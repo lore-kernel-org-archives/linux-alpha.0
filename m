@@ -1,197 +1,299 @@
-Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5568B4503A;
-	Thu,  1 Aug 2024 09:59:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96C4919FA96
+	for <linux-alpha@vger.kernel.org>; Thu,  1 Aug 2024 12:53:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722506394; cv=none; b=nmZHubLERcUhAAsKJUH/l5SwNMZamQ8nl5UMmaFsuu0e3uwLTPJJ6L/DOVqg1OvyU2MXRRySQjR+yFfjQ0ZNii50IXoaXZg8KqWQvZF3UAt4HTI7L1/f1nndG6S4N4XrQpCV/uHBKcxXU7SJyw5xYty1fnY4goVtjPiUDn/xwO4=
+	t=1722516805; cv=none; b=oxTXlIJ6DzcZaZExFYBi4VGdHE1XTYyyenVQqsQPKj9KWPLiZQm77TWCDT9v2ma1T0WL/wDn+8WaU9WaucAUUVPl8FSfRvzWoeuU7ZTNGtbiBnObhfBKSSLrJalgoXWcH+Xg2CztL37CaAVaaqcI4Ff19Kv93EnREWFbTyTtYrw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722506394; c=relaxed/simple;
-	bh=hJKBqDWK9Ax/+Bl3wOMxZMkJcY32J+0lM0f8oV09EwU=;
-	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=IF9sn2oWUjIOTN2xZrlZukIAsfUcXvcBelJrbL28Yi01A8cl/F1gv1Bgi+hF5/LHX5lrIcHAnjESy4lIXsdKo3NKM8HO49u0Kxysab9FJsWrZNPlY8EfI2sj+h26jZNYDj4gJbbDesAE0zV4G3AZ3QUSQ4G4KAnsuaU0XJ4TyDs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
-Received: from mail.maildlp.com ([172.25.15.154])
-	by h3cspam02-ex.h3c.com with ESMTP id 4719vV3J026474;
-	Thu, 1 Aug 2024 17:57:31 +0800 (GMT-8)
-	(envelope-from zhang.renze@h3c.com)
-Received: from DAG6EX11-BJD.srv.huawei-3com.com (unknown [10.153.34.13])
-	by mail.maildlp.com (Postfix) with ESMTP id A6507200472D;
-	Thu,  1 Aug 2024 18:02:18 +0800 (CST)
-Received: from DAG6EX09-BJD.srv.huawei-3com.com (10.153.34.11) by
- DAG6EX11-BJD.srv.huawei-3com.com (10.153.34.13) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.27; Thu, 1 Aug 2024 17:57:34 +0800
-Received: from DAG6EX09-BJD.srv.huawei-3com.com ([fe80::bdc5:ad7:2347:12a5])
- by DAG6EX09-BJD.srv.huawei-3com.com ([fe80::bdc5:ad7:2347:12a5%4]) with mapi
- id 15.02.1258.027; Thu, 1 Aug 2024 17:57:34 +0800
-From: Zhangrenze <zhang.renze@h3c.com>
-To: David Hildenbrand <david@redhat.com>,
-        "linux-mm@kvack.org"
-	<linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        "akpm@linux-foundation.org"
-	<akpm@linux-foundation.org>
-CC: "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-arch@vger.kernel.org"
-	<linux-arch@vger.kernel.org>,
-        "chris@zankel.net" <chris@zankel.net>,
-        "jcmvbkbc@gmail.com" <jcmvbkbc@gmail.com>,
-        "James.Bottomley@HansenPartnership.com"
-	<James.Bottomley@HansenPartnership.com>,
-        "deller@gmx.de" <deller@gmx.de>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>,
-        "rdunlap@infradead.org" <rdunlap@infradead.org>,
-        "bhelgaas@google.com"
-	<bhelgaas@google.com>,
-        "linux-mips@vger.kernel.org"
-	<linux-mips@vger.kernel.org>,
-        "richard.henderson@linaro.org"
-	<richard.henderson@linaro.org>,
-        "ink@jurassic.park.msu.ru"
-	<ink@jurassic.park.msu.ru>,
-        "mattst88@gmail.com" <mattst88@gmail.com>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        Jiaoxupo
-	<jiaoxupo@h3c.com>, Zhouhaofan <zhou.haofan@h3c.com>
-Subject: Re: [PATCH v2 0/1] mm: introduce MADV_DEMOTE/MADV_PROMOTE
-Thread-Topic: [PATCH v2 0/1] mm: introduce MADV_DEMOTE/MADV_PROMOTE
-Thread-Index: Adrj+TpMWvmFzAgQpUGNt+p1t3dI6Q==
-Date: Thu, 1 Aug 2024 09:57:34 +0000
-Message-ID: <3a5785661e1b4f3381046aa5e808854c@h3c.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-sender-location: DAG2
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1722516805; c=relaxed/simple;
+	bh=RSXa3QrdosMXek03Kn5TJUgAyt9Pgt8CEW3Dz2q5d6k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=P6CF3r4uyMq+Ayn+TADyxcdyvvKOGuA3FKribc3SLCYc/nC/ZBIJDLEJcSPMgTNhBAlZ4rtvzXptvseb8c+O+tdfSap4Sa6SHUwqF2AssKqKMMF8QVdKBoaIY8Vazg5weeEcjliGhGLPEKV56O+Fkl6rzmGlRcJl0fEs8DIF+7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=jOosIZBZ; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="jOosIZBZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1722516802;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=tY3FTh7vOTxS/LhqhyyExp9r4gGoOfraF1glml6en7Q=;
+	b=jOosIZBZGQTA8l+OiWKwMzhLzigshAK/nV9vhCJNY/NLT+TUtL17ZBj/F3NF9l/AwjmWEf
+	GUH75fVn67N9cKzCJr1tlEBt1K3OsgR3HRXIaxs+6kcv3fNr2TPBNL83AsyU+YefTh/4dk
+	wE5TFOLGG11KwpjnLCCQOfzUIxcdkEw=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-48-LUG-qY9KOMiyPOYdZtZEOQ-1; Thu, 01 Aug 2024 08:53:20 -0400
+X-MC-Unique: LUG-qY9KOMiyPOYdZtZEOQ-1
+Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-368374dc565so3191010f8f.2
+        for <linux-alpha@vger.kernel.org>; Thu, 01 Aug 2024 05:53:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1722516799; x=1723121599;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:from:references:cc:to:subject:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=tY3FTh7vOTxS/LhqhyyExp9r4gGoOfraF1glml6en7Q=;
+        b=L/Uan7U3rnUDI96Wz1sMilwFnO/WSOL1OgruX9pQngZE/olEmpJ4FYTSR3IH0yK9TR
+         ST1AubSQGyAcX3tOgVzoI2ypukcKnSF+m2jcF8qbG192bGS04pAgh96EnMEWzNY+aJrk
+         qU82sJtd7MlwY5wwvYX77bTIsWBPF+EltW8ye4vhcXlXIuluhCKDOrfkLBAIcgCwYd87
+         PmhO/CUN7KXOWY7ch7eHli7lLaFe6yJ85rAFPxfGaYjLuayIFjjRMnaBH2Cy9nMVaZLk
+         HY6twT+2jGqoU9VCC1Bz7M8T8ITDbAtQZpDAt2gLcQC2nDgWnmOdKYhhz+RI9XgOTR5W
+         2LyQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUdyBgsLuQ+vQEuff+CHlusUYsr97/fmgysAtPmD1+A0kPGX8PuJ+qOLbfhUqaRrbCVgW0YPPCcsmS07zQJ4l5cZGJAd2DEQfWl+tA=
+X-Gm-Message-State: AOJu0YxcVONtRrgN0PQR9CWnEAAx8qqPmMrCOQrAQQ8tbJFxjLKhV/hv
+	sfESM6SBOgsRPxjS+zDvI51AJQu0sowINH66ZvXuaTixEkXUrIkQGD8Bnq3j0/Jwwc1YOvv3glA
+	HUTXHz9yvO0TtJ1L1LUOGHGudhY8iajKQ0JS85tg9ZEPVu7nz9hAWUR2Q63nl
+X-Received: by 2002:adf:ed11:0:b0:364:8568:f843 with SMTP id ffacd0b85a97d-36baaf46ff3mr1747185f8f.59.1722516799373;
+        Thu, 01 Aug 2024 05:53:19 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEXkQzuiBajNhJVSP5UhLjv2gX0jPjX0Kpt2L7st5acq9l3/tBwA4i709DCI0A4Sa8f6WF5tw==
+X-Received: by 2002:adf:ed11:0:b0:364:8568:f843 with SMTP id ffacd0b85a97d-36baaf46ff3mr1747154f8f.59.1722516798788;
+        Thu, 01 Aug 2024 05:53:18 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:5c00:e650:bcd7:e2a0:54fe? (p200300cbc7075c00e650bcd7e2a054fe.dip0.t-ipconnect.de. [2003:cb:c707:5c00:e650:bcd7:e2a0:54fe])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-36b36858197sm19818391f8f.68.2024.08.01.05.53.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Aug 2024 05:53:18 -0700 (PDT)
+Message-ID: <bffe178c-bd97-4945-898e-97ba203f503e@redhat.com>
+Date: Thu, 1 Aug 2024 14:53:15 +0200
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-DNSRBL: 
-X-SPAM-SOURCE-CHECK: pass
-X-MAIL:h3cspam02-ex.h3c.com 4719vV3J026474
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/1] mm: introduce MADV_DEMOTE/MADV_PROMOTE
+To: Zhangrenze <zhang.renze@h3c.com>, "linux-mm@kvack.org"
+ <linux-mm@kvack.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "akpm@linux-foundation.org" <akpm@linux-foundation.org>
+Cc: "arnd@arndb.de" <arnd@arndb.de>,
+ "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "chris@zankel.net" <chris@zankel.net>,
+ "jcmvbkbc@gmail.com" <jcmvbkbc@gmail.com>,
+ "James.Bottomley@HansenPartnership.com"
+ <James.Bottomley@HansenPartnership.com>, "deller@gmx.de" <deller@gmx.de>,
+ "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+ "tsbogend@alpha.franken.de" <tsbogend@alpha.franken.de>,
+ "rdunlap@infradead.org" <rdunlap@infradead.org>,
+ "bhelgaas@google.com" <bhelgaas@google.com>,
+ "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+ "richard.henderson@linaro.org" <richard.henderson@linaro.org>,
+ "ink@jurassic.park.msu.ru" <ink@jurassic.park.msu.ru>,
+ "mattst88@gmail.com" <mattst88@gmail.com>,
+ "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+ Jiaoxupo <jiaoxupo@h3c.com>, Zhouhaofan <zhou.haofan@h3c.com>
+References: <3a5785661e1b4f3381046aa5e808854c@h3c.com>
+From: David Hildenbrand <david@redhat.com>
+Content-Language: en-US
+Autocrypt: addr=david@redhat.com; keydata=
+ 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
+ WNyWQQ==
+Organization: Red Hat
+In-Reply-To: <3a5785661e1b4f3381046aa5e808854c@h3c.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-PiA+IFN1cmUsIGhlcmUncyB0aGUgU2NhbGFibGUgVGllcmVkIE1lbW9yeSBDb250cm9sIChTVE1D
-KQ0KPiA+IA0KPiA+ICoqQmFja2dyb3VuZCoqDQo+ID4gDQo+ID4gSW4gdGhlIGVyYSB3aGVuIGFy
-dGlmaWNpYWwgaW50ZWxsaWdlbmNlLCBiaWcgZGF0YSBhbmFseXRpY3MsIGFuZA0KPiA+IG1hY2hp
-bmUgbGVhcm5pbmcgaGF2ZSBiZWNvbWUgbWFpbnN0cmVhbSByZXNlYXJjaCB0b3BpY3MgYW5kDQo+
-ID4gYXBwbGljYXRpb24gc2NlbmFyaW9zLCB0aGUgZGVtYW5kIGZvciBoaWdoLWNhcGFjaXR5IGFu
-ZCBoaWdoLQ0KPiA+IGJhbmR3aWR0aCBtZW1vcnkgaW4gY29tcHV0ZXJzIGhhcyBiZWNvbWUgaW5j
-cmVhc2luZ2x5IGltcG9ydGFudC4NCj4gPiBUaGUgZW1lcmdlbmNlIG9mIENYTCAoQ29tcHV0ZSBF
-eHByZXNzIExpbmspIHByb3ZpZGVzIHRoZQ0KPiA+IHBvc3NpYmlsaXR5IG9mIGhpZ2gtY2FwYWNp
-dHkgbWVtb3J5LiBBbHRob3VnaCBDWEwgVFlQRTMgZGV2aWNlcw0KPiA+IGNhbiBwcm92aWRlIGxh
-cmdlIG1lbW9yeSBjYXBhY2l0aWVzLCB0aGVpciBhY2Nlc3Mgc3BlZWQgaXMgbG93ZXINCj4gPiB0
-aGFuIHRyYWRpdGlvbmFsIERSQU0gZHVlIHRvIGhhcmR3YXJlIGFyY2hpdGVjdHVyZSBsaW1pdGF0
-aW9ucy4NCj4gPiANCj4gPiBUbyBlbmpveSB0aGUgbGFyZ2UgY2FwYWNpdHkgYnJvdWdodCBieSBD
-WEwgbWVtb3J5IHdoaWxlIG1pbmltaXppbmcNCj4gPiB0aGUgaW1wYWN0IG9mIGhpZ2ggbGF0ZW5j
-eSwgTGludXggaGFzIGludHJvZHVjZWQgdGhlIFRpZXJlZCBNZW1vcnkNCj4gPiBhcmNoaXRlY3R1
-cmUuIEluIHRoZSBUaWVyZWQgTWVtb3J5IGFyY2hpdGVjdHVyZSwgQ1hMIG1lbW9yeSBpcw0KPiA+
-IHRyZWF0ZWQgYXMgYW4gaW5kZXBlbmRlbnQsIHNsb3dlciBOVU1BIE5PREUsIHdoaWxlIERSQU0g
-aXMNCj4gPiBjb25zaWRlcmVkIGFzIGEgcmVsYXRpdmVseSBmYXN0ZXIgTlVNQSBOT0RFLiBBcHBs
-aWNhdGlvbnMgYWxsb2NhdGUNCj4gPiBtZW1vcnkgZnJvbSB0aGUgbG9jYWwgbm9kZSwgYW5kIFRp
-ZXJlZCBNZW1vcnksIGxldmVyYWdpbmcgbWVtb3J5DQo+ID4gcmVjbGFtYXRpb24gYW5kIE5VTUEg
-QmFsYW5jaW5nIG1lY2hhbmlzbXMsIGNhbiB0cmFuc3BhcmVudGx5IGRlbW90ZQ0KPiA+IHBoeXNp
-Y2FsIHBhZ2VzIG5vdCByZWNlbnRseSBhY2Nlc3NlZCBieSB1c2VyIHByb2Nlc3NlcyB0byB0aGUg
-c2xvd2VyDQo+ID4gQ1hMIE5VTUEgTk9ERS4gSG93ZXZlciwgd2hlbiB1c2VyIHByb2Nlc3NlcyBy
-ZS1hY2Nlc3MgdGhlIGRlbW90ZWQNCj4gPiBtZW1vcnksIHRoZSBUaWVyZWQgTWVtb3J5IG1lY2hh
-bmlzbSB3aWxsLCBiYXNlZCBvbiBjZXJ0YWluIGxvZ2ljLA0KPiA+IGRlY2lkZSB3aGV0aGVyIHRv
-IHByb21vdGUgdGhlIGRlbW90ZWQgcGh5c2ljYWwgcGFnZXMgYmFjayB0byB0aGUNCj4gPiBmYXN0
-IE5VTUEgTk9ERS4gSWYgdGhlIHByb21vdGlvbiBpcyBzdWNjZXNzZnVsLCB0aGUgbWVtb3J5IGFj
-Y2Vzc2VkDQo+ID4gYnkgdGhlIHVzZXIgcHJvY2VzcyB3aWxsIHJlc2lkZSBpbiBEUkFNOyBvdGhl
-cndpc2UsIGl0IHdpbGwgcmVzaWRlIGluDQo+ID4gdGhlIENYTCBOT0RFLiBUaHJvdWdoIHRoZSBU
-aWVyZWQgTWVtb3J5IG1lY2hhbmlzbSwgTGludXggYmFsYW5jZXMNCj4gPiBiZXR3ZWVubGFyZ2Ug
-bWVtb3J5IGNhcGFjaXR5IGFuZCBsYXRlbmN5LCBzdHJpdmluZyB0byBtYWludGFpbiBhbg0KPiA+
-IGVxdWlsaWJyaXVtIGZvciBhcHBsaWNhdGlvbnMuDQo+ID4gDQo+ID4gKipQcm9ibGVtKioNCj4g
-PiBBbHRob3VnaCBUaWVyZWQgTWVtb3J5IHN0cml2ZXMgdG8gYmFsYW5jZSBiZXR3ZWVuIGxhcmdl
-IGNhcGFjaXR5IGFuZA0KPiA+IGxhdGVuY3ksIHNwZWNpZmljIHNjZW5hcmlvcyBjYW4gbGVhZCB0
-byB0aGUgZm9sbG93aW5nIGlzc3VlczoNCj4gPiANCj4gPiAgICAxLiBJbiBzY2VuYXJpb3MgcmVx
-dWlyaW5nIG1hc3NpdmUgY29tcHV0YXRpb25zLCBpZiBkYXRhIGlzIGhlYXZpbHkNCj4gPiAgICAg
-ICBzdG9yZWQgaW4gQ1hMIHNsb3cgbWVtb3J5IGFuZCBUaWVyZWQgTWVtb3J5IGNhbm5vdCBwcm9t
-cHRseQ0KPiA+ICAgICAgIHByb21vdGUgdGhpcyBtZW1vcnkgdG8gZmFzdCBEUkFNLCBpdCB3aWxs
-IHNpZ25pZmljYW50bHkgaW1wYWN0DQo+ID4gICAgICAgcHJvZ3JhbSBwZXJmb3JtYW5jZS4NCj4g
-PiAgICAyLiBTaW1pbGFyIHRvIHRoZSBzY2VuYXJpbyBkZXNjcmliZWQgaW4gcG9pbnQgMSwgaWYg
-VGllcmVkIE1lbW9yeQ0KPiA+ICAgICAgIGRlY2lkZXMgdG8gcHJvbW90ZSB0aGVzZSBwaHlzaWNh
-bCBwYWdlcyB0byBmYXN0IERSQU0gTk9ERSwgYnV0DQo+ID4gICAgICAgZHVlIHRvIGxpbWl0YXRp
-b25zIGluIHRoZSBEUkFNIE5PREUgcHJvbW90ZSByYXRpbywgdGhlc2UgcGh5c2ljYWwNCj4gPiAg
-ICAgICBwYWdlcyBjYW5ub3QgYmUgcHJvbW90ZWQuIENvbnNlcXVlbnRseSwgdGhlIHByb2dyYW0g
-d2lsbCBrZWVwDQo+ID4gICAgICAgcnVubmluZyBpbiBzbG93IG1lbW9yeS4NCj4gPiAgICAzLiBB
-ZnRlciBhbiBhcHBsaWNhdGlvbiBmaW5pc2hlcyBjb21wdXRpbmcgb24gYSBsYXJnZSBibG9jayBv
-ZiBmYXN0DQo+ID4gICAgICAgbWVtb3J5LCBpdCBtYXkgbm90IGltbWVkaWF0ZWx5IHJlLWFjY2Vz
-cyBpdC4gSGVuY2UsIHRoaXMgbWVtb3J5DQo+ID4gICAgICAgY2FuIG9ubHkgd2FpdCBmb3IgdGhl
-IG1lbW9yeSByZWNsYW1hdGlvbiBtZWNoYW5pc20gdG8gZGVtb3RlIGl0Lg0KPiA+ICAgIDQuIFNp
-bWlsYXIgdG8gdGhlIHNjZW5hcmlvIGRlc2NyaWJlZCBpbiBwb2ludCAzLCBpZiB0aGUgZGVtb3Rp
-b24NCj4gPiAgICAgICBzcGVlZCBpcyBzbG93LCB0aGVzZSBjb2xkIHBhZ2VzIHdpbGwgb2NjdXB5
-IHRoZSBwcm9tb3Rpb24NCj4gPiAgICAgICByZXNvdXJjZXMsIHByZXZlbnRpbmcgc29tZSBlbGln
-aWJsZSBzbG93IHBhZ2VzIGZyb20gYmVpbmcNCj4gPiAgICAgICBpbW1lZGlhdGVseSBwcm9tb3Rl
-ZCwgc2V2ZXJlbHkgYWZmZWN0aW5nIGFwcGxpY2F0aW9uIGVmZmljaWVuY3kuDQo+ID4gDQo+ID4g
-KipTb2x1dGlvbioqDQo+ID4gV2UgcHJvcG9zZSB0aGUgKipTY2FsYWJsZSBUaWVyZWQgTWVtb3J5
-IENvbnRyb2wgKFNUTUMpKiogbWVjaGFuaXNtLA0KPiA+IHdoaWNoIGRlbGVnYXRlcyB0aGUgYXV0
-aG9yaXR5IG9mIHByb21vdGluZyBhbmQgZGVtb3RpbmcgbWVtb3J5IHRvIHRoZQ0KPiA+IGFwcGxp
-Y2F0aW9uLiBUaGUgcHJpbmNpcGxlIGlzIHNpbXBsZSwgYXMgZm9sbG93czoNCj4gPiANCj4gPiAg
-ICAxLiBXaGVuIGFuIGFwcGxpY2F0aW9uIGlzIHByZXBhcmluZyBmb3IgY29tcHV0YXRpb24sIGl0
-IGNhbiBwcm9tb3RlDQo+ID4gICAgICAgdGhlIG1lbW9yeSBpdCBuZWVkcyB0byB1c2Ugb3IgZW5z
-dXJlIHRoZSBtZW1vcnkgcmVzaWRlcyBvbiBhIGZhc3QNCj4gPiAgICAgICBOT0RFLg0KPiA+ICAg
-IDIuIFdoZW4gYW4gYXBwbGljYXRpb24gd2lsbCBub3QgdXNlIHRoZSBtZW1vcnkgc2hvcnRseSwg
-aXQgY2FuDQo+ID4gICAgICAgaW1tZWRpYXRlbHkgZGVtb3RlIHRoZSBtZW1vcnkgdG8gc2xvdyBt
-ZW1vcnksIGZyZWVpbmcgdXAgdmFsdWFibGUNCj4gPiAgICAgICBwcm9tb3Rpb24gcmVzb3VyY2Vz
-Lg0KPiA+IA0KPiA+IFNUTUMgbWVjaGFuaXNtIGlzIGltcGxlbWVudGVkIHRocm91Z2ggdGhlIG1h
-ZHZpc2Ugc3lzdGVtIGNhbGwsIHByb3ZpZGluZw0KPiA+IHR3byBuZXcgYWR2aWNlIG9wdGlvbnM6
-IE1BRFZfREVNT1RFIGFuZCBNQURWX1BST01PVEUuIE1BRFZfREVNT1RFDQo+ID4gYWR2aXNlcyBk
-ZW1vdGUgdGhlIHBoeXNpY2FsIG1lbW9yeSB0byB0aGUgbm9kZSB3aGVyZSBzbG93IG1lbW9yeQ0K
-PiA+IHJlc2lkZXM7IHRoaXMgYWR2aWNlIG9ubHkgZmFpbHMgaWYgdGhlcmUgaXMgbm8gZnJlZSBw
-aHlzaWNhbCBtZW1vcnkgb24NCj4gPiB0aGUgc2xvdyBtZW1vcnkgbm9kZS4gTUFEVl9QUk9NT1RF
-IGFkdmlzZXMgcmV0YWluaW5nIHRoZSBwaHlzaWNhbCBtZW1vcnkNCj4gPiBpbiB0aGUgZmFzdCBt
-ZW1vcnk7IHRoaXMgYWR2aWNlIG9ubHkgZmFpbHMgaWYgdGhlcmUgYXJlIG5vIHByb21vdGlvbg0K
-PiA+IHNsb3RzIGF2YWlsYWJsZSBvbiB0aGUgZmFzdCBtZW1vcnkgbm9kZS4gQmVuZWZpdHMgYnJv
-dWdodCBieSBTVE1DDQo+ID4gaW5jbHVkZToNCj4gPiANCj4gPiAgICAxLiBUaGUgU1RNQyBtZWNo
-YW5pc20gaXMgYSB2YXJpYW50IG9mIG9uLWRlbWFuZCBtZW1vcnkgbWFuYWdlbWVudA0KPiA+ICAg
-ICAgIGRlc2lnbmVkIHRvIGxldCBhcHBsaWNhdGlvbnMgZW5qb3kgZmFzdCBtZW1vcnkgYXMgbXVj
-aCBhcyBwb3NzaWJsZSwNCj4gPiAgICAgICB3aGlsZSBhY3RpdmVseSBkZW1vdGluZyB0byBzbG93
-IG1lbW9yeSB3aGVuIG5vdCBpbiB1c2UsIHRodXMNCj4gPiAgICAgICBmcmVlaW5nIHVwIHByb21v
-dGlvbiBzbG90cyBmb3IgdGhlIE5PREUgYW5kIGFsbG93aW5nIGl0IHRvIHJ1biBpbg0KPiA+ICAg
-ICAgIGFuIG9wdGltaXplZCBUaWVyZWQgTWVtb3J5IGVudmlyb25tZW50Lg0KPiA+ICAgIDIuIFRo
-ZSBTVE1DIG1lY2hhbmlzbSBiZXR0ZXIgYmFsYW5jZXMgbGFyZ2UgY2FwYWNpdHkgYW5kIGxhdGVu
-Y3kuDQo+ID4gDQo+ID4gKipTaG9ydGNvbWluZ3Mgb2YgU1RNQyoqDQo+ID4gVGhlIFNUTUMgbWVj
-aGFuaXNtIHJlcXVpcmVzIHRoZSBjYWxsZXIgdG8gbWFuYWdlIG1lbW9yeSBkZW1vdGlvbiBhbmQN
-Cj4gPiBwcm9tb3Rpb24uIElmIHRoZSBtZW1vcnkgaXMgbm90IHByb21wdGx5IGRlbW90aW5nIGFm
-dGVyIGFuIHByb21vdGlvbiwNCj4gPiBpdCBtYXkgY2F1c2UgaXNzdWVzIHNpbWlsYXIgdG8gbWVt
-b3J5IGxlYWtzDQo+IEVobSwgdGhhdCBzb3VuZHMgc2NhcnkuIENhbiB5b3UgZWxhYm9yYXRlIHdo
-YXQncyBoYXBwZW5pbmcgaGVyZSBhbmQgd2h5IA0KPiBpdCBpcyAic2ltaWxhciB0byBtZW1vcnkg
-bGVha3MiPw0KPiANCj4gDQo+IENhbiB5b3UgYWxzbyBwb2ludCBvdXQgd2h5IG1pZ3JhdGVfcGFn
-ZXMoKSBpcyBub3Qgc3VpdGFibGU/IEkgd291bGQgDQo+IGFzc3VtZSBkZW1vdGUvcHJvbW90ZSBp
-cyBpbiBlc3NlbmNlIHNpbXBseSBtaWdyYXRpbmcgbWVtb3J5IGJldHdlZW4gbm9kZXMuDQo+IA0K
-PiAtLSANCj4gQ2hlZXJzLA0KPiANCj4gRGF2aWQgLyBkaGlsZGVuYg0KPiANCg0KVGhhbmsgeW91
-IGZvciB0aGUgcmVzcG9uc2UuIEJlbG93IGFyZSBteSBwb2ludHMgb2Ygdmlldy4gSWYgdGhlcmUg
-YXJlIGFueQ0KbWlzdGFrZXMsIEkgYXBwcmVjaWF0ZSB5b3VyIHVuZGVyc3RhbmRpbmc6DQoNCjEu
-IEluIGEgdGllcmVkIG1lbW9yeSBzeXN0ZW0sIGZhc3Qgbm9kZXMgYW5kIHNsb3cgbm9kZXMgYWN0
-IGFzIHR3byBjb21tb24NCiAgIG1lbW9yeSBwb29scy4gVGhlIHN5c3RlbSBoYXMgYSBjZXJ0YWlu
-IHJhdGlvIGxpbWl0IGZvciBwcm9tb3Rpb24uIEZvcg0KICAgZXhhbXBsZSwgYSBOT0RFIG1heSBz
-dGlwdWxhdGUgdGhhdCB3aGVuIHRoZSBhdmFpbGFibGUgbWVtb3J5IGlzIGxlc3MNCiAgIHRoYW4g
-MUdCIG9yIDEvNCBvZiB0aGUgbm9kZSdzIG1lbW9yeSwgcHJvbW90aW9uIGFyZSBwcm9oaWJpdGVk
-LiBJZiB3ZQ0KICAgdXNlIG1pZ3JhdGVfcGFnZXMgYXQgdGhpcyBwb2ludCwgaXQgd2lsbCB1bnJl
-c3RyaWN0ZWRseSBwcm9tb3RlIHNsb3cNCiAgIHBhZ2VzIHRvIGZhc3QgbWVtb3J5LCB3aGljaCBt
-YXkgcHJldmVudCBvdGhlciBwcm9jZXNzZXPigJkgcGFnZXMgdGhhdA0KICAgc2hvdWxkIGhhdmUg
-YmVlbiBwcm9tb3RlZCBmcm9tIGJlaW5nIHByb21vdGVkLiBUaGlzIGlzIHdoYXQgSSBtZWFuIGJ5
-DQogICBvY2N1cHlpbmcgcHJvbW90aW9uIHJlc291cmNlcy4NCjIuIEFzIGRlc2NyaWJlZCBpbiBw
-b2ludCAxLCBpZiB3ZSB1c2UgTUFEVl9QUk9NT1RFIHRvIHRlbXBvcmFyaWx5IHByb21vdGUNCiAg
-IGEgYmF0Y2ggb2YgcGFnZXMgYW5kIGRvIG5vdCBkZW1vdGUgdGhlbSBpbW1lZGlhdGVseSBhZnRl
-ciB1c2FnZSwgaXQNCiAgIHdpbGwgb2NjdXB5IG1hbnkgcHJvbW90aW9uIHJlc291cmNlcy4gT3Ro
-ZXIgaG90IHBhZ2VzIHRoYXQgbmVlZCBwcm9tb3RlDQogICB3aWxsIG5vdCBiZSBhYmxlIHRvIGdl
-dCBwcm9tb3RlLCB3aGljaCB3aWxsIGltcGFjdCB0aGUgcGVyZm9ybWFuY2Ugb2YNCiAgIGNlcnRh
-aW4gcHJvY2Vzc2VzLg0KMy4gTUFEVl9ERU1PVEUgYW5kIE1BRFZfUFJPTU9URSBvbmx5IHJlbHkg
-b24gbWFkdmlzZSwgd2hpbGUgbWlncmF0ZV9wYWdlcw0KICAgZGVwZW5kcyBvbiBsaWJudW1hLg0K
-NC4gTUFEVl9ERU1PVEUgYW5kIE1BRFZfUFJPTU9URSBwcm92aWRlIGEgYmV0dGVyIGJhbGFuY2Ug
-YmV0d2VlbiBjYXBhY2l0eQ0KICAgYW5kIGxhdGVuY3kuIFRoZXkgYWxsb3cgaG90IHBhZ2VzIHRo
-YXQgbmVlZCBwcm9tb3RpbmcgdG8gYmUgcHJvbW90ZWQNCiAgIHNtb290aGx5IGFuZCBwYWdlcyB0
-aGF0IG5lZWQgZGVtb3RpbmcgdG8gYmUgZGVtb3RlZCBpbW1lZGlhdGVseS4gVGhpcw0KICAgaGVs
-cHMgdGllcmVkIG1lbW9yeSBzeXN0ZW1zIHRvIG9wZXJhdGUgbW9yZSByYXRpb25hbGx5Lg0KDQo6
-KSBCaXNjdWl0T1MgQnJvaWxlcg0K
+On 01.08.24 11:57, Zhangrenze wrote:
+>>> Sure, here's the Scalable Tiered Memory Control (STMC)
+>>>
+>>> **Background**
+>>>
+>>> In the era when artificial intelligence, big data analytics, and
+>>> machine learning have become mainstream research topics and
+>>> application scenarios, the demand for high-capacity and high-
+>>> bandwidth memory in computers has become increasingly important.
+>>> The emergence of CXL (Compute Express Link) provides the
+>>> possibility of high-capacity memory. Although CXL TYPE3 devices
+>>> can provide large memory capacities, their access speed is lower
+>>> than traditional DRAM due to hardware architecture limitations.
+>>>
+>>> To enjoy the large capacity brought by CXL memory while minimizing
+>>> the impact of high latency, Linux has introduced the Tiered Memory
+>>> architecture. In the Tiered Memory architecture, CXL memory is
+>>> treated as an independent, slower NUMA NODE, while DRAM is
+>>> considered as a relatively faster NUMA NODE. Applications allocate
+>>> memory from the local node, and Tiered Memory, leveraging memory
+>>> reclamation and NUMA Balancing mechanisms, can transparently demote
+>>> physical pages not recently accessed by user processes to the slower
+>>> CXL NUMA NODE. However, when user processes re-access the demoted
+>>> memory, the Tiered Memory mechanism will, based on certain logic,
+>>> decide whether to promote the demoted physical pages back to the
+>>> fast NUMA NODE. If the promotion is successful, the memory accessed
+>>> by the user process will reside in DRAM; otherwise, it will reside in
+>>> the CXL NODE. Through the Tiered Memory mechanism, Linux balances
+>>> betweenlarge memory capacity and latency, striving to maintain an
+>>> equilibrium for applications.
+>>>
+>>> **Problem**
+>>> Although Tiered Memory strives to balance between large capacity and
+>>> latency, specific scenarios can lead to the following issues:
+>>>
+>>>     1. In scenarios requiring massive computations, if data is heavily
+>>>        stored in CXL slow memory and Tiered Memory cannot promptly
+>>>        promote this memory to fast DRAM, it will significantly impact
+>>>        program performance.
+>>>     2. Similar to the scenario described in point 1, if Tiered Memory
+>>>        decides to promote these physical pages to fast DRAM NODE, but
+>>>        due to limitations in the DRAM NODE promote ratio, these physical
+>>>        pages cannot be promoted. Consequently, the program will keep
+>>>        running in slow memory.
+>>>     3. After an application finishes computing on a large block of fast
+>>>        memory, it may not immediately re-access it. Hence, this memory
+>>>        can only wait for the memory reclamation mechanism to demote it.
+>>>     4. Similar to the scenario described in point 3, if the demotion
+>>>        speed is slow, these cold pages will occupy the promotion
+>>>        resources, preventing some eligible slow pages from being
+>>>        immediately promoted, severely affecting application efficiency.
+>>>
+>>> **Solution**
+>>> We propose the **Scalable Tiered Memory Control (STMC)** mechanism,
+>>> which delegates the authority of promoting and demoting memory to the
+>>> application. The principle is simple, as follows:
+>>>
+>>>     1. When an application is preparing for computation, it can promote
+>>>        the memory it needs to use or ensure the memory resides on a fast
+>>>        NODE.
+>>>     2. When an application will not use the memory shortly, it can
+>>>        immediately demote the memory to slow memory, freeing up valuable
+>>>        promotion resources.
+>>>
+>>> STMC mechanism is implemented through the madvise system call, providing
+>>> two new advice options: MADV_DEMOTE and MADV_PROMOTE. MADV_DEMOTE
+>>> advises demote the physical memory to the node where slow memory
+>>> resides; this advice only fails if there is no free physical memory on
+>>> the slow memory node. MADV_PROMOTE advises retaining the physical memory
+>>> in the fast memory; this advice only fails if there are no promotion
+>>> slots available on the fast memory node. Benefits brought by STMC
+>>> include:
+>>>
+>>>     1. The STMC mechanism is a variant of on-demand memory management
+>>>        designed to let applications enjoy fast memory as much as possible,
+>>>        while actively demoting to slow memory when not in use, thus
+>>>        freeing up promotion slots for the NODE and allowing it to run in
+>>>        an optimized Tiered Memory environment.
+>>>     2. The STMC mechanism better balances large capacity and latency.
+>>>
+>>> **Shortcomings of STMC**
+>>> The STMC mechanism requires the caller to manage memory demotion and
+>>> promotion. If the memory is not promptly demoting after an promotion,
+>>> it may cause issues similar to memory leaks
+>> Ehm, that sounds scary. Can you elaborate what's happening here and why
+>> it is "similar to memory leaks"?
+>>
+>>
+>> Can you also point out why migrate_pages() is not suitable? I would
+>> assume demote/promote is in essence simply migrating memory between nodes.
+>>
+>> -- 
+>> Cheers,
+>>
+>> David / dhildenb
+>>
+> 
+> Thank you for the response. Below are my points of view. If there are any
+> mistakes, I appreciate your understanding:
+> 
+> 1. In a tiered memory system, fast nodes and slow nodes act as two common
+>     memory pools. The system has a certain ratio limit for promotion. For
+>     example, a NODE may stipulate that when the available memory is less
+>     than 1GB or 1/4 of the node's memory, promotion are prohibited. If we
+>     use migrate_pages at this point, it will unrestrictedly promote slow
+>     pages to fast memory, which may prevent other processes’ pages that
+>     should have been promoted from being promoted. This is what I mean by
+>     occupying promotion resources.
+> 2. As described in point 1, if we use MADV_PROMOTE to temporarily promote
+>     a batch of pages and do not demote them immediately after usage, it
+>     will occupy many promotion resources. Other hot pages that need promote
+>     will not be able to get promote, which will impact the performance of
+>     certain processes.
+
+So, you mean, applications can actively consume "fast memory" and 
+"steal" it from other applications? I assume that's what you meant with 
+"memory leak".
+
+I would really suggest to *not* call this "similar to memory leaks", in 
+your own favor ;)
+
+> 3. MADV_DEMOTE and MADV_PROMOTE only rely on madvise, while migrate_pages
+>     depends on libnuma.
+
+Well, you can trivially call that systemcall also without libnuma ;) So 
+that shouldn't really make a difference and is rather something that can 
+be solved in user space.
+
+> 4. MADV_DEMOTE and MADV_PROMOTE provide a better balance between capacity
+>     and latency. They allow hot pages that need promoting to be promoted
+>     smoothly and pages that need demoting to be demoted immediately. This
+>     helps tiered memory systems to operate more rationally.
+
+Can you summarize why something similar could not be provided by a 
+library that builds up on existing functionality, such as migrate_pages? 
+It could easily take a look at memory stats to reason whether a 
+promotion/demotion makes sense (your example above with the memory 
+distribution).
+
+ From the patch itself I read
+
+"MADV_DEMOTE can mark a range of memory pages as cold
+pages and immediately demote them to slow memory. MADV_PROMOTE can mark
+a range of memory pages as hot pages and immediately promote them to
+fast memory"
+
+which sounds to me like migrate_pages / MADV_COLD might be able to 
+achieve something similar.
+
+What's the biggest difference that MADV_DEMOTE|MADV_PROMOTE can do better?
+
+-- 
+Cheers,
+
+David / dhildenb
+
