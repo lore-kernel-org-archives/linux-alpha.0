@@ -1,140 +1,183 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from h3cspam02-ex.h3c.com (smtp.h3c.com [60.191.123.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E480166316
-	for <linux-alpha@vger.kernel.org>; Wed, 31 Jul 2024 21:19:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A5015853E;
+	Thu,  1 Aug 2024 06:53:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.191.123.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722460771; cv=none; b=PsVIHAfMsaIVaWpXaMOwsLsHAaYY0tCbDugHQf2urbyvaIl2+IgfnaxeBEbGsQHvhCJdwtHP9FNqitTfwogy9hAW19T0Ljlr10sffyxNLObFFVjZFD4gto7M1yBdLUAOoiq4u7N3q2+OQ5kXmFRHExst5rdN3lDS+WqdANq0Alo=
+	t=1722495219; cv=none; b=WteHPJVY0aWd9+QV4udYd+zQh3YNcZOzm9mY4ZSuUdPK026qoX5NJCgnxH1NV/32MuEp0zudRkraHdYmTRUXxp6LuSIklXlqUD+YXHI6xcuduLn5WrnXLSWJ+zfaoz9rQQnf0Bda/cUuXriP/S3IGn3BR69xhrqwjXeKYmtVdCI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722460771; c=relaxed/simple;
-	bh=dEiu0hhQh0Jy26qjQV9Cqq27juU/IGB072cpo+oEEG0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TcZSaEc9UM2xcMA/++96tx1hptj/VYy+nHzWGjwY/iTJs9zxx10dvqxlPG8/UoFoe0sukaWVY0ee8IOaIjQRFhKTqtQwhxcPGrHlEMXv0CLwG534rcATK/HJcufEH++R8EljS6j8Rxz5JJZ4i9PH9vjiyoYr1jC8EcpaCpxFTpc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=G5AOJVde; arc=none smtp.client-ip=209.85.221.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="G5AOJVde"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-368380828d6so4013139f8f.1
-        for <linux-alpha@vger.kernel.org>; Wed, 31 Jul 2024 14:19:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1722460767; x=1723065567; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dEiu0hhQh0Jy26qjQV9Cqq27juU/IGB072cpo+oEEG0=;
-        b=G5AOJVdeww95s7Qb7CjW1AIB44U8JoB3hsMVjtKEas3JXf1vwCfGamISn0W9Aq/kdy
-         yNL1Zqv/cr4RhFQKyRJmPJ6INVWA7HaLN4BA3TPWJOgIpZunPibJa8lDt4dea35PXJMa
-         WJnXVfFa8qRDUEOjUhndXkLLFeV3WIfifKMKBtqyAQTnivbTT+brnZBgFMNZdAo8vEjt
-         AHpE8w7Pa18w2XjTHFuKm63OtcCWPoxDqHBhXedIrvxFQBDm2ZqArJ12gP+H0TWV+pTi
-         hMTXlVceo15PAg4VK22DsRHYu0TuNLhY74kcM8C3XJhIyn3vkFywG3eHmMbwTKrnO4Hh
-         vx9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722460767; x=1723065567;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dEiu0hhQh0Jy26qjQV9Cqq27juU/IGB072cpo+oEEG0=;
-        b=g3pMPrCWclHtOWMYq3emHLrsHxlWYYXO+1kYrRNuYVrPhl48vSY/+xhw8otkgm9zwL
-         Is4hZk6rO9dvhFiwUW/HrkCECUmc+hFasUuYDoi0mYffu2RwjMM0ZXh2OF70SFx4RZXa
-         yHLWE0xEflUJWfg2ve9Zw1BhAHZApRmVBUWusmRYr7gnt2xK+ObSwJypbFKxIuU4ECwm
-         PET0zlc4JtsiCc1tm66J+v03jd0t5imfmIcD99lbURGlwt7GiArqMcNqwVcHwCqcfDPV
-         bbEJl89gvgCPKLQ8ByEFMFE2NAzk4tnHpiwEQH3FLk1kbo5pJv+PmfLooQnlnCkbYjyJ
-         QfBQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUqrjmSYF61QpTgXxpTy81t+6VeIFnsFQyotA5crjAlEr90KQUkEg7yUXftYcwfUoJKVpRyoECWpwty0OqH8nag2QUOn8lUVtAB124=
-X-Gm-Message-State: AOJu0YxH6prShpPySZa8EeD01BWdd6qFeQZHYXRTwOA0C9tatCMUswk1
-	PVdyC2fUtzZQAMiG5OwhF+5mNqsZvHAMD9pfH/t2gb6+5DTRor9sHHslF87ExGjIroN0hm6TWLF
-	fAfeeAAZzM95d1tQz2Qefmd4E27DRaTBsT//v
-X-Google-Smtp-Source: AGHT+IGCGvp/48H8qaH6fLYg7SPbNiiWFxJtKT/J7GEsXh7PoxMKp+lvuqPbXyBiSW9seEuLTTgslLee6nJ92gY4vjU=
-X-Received: by 2002:a5d:4483:0:b0:368:6d75:1bde with SMTP id
- ffacd0b85a97d-36baacdd8aamr351815f8f.15.1722460767120; Wed, 31 Jul 2024
- 14:19:27 -0700 (PDT)
+	s=arc-20240116; t=1722495219; c=relaxed/simple;
+	bh=4hc8SFJafE8nX5khHv3obkGEDR7jGjNXZ+RQ3UyZ4p4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=mpw/NV1A26HN4JV472VGygdUKAXouh+jOiT8QyXir740Ad1BmuadLFJcwNZaJIE3NNKnQFTAS9z9oDvICFPNhBi+XSHZCAzYPlM7zI2OmjFnQ0I4S/3lkJQV8Zl3zQD7j4LXD61fQAN25UxVEAYw1zhIZgg1gtcVLhTNjV9HIYg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com; spf=pass smtp.mailfrom=h3c.com; arc=none smtp.client-ip=60.191.123.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=h3c.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=h3c.com
+Received: from mail.maildlp.com ([172.25.15.154])
+	by h3cspam02-ex.h3c.com with ESMTP id 4716p8Fp012906;
+	Thu, 1 Aug 2024 14:51:08 +0800 (GMT-8)
+	(envelope-from zhang.renze@h3c.com)
+Received: from DAG6EX09-BJD.srv.huawei-3com.com (unknown [10.153.34.11])
+	by mail.maildlp.com (Postfix) with ESMTP id B360A20071B5;
+	Thu,  1 Aug 2024 14:55:54 +0800 (CST)
+Received: from localhost.localdomain (10.99.206.12) by
+ DAG6EX09-BJD.srv.huawei-3com.com (10.153.34.11) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.1258.27; Thu, 1 Aug 2024 14:51:10 +0800
+From: BiscuitOS Broiler <zhang.renze@h3c.com>
+To: <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <akpm@linux-foundation.org>
+CC: <arnd@arndb.de>, <linux-arch@vger.kernel.org>, <chris@zankel.net>,
+        <jcmvbkbc@gmail.com>, <James.Bottomley@HansenPartnership.com>,
+        <deller@gmx.de>, <linux-parisc@vger.kernel.org>,
+        <tsbogend@alpha.franken.de>, <rdunlap@infradead.org>,
+        <bhelgaas@google.com>, <linux-mips@vger.kernel.org>,
+        <richard.henderson@linaro.org>, <ink@jurassic.park.msu.ru>,
+        <mattst88@gmail.com>, <linux-alpha@vger.kernel.org>,
+        <jiaoxupo@h3c.com>, <zhou.haofan@h3c.com>, <zhang.renze@h3c.com>
+Subject: [PATCH 0/1] mm: introduce MADV_DEMOTE/MADV_PROMOTE
+Date: Thu, 1 Aug 2024 14:50:34 +0800
+Message-ID: <20240801065035.15377-1-zhang.renze@h3c.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240730022623.98909-1-almasrymina@google.com>
- <20240730022623.98909-2-almasrymina@google.com> <1722327259.5659568-1-xuanzhuo@linux.alibaba.com>
-In-Reply-To: <1722327259.5659568-1-xuanzhuo@linux.alibaba.com>
-From: Mina Almasry <almasrymina@google.com>
-Date: Wed, 31 Jul 2024 17:19:11 -0400
-Message-ID: <CAHS8izMZQLsBWPXWiqPwaQHfupKc5VAuxW+6kpWmzi-vw8JEWQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v17 01/14] netdev: add netdev_rx_queue_restart()
-To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Donald Hunter <donald.hunter@gmail.com>, Jonathan Corbet <corbet@lwn.net>, 
-	Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
-	Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Arnd Bergmann <arnd@arndb.de>, Steffen Klassert <steffen.klassert@secunet.com>, 
-	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Bagas Sanjaya <bagasdotme@gmail.com>, Christoph Hellwig <hch@infradead.org>, 
-	Nikolay Aleksandrov <razor@blackwall.org>, Taehee Yoo <ap420073@gmail.com>, 
-	Pavel Begunkov <asml.silence@gmail.com>, David Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Yunsheng Lin <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>, 
-	Harshitha Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>, 
-	Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>, netdev@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org, bpf@vger.kernel.org, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-ClientProxiedBy: BJSMTP02-EX.srv.huawei-3com.com (10.63.20.133) To
+ DAG6EX09-BJD.srv.huawei-3com.com (10.153.34.11)
 Content-Transfer-Encoding: quoted-printable
+X-DNSRBL: 
+X-SPAM-SOURCE-CHECK: pass
+X-MAIL:h3cspam02-ex.h3c.com 4716p8Fp012906
 
-On Tue, Jul 30, 2024 at 4:17=E2=80=AFAM Xuan Zhuo <xuanzhuo@linux.alibaba.c=
-om> wrote:
->
-> On Tue, 30 Jul 2024 02:26:05 +0000, Mina Almasry <almasrymina@google.com>=
- wrote:
-> > Add netdev_rx_queue_restart() function to netdev_rx_queue.h
->
->
-> Can you say more? As far as I understand, we just release the buffer
-> submitted to the rx ring and get a new page pool.
->
+Sure, here's the Scalable Tiered Memory Control (STMC)
 
-Yes, I just noticed that this commit message is underwritten. I'll add
-more color. Maybe something like;
+**Background**
 
-=3D=3D=3D=3D
-Add netdev_rx_queue_restart(), which resets an rx queue using the
-queue API recently merged[1].
+In the era when artificial intelligence, big data analytics, and
+machine learning have become mainstream research topics and
+application scenarios, the demand for high-capacity and high-
+bandwidth memory in computers has become increasingly important.
+The emergence of CXL (Compute Express Link) provides the
+possibility of high-capacity memory. Although CXL TYPE3 devices
+can provide large memory capacities, their access speed is lower
+than traditional DRAM due to hardware architecture limitations.
 
-The queue API was merged to enable the core net stack reset individual
-rx queues to actuate changes in the rx queue's configuration. In later
-patches in this series, we will use netdev_rx_queue_restart() to reset
-rx queues after binding or unbinding dmabuf configuration, which will
-cause reallocation of the page_pool to repopulate its memory using the
-new configuration.
+To enjoy the large capacity brought by CXL memory while minimizing
+the impact of high latency, Linux has introduced the Tiered Memory
+architecture. In the Tiered Memory architecture, CXL memory is
+treated as an independent, slower NUMA NODE, while DRAM is
+considered as a relatively faster NUMA NODE. Applications allocate
+memory from the local node, and Tiered Memory, leveraging memory
+reclamation and NUMA Balancing mechanisms, can transparently demote
+physical pages not recently accessed by user processes to the slower
+CXL NUMA NODE. However, when user processes re-access the demoted
+memory, the Tiered Memory mechanism will, based on certain logic,
+decide whether to promote the demoted physical pages back to the
+fast NUMA NODE. If the promotion is successful, the memory accessed
+by the user process will reside in DRAM; otherwise, it will reside in
+the CXL NODE. Through the Tiered Memory mechanism, Linux balances
+betweenlarge memory capacity and latency, striving to maintain an
+equilibrium for applications.
 
-[1] https://lore.kernel.org/netdev/20240430231420.699177-1-shailend@google.=
-com/T/
-=3D=3D=3D=3D
+**Problem**
+Although Tiered Memory strives to balance between large capacity and
+latency, specific scenarios can lead to the following issues:
 
-> But I personally feel that the interface here is a bit too complicated. I=
-n
-> particular, we also need to copy the rx struct memory, which means it is =
-a
-> dangerous operation for many pointers.
->
+  1. In scenarios requiring massive computations, if data is heavily
+     stored in CXL slow memory and Tiered Memory cannot promptly
+     promote this memory to fast DRAM, it will significantly impact
+     program performance.
+  2. Similar to the scenario described in point 1, if Tiered Memory
+     decides to promote these physical pages to fast DRAM NODE, but
+     due to limitations in the DRAM NODE promote ratio, these physical
+     pages cannot be promoted. Consequently, the program will keep
+     running in slow memory.
+  3. After an application finishes computing on a large block of fast
+     memory, it may not immediately re-access it. Hence, this memory
+     can only wait for the memory reclamation mechanism to demote it.
+  4. Similar to the scenario described in point 3, if the demotion
+     speed is slow, these cold pages will occupy the promotion
+     resources, preventing some eligible slow pages from being
+     immediately promoted, severely affecting application efficiency.
 
-Understood, but the complication is necessary based on previous
-discussions. Jakub requests that we must allocate memory for a new rx
-queues before bringing down the existing queue, to guard against the
-interface remaining down on ENOMEM error.
+**Solution**
+We propose the **Scalable Tiered Memory Control (STMC)** mechanism,
+which delegates the authority of promoting and demoting memory to the
+application. The principle is simple, as follows:
 
-Btw, I notice the series was marked as changes requested; the only
-feedback I got was this one and the incorrect netmem_priv.h header.
-I'll fix and repost. It's just slightly weird because both v16 and v17
-are marked as changes requested in patchwork.
+  1. When an application is preparing for computation, it can promote
+     the memory it needs to use or ensure the memory resides on a fast
+     NODE.
+  2. When an application will not use the memory shortly, it can
+     immediately demote the memory to slow memory, freeing up valuable
+     promotion resources.
+
+STMC mechanism is implemented through the madvise system call, providing
+two new advice options: MADV_DEMOTE and MADV_PROMOTE. MADV_DEMOTE
+advises demote the physical memory to the node where slow memory
+resides; this advice only fails if there is no free physical memory on
+the slow memory node. MADV_PROMOTE advises retaining the physical memory
+in the fast memory; this advice only fails if there are no promotion
+slots available on the fast memory node. Benefits brought by STMC
+include:
+
+  1. The STMC mechanism is a variant of on-demand memory management
+     designed to let applications enjoy fast memory as much as possible,
+     while actively demoting to slow memory when not in use, thus
+     freeing up promotion slots for the NODE and allowing it to run in
+     an optimized Tiered Memory environment.
+  2. The STMC mechanism better balances large capacity and latency.
+
+**Shortcomings of STMC**
+The STMC mechanism requires the caller to manage memory demotion and
+promotion. If the memory is not promptly demoting after an promotion,
+it may cause issues similar to memory leaks, leading to short-term
+promotion bottlenecks.
+
+
+BiscuitOS Broiler (1):
+  mm: introduce MADV_DEMOTE/MADV_PROMOTE
+
+ arch/alpha/include/uapi/asm/mman.h           |   3 +
+ arch/mips/include/uapi/asm/mman.h            |   3 +
+ arch/parisc/include/uapi/asm/mman.h          |   3 +
+ arch/xtensa/include/uapi/asm/mman.h          |   3 +
+ include/uapi/asm-generic/mman-common.h       |   3 +
+ mm/internal.h                                |   1 +
+ mm/madvise.c                                 | 251 +++++++++++++++++++
+ mm/vmscan.c                                  |  57 +++++
+ tools/include/uapi/asm-generic/mman-common.h |   3 +
+ 9 files changed, 327 insertions(+)
+
+--
+2.34.1
+
+---------------------------------------------------------------------------=
+----------------------------------------------------------
+=B1=BE=D3=CA=BC=FE=BC=B0=C6=E4=B8=BD=BC=FE=BA=AC=D3=D0=D0=C2=BB=AA=C8=FD=BC=
+=AF=CD=C5=B5=C4=B1=A3=C3=DC=D0=C5=CF=A2=A3=AC=BD=F6=CF=DE=D3=DA=B7=A2=CB=CD=
+=B8=F8=C9=CF=C3=E6=B5=D8=D6=B7=D6=D0=C1=D0=B3=F6
+=B5=C4=B8=F6=C8=CB=BB=F2=C8=BA=D7=E9=A1=A3=BD=FB=D6=B9=C8=CE=BA=CE=C6=E4=CB=
+=FB=C8=CB=D2=D4=C8=CE=BA=CE=D0=CE=CA=BD=CA=B9=D3=C3=A3=A8=B0=FC=C0=A8=B5=AB=
+=B2=BB=CF=DE=D3=DA=C8=AB=B2=BF=BB=F2=B2=BF=B7=D6=B5=D8=D0=B9=C2=B6=A1=A2=B8=
+=B4=D6=C6=A1=A2
+=BB=F2=C9=A2=B7=A2=A3=A9=B1=BE=D3=CA=BC=FE=D6=D0=B5=C4=D0=C5=CF=A2=A1=A3=C8=
+=E7=B9=FB=C4=FA=B4=ED=CA=D5=C1=CB=B1=BE=D3=CA=BC=FE=A3=AC=C7=EB=C4=FA=C1=A2=
+=BC=B4=B5=E7=BB=B0=BB=F2=D3=CA=BC=FE=CD=A8=D6=AA=B7=A2=BC=FE=C8=CB=B2=A2=C9=
+=BE=B3=FD=B1=BE
+=D3=CA=BC=FE=A3=A1
+This e-mail and its attachments contain confidential information from New H=
+3C, which is
+intended only for the person or entity whose address is listed above. Any u=
+se of the
+information contained herein in any way (including, but not limited to, tot=
+al or partial
+disclosure, reproduction, or dissemination) by persons other than the inten=
+ded
+recipient(s) is prohibited. If you receive this e-mail in error, please not=
+ify the sender
+by phone or email immediately and delete it!
