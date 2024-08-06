@@ -1,183 +1,229 @@
-Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com [209.85.221.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7EFC1C57BD;
-	Tue,  6 Aug 2024 12:39:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA03440875;
+	Tue,  6 Aug 2024 20:37:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722947978; cv=none; b=B7IWww1Fg6972u4BDApPUB8xMKPbdGTTLWK8zv/Rcz78+M8yuv4Ntqf4OSP4zzQD6co6C/q4OW0ygKWL4t2PzzLpTOpoagQ5sQUbSt3TkfMYQlIE0luURcExN6BblQPmSn+oWPIIDBAWg/OA8FKse0wrkXTVoZ/ZxJ4wlkZpLGA=
+	t=1722976642; cv=none; b=e1UywqPh5Z+jweJs3fYBe26pJ/IfwukLn/m9ckGASEOM3LOI2fFlfHMY5HZ1YszePqpsS7xp5hjwfGYoA9OQAaz8a6/QUi97zpYr0e8cG3uL/922elDOQkdXYw4wGxe3QKRiB9DqYgn/oWmcpxFxOclUHHDa4mUGIPrMYg7bW7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722947978; c=relaxed/simple;
-	bh=pRGjwMQFuXx8nS2LCderaOx79LtJsbSQjU6aMaxd08o=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
-	 Mime-Version:Content-Type; b=TKK2KnVVy1rJbTHObhoK3/wKw5taAyFPyFvVG0RZpbtLNHUJ15pfoX+fEnYFWkkgCrkj90LaHHeTPz54ahzTFBBpb37lZQ0b8fuEUtGvgLQ5Nr/krMquGBR8NuPLanCWQsQY0Hmwqb/6qIDGrktMHds0OUcA0ut4GWUxNQP1NTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VKlxrqan; arc=none smtp.client-ip=209.85.221.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1722976642; c=relaxed/simple;
+	bh=g7QmdLe9IFWfz7C77+mSFv4ErgmVpHHeVChQmimHYG8=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=vEkR2Sih9hN6YqOQJbx3rNxW2RwuyeGL+6UAKwT7b9PkKvDpFV8FtRNM2N+B9FdB/S7+8WORFnPHGop5IOtyMZ7ukzXFfEbjrSL/rYMElPBMOam3iJvmVON2y9AbaXSV6AdxiNwTjboaPQY4+/dciggFe0imMTNhZHLGLbZsr4k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X8YxGWgP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VKlxrqan"
-Received: by mail-vk1-f173.google.com with SMTP id 71dfb90a1353d-4f50dd3eab9so240273e0c.1;
-        Tue, 06 Aug 2024 05:39:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1722947976; x=1723552776; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zrdmTtiXVmTM/1NHHOYdmmDXOI3jR7XQcOI+pwOJhWY=;
-        b=VKlxrqanIheS9Sd5XzmNfv9ScS8GGE/obB6rli6JcQfzv8OQyH1ms5LfzyftBPJlAw
-         sfZMoNB7fMIUVJbfSp28rtM1yLUdMdnW27USd+yevM4WhMxcn2tC0kCwT21BzrtIUUHR
-         Gs3J1wl0qryBTZV4pStD26pH1HB09vV81qeXzTdRPH8cT7SCJpF5PsIvdPYcQcoZb/bU
-         lS+DuGbMun0iJwWow8q9nb7YSa1fpQ79XatO8EdXq8FWVvnWo4atP4i/rHxrlW27fHfJ
-         SUpp7IX8Dh3JdPkm8lpi4n5ypupMKNxoU+XW+rEQCrGBXD5UQfBs/vy59JIZ6bD1Fmo1
-         zdgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1722947976; x=1723552776;
-        h=content-transfer-encoding:mime-version:subject:references
-         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=zrdmTtiXVmTM/1NHHOYdmmDXOI3jR7XQcOI+pwOJhWY=;
-        b=YwoX+XXfHLFESv4nU6ef39maHkPDlzto+lpgxBYhmTJEGyg2MbrBTQuBRLzRIMetp7
-         MQo8C31NtC9IZUGo9PHUc9W5l2dFksMlgvi0QohkNNrkdg4xQrtwhhuVJp8AE+/6ZwsQ
-         18SRSbZ2kcflIWn99kpghh+EsNMIKy603tqnS5oZtciShQj7G1+LyGSVb1bWbmQlC4s6
-         zOFuUMxal+8Y4F6zIsS88V3ZjSIHwj26kh2J0B93/ye4/Pfxq7mRdnBEDbepUUVUF+Un
-         E/8H1bwvmgq3UU6gjegXYWuZJmcJeH8x9s01MRCBTsNyyPGs315OJchwwKbtfo1ePb8w
-         FjPg==
-X-Forwarded-Encrypted: i=1; AJvYcCUCTL3GifOoTkGotVQKHsht3DH11hDZibW61aSUOHYmvH8IO2m8nbbHB4vV63n+wNxBJfCcxiS88C2+z1upzJbLrWmIu6BvineuFcHLv+zQRkbWwJ5woYB0Rp6z1J9OsObiq0BDbZy8aUaI/o8DoCpcfiIn5M4NjWpUVOucS89c+cCJYuFy3hblNRb+aS9l7uNxbvPYmIqIO/SKZa//lBNIJmEfQGAWGB6KOX6w4lu0PECsvwrDEIHRoSypUvkwoM6wr8nbiwptxAlGu0Q2nfri3ivhFPaQ0a58BZ3JjhgHBkMZ+ZxRbGFJjExm9gtw7Q6DN/0jI/infzNnGKupNyYRy9ob9tkjzf4Giii2kSAGYdSkDzMcMup97D6whg1Arys+dL0HfUhjVC2cdmgR+NzVZX2Dcq6rmsYNH42+t182nBhSh2GY21ecMPVrx3+rk6rROHyUGoWoVjbrnX1mVY8JOfgyEYZALUMv2CcFUQDww0dClYG9XRp3hPYyliKGX6G+v7PhjQ==
-X-Gm-Message-State: AOJu0YwpsNYteLdDFoX1IKaNFFCuUC+P89kqXZcyX2ui47QVOzUubQGf
-	/7ZVPgtJdbk9sA4CS5+NFrTN9dPmJbKUl6w6X+olQ2zL47KdPisM
-X-Google-Smtp-Source: AGHT+IEzF8kEieTvm400vGSAD/FxkfKWUdB+Qp9zmFjvlH9NnaUdLi1L0Oe0+UqgMX4/h+bhgaOPVA==
-X-Received: by 2002:a05:6122:4584:b0:4eb:5cb9:f219 with SMTP id 71dfb90a1353d-4f89fe84d6fmr18355377e0c.0.1722947975581;
-        Tue, 06 Aug 2024 05:39:35 -0700 (PDT)
-Received: from localhost (73.84.86.34.bc.googleusercontent.com. [34.86.84.73])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7a34f6dce75sm450350985a.14.2024.08.06.05.39.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Aug 2024 05:39:34 -0700 (PDT)
-Date: Tue, 06 Aug 2024 08:39:34 -0400
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To: Markus Elfring <Markus.Elfring@web.de>, 
- Mina Almasry <almasrymina@google.com>, 
- netdev@vger.kernel.org, 
- linux-doc@vger.kernel.org
-Cc: Daniel Vetter <daniel.vetter@ffwll.ch>, 
- Kaiyuan Zhang <kaiyuanz@google.com>, 
- Pavel Begunkov <asml.silence@gmail.com>, 
- Willem de Bruijn <willemb@google.com>, 
- linux-alpha@vger.kernel.org, 
- linux-mips@vger.kernel.org, 
- linux-parisc@vger.kernel.org, 
- sparclinux@vger.kernel.org, 
- linux-trace-kernel@vger.kernel.org, 
- linux-arch@vger.kernel.org, 
- linux-kselftest@vger.kernel.org, 
- bpf@vger.kernel.org, 
- linux-media@vger.kernel.org, 
- dri-devel@lists.freedesktop.org, 
- LKML <linux-kernel@vger.kernel.org>, 
- Andreas Larsson <andreas@gaisler.com>, 
- Arnd Bergmann <arnd@arndb.de>, 
- Bagas Sanjaya <bagasdotme@gmail.com>, 
- =?UTF-8?B?Q2hyaXN0aWFuIEvDtm5pZw==?= <christian.koenig@amd.com>, 
- Christoph Hellwig <hch@infradead.org>, 
- David Ahern <dsahern@kernel.org>, 
- "David S. Miller" <davem@davemloft.net>, 
- David Wei <dw@davidwei.uk>, 
- Donald Hunter <donald.hunter@gmail.com>, 
- Eric Dumazet <edumazet@google.com>, 
- Harshitha Ramamurthy <hramamurthy@google.com>, 
- Helge Deller <deller@gmx.de>, 
- Herbert Xu <herbert@gondor.apana.org.au>, 
- Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
- Jakub Kicinski <kuba@kernel.org>, 
- "James E. J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
- Jason Gunthorpe <jgg@ziepe.ca>, 
- Jeroen de Borst <jeroendb@google.com>, 
- Jesper Dangaard Brouer <hawk@kernel.org>, 
- Jonathan Corbet <corbet@lwn.net>, 
- Masami Hiramatsu <mhiramat@kernel.org>, 
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
- Matt Turner <mattst88@gmail.com>, 
- Nikolay Aleksandrov <razor@blackwall.org>, 
- Paolo Abeni <pabeni@redhat.com>, 
- Praveen Kaligineedi <pkaligineedi@google.com>, 
- Richard Henderson <richard.henderson@linaro.org>, 
- Shailend Chand <shailend@google.com>, 
- Shakeel Butt <shakeel.butt@linux.dev>, 
- Shuah Khan <shuah@kernel.org>, 
- Steffen Klassert <steffen.klassert@secunet.com>, 
- Steven Rostedt <rostedt@goodmis.org>, 
- Sumit Semwal <sumit.semwal@linaro.org>, 
- Taehee Yoo <ap420073@gmail.com>, 
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
- Willem de Bruijn <willemdebruijn.kernel@gmail.com>, 
- Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <66b2198686b91_3206cf29453@willemb.c.googlers.com.notmuch>
-In-Reply-To: <9aad36fe-cd4c-4ce5-b4d8-6c8619d10c46@web.de>
-References: <20240730022623.98909-4-almasrymina@google.com>
- <5d3c74da-7d44-4b88-8961-60f21f84f0ac@web.de>
- <CAHS8izPxfCv1VMFBK1FahGTjVmUSSfrabgY5y6V+XtaszoHQ4w@mail.gmail.com>
- <9aad36fe-cd4c-4ce5-b4d8-6c8619d10c46@web.de>
-Subject: Re: [PATCH net-next v17 03/14] netdev: support binding dma-buf to
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X8YxGWgP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2EDAC32786;
+	Tue,  6 Aug 2024 20:37:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1722976642;
+	bh=g7QmdLe9IFWfz7C77+mSFv4ErgmVpHHeVChQmimHYG8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=X8YxGWgP2UMFZzmnwxFTZacJCBIWbq/z7d+2P/PY9Q5HIpRaRo5UUK629pTV5bU+K
+	 L3ODKR2S5C8Cly3RBZpnOtbw5A5RD74DNc4Aj4LRaY63F5SOWYn6WNAABfQVNaoSB4
+	 FnE3lOClziNlgKZEPEYmJBdLpHfq+tGNeTW7non+xpfZ8H3Lr3TTodHiZ+fYNm7oFa
+	 r005iJn+WbIbLd0BIb+hBF88OkmE45EdIBQjJcPcfRT2D2o5UiOYQ/EiQLGXjGO1tH
+	 AfKdXhSddmFMc8kSMXFn4WyrWcVQtGQCNAtdpP2AnK1qNaK4TzeqntlXV0d0ds42aS
+	 r3Mb4dSi5D2ZA==
+Date: Tue, 6 Aug 2024 13:37:18 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Mina Almasry <almasrymina@google.com>
+Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+ linux-arch@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ bpf@vger.kernel.org, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, Donald Hunter <donald.hunter@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Jonathan Corbet
+ <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan
+ Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley"
+ <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>,
+ Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer
+ <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven
+ Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>,
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Arnd Bergmann
+ <arnd@arndb.de>, Steffen Klassert <steffen.klassert@secunet.com>, Herbert
+ Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, Willem
+ de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>,
+ Sumit Semwal <sumit.semwal@linaro.org>, "Christian =?UTF-8?B?S8O2bmln?="
+ <christian.koenig@amd.com>, Bagas Sanjaya <bagasdotme@gmail.com>, Christoph
+ Hellwig <hch@infradead.org>, Nikolay Aleksandrov <razor@blackwall.org>,
+ Taehee Yoo <ap420073@gmail.com>, Pavel Begunkov <asml.silence@gmail.com>,
+ David Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin
+ <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>, Harshitha
+ Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>,
+ Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi
+ <pkaligineedi@google.com>, Willem de Bruijn <willemb@google.com>, Kaiyuan
+ Zhang <kaiyuanz@google.com>, Daniel Vetter <daniel.vetter@ffwll.ch>
+Subject: Re: [PATCH net-next v18 03/14] netdev: support binding dma-buf to
  netdevice
+Message-ID: <20240806133718.71a53a4f@kernel.org>
+In-Reply-To: <20240805212536.2172174-4-almasrymina@google.com>
+References: <20240805212536.2172174-1-almasrymina@google.com>
+	<20240805212536.2172174-4-almasrymina@google.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Markus Elfring wrote:
-> >> =E2=80=A6
-> >>> +++ b/include/net/devmem.h
-> >>> @@ -0,0 +1,115 @@
-> >> =E2=80=A6
-> >>> +#ifndef _NET_DEVMEM_H
-> >>> +#define _NET_DEVMEM_H
-> >> =E2=80=A6
-> >>
-> >> I suggest to omit leading underscores from such identifiers.
-> >> https://wiki.sei.cmu.edu/confluence/display/c/DCL37-C.+Do+not+declar=
-e+or+define+a+reserved+identifier
-> >>
-> >
-> > I was gonna apply this change, but I ack'd existing files and I find
-> > that all of them include leading underscores, including some very
-> > recently added files like net/core/page_pool_priv.h.
-> >
-> > I would prefer to stick to existing conventions if that's OK, unless
-> > there is widespread agreement to the contrary.
-> =
+On Mon,  5 Aug 2024 21:25:16 +0000 Mina Almasry wrote:
+> +/* Protected by rtnl_lock() */
+> +static DEFINE_XARRAY_FLAGS(net_devmem_dmabuf_bindings, XA_FLAGS_ALLOC1);
 
-> Under which circumstances would you become interested to reduce develop=
-ment risks
-> also according to undefined behaviour?
-> https://wiki.sei.cmu.edu/confluence/display/c/CC.+Undefined+Behavior#CC=
-.UndefinedBehavior-ub_106
+nit: global variable declarations before any code
 
-This series is following established practice in kernel networking.
+> +void net_devmem_unbind_dmabuf(struct net_devmem_dmabuf_binding *binding)
+> +{
+> +	struct netdev_rx_queue *rxq;
+> +	unsigned long xa_idx;
+> +	unsigned int rxq_idx;
+> +
+> +	if (binding->list.next)
+> +		list_del(&binding->list);
+> +
+> +	xa_for_each(&binding->bound_rxqs, xa_idx, rxq) {
+> +		if (rxq->mp_params.mp_priv == binding) {
+> +			rxq->mp_params.mp_priv = NULL;
+> +
+> +			rxq_idx = get_netdev_rx_queue_index(rxq);
+> +
+> +			netdev_rx_queue_restart(binding->dev, rxq_idx);
 
-If that conflicts with a C standard, then perhaps that needs to be
-resolved project wide.
+Throw in a WARN_ON() around this, hopefully we'll get to addressing it
+later..
 
-Forcing an individual feature to diverge just brings inconsistency.
-That said, this appears to be inconsistent already.
+> +		}
+> +	}
+> +
+> +	xa_erase(&net_devmem_dmabuf_bindings, binding->id);
+> +
+> +	net_devmem_dmabuf_binding_put(binding);
+> +}
+> +
+> +int net_devmem_bind_dmabuf_to_queue(struct net_device *dev, u32 rxq_idx,
+> +				    struct net_devmem_dmabuf_binding *binding)
+> +{
+> +	struct netdev_rx_queue *rxq;
+> +	u32 xa_idx;
+> +	int err;
+> +
+> +	if (rxq_idx >= dev->real_num_rx_queues)
+> +		return -ERANGE;
 
-Main question is whether this is worth respinning a series already at
-v17 with no more fundamental feedback.
+If we prevent binding to an inactive queue we should also prevent
+deactivation.
 
-For reference:
+Please take a look at the (two?) callers of
+ethtool_get_max_rxnfc_channel() and ethtool_get_max_rxfh_channel().
+Wrap those into a new function for reading max active channel, and
+take mp binds into account as well (send the refactor separately 
+from the series to avoid making it longer).
 
-$ grep -nrI '^#ifndef\ _\+NET[_A-Z]\+H' include/  | wc -l
-149
+> +	rxq = __netif_get_rx_queue(dev, rxq_idx);
+> +	if (rxq->mp_params.mp_priv)
+> +		return -EEXIST;
+> +
+> +	err = xa_alloc(&binding->bound_rxqs, &xa_idx, rxq, xa_limit_32b,
+> +		       GFP_KERNEL);
+> +	if (err)
+> +		return err;
+> +
+> +	rxq->mp_params.mp_priv = binding;
+> +
+> +	err = netdev_rx_queue_restart(dev, rxq_idx);
+> +	if (err)
+> +		goto err_xa_erase;
+> +
+> +	return 0;
+> +
+> +err_xa_erase:
+> +	rxq->mp_params.mp_priv = NULL;
+> +	xa_erase(&binding->bound_rxqs, xa_idx);
+> +
+> +	return err;
+> +}
 
-$ grep -nrI '^#ifndef\ NET[_A-Z]\+H' include/  | wc -l
-4
+> +void dev_dmabuf_uninstall(struct net_device *dev)
+> +{
+> +	unsigned int i, count = dev->num_rx_queues;
 
-$ grep -nrI '^#ifndef\ [_]\+[A-Z][_A-Z]\+H' include/  | wc -l
-3805
+nit: why stash the value of num_rx_queues ?
 
-$ grep -nrI '^#ifndef\ [A-Z][_A-Z]\+H' include/  | wc -l
-583
+> +	struct net_devmem_dmabuf_binding *binding;
+> +	struct netdev_rx_queue *rxq;
+> +	unsigned long xa_idx;
+> +
+> +	for (i = 0; i < count; i++) {
+> +		binding = dev->_rx[i].mp_params.mp_priv;
+> +		if (binding)
+> +			xa_for_each(&binding->bound_rxqs, xa_idx, rxq)
+> +				if (rxq == &dev->_rx[i])
+> +					xa_erase(&binding->bound_rxqs, xa_idx);
+
+nit: Please use "continue", this is too deeply indented
+
+> +	nla_for_each_attr_type(attr, NETDEV_A_DMABUF_QUEUES,
+> +			       genlmsg_data(info->genlhdr),
+> +			       genlmsg_len(info->genlhdr), rem) {
+> +		err = nla_parse_nested(
+> +			tb, ARRAY_SIZE(netdev_queue_id_nl_policy) - 1, attr,
+> +			netdev_queue_id_nl_policy, info->extack);
+> +		if (err < 0)
+> +			goto err_unbind;
+> +
+> +		rxq_idx = nla_get_u32(tb[NETDEV_A_QUEUE_ID]);
+
+How do we know this attribute is present?  NL_REQ_ATTR_CHECK()
+
+> +		err = net_devmem_bind_dmabuf_to_queue(netdev, rxq_idx, binding);
+> +		if (err)
+> +			goto err_unbind;
+> +	}
+> +
+> +	list_add(&binding->list, sock_binding_list);
+> +
+> +	nla_put_u32(rsp, NETDEV_A_DMABUF_ID, binding->id);
+> +	genlmsg_end(rsp, hdr);
+> +
+> +	rtnl_unlock();
+
+nit: for symmetry you should also unlock after list_add(),
+     netlink msg alloc and prep are before rtnl_lock()
+
+> +	return genlmsg_reply(rsp, info);
+> +
+> +err_unbind:
+> +	net_devmem_unbind_dmabuf(binding);
+> +err_unlock:
+> +	rtnl_unlock();
+> +err_genlmsg_free:
+> +	nlmsg_free(rsp);
+> +	return err;
+>  }
+
+> +void netdev_nl_sock_priv_init(struct list_head *priv)
+> +{
+> +	INIT_LIST_HEAD(priv);
+> +}
+> +
+> +void netdev_nl_sock_priv_destroy(struct list_head *priv)
+> +{
+> +	struct net_devmem_dmabuf_binding *binding;
+> +	struct net_devmem_dmabuf_binding *temp;
+> +
+> +	list_for_each_entry_safe(binding, temp, priv, list) {
+> +		rtnl_lock();
+> +		net_devmem_unbind_dmabuf(binding);
+> +		rtnl_unlock();
+> +	}
+> +}
+
+nit: move these before the subsys_initcall.. and what it calls
