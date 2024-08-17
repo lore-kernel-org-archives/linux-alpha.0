@@ -1,322 +1,609 @@
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED8B1440C;
-	Sat, 17 Aug 2024 16:51:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A52C1854
+	for <linux-alpha@vger.kernel.org>; Sat, 17 Aug 2024 18:14:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723913485; cv=none; b=XdQJi+/I0sPcxEoLyfb+IddC7M4TrDAypJ0i+Hkci3+j6p80IpeMd465AqUIYp3GayDZymQjtNuazSk4Fsxgbx8Lol0NdUwF2Qd5+CNAKHhgrFePEaZtvut/sjj4U70EM8H7uE3ZQLq3XrjKaTpnr2d7ySwRzdh299RtmIuJtuU=
+	t=1723918475; cv=none; b=DN8Dxm6TqfYRfO5k4E+CR3A/+wbwo9H/ZDhIP2M6dB8FClp5BcxTC2JUsLcbTiYl2L2hPWZBEi44tz9sBevpNcc6ymLFUEmGc/vQjswtwXDlR07CbMZD1vzq7lCowely/MaQm3dIMB56IDctYXhTPM0RQEUcYFOdkoqm2WmMStg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723913485; c=relaxed/simple;
-	bh=uPm2ix/rW3SAryvnCUoqiN+L+HYHFUHM3ZhnV4hoge0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SChQVidzIIF9WkEGiWqEDVfYagO9pxnk3k1gKuHgk5cnTl5K25UjvBNzV99YLyaA882ZEJa8pjHutjAnhnFjoe5rDUfJ3AvUd7uvTeSv/wjScJVY87nEv0vknpaE99Uj2MqnOD82aMOp4ovGsmp70AnWeF8ky3w4wnSL6OVAmPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PgMF3d8H; arc=none smtp.client-ip=209.85.208.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1723918475; c=relaxed/simple;
+	bh=q8W1pXTnXxrYZbaJ3+1q0b+6WodizEOqToB35JrXWh8=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=dV2q1Gmoo18KWCLekPdpeDZS1m+xNZ9gsc1B0790q5hEQ6CxWSw/g3Wixh4B5xem2gQEcfGl8BL/GLzTRBtk1ACfPlE/KvyIsgUih56E7cHEdvVnMnSPrnsA8n9TYUXK1/gHYGtCG33xiEOF2Z3GKIAqDv4+AcllN7cQUIfI+fs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=v1aFvDxl; arc=none smtp.client-ip=62.89.141.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PgMF3d8H"
-Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2f3b7aba3dbso36261761fa.3;
-        Sat, 17 Aug 2024 09:51:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723913482; x=1724518282; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uPm2ix/rW3SAryvnCUoqiN+L+HYHFUHM3ZhnV4hoge0=;
-        b=PgMF3d8HdkmdZYgKuq2QQp6IhO+hvXoeBq4p70UQqJHZz/UFcop+hGaAUOPQbYEdIp
-         cF6s6KGIzy3gFI19C/Mu2XiqylUQ6mz/CNnQC3a3F8Jp0lMKZ3j9pNJgZQlTTKrP1sDB
-         Gp4oK2Kur5s6gd5Z8J1Kr9SZYg3WxwiQQkukx1qzgnNSbu/R4CC3Pe0+R1xsSLStbn1q
-         m3k9+M67RpidxK/wjhcgn7eYORh99GBI+evGjzIlLPHOZzu4rZy2xsLf6b4iSgd0+c/4
-         A1uz7ncDQubhl9VfiVPQ112gnxkeL+NrDGi1JB2+8wHMYyeG+6mzdFHRwZ0dHCVRKDsg
-         HquA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723913482; x=1724518282;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uPm2ix/rW3SAryvnCUoqiN+L+HYHFUHM3ZhnV4hoge0=;
-        b=mGjdRGkxmcouqd79OQykd5peI+H7NuADa/w0o51hRWlrNWNKYLrjG4OpZQzxcY7SNy
-         ewGr7wwe8wa8ELdoqInGlqBWVl2C0xYkX8oqYQp9iMMS/tDoAGWNpMeTa9pRn+dMADTP
-         4fWmWFoW/E6k358AFrjovzJcPkwidaIufSq8PKV+CZy94p30K59s9WUi3LRFE9N+HNrL
-         ayesnhgbGOxXedzbVhFO5bVVbqLGOSvw5HMclNe0l/o6tMX8oQFLpRSFx9gbbvVd+LGA
-         TzzRGDLpcbFawoqf0Iqzf2u7eFBBvtSnaGIGZb0nmHxcKRkNlZYTpd+PPzeaKQcfg0IX
-         5ilA==
-X-Forwarded-Encrypted: i=1; AJvYcCW/EKzPivKjc53iJmgxkpKHSEW234eEatAJ89gJEWPNRBLEDXSe76Rqu511Ej8JiTUTOU+pGdE0KYrO7CD1iZBkkD3ISptQyIPqzF+IsUOl0+clK09Toc3FE1stKitjO65NyjdygYeqzFyBCAbqMao0DojCcMQdY79PFX4WdZ5Y7ZVrQ/ObQhDQT21riafevBuME9yLwaEgyuqLbAWpKuMSsYJM0TbiIeDU8fXEGB7qB/Bt7xmKXz/5Op7Y3HkatK1fIKEJzxdiEMktTSRcuS6HdLKws/VYicKyfewx2Wtv64Irv7QbeW7/sPIy6I5AurhNWECYht6ozMAsw6vwzMQOura4zKWsrfnAzeZsWkWtEpTRS8bA7vDhWhuNYjbPAHteKB04Y+NumNoXuQKim4+ocDeZdUC5XKGcZwkx5drJBVrplvlR/6ltOBqCFsZY/xBtcOHZdmcITWYSScWiYbsdqiljgfzxv0s5lqoWNA==
-X-Gm-Message-State: AOJu0YxlBjUMVumTbMgt/WZrLcxftbamTHaLr74+L5+/0Txa3UMB8YiO
-	Qqm8SKauIE6cGEqYUf8YWMujPSLyDHSH9A40ztcjMcAqvrffmoMgmRZY45xZAcfL7/9axTzzQRF
-	7qC2uL6vxtbDCP62ZCeV143AjiR4=
-X-Google-Smtp-Source: AGHT+IHFnXWswRNTDKm+umQ5ztT6GCIRL4SA0D2oDGwZTni6Tc0rxL80VlX+Lqp+Gco7elLa7e2ftzMi0E7hh8CxhzU=
-X-Received: by 2002:a05:651c:222b:b0:2ef:26dc:efb3 with SMTP id
- 38308e7fff4ca-2f3be575b36mr58372901fa.2.1723913481489; Sat, 17 Aug 2024
- 09:51:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="v1aFvDxl"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=linux.org.uk; s=zeniv-20220401; h=Sender:Content-Type:MIME-Version:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=QWulh+sZ2KYxQ1yvEKAnA8aiQJO/OXwX4pQYFDdznCE=; b=v1aFvDxlYTN91KChntiUcyLmAC
+	C9xc6Waqz8VuwMK5OiysszmGtpnSiw9nagHmz1VSJIwp9W0ILRGdk6sFlJ5pNL3HqWT+jnWAcCvVe
+	UDikDRmg7nQpqGa1RpaNupN3I72jXYE//HeqEIGdRl4Qgzqy9r8/9RM1SeAEqBaNUMQynYV6Xgwf9
+	7J/Ds/gYhAJC1U7xe3KWWG2L42m6y28gbTCoO/ok5lbii2ab4zrxQgZLgEVlpoyAHJmFq5qxrqQMb
+	JJwPSfwxgorrXZ10FPoskZBHGA7lfjem7DaOQcJfjEmgIn9jy18y+c9utBBHRaMzaLRr6MzROc9O7
+	p37KF0XQ==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.98 #2 (Red Hat Linux))
+	id 1sfNwb-00000002bS9-21tM;
+	Sat, 17 Aug 2024 18:14:29 +0000
+Date: Sat, 17 Aug 2024 19:14:29 +0100
+From: Al Viro <viro@zeniv.linux.org.uk>
+To: linux-alpha@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Matt Turner <mattst88@gmail.com>
+Subject: [PATCH] alpha: no need to include asm/xchg.h twice
+Message-ID: <20240817181429.GH504335@ZenIV>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240813211317.3381180-10-almasrymina@google.com>
- <CAMArcTW=mg2gF_e6spPWOCuQdDAWSuKTCdCNPWGqcU1ciq30EQ@mail.gmail.com> <CAHS8izOqGMiZNkfQ6G-29UuG64GVo7L+fAzWn5A1713cDAgbgg@mail.gmail.com>
-In-Reply-To: <CAHS8izOqGMiZNkfQ6G-29UuG64GVo7L+fAzWn5A1713cDAgbgg@mail.gmail.com>
-From: Taehee Yoo <ap420073@gmail.com>
-Date: Sun, 18 Aug 2024 01:51:09 +0900
-Message-ID: <CAMArcTUXm13xJO9XqcT=0uQAn_ZQOQ=Y49EPpHqV+jkkhihMcw@mail.gmail.com>
-Subject: Re: [PATCH net-next v19 09/13] tcp: RX path for devmem TCP
-To: Mina Almasry <almasrymina@google.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linux-arch@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	bpf@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Donald Hunter <donald.hunter@gmail.com>, Jonathan Corbet <corbet@lwn.net>, 
-	Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
-	Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Arnd Bergmann <arnd@arndb.de>, Steffen Klassert <steffen.klassert@secunet.com>, 
-	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>, 
-	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
-	John Fastabend <john.fastabend@gmail.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Bagas Sanjaya <bagasdotme@gmail.com>, Christoph Hellwig <hch@infradead.org>, 
-	Nikolay Aleksandrov <razor@blackwall.org>, Pavel Begunkov <asml.silence@gmail.com>, David Wei <dw@davidwei.uk>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin <linyunsheng@huawei.com>, 
-	Shailend Chand <shailend@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
-	Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst <jeroendb@google.com>, 
-	Praveen Kaligineedi <pkaligineedi@google.com>, Willem de Bruijn <willemb@google.com>, 
-	Kaiyuan Zhang <kaiyuanz@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Al Viro <viro@ftp.linux.org.uk>
 
-On Sun, Aug 18, 2024 at 12:13=E2=80=AFAM Mina Almasry <almasrymina@google.c=
-om> wrote:
->
-> On Sat, Aug 17, 2024 at 9:58=E2=80=AFAM Taehee Yoo <ap420073@gmail.com> w=
-rote:
-> >
-> > On Wed, Aug 14, 2024 at 6:13=E2=80=AFAM Mina Almasry <almasrymina@googl=
-e.com> wrote:
-> > >
-> >
-> > Hi Mina,
-> >
-> > > In tcp_recvmsg_locked(), detect if the skb being received by the user
-> > > is a devmem skb. In this case - if the user provided the MSG_SOCK_DEV=
-MEM
-> > > flag - pass it to tcp_recvmsg_devmem() for custom handling.
-> > >
-> > > tcp_recvmsg_devmem() copies any data in the skb header to the linear
-> > > buffer, and returns a cmsg to the user indicating the number of bytes
-> > > returned in the linear buffer.
-> > >
-> > > tcp_recvmsg_devmem() then loops over the unaccessible devmem skb frag=
-s,
-> > > and returns to the user a cmsg_devmem indicating the location of the
-> > > data in the dmabuf device memory. cmsg_devmem contains this informati=
-on:
-> > >
-> > > 1. the offset into the dmabuf where the payload starts. 'frag_offset'=
-.
-> >
-> > I have been testing this patch and I found a bug.
->
-> Thanks Taehee. It's exciting to see that you have gotten this far in
-> your testing!! You seem to have devmem TCP (almost) fully working!!
+[rebased to 6.11-rc1, sits in
+git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git #work.alpha
 
-Yes, Finally!!
+I don't really care which tree it goes through; preferences?
+]
 
-> May I ask which driver this is? I assume it's bnxt. Do you have the
-> driver support somewhere on github or something? I'm curious what your
-> driver implementation looks like.
+commit 06ed6b34448dd7090a9782f7c160312dd5230d73
+Author: Al Viro <viro@zeniv.linux.org.uk>
+Date:   Mon Apr 8 17:43:37 2024 -0400
 
-I'm using a modified bnxt_en driver.
-NICs are BCM57412, BCM57508(currently only 57412).
-I modified the driver by myself for devmem TCP.
-The implementation is too rough, only for testing it.
+    alpha: no need to include asm/xchg.h twice
+    
+    We used to generate different helpers for local and full
+    {cmp,}xchg(); these days the barriers are in arch_{cmp,}xchg()
+    instead and generated helpers are identical for local and
+    full cases.  No need for those parametrized includes of
+    asm/xchg.h - we might as well insert its contents directly
+    in asm/cmpxchg.h and do it only once.
+    
+    Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 
->
-> > While testing it with the ncdevmem cmd, it fails to validate buffers
-> > after some period.
-> > This is because tcp_recvmsg_dmabuf() can't handle skb properly when
-> > the parameter offset !=3D 0.
->
-> Sadly I'm unable to reproduce this issue, but I think I know where to
-> suspect the bug is. Thanks for taking the time to root cause this and
-> provide a fix.
-
-I'm not sure why, but I assume this bug appears when CPU utilization
-peeks to almost 100%.
-
->
-> ...
->
-> > > + offset =3D 0;
-> >
-> > If the offset is 5000 and only 4500 bytes are skipped at this point,
-> > the offset should be 500, not 0.
-> > We need to add a condition to set the offset correctly.
-> >
->
-> I highly suspect this is a regression that was introduced in v13. In
-> v12 Pavel asked if offset can just be set to 0 here, and I didn't see
-> any reason why not, so I made the change:
->
-> -+ offset =3D offset - start;
-> ++ offset =3D 0;
->
-> It looks like we missed something. I suspect reverting that may
-> resolve the issue, because __skb_copy_datagram() in earlier kernels
-> modified offset like this and it's well tested. Can you test with this
-> change reverted? Diff like so:
-
-No problem, I will test it.
-
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 40e7335dae6e..984e28c5d096 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -2522,7 +2522,7 @@ static int tcp_recvmsg_dmabuf(struct sock *sk,
-> const struct sk_buff *skb,
-> */
-> skb =3D skb_shinfo(skb)->frag_list ?: skb->next;
->
-> - offset =3D 0;
-> + offset =3D offset - start;
-> } while (skb);
->
-> if (remaining_len) {
->
-> I'm running a long test to try to reproduce this issue, but I have ran
-> many long tests before and was not able to. For some reason my setup
-> is not able to reproduce this edge case. Are you doing anything
-> special with ncdevmem? Or simply running commands like these on the
-> server client?
->
-> server: ./ncdevmem -s SERVER -c CLIENT -l -p 5224 -v 7
-> client: yes $(echo -e \\x01\\x02\\x03\\x04\\x05\\x06) | tr \\n \\0 |
-> nc SERVER 5224 -p 5224
->
-
-Yes, I'm using the vanilla ncdevmem command and option in the
-documentation in this series.
-
-server:
-./ncdevmem -s 192.168.1.4 -c 192.168.1.2 -f $interface -l -p 5000 -v 7 -t 0=
- -q 4
-
-client:
-yes $(echo -e \\x01\\x02\\x03\\x04\\x05\\x06) | \
-tr \\n \\0 | \
-head -c 1000000G | \
-nc 192.168.1.4 5000 -p 5000
-
-
-BTW, this is a ncdevmem failure message of the current implementation.
-(offset =3D 0)
-
-received frag_page=3D13205, in_page_offset=3D0, frag_offset=3D54087680,
-frag_size=3D2896, token=3D288, total_received=3D1153657976, dmabuf_id=3D2
-Validated buffer
-received frag_page=3D13204, in_page_offset=3D0, frag_offset=3D54083584,
-frag_size=3D1448, token=3D289, total_received=3D1153659424, dmabuf_id=3D2
-Validated buffer
-[1] received frag_page=3D13203, in_page_offset=3D0, frag_offset=3D54079488,
-frag_size=3D2896, token=3D290, total_received=3D1153662320, dmabuf_id=3D2
-Validated buffer
-received frag_page=3D13202, in_page_offset=3D0, frag_offset=3D54075392,
-frag_size=3D200, token=3D291, total_received=3D1153662520, dmabuf_id=3D2
-Validated buffer
-total_received=3D1153662520
-
-
-recvmsg ret=3D819200
-[2] received frag_page=3D13203, in_page_offset=3D0, frag_offset=3D54079488,
-frag_size=3D2896, token=3D1, total_received=3D1153665416, dmabuf_id=3D2
-Failed validation: expected=3D4, actual=3D2, index=3D0
-Failed validation: expected=3D5, actual=3D3, index=3D1
-Failed validation: expected=3D6, actual=3D4, index=3D2
-Failed validation: expected=3D0, actual=3D5, index=3D3
-Failed validation: expected=3D1, actual=3D6, index=3D4
-Failed validation: expected=3D2, actual=3D0, index=3D5
-Failed validation: expected=3D3, actual=3D1, index=3D6
-Failed validation: expected=3D4, actual=3D2, index=3D7
-Failed validation: expected=3D5, actual=3D3, index=3D8
-Failed validation: expected=3D6, actual=3D4, index=3D9
-Failed validation: expected=3D0, actual=3D5, index=3D10
-Failed validation: expected=3D1, actual=3D6, index=3D11
-Failed validation: expected=3D2, actual=3D0, index=3D12
-Failed validation: expected=3D3, actual=3D1, index=3D13
-Failed validation: expected=3D4, actual=3D2, index=3D14
-Failed validation: expected=3D5, actual=3D3, index=3D15
-Failed validation: expected=3D6, actual=3D4, index=3D16
-Failed validation: expected=3D0, actual=3D5, index=3D17
-Failed validation: expected=3D1, actual=3D6, index=3D18
-Failed validation: expected=3D2, actual=3D0, index=3D19
-Failed validation: expected=3D3, actual=3D1, index=3D20
-./ncdevmem: validation failed.
-
-Please look at the [1] and [2].
-At the [1], The 13203 page is fully passed to userspace.
-But 13202 is not, only 200 bytes are passed to userspace.
-The 13203 page is passed to userspace fully, but 13202 is not.
-Only 200 bytes are passed to userspace.
-
-But at the [2], it receives 2896 bytes from 13203 again.
-It should be 13202 and in_page_offset=3D200.
-
-And I just started testing your suggestion, it seems to work correctly.
-Here is the ncdevmem message, it's not a failure message.
-(offset =3D offset - start)
-
-received frag_page=3D13085, in_page_offset=3D0, frag_offset=3D53596160,
-frag_size=3D2896, token=3D288, total_received=3D2233699704, dmabuf_id=3D2
-Validated buffer
-received frag_page=3D12931, in_page_offset=3D0, frag_offset=3D52965376,
-frag_size=3D2896, token=3D289, total_received=3D2233702600, dmabuf_id=3D2
-Validated buffer
-[1] received frag_page=3D12916, in_page_offset=3D0, frag_offset=3D52903936,
-frag_size=3D1392, token=3D290, total_received=3D2233703992, dmabuf_id=3D2
-Validated buffer
-total_received=3D2233703992
-
-
-recvmsg ret=3D819200
-[2] received frag_page=3D12916, in_page_offset=3D1392,
-frag_offset=3D52905328, frag_size=3D1504, token=3D1,
-total_received=3D2233705496,
-dmabuf_id=3D2
-Validated buffer
-received frag_page=3D13244, in_page_offset=3D0, frag_offset=3D54247424,
-frag_size=3D2896, token=3D2, total_received=3D2233708392, dmabuf_id=3D2
-Validated buffer
-received frag_page=3D13579, in_page_offset=3D0, frag_offset=3D55619584,
-frag_size=3D1448, token=3D3, total_received=3D2233709840, dmabuf_id=3D2
-Validated buffer
-received frag_page=3D12315, in_page_offset=3D0, frag_offset=3D50442240,
-frag_size=3D2896, token=3D4, total_received=3D2233712736, dmabuf_id=3D2
-Validated buffer
-
-At the [1], the 12916 page was not passed to userspace fully.
-Only 1392 bytes are received.
-At the [2], remain 1504 bytes are passed and the offset is 1392.
-So, the 12916 page size is 2896, so it makes sense.
-
-So, this is the reason why I think your suggestion is working correctly.
-I have been still testing it, so I will report if it fails while testing.
-But I think it works well about this corner case so far.
-
->
-> --
-> Thanks,
-> Mina
-
-Thanks a lot,
-Taehee Yoo
+diff --git a/arch/alpha/include/asm/cmpxchg.h b/arch/alpha/include/asm/cmpxchg.h
+index 91d4a4d9258c..ae1b96479d0c 100644
+--- a/arch/alpha/include/asm/cmpxchg.h
++++ b/arch/alpha/include/asm/cmpxchg.h
+@@ -3,17 +3,232 @@
+ #define _ALPHA_CMPXCHG_H
+ 
+ /*
+- * Atomic exchange routines.
++ * Atomic exchange.
++ * Since it can be used to implement critical sections
++ * it must clobber "memory" (also for interrupts in UP).
+  */
+ 
+-#define ____xchg(type, args...)		__arch_xchg ## type ## _local(args)
+-#define ____cmpxchg(type, args...)	__cmpxchg ## type ## _local(args)
+-#include <asm/xchg.h>
++static inline unsigned long
++____xchg_u8(volatile char *m, unsigned long val)
++{
++	unsigned long ret, tmp, addr64;
++
++	__asm__ __volatile__(
++	"	andnot	%4,7,%3\n"
++	"	insbl	%1,%4,%1\n"
++	"1:	ldq_l	%2,0(%3)\n"
++	"	extbl	%2,%4,%0\n"
++	"	mskbl	%2,%4,%2\n"
++	"	or	%1,%2,%2\n"
++	"	stq_c	%2,0(%3)\n"
++	"	beq	%2,2f\n"
++	".subsection 2\n"
++	"2:	br	1b\n"
++	".previous"
++	: "=&r" (ret), "=&r" (val), "=&r" (tmp), "=&r" (addr64)
++	: "r" ((long)m), "1" (val) : "memory");
++
++	return ret;
++}
++
++static inline unsigned long
++____xchg_u16(volatile short *m, unsigned long val)
++{
++	unsigned long ret, tmp, addr64;
++
++	__asm__ __volatile__(
++	"	andnot	%4,7,%3\n"
++	"	inswl	%1,%4,%1\n"
++	"1:	ldq_l	%2,0(%3)\n"
++	"	extwl	%2,%4,%0\n"
++	"	mskwl	%2,%4,%2\n"
++	"	or	%1,%2,%2\n"
++	"	stq_c	%2,0(%3)\n"
++	"	beq	%2,2f\n"
++	".subsection 2\n"
++	"2:	br	1b\n"
++	".previous"
++	: "=&r" (ret), "=&r" (val), "=&r" (tmp), "=&r" (addr64)
++	: "r" ((long)m), "1" (val) : "memory");
++
++	return ret;
++}
++
++static inline unsigned long
++____xchg_u32(volatile int *m, unsigned long val)
++{
++	unsigned long dummy;
++
++	__asm__ __volatile__(
++	"1:	ldl_l %0,%4\n"
++	"	bis $31,%3,%1\n"
++	"	stl_c %1,%2\n"
++	"	beq %1,2f\n"
++	".subsection 2\n"
++	"2:	br 1b\n"
++	".previous"
++	: "=&r" (val), "=&r" (dummy), "=m" (*m)
++	: "rI" (val), "m" (*m) : "memory");
++
++	return val;
++}
++
++static inline unsigned long
++____xchg_u64(volatile long *m, unsigned long val)
++{
++	unsigned long dummy;
++
++	__asm__ __volatile__(
++	"1:	ldq_l %0,%4\n"
++	"	bis $31,%3,%1\n"
++	"	stq_c %1,%2\n"
++	"	beq %1,2f\n"
++	".subsection 2\n"
++	"2:	br 1b\n"
++	".previous"
++	: "=&r" (val), "=&r" (dummy), "=m" (*m)
++	: "rI" (val), "m" (*m) : "memory");
++
++	return val;
++}
++
++/* This function doesn't exist, so you'll get a linker error
++   if something tries to do an invalid xchg().  */
++extern void __xchg_called_with_bad_pointer(void);
++
++static __always_inline unsigned long
++____xchg(volatile void *ptr, unsigned long x, int size)
++{
++	return
++		size == 1 ? ____xchg_u8(ptr, x) :
++		size == 2 ? ____xchg_u16(ptr, x) :
++		size == 4 ? ____xchg_u32(ptr, x) :
++		size == 8 ? ____xchg_u64(ptr, x) :
++			(__xchg_called_with_bad_pointer(), x);
++}
++
++/*
++ * Atomic compare and exchange.  Compare OLD with MEM, if identical,
++ * store NEW in MEM.  Return the initial value in MEM.  Success is
++ * indicated by comparing RETURN with OLD.
++ */
++
++static inline unsigned long
++____cmpxchg_u8(volatile char *m, unsigned char old, unsigned char new)
++{
++	unsigned long prev, tmp, cmp, addr64;
++
++	__asm__ __volatile__(
++	"	andnot	%5,7,%4\n"
++	"	insbl	%1,%5,%1\n"
++	"1:	ldq_l	%2,0(%4)\n"
++	"	extbl	%2,%5,%0\n"
++	"	cmpeq	%0,%6,%3\n"
++	"	beq	%3,2f\n"
++	"	mskbl	%2,%5,%2\n"
++	"	or	%1,%2,%2\n"
++	"	stq_c	%2,0(%4)\n"
++	"	beq	%2,3f\n"
++	"2:\n"
++	".subsection 2\n"
++	"3:	br	1b\n"
++	".previous"
++	: "=&r" (prev), "=&r" (new), "=&r" (tmp), "=&r" (cmp), "=&r" (addr64)
++	: "r" ((long)m), "Ir" (old), "1" (new) : "memory");
++
++	return prev;
++}
++
++static inline unsigned long
++____cmpxchg_u16(volatile short *m, unsigned short old, unsigned short new)
++{
++	unsigned long prev, tmp, cmp, addr64;
++
++	__asm__ __volatile__(
++	"	andnot	%5,7,%4\n"
++	"	inswl	%1,%5,%1\n"
++	"1:	ldq_l	%2,0(%4)\n"
++	"	extwl	%2,%5,%0\n"
++	"	cmpeq	%0,%6,%3\n"
++	"	beq	%3,2f\n"
++	"	mskwl	%2,%5,%2\n"
++	"	or	%1,%2,%2\n"
++	"	stq_c	%2,0(%4)\n"
++	"	beq	%2,3f\n"
++	"2:\n"
++	".subsection 2\n"
++	"3:	br	1b\n"
++	".previous"
++	: "=&r" (prev), "=&r" (new), "=&r" (tmp), "=&r" (cmp), "=&r" (addr64)
++	: "r" ((long)m), "Ir" (old), "1" (new) : "memory");
++
++	return prev;
++}
++
++static inline unsigned long
++____cmpxchg_u32(volatile int *m, int old, int new)
++{
++	unsigned long prev, cmp;
++
++	__asm__ __volatile__(
++	"1:	ldl_l %0,%5\n"
++	"	cmpeq %0,%3,%1\n"
++	"	beq %1,2f\n"
++	"	mov %4,%1\n"
++	"	stl_c %1,%2\n"
++	"	beq %1,3f\n"
++	"2:\n"
++	".subsection 2\n"
++	"3:	br 1b\n"
++	".previous"
++	: "=&r"(prev), "=&r"(cmp), "=m"(*m)
++	: "r"((long) old), "r"(new), "m"(*m) : "memory");
++
++	return prev;
++}
++
++static inline unsigned long
++____cmpxchg_u64(volatile long *m, unsigned long old, unsigned long new)
++{
++	unsigned long prev, cmp;
++
++	__asm__ __volatile__(
++	"1:	ldq_l %0,%5\n"
++	"	cmpeq %0,%3,%1\n"
++	"	beq %1,2f\n"
++	"	mov %4,%1\n"
++	"	stq_c %1,%2\n"
++	"	beq %1,3f\n"
++	"2:\n"
++	".subsection 2\n"
++	"3:	br 1b\n"
++	".previous"
++	: "=&r"(prev), "=&r"(cmp), "=m"(*m)
++	: "r"((long) old), "r"(new), "m"(*m) : "memory");
++
++	return prev;
++}
++
++/* This function doesn't exist, so you'll get a linker error
++   if something tries to do an invalid cmpxchg().  */
++extern void __cmpxchg_called_with_bad_pointer(void);
++
++static __always_inline unsigned long
++____cmpxchg(volatile void *ptr, unsigned long old, unsigned long new,
++	      int size)
++{
++	return
++		size == 1 ? ____cmpxchg_u8(ptr, old, new) :
++		size == 2 ? ____cmpxchg_u16(ptr, old, new) :
++		size == 4 ? ____cmpxchg_u32(ptr, old, new) :
++		size == 8 ? ____cmpxchg_u64(ptr, old, new) :
++			(__cmpxchg_called_with_bad_pointer(), old);
++}
+ 
+ #define xchg_local(ptr, x)						\
+ ({									\
+ 	__typeof__(*(ptr)) _x_ = (x);					\
+-	(__typeof__(*(ptr))) __arch_xchg_local((ptr), (unsigned long)_x_,\
++	(__typeof__(*(ptr))) ____xchg((ptr), (unsigned long)_x_,	\
+ 					       sizeof(*(ptr)));		\
+ })
+ 
+@@ -21,7 +236,7 @@
+ ({									\
+ 	__typeof__(*(ptr)) _o_ = (o);					\
+ 	__typeof__(*(ptr)) _n_ = (n);					\
+-	(__typeof__(*(ptr))) __cmpxchg_local((ptr), (unsigned long)_o_,	\
++	(__typeof__(*(ptr))) ____cmpxchg((ptr), (unsigned long)_o_,	\
+ 					  (unsigned long)_n_,		\
+ 					  sizeof(*(ptr)));		\
+ })
+@@ -32,12 +247,6 @@
+ 	cmpxchg_local((ptr), (o), (n));					\
+ })
+ 
+-#undef ____xchg
+-#undef ____cmpxchg
+-#define ____xchg(type, args...)		__arch_xchg ##type(args)
+-#define ____cmpxchg(type, args...)	__cmpxchg ##type(args)
+-#include <asm/xchg.h>
+-
+ /*
+  * The leading and the trailing memory barriers guarantee that these
+  * operations are fully ordered.
+@@ -48,7 +257,7 @@
+ 	__typeof__(*(ptr)) _x_ = (x);					\
+ 	smp_mb();							\
+ 	__ret = (__typeof__(*(ptr)))					\
+-		__arch_xchg((ptr), (unsigned long)_x_, sizeof(*(ptr)));	\
++		____xchg((ptr), (unsigned long)_x_, sizeof(*(ptr)));	\
+ 	smp_mb();							\
+ 	__ret;								\
+ })
+@@ -59,7 +268,7 @@
+ 	__typeof__(*(ptr)) _o_ = (o);					\
+ 	__typeof__(*(ptr)) _n_ = (n);					\
+ 	smp_mb();							\
+-	__ret = (__typeof__(*(ptr))) __cmpxchg((ptr),			\
++	__ret = (__typeof__(*(ptr))) ____cmpxchg((ptr),			\
+ 		(unsigned long)_o_, (unsigned long)_n_, sizeof(*(ptr)));\
+ 	smp_mb();							\
+ 	__ret;								\
+@@ -71,6 +280,4 @@
+ 	arch_cmpxchg((ptr), (o), (n));					\
+ })
+ 
+-#undef ____cmpxchg
+-
+ #endif /* _ALPHA_CMPXCHG_H */
+diff --git a/arch/alpha/include/asm/xchg.h b/arch/alpha/include/asm/xchg.h
+deleted file mode 100644
+index 7adb80c6746a..000000000000
+--- a/arch/alpha/include/asm/xchg.h
++++ /dev/null
+@@ -1,246 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef _ALPHA_CMPXCHG_H
+-#error Do not include xchg.h directly!
+-#else
+-/*
+- * xchg/xchg_local and cmpxchg/cmpxchg_local share the same code
+- * except that local version do not have the expensive memory barrier.
+- * So this file is included twice from asm/cmpxchg.h.
+- */
+-
+-/*
+- * Atomic exchange.
+- * Since it can be used to implement critical sections
+- * it must clobber "memory" (also for interrupts in UP).
+- */
+-
+-static inline unsigned long
+-____xchg(_u8, volatile char *m, unsigned long val)
+-{
+-	unsigned long ret, tmp, addr64;
+-
+-	__asm__ __volatile__(
+-	"	andnot	%4,7,%3\n"
+-	"	insbl	%1,%4,%1\n"
+-	"1:	ldq_l	%2,0(%3)\n"
+-	"	extbl	%2,%4,%0\n"
+-	"	mskbl	%2,%4,%2\n"
+-	"	or	%1,%2,%2\n"
+-	"	stq_c	%2,0(%3)\n"
+-	"	beq	%2,2f\n"
+-	".subsection 2\n"
+-	"2:	br	1b\n"
+-	".previous"
+-	: "=&r" (ret), "=&r" (val), "=&r" (tmp), "=&r" (addr64)
+-	: "r" ((long)m), "1" (val) : "memory");
+-
+-	return ret;
+-}
+-
+-static inline unsigned long
+-____xchg(_u16, volatile short *m, unsigned long val)
+-{
+-	unsigned long ret, tmp, addr64;
+-
+-	__asm__ __volatile__(
+-	"	andnot	%4,7,%3\n"
+-	"	inswl	%1,%4,%1\n"
+-	"1:	ldq_l	%2,0(%3)\n"
+-	"	extwl	%2,%4,%0\n"
+-	"	mskwl	%2,%4,%2\n"
+-	"	or	%1,%2,%2\n"
+-	"	stq_c	%2,0(%3)\n"
+-	"	beq	%2,2f\n"
+-	".subsection 2\n"
+-	"2:	br	1b\n"
+-	".previous"
+-	: "=&r" (ret), "=&r" (val), "=&r" (tmp), "=&r" (addr64)
+-	: "r" ((long)m), "1" (val) : "memory");
+-
+-	return ret;
+-}
+-
+-static inline unsigned long
+-____xchg(_u32, volatile int *m, unsigned long val)
+-{
+-	unsigned long dummy;
+-
+-	__asm__ __volatile__(
+-	"1:	ldl_l %0,%4\n"
+-	"	bis $31,%3,%1\n"
+-	"	stl_c %1,%2\n"
+-	"	beq %1,2f\n"
+-	".subsection 2\n"
+-	"2:	br 1b\n"
+-	".previous"
+-	: "=&r" (val), "=&r" (dummy), "=m" (*m)
+-	: "rI" (val), "m" (*m) : "memory");
+-
+-	return val;
+-}
+-
+-static inline unsigned long
+-____xchg(_u64, volatile long *m, unsigned long val)
+-{
+-	unsigned long dummy;
+-
+-	__asm__ __volatile__(
+-	"1:	ldq_l %0,%4\n"
+-	"	bis $31,%3,%1\n"
+-	"	stq_c %1,%2\n"
+-	"	beq %1,2f\n"
+-	".subsection 2\n"
+-	"2:	br 1b\n"
+-	".previous"
+-	: "=&r" (val), "=&r" (dummy), "=m" (*m)
+-	: "rI" (val), "m" (*m) : "memory");
+-
+-	return val;
+-}
+-
+-/* This function doesn't exist, so you'll get a linker error
+-   if something tries to do an invalid xchg().  */
+-extern void __xchg_called_with_bad_pointer(void);
+-
+-static __always_inline unsigned long
+-____xchg(, volatile void *ptr, unsigned long x, int size)
+-{
+-	switch (size) {
+-		case 1:
+-			return ____xchg(_u8, ptr, x);
+-		case 2:
+-			return ____xchg(_u16, ptr, x);
+-		case 4:
+-			return ____xchg(_u32, ptr, x);
+-		case 8:
+-			return ____xchg(_u64, ptr, x);
+-	}
+-	__xchg_called_with_bad_pointer();
+-	return x;
+-}
+-
+-/*
+- * Atomic compare and exchange.  Compare OLD with MEM, if identical,
+- * store NEW in MEM.  Return the initial value in MEM.  Success is
+- * indicated by comparing RETURN with OLD.
+- */
+-
+-static inline unsigned long
+-____cmpxchg(_u8, volatile char *m, unsigned char old, unsigned char new)
+-{
+-	unsigned long prev, tmp, cmp, addr64;
+-
+-	__asm__ __volatile__(
+-	"	andnot	%5,7,%4\n"
+-	"	insbl	%1,%5,%1\n"
+-	"1:	ldq_l	%2,0(%4)\n"
+-	"	extbl	%2,%5,%0\n"
+-	"	cmpeq	%0,%6,%3\n"
+-	"	beq	%3,2f\n"
+-	"	mskbl	%2,%5,%2\n"
+-	"	or	%1,%2,%2\n"
+-	"	stq_c	%2,0(%4)\n"
+-	"	beq	%2,3f\n"
+-	"2:\n"
+-	".subsection 2\n"
+-	"3:	br	1b\n"
+-	".previous"
+-	: "=&r" (prev), "=&r" (new), "=&r" (tmp), "=&r" (cmp), "=&r" (addr64)
+-	: "r" ((long)m), "Ir" (old), "1" (new) : "memory");
+-
+-	return prev;
+-}
+-
+-static inline unsigned long
+-____cmpxchg(_u16, volatile short *m, unsigned short old, unsigned short new)
+-{
+-	unsigned long prev, tmp, cmp, addr64;
+-
+-	__asm__ __volatile__(
+-	"	andnot	%5,7,%4\n"
+-	"	inswl	%1,%5,%1\n"
+-	"1:	ldq_l	%2,0(%4)\n"
+-	"	extwl	%2,%5,%0\n"
+-	"	cmpeq	%0,%6,%3\n"
+-	"	beq	%3,2f\n"
+-	"	mskwl	%2,%5,%2\n"
+-	"	or	%1,%2,%2\n"
+-	"	stq_c	%2,0(%4)\n"
+-	"	beq	%2,3f\n"
+-	"2:\n"
+-	".subsection 2\n"
+-	"3:	br	1b\n"
+-	".previous"
+-	: "=&r" (prev), "=&r" (new), "=&r" (tmp), "=&r" (cmp), "=&r" (addr64)
+-	: "r" ((long)m), "Ir" (old), "1" (new) : "memory");
+-
+-	return prev;
+-}
+-
+-static inline unsigned long
+-____cmpxchg(_u32, volatile int *m, int old, int new)
+-{
+-	unsigned long prev, cmp;
+-
+-	__asm__ __volatile__(
+-	"1:	ldl_l %0,%5\n"
+-	"	cmpeq %0,%3,%1\n"
+-	"	beq %1,2f\n"
+-	"	mov %4,%1\n"
+-	"	stl_c %1,%2\n"
+-	"	beq %1,3f\n"
+-	"2:\n"
+-	".subsection 2\n"
+-	"3:	br 1b\n"
+-	".previous"
+-	: "=&r"(prev), "=&r"(cmp), "=m"(*m)
+-	: "r"((long) old), "r"(new), "m"(*m) : "memory");
+-
+-	return prev;
+-}
+-
+-static inline unsigned long
+-____cmpxchg(_u64, volatile long *m, unsigned long old, unsigned long new)
+-{
+-	unsigned long prev, cmp;
+-
+-	__asm__ __volatile__(
+-	"1:	ldq_l %0,%5\n"
+-	"	cmpeq %0,%3,%1\n"
+-	"	beq %1,2f\n"
+-	"	mov %4,%1\n"
+-	"	stq_c %1,%2\n"
+-	"	beq %1,3f\n"
+-	"2:\n"
+-	".subsection 2\n"
+-	"3:	br 1b\n"
+-	".previous"
+-	: "=&r"(prev), "=&r"(cmp), "=m"(*m)
+-	: "r"((long) old), "r"(new), "m"(*m) : "memory");
+-
+-	return prev;
+-}
+-
+-/* This function doesn't exist, so you'll get a linker error
+-   if something tries to do an invalid cmpxchg().  */
+-extern void __cmpxchg_called_with_bad_pointer(void);
+-
+-static __always_inline unsigned long
+-____cmpxchg(, volatile void *ptr, unsigned long old, unsigned long new,
+-	      int size)
+-{
+-	switch (size) {
+-		case 1:
+-			return ____cmpxchg(_u8, ptr, old, new);
+-		case 2:
+-			return ____cmpxchg(_u16, ptr, old, new);
+-		case 4:
+-			return ____cmpxchg(_u32, ptr, old, new);
+-		case 8:
+-			return ____cmpxchg(_u64, ptr, old, new);
+-	}
+-	__cmpxchg_called_with_bad_pointer();
+-	return old;
+-}
+-
+-#endif
