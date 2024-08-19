@@ -1,298 +1,100 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fout2-smtp.messagingengine.com (fout2-smtp.messagingengine.com [103.168.172.145])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8859215A4B3
-	for <linux-alpha@vger.kernel.org>; Mon, 19 Aug 2024 03:55:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C21FF14F12F
+	for <linux-alpha@vger.kernel.org>; Mon, 19 Aug 2024 07:47:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724039723; cv=none; b=E3bVnxsXNOeds08rChbnoZFm8Wwue+dGhaKaZxGhu59KQ/hKSUBP/k6Z3CFlN3629vHOjUl+S0gU9dJtJqrHlyZL4fyEkETS4lUhJviUB8Z1d+tsQA7hHXnrfEW355cVn94IbniG/qHnD7QoGIcCL5xuvnnYxyqkA5394GHp4iI=
+	t=1724053663; cv=none; b=LwsmLzUedxyY8FPWA3oZQ4vLiUIhYH55dDNaQKMSyMRxrfRvhmkT7Tlb+I+iZ2l5HhTNVMfU/+CnJd7QbvN16MTHdoXj9k3t3dESQ29uNu1XXMxEP/TF2H3B/PqfGGMfNoBIpOHnNgBgEXDMnr7a3d3EtgMnjE5YghqXFNn/MZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724039723; c=relaxed/simple;
-	bh=G7DEbNSfdulJZL7B+4tp/pE0LZ4T6ArGyQS38ScvR+s=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=cfTyzbsM7+ZanZcOwbOPOcGH110YX+yMqQokN5YEwfwllx7qTS48G/tKS3BxzRobVD0ODHgICR+Exy7ejC6X6ec2O42AoRrJc9kaKgoFPNlCE7Ptq3ahyZ0dYzxsOuORsdbZW3uL/c1BNJWRrqNGHiByW9CAxvtjFs6207N35Do=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--almasrymina.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nCkKm3td; arc=none smtp.client-ip=209.85.219.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--almasrymina.bounces.google.com
+	s=arc-20240116; t=1724053663; c=relaxed/simple;
+	bh=6KUS83ay2PnSKfpYYmN+cHz2MuAZTa12ApUb7RH/a7Y=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=txDwCHjc4CptBWXswKYXGpCOqAKR2CODLhwrs9Xfl1W40NNFTZJ7V+XrLcWD1kFGk02nTmRUQ5LHJXpwMesQtwns0qwbDn2ydZmf2XgqJrGghfZt84EPqwr0r+5i4l3QboNGIcg2STSC7OHXgqc6otTl8PUqKzoaMty+0rPogtU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=NfVldTz0; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=XnqF/Onn; arc=none smtp.client-ip=103.168.172.145
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nCkKm3td"
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-e0b3d35ccfbso5532826276.3
-        for <linux-alpha@vger.kernel.org>; Sun, 18 Aug 2024 20:55:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1724039715; x=1724644515; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=boXjESgdTWQLiG6t6XpDdGr7L3LSCk/sMDntOjdOAS4=;
-        b=nCkKm3td3RkJQdOAQclcAmBztoTBtqiGdr1WcjwjcBSRMQ0SeTB9xsXYRaSTQdiVAq
-         eyLiAysKHoWRAFXBL0lSEvm7Cr7tyI1x5dVbz83Vk6EwFbeKvDkW9KxpdosoamoWOLX6
-         cVgomAWrrpINNJ6sYciY6C43nQN7ZQ4uScQeLKaj3XLsY5qp50f4+IDYk1bUvpsXKMbY
-         8m06ZJ2CHC6mth2zYMtr8oC8PU9UGdsmj0c42HlSV/KJJbxXWyRje2achbxnYr2Ej/pe
-         5Gy7bEbcCIb/M9CfceoXTGK8qhw74GT39orLmjnsVT1UkajaE2ygvi5BqtFE63/k//UX
-         G2eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724039715; x=1724644515;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=boXjESgdTWQLiG6t6XpDdGr7L3LSCk/sMDntOjdOAS4=;
-        b=mlGm/LIWXK9uW2LKE4OeuoqG20YyJTEmJ7RnmIxnEGTSYjfsAJR+l6/A5SZ7u5Pt03
-         xlTtQsQOBNE9Mn5qjHxgEvNHp4wK8ozWEBVqwRr3f3Chr7ApyXywHnPtsOAhASDz43kw
-         gIndji8kDtW2zHO8GiWYMLAVz9o+iGocJ59Q6lcfvs7EJ+sVcag7ANenfHRkLIlAnaCU
-         Uy5MRdFU5x/g4ipCV1PTZWDbS4ca2IGP5SDt7GZj0xgSfhD7HHndFl4tobs6vY+sCoFu
-         9916nwJFrDKyRPwK4T1x4bBc6gKCJntSrgRDqDMa37q/iHBYcATaq1d+AkWNZ4kJxNn3
-         9rTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUg/PyVHChQrymLQJZfCdOGpyBZiybQ52Q0adnaoutIEEAeWe05U9cF7LOyFBTK6fZjbBxbqE6csypJZFAE+gqHDXeVTx9L95RRPTc=
-X-Gm-Message-State: AOJu0YyGCDyCbCHpqut3idd6sw4BQSeXSfDlm1kSBEZe4TxSBb/XjwTY
-	4UtoaPV3AeR+PVoRt8hXPBtDvpSd03qQe0nKUVkUoDdm64rBeEQ5nL0psHX2E0AaPCzYH7Io43S
-	/0hhVo2gczbOaxGHEoa3ByQ==
-X-Google-Smtp-Source: AGHT+IGYA+amTKThCk7veM6D3f5sThh4Cg+j7ljIkYvvrsRv3uMSTVwGF5elitD5+B+ElOczfN8dTxbGAnzb+sPMzA==
-X-Received: from almasrymina.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:4bc5])
- (user=almasrymina job=sendgmr) by 2002:a05:6902:1005:b0:e0e:4350:d7de with
- SMTP id 3f1490d57ef6-e1180f71ae2mr23359276.9.1724039715311; Sun, 18 Aug 2024
- 20:55:15 -0700 (PDT)
-Date: Mon, 19 Aug 2024 03:54:48 +0000
-In-Reply-To: <20240819035448.2473195-1-almasrymina@google.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="NfVldTz0";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="XnqF/Onn"
+Received: from phl-compute-04.internal (phl-compute-04.nyi.internal [10.202.2.44])
+	by mailfout.nyi.internal (Postfix) with ESMTP id BF941138FF80;
+	Mon, 19 Aug 2024 03:47:40 -0400 (EDT)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-04.internal (MEProxy); Mon, 19 Aug 2024 03:47:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1724053660;
+	 x=1724140060; bh=Qn8nu4ReGoeujtn0VmLJqejML1jHH4WP7yAC2GO+slw=; b=
+	NfVldTz0cGB+6dmyNx5svWc0Ux/VvxwmupwJWq9ZCWdwk/8ySthtcVFM/DSLkqBR
+	jmBXt1+8GRLY9AsFjLT4B8/VqacgLhTwyjtIpXCJmHhHGL3HW9nxN025JOHGxGK5
+	lBs1T4i+PfJ97xnNGS0wvrxtxZQCq7OGn8/ZmSKGMT/M1ESXV3PoryrqHz2qRKN8
+	0uloTN16wxCCTZ7Bgk/P5Z4iv/WiW61gtvSJS5jHEGQ5CM27kbi5ZxCJp6QQYh/T
+	7CJWW/kTouSJ6GAv8H4NBbkP2NIplwvqJ6qBbK/AqWCxQ7V4MPb1CIbeeKJrL7kd
+	PFqdQFgKeEhJw6iFKz0TQw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1724053660; x=
+	1724140060; bh=Qn8nu4ReGoeujtn0VmLJqejML1jHH4WP7yAC2GO+slw=; b=X
+	nqF/OnnXb+qIVZoDIW4zofAIzN2IvTKj6tIt67c7Yl793qEzJraAE22ktXENar6U
+	E2iWZImC31lmt7FKsj9yw3t740qsROXq+psKeUF6si43168t0Dcva7Y4br9DCMIP
+	jJwSmCb8mc4KIE1B/Q9RLJTFC1qa99iPvGGE4nz0R+dyyWnez8uCwHk7Os2VcHoV
+	CquzGtJ4NoKG6VOe/62AZzQA9Z2PBgqFHAkFbGogpMH9LOkQOnsVar6OXzgGr3wi
+	WhBBUJxKxr188QBRD4yYxHCOSwCPb3SJUqLxmBYmGGgL+KXm/CaTMfoizWiSOt7t
+	5R6dxXxyIXsO3CkyVdqig==
+X-ME-Sender: <xms:nPjCZnGx02S1O3l8n7b1k3WhJYYJA2zyluRZJ2ZwwzZB0GWCmw9EoA>
+    <xme:nPjCZkUvsPlNYuVyiW2XHO7U71kXQ-lvWTmoOeZRXXEj7yHOlF2PYqbi7UfEggcww
+    ZJ5EtKsge_ksFQXk3I>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddruddufedguddviecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
+    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
+    hnthhsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredt
+    tdenucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusg
+    druggvqeenucggtffrrghtthgvrhhnpeefhfehteffuddvgfeigefhjeetvdekteekjeef
+    keekleffjeetvedvgefhhfeihfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuve
+    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnhgusegr
+    rhhnuggsrdguvgdpnhgspghrtghpthhtohepfedpmhhouggvpehsmhhtphhouhhtpdhrtg
+    hpthhtohepmhgrthhtshhtkeeksehgmhgrihhlrdgtohhmpdhrtghpthhtoheplhhinhhu
+    gidqrghlphhhrgesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehvihhroh
+    esiigvnhhivhdrlhhinhhugidrohhrghdruhhk
+X-ME-Proxy: <xmx:nPjCZpJ2ePueE_0rmG-nhltteloM4iofw5_DGqmKp2WZNQLps2N8iA>
+    <xmx:nPjCZlEUTXyTvqSkoeqo5xm31UUePN7_c8V6_6Kv6eKcCOU4dV5Pug>
+    <xmx:nPjCZtUwAmKpHGyUfx7DEfBrtoo3X-Cczn73ZKsJqfhpatzmSOdwaQ>
+    <xmx:nPjCZgPFEO4UlRqnSFmhfX8x_AfYB8t6jTSrlGeJ1rKMG-qXf8fPQQ>
+    <xmx:nPjCZqijMBWI0QUunnHPl-fnRQybXKtFAih9dLkRVwE6evCFjJG06XqM>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 8473C16005E; Mon, 19 Aug 2024 03:47:40 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <20240819035448.2473195-1-almasrymina@google.com>
-X-Mailer: git-send-email 2.46.0.184.g6999bdac58-goog
-Message-ID: <20240819035448.2473195-14-almasrymina@google.com>
-Subject: [PATCH net-next v20 13/13] netdev: add dmabuf introspection
-From: Mina Almasry <almasrymina@google.com>
-To: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
-	linux-arch@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	bpf@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org
-Cc: Mina Almasry <almasrymina@google.com>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Donald Hunter <donald.hunter@gmail.com>, Jonathan Corbet <corbet@lwn.net>, 
-	Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
-	Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, 
-	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Arnd Bergmann <arnd@arndb.de>, Steffen Klassert <steffen.klassert@secunet.com>, 
-	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>, 
-	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
-	John Fastabend <john.fastabend@gmail.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
-	"=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>, Bagas Sanjaya <bagasdotme@gmail.com>, 
-	Christoph Hellwig <hch@infradead.org>, Nikolay Aleksandrov <razor@blackwall.org>, Taehee Yoo <ap420073@gmail.com>, 
-	Pavel Begunkov <asml.silence@gmail.com>, David Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Yunsheng Lin <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>, 
-	Harshitha Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>, 
-	Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Date: Mon, 19 Aug 2024 09:47:19 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Alexander Viro" <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org
+Cc: "Matt Turner" <mattst88@gmail.com>
+Message-Id: <12a409df-28da-4bc1-898d-715871d44841@app.fastmail.com>
+In-Reply-To: <20240817181429.GH504335@ZenIV>
+References: <20240817181429.GH504335@ZenIV>
+Subject: Re: [PATCH] alpha: no need to include asm/xchg.h twice
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-Add dmabuf information to page_pool stats:
+On Sat, Aug 17, 2024, at 20:14, Al Viro wrote:
+> [rebased to 6.11-rc1, sits in
+> git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git #work.alpha
+>
+> I don't really care which tree it goes through; preferences?
+> ]
 
-$ ./cli.py --spec ../netlink/specs/netdev.yaml --dump page-pool-get
-...
- {'dmabuf': 10,
-  'id': 456,
-  'ifindex': 3,
-  'inflight': 1023,
-  'inflight-mem': 4190208},
- {'dmabuf': 10,
-  'id': 455,
-  'ifindex': 3,
-  'inflight': 1023,
-  'inflight-mem': 4190208},
- {'dmabuf': 10,
-  'id': 454,
-  'ifindex': 3,
-  'inflight': 1023,
-  'inflight-mem': 4190208},
- {'dmabuf': 10,
-  'id': 453,
-  'ifindex': 3,
-  'inflight': 1023,
-  'inflight-mem': 4190208},
- {'dmabuf': 10,
-  'id': 452,
-  'ifindex': 3,
-  'inflight': 1023,
-  'inflight-mem': 4190208},
- {'dmabuf': 10,
-  'id': 451,
-  'ifindex': 3,
-  'inflight': 1023,
-  'inflight-mem': 4190208},
- {'dmabuf': 10,
-  'id': 450,
-  'ifindex': 3,
-  'inflight': 1023,
-  'inflight-mem': 4190208},
- {'dmabuf': 10,
-  'id': 449,
-  'ifindex': 3,
-  'inflight': 1023,
-  'inflight-mem': 4190208},
+I've applied it to the asm-generic tree now. If Matt or anyone
+else wants to pick it up, I can drop it from my tree.
 
-And queue stats:
-
-$ ./cli.py --spec ../netlink/specs/netdev.yaml --dump queue-get
-...
-{'dmabuf': 10, 'id': 8, 'ifindex': 3, 'type': 'rx'},
-{'dmabuf': 10, 'id': 9, 'ifindex': 3, 'type': 'rx'},
-{'dmabuf': 10, 'id': 10, 'ifindex': 3, 'type': 'rx'},
-{'dmabuf': 10, 'id': 11, 'ifindex': 3, 'type': 'rx'},
-{'dmabuf': 10, 'id': 12, 'ifindex': 3, 'type': 'rx'},
-{'dmabuf': 10, 'id': 13, 'ifindex': 3, 'type': 'rx'},
-{'dmabuf': 10, 'id': 14, 'ifindex': 3, 'type': 'rx'},
-{'dmabuf': 10, 'id': 15, 'ifindex': 3, 'type': 'rx'},
-
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Mina Almasry <almasrymina@google.com>
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-
----
- Documentation/netlink/specs/netdev.yaml | 10 ++++++++++
- include/uapi/linux/netdev.h             |  2 ++
- net/core/netdev-genl.c                  | 10 ++++++++++
- net/core/page_pool_user.c               |  4 ++++
- tools/include/uapi/linux/netdev.h       |  2 ++
- 5 files changed, 28 insertions(+)
-
-diff --git a/Documentation/netlink/specs/netdev.yaml b/Documentation/netlink/specs/netdev.yaml
-index 0c747530c275..08412c279297 100644
---- a/Documentation/netlink/specs/netdev.yaml
-+++ b/Documentation/netlink/specs/netdev.yaml
-@@ -167,6 +167,10 @@ attribute-sets:
-           "re-attached", they are just waiting to disappear.
-           Attribute is absent if Page Pool has not been detached, and
-           can still be used to allocate new memory.
-+      -
-+        name: dmabuf
-+        doc: ID of the dmabuf this page-pool is attached to.
-+        type: u32
-   -
-     name: page-pool-info
-     subset-of: page-pool
-@@ -268,6 +272,10 @@ attribute-sets:
-         name: napi-id
-         doc: ID of the NAPI instance which services this queue.
-         type: u32
-+      -
-+        name: dmabuf
-+        doc: ID of the dmabuf attached to this queue, if any.
-+        type: u32
- 
-   -
-     name: qstats
-@@ -543,6 +551,7 @@ operations:
-             - inflight
-             - inflight-mem
-             - detach-time
-+            - dmabuf
-       dump:
-         reply: *pp-reply
-       config-cond: page-pool
-@@ -607,6 +616,7 @@ operations:
-             - type
-             - napi-id
-             - ifindex
-+            - dmabuf
-       dump:
-         request:
-           attributes:
-diff --git a/include/uapi/linux/netdev.h b/include/uapi/linux/netdev.h
-index 91bf3ecc5f1d..7c308f04e7a0 100644
---- a/include/uapi/linux/netdev.h
-+++ b/include/uapi/linux/netdev.h
-@@ -93,6 +93,7 @@ enum {
- 	NETDEV_A_PAGE_POOL_INFLIGHT,
- 	NETDEV_A_PAGE_POOL_INFLIGHT_MEM,
- 	NETDEV_A_PAGE_POOL_DETACH_TIME,
-+	NETDEV_A_PAGE_POOL_DMABUF,
- 
- 	__NETDEV_A_PAGE_POOL_MAX,
- 	NETDEV_A_PAGE_POOL_MAX = (__NETDEV_A_PAGE_POOL_MAX - 1)
-@@ -131,6 +132,7 @@ enum {
- 	NETDEV_A_QUEUE_IFINDEX,
- 	NETDEV_A_QUEUE_TYPE,
- 	NETDEV_A_QUEUE_NAPI_ID,
-+	NETDEV_A_QUEUE_DMABUF,
- 
- 	__NETDEV_A_QUEUE_MAX,
- 	NETDEV_A_QUEUE_MAX = (__NETDEV_A_QUEUE_MAX - 1)
-diff --git a/net/core/netdev-genl.c b/net/core/netdev-genl.c
-index 4201f9555772..c2ae57e7f291 100644
---- a/net/core/netdev-genl.c
-+++ b/net/core/netdev-genl.c
-@@ -293,6 +293,7 @@ static int
- netdev_nl_queue_fill_one(struct sk_buff *rsp, struct net_device *netdev,
- 			 u32 q_idx, u32 q_type, const struct genl_info *info)
- {
-+	struct net_devmem_dmabuf_binding *binding;
- 	struct netdev_rx_queue *rxq;
- 	struct netdev_queue *txq;
- 	void *hdr;
-@@ -312,6 +313,15 @@ netdev_nl_queue_fill_one(struct sk_buff *rsp, struct net_device *netdev,
- 		if (rxq->napi && nla_put_u32(rsp, NETDEV_A_QUEUE_NAPI_ID,
- 					     rxq->napi->napi_id))
- 			goto nla_put_failure;
-+
-+		binding = (struct net_devmem_dmabuf_binding *)
-+				  rxq->mp_params.mp_priv;
-+		if (binding) {
-+			if (nla_put_u32(rsp, NETDEV_A_QUEUE_DMABUF,
-+					binding->id))
-+				goto nla_put_failure;
-+		}
-+
- 		break;
- 	case NETDEV_QUEUE_TYPE_TX:
- 		txq = netdev_get_tx_queue(netdev, q_idx);
-diff --git a/net/core/page_pool_user.c b/net/core/page_pool_user.c
-index 9b69066cc07e..7995c1e3477d 100644
---- a/net/core/page_pool_user.c
-+++ b/net/core/page_pool_user.c
-@@ -213,6 +213,7 @@ static int
- page_pool_nl_fill(struct sk_buff *rsp, const struct page_pool *pool,
- 		  const struct genl_info *info)
- {
-+	struct net_devmem_dmabuf_binding *binding = pool->mp_priv;
- 	size_t inflight, refsz;
- 	void *hdr;
- 
-@@ -242,6 +243,9 @@ page_pool_nl_fill(struct sk_buff *rsp, const struct page_pool *pool,
- 			 pool->user.detach_time))
- 		goto err_cancel;
- 
-+	if (binding && nla_put_u32(rsp, NETDEV_A_PAGE_POOL_DMABUF, binding->id))
-+		goto err_cancel;
-+
- 	genlmsg_end(rsp, hdr);
- 
- 	return 0;
-diff --git a/tools/include/uapi/linux/netdev.h b/tools/include/uapi/linux/netdev.h
-index 91bf3ecc5f1d..7c308f04e7a0 100644
---- a/tools/include/uapi/linux/netdev.h
-+++ b/tools/include/uapi/linux/netdev.h
-@@ -93,6 +93,7 @@ enum {
- 	NETDEV_A_PAGE_POOL_INFLIGHT,
- 	NETDEV_A_PAGE_POOL_INFLIGHT_MEM,
- 	NETDEV_A_PAGE_POOL_DETACH_TIME,
-+	NETDEV_A_PAGE_POOL_DMABUF,
- 
- 	__NETDEV_A_PAGE_POOL_MAX,
- 	NETDEV_A_PAGE_POOL_MAX = (__NETDEV_A_PAGE_POOL_MAX - 1)
-@@ -131,6 +132,7 @@ enum {
- 	NETDEV_A_QUEUE_IFINDEX,
- 	NETDEV_A_QUEUE_TYPE,
- 	NETDEV_A_QUEUE_NAPI_ID,
-+	NETDEV_A_QUEUE_DMABUF,
- 
- 	__NETDEV_A_QUEUE_MAX,
- 	NETDEV_A_QUEUE_MAX = (__NETDEV_A_QUEUE_MAX - 1)
--- 
-2.46.0.184.g6999bdac58-goog
-
+     Arnd
