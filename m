@@ -1,100 +1,134 @@
-Received: from fout2-smtp.messagingengine.com (fout2-smtp.messagingengine.com [103.168.172.145])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C21FF14F12F
-	for <linux-alpha@vger.kernel.org>; Mon, 19 Aug 2024 07:47:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.145
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55F0A1598E9
+	for <linux-alpha@vger.kernel.org>; Mon, 19 Aug 2024 20:38:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724053663; cv=none; b=LwsmLzUedxyY8FPWA3oZQ4vLiUIhYH55dDNaQKMSyMRxrfRvhmkT7Tlb+I+iZ2l5HhTNVMfU/+CnJd7QbvN16MTHdoXj9k3t3dESQ29uNu1XXMxEP/TF2H3B/PqfGGMfNoBIpOHnNgBgEXDMnr7a3d3EtgMnjE5YghqXFNn/MZw=
+	t=1724099929; cv=none; b=KK3wMFRaSG8NZL4QYoZTYDtuA/PFcI79rJjMQFApiHkizXynyfswMHER779fWa21hkFI8aIPiCpK75LN2t4KBTDZOnDXNL5g9jRbmQXUQ0JwYwIRqxLWXNwyCHAVZdkPzEfinzEahT+6sX5AxYsJ2TrTMVkgmiQipt6GGr7SSPU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724053663; c=relaxed/simple;
-	bh=6KUS83ay2PnSKfpYYmN+cHz2MuAZTa12ApUb7RH/a7Y=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=txDwCHjc4CptBWXswKYXGpCOqAKR2CODLhwrs9Xfl1W40NNFTZJ7V+XrLcWD1kFGk02nTmRUQ5LHJXpwMesQtwns0qwbDn2ydZmf2XgqJrGghfZt84EPqwr0r+5i4l3QboNGIcg2STSC7OHXgqc6otTl8PUqKzoaMty+0rPogtU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=NfVldTz0; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=XnqF/Onn; arc=none smtp.client-ip=103.168.172.145
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1724099929; c=relaxed/simple;
+	bh=5hCWg1nbsBli0YGHvlLtJZAoYo565YPePTccPZa0G94=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=oE60ia8ycvqCh9MaGZ2wmjKE1rr6aMHro4kg6Jx7OsJHmOUQU3x3BbfzK52bkO2P/WNMXlC0oX+M0fIJuGLgcQHYuaKCKWOiSoKGOIRDuVebU6l14hbDiHetW4ZSSJwtZhucMNoqplQZJJriB1IW8cS4gjDFYAd82FAKCTadwnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dQt9NvXr; arc=none smtp.client-ip=209.85.222.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="NfVldTz0";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="XnqF/Onn"
-Received: from phl-compute-04.internal (phl-compute-04.nyi.internal [10.202.2.44])
-	by mailfout.nyi.internal (Postfix) with ESMTP id BF941138FF80;
-	Mon, 19 Aug 2024 03:47:40 -0400 (EDT)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-04.internal (MEProxy); Mon, 19 Aug 2024 03:47:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1724053660;
-	 x=1724140060; bh=Qn8nu4ReGoeujtn0VmLJqejML1jHH4WP7yAC2GO+slw=; b=
-	NfVldTz0cGB+6dmyNx5svWc0Ux/VvxwmupwJWq9ZCWdwk/8ySthtcVFM/DSLkqBR
-	jmBXt1+8GRLY9AsFjLT4B8/VqacgLhTwyjtIpXCJmHhHGL3HW9nxN025JOHGxGK5
-	lBs1T4i+PfJ97xnNGS0wvrxtxZQCq7OGn8/ZmSKGMT/M1ESXV3PoryrqHz2qRKN8
-	0uloTN16wxCCTZ7Bgk/P5Z4iv/WiW61gtvSJS5jHEGQ5CM27kbi5ZxCJp6QQYh/T
-	7CJWW/kTouSJ6GAv8H4NBbkP2NIplwvqJ6qBbK/AqWCxQ7V4MPb1CIbeeKJrL7kd
-	PFqdQFgKeEhJw6iFKz0TQw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1724053660; x=
-	1724140060; bh=Qn8nu4ReGoeujtn0VmLJqejML1jHH4WP7yAC2GO+slw=; b=X
-	nqF/OnnXb+qIVZoDIW4zofAIzN2IvTKj6tIt67c7Yl793qEzJraAE22ktXENar6U
-	E2iWZImC31lmt7FKsj9yw3t740qsROXq+psKeUF6si43168t0Dcva7Y4br9DCMIP
-	jJwSmCb8mc4KIE1B/Q9RLJTFC1qa99iPvGGE4nz0R+dyyWnez8uCwHk7Os2VcHoV
-	CquzGtJ4NoKG6VOe/62AZzQA9Z2PBgqFHAkFbGogpMH9LOkQOnsVar6OXzgGr3wi
-	WhBBUJxKxr188QBRD4yYxHCOSwCPb3SJUqLxmBYmGGgL+KXm/CaTMfoizWiSOt7t
-	5R6dxXxyIXsO3CkyVdqig==
-X-ME-Sender: <xms:nPjCZnGx02S1O3l8n7b1k3WhJYYJA2zyluRZJ2ZwwzZB0GWCmw9EoA>
-    <xme:nPjCZkUvsPlNYuVyiW2XHO7U71kXQ-lvWTmoOeZRXXEj7yHOlF2PYqbi7UfEggcww
-    ZJ5EtKsge_ksFQXk3I>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddruddufedguddviecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
-    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
-    hnthhsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredt
-    tdenucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusg
-    druggvqeenucggtffrrghtthgvrhhnpeefhfehteffuddvgfeigefhjeetvdekteekjeef
-    keekleffjeetvedvgefhhfeihfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuve
-    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnhgusegr
-    rhhnuggsrdguvgdpnhgspghrtghpthhtohepfedpmhhouggvpehsmhhtphhouhhtpdhrtg
-    hpthhtohepmhgrthhtshhtkeeksehgmhgrihhlrdgtohhmpdhrtghpthhtoheplhhinhhu
-    gidqrghlphhhrgesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehvihhroh
-    esiigvnhhivhdrlhhinhhugidrohhrghdruhhk
-X-ME-Proxy: <xmx:nPjCZpJ2ePueE_0rmG-nhltteloM4iofw5_DGqmKp2WZNQLps2N8iA>
-    <xmx:nPjCZlEUTXyTvqSkoeqo5xm31UUePN7_c8V6_6Kv6eKcCOU4dV5Pug>
-    <xmx:nPjCZtUwAmKpHGyUfx7DEfBrtoo3X-Cczn73ZKsJqfhpatzmSOdwaQ>
-    <xmx:nPjCZgPFEO4UlRqnSFmhfX8x_AfYB8t6jTSrlGeJ1rKMG-qXf8fPQQ>
-    <xmx:nPjCZqijMBWI0QUunnHPl-fnRQybXKtFAih9dLkRVwE6evCFjJG06XqM>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-	id 8473C16005E; Mon, 19 Aug 2024 03:47:40 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dQt9NvXr"
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-7a35eff1d06so336692685a.0
+        for <linux-alpha@vger.kernel.org>; Mon, 19 Aug 2024 13:38:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1724099926; x=1724704726; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WfUQmRn/EFhMiTzRoHA7ZDzm1OmxjBuZj9W18S8T8rE=;
+        b=dQt9NvXrN1VKYzQEcAZvli+TpnUjgqP6GUFJu04Q8N5MsPSHDtblHkM88vHPNmSbf4
+         LYLqj/n5ogic1iqNa4Ll9lehU3Gk8/gvI+DrOgO90HkhmVTYUWp/HUadFOdh+q4PHRwS
+         uYznAFDmM0qQ16DcdaKNuIrvq5Eqp2ZfyEex5VzrUeVbQNMg4TGvFaZakwXH1qUBTDLq
+         dZv0/TDlNmsYrqccyMM25RCA4VdQz5ou3WazXwTrJ7pLK39nxxmCDJXLUwLDCYidmqHI
+         U19a6NDUC14Ry56OQV3MwhjC8XFkXSfP6MSqU69zJ9C0q6zOzjsvFoWzeWYLZ6ATRnPR
+         ekDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724099926; x=1724704726;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=WfUQmRn/EFhMiTzRoHA7ZDzm1OmxjBuZj9W18S8T8rE=;
+        b=G3I992Kxov40YcrxL5NW70ftdhzU0UpYRX6Gd2GReK2BEqPUQ5M4ljUCC/URinWN0w
+         GUoYOe05MRd/fUmXgVeMD9AMqJps4kU3WP2i/2DNBx/27caVBpMITnbbZfTiTH1gHAqa
+         1Yq3BvnhdyPOhdLpmjjKLzOcH6sdrcvCFmDpJ7shSx6pq2UPl85rzwlfNLrB+GeQHEHX
+         /F/9mqZiIIenHfIvo/6hTyrNBHXAmCHVCYE5hpyIbQRrKeNNOOny10ev6Xyk0rz7r+U2
+         N5vv5GfupTBoZuedmTuHElKiBr+nTMi/r+Jxanvs2Cg+rdsqoqL0IqQM+5GAUbbfbDo4
+         nWPQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVr0S2Uym4CJSuKA4B92FSWvYv+HcgQzSSJ4C8DQEvmlce3Q7LPysBlEHKwcsZPPX5SL43K8yWTQhyhtA==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzMOGrBVxfV971DhLS9F/U1OhQF87uv9o0FxXFb0KjIMwwFihUM
+	gCf0T3CLhrmkO9cOJtGyF0pMISe+KbmqmSObM+l0MTbb4Td1DNjuc1RbIuygwEzioBusxoLI3dw
+	2jsPCer2xEMx30jxIxhmW7Kx4hvBx6Cq2CuyH
+X-Google-Smtp-Source: AGHT+IH9NK+VEbJYkN3LP0eycR7QieY0LFTeKOUKys5z+kSU7zJQmMHAEMe3u1Xxmij2PKgwfzIhek+Uv3hwzgQnvEA=
+X-Received: by 2002:a05:6214:53c5:b0:6b7:ab98:b8b4 with SMTP id
+ 6a1803df08f44-6bf7ce6839cmr162319456d6.48.1724099926079; Mon, 19 Aug 2024
+ 13:38:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Mon, 19 Aug 2024 09:47:19 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Alexander Viro" <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org
-Cc: "Matt Turner" <mattst88@gmail.com>
-Message-Id: <12a409df-28da-4bc1-898d-715871d44841@app.fastmail.com>
-In-Reply-To: <20240817181429.GH504335@ZenIV>
-References: <20240817181429.GH504335@ZenIV>
-Subject: Re: [PATCH] alpha: no need to include asm/xchg.h twice
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+References: <20240819035448.2473195-1-almasrymina@google.com>
+In-Reply-To: <20240819035448.2473195-1-almasrymina@google.com>
+From: Mina Almasry <almasrymina@google.com>
+Date: Mon, 19 Aug 2024 16:38:32 -0400
+Message-ID: <CAHS8izMqcLnmo9792FPkkXPQSBWSjFGO+QHhkou=PaDHLwtsRw@mail.gmail.com>
+Subject: Re: [PATCH net-next v20 00/13] Device Memory TCP
+To: netdev@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org, 
+	linux-arch@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+	bpf@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org
+Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Donald Hunter <donald.hunter@gmail.com>, Jonathan Corbet <corbet@lwn.net>, 
+	Richard Henderson <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>, 
+	Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+	Arnd Bergmann <arnd@arndb.de>, Steffen Klassert <steffen.klassert@secunet.com>, 
+	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
+	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>, 
+	Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, 
+	John Fastabend <john.fastabend@gmail.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Bagas Sanjaya <bagasdotme@gmail.com>, Christoph Hellwig <hch@infradead.org>, 
+	Nikolay Aleksandrov <razor@blackwall.org>, Taehee Yoo <ap420073@gmail.com>, 
+	Pavel Begunkov <asml.silence@gmail.com>, David Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Yunsheng Lin <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>, 
+	Harshitha Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>, 
+	Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Aug 17, 2024, at 20:14, Al Viro wrote:
-> [rebased to 6.11-rc1, sits in
-> git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git #work.alpha
+On Sun, Aug 18, 2024 at 11:54=E2=80=AFPM Mina Almasry <almasrymina@google.c=
+om> wrote:
 >
-> I don't really care which tree it goes through; preferences?
-> ]
+> v20: https://patchwork.kernel.org/project/netdevbpf/list/?series=3D879373=
+&state=3D*
+> =3D=3D=3D=3D
+>
+> v20 aims to resolve a couple of bug reports against v19, and addresses
+> some review comments around the page_pool_check_memory_provider
+> mechanism.
+>
+> Major changes:
+> - Test edge cases such as header split disabled in selftest.
+> - Change `offset =3D 0` back to `offset =3D offset - start` to resolve is=
+sue
+>   found in RX path by Taehee (thanks!)
+> - Address a few comments around page_pool_check_memory_provider() from
+>   Pavel & Jakub.
+> - Removed some unnecessary includes across various patches in the
+>   series.
+> - Removed unnecessary EXPORT_SYMBOL(page_pool_mem_providers) (Jakub).
+> - Fix regression caused by incorrect dev_get_max_mp_channel check, along
+>   with rename (Jakub).
+>
 
-I've applied it to the asm-generic tree now. If Matt or anyone
-else wants to pick it up, I can drop it from my tree.
+Looks like in this iteration I resolved the previous test failure, but
+introduced a build regression with certain configs:
 
-     Arnd
+ld: vmlinux.o: in function `netdev_rx_queue_restart':
+(.text+0x6a4133): undefined reference to `page_pool_check_memory_provider'
+make[3]: *** [../scripts/Makefile.vmlinux:34: vmlinux] Error 1
+make[2]: *** [/home/kunit/testing/Makefile:1156: vmlinux] Error 2
+make[1]: *** [/home/kunit/testing/Makefile:224: __sub-make] Error 2
+make: *** [Makefile:224: __sub-make] Error 2
+
+Looks like I'm not build testing with enough config variations (in
+this case CONFIG_NET=3Dy but CONFIG_PAGE_POOL=3Dn). I've fixed the issue
+locally and added a test to my presubmit checks with this config and a
+couple of risky others. Sorry about that.
