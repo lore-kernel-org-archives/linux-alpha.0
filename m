@@ -1,99 +1,79 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43C021741FA;
-	Wed, 21 Aug 2024 22:30:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 220B5AD5B;
+	Sat, 24 Aug 2024 03:58:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724279453; cv=none; b=Vrt0mqDIJj8B+Awa+aCpMwEjxA3v9e1OwYSRCUOoxTfjrm5eqhIUjpE4xBOt3+6lMIcCm4b9bo7XZlF2AOofk99Ub19l8P3BOtp6yCxHFJ+JxahDAiIKIp8EiG0E2xL0IKrAnTWKMbPHGRcZi6JBbgulX8BjjF/ojjNXHWc7xCM=
+	t=1724471904; cv=none; b=mmm9v2LrxPlUCXh8QmSTPi4gOdIkCyYEnQJjWotPlkj8268ATWGWrD2xNUU/4hVWvQ54sy2HuVVqvzMwgc0a1oprPXPYT3VTdiFpmfpz86NVO5NSmRcavolHjhWK25epQOFTbHODNDEPLh1/tJGzySVf0ceM4puIqh27C47OIgY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724279453; c=relaxed/simple;
-	bh=9hM1UR02IR6WK1n9AY+5U6wjkUWO6iL3GULiEkR+LAE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VNeqkwswVl2P61ppsCEUWm5Xh+6y1XmmAUTsOIBYxKin3QNz9TGv8hWp1yfm6OKv8uTQDAv7z/4b/HfFCtKi9T1Hpt+vw7GJ43l4mv5sPefkyHh5cow2E0J+hPqdV8w/ZIHvlX3VVxvNCDJ3TjKH6w6winoVB9VzmrX4POtTnWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qVNyim/9; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1724471904; c=relaxed/simple;
+	bh=Clh9AkGSwfDfUvvLJoxosPbut7uF7iTtgQ3zxQUr6Og=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Rc6vJmSscuYCzYnqqgSMszH9rraTYuBSVm2DVHDOr45qdE2v8Hr/wnXALc8rncza9QwHaOJTrzhx49YuqJb1KWYvRgpQ8vhJ4tZeDPMTY75Q/CF+QlqmUv4dIT2EAscu1KcC3SkDx62axkdamU6JyIf4bT9FooIj6G08e0zjD0k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=ibODa9lL; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qVNyim/9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ACDBC32781;
-	Wed, 21 Aug 2024 22:30:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1724279452;
-	bh=9hM1UR02IR6WK1n9AY+5U6wjkUWO6iL3GULiEkR+LAE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=qVNyim/9QotcRj/a4kStDywZY9GIvJPHopig9Y4+y0+EqoIREhXFJXkCl6PnoGAB2
-	 I/iHlnLZbSl4TYG7HZjEbkGFei+lDhbO/1zgOhMbkXqmQFlVw0lxeAFBtN2KMWogPT
-	 1S8H9QZ7mCm6sDyYEqHyB1lX2iKxQEe6kkkay/feGO/6jYfxqI9fyFvOGFB6PPf8kS
-	 LvW1Ua/y5yso7XpM6mcbvSnBkZEMZkr7ONtjBPiGZ5Nvjtvaey01yyHTlEcdsm65b7
-	 QjnHkd+v6GmK5reTeStHnmg0Uoxag9k0jAqCAx7K5I0FrhauLhjY+G6wM6lsk+vY0I
-	 8QGRc1kVegb7g==
-Date: Wed, 21 Aug 2024 15:30:49 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Mina Almasry <almasrymina@google.com>
-Cc: Taehee Yoo <ap420073@gmail.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
- linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
- linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
- linux-kselftest@vger.kernel.org, bpf@vger.kernel.org,
- linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, "David S.
- Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Paolo
- Abeni <pabeni@redhat.com>, Donald Hunter <donald.hunter@gmail.com>,
- Jonathan Corbet <corbet@lwn.net>, Richard Henderson
- <richard.henderson@linaro.org>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
- Matt Turner <mattst88@gmail.com>, Thomas Bogendoerfer
- <tsbogend@alpha.franken.de>, "James E.J. Bottomley"
- <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>,
- Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer
- <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven
- Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>,
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Arnd Bergmann
- <arnd@arndb.de>, Steffen Klassert <steffen.klassert@secunet.com>, Herbert
- Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, Willem
- de Bruijn <willemdebruijn.kernel@gmail.com>, Shuah Khan <shuah@kernel.org>,
- Alexei Starovoitov <ast@kernel.org>, Daniel Borkmann
- <daniel@iogearbox.net>, John Fastabend <john.fastabend@gmail.com>, Sumit
- Semwal <sumit.semwal@linaro.org>, Christian =?UTF-8?B?S8O2bmln?=
- <christian.koenig@amd.com>, Bagas Sanjaya <bagasdotme@gmail.com>, Christoph
- Hellwig <hch@infradead.org>, Nikolay Aleksandrov <razor@blackwall.org>,
- Pavel Begunkov <asml.silence@gmail.com>, David Wei <dw@davidwei.uk>, Jason
- Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin <linyunsheng@huawei.com>, Shailend
- Chand <shailend@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>,
- Shakeel Butt <shakeel.butt@linux.dev>, Jeroen de Borst
- <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>,
- Willem de Bruijn <willemb@google.com>, Kaiyuan Zhang <kaiyuanz@google.com>,
- Daniel Vetter <daniel.vetter@ffwll.ch>
-Subject: Re: [PATCH net-next v19 03/13] netdev: support binding dma-buf to
- netdevice
-Message-ID: <20240821153049.7dc983db@kernel.org>
-In-Reply-To: <CAHS8izPZ9Jiu9Gj+Kk3cQ_+t22M4n4-mbPLhx+fti_HiWzL57Q@mail.gmail.com>
-References: <20240813211317.3381180-4-almasrymina@google.com>
-	<CAMArcTWWxjsg_zwS6waWkLpyHhwdXDm_NJeVGm_dr+eT5QDZiA@mail.gmail.com>
-	<20240819155257.1148e869@kernel.org>
-	<CAHS8izPL4YdqFjkTpYavdxQn816=kkUv0xravQJF4Uno7Bn3ZQ@mail.gmail.com>
-	<CAMArcTXvccYBPZTEuW-z=uTK7W67utd9-xjPzfxEOvUWhPS7bg@mail.gmail.com>
-	<CAHS8izPZ9Jiu9Gj+Kk3cQ_+t22M4n4-mbPLhx+fti_HiWzL57Q@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ibODa9lL"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=Q2nYRi9U4a8itDtDq9LNnEMZ/Twd4vEjX9CTeiWFtZk=; b=ibODa9lL5q7uggEbw2OOQZkuOl
+	gdhQY0r9D/9beDb+Bd4qmVTCvwI+QiMjo95/+tPj+4V9U7F5hRFToRdX4k4DvPYHu1OLEHcIx+etT
+	KIlSwzlSzvMKbYOerqEj9me07yLSDIeP/0/bbrlY9qqah4ekXhqi/eYjBvvldU6VljO5zLO6djC2Z
+	2yksa1axP4sCcbZUGAWwKgEmbBGoAFPkoBoCxdpgqo5+6g1QWpb94Ilm4RmYcg8FZcggX2U6K6Sfe
+	cGdem+9zPaemNy7/Cr0ZBWXuCzcsmrGl8tEN+ptWMeKG1q46THZ+VeovOI19ardMWa1DQRk/ZtOsI
+	ioZS20vQ==;
+Received: from 2a02-8389-2341-5b80-7457-864c-9b77-b751.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:7457:864c:9b77:b751] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1shhut-00000001ON7-0bmD;
+	Sat, 24 Aug 2024 03:58:20 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: iommu@lists.linux.dev
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Bingbu Cao <bingbu.cao@intel.com>,
+	"Michael S . Tsirkin " <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-mips@vger.kernel.org,
+	linux-parisc@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	sparclinux@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	virtualization@lists.linux.dev,
+	xen-devel@lists.xenproject.org
+Subject: clearly mark DMA_OPS support as an architecture feasture
+Date: Sat, 24 Aug 2024 05:57:57 +0200
+Message-ID: <20240824035817.1163502-1-hch@lst.de>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Wed, 21 Aug 2024 11:36:31 -0400 Mina Almasry wrote:
-> Additionally I'm wondering if we should disable adding mp-bound
-> devices as slaves completely, regardless of xdp. My concern is that if
-> the lower device is using unreadable memory, then the upper device may
-> see unreadable memory in its code paths, and will not be expecting
-> that, so it may break.
+Hi all,
 
-I could be wrong, but my knee jerk reaction is that from datapath
-perspective upper devices are just like any other part of the stack.
-They should handle (read: not crash with) unreadable frags. The frags
-can be injected in many ways, we can't depend on "lower doesn't do MP"
-to catch all the bugs.
+we've had a long standing problems where drivers try to hook into the
+DMA_OPS mechanisms to override them for something that is not DMA, or
+to introduce additional dispatching.
 
-XDP is isolated, we can prevent unreadable packets from entering XDP
-*completely*. We cannot prevent packets from entering the skb paths.
-No?
+Now that we are not using DMA_OPS support for dma-iommu and can build
+kernels without DMA_OPS support on many common setups this becomes even
+more problematic.
+
+This series renames the option to ARCH_DMA_OPS and adds very explicit
+comment to not use it in drivers.  The ipu6 and vdpa_sim/user drivers
+that abuse the mechanism are made to depend on the option instead of
+selecting it with a big comment, but I expect this to be fixed rather
+sooner than later (I know the ipu6 maintainers are on it based on a
+previous discussion).
