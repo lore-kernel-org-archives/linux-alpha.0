@@ -1,93 +1,164 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 281D31A0BCB
-	for <linux-alpha@vger.kernel.org>; Tue,  3 Sep 2024 09:39:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 191E51420DD;
+	Tue,  3 Sep 2024 17:18:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725356389; cv=none; b=ssZu2DO/ekWYRevZZdqj1auaoxQCvRp5qXwZWIaXHmVZn4WR0a4Vm7L+LESsII64Kdi5TaBzg+LNsFvMfWtmgzMLtDxltzpcXnCi7rCrHkMRkteHnlPvJgl/B66Hl7yuGUtpopdlqJvHi9/XFrwU1kJMlODtq5IQtCSYPY9C0oM=
+	t=1725383917; cv=none; b=q85UdUcYglCvJ1EiQaBXdE4juMKTXCUABEZzVNrxs1J/sT5PsOrGLxX3GxF7LOryIvGHqzGTSosI3bax96v7zxrSzox+SoJu0mqGdHiAzPzW0fVL9LHUOUxHwd1m/evW8gxlJSXo0wddTMQ7iiTWKHwjzCtprqbkqF8CMnoIXKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725356389; c=relaxed/simple;
-	bh=pE3Mr0PnS9xl+CUiCEH2hxI4fWM92/vwv+iNfIiq4l8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kB+v8OrTtAWoJ/ZtShjTDy4IpV4XHqT3Vn/dnffk/oy+o34mTXK2bRH2mbTeNJwFPmPF9pEirZur//DagiDPciRkZQ18yfxOD2n3PcTCpdlRIAznIBMmlA0g3qhiLKjRVNqMuEeids8+wkhUcjel2nAYOvqufbojHUvVKJrIovo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Hh5kBEjO; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Hh5kBEjO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1725356387;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cIxA/7+yR2jXA4ieeKPuD5EUL5lArHR8csGiCMl6eW4=;
-	b=Hh5kBEjOrdKZk3kRJinPc6wdUa5u6DXLTuWECSxYMTKrHHUGqSFrQ2EZzMzn9n3jPjSkDp
-	GC6ifzE63Y1thpL3mpxcPpx/fxnMhjD+tQ5mrxZr3Pk0X0fXkFZ29JbgHWf97tb3WJzpaF
-	VBc2DqBSZXXc3dJ3AutwG9VxR12KmZ0=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-6-0D2wC1NQN9yHpbSSNgkA5Q-1; Tue, 03 Sep 2024 05:39:46 -0400
-X-MC-Unique: 0D2wC1NQN9yHpbSSNgkA5Q-1
-Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-374beb23f35so2083918f8f.0
-        for <linux-alpha@vger.kernel.org>; Tue, 03 Sep 2024 02:39:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725356385; x=1725961185;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cIxA/7+yR2jXA4ieeKPuD5EUL5lArHR8csGiCMl6eW4=;
-        b=n0/x2hI1MkD0pLX3t5T3F/LaM6189cI4YA28PxR7ESnK/cxcGHYZHFy/Ew4XHRMt/k
-         DfEUr6XPkJw8DNnGYq10o73qID16gWVUtE8IRFbs1lYJ9frOurzFw47AacqPcVbo6mLF
-         6qrNw+0JXLbQTnekd60eSMNEP5l3aUaXhyGVHMD1O+yo3vW6wCdaoBw+46dbnpreVuuN
-         iypV3sVENI77b6SXR7M5LSriKsGyNHWCSKSgGxT21U1BW5qV9h4x/dWgE+XYSSaPsHQW
-         UiytPpd4c4kL54NUrA1AWuEW4KSvo8DKdRT/JzhBINDE0BsxzSKmMLQokZn7cZ3qOtc0
-         RR1Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWq0PVgSkZZGWt6tgG+VuK/YMERtWh9CdbfTsLbPUa5H39I7XkMnsihHKszGV9/MDKYJuYg/g4VWjwwMw==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwiZ08COT2zDU8qj8Bm3yO0rxHNuYkbKMKSdL5ZPRTACDoISVBX
-	apaR7P3sKVY6cWl6npZclrmGc16V6jjO/edOjhs8m0qm9MI6HZpyUyz+jb0dA2qh+FTgHAJKhLB
-	L1jmzLRjJhcigc6Iwwd3fHHKG5TmaqDcgrW0IkfyNTZxijldDGJW967ygWDL9
-X-Received: by 2002:a05:600c:1f90:b0:429:dc88:7e65 with SMTP id 5b1f17b1804b1-42bb02ecb7emr124596385e9.12.1725356385059;
-        Tue, 03 Sep 2024 02:39:45 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEx9ZT+cp/JOzMdJ0eMMwlRMn2QkU5Mi38V0c6sZIqJTMhc/MD50iSbcQF046e0ymvaKlJlng==
-X-Received: by 2002:a05:600c:1f90:b0:429:dc88:7e65 with SMTP id 5b1f17b1804b1-42bb02ecb7emr124595995e9.12.1725356384137;
-        Tue, 03 Sep 2024 02:39:44 -0700 (PDT)
-Received: from redhat.com ([2a0d:6fc7:441:95c6:9977:c577:f3d1:99e1])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42bb6df0f41sm164222235e9.19.2024.09.03.02.39.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Sep 2024 02:39:43 -0700 (PDT)
-Date: Tue, 3 Sep 2024 05:39:39 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Bingbu Cao <bingbu.cao@intel.com>, Jason Wang <jasowang@redhat.com>,
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-	linux-media@vger.kernel.org, virtualization@lists.linux.dev,
-	xen-devel@lists.xenproject.org
-Subject: Re: clearly mark DMA_OPS support as an architecture feature v2
-Message-ID: <20240903053917-mutt-send-email-mst@kernel.org>
-References: <20240828061104.1925127-1-hch@lst.de>
- <20240903072744.GA2082@lst.de>
+	s=arc-20240116; t=1725383917; c=relaxed/simple;
+	bh=rAT/16lEXiR/FQGCf8mH61WrxLJvKpfnUCw3JXbOKlk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=aMYZvRwPzKbHvQjy+LnWLJRw7iHRHbfsE5FzHqr9nQsWPh1U6xRR1yoeeI/3q4uyx3Hua+1CdN5JNDqVSewh5TbiqTgXWzIAC4Ke4bK9goeW2rxnvPQOqpFw50ctPwt/5ER6bui/RRLjIGlStf2NoV4yn2enL9hmm63EBN1Qn4U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+	by localhost (Postfix) with ESMTP id 4Wyslp6shpz9sSC;
+	Tue,  3 Sep 2024 19:18:30 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hEi4N-oS1BVW; Tue,  3 Sep 2024 19:18:30 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+	by pegase2.c-s.fr (Postfix) with ESMTP id 4Wysln4fbCz9sSH;
+	Tue,  3 Sep 2024 19:18:29 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id 7E91E8B779;
+	Tue,  3 Sep 2024 19:18:29 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+	with ESMTP id pxEcRzUEidZI; Tue,  3 Sep 2024 19:18:29 +0200 (CEST)
+Received: from [192.168.234.228] (unknown [192.168.234.228])
+	by messagerie.si.c-s.fr (Postfix) with ESMTP id 3CEB98B774;
+	Tue,  3 Sep 2024 19:18:27 +0200 (CEST)
+Message-ID: <6b07c48d-656f-4e42-bfa7-0ecead72a7b8@csgroup.eu>
+Date: Tue, 3 Sep 2024 19:18:26 +0200
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240903072744.GA2082@lst.de>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v2 2/4] mm: Add hint and mmap_flags to struct
+ vm_unmapped_area_info
+To: Charlie Jenkins <charlie@rivosinc.com>, Arnd Bergmann <arnd@arndb.de>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
+ <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>,
+ Russell King <linux@armlinux.org.uk>, Guo Ren <guoren@kernel.org>,
+ Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>,
+ Nicholas Piggin <npiggin@gmail.com>, Naveen N Rao <naveen@kernel.org>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>,
+ Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>,
+ John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+ "David S. Miller" <davem@davemloft.net>,
+ Andreas Larsson <andreas@gaisler.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+ "H. Peter Anvin" <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>,
+ Peter Zijlstra <peterz@infradead.org>, Muchun Song <muchun.song@linux.dev>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>, Vlastimil Babka
+ <vbabka@suse.cz>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ Shuah Khan <shuah@kernel.org>
+Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
+ loongarch@lists.linux.dev, linux-mips@vger.kernel.org,
+ linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-mm@kvack.org,
+ linux-kselftest@vger.kernel.org
+References: <20240829-patches-below_hint_mmap-v2-0-638a28d9eae0@rivosinc.com>
+ <20240829-patches-below_hint_mmap-v2-2-638a28d9eae0@rivosinc.com>
+Content-Language: fr-FR
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
+In-Reply-To: <20240829-patches-below_hint_mmap-v2-2-638a28d9eae0@rivosinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Sep 03, 2024 at 09:27:44AM +0200, Christoph Hellwig wrote:
-> I've pulled this into the dma-mapping for-next tree, although I'd
-> love to see one of the vdpa maintainers look over patch 1.  I'm
-> pretty sure it's correct, but a confirmation would be good.
+Hi Charlie,
 
-Missed patch 1, I was wondering why I'm CC'd. Looks good, thanks.
+Le 29/08/2024 à 09:15, Charlie Jenkins a écrit :
+> The hint address and mmap_flags are necessary to determine if
+> MAP_BELOW_HINT requirements are satisfied.
+> 
+> Signed-off-by: Charlie Jenkins <charlie@rivosinc.com>
+> ---
+>   arch/alpha/kernel/osf_sys.c      | 2 ++
+>   arch/arc/mm/mmap.c               | 3 +++
+>   arch/arm/mm/mmap.c               | 7 +++++++
+>   arch/csky/abiv1/mmap.c           | 3 +++
+>   arch/loongarch/mm/mmap.c         | 3 +++
+>   arch/mips/mm/mmap.c              | 3 +++
+>   arch/parisc/kernel/sys_parisc.c  | 3 +++
+>   arch/powerpc/mm/book3s64/slice.c | 7 +++++++
+>   arch/s390/mm/hugetlbpage.c       | 4 ++++
+>   arch/s390/mm/mmap.c              | 6 ++++++
+>   arch/sh/mm/mmap.c                | 6 ++++++
+>   arch/sparc/kernel/sys_sparc_32.c | 3 +++
+>   arch/sparc/kernel/sys_sparc_64.c | 6 ++++++
+>   arch/sparc/mm/hugetlbpage.c      | 4 ++++
+>   arch/x86/kernel/sys_x86_64.c     | 6 ++++++
+>   arch/x86/mm/hugetlbpage.c        | 4 ++++
+>   fs/hugetlbfs/inode.c             | 4 ++++
+>   include/linux/mm.h               | 2 ++
+>   mm/mmap.c                        | 6 ++++++
+>   19 files changed, 82 insertions(+)
+> 
 
+>   
+> diff --git a/arch/powerpc/mm/book3s64/slice.c b/arch/powerpc/mm/book3s64/slice.c
+> index ef3ce37f1bb3..f0e2550af6d0 100644
+> --- a/arch/powerpc/mm/book3s64/slice.c
+> +++ b/arch/powerpc/mm/book3s64/slice.c
+> @@ -286,6 +286,10 @@ static unsigned long slice_find_area_bottomup(struct mm_struct *mm,
+>   		.length = len,
+>   		.align_mask = PAGE_MASK & ((1ul << pshift) - 1),
+>   	};
+> +
+> +	info.hint = addr;
+> +	info.mmap_flags = flags;
+> +
+>   	/*
+>   	 * Check till the allow max value for this mmap request
+>   	 */
+> @@ -331,6 +335,9 @@ static unsigned long slice_find_area_topdown(struct mm_struct *mm,
+>   	};
+>   	unsigned long min_addr = max(PAGE_SIZE, mmap_min_addr);
+>   
+> +	info.hint = addr;
+> +	info.mmap_flags = flags;
+> +
+>   	/*
+>   	 * If we are trying to allocate above DEFAULT_MAP_WINDOW
+>   	 * Add the different to the mmap_base.
+
+ppc64_defconfig:
+
+   CC      arch/powerpc/mm/book3s64/slice.o
+arch/powerpc/mm/book3s64/slice.c: In function 'slice_find_area_bottomup':
+arch/powerpc/mm/book3s64/slice.c:291:27: error: 'flags' undeclared 
+(first use in this function)
+   291 |         info.mmap_flags = flags;
+       |                           ^~~~~
+arch/powerpc/mm/book3s64/slice.c:291:27: note: each undeclared 
+identifier is reported only once for each function it appears in
+arch/powerpc/mm/book3s64/slice.c: In function 'slice_find_area_topdown':
+arch/powerpc/mm/book3s64/slice.c:339:27: error: 'flags' undeclared 
+(first use in this function)
+   339 |         info.mmap_flags = flags;
+       |                           ^~~~~
+make[5]: *** [scripts/Makefile.build:244: 
+arch/powerpc/mm/book3s64/slice.o] Error 1
