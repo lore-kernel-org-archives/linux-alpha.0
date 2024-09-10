@@ -1,95 +1,222 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from flow3-smtp.messagingengine.com (flow3-smtp.messagingengine.com [103.168.172.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DB221804F;
-	Tue, 10 Sep 2024 02:05:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AC8317E00A
+	for <linux-alpha@vger.kernel.org>; Tue, 10 Sep 2024 09:14:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.138
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725933939; cv=none; b=eU+jwSTOAX2Bi3xEU+zXvlk1dQAEerx3o9gRJofPtC9LRGjHjlmOOJATLwzi0RGW7FvgVk+OE2A/M4TFlm+fo5fHvFFaernAv8MqlF7MP01wTsv6fF/E9OseDxits+I+P9EGuBtbKNsl/JCabuD1fW/vnNEkJaJ5W3Hrgk/q8kk=
+	t=1725959664; cv=none; b=WqIAmOj/CrRhSeD1Z8zvhVg/fMMZnmCNkcKBZeGsqRnurShiO90dukLZWsq3UnJq0se91Dub71FvehUZ+X1SiyYbrnU2nxOEYkUb7oVlsi3NkaEc70/caMr3xSrPxNR6nAbbZ8GFBHuXTku2muM6Wuh0tUJ1RFx1vwRdXZQA/v8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725933939; c=relaxed/simple;
-	bh=dYb9IcUg68I7MWLN85WuKlqFZWT/n2b1zWgUXnGNwiA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RMY4A5DRcVRmzvOu/MdCT+IR0ZPNQ8Nff7NJCBZlknITAne361bstHgi1muZt6Sk0PW9ctnVES7I85TPh4fpNaMSTyyKjM9fwBHXUv9quove/GID9isI6GyrW6WJrXd23c/9AhhVIdslRf7r20/BKJtyDtQKPnu5kgAsVrNkiDI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dtXDOkDr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1725959664; c=relaxed/simple;
+	bh=ofDWqCs41OUr2oUiMhBqPf9Yy+vN58jzrJOk+Qtpsvs=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=Yat5CJtDEG39TZw3Gc6wi0+diSduo5U6kIfYfUOzk/bfQndkHWRgb9dPAdIz1ZxbH1rgmJkxUc5NFYHmsyTl9iFXi/vTFHdvt8K+BsUs3sFKGMDdE83xfjEUuHnLg/4Kl81gleZBUBRCLFRlXzIDLLkP0jeRZVNql5xtmEmDkrg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=gDz+28Ep; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=rWap/EB3; arc=none smtp.client-ip=103.168.172.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dtXDOkDr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6B71C4CEC6;
-	Tue, 10 Sep 2024 02:05:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1725933938;
-	bh=dYb9IcUg68I7MWLN85WuKlqFZWT/n2b1zWgUXnGNwiA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=dtXDOkDrpc7TH9tMpJARjQom+m7/Q5mrWmDooMGHgVG2J725H3Zh0S1kGxK0MUNeV
-	 DCUFZld+P55IPiBxXO2iKAeDMYdIp74rQfnzFuKYm0DIXnrguAGoPtmxDH6zvfxtw0
-	 XJwiS1IA2N7WeP7d6Skj1Qm1y5jm979/Cfupfy2KvA1vPwdEQ0J2GNst4f5JHlM37w
-	 ePESO8mp4tj9LDqAcWvJs8XizjEdrs7fl2chB/wDM1OTrSSxGxPFzZdH1/oNMXr78f
-	 Yd0SZCptMXgo3Nq/CtDC1gi1eM7Es1G0/dObRwE1Q8bNgBDwbDNGbUNbFPi1Wp7Zhs
-	 TrTCAN996cwKQ==
-Date: Mon, 9 Sep 2024 19:05:35 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Mina Almasry <almasrymina@google.com>
-Cc: netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-alpha@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
- linux-arch@vger.kernel.org, bpf@vger.kernel.org,
- linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, Donald Hunter <donald.hunter@gmail.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet
- <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Jonathan Corbet
- <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, Ivan
- Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley"
- <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>,
- Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer
- <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven
- Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>,
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, Arnd Bergmann
- <arnd@arndb.de>, Steffen Klassert <steffen.klassert@secunet.com>, Herbert
- Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, Willem
- de Bruijn <willemdebruijn.kernel@gmail.com>, "=?UTF-8?B?QmrDtnJuIFTDtnBl?=
- =?UTF-8?B?bA==?=" <bjorn@kernel.org>, Magnus Karlsson
- <magnus.karlsson@intel.com>, Maciej Fijalkowski
- <maciej.fijalkowski@intel.com>, Jonathan Lemon <jonathan.lemon@gmail.com>,
- Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>, Daniel
- Borkmann <daniel@iogearbox.net>, John Fastabend <john.fastabend@gmail.com>,
- Sumit Semwal <sumit.semwal@linaro.org>, "Christian =?UTF-8?B?S8O2bmln?="
- <christian.koenig@amd.com>, Pavel Begunkov <asml.silence@gmail.com>, David
- Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin
- <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>, Harshitha
- Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>,
- Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi
- <pkaligineedi@google.com>, Bagas Sanjaya <bagasdotme@gmail.com>, Christoph
- Hellwig <hch@infradead.org>, Nikolay Aleksandrov <razor@blackwall.org>,
- Taehee Yoo <ap420073@gmail.com>, Willem de Bruijn <willemb@google.com>,
- Kaiyuan Zhang <kaiyuanz@google.com>
-Subject: Re: [PATCH net-next v25 10/13] net: add SO_DEVMEM_DONTNEED
- setsockopt to release RX frags
-Message-ID: <20240909190535.01611ae1@kernel.org>
-In-Reply-To: <20240909054318.1809580-11-almasrymina@google.com>
-References: <20240909054318.1809580-1-almasrymina@google.com>
-	<20240909054318.1809580-11-almasrymina@google.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="gDz+28Ep";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="rWap/EB3"
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailflow.phl.internal (Postfix) with ESMTP id 72BC5200351;
+	Tue, 10 Sep 2024 05:14:21 -0400 (EDT)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Tue, 10 Sep 2024 05:14:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1725959661;
+	 x=1725966861; bh=0bAs8GYS7XnporkOcRS5T4HRjTKpKe/QReainQI38Rk=; b=
+	gDz+28EpjBqcJxXIpE07fsC74DAIbGxqo+wO/HvSw2cBjD0C4R6ZpUDaWI8whYgB
+	Uou5tC2Ba2wAK+EqftPNq2n28JERnlqyobUzsSO7FOGcG9ZiHwpfeJASHNlk/d4X
+	5WiSttpIB5Eir9pgs0kvpEK0oEXGwRcZGRDrgUdP8vFhxfezO3ZRebg6KxQY8DB+
+	Uhf5KhhI6mL50jLO0daKWiHfpjmqkQas8EX/yg3llN0VUKg/Stthb0rDw6zcxqPY
+	hlQQwIDg5uokWvMGZ5nIpVqoej/xmK+OuzWbc01t+AIEgASbJhDVMG1M0JMEeFDW
+	72pPfdCEMdc8thjma5PNPQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1725959661; x=
+	1725966861; bh=0bAs8GYS7XnporkOcRS5T4HRjTKpKe/QReainQI38Rk=; b=r
+	Wap/EB3CA7vwicHILWXH6WMegg0FjR1Y0PbkSlHz6bdN930Oik8Wzk0mX3oX3Dcf
+	mgJex09u2n+JG/FORnOd62+EaW184geOkclWYSUlgQn8nU841vhkp+eh4R+ZLYk7
+	DrXAGb6hkGTp5ublWeGD9m4c/xVj/Mak9mwuU7MvtygsYDeDF+kcsBRlQbRYQPY8
+	fUF+xTxPfulNUbAFbGAzpDkalWbBpwaOe3FDeFX0A25/64tjJrpUw5GkeufjRD7V
+	NNqgO+ua3k+FdgEB7he2co98A/HrB++MPt6MD+fMHIqTQJpQcTBj2Aey7tX4yR1y
+	Qda9OdbsMwbeGeP9pgQAw==
+X-ME-Sender: <xms:6w3gZtSNigwJbM4kq3Ho3lz6Oyxs7tmCSsiSxXHZ1gWG3xLgjltsRg>
+    <xme:6w3gZmz30LEeOyALW1olDfDteOenIRlWDAxhJJLR8EqdfxeQSGx_mOP6lWh8qZwIG
+    mGAzeEUWvS9rB01ltA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrudeiledguddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
+    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrd
+    guvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefg
+    gfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohephedt
+    pdhmohguvgepshhmthhpohhuthdprhgtphhtthhopegsphesrghlihgvnhekrdguvgdprh
+    gtphhtthhopehtshgsohhgvghnugesrghlphhhrgdrfhhrrghnkhgvnhdruggvpdhrtghp
+    thhtoheplhhinhhugiesrghrmhhlihhnuhigrdhorhhgrdhukhdprhgtphhtthhopegthh
+    hrihhsthhophhhvgdrlhgvrhhohiestghsghhrohhuphdrvghupdhrtghpthhtohepuggr
+    vhgvmhesuggrvhgvmhhlohhfthdrnhgvthdprhgtphhtthhopehmphgvsegvlhhlvghrmh
+    grnhdrihgurdgruhdprhgtphhtthhopegrnhgurhgvrghssehgrghishhlvghrrdgtohhm
+    pdhrtghpthhtoheptghhrhhishdrthhorhgvkhesghhmrghilhdrtghomhdprhgtphhtth
+    hopehmrghtthhsthekkeesghhmrghilhdrtghomh
+X-ME-Proxy: <xmx:6w3gZi25NCuMYsHvF4JPJ5-Hsx2gk93DZNkK5pJU4nxaCreHeSGRXw>
+    <xmx:6w3gZlCyMMRfwGGvEKVgxWZ3M-1Ey3cenNfMfzJzIgKOfMHnT6AIrA>
+    <xmx:6w3gZmiQ80aB7sHrPICA36rJejIl4DPGoBMWO4CM1C6uPQJRJXf-MA>
+    <xmx:6w3gZpqIONrFxQiuso8dhcouvVRtfzvSTIDT18bekI9WMbAHfJmS_g>
+    <xmx:7Q3gZqx1eEmFAKZo4yINUBS6CDSl30x6UdV96JYbm1dLqVF0ba9ZAB3I>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 02253222006F; Tue, 10 Sep 2024 05:14:18 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Date: Tue, 10 Sep 2024 09:13:33 +0000
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Charlie Jenkins" <charlie@rivosinc.com>,
+ "Lorenzo Stoakes" <lorenzo.stoakes@oracle.com>
+Cc: "Richard Henderson" <richard.henderson@linaro.org>,
+ "Ivan Kokshaysky" <ink@jurassic.park.msu.ru>,
+ "Matt Turner" <mattst88@gmail.com>, "Vineet Gupta" <vgupta@kernel.org>,
+ "Russell King" <linux@armlinux.org.uk>, guoren <guoren@kernel.org>,
+ "Huacai Chen" <chenhuacai@kernel.org>, "WANG Xuerui" <kernel@xen0n.name>,
+ "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>,
+ "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+ "Helge Deller" <deller@gmx.de>, "Michael Ellerman" <mpe@ellerman.id.au>,
+ "Nicholas Piggin" <npiggin@gmail.com>,
+ "Christophe Leroy" <christophe.leroy@csgroup.eu>,
+ "Naveen N Rao" <naveen@kernel.org>,
+ "Alexander Gordeev" <agordeev@linux.ibm.com>,
+ "Gerald Schaefer" <gerald.schaefer@linux.ibm.com>,
+ "Heiko Carstens" <hca@linux.ibm.com>,
+ "Vasily Gorbik" <gor@linux.ibm.com>,
+ "Christian Borntraeger" <borntraeger@linux.ibm.com>,
+ "Sven Schnelle" <svens@linux.ibm.com>,
+ "Yoshinori Sato" <ysato@users.sourceforge.jp>,
+ "Rich Felker" <dalias@libc.org>,
+ "John Paul Adrian Glaubitz" <glaubitz@physik.fu-berlin.de>,
+ "David S . Miller" <davem@davemloft.net>,
+ "Andreas Larsson" <andreas@gaisler.com>,
+ "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
+ "Borislav Petkov" <bp@alien8.de>,
+ "Dave Hansen" <dave.hansen@linux.intel.com>, x86@kernel.org,
+ "H. Peter Anvin" <hpa@zytor.com>, "Andy Lutomirski" <luto@kernel.org>,
+ "Peter Zijlstra" <peterz@infradead.org>,
+ "Muchun Song" <muchun.song@linux.dev>,
+ "Andrew Morton" <akpm@linux-foundation.org>,
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ "Vlastimil Babka" <vbabka@suse.cz>, shuah <shuah@kernel.org>,
+ "Christoph Hellwig" <hch@infradead.org>,
+ "Michal Hocko" <mhocko@suse.com>,
+ "Kirill A. Shutemov" <kirill@shutemov.name>,
+ "Chris Torek" <chris.torek@gmail.com>,
+ Linux-Arch <linux-arch@vger.kernel.org>, linux-kernel@vger.kernel.org,
+ linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org,
+ "linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>,
+ loongarch@lists.linux.dev, linux-mips@vger.kernel.org,
+ linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-mm@kvack.org,
+ linux-kselftest@vger.kernel.org, linux-abi-devel@lists.sourceforge.net
+Message-Id: <89d21669-8daa-4225-b6d2-33d439ebd746@app.fastmail.com>
+In-Reply-To: <Zt+DGHZrHFxfq7xo@ghost>
+References: <20240905-patches-below_hint_mmap-v3-0-3cd5564efbbb@rivosinc.com>
+ <20240905-patches-below_hint_mmap-v3-1-3cd5564efbbb@rivosinc.com>
+ <9fc4746b-8e9d-4a75-b966-e0906187e6b7@app.fastmail.com>
+ <58f39d58-579e-4dd3-8084-baebf86f1ae0@lucifer.local>
+ <7be08ea9-f343-42da-805f-e5f0d61bde26@app.fastmail.com>
+ <016c7857-9ea8-4333-96e6-3ae3870f375f@lucifer.local> <Zt+DGHZrHFxfq7xo@ghost>
+Subject: Re: [PATCH RFC v3 1/2] mm: Add personality flag to limit address to 47 bits
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 
-On Mon,  9 Sep 2024 05:43:15 +0000 Mina Almasry wrote:
-> --- a/include/uapi/linux/uio.h
-> +++ b/include/uapi/linux/uio.h
-> @@ -33,6 +33,10 @@ struct dmabuf_cmsg {
->  				 */
->  };
->  
-> +struct dmabuf_token {
-> +	__u32 token_start;
-> +	__u32 token_count;
-> +};
->  /*
+On Mon, Sep 9, 2024, at 23:22, Charlie Jenkins wrote:
+> On Fri, Sep 06, 2024 at 10:52:34AM +0100, Lorenzo Stoakes wrote:
+>> On Fri, Sep 06, 2024 at 09:14:08AM GMT, Arnd Bergmann wrote:
+>> The intent is to optionally be able to run a process that keeps higher bits
+>> free for tagging and to be sure no memory mapping in the process will
+>> clobber these (correct me if I'm wrong Charlie! :)
+>> 
+>> So you really wouldn't want this if you are using tagged pointers, you'd
+>> want to be sure literally nothing touches the higher bits.
 
-nit: missing new line
+My understanding was that the purpose of the existing design
+is to allow applications to ask for a high address without having
+to resort to the complexity of MAP_FIXED.
+
+In particular, I'm sure there is precedent for applications that
+want both tagged pointers (for most mappings) and untagged pointers
+(for large mappings). With a per-mm_struct or per-task_struct
+setting you can't do that.
+
+> Various architectures handle the hint address differently, but it
+> appears that the only case across any architecture where an address
+> above 47 bits will be returned is if the application had a hint address
+> with a value greater than 47 bits and was using the MAP_FIXED flag.
+> MAP_FIXED bypasses all other checks so I was assuming that it would be
+> logical for MAP_FIXED to bypass this as well. If MAP_FIXED is not set,
+> then the intent is for no hint address to cause a value greater than 47
+> bits to be returned.
+
+I don't think the MAP_FIXED case is that interesting here because
+it has to work in both fixed and non-fixed mappings.
+
+>> This would be more consistent vs. other arches.
+>
+> Yes riscv is an outlier here. The reason I am pushing for something like
+> a flag to restrict the address space rather than setting it to be the
+> default is it seems like if applications are relying on upper bits to be
+> free, then they should be explicitly asking the kernel to keep them free
+> rather than assuming them to be free.
+
+Let's see what the other architectures do and then come up with
+a way that fixes the pointer tagging case first on those that are
+broken. We can see if there needs to be an extra flag after that.
+Here is what I found:
+
+- x86_64 uses DEFAULT_MAP_WINDOW of BIT(47), uses a 57 bit
+  address space when an addr hint is passed.
+- arm64 uses DEFAULT_MAP_WINDOW of BIT(47) or BIT(48), returns
+  higher 52-bit addresses when either a hint is passed or
+  CONFIG_EXPERT and CONFIG_ARM64_FORCE_52BIT is set (this
+  is a debugging option)
+- ppc64 uses a DEFAULT_MAP_WINDOW of BIT(47) or BIT(48),
+  returns 52 bit address when an addr hint is passed
+- riscv uses a DEFAULT_MAP_WINDOW of BIT(47) but only uses
+  it for allocating the stack below, ignoring it for normal
+  mappings
+- s390 has no DEFAULT_MAP_WINDOW but tried to allocate in
+  the current number of pgtable levels and only upgrades to
+  the next level (31, 42, 53, 64 bits) if a hint is passed or
+  the current level is exhausted.
+- loongarch64 has no DEFAULT_MAP_WINDOW, and a default VA
+  space of 47 bits (16K pages, 3 levels), but can support
+  a 55 bit space (64K pages, 3 levels).
+- sparc has no DEFAULT_MAP_WINDOW and up to 52 bit VA space.
+  It may allocate both positive and negative addresses in
+  there. (?)
+- mips64, parisc64 and alpha have no DEFAULT_MAP_WINDOW and
+  at most 48, 41 or 39 address bits, respectively.
+
+I would suggest these changes:
+
+- make riscv enforce DEFAULT_MAP_WINDOW like x86_64, arm64
+   and ppc64, leave it at 47
+
+- add DEFAULT_MAP_WINDOW on loongarch64 (47/48 bits
+  based on page size), sparc (48 bits) and s390 (unsure if
+  42, 53, 47 or 48 bits)
+
+- leave the rest unchanged.
+
+       Arnd
