@@ -1,83 +1,172 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED71C26ADD;
-	Tue,  8 Oct 2024 13:57:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77D1E1E0483
+	for <linux-alpha@vger.kernel.org>; Tue,  8 Oct 2024 14:54:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728395870; cv=none; b=HX14u+EouBAOn1iEkZlarHLqFaWJbyH00jYILRfRmbEss1dS/rTmx7ZFw0iwUqQo6AaUSOHKrnVT8IbULjdk9aufgrRfI/otlhpMeSPGPC6rDeZy0+uiAHgVPV4gNl1bgW+M4FxM5MyTUU+peQr0Fxfk//wP6BkiGZnut3FEhZQ=
+	t=1728399256; cv=none; b=mq/R8IYsvPGay/Ys4jQLAMxwRMRcqTW7sSpYflbw8e0saJonaK1juJNSL7hU80bcrO2jkre/REmDzld6oCHIqPb7RMtVVWtlB5OshabkA3NItxpPBH57PXuo/88iB2l16Lf7gUv+++Ehroyaf2sN+OYye8HBHw073a4VuqmxP50=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728395870; c=relaxed/simple;
-	bh=dgqlCo6djy+sBVeKf7V93rVMuP1WNL+lntFf1aIDEXQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=l3EQ8YaOGoMGNEuv3WNEhvAmGeqbUIuFahyMceZsHWbOLYPWeZzGF3GZPIQF3qkmBoV2xTKJ3SJrhIn7JxNT+N0yoVLERMWSiladez5A6YFsYF9+KXyzNLC18zJStfN66MOjwHYMjn6RljSmXkrI4M6ju2dshHXJ+gY9/sKfyC8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=D+1W7Quw; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=NSR4skyB; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1728399256; c=relaxed/simple;
+	bh=47vEb3Hdq9xPPCEmmUkYg2VZzzZT9NReLtByAZ6PrQU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=umAkeTsaexnJVZpn/kkhKCyLiXJQtfKsuFXFtALCbSq91MbfTdOj8veLpnp3NMLV47cT+0c1m5H+T30ead03iPRgWVF753yqlXaLaa6SdifkicrebHrHY5uyv8KQ8pO9C54LDacTs4P6O/vTuOL9jIA+EJZBiVGXX/r/OsxJLFs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=gcxsip6F; arc=none smtp.client-ip=209.85.210.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="D+1W7Quw";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="NSR4skyB"
-Date: Tue, 8 Oct 2024 15:57:45 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1728395867;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=mTGesulOIN7xlBlbtZ32fMZsDu5BhOC6CvYlt9xD1bU=;
-	b=D+1W7Quw7lLiMEY8/MtTDRpTY6pEUZA3Dr9todOncwQOdl/q5JSrJh/RXBs36SRKX4sOKH
-	sFnkA55e7EDqvTVH0IxfL+P5beZguYH60bwTg21/ZOrIE5tdfxQ0BHmjAN21Zt0NJ/J+PJ
-	FOfmyfxr1Ro43UaFvpm1WLMeRJwHZBYnLyFc8YUGt0suRotq6tUQJLIsxbEH8koR8YMbo2
-	83uwBadND09PRQxoBrCbfNp94CXaAnU0Me67hSqBtVmOH1TWuuRYg0oOvPGb6Gr8jp9KdH
-	dTnGVcBNW6QqhJtEqN5z3WPbDx7Tl/ZhFWiu+mDx7bdNxP9mtnEQ14zQ6dgMqQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1728395867;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=mTGesulOIN7xlBlbtZ32fMZsDu5BhOC6CvYlt9xD1bU=;
-	b=NSR4skyB8geCONZb73pvKel3gvlDpgqOybJRPAq/SUMMKfWowadZr8Pa8u14DiOqB60enu
-	xtaWn5baIx+PXdCg==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
-Cc: Ingo Molnar <mingo@redhat.com>,
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-	Matt Turner <mattst88@gmail.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH] alpha: Make thread_info::flags unsigned long.
-Message-ID: <20241008135745.Ndzf7UIa@linutronix.de>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="gcxsip6F"
+Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-718e9c8bd83so4267655b3a.1
+        for <linux-alpha@vger.kernel.org>; Tue, 08 Oct 2024 07:54:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1728399254; x=1729004054; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=iQ4LVhvFHLa0eWBgE9k6FrixkUFYtnCP97x2+SmMe3Y=;
+        b=gcxsip6FWP1N2f/nY9BjEhzzetImpW5UbfgfGo4GdeSIp200vDtM7qG6dUK9+7L8Xy
+         B/j0OZ6ae50eAgswObIxV+Lw1SuuIendnnC/b6l0IJoLC+9FekJnNFGOj4Ds2vcrw1Ar
+         1yCR56SniaorW5Apyp/1hXszRxXtexLdV0cKg4M3cxqKnu4FtminQ5XW4agScQpkUmRO
+         5MY/8LDYUH1x1OuO4pPbtQ/tG0l6HcF/gGc1oNCTV/VvP3sw/ZfkLYeR2o2IzzWPSt9J
+         Ks8fl6EEQNfv+LerWC/nGIh6igE0gHiRVOb3H7Nf9dmDSdUa9eAYIfKki5sBPQPiOUpN
+         DifA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728399254; x=1729004054;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=iQ4LVhvFHLa0eWBgE9k6FrixkUFYtnCP97x2+SmMe3Y=;
+        b=GLWAH8dzhXvTcQM74r3T/REhMC4dIT3RoHYjBgXXV8v0OAgLgRlMh13SJ/lWLjqT4g
+         gxtfn6+OvbodFnbYiXiHm1wQlBLI/d5ruFm+h5UR7sPHxX1awUM4g6pv98+dzLiAW9lv
+         hlLaDAzX/PR48gL1d+tlsx8FWWbUNm7LUWV5dCnbLf4NL/F9ICJX26nzLR0xToCP/FCa
+         Ay3+duK6wMZtUSjnLkG6dicl1R5ivy4kxK9wH76VMDZ2AKF7hTsCQ1hGHfPKHoUPJj8Q
+         sLjWFTTMMoCCEWxZedtY139q8CJ4f192gA2QHumHzSVDgMZPtJ37Eu+tcOK+rzxy2Y66
+         GS4g==
+X-Forwarded-Encrypted: i=1; AJvYcCV1NkO6ScKGN0sYinjROaoP7rSxPH9t3R8srNsy0h8HsDclDJ6vb6Zh8iq2qPSIwOB8fZOcjb31UA7Vsw==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwZ8RQFH8+0xcSno4K0JwM4NY18EGjYzS2r/D5LwwWBw63rP9yd
+	Ih6sMFeXvMXaZYocV7755n1JcS5PLB76MPVhHuudL2JhfzmwFemcnC8yDExdXYI=
+X-Google-Smtp-Source: AGHT+IEE7e5dtXU6pMg21/0OJnrotv0zSN5hz6Qh4qER1MpIu7AV7t7dgpJ2YGuT0VFYFJ+iVS/TPg==
+X-Received: by 2002:a05:6a21:4581:b0:1d2:eaea:39d7 with SMTP id adf61e73a8af0-1d8a193d1c4mr595970637.9.1728399253860;
+        Tue, 08 Oct 2024 07:54:13 -0700 (PDT)
+Received: from [192.168.0.4] (174-21-81-121.tukw.qwest.net. [174.21.81.121])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71df0cd5006sm6207044b3a.77.2024.10.08.07.54.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Oct 2024 07:54:13 -0700 (PDT)
+Message-ID: <5fe42a14-5070-43f7-8333-ed37c29c947f@linaro.org>
+Date: Tue, 8 Oct 2024 07:54:10 -0700
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 06/14] alpha: Align prototypes of IO memcpy/memset
+To: Julian Vetter <jvetter@kalrayinc.com>, Arnd Bergmann <arnd@arndb.de>,
+ Russell King <linux@armlinux.org.uk>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Guo Ren <guoren@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
+ WANG Xuerui <kernel@xen0n.name>, Andrew Morton <akpm@linux-foundation.org>,
+ Geert Uytterhoeven <geert@linux-m68k.org>,
+ Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
+ <mattst88@gmail.com>,
+ "James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>,
+ Helge Deller <deller@gmx.de>, Yoshinori Sato <ysato@users.sourceforge.jp>,
+ Rich Felker <dalias@libc.org>,
+ John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+ Richard Weinberger <richard@nod.at>,
+ Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+ Johannes Berg <johannes@sipsolutions.net>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Christophe Leroy <christophe.leroy@csgroup.eu>,
+ Naveen N Rao <naveen@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>, Niklas Schnelle
+ <schnelle@linux.ibm.com>,
+ Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Miquel Raynal <miquel.raynal@bootlin.com>,
+ Vignesh Raghavendra <vigneshr@ti.com>, Jaroslav Kysela <perex@perex.cz>,
+ Takashi Iwai <tiwai@suse.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-csky@vger.kernel.org, loongarch@lists.linux.dev,
+ linux-m68k@lists.linux-m68k.org, linux-alpha@vger.kernel.org,
+ linux-parisc@vger.kernel.org, linux-sh@vger.kernel.org,
+ linux-um@lists.infradead.org, linux-arch@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+ mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+ linux-mtd@lists.infradead.org, linux-sound@vger.kernel.org,
+ Yann Sionneau <ysionneau@kalrayinc.com>
+References: <20241008075023.3052370-1-jvetter@kalrayinc.com>
+ <20241008075023.3052370-7-jvetter@kalrayinc.com>
+Content-Language: en-US
+From: Richard Henderson <richard.henderson@linaro.org>
+In-Reply-To: <20241008075023.3052370-7-jvetter@kalrayinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The users of thread_info::flags such as test_and_set_ti_thread_flag()
-expect 'flags' to be an unsigned long but alpha is defining an unsigned
-int here.
+On 10/8/24 00:50, Julian Vetter wrote:
+> Align the prototypes of the memcpy_{from,to}io and memset_io functions
+> with the new ones from iomap_copy.c and remove function declarations,
+> because they are now declared in asm-generic/io.h.
+> 
+> Reviewed-by: Yann Sionneau <ysionneau@kalrayinc.com>
+> Signed-off-by: Julian Vetter <jvetter@kalrayinc.com>
+> ---
+> Changes for v8:
+> - Mask the argument with 0xff because now it's an int and not a u8
+>    anymore
 
-Make thread_info::flags unsigned long.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- arch/alpha/include/asm/thread_info.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Richard Henderson <richard.henderson@linaro.org>
 
-diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
-index 4a4d00b37986e..913e6ddb09d3e 100644
---- a/arch/alpha/include/asm/thread_info.h
-+++ b/arch/alpha/include/asm/thread_info.h
-@@ -16,7 +16,7 @@ struct thread_info {
- 	struct pcb_struct	pcb;		/* palcode state */
- 
- 	struct task_struct	*task;		/* main task structure */
--	unsigned int		flags;		/* low level flags */
-+	unsigned long		flags;		/* low level flags */
- 	unsigned int		ieee_state;	/* see fpu.h */
- 
- 	unsigned		cpu;		/* current CPU */
--- 
-2.45.2
+r~
+> ---
+>   arch/alpha/include/asm/io.h | 6 ++----
+>   arch/alpha/kernel/io.c      | 4 ++--
+>   2 files changed, 4 insertions(+), 6 deletions(-)
+> 
+> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+> index b191d87f89c4..e7d52c8159b0 100644
+> --- a/arch/alpha/include/asm/io.h
+> +++ b/arch/alpha/include/asm/io.h
+> @@ -591,13 +591,11 @@ extern inline u64 readq_relaxed(const volatile void __iomem *addr)
+>   /*
+>    * String version of IO memory access ops:
+>    */
+> -extern void memcpy_fromio(void *, const volatile void __iomem *, long);
+> -extern void memcpy_toio(volatile void __iomem *, const void *, long);
+>   extern void _memset_c_io(volatile void __iomem *, unsigned long, long);
+>   
+> -static inline void memset_io(volatile void __iomem *addr, u8 c, long len)
+> +static inline void memset_io(volatile void __iomem *dst, int c, size_t count)
+>   {
+> -	_memset_c_io(addr, 0x0101010101010101UL * c, len);
+> +	_memset_c_io(dst, 0x0101010101010101UL * (c & 0xff), count);
+>   }
+>   
+>   #define __HAVE_ARCH_MEMSETW_IO
+> diff --git a/arch/alpha/kernel/io.c b/arch/alpha/kernel/io.c
+> index c28035d6d1e6..69c06f1b158d 100644
+> --- a/arch/alpha/kernel/io.c
+> +++ b/arch/alpha/kernel/io.c
+> @@ -481,7 +481,7 @@ EXPORT_SYMBOL(outsl);
+>    * Copy data from IO memory space to "real" memory space.
+>    * This needs to be optimized.
+>    */
+> -void memcpy_fromio(void *to, const volatile void __iomem *from, long count)
+> +void memcpy_fromio(void *to, const volatile void __iomem *from, size_t count)
+>   {
+>   	/* Optimize co-aligned transfers.  Everything else gets handled
+>   	   a byte at a time. */
+> @@ -535,7 +535,7 @@ EXPORT_SYMBOL(memcpy_fromio);
+>    * Copy data from "real" memory space to IO memory space.
+>    * This needs to be optimized.
+>    */
+> -void memcpy_toio(volatile void __iomem *to, const void *from, long count)
+> +void memcpy_toio(volatile void __iomem *to, const void *from, size_t count)
+>   {
+>   	/* Optimize co-aligned transfers.  Everything else gets handled
+>   	   a byte at a time. */
 
