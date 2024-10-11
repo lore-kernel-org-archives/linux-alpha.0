@@ -1,150 +1,259 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FC451D0487
-	for <linux-alpha@vger.kernel.org>; Fri, 11 Oct 2024 19:38:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89FBC1D14FD
+	for <linux-alpha@vger.kernel.org>; Fri, 11 Oct 2024 20:55:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728675511; cv=none; b=qSavJOTFElIWMDO/gz3owuPMiL5hw0DbYgU/z9U/ALBK90xARqAiFpHej05j2UiZUWLlcg1VGj0YxOOv0T/18YRIiqr74w5QtB5c52CNy0d929NkzHOBRd/tjzfoblDqtTPEsP0gkTvE4wHbw/UTnuYqaYZs/SsWQ1rKwsoIVWc=
+	t=1728680159; cv=none; b=LYtmiOBIrB7Cy9X4XGkS5DAyMYniA76L4EVXFSdy8Dv0R+rpvQZGGl1Ub8TZst9DR211wZhzjqVghvtXWSVOqVXy5r3Usogh9gyfRLZSI+VPCLXW+8xBH0IaMH6bzKbsiN5fAWxX/9gfedSDKi8zVwKL5SiNeQQ/rYtOktWa8nk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728675511; c=relaxed/simple;
-	bh=lIT4MF3P08EUQ/ItxiJCyTg8JaALptzUPgWCabDCkKc=;
+	s=arc-20240116; t=1728680159; c=relaxed/simple;
+	bh=uC2xLUGeBTKyYtCrbYvB49i/24wKqmENpfcl+kT6kII=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=nLkQDT1zO2F/LQ6ydGiTT5ggwDJTPNca3ASmq0gDtCQIhWWONqpBfdcsSroT5frzF1pEB5ytMAnqoYHPfmNmKT5SWNR051QRdgXSp8Up8Vy+Js1w2wdTJpU6wLx8v1HYHAV2rq8gexL8Q+NK83k76Cdp6xxrsPzdroqWWwh7y4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XjkjknEt; arc=none smtp.client-ip=209.85.160.170
+	 To:Cc:Content-Type; b=HhQbgx1/3UdGEHgT0RXBCKEccwcoFfbqn/kjmKXW/jE+h8QSeq3W3PNMkqr3nKeUWca0Ba7ICeI8tFSGE/OlpmbZlezSGV/MVOWAMLPZeTznd0LC9cjmu2/Ir3E4IMJ6nrdjn3e42lhdUhuRatOoySy7tV7NPNghBDpDvgXUN2Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OeleiByD; arc=none smtp.client-ip=209.85.160.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XjkjknEt"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-4601a471aecso35361cf.1
-        for <linux-alpha@vger.kernel.org>; Fri, 11 Oct 2024 12:38:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OeleiByD"
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-4603d3e0547so60401cf.0
+        for <linux-alpha@vger.kernel.org>; Fri, 11 Oct 2024 13:55:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1728675507; x=1729280307; darn=vger.kernel.org;
+        d=google.com; s=20230601; t=1728680155; x=1729284955; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=f4/PPqatSk2BAD8kUIT/38Gyd1BY7fTrP7ap/2S9Mqk=;
-        b=XjkjknEt5tftq70KCGlTHLD1Bh2BPjVE2PxpnBWMyyvy0Sp3gh+Ou2AGHu9p3dWutG
-         Ly3++jhiM30xrysorDSmgJ1/CrEZtf6ayIU3Zmwx3Vb8IUgL3FRRSfyF9Uq+Uzbj3vUN
-         u/bUYraAbm5jodAmY4pqow/Khq+dr2J2OnWFkAw+h8J7APJ1G+1llNpGccZsVYLd3rvD
-         +QBQRdyuhuBJG6aMG9ikacbC88xyvg5Opx9d5h6aw4PuP1rE87zMIrrAmpxqP3AFOGuK
-         ExS8+5YeQleDH4F25vvvICWGh0gbjOcW75+6kisVvnRm7+3uDYn2SyaicjpmO643m7Cu
-         Y50g==
+        bh=KBFPzh5NlZh+7Zd1K+MhC4XZXtWT2loiufG6vbfnB2M=;
+        b=OeleiByDAP48vj8/ojIGt0ies1ajsLNjTX7T7hoO6BIRJE5PRHHa283ZsFgQOFid94
+         nbc30+ahp0AGN1VOuJp1tO4i/WH07eG9/pqjIQd1A15Zzn4veFRGimI3yelmcHV6s8cm
+         zOOF4DkTPqotg2EMT2W9qglnU4WG+skFARX8jYkbc7lfWwxQQk6jTBCUsHo/AjbhKrKG
+         tz7nJmT5rseBuR4KSBnOlKXLOoA7PLVtzzZIK1N8PDIdabEdvR8Rjz75c0jWTKSFAbqF
+         1Bpvtv5rjPOZ615jMpqRW9wbjDVCk8WGapbNKAFr6JiibYgOshIyKEKm9sK3L+Yc/4xd
+         msTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728675507; x=1729280307;
+        d=1e100.net; s=20230601; t=1728680155; x=1729284955;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=f4/PPqatSk2BAD8kUIT/38Gyd1BY7fTrP7ap/2S9Mqk=;
-        b=gcKPotkqC3JPZLxnRdiWzaAstvlOkh+cQLZ8mIqq+3gs7jeT12sWe7Q++OBrmzWTgh
-         bM+qK4S4euOZkQfdDmMQt/QleDX1hFXoWZt55rbwEnIdr69QEIvb0ecoFv7TnYmnuepo
-         oppe2K9BsjCGfb++ducJfs0T2UemargCtwfjiAxr6FQVkI8BDK9eR89tSxd95GBLdNjF
-         Ctybn5VJUlJbMraE+ZmfXJT/VyNu5zhnbTOUTkFDeIeQkfl5ZSaGGnTHtKpmezdTz9XW
-         AUS6Ju5HsDwNhTR4LmLT4G4oZyto1TgBxuM967hU0399BBiejfDyrlsZ9g7nnBfaTnw0
-         p1Wg==
-X-Forwarded-Encrypted: i=1; AJvYcCUpNhT6n3E6cQwFHQ2A3e0qFsVHRu0AgosDC6E26Vp8VhB3E9iN4p1j10aWz9bInXtJgWz+POazoWsxDA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YzjAvTzQeGOUHezTJLetnz8/IHAEBk0lH8cGkycKB1dP1nWwmYr
-	QMZ3S+Z622Hb2aA4SCPTeUX7eRZO5RPpyjsiPABMBx3hO/kTXuvMrQqvCrdODy9UXXvSbw7EbOY
-	Qiq496zXJZ/UJNuSzuhSEmxDnApoC87TQffuz
-X-Google-Smtp-Source: AGHT+IEJvq2uzdDh3W2Sfu5aWaK5xhLaKiCn2xWH/iIRkxgpB4FklAs+UX9kaTQ1TkS7P0dLyhTRAOjn/li4z+5WdqQ=
-X-Received: by 2002:a05:622a:468c:b0:45c:9eab:cce0 with SMTP id
- d75a77b69052e-46059046571mr529141cf.15.1728675507274; Fri, 11 Oct 2024
- 12:38:27 -0700 (PDT)
+        bh=KBFPzh5NlZh+7Zd1K+MhC4XZXtWT2loiufG6vbfnB2M=;
+        b=qMQQdylDF3WFik4wQ85cfVaSPzcvvLSdrd5mWhmfj8nTlrx+2wAt3gN6EKewjwgS+D
+         KOs+xa1N+MmGkTEbFXTZ469M9J7+5IUHMliEI/MjH5kdbhLZf3dkNMRNlIrZ0Y0dITGA
+         zOqu8haU9RUmNV8QF3kCOPSQwyMv6aTO+m/S+crMaFRdpRN87BSIJho1pu5wacEj4eO3
+         KW0aH701rz/y8BHV77veR1Bn8+GdXc375mlPlFoSWfvDWIxIwKTdQMUef+2V/EEFaazj
+         tOPGAeABMbfe31hIEcPxHA2SPnnhrUq6evGUTtgc+WllmWVXgLSy6cANoQ7Nf3tcTlcj
+         eSyA==
+X-Forwarded-Encrypted: i=1; AJvYcCVeIzSgKpoe7OCzpA55iWiwIFclIukYmRei+2cPFRRcnURdog8SGSP/PRLdpGyn9QfYXMd0GR93sapqgQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YyVmAlsjR/px871lzqw6TnJ124IZReVAiJjtOltEH/QNgfiLpt1
+	OO+0nFuNi6avybUO9eQXyYPnABY/0JX2apnnd4+PxDcaI7e9s/dG2WJa9zcxtixaTZg1MCEfmAj
+	WbEQsGZ1qoPM/zkNCHN9PtBVM0n4Rr4qSPQ7F
+X-Google-Smtp-Source: AGHT+IG6IScrTSH9iJhbpLI7RLZRrQurOaPZvTBCGWMkP7mWaid454o5VBVq59wNWCmpMXfwr84ZSmZjgA3xj9fhNCc=
+X-Received: by 2002:a05:622a:a28c:b0:45c:9d26:8f6e with SMTP id
+ d75a77b69052e-46059c77ccdmr87721cf.21.1728680155167; Fri, 11 Oct 2024
+ 13:55:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240909054318.1809580-1-almasrymina@google.com>
- <20240909054318.1809580-11-almasrymina@google.com> <Zwe3lWTN36IUaIdd@ly-workstation>
- <CAHS8izPuEUA20BDXvwq2vW-24ez36YFJFMQok-oBDbgk6bajSA@mail.gmail.com> <20241011082707.5de66f15@kernel.org>
-In-Reply-To: <20241011082707.5de66f15@kernel.org>
-From: Mina Almasry <almasrymina@google.com>
-Date: Fri, 11 Oct 2024 12:38:14 -0700
-Message-ID: <CAHS8izMVjfrYopPpmg4dN33VL7bF-icS=HFDPOhmW96rgthErg@mail.gmail.com>
-Subject: Re: [PATCH net-next v25 10/13] net: add SO_DEVMEM_DONTNEED setsockopt
- to release RX frags
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: "Lai, Yi" <yi1.lai@linux.intel.com>, netdev@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org, 
-	bpf@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	Donald Hunter <donald.hunter@gmail.com>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, 
-	Jonathan Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>, 
+References: <cover.1727440966.git.lorenzo.stoakes@oracle.com>
+ <a578ee9bb656234d3a19bf9e97c3012378d31a19.1727440966.git.lorenzo.stoakes@oracle.com>
+ <CAG48ez3ursoL-f=mYpV79Do18XPPt+MPPHNUBv6uFE1GhpOwSA@mail.gmail.com>
+In-Reply-To: <CAG48ez3ursoL-f=mYpV79Do18XPPt+MPPHNUBv6uFE1GhpOwSA@mail.gmail.com>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Fri, 11 Oct 2024 13:55:42 -0700
+Message-ID: <CAJuCfpFaHz-xW1Rh-+rJ8iLyV19JuG9Rm-eJsz3aOm8dUj3Ewg@mail.gmail.com>
+Subject: Re: [RFC PATCH 3/4] mm: madvise: implement lightweight guard page mechanism
+To: Jann Horn <jannh@google.com>
+Cc: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	"Liam R . Howlett" <Liam.Howlett@oracle.com>, Matthew Wilcox <willy@infradead.org>, 
+	Vlastimil Babka <vbabka@suse.cz>, "Paul E . McKenney" <paulmck@kernel.org>, 
+	David Hildenbrand <david@redhat.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	Muchun Song <muchun.song@linux.dev>, Richard Henderson <richard.henderson@linaro.org>, 
 	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, 
 	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
-	Andreas Larsson <andreas@gaisler.com>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Arnd Bergmann <arnd@arndb.de>, Steffen Klassert <steffen.klassert@secunet.com>, 
-	Herbert Xu <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, 
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>, =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>, 
-	Magnus Karlsson <magnus.karlsson@intel.com>, 
-	Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Jonathan Lemon <jonathan.lemon@gmail.com>, 
-	Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>, 
-	Daniel Borkmann <daniel@iogearbox.net>, John Fastabend <john.fastabend@gmail.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Pavel Begunkov <asml.silence@gmail.com>, David Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Yunsheng Lin <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>, 
-	Harshitha Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>, 
-	Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi <pkaligineedi@google.com>, 
-	Bagas Sanjaya <bagasdotme@gmail.com>, Christoph Hellwig <hch@infradead.org>, 
-	Nikolay Aleksandrov <razor@blackwall.org>, Taehee Yoo <ap420073@gmail.com>, 
-	Willem de Bruijn <willemb@google.com>, Kaiyuan Zhang <kaiyuanz@google.com>, yi1.lai@intel.com
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, Arnd Bergmann <arnd@arndb.de>, 
+	linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, 
+	linux-parisc@vger.kernel.org, linux-arch@vger.kernel.org, 
+	Shuah Khan <shuah@kernel.org>, Christian Brauner <brauner@kernel.org>, linux-kselftest@vger.kernel.org, 
+	Sidhartha Kumar <sidhartha.kumar@oracle.com>, Vlastimil Babka <vbabka@suze.cz>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 11, 2024 at 8:27=E2=80=AFAM Jakub Kicinski <kuba@kernel.org> wr=
-ote:
+On Fri, Oct 11, 2024 at 11:12=E2=80=AFAM Jann Horn <jannh@google.com> wrote=
+:
 >
-> On Thu, 10 Oct 2024 12:05:38 -0700 Mina Almasry wrote:
-> > diff --git a/net/core/sock.c b/net/core/sock.c
-> > index 083d438d8b6f..cb3d8b19de14 100644
-> > --- a/net/core/sock.c
-> > +++ b/net/core/sock.c
-> > @@ -1071,11 +1071,11 @@ sock_devmem_dontneed(struct sock *sk,
-> > sockptr_t optval, unsigned int optlen)
-> >             optlen > sizeof(*tokens) * MAX_DONTNEED_TOKENS)
-> >                 return -EINVAL;
-> >
-> > -       tokens =3D kvmalloc_array(optlen, sizeof(*tokens), GFP_KERNEL);
-> > +       num_tokens =3D optlen / sizeof(struct dmabuf_token);
-> > +       tokens =3D kvmalloc_array(num_tokens, sizeof(*tokens), GFP_KERN=
-EL);
-> >         if (!tokens)
-> >                 return -ENOMEM;
-> >
-> > -       num_tokens =3D optlen / sizeof(struct dmabuf_token);
-> >         if (copy_from_sockptr(tokens, optval, optlen)) {
-> >                 kvfree(tokens);
-> >                 return -EFAULT;
-> > @@ -1083,6 +1083,10 @@ sock_devmem_dontneed(struct sock *sk, sockptr_t
-> > optval, unsigned int optlen)
-> >
-> >         xa_lock_bh(&sk->sk_user_frags);
-> >         for (i =3D 0; i < num_tokens; i++) {
+> On Fri, Sep 27, 2024 at 2:51=E2=80=AFPM Lorenzo Stoakes
+> <lorenzo.stoakes@oracle.com> wrote:
+> > Implement a new lightweight guard page feature, that is regions of user=
+land
+> > virtual memory that, when accessed, cause a fatal signal to arise.
+> [...]
+> > ---
+> >  arch/alpha/include/uapi/asm/mman.h     |   3 +
+> >  arch/mips/include/uapi/asm/mman.h      |   3 +
+> >  arch/parisc/include/uapi/asm/mman.h    |   3 +
+> >  arch/xtensa/include/uapi/asm/mman.h    |   3 +
+> >  include/uapi/asm-generic/mman-common.h |   3 +
+>
+> I kinda wonder if we could start moving the parts of those headers
+> that are the same for all architectures to include/uapi/linux/mman.h
+> instead... but that's maybe out of scope for this series.
+>
+> [...]
+> > diff --git a/mm/madvise.c b/mm/madvise.c
+> > index e871a72a6c32..7216e10723ae 100644
+> > --- a/mm/madvise.c
+> > +++ b/mm/madvise.c
+> > @@ -60,6 +60,7 @@ static int madvise_need_mmap_write(int behavior)
+> >         case MADV_POPULATE_READ:
+> >         case MADV_POPULATE_WRITE:
+> >         case MADV_COLLAPSE:
+> > +       case MADV_GUARD_UNPOISON: /* Only poisoning needs a write lock.=
+ */
+>
+> What does poisoning need a write lock for? anon_vma_prepare() doesn't
+> need it (it only needs mmap_lock held for reading),
+> zap_page_range_single() doesn't need it, and pagewalk also doesn't
+> need it as long as the range being walked is covered by a VMA, which
+> it is...
+>
+> I see you set PGWALK_WRLOCK in guard_poison_walk_ops with a comment
+> saying "We might need to install an anon_vma" - is that referring to
+> an older version of the patch where the anon_vma_prepare() call was
+> inside the pagewalk callback or something like that? Either way,
+> anon_vma_prepare() doesn't need write locks (it can't, it has to work
+> from the page fault handling path).
+
+I was wondering about that too and I can't find any reason for
+write-locking the mm for this operation. PGWALK_WRLOCK should also be
+changed to PGWALK_RDLOCK as we are not modifying the VMA.
+
+BTW, I'm testing your patchset on Android and so far it is stable!
+
+>
+> >                 return 0;
+> >         default:
+> >                 /* be safe, default to 1. list exceptions explicitly */
+> [...]
+> > +static long madvise_guard_poison(struct vm_area_struct *vma,
+> > +                                struct vm_area_struct **prev,
+> > +                                unsigned long start, unsigned long end=
+)
+> > +{
+> > +       long err;
+> > +       bool retried =3D false;
 > > +
-> > +               if (tokens[i].token_count > MAX_DONTNEED_TOKENS)
-> > +                       continue;
+> > +       *prev =3D vma;
+> > +       if (!is_valid_guard_vma(vma, /* allow_locked =3D */false))
+> > +               return -EINVAL;
+> > +
+> > +       /*
+> > +        * Optimistically try to install the guard poison pages first. =
+If any
+> > +        * non-guard pages are encountered, give up and zap the range b=
+efore
+> > +        * trying again.
+> > +        */
+> > +       while (true) {
+> > +               unsigned long num_installed =3D 0;
+> > +
+> > +               /* Returns < 0 on error, =3D=3D 0 if success, > 0 if za=
+p needed. */
+> > +               err =3D walk_page_range_mm(vma->vm_mm, start, end,
+> > +                                        &guard_poison_walk_ops,
+> > +                                        &num_installed);
+> > +               /*
+> > +                * If we install poison markers, then the range is no l=
+onger
+> > +                * empty from a page table perspective and therefore it=
+'s
+> > +                * appropriate to have an anon_vma.
+> > +                *
+> > +                * This ensures that on fork, we copy page tables corre=
+ctly.
+> > +                */
+> > +               if (err >=3D 0 && num_installed > 0) {
+> > +                       int err_anon =3D anon_vma_prepare(vma);
 >
-> For the real fix let's scan the tokens before we take the xa lock
-> and return an error rather than silently skipping?
+> I'd move this up, to before we create poison PTEs. There's no harm in
+> attaching an anon_vma to the VMA even if the rest of the operation
+> fails; and I think it would be weird to have error paths that don't
+> attach an anon_vma even though they .
 >
-> >                 for (j =3D 0; j < tokens[i].token_count; j++) {
+> > +                       if (err_anon)
+> > +                               err =3D err_anon;
+> > +               }
+> > +
+> > +               if (err <=3D 0)
+> > +                       return err;
+> > +
+> > +               if (!retried)
+> > +                       /*
+> > +                        * OK some of the range have non-guard pages ma=
+pped, zap
+> > +                        * them. This leaves existing guard pages in pl=
+ace.
+> > +                        */
+> > +                       zap_page_range_single(vma, start, end - start, =
+NULL);
+> > +               else
+> > +                       /*
+> > +                        * If we reach here, then there is a racing fau=
+lt that
+> > +                        * has populated the PTE after we zapped. Give =
+up and
+> > +                        * let the user know to try again.
+> > +                        */
+> > +                       return -EAGAIN;
 >
-
-Yes, sorry, I called the diff above an 'untested fix' but it was more
-of a hack to see if I got the root cause right. For a proper fix, we
-should do exactly that. Scan and see how many tokens the user is
-asking us to free ahead of time, then exit early if it's too much
-before we acquire locks and loop. Will do!
-
---=20
-Thanks,
-Mina
+> Hmm, yeah, it would be nice if we could avoid telling userspace to
+> loop on -EAGAIN but I guess we don't have any particularly good
+> options here? Well, we could bail out with -EINTR if a (fatal?) signal
+> is pending and otherwise keep looping... if we'd tell userspace "try
+> again on -EAGAIN", we might as well do that in the kernel...
+>
+> (Personally I would put curly braces around these branches because
+> they occupy multiple lines, though the coding style doesn't explicitly
+> say that, so I guess maybe it's a matter of personal preference...
+> adding curly braces here would match what is done, for example, in
+> relocate_vma_down().)
+>
+> > +               retried =3D true;
+> > +       }
+> > +}
+> > +
+> > +static int guard_unpoison_pte_entry(pte_t *pte, unsigned long addr,
+> > +                                   unsigned long next, struct mm_walk =
+*walk)
+> > +{
+> > +       pte_t ptent =3D ptep_get(pte);
+> > +
+> > +       if (is_guard_pte_marker(ptent)) {
+> > +               /* Simply clear the PTE marker. */
+> > +               pte_clear_not_present_full(walk->mm, addr, pte, true);
+>
+> I think that last parameter probably should be "false"? The sparc code
+> calls it "fullmm", which is a term the MM code uses when talking about
+> operations that remove all mappings in the entire mm_struct because
+> the process has died, which allows using some faster special-case
+> version of TLB shootdown or something along those lines.
+>
+> > +               update_mmu_cache(walk->vma, addr, pte);
+> > +       }
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static const struct mm_walk_ops guard_unpoison_walk_ops =3D {
+> > +       .pte_entry              =3D guard_unpoison_pte_entry,
+> > +       .walk_lock              =3D PGWALK_RDLOCK,
+> > +};
+>
+> It is a _little_ weird that unpoisoning creates page tables when they
+> don't already exist, which will also prevent creating THP entries on
+> fault in such areas afterwards... but I guess it doesn't really matter
+> given that poisoning has that effect, too, and you probably usually
+> won't call MADV_GUARD_UNPOISON on an area that hasn't been poisoned
+> before... so I guess this is not an actionable comment.
