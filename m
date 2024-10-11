@@ -1,118 +1,95 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B32CF178372;
-	Fri, 11 Oct 2024 15:27:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CED519F49E
+	for <linux-alpha@vger.kernel.org>; Fri, 11 Oct 2024 18:12:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728660432; cv=none; b=PjIrseXp/GEemARWjszBYmEXkyHh2uKyTwJBBE8gVmAFP54qrRNfDG5mxsHu2nvNEiRu5zq7b9+czPjiQPXsfgluKd/o6tAdBD42ZEDN4qX0BbubHHtFzFP9h3KE+pki8EI/pk9/OjTd9l8VVguRDSnR1muLmli7wmg92ZN/rxs=
+	t=1728670330; cv=none; b=up9ste+WuV626K+rMeN7vmtXAEk73GCBla0S1EeK4n7E4rZPiuCbMynO7JT/9evFt7fLzGr5vpl7T+MDCBPI6psOBAc97BWcGWrRjJEc80dKmbCrSzcxMFuKkwqSKZQWPCz/HK4UY1wkyNfJpKvpCPdToZSq41s1UYrUXd+0ZMQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728660432; c=relaxed/simple;
-	bh=sGWntrz3wIyVB8alp9rpncuZ1V1KDuURy3H+JpEcM7M=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CAa0u1VNwrXu4AWZKa13D8IITkTYNjEqaH/NVcKmmUp4I8fo5VYBtH0NIRHn8EulJiUcpFARmVHXVfHwDHiDR88PG4O+8ffdm77bO6mNkpm0Mvg3O88kRLeQp+F1jx60uFQgATfnAX4GBglRAvAZhLwNq+p6eV29V/43Jrk2lDw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I8L75zVt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1728670330; c=relaxed/simple;
+	bh=KAP43U2v6w81RuXDoAO0hX2voUKdYd0ciolZ9lqY+iw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FOAg38/bBHaqve8t+RuZ0sOcNH+caylrVOGgkqbiFVynfTqKIsp2NjdAFRSUkXdpzFkf7Gf7PxFO9UG6aXI0coSI8S5Gq/6zwUnbzsnCsLy3ffpggPkJaKGZ0gwwEVlIH+99QsqxVwd/gOb45aAPrJtFhjc0QYr2LUn53aclAaE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FYkz0OsI; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I8L75zVt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64E81C4CEC7;
-	Fri, 11 Oct 2024 15:27:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728660431;
-	bh=sGWntrz3wIyVB8alp9rpncuZ1V1KDuURy3H+JpEcM7M=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=I8L75zVtrZx7w5SpRULZ/piL2MAHcg+XRpGLvOSuuaq79SJWN4Fma1eeimZ3TTbVB
-	 s3Tj07SktC4NyMlxdWrHxkP9B09QxKjTACbn46Lcb7EZmhdJiFuU6u5LM0LB+VOnwB
-	 ipxmM/V1tJE/lNo+oR0h67Z16lt34GSW47dbcRsA2Rcnm7hvFzitsQaVu0tDTBL7I1
-	 XrWK27pP7SdJ/JUMi4LEQxyVwYXTQYUn1hmQM2ozZex/gG6pI4W/jWyE7zsMYDHYlF
-	 b7b0dB6+vFHNuxfWZal17srhcGgebXOevLR69yA//3wjEvgTu0P9zbH1pTrGNR4W9m
-	 VsL6bpzNsWhgg==
-Date: Fri, 11 Oct 2024 08:27:07 -0700
-From: Jakub Kicinski <kuba@kernel.org>
-To: Mina Almasry <almasrymina@google.com>
-Cc: "Lai, Yi" <yi1.lai@linux.intel.com>, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
- linux-parisc@vger.kernel.org, sparclinux@vger.kernel.org,
- linux-trace-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
- bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, Donald Hunter
- <donald.hunter@gmail.com>, "David S. Miller" <davem@davemloft.net>, Eric
- Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Jonathan
- Corbet <corbet@lwn.net>, Richard Henderson <richard.henderson@linaro.org>,
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner
- <mattst88@gmail.com>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge
- Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>, Jesper
- Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas
- <ilias.apalodimas@linaro.org>, Steven Rostedt <rostedt@goodmis.org>, Masami
- Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers
- <mathieu.desnoyers@efficios.com>, Arnd Bergmann <arnd@arndb.de>, Steffen
- Klassert <steffen.klassert@secunet.com>, Herbert Xu
- <herbert@gondor.apana.org.au>, David Ahern <dsahern@kernel.org>, Willem de
- Bruijn <willemdebruijn.kernel@gmail.com>, =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?=
- <bjorn@kernel.org>, Magnus Karlsson <magnus.karlsson@intel.com>, Maciej
- Fijalkowski <maciej.fijalkowski@intel.com>, Jonathan Lemon
- <jonathan.lemon@gmail.com>, Shuah Khan <shuah@kernel.org>, Alexei
- Starovoitov <ast@kernel.org>, Daniel Borkmann <daniel@iogearbox.net>, John
- Fastabend <john.fastabend@gmail.com>, Sumit Semwal
- <sumit.semwal@linaro.org>, Christian =?UTF-8?B?S8O2bmln?=
- <christian.koenig@amd.com>, Pavel Begunkov <asml.silence@gmail.com>, David
- Wei <dw@davidwei.uk>, Jason Gunthorpe <jgg@ziepe.ca>, Yunsheng Lin
- <linyunsheng@huawei.com>, Shailend Chand <shailend@google.com>, Harshitha
- Ramamurthy <hramamurthy@google.com>, Shakeel Butt <shakeel.butt@linux.dev>,
- Jeroen de Borst <jeroendb@google.com>, Praveen Kaligineedi
- <pkaligineedi@google.com>, Bagas Sanjaya <bagasdotme@gmail.com>, Christoph
- Hellwig <hch@infradead.org>, Nikolay Aleksandrov <razor@blackwall.org>,
- Taehee Yoo <ap420073@gmail.com>, Willem de Bruijn <willemb@google.com>,
- Kaiyuan Zhang <kaiyuanz@google.com>, yi1.lai@intel.com
-Subject: Re: [PATCH net-next v25 10/13] net: add SO_DEVMEM_DONTNEED
- setsockopt to release RX frags
-Message-ID: <20241011082707.5de66f15@kernel.org>
-In-Reply-To: <CAHS8izPuEUA20BDXvwq2vW-24ez36YFJFMQok-oBDbgk6bajSA@mail.gmail.com>
-References: <20240909054318.1809580-1-almasrymina@google.com>
-	<20240909054318.1809580-11-almasrymina@google.com>
-	<Zwe3lWTN36IUaIdd@ly-workstation>
-	<CAHS8izPuEUA20BDXvwq2vW-24ez36YFJFMQok-oBDbgk6bajSA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FYkz0OsI"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5398c2e4118so2935e87.0
+        for <linux-alpha@vger.kernel.org>; Fri, 11 Oct 2024 11:12:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1728670327; x=1729275127; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KAP43U2v6w81RuXDoAO0hX2voUKdYd0ciolZ9lqY+iw=;
+        b=FYkz0OsIDqv165nlRvP5jCDDEdBnN9znipi4Y9X6PWTbLjnz0whOKU1QtVlt3k4b5z
+         qn3ZZqPG9OYxPE3qPi0xsXZ+V+fl0rkombX0YRS5d3QEBWr58FyQagO6FHe35MNULjuj
+         NJzqHyijdqq8fH2EPbPsqsMXtPTfsgnr9dH+YTuYrJEM7z46q4uHaJTLB0PF8L3r52+a
+         xoE0abvU8eYDnpgld2u69qt1N8ie5rFUEorvFe2tLX7ZrFavgMSmW7NEnUbEG3Swud1w
+         NztjMSsojdGNVyXl6WHtPJ7apUjeA8sLrexbxxVozvBAu5g6bbSWoa+rcZ/TS+kfB7V6
+         FTKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728670327; x=1729275127;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KAP43U2v6w81RuXDoAO0hX2voUKdYd0ciolZ9lqY+iw=;
+        b=FHV/jLRNeWVHWj20De48f7gTftbljRc3SUB8cAnAzLao8cjwmK4nbSRydyU3WfF1+s
+         B2JLl7qY5FTQdfCSbIwWNG7IYM9qbKmlO8ss0hy7nF/stdxKsHE1nynSAYVH0hNS550+
+         v4pFwqqAQqm+VneUDxnGvSymr/HkXSxo1P8ZadM8zS5CAO+A+9+lu/kPbO+h871+YYxJ
+         HVfgUglx2mFdpo6p8h8AYGjA3oRuI+8w3zVMIilC6g/6fbxEsbfYCm2IENxVi1uxtYdM
+         nq+8EjhA9dkmlYnkWStXoL+0fo9SQavnXuOSSDDZLSyaPQlrsnEkMYZlBfdE6u+fkKOv
+         TAgw==
+X-Forwarded-Encrypted: i=1; AJvYcCVZNFxv7nFwrGjTuZa/B8quq1IVWCr91bnWGgs9warrR7fiZ0lh1O8K9PjdQ5GIXEgVbePZtLngRZyfGw==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx5HtGdXvCjGbUXtNqnxUGZDfAc715aU0dosRuE2iR/Sfe3SggH
+	mAOjDtyBHV1ez9WLLvzYFFAvPhkiaKOtIOGiNWereoKUMt1Po1JO5GU2GN9V7igjDkQAcinZK47
+	7bJlTn5PDzdc3q4E/MbqDNpzM/DQhlAR+UKvt
+X-Google-Smtp-Source: AGHT+IEPzZYRUYBZDGGZnE1YCDc46bSYVdLJ+yiGqVFt9StDeDnto1Lbfh+eC0TGRLr+N2ieM1Z/sn2o6ag0xZNnFbs=
+X-Received: by 2002:a05:6512:2821:b0:535:3d14:1313 with SMTP id
+ 2adb3069b0e04-539e5e762e7mr28681e87.0.1728670326127; Fri, 11 Oct 2024
+ 11:12:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <cover.1727440966.git.lorenzo.stoakes@oracle.com> <59e218670565accf978aeb8cf4745de4c0738773.1727440966.git.lorenzo.stoakes@oracle.com>
+In-Reply-To: <59e218670565accf978aeb8cf4745de4c0738773.1727440966.git.lorenzo.stoakes@oracle.com>
+From: Jann Horn <jannh@google.com>
+Date: Fri, 11 Oct 2024 20:11:28 +0200
+Message-ID: <CAG48ez3XwT3aeXRDrW2e_46aAzyQ8iVGr6G7PrMz0KATaJNtew@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/4] mm: pagewalk: add the ability to install PTEs
+To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Suren Baghdasaryan <surenb@google.com>, 
+	"Liam R . Howlett" <Liam.Howlett@oracle.com>, Matthew Wilcox <willy@infradead.org>, 
+	Vlastimil Babka <vbabka@suse.cz>, "Paul E . McKenney" <paulmck@kernel.org>, 
+	David Hildenbrand <david@redhat.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	Muchun Song <muchun.song@linux.dev>, Richard Henderson <richard.henderson@linaro.org>, 
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Matt Turner <mattst88@gmail.com>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	"James E . J . Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, Arnd Bergmann <arnd@arndb.de>, 
+	linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, 
+	linux-parisc@vger.kernel.org, linux-arch@vger.kernel.org, 
+	Shuah Khan <shuah@kernel.org>, Christian Brauner <brauner@kernel.org>, linux-kselftest@vger.kernel.org, 
+	Sidhartha Kumar <sidhartha.kumar@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 10 Oct 2024 12:05:38 -0700 Mina Almasry wrote:
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 083d438d8b6f..cb3d8b19de14 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -1071,11 +1071,11 @@ sock_devmem_dontneed(struct sock *sk,
-> sockptr_t optval, unsigned int optlen)
->             optlen > sizeof(*tokens) * MAX_DONTNEED_TOKENS)
->                 return -EINVAL;
-> 
-> -       tokens = kvmalloc_array(optlen, sizeof(*tokens), GFP_KERNEL);
-> +       num_tokens = optlen / sizeof(struct dmabuf_token);
-> +       tokens = kvmalloc_array(num_tokens, sizeof(*tokens), GFP_KERNEL);
->         if (!tokens)
->                 return -ENOMEM;
-> 
-> -       num_tokens = optlen / sizeof(struct dmabuf_token);
->         if (copy_from_sockptr(tokens, optval, optlen)) {
->                 kvfree(tokens);
->                 return -EFAULT;
-> @@ -1083,6 +1083,10 @@ sock_devmem_dontneed(struct sock *sk, sockptr_t
-> optval, unsigned int optlen)
-> 
->         xa_lock_bh(&sk->sk_user_frags);
->         for (i = 0; i < num_tokens; i++) {
-> +
-> +               if (tokens[i].token_count > MAX_DONTNEED_TOKENS)
-> +                       continue;
+On Fri, Sep 27, 2024 at 2:51=E2=80=AFPM Lorenzo Stoakes
+<lorenzo.stoakes@oracle.com> wrote:
+> Rather than add yet another implementation, we extend the generic pagewal=
+k
+> logic to enable the installation of page table entries by adding a new
+> install_pte() callback in mm_walk_ops. If this is specified, then upon
+> encountering a missing page table entry, we allocate and install a new on=
+e
+> and continue the traversal.
+[...]
+>
+> Signed-off-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
 
-For the real fix let's scan the tokens before we take the xa lock
-and return an error rather than silently skipping?
-
->                 for (j = 0; j < tokens[i].token_count; j++) {
-
+Reviewed-by: Jann Horn <jannh@google.com>
