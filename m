@@ -1,56 +1,56 @@
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40BAF202651
-	for <linux-alpha@vger.kernel.org>; Fri, 18 Oct 2024 16:24:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EC2C203710
+	for <linux-alpha@vger.kernel.org>; Fri, 18 Oct 2024 16:25:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729268671; cv=none; b=N1t5Bv8BqHEXBeLEjEL6RiwAI8YRVsWlgh+bcqwJuGOsRqLCqJA7yRp5Mw2YWf+8Kia8YZeaCS9KKQs1wyxfr6xniDSOlHgDz4dlB1s1vnfr6WPmr9l2VQN4fVpVo4kl5AaOrHOBLB+Zxm41R/lCjG+knmKrf4USVsANRo+M1BE=
+	t=1729268762; cv=none; b=h3GPFSAkhR8FGdbM51GqmHVmYzjaAKTRg1Ddr8DtZMRcL5w5mes9qtFFcwlc9G7uAv82EW9ISsTBDPdsb9xcluQCLrMzN/IInoBo40RSoRgu5z80YkTEn+LBBCBawCbRpaOtjpCdzF9ugW/Ld6VW5prZ0UDaXNAcbPZgPgSqu1Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729268671; c=relaxed/simple;
-	bh=iWxiwdG2p0Ia/g/Q7KCJatv1Xb46S2nFuXqxm0WqkKI=;
+	s=arc-20240116; t=1729268762; c=relaxed/simple;
+	bh=5jbP6qgUgoq1McrR3RLDeRE04owyYxOG4RL62eRi/S0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JohGuB8xGIuu4Rpge8hJ8iL8ISmBhNQ4TR5PTxrVfQmNy8LX7qulM5L6cRJjU+JuKCUZ1VJqx+KwewRNX2eT3KTEEwIJy5cCSiGxWzVGFq/LuR454SO7e36LgY0+K9pksJdU0AoeaabRFm14GOJ+pAESH1eQLNgcDxQJZghWbuQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=NEHd19DV; arc=none smtp.client-ip=209.85.210.49
+	 In-Reply-To:Content-Type; b=N0qNe5sDVMMnw14gnfhpwJt81MdmSjSgLpKqLloCXrjDII64LJfNsG37HvqBbl5MMJCRKssNN/B2nxjcojkPqULM4z4wMasrf4Ugv/wJUKlSavtUV9LVTNFMTUln55UdTZPu+0AyqBtEJrcIsiQnsDLr5pHFh++Ada/RxDRtx8g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=H+/zmRRV; arc=none smtp.client-ip=209.85.161.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="NEHd19DV"
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-71811c7eb8dso781297a34.0
-        for <linux-alpha@vger.kernel.org>; Fri, 18 Oct 2024 09:24:29 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="H+/zmRRV"
+Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-5eb8aec5d3bso506446eaf.0
+        for <linux-alpha@vger.kernel.org>; Fri, 18 Oct 2024 09:25:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google; t=1729268668; x=1729873468; darn=vger.kernel.org;
+        d=linuxfoundation.org; s=google; t=1729268758; x=1729873558; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=F3v+T7PjpPKYcorK84vLoRIziLno8dgMRinbwlPayfE=;
-        b=NEHd19DVCC+91om/KDc6/DtsOHXxxhSn2fZUUeH4mtp4BCX4WlrGa0fdoKvmR0gUW7
-         aSLR0TIFOqdRGcylJv0/qr3YYxWNil/j8sG1rVxH+H9vynocQoQDJxeF+gK1hrxCmFzC
-         S9t3h3q0Z9gdBcYw4A2xEzyQdVgMx9ea8+WBk=
+        bh=P4qNWvLVpxYbIRtwTadaIjM03ETyiiYE+F1EJeQJjHY=;
+        b=H+/zmRRV8q4r4+UlnQN+A0sP2z3gWgJIB1zMRgg6lSVwQDwtf4E85CCQQQpAg5ByQZ
+         syk1Lhzseqd9xZSU4/I/HS2vk/XrXimgUu6t+n555D68Yz7svJcvHY1nTQOyg+tYj36k
+         YsPJaR6eYmdifwgngf3DaWrxI6vYfn+aABy5o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729268668; x=1729873468;
+        d=1e100.net; s=20230601; t=1729268758; x=1729873558;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=F3v+T7PjpPKYcorK84vLoRIziLno8dgMRinbwlPayfE=;
-        b=gOurQkCI3XlqyyOG58ElgRDNcOKmmtfW4m9/hT4WoavUusRdokcuPdd/WGwxETX8vj
-         C2G277E/ClJo+KHwDCjJXd0nGBzghAC6sXKiAWYr2jygQe04c5DnWwpYi/sDgLLEaiqw
-         wLamIue/I2nrVTQXoTonfyusA0RiuKu1I9863NCYh4tXa+qTozaBaM+YhTy2mgrkhqRQ
-         OE/NdsOQ536d3Moun0ZtMsXBLRGeJArNQzgh/o6AEHsk+4eutxxLEBLLuzjMwbHbz0mz
-         bpsEY8JcVn+lqSRKaUKR9APuZDaszL7i59q8qvxcxawKxz4j3KGnVmPU2xEh0EHNdsLr
-         gzGw==
-X-Forwarded-Encrypted: i=1; AJvYcCUHJe3ECck4rkg6aIKI99hDUYxo0GYaBzmT1ATm1d0eV0dbIIiG6d4irbLm/WuCyhBg7jLY3FOUDy8vyg==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy0QVqajhJAxXTpOTarkgq8awduKOUsXIMhJm2SHytuE+o0qtzk
-	MhH024KkzqlVWyl5M9htRRpwMhhCb+dl5f0eN4KejyJ7bZqADRD01uWoyPxoxmc=
-X-Google-Smtp-Source: AGHT+IFIMl2GQFcOD4CAePzrCdIz3Ij+s6w3yxltIlvjQyisZktPRrklsesyLhvGbRcpIU0+2bu3ig==
-X-Received: by 2002:a05:6830:348a:b0:717:fb12:2c2 with SMTP id 46e09a7af769-7181a5c6046mr2826059a34.3.1729268667921;
-        Fri, 18 Oct 2024 09:24:27 -0700 (PDT)
+        bh=P4qNWvLVpxYbIRtwTadaIjM03ETyiiYE+F1EJeQJjHY=;
+        b=EZOb89pTb2VuEJDZzK8QJR2LhwYxRwGvLTO11vybquCLNcWv0tMuw+9T7MxY8ZSg4w
+         KUuGX+P+a7NxkglqBSsFEl4Irc0qAvIRhDnJOKRqTrMH3Bu1gPPD57EwMQHlGBp2jc6u
+         9TlnUHBOycVON1HdEtBI4YX2lxOtgxn7V+51xdMTmlWh2qrO2cGIWFlXCNYenOYEuUc0
+         MTB0g/h/jU02/1rf2GrVljT4j5c1QyM4caXrNfdeKu8FuA/UgemV1Cfq/OOg1fYU76QV
+         +RwckG9MoDzrf/jlc0NPJATxwUW+lqurals9LzwZTWsWW+SU1wIrqFzCIN+i0464iI3I
+         BoLQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW1Q21so7p4EDV8QaZaxeAKUai3QESk/kObbHNTmXfntFZoJGvFqcnG3N0aeVKotVWRMQnBqItVTrQTIQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwJ+RW6hnNZyhkTKYHv72oD8uZiSYpXkSF7Q4IzHmmKKvpr8Qw+
+	rKe1ISY7on/maPl8A3AGpaYcpSnbKSbgyVLJ66AX1TAy0/bcOH5oe0pfBWli73M=
+X-Google-Smtp-Source: AGHT+IGaroc9U1gTQH8oIv9XintQoQrlC7c5FvJNC3/Om1CneZ+0NGXExK3IjmCzNnhwYO6jdZ3JsA==
+X-Received: by 2002:a05:6870:d60e:b0:288:aed8:c43d with SMTP id 586e51a60fabf-2890cf88610mr4183890fac.15.1729268758143;
+        Fri, 18 Oct 2024 09:25:58 -0700 (PDT)
 Received: from [192.168.1.128] ([38.175.170.29])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-718195da4d0sm376406a34.56.2024.10.18.09.24.26
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-718195da5f0sm377033a34.60.2024.10.18.09.25.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Oct 2024 09:24:27 -0700 (PDT)
-Message-ID: <40ca64d7-c8c9-47b1-ac17-95524bd76aa6@linuxfoundation.org>
-Date: Fri, 18 Oct 2024 10:24:25 -0600
+        Fri, 18 Oct 2024 09:25:57 -0700 (PDT)
+Message-ID: <3a41a1b5-e9a7-43db-b50e-84d6cc275d10@linuxfoundation.org>
+Date: Fri, 18 Oct 2024 10:25:55 -0600
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -89,7 +89,7 @@ Content-Language: en-US
 From: Shuah Khan <skhan@linuxfoundation.org>
 In-Reply-To: <7bbfc635-8d42-4c3d-8808-cb060cd9f658@lucifer.local>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
 On 10/18/24 10:07, Lorenzo Stoakes wrote:
 > On Fri, Oct 18, 2024 at 09:32:17AM -0600, Shuah Khan wrote:
@@ -287,76 +287,10 @@ On 10/18/24 10:07, Lorenzo Stoakes wrote:
 > been more productive for you to first engage on why it is I'm deviating
 > here.
 > 
-> Firstly, as I said, the code _does not compile_ if I do not use braces in
-> many cases. This is probably an issue with the macros, but it is out of
-> scope for this series for me to fix that.
 
-I am not trying to throw the book at you. When I see 45 of
-them I have to ask the reasons why.
-
-> 
-> 'Fixing' these cases results in:
-> 
->    CC       guard-pages
-> guard-pages.c: In function ‘guard_pages_split_merge’:
-> guard-pages.c:566:17: error: ‘else’ without a previous ‘if’
->    566 |                 else
->        |                 ^~~~
-> guard-pages.c: In function ‘guard_pages_dontneed’:
-> guard-pages.c:666:17: error: ‘else’ without a previous ‘if’
->    666 |                 else
->        |                 ^~~~
-> guard-pages.c: In function ‘guard_pages_fork’:
-> guard-pages.c:957:17: error: ‘else’ without a previous ‘if’
->    957 |                 else
->        |                 ^~~~
-> guard-pages.c: In function ‘guard_pages_fork_wipeonfork’:
-> guard-pages.c:1010:17: error: ‘else’ without a previous ‘if’
->   1010 |                 else
->        |                 ^~~~
-> 
-> In other cases I am simply not a fan of single line loops where there is a
-> lot of compound stuff going on:
-> 
-> 	for (i = 0; i < 10; i++) {
-> 		ASSERT_FALSE(try_read_write_buf(&ptr1[i * page_size]));
-> 	}
-> 
-> vs.
-> 
-> 	for (i = 0; i < 10; i++)
-> 		ASSERT_FALSE(try_read_write_buf(&ptr1[i * page_size]));
-> 
-> When there are very many loops like this. This is kind of a test-specific
-> thing, you'd maybe put more effort into splitting this up + have less
-> repetition in non-test code.
-> 
-> I'm not going to die on the hill of single-line-for-loops though, so if you
-> insist I'll change those.
-> 
-> However I simply _cannot_ change the if/else blocks that cause compilation
-> errors.
-> 
-> This is what I mean about checkpatch being fallible. It's also fallible in
-> other cases, like variable declarations via macro (understandably).
-> 
-> Expecting checkpatch to give zero warnings is simply unattainable,
-> unfortunately.
-> 
-> As you seem adamant about strict adherence to checkpatch, and I always try
-> to be accommodating where I can be, I suggest I fix everything _except
-> where it breaks the compilation_ does that work for you?
-
-Yes Please. If you leave these in here as soon as the patch hits
-next, we start seeing a flood of patches. It becomes harder to fix
-these later due to merge conflicts.
-
-It becomes a patch overload issue. Yes I would like to see the ones
-that don't result in compile errors fixed.
+This is not the only comment I gave you in this patch and your
+other patches.
 
 thanks,
 -- Shuah
-
-> 
-> Thanks.
 
