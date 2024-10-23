@@ -1,102 +1,109 @@
-Received: from mail-ed1-f74.google.com (mail-ed1-f74.google.com [209.85.208.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtpbguseast2.qq.com (smtpbguseast2.qq.com [54.204.34.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B534140BF5
-	for <linux-alpha@vger.kernel.org>; Wed, 23 Oct 2024 06:24:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 080D127452;
+	Wed, 23 Oct 2024 06:32:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729664665; cv=none; b=IqfV9EjM8aU+a9/4loUT+0l6vO6B+urYN5l+HglQLzq1Cc5uA3fQQ3wem+/CE0odDYytK6c6V9ZeNLwEgz0QjbRgXqdcn4xQ7BP7FkGptEO070ncP66/4HKDFtq6idFhpSPyWMF3luapmPRcmOq+Np8UNMuz6faIGJlbWvvewRQ=
+	t=1729665127; cv=none; b=iRmJP98DvFpzXIGQhWg0NpXU3niUiael3tSz/rC/Jgw7LEMlKG+Xy2jjaa4gk08XKQCxtUVKiVTaNkr5BPayyraA8SNKdM+De4M1n9BaRmY7kvXy4QH0Z3QKGwgq83dLU382UXuNnilQAQ9KdIyl1sowy+Lddq47lJlLUs8sj90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729664665; c=relaxed/simple;
-	bh=Kmf/1xEzbwqpAKJt9go6uvl87csSe+TqzWzUtyTAm8I=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=ecHvWh8PiUuYwC/I58JXdK1dJHksfrdEeGLm6ij33tgbKnRvf7K/7yB7M2GzKwzA9xHGcf/tlRZ8ZFuc8IRU7sKu44D6P8IPh3wq6tGEkDx9ROhL1AuMdnh3+/4kSLZemsm/HbCXuoFYO0v8ZSW4v9MteSzW6JHerxWfxQCvhUk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dvyukov.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PrwYraWd; arc=none smtp.client-ip=209.85.208.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dvyukov.bounces.google.com
+	s=arc-20240116; t=1729665127; c=relaxed/simple;
+	bh=ngQUyspk0u5tmnuw4tF5HJKltqCiL9AJbZfUWTdGVNU=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=QqAljj8fmHdDyFdoVmA1FP288LYiMEy1EbIUQAuSzRrGeRBwRLefGLz8QHoNqUUN2KkWDn4bV5rAdxrFl8S63elr2rGMiw6h9lX0HAblHnU62os6fTA66AY86N6vLgUNq7gAiU3LpBWqouLvZgw8313F7JRYiBsPd8b+Mo4lemU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=iGpQUzuf; arc=none smtp.client-ip=54.204.34.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PrwYraWd"
-Received: by mail-ed1-f74.google.com with SMTP id 4fb4d7f45d1cf-5c936f71759so3785170a12.2
-        for <linux-alpha@vger.kernel.org>; Tue, 22 Oct 2024 23:24:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1729664662; x=1730269462; darn=vger.kernel.org;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kmf/1xEzbwqpAKJt9go6uvl87csSe+TqzWzUtyTAm8I=;
-        b=PrwYraWdobug2t+uC6Vp7EV4xdzZoVwTNHirr73b2IFqvth+F4o5VWgdzH0i/gmNvh
-         ZHKJqzhqNtxP4SqT2eY+kDTQkKUIEiSTrPi2nYwkJPIR9tvneugekSRGtKKYanGleFub
-         MiPMP10l4ktHx4DwnjU+siCw1amlk+KOzUAMa8+2a55LPcNcIS61hYzNq+ny/WCJkCw4
-         BkyTRidsui8NTTW/yt3kJxhZHry4mZHojJevjbmbTv15Y1da8qnnzb/yZeO/MRvUl2mq
-         AENdyKhdfRgcLxVfG99qakdKL1WOe/Ui47pY20zETidEzKKkp81ECCFRYvnJmA1SptM/
-         Q2TA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729664662; x=1730269462;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kmf/1xEzbwqpAKJt9go6uvl87csSe+TqzWzUtyTAm8I=;
-        b=sjhGLnZzjbrixUbvhuYXkK8Cd8F/nIqrN2Y7qEdeGSzSOPSYLjABHfgpl0NMcg/o43
-         881LFxQMnJ4enHB/29ocOeGFIfhK4yTJw8+U7ewZxWaVRENJuj+nIbViz8ecBNEgIYqh
-         mhN+yEy2qw+PENxffY01vo5xH3s+tWU6YHKJlpoP+L/QSOcq/pN9hwB+acxM5JBkbG9n
-         Wu8FDblGM4A7w+gLQrh4uQDteKCVikONNp8JWQ0tjEQxKr9PnMFLHi1/eeJpUOdnmt+n
-         RwUpQsZV4CbsI1ezNFrb9z83MgzEPc4vjAAlsOO4fINAtbKU/DMnGe85PDy3SqAw0+9V
-         YI9Q==
-X-Forwarded-Encrypted: i=1; AJvYcCU3Iq1imqcdeMj/fAb20NZRkARBtt/MEax2X8IGQ4xgecp6J2A7QSeogFqVjFHRN6Kn7kSJNFq4zlvoBA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YxGeuPXhHOBnsI7L+u00KFy0QTxW6l/HKffF2XRrO1SfqbZovs3
-	Yr6Y2PBnXJxSVA1RjLWFeC/hyZg295wyG5mUnkMTxMqk5z8Vi8V0Ot8zSuwWLRlitF0LbLivEej
-	AgvmQdg==
-X-Google-Smtp-Source: AGHT+IH2bi6zc9dFjuEaAFUh7qdl0Clkcf7sHX1Yomy2F23FgFUOKN443WAQT8QytBDy9+TF/aj9qhft85qo
-X-Received: from dvyukov9.muc.corp.google.com ([2a00:79e0:9c:201:6e9d:53fb:bcc1:7c2d])
- (user=dvyukov job=sendgmr) by 2002:a05:6402:3482:b0:5c9:5cbf:e5b9 with SMTP
- id 4fb4d7f45d1cf-5cb8b20d251mr583a12.8.1729664661613; Tue, 22 Oct 2024
- 23:24:21 -0700 (PDT)
-Date: Wed, 23 Oct 2024 08:24:17 +0200
-In-Reply-To: <87a5eysmj1.fsf@mid.deneb.enyo.de>
+	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="iGpQUzuf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
+	s=onoh2408; t=1729665067;
+	bh=ngQUyspk0u5tmnuw4tF5HJKltqCiL9AJbZfUWTdGVNU=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version;
+	b=iGpQUzufGKagQD2p8OJ9+o1rv05GO3s0irkkzl+B/jVQzK62CKg8qVz67X69ysnlY
+	 guTCSgPYkdN689aKc9jSkAv2q1YkVkLU9aW1hyxIu8y95ubUmp7oLbbBrYPzSuQtxk
+	 b6AP1aH471/Gf/Mf0lCx04AOx9Z8n7u1eTbhDMCE=
+X-QQ-mid: bizesmtp85t1729665063t7rgkpzf
+X-QQ-Originating-IP: /Pu5B/BFVMh1l61DmVeOAJ9BOb/PIqdl2onMEJbSJ3s=
+Received: from localhost.localdomain ( [113.57.152.160])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Wed, 23 Oct 2024 14:30:59 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 1
+X-BIZMAIL-ID: 5490330265754036757
+From: WangYuli <wangyuli@uniontech.com>
+To: gregkh@linuxfoundation.org
+Cc: patches@lists.linux.dev,
+	nikita@trvn.ru,
+	ink@jurassic.park.msu.ru,
+	shc_work@mail.ru,
+	richard.henderson@linaro.org,
+	mattst88@gmail.com,
+	linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	fancer.lancer@gmail.com,
+	linux-hwmon@vger.kernel.org,
+	dmaengine@vger.kernel.org,
+	xeb@mail.ru,
+	netdev@vger.kernel.org,
+	s.shtylyov@omp.ru,
+	linux-ide@vger.kernel.org,
+	serjk@netup.ru,
+	aospan@netup.ru,
+	linux-media@vger.kernel.org,
+	ddrokosov@sberdevices.ru,
+	linux-iio@vger.kernel.org,
+	v.georgiev@metrotek.ru,
+	linux-mips@vger.kernel.org,
+	ntb@lists.linux.dev,
+	linux-renesas-soc@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	dushistov@mail.ru,
+	manivannan.sadhasivam@linaro.org,
+	conor.dooley@microchip.com,
+	linux-fpga@vger.kernel.org,
+	tsbogend@alpha.franken.de,
+	hoan@os.amperecomputing.com,
+	geert@linux-m68k.org,
+	wsa+renesas@sang-engineering.com
+Subject: Re: [PATCH] MAINTAINERS: Remove some entries due to various compliance requirements.
+Date: Wed, 23 Oct 2024 14:30:58 +0800
+Message-ID: <A74519B4332040FA+20241023063058.223139-1-wangyuli@uniontech.com>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <2024101835-tiptop-blip-09ed@gregkh>
+References: <2024101835-tiptop-blip-09ed@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-References: <87a5eysmj1.fsf@mid.deneb.enyo.de>
-X-Mailer: git-send-email 2.47.0.105.g07ac214952-goog
-Message-ID: <20241023062417.3862170-1-dvyukov@google.com>
-Subject: Re: [PATCH v2 0/5] implement lightweight guard pages
-From: Dmitry Vyukov <dvyukov@google.com>
-To: fw@deneb.enyo.de
-Cc: James.Bottomley@HansenPartnership.com, Liam.Howlett@oracle.com, 
-	akpm@linux-foundation.org, arnd@arndb.de, brauner@kernel.org, 
-	chris@zankel.net, david@redhat.com, deller@gmx.de, hch@infradead.org, 
-	ink@jurassic.park.msu.ru, jannh@google.com, jcmvbkbc@gmail.com, 
-	jeffxu@chromium.org, jhubbard@nvidia.com, linux-alpha@vger.kernel.org, 
-	linux-api@vger.kernel.org, linux-arch@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-mm@kvack.org, linux-parisc@vger.kernel.org, 
-	lorenzo.stoakes@oracle.com, mattst88@gmail.com, muchun.song@linux.dev, 
-	paulmck@kernel.org, richard.henderson@linaro.org, shuah@kernel.org, 
-	sidhartha.kumar@oracle.com, surenb@google.com, tsbogend@alpha.franken.de, 
-	vbabka@suse.cz, willy@infradead.org, elver@google.com
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybglogicsvrgz:qybglogicsvrgz8a-1
+X-QQ-XMAILINFO: Ns4o82esMDegcnRCWZU/vtwwA13F4B7+hQiq+gV4rNIZds3XaHCyoQOa
+	p1fmo6vINY/HzKP8exUDEUoT8GO1mhMuqj8+qpo5UC+JwPE3OWM7p2tc37xsKL0Rflb2gvg
+	3g+rXbHOOHjoc7udEIyiRilr8qSndIj44+lmU2xp1cmI4vs85wz+CmAay/MLBHgTu8VSDav
+	18VxAAE8Yd2BXdS4DJgxvsIF4uLWcfuKQ18bZt6QN4PuMS8nErrVaThJbYmG6ZlX+Zs5jdj
+	hp3T2WOqIhf8Xorib4KNQwU3I00j3FEZmlokVC/zrWW9NeSBwAuw1H/FtCbuQFejMKMxKcF
+	C1ko/yI73fKK2fAloS9N1DbwAUL0de2oXLE/HRPaPNLjnIZ0c/O1Mwm0JeiYTCVjPpiRaO1
+	WaRrYhmIGp76sLTGrJeyQ2xDXW9TP+H11ZhkS+PWc2xc6HCivXkBXtOcQJHn4uh3Llh17Ps
+	dOnQZUopL9EgRdav9yavseoCFrTqbujsKPRWmiQNx+be6xlFi/GPWpHdT6opgiBhDECxI9o
+	CHJjdm3dxDPTTXGOq4UlF8henUED315eWa/m7+YiU6j4HTd/mEtyKf8XhHcF/PjZFoRKkFb
+	3i3G6X2XmnG5ko/AkhJ5GTUnLEKf5Ex4xqNVJJFUno+YAzzh+q0vy4NMoPzAoqrkoNf+y+G
+	E71LDKQsbTd61QEDPqjfp0TDuF7UHoiJoewWDckjzR/X7LHJ5L5a6wNLtsPt66laf3rmGST
+	Jp4DiW65HQUeS3wsDAiDAqm30JuVGYGCcRZzjdcaNJnZOF0ur8qUZI9WqxiAMYXhF+EeQOS
+	+3bSV7qiBCvev2SyMI1xcUevIwqfQoO7WfTH0Xi8u/a98aKNBMKOvefCOOsOYFbhbY38S8M
+	8FMeZiYtkAp3ngJsZfKMB6mfHqlo2IfaoyvmPXJyuJ1dsEgra9VXPsTwai42iQ1ykdky6Uw
+	gTs6Rdc5VI7x7lU95r9nZDyPv
+X-QQ-XMRINFO: NI4Ajvh11aEj8Xl/2s1/T8w=
+X-QQ-RECHKSPAM: 0
 
-Hi Florian, Lorenzo,
+Although this commit has been merged, it's still important to know the specific reason (or even an example) that triggered this change for everyone here, right?
 
-This looks great!
+And those maintainers who have been removed should be notified.
 
-What I am VERY interested in is if poisoned pages cause SIGSEGV even when
-the access happens in the kernel. Namely, the syscall still returns EFAULT,
-but also SIGSEGV is queued on return to user-space.
+It should be CC'd everyone who might need to be aware of this change, including the removed maintainers, other maintainers on the subsystem, and the subsystem's mailing list.
 
-Catching bad accesses in system calls is currently the weak spot for
-all user-space bug detection tools (GWP-ASan, libefence, libefency, etc).
-It's almost possible with userfaultfd, but catching faults in the kernel
-requires admin capability, so not really an option for generic bug
-detection tools (+inconvinience of userfaultfd setup/handler).
-Intercepting all EFAULT from syscalls is not generally possible
-(w/o ptrace, usually not an option as well), and EFAULT does not always
-mean a bug.
-
-Triggering SIGSEGV even in syscalls would be not just a performance
-optimization, but a new useful capability that would allow it to catch
-more bugs.
-
-Thanks
-
+To ensure transparency.
