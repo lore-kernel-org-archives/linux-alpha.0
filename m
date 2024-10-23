@@ -1,74 +1,146 @@
-Received: from mail-40130.protonmail.ch (mail-40130.protonmail.ch [185.70.40.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D2991A7045;
-	Wed, 23 Oct 2024 10:56:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.40.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6783B1AA780
+	for <linux-alpha@vger.kernel.org>; Wed, 23 Oct 2024 11:32:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729680966; cv=none; b=Iv4vdrhGi95oR/Sk2jXea2ct+/cOtS5Py1EhqDO6GnKJH2n8jm2xJoQNOyjh9gDPp3Ab9V9tfvIEGvn0inslp26SUvP9WkcriVB5FLi3rNf/zuHq9IqC7GuXM40vj4B3ohIGGsroNve/EDmm9yCLOwOzHa4gcDuQM5+124FVo38=
+	t=1729683121; cv=none; b=KhGLrwUeLgvGJ8o0FFI06OARQUTYrcfQKT0K3yIRSAcOO4LqhS8yNslVPhqTvHMDxFwZltIhurg7lCzwCVQ4Aq2r1967VSzrPAdx9OT+lfvA+ZAChVRo2Un01mng2apmdRp9Ro0I2Cy+uPE27wH8GIY/huHr6ThZOEF2fmjxpk8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729680966; c=relaxed/simple;
-	bh=2uZmCdan2XO0Cl6IjNWW2Vbysd7BOfysAd/eGyKtjho=;
-	h=Date:To:From:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=RYnzOOkL0B3xf6czTm9BcMBiSUvOzWvRLUvmrNSirSxgtrZBAHyqVndMmG/MuflA3BA+tRvupQpKgkfdR/I3ES4ZjZy/nRC/amGXwsuWTSv+gwQo9EQjt+gPFXT2QxTlvtfY5UBIqAHG81tFsZNL6ss5XHYBT+dAGLVdIksgp5c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me; spf=pass smtp.mailfrom=proton.me; dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b=nU7UGMDK; arc=none smtp.client-ip=185.70.40.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=proton.me
+	s=arc-20240116; t=1729683121; c=relaxed/simple;
+	bh=PifyftziAf8djQkPyvbqMUdH0ri6kdYCgtQLuMyRp+U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lR4cqk6Stt4GlY7xOSuXcq8MeVEI8ngmpDlCX9xMTlcI2k2gAwd0K6p390VkouxlJYgIdmpjFaxQRkZytx+RWg7Gz9WtSHUVqXRYJosavFf+j5QRzLEkGOrFKikZE5berwyl8YXxQDYTxf8gF1wJzUS8zWg6TVa7Ck523YVcxyg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=DxTgvMPk; arc=none smtp.client-ip=209.85.215.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b="nU7UGMDK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
-	s=protonmail; t=1729680956; x=1729940156;
-	bh=2uZmCdan2XO0Cl6IjNWW2Vbysd7BOfysAd/eGyKtjho=;
-	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
-	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=nU7UGMDK8WFIn/KVA5W9N1NEqSwT8UQE0fS8bECjDpD2ZiPAzyyljte+fEi4gpSeP
-	 MnGDOCFdknAj583jHSX7ECsALTfg66OszSBNofUJpIsZYnJleMB2UhPiz0fh/hN1Gg
-	 t9UQCpjJv+3WmXZTYUKzsNwZU++PSa/pdsuU92YQbbk+YNmprbZQ5ORoIl89u1y1Fv
-	 tA+09hbvn4vMvOsPCG+oDWCAxwiQ/fwwYYlrmQfFKs/7bbxnvek/Vo91SXoeMEkPuG
-	 xM1psDgryCSiA474uepaqdbzVyWeBaXpXhxEjg0SlqU14v/WvQHco5bRMaBHD/gEHJ
-	 Mjp/mmDmcMg2Q==
-Date: Wed, 23 Oct 2024 10:55:51 +0000
-To: "patches@lists.linux.dev" <patches@lists.linux.dev>
-From: jisralbasha <jisralbasha@proton.me>
-Cc: "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>, "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>, "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>, "linux-ide@vger.kernel.org" <linux-ide@vger.kernel.org>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>, "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "ntb@lists.linux.dev" <ntb@lists.linux.dev>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "wangyuli@uniontech.com" <wangyuli@uniontech.com>, "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>
-Subject: Re: [PATCH] MAINTAINERS: Remove some entries due to various compliance requirements
-Message-ID: <CpPiTF0xZwq_zhrYVO2pCA9TxAmJi_zwVBmyl9Z1RHKCjgf332fcmsc86C_1CMaZPNLlIDcvqOIWa1vR2lr2qMaZpcyIisxLqL1IVvq9ZNQ=@proton.me>
-Feedback-ID: 94463129:user:proton
-X-Pm-Message-ID: 5a8ecfa1aba099d9d2341478826b3c35ab4c778b
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="DxTgvMPk"
+Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-7ed67cfc1fcso947397a12.1
+        for <linux-alpha@vger.kernel.org>; Wed, 23 Oct 2024 04:32:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1729683119; x=1730287919; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=PifyftziAf8djQkPyvbqMUdH0ri6kdYCgtQLuMyRp+U=;
+        b=DxTgvMPkO2le6L21EZNRPJy4zKw4yfQiAtO8liPOzI3nvVEQVUsDfB6Jgju6fkZCzs
+         jnEZDJ5//Kc3L5KPBqjXGlFSOKxIOdUtwSYxVrpLsh8uacEwORdP8MsxWUdkiBlMBjVd
+         RKFyWcE7teRV2sAUqw0IJbXYJCNZ6E7zYcbDu5qCKCxctyPPbSS7GaEVqJ+1GjF4Sty5
+         KUxV2O8z9fGxSyPmdZdLgAAOc1KRk9MLFvPKCZzVF1wlmARCmG8S42RjwYOkPQx+QkoC
+         dui8VI3ucXwYplb3D5kqNsZppmn64RaheukurK58GcLID4DW0cTCjpG+Z3smd6qtw18m
+         K9DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729683119; x=1730287919;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PifyftziAf8djQkPyvbqMUdH0ri6kdYCgtQLuMyRp+U=;
+        b=iqvrV58l3QC7A33V0Ol2CWwbG0CWMFM3kyajvEK9VJzJNfXgMKhGkSY+OQ/GaM/acz
+         52YQIkjU7iFBECiw31GMcHqwDi1VYo07XP3C6bvKWlXSapSO7iZtXImR258ucQIlhq/E
+         IXHqYzkW3I28xnR7gEt4HBjl49gO/R+1jRyeYsxBdCIZiAkNHNfvv5tHjKCBZBr3NBBD
+         +2wtj8pGw5D3ESgXJbr3CCCF5ggu5KdTgFbop4TmIPG7GG/AWPCNmxBY4qLVZsT6mNYy
+         LocV9Oa5grsGykySglcOxPozJrsBb69GQ7vSjk5sbLPJyfG5whUh+FIC5x1S7AHKMHUR
+         uOfQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUdLWiRuemur5FPphiAuyPszOf7zQO/COSEyFWRkHXm64POuxWiY2RzwbrbwvymOcfqMwfMTyXpgSM6yA==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzn2QPx35NRIKZzVWHigDi1kHKcQ9Iqqt34ktDPIJeQWZdHx5q2
+	W98L0h+1oBkZYwtsvAjCKnbCIsHAV8jy41YcnEOMLWajggj+FJHYQCIGA5XVE5tUtKSRh9+J2Pb
+	pjA7+F6KGkkvHdfjLaSWSaTrhnXCav+KXhJ3p
+X-Google-Smtp-Source: AGHT+IHP+7htcJ8BgPEpFBfWaxFnQpKq7JObNjsHz6Dygzj4nAQwcf6cdlKATTACXhbxMaOm10i6V6GwxULSmHcVeAY=
+X-Received: by 2002:a17:90a:5d15:b0:2e2:8fb4:502d with SMTP id
+ 98e67ed59e1d1-2e76b5e65a6mr2138687a91.16.1729683119198; Wed, 23 Oct 2024
+ 04:31:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <87a5eysmj1.fsf@mid.deneb.enyo.de> <20241023062417.3862170-1-dvyukov@google.com>
+ <8471d7b1-576b-41a6-91fb-1c9baae8c540@redhat.com> <5a3d3bc8-60db-46d0-b689-9aeabcdb8eab@lucifer.local>
+ <CACT4Y+ZE9Zco7KaQoT50aooXCHxhz2N_psTAFtT+ZrH14Si7aw@mail.gmail.com>
+ <b1df934e-7012-4523-a513-d3d1536b7f72@suse.cz> <f000d21f-dd04-462a-9d34-d0e7f0f7dc2e@redhat.com>
+ <b5792b5f-298b-499f-abc2-db773ceeed36@lucifer.local> <1768ef5d-7289-4d2b-ae02-f5d2a20d5320@redhat.com>
+In-Reply-To: <1768ef5d-7289-4d2b-ae02-f5d2a20d5320@redhat.com>
+From: Marco Elver <elver@google.com>
+Date: Wed, 23 Oct 2024 13:31:21 +0200
+Message-ID: <CANpmjNM_q-+FH4S8UxRqnomfT7oneN5kcFf_Sxn6cStCCqoKeQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] implement lightweight guard pages
+To: David Hildenbrand <david@redhat.com>
+Cc: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, Vlastimil Babka <vbabka@suse.cz>, 
+	Dmitry Vyukov <dvyukov@google.com>, fw@deneb.enyo.de, 
+	James.Bottomley@hansenpartnership.com, Liam.Howlett@oracle.com, 
+	akpm@linux-foundation.org, arnd@arndb.de, brauner@kernel.org, 
+	chris@zankel.net, deller@gmx.de, hch@infradead.org, ink@jurassic.park.msu.ru, 
+	jannh@google.com, jcmvbkbc@gmail.com, jeffxu@chromium.org, 
+	jhubbard@nvidia.com, linux-alpha@vger.kernel.org, linux-api@vger.kernel.org, 
+	linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org, linux-mips@vger.kernel.org, 
+	linux-mm@kvack.org, linux-parisc@vger.kernel.org, mattst88@gmail.com, 
+	muchun.song@linux.dev, paulmck@kernel.org, richard.henderson@linaro.org, 
+	shuah@kernel.org, sidhartha.kumar@oracle.com, surenb@google.com, 
+	tsbogend@alpha.franken.de, willy@infradead.org, 
+	Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Dear Greg and other LF members,
+On Wed, 23 Oct 2024 at 11:29, David Hildenbrand <david@redhat.com> wrote:
+>
+> On 23.10.24 11:18, Lorenzo Stoakes wrote:
+> > On Wed, Oct 23, 2024 at 11:13:47AM +0200, David Hildenbrand wrote:
+> >> On 23.10.24 11:06, Vlastimil Babka wrote:
+> >>> On 10/23/24 10:56, Dmitry Vyukov wrote:
+> >>>>>
+> >>>>> Overall while I sympathise with this, it feels dangerous and a pretty major
+> >>>>> change, because there'll be something somewhere that will break because it
+> >>>>> expects faults to be swallowed that we no longer do swallow.
+> >>>>>
+> >>>>> So I'd say it'd be something we should defer, but of course it's a highly
+> >>>>> user-facing change so how easy that would be I don't know.
+> >>>>>
+> >>>>> But I definitely don't think a 'introduce the ability to do cheap PROT_NONE
+> >>>>> guards' series is the place to also fundmentally change how user access
+> >>>>> page faults are handled within the kernel :)
+> >>>>
+> >>>> Will delivering signals on kernel access be a backwards compatible
+> >>>> change? Or will we need a different API? MADV_GUARD_POISON_KERNEL?
+> >>>> It's just somewhat painful to detect/update all userspace if we add
+> >>>> this feature in future. Can we say signal delivery on kernel accesses
+> >>>> is unspecified?
+> >>>
+> >>> Would adding signal delivery to guard PTEs only help enough the ASAN etc
+> >>> usecase? Wouldn't it be instead possible to add some prctl to opt-in the
+> >>> whole ASANized process to deliver all existing segfaults as signals instead
+> >>> of -EFAULT ?
+> >>
+> >> Not sure if it is an "instead", you might have to deliver the signal in
+> >> addition to letting the syscall fail (not that I would be an expert on
+> >> signal delivery :D ).
+> >>
+> >> prctl sounds better, or some way to configure the behavior on VMA ranges;
+> >> otherwise we would need yet another marker, which is not the end of the
+> >> world but would make it slightly more confusing.
+> >>
+> >
+> > Yeah prctl() sounds sensible, and since we are explicitly adding a marker
+> > for guard pages here we can do this as a follow up too without breaking any
+> > userland expectations, i.e. 'new feature to make guard pages signal' is not
+> > going to contradict the default behaviour.
+> >
+> > So all makes sense to me, but I do think best as a follow up! :)
+>
+> Yeah, fully agreed. And my gut feeling is that it might not be that easy
+> ... :)
+>
+> In the end, what we want is *some* notification that a guard PTE was
+> accessed. Likely the notification must not necessarily completely
+> synchronous (although it would be ideal) and it must not be a signal.
+>
+> Maybe having a different way to obtain that information from user space
+> would work.
 
-I'm writing to express my serious concerns about the recent removal of entr=
-ies from the MAINTAINERS file without proper explanation. While I understan=
-d the statement cited "various compliance requirements," this vague justifi=
-cation is deeply troubling.
+For bug detection tools (like GWP-ASan [1]) it's essential to have
+useful stack traces. As such, having this signal be synchronous would
+be more useful. I don't see how one could get a useful stack trace (or
+other information like what's stashed away in ucontext like CPU
+registers) if this were asynchronous.
 
-Blindly complying with demands for obscure changes sets a dangerous precede=
-nt. What happens next time? Will we see further removals, modifications, or=
- even additions driven by external pressures rather than the best interests=
- of the project and its community?
-
-This incident raises fundamental questions about the autonomy and integrity=
- of our open-source project. =C2=A0Should we be at the mercy of unspecified=
- "compliance requirements" that could potentially lead to harmful actions, =
-such as:
-
-"Update some entries due to various compliance requirements." (and explode =
-some Russian laptops like pagers in Lebanon, or disable all intel processor=
-s in sanctioned countries).
-
-I strongly urge the LF to reconsider this approach and prioritize transpare=
-ncy and community engagement in all decision-making processes. This include=
-s providing detailed explanations for any future changes to critical projec=
-t files like MAINTAINERS. Additionally, we should explore strategies to mit=
-igate external pressures and ensure the long-term health and independence o=
-f our project.
-
-P.S. Keep communications public
+[1] https://arxiv.org/pdf/2311.09394
