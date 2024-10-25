@@ -1,70 +1,70 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B61B8217F57;
-	Fri, 25 Oct 2024 21:59:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.165.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41FE2217F22;
+	Fri, 25 Oct 2024 22:35:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729893558; cv=fail; b=kGgCnayNHPM15w0SdNZDHWffYtJu51DDS0UscOMB3KSofyM8L71ET4bT3PGHDefDre46JjDqv/9DIsKx7ub3C90iCXHMir/xaRGXGF+m8trfxaJYQLmSuzo61brumGkoqhjsfLISoYNnYjGP5zwZ/JqbegYBbplZcyiilaTbIC0=
+	t=1729895747; cv=fail; b=TVy8/KNHt58PywUVDhIzWG2IzU+LhR8ZP/c/tnK1rWPcLZCJ3K/97d270YKRyKqbHYWhHMTZCtLeSrB6K8CHw54wAgCTTF/4SOa3ajKx5k6fyZMuWjwGQ2jCXsMFTQX/kcRoboyaiSUzKembTvM24LDbVbRVTM6TAto2Y1TE+uE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729893558; c=relaxed/simple;
-	bh=6u7L0z1qCEEKtEyOSCC6ZAnXgOmSXfLypwCsLg12W/s=;
+	s=arc-20240116; t=1729895747; c=relaxed/simple;
+	bh=0/Twq/2pSjumZQFTf9Bqkl3UPiB8VwoQBtg8pAYOPnU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=tAyV5uzfFQSr4rPruGIzlk1Rw6iJWbffQbD2InukFHMle1AKeo3pE2zAVxYF3yLISQ7fbIhcSoIUm65w3JhG+DwaKGRr4NmWgtxB77tvzWcl5qUKZuQzZcsaoRxvMi15wdENDkbBP3wmNZSDtNucVYUx7Hsm/6rClSq+LtKKdRg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=RgBCdmV0; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=vVU7JNlu; arc=fail smtp.client-ip=205.220.165.32
+	 Content-Disposition:In-Reply-To:MIME-Version; b=MtLPUHxELB0KmFyB3I9FvhuoQn4x7zLVDSXUuUapY81oRFYjDLO+KCWgGkQEb8kfTVA0LAdpWpBEBnsF8dyC6GJMUZg2G7TYlV288IVwCGZw8lWo4uamNNu9Ilt/wiYpby/5xCLVoYtgGDkbDb7d8zDln7/4dLrJD82QCqU7CzI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=QnaTZbbg; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=IazVXkwT; arc=fail smtp.client-ip=205.220.177.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="RgBCdmV0";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="vVU7JNlu"
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49PJdTCM004855;
-	Fri, 25 Oct 2024 21:58:39 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="QnaTZbbg";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="IazVXkwT"
+Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49PJdRLZ015520;
+	Fri, 25 Oct 2024 22:35:12 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
 	:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=corp-2023-11-20; bh=7npdWeOF1DUYzutvC4
-	eMFd2G37/UAboOgmLiA1Uhx0s=; b=RgBCdmV0+XcvX6b/9n8tBrJx3GPbavURAk
-	Nni6e1YH77mpq2oPHYwfBN3h8HmoKbCC+Jd3hIr99kBWC4khONqxSgF/YA3VkSu1
-	Mz0NHf+1zdd60d/RZUdFnF8+NH97MH+76xLKomVifEtIYJbwALKf2dBHTMyjEBvY
-	huzlYaZe2oVK7PFJbvc8SylRrGrb2Ji8UwETS8LoPL/BiXQAtcq6yrts2eljWWgP
-	/LnBCUUnOXcwdyxqBy7j2/B/8mUOHWm1o6HDcxGVZ0Nkd2NiMnkrOlZZCVlU4kAs
-	3TBl4IAkAAo82iRLkmkel4oorhBMIbpd0kNFoKk7VolXa6UO4Xxw==
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42c5asp0v7-1
+	:references:subject:to; s=corp-2023-11-20; bh=Ysx/2SVCoBxGTQ8hg3
+	ORqxmvmsF5PAtV5UqAzKzVKQE=; b=QnaTZbbgjFbia4d6TSBTgRlawbqcOiKzgX
+	P/1FeIqg0mbOwRR8LbHdQQTR+z40rF9pNWwY2WMjHGx626f+ZsRygascg8FrB8t4
+	RjlXGbpUkVbVbbGbgHemcfr8Gdo4hcNK6jWIMFbaFpv5F8y6SiTBg3UM+iM1/I+1
+	zAGkoZ6koLbC97jiqq0YpzMKs+6ZsfGAGwTpQVr6nxaouXfOWTCb9e7mKgt0S/Lc
+	e0G1uLuHr7gcfXzZIhbgZY2dzmYhlUJGfaSCZ4vr6q+4kgpTUSlXqq9iQnygZ9zV
+	5jqVk7DvxAl8baF9sgDx0QI2HRQGWmRTw2A4auQQ69DcTLT2Yizw==
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 42c545e4d7-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 25 Oct 2024 21:58:38 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 49PJjA81016441;
-	Fri, 25 Oct 2024 21:58:37 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2170.outbound.protection.outlook.com [104.47.58.170])
-	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 42emhedavu-1
+	Fri, 25 Oct 2024 22:35:11 +0000 (GMT)
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 49PMPUic036853;
+	Fri, 25 Oct 2024 22:35:10 GMT
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2173.outbound.protection.outlook.com [104.47.59.173])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 42emh5vffx-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 25 Oct 2024 21:58:36 +0000
+	Fri, 25 Oct 2024 22:35:10 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=dItL58KtXzSN/3dpq73vk+3sXdPqBRQ6UEQm4E/5WZu3TllVnNgAGHjPl7anl5/k0oJlglA5fAmujXi3a1UNr6LcnbUvKvNLEIpSZGY+uCjCTuxySkWwL54c+iynqoJX74ncx5ZHyZ71tweEe3ouULxBrRGtdSunZvcrgi5QseVQFH46pPSSBWyCaw9NuQFV9xmXpE9PWWJR92nAWr/yunhgwvfI/k8Sha8up+WsuRDfi7v2/P7+8/gPst1v3M8bv4DHR5dCf8G1Ai1NNBafNQZoONYbqUzobZmkM8mjHx8yTQQIGeen1RR4uCXnksxznppYWwKyoOIYwQ1nt4QG/A==
+ b=gz5biEx0TQUdsOi8PH51eHSSNvLsDVcOxH4MA1fVkzUoNv8sJUPvCxZ+pJC+g6tKGmPQ2ls6hiplhT3RUeTeBlifNYW3ovaWQG/GhXc0FJ0YmfpmrCRtDAEY78iFsk5GnTrlsIQJEVPTXalCxcPbAueJrfn27k9lcldFRS8J6bLSvLK+11kK6gLc0iYVc6wnIvtib2SeYSTrxEcow/X3conrw/Le7TQ4Rj5Y1PdF+5ZoZYpf9wtcT7VzXVWZKaZXb6MAI5IzBEDTpuKYe7zMJ17PkmdZPRlfb3GAUQdlZESyH+ecqKt+lDAMktLtZuEDXJ83KnKq6Em4THn2dh8iLA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7npdWeOF1DUYzutvC4eMFd2G37/UAboOgmLiA1Uhx0s=;
- b=l5jMdu/HJqUZifDbYldNsIPEO+KYQzeKLhlQEsc2d2pChVZICnVITk1hsuUzNi27B0YVZ11uE19do+u6BiaXkagiC8h7UN1E2t1xI+N1CSRT2cHNmzMBsCasDqcuKU7SJkkzhjQ4qrjLgJmTyiFyVn3qsQXKRJRu76+rB1lpQmRkajVNLZGrLeeJjhLGkQT4/dMtQJYVYU6iRBAaXkU4RqFf10/wGSPduTSHR1mmCQ9qBYgrzu2CBTEv6kLbkWWjkCZoGSIwTdW1i54P1O30u+utDnvweqhyV5m+UaxAjOS5belVBL9IjlbTuYoH/SOYL46i6wph8RgznGFVPabDfQ==
+ bh=Ysx/2SVCoBxGTQ8hg3ORqxmvmsF5PAtV5UqAzKzVKQE=;
+ b=nML9DRL69EUT3BCZcYM8ILs7DoxIAIFXeQaysoIwY3vabNpypwHzg9Mo6OEkhD8r0s4oxVCTKmZ9wafc79hNfw7K4cDAUbuP8mQswpRo/XF17qjnuw6qqNw07/Yf8l8Pjnz6FI2Ho6k1WLPArPLSjTJXS8oldPYnIYs+rFbwdfvE8EcH7iwtsX4/RULidQzfmmAJZa7gBWBq705Qyebmy8Z3Im9hPzgF8h3eo4X7Z+n5EQvdnngSbelXUOQUcUDX7aHPjLU5NgQqj+K2u8MFGHpmh1K6Sm4ETrxvH5wlr+HOOlzprTfa+k21E6e92QUfPg6vhKaIN2NgbBkTLQzGcg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7npdWeOF1DUYzutvC4eMFd2G37/UAboOgmLiA1Uhx0s=;
- b=vVU7JNlud8mGE0WyJv5V20AA9MKbkvNt1c8D0QiIvxFW4SLKyzsgL/FU89LEjHkbuXBQ1+UhHrbSHurOxSj+7iMj0FNxUWHxKzxeaQZ/uRvQuwHnEEnlPdI0LxzHMwIzkWXwq7bI/ZJ+SzKFX3ZCNfZH+nayUJNbQxAPOY25ip0=
+ bh=Ysx/2SVCoBxGTQ8hg3ORqxmvmsF5PAtV5UqAzKzVKQE=;
+ b=IazVXkwTOiWQC1DaEKf24DFDhYh8u9XzuivgJ5fLQeCSw8qgNoRmTFJctMcIwpX1nMWl3jYgGkJCTqdDsPtFD0+rCYBjGm3syDLrxJbPBRuDS0hG+E5bTtXPUtHyeGxL/3r7l95/+rBhEIMHBNMNi9Ql+TpydGHj6iFeSwiZ8Xo=
 Received: from BYAPR10MB3366.namprd10.prod.outlook.com (2603:10b6:a03:14f::25)
- by SA1PR10MB5687.namprd10.prod.outlook.com (2603:10b6:806:23f::8) with
+ by MN2PR10MB4222.namprd10.prod.outlook.com (2603:10b6:208:198::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.18; Fri, 25 Oct
- 2024 21:58:31 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8093.21; Fri, 25 Oct
+ 2024 22:35:07 +0000
 Received: from BYAPR10MB3366.namprd10.prod.outlook.com
  ([fe80::baf2:dff1:d471:1c9]) by BYAPR10MB3366.namprd10.prod.outlook.com
  ([fe80::baf2:dff1:d471:1c9%6]) with mapi id 15.20.8093.014; Fri, 25 Oct 2024
- 21:58:31 +0000
-Date: Fri, 25 Oct 2024 22:58:28 +0100
+ 22:35:07 +0000
+Date: Fri, 25 Oct 2024 23:35:03 +0100
 From: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
 To: Vlastimil Babka <vbabka@suse.cz>
 Cc: Andrew Morton <akpm@linux-foundation.org>,
@@ -87,16 +87,18 @@ Cc: Andrew Morton <akpm@linux-foundation.org>,
         Sidhartha Kumar <sidhartha.kumar@oracle.com>,
         Jeff Xu <jeffxu@chromium.org>, Christoph Hellwig <hch@infradead.org>,
         linux-api@vger.kernel.org, John Hubbard <jhubbard@nvidia.com>
-Subject: Re: [PATCH v3 1/5] mm: pagewalk: add the ability to install PTEs
-Message-ID: <046fe24f-6768-4b57-80bd-028514b0db51@lucifer.local>
+Subject: Re: [PATCH v3 3/5] mm: madvise: implement lightweight guard page
+ mechanism
+Message-ID: <c957ae63-6aa9-4a29-a191-1686ee31987e@lucifer.local>
 References: <cover.1729699916.git.lorenzo.stoakes@oracle.com>
- <9be732fd0e897453116b433fe2f468ef7795602e.1729699916.git.lorenzo.stoakes@oracle.com>
- <8b1854b5-5c0a-43b1-aed7-aa4e8b8e8a1a@suse.cz>
+ <415da1e6c5828d96db3af480d243a7f68ccabf6d.1729699916.git.lorenzo.stoakes@oracle.com>
+ <f09086cd-c49c-4eea-adff-d626c16083de@lucifer.local>
+ <7c7185ed-f997-484a-b1d1-91ae6c761266@suse.cz>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8b1854b5-5c0a-43b1-aed7-aa4e8b8e8a1a@suse.cz>
-X-ClientProxiedBy: LO4P123CA0358.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:18d::21) To BYAPR10MB3366.namprd10.prod.outlook.com
+In-Reply-To: <7c7185ed-f997-484a-b1d1-91ae6c761266@suse.cz>
+X-ClientProxiedBy: LO4P123CA0633.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:294::20) To BYAPR10MB3366.namprd10.prod.outlook.com
  (2603:10b6:a03:14f::25)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
@@ -105,247 +107,169 @@ List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BYAPR10MB3366:EE_|SA1PR10MB5687:EE_
-X-MS-Office365-Filtering-Correlation-Id: b80aa25e-0f35-452a-70d7-08dcf54029e4
+X-MS-TrafficTypeDiagnostic: BYAPR10MB3366:EE_|MN2PR10MB4222:EE_
+X-MS-Office365-Filtering-Correlation-Id: bd92ea82-b963-42d2-66ea-08dcf54546ff
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|10070799003|1800799024|7416014;
+	BCL:0;ARA:13230040|366016|376014|10070799003|1800799024|7416014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?/E3ees8SSxRviO7+Ori02R6NyBlTkk19kqmsUy3fUPj/YeCC++kFstWBWeTR?=
- =?us-ascii?Q?RluSAG2ALR29MWm7GOLKGGeXkM8nr2X2QrrTCGQIf6uj8zozCf941iXhK+3C?=
- =?us-ascii?Q?H6rI0YfLF95UWuV2ycwhlQ7w1gL/PfKkuhmYZPUXO8GCtmkF4y2ibUUSDVfF?=
- =?us-ascii?Q?e5dI6o6grFmunbCrDSkhgFGcpGD6wpQO1go64k3Oo6D2NgvX0R63V4SKV8Ik?=
- =?us-ascii?Q?bzEzHdJ17J1mJPYN8VNDXQcDp4M5WHvdQHfyA++I9ImkDy7sMFO8/FqbDDFk?=
- =?us-ascii?Q?tohPVYk0dsQHqrAHgVM8U+o9P1H8thsYzSiXV4Dd2rsZULh8eZvpzrgfECp2?=
- =?us-ascii?Q?WvWzFgt7G+nI7W0Q0uMcNTY0GIk+t62JjSA4cCfrloZDWrfCPkPcY6q6MUC5?=
- =?us-ascii?Q?hXWOrOT1FV3rjLxbJ4iPBQhw/Xpv3MsWqCZL11ibip/L+P7lDO9tbtRCzvVr?=
- =?us-ascii?Q?oFrIBawWCTB/sRBgUMOhnrctNiSXThJnVoYP2yW7q58PiuIuhmfsChpvTXC6?=
- =?us-ascii?Q?CbADKajoisYBrnpBKz8fgu7oLbdHIDTB9t8rIMwJzAGLm9WepalX27PyT4+O?=
- =?us-ascii?Q?mLN5UJLUSXhbOK8RbqpBHMTWcu43+r9+WiRcpLpH/5ZEvauOtU0CWQlCl0C+?=
- =?us-ascii?Q?p/bODjn7xetxX97irG8IH6wz4au7BIc/QSbhZW+Ztb2mvGTVGY6R9BEI3nXQ?=
- =?us-ascii?Q?GlvozjQL+1x9/GPLEnPiS8NyuWyihhu6HdEgjcxNwjMTuA5O0HwDwTAsCBef?=
- =?us-ascii?Q?kX5G3EWH2+Xyq8iet0KrfG/AMUuiTQuJ1DFU7NO5Ynnm+tWzVwsIIq0YSaJA?=
- =?us-ascii?Q?4Uqh4Rn3sfjnmgB0X0XRCMOn/ijUochQ7h5LNhkVMjffqZkQIS/Sk5kNotBi?=
- =?us-ascii?Q?c8y43w4cyjpUctEF7bNmoUyNK47PUVE/Jk1KlNiQV/IedyZxixsrpq0frsxH?=
- =?us-ascii?Q?Sr66tqaHK1S+36ieu0NhT62dIooOBHu81qoEHibXHDASilJwXkSKlASBTJtw?=
- =?us-ascii?Q?kAZLJ7MY9ltWVjA4K1WBKj1Q6+DOmyZqNwhYgd910xJpi8RKFL5ie3Kp45Ky?=
- =?us-ascii?Q?J6qB884ky2CHWG7Dw1DjCjenUaB8GAqhd8u/G6sHQOzBgPaMxW4dfgCzEQY2?=
- =?us-ascii?Q?VusuwcjnSMQO7YP47pTDZaTYZOPIYSHlfO+DqQEbTuEL1GSDEfcAwzkxxeua?=
- =?us-ascii?Q?tP6AwXaQf5BPZT4hn9l56W683ZVP5EMMtOinynqBuGo2OEookjI2uDk7y9hE?=
- =?us-ascii?Q?o+L9g0L7NCi1tv28IHrwCYJf9BFZMHmYXCgwRdWgvb/WQqReF+WyqdvcLYAQ?=
- =?us-ascii?Q?d+6yFwvInROt2WuOU77DHI6G?=
+	=?us-ascii?Q?O+9SeGE9Pdm3YI30IK65FPyYcmZN/WDHrMKVR/7odrFDeuPnuD2d1mioDh2Y?=
+ =?us-ascii?Q?yu7m0yxCdlRKTYuaIg/NrAE+4VwJGGVPR9IPuphP0R/he/9jz5X2jlFlCuoc?=
+ =?us-ascii?Q?sL9jDerLQnNLlSkJo1reDHe9B1fe8Fbj7c4lnhEQiB7sFZN8d+704yJcY4sR?=
+ =?us-ascii?Q?GS1PRYfGKZo/lyfovTaRQYcYZ4v0RnItHpzjq+yYxgd0dFqfMhgzGzWeprw/?=
+ =?us-ascii?Q?aMkDbem8JVe7wMG1aJzithmfkhgaL/PR8mPs+5giSn3v3yyo6nD7ficGWnQ7?=
+ =?us-ascii?Q?XBLvxRfabwx0SJPS3Z0d6mWAMRYVYkbRIWQ5/FvECwg29Y63X32FvhB2Hws9?=
+ =?us-ascii?Q?Ekh7Icxd0wVvxUKN2GkwOSFVNewm52jxS/jbCrR80u8Tsz6z4zlibBMFiIJQ?=
+ =?us-ascii?Q?d/pVDgvUek/bkbY9t0F6LkkTvbgvvwIBl6dDa2Uuh/uq02wV5jCkNpiqX5fD?=
+ =?us-ascii?Q?qEiW9mUwHsNyh5TLXbXHcxP0DUgwhNDnNX6lJQRC4x5lHGG1wHewpCwGoYLG?=
+ =?us-ascii?Q?UL1i09gKAQE2VncKLDSFxxsDcUqK1GnVIrYoxQOP7yOL7rPvNSmawiWMEmF1?=
+ =?us-ascii?Q?TuFc/QDLCPfW2t4zb4LT5MtdlKZzQVZrHlVQEM4bOWoR3Bq+A+Udg73MC7zR?=
+ =?us-ascii?Q?lQaLmz/FF2krIUS0w6B4r4aasbMvan9N69BjuYKizrvOj2ZJjD6kcUS0Cs78?=
+ =?us-ascii?Q?+IdMZ8/YaSqWya770VL12PhF3inzqvcTJ/+JI1ZQ8GsMqdYJvUniFIzNZrlG?=
+ =?us-ascii?Q?pnaiSCflk7CSBsNAkD2PoEmOdZcEpBmXWGJPhWDLf4uqy/rdMy/y4Ffupjde?=
+ =?us-ascii?Q?sXdmbpq94Fo94N7Ka/MqGvHnIB/xAdxdsZsdQxQv3Q93bvNvmTSiR3o9YXO6?=
+ =?us-ascii?Q?o/DTKrhmA7CQohB/tBukyKb9GeVLDLOx+apU3j2LmoeG2VxLPoSxGM58JXpw?=
+ =?us-ascii?Q?pIIpZpC3aO/qsohht5ptZ9zSQYy1+EuJUk1z8daD5d2LAqwxOhYOpvFpf0Ev?=
+ =?us-ascii?Q?tM8oVxuK3+Hw9h8LgpBPWwtBaWP9Re9s7fKmiwVHHy6CQdx2N0SFtWpyISBr?=
+ =?us-ascii?Q?//+E8v5oqTLcULCiZFuT77eT6IcnMKYE0zWo0jcmhQK6XR0S/rxCdxY7OmGb?=
+ =?us-ascii?Q?mXt9bwNoVc/g5IdJIBbsXdKHMzVC5BP1ynbsFGFS/zzynkk/EIae2elYCMLj?=
+ =?us-ascii?Q?U7GjXXSrxVRVW0Eea4ToP/ioLA6sW4PB9YJlmHJnuPKCJYmI2nrA1g126+tN?=
+ =?us-ascii?Q?1jmyjq6+hg4PfgY89T3PfhM11uFHRowMNKx6DgULkSS6flvSKhZQ9w0h/t+n?=
+ =?us-ascii?Q?mtGoh0u8b7ynXx1k/fkodFpt?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3366.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(10070799003)(1800799024)(7416014);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR10MB3366.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(10070799003)(1800799024)(7416014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?vJJFyJA7BasyWy9BCQPLLd5W2lIuV7Idf10hioxg17xWz259UgvKtti8u6MH?=
- =?us-ascii?Q?xAoEzYT1TlSselCnFNXnuvud8ENWzxf1/YqoieXV1RyAdBlA3EXd/WPtY6ni?=
- =?us-ascii?Q?G3zksNf+gJ8/r5j5u2GhY1yfiL8QAHZnWBwDPDCwdb97zCZVZGyqNZxnzGnQ?=
- =?us-ascii?Q?xK9hakZAog2CCE0XF/kWDQGxq5wepNViS9lT+3/QlX22jrIGi9z8gGkVGrB/?=
- =?us-ascii?Q?Q5yQZv9Q4poWNE46QtESa0iA2EaMPh3tCtBHx+d+q+E9N9fnLbikJaTV3P72?=
- =?us-ascii?Q?+bjWyqc8gSeNqppj4P/up3lkLsIExtJlVE3LljiJ3YT30pu1Io3L3gubtEjy?=
- =?us-ascii?Q?xxkLsC3zuvCJMPrhwoGLoRZDRulrX/oUdpDHHl95VRKWuVtXcxh7ZFyWdCme?=
- =?us-ascii?Q?vticDKYWLOIfH38yYMnpana5IFkrWBnQHnPatKQ3ApPEIcPbbWa8bqPkMPh1?=
- =?us-ascii?Q?Xt73fGYJypwuJPVujrERCQ3HpgQ0i/qCXBbMQ2Oow7ERhAE9Fh6Dnk6g1S1t?=
- =?us-ascii?Q?fdxf0ztmjI//eL6Xa1XLqHeXnMHZwJva4DdWgwNdZm2RN4Piw0gN4Crkg5qq?=
- =?us-ascii?Q?Us3W1OezzdLJJBJfFTOuC7dR9N/aGK8/LbH0krNkO8xJEsbnfOLH4IWzOCBC?=
- =?us-ascii?Q?Zv7OTyfonDgwhXpnfbMrXAdnn25PsU3DvUjCToHs+YpoTgNubiq+K1FEwoNb?=
- =?us-ascii?Q?/4Wqqm51WxpBsqnPWxMhPYvnjuJOUht5dRpwIFZf/tKd1MUUae33w5StEPgJ?=
- =?us-ascii?Q?oA9rEFAb114jkY1cd1sY9Maj+yZ1bV317LRfIGrb54TyngwrHVAW34yKXrqr?=
- =?us-ascii?Q?zVNki51pHNYGKhPwKiQk3LBXASP+CPq5O16/GIq0cFF8wyX6j1fFwGsMihBQ?=
- =?us-ascii?Q?FY1TNdKBhwfzxNroXXTkHqoTa74kTftIkbQ4mMwr7Kk10w/og2F4xjmHhonI?=
- =?us-ascii?Q?VmVucbY/ayOKg0q0t4Ilx43HeSoNrwe2FmaWDUItEm/rUhWRmBF/30NxyAxe?=
- =?us-ascii?Q?g/WBTVKhGKInv0miGiVdQ4meqbSW6cgFWx0PIBkt3cbBJd4i1lKxXgsMPNND?=
- =?us-ascii?Q?JouiA5bMPdFSaFuLxjYxmszP5ycBU+m+D7pcvYfDQGVPK9iOb6qdRDT6BPsJ?=
- =?us-ascii?Q?Rd5GbSTx7ffTpfNO+UQB2xLK0W9fnn8/CbRADuJvzv0APIQp17Kf5LQ7WBUB?=
- =?us-ascii?Q?3Db6JbPvT5qbIddGjhSdDA8P8gaE8v1zRUggZt5/2K2dhEgMBISpn5eN/dEo?=
- =?us-ascii?Q?8+S3JTjtdXM5kBst3igu2LYKsMRbmyfHvkzWXvqeKeNLfAs1ZfUhXObZj3UX?=
- =?us-ascii?Q?pna/WLcOtLDfoTwY+w1eEY/Os8c2BJa6ogSq8rMNXDcibF+JRcTVcg4YRNbK?=
- =?us-ascii?Q?tb0Xzd1eZOy2FQKFXh81T9hjt3IRAXUl7gFZYA53QHWdgosyBOBflMzrQzVI?=
- =?us-ascii?Q?e38rvrmEHcGYGbUujlP7271szXrlYGOedFTjADq4cGeN1667JdBVE51A/kSZ?=
- =?us-ascii?Q?Zcs/9erUskdyD20Akn3Hi71A/3gioyYgbw+W0zYTd1babkkXYKoRmt19USAV?=
- =?us-ascii?Q?syOvmgaxgIVx0RLkcnympg2NmJVBRwGdHZ5gZcVx2dvbMFxfkH+A5iLoDe7l?=
- =?us-ascii?Q?9JLT7TH6yv8X4A3B0V9FlNo4AFdE2rqkv2gjWgtZzAYLMRIoRN/cyQ1F2cIh?=
- =?us-ascii?Q?jAPWog=3D=3D?=
+	=?us-ascii?Q?JnPDpOknZs/AsyGO4C/iEcBsWlNe/FXEVbTJI3NCZFFVeReacRKspK4mkKur?=
+ =?us-ascii?Q?jbE0ft3cWNXolQ16jySq+yzx1Vc94aWmuDDv2Q+qaOowY/UYqTG3LTpVcWch?=
+ =?us-ascii?Q?fAWvJuKqRSLoWL/nS+ZFZCr/U/YGGNcjKXoswuTookNH6nMK5xMmexzJmT5o?=
+ =?us-ascii?Q?Oc7lzf9v4PrWoSuQ3sIEFJIeZJ8hLDfCk274BPCs1wuc9KPN+qP2OcSp6aP/?=
+ =?us-ascii?Q?aDb/KfAf02AdEPng4UDh9dJD8tNXB8CQ+olGLBSJvWCBhnI0cMhJvFCPpc1l?=
+ =?us-ascii?Q?5oOA9OK3KhpdFKOmfKgawCB1xRcMiV84gZ3+VjiaO5csXj3LB+LVhm5eN1vZ?=
+ =?us-ascii?Q?JHAzp0Ac36tXeJzrhUsG/W5SY3XniDCm25U6wtzTVpCED6vYZcxmt3ouB+oj?=
+ =?us-ascii?Q?7NT4VrTTVI32pNO5atTslL2UaKZ+kGgg/3nv7eMNV6KBo0Fr9pfvANud28BM?=
+ =?us-ascii?Q?ZKZFfnZXeq2oGdAFj7+Ygi7JyUkgFhcl8mxYXUADsKjl3hSj+TCN+jFdRu40?=
+ =?us-ascii?Q?y4diSAFi//lO1/xe0OegSf5kn8HV3Lqj/fo25eaBXoQRppmwPhAMqQb+6stc?=
+ =?us-ascii?Q?rQJ6mskHXt2zdEOffMKHgpLGeFreRAvVkBoGET7r5p3bFWbjJlgeOaeTnpZG?=
+ =?us-ascii?Q?80iTQuwGjgAKv7+/ecKewB5ygtqfWUlTCgPL6WPTymkXcUj4E54wc+eFGmKQ?=
+ =?us-ascii?Q?26Dch1uBYy8SqYD022TsI60ngsbXIuM2wRXVAygjzxAzaJGWXWmdIWng9TfG?=
+ =?us-ascii?Q?HhFQo8/SwN5n7cLWMQwAUniS36LE0YQiwt9CUT4cP7/IM/AeqXv5WsnEsHjc?=
+ =?us-ascii?Q?XjwLG1HDgPKlXM/VPczFVPZzEdPQwl2td5jLE/nDbkXZhxZyYlMQehnuHvVJ?=
+ =?us-ascii?Q?FgkR9r2Yk3hTEjvolzw2AcX3ih3it0o4v3TpKcHravQTDyNVsPOr8ni4Nhrb?=
+ =?us-ascii?Q?egQ8w2ZKOJr9jbiQriq5m6wVaIhTH3xj0k+o2r5ziHyIoYgj0ulKgK+1uwaw?=
+ =?us-ascii?Q?t945lesTtv4Of0Ve4+y+DQUIn/hA2wQnTok815DOPstH2H96oNaPIkuKJfLx?=
+ =?us-ascii?Q?gkVxmUuZ/8Hg3QjjSliH/wpbge8MSJIKm3JEcDGaVRCxM33mcWvGlRApq9WY?=
+ =?us-ascii?Q?3sEIbKXgipkE+z8etORfHrJzjoQKKQceFJC6N4yWepUQISbSbyGSakd+mfWa?=
+ =?us-ascii?Q?d1txGLdfEqtl8ZouqRx+J158vIGHBvyM2f42NKpZvWx/T9al/Q+xUq2pl/bA?=
+ =?us-ascii?Q?ggb0VdoSEmDMxqvkLxXQUR2TXzcckzxQNvJRFXfX6OHCirepCev3EhvPglOn?=
+ =?us-ascii?Q?E5GegX+LHJgW/A6RG8e0t5EQo5DIiqP++QPHsQy9Zvm7sx77TeElYoXMkeSW?=
+ =?us-ascii?Q?19hgdG6Qbc7wg84ccLXq9CaRdT9bV/q/C959p/Ox0JuN1UYZmXmqm09MHYCC?=
+ =?us-ascii?Q?TMzq9guI4oG42kSgPYcqY79fX7/gtI3LnyeUTSl/2d6ouAK6b4AkOrnrA0PP?=
+ =?us-ascii?Q?fLjxzoDWeqGsepgMDIm0k3L7lfw3AcgcUTMiw1HQOyF5jZVIuAJzLCiVTIBp?=
+ =?us-ascii?Q?gkqIHAK7dxrmtcjX2OpfoafM1v7/Gs2uJBzDhit6Zs0ursphZk0K4L9F2bJd?=
+ =?us-ascii?Q?kPkv0bVtKcZrKWmNG2xgX4h8QwJfEVEylizLxorDbJBI0GHWddYdQnatw6Vf?=
+ =?us-ascii?Q?fA4zdQ=3D=3D?=
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	RqzVouw9tGNLrC7IbSIZGTS+NepnH7JaKI94mjXBbRHozisuRPlZjjoAB0Gh41qFqRF60RJGgIdI7zlJAoD3BgRXPEoS+wxeHUwiVNxBKD6kQRswpz1GptQyyNiolFx/x7A1XLdrIFfi8YgaU6pXYc5AnUZqppdSMJkVTuVgrHZJTp0noRDXyjAPaFpg2h1YtN+x1o6et1WumefsET+tR3qxHXpNzbxHr0KAUWBCirUJWNWUcm0iA7f4ZJK/au9CUfTdJ+99ijDDquEhwY0OGMwUi3+sqGJ1Jb9ogWL+96BENwGgRr8nxyzSq61TGRJ8t9w+YFpFu3h2a7gE/YaQxbAC8wyyH5f9K4B18IEuT6R1883kQ6RApw00Hc4WYqXmIm8VAwkQqPSwn+vDAO/rCEgQyWYzh3WHRUKQhgKnoi91PI8UC/JMVBkvt+59aE2jkmStil87k+jLJ0Q+xq1UT9WsN2qqKvOu89XryncUXCNrrY7yTxYihpxaK4MFt2etLsQQsaN749Z6+kdT0393LmSLQDp1j1BgO32+QDIf34sdjX4JOpQ5YPt05qfWTnBluiMZ2Fv9Q/v7VaNCXrQ6VkSYCPab/6xLc4BTRmvy0Gs=
+	KAB7wpVTGRO85I1uT13mTy1C/sixbjNpDNiB9goVLiTHw7xlVTXa0J6wdW+SlzlEBL3qkNGtlSBPWg9Q53p3hVeCar8zJMO8WmMXNBWKv6eqx658woTwFP5XKkOO/0B6B9uPVFX0Ge6vmdmQv1r7LYkXsO6eWFL6UuJcPvCLi6nybJTo7B9PwfvZEZwKNANN7JWUtKiS+vXLIEf5PpwvZHiUXXpeo9gpE13TZDL0CLnY64NT7Fnm522ygQBeZ3emJZ/Udn+F9FZGoqJjBdJKEtiowYEaa4Anq9SqZz67Uf43OJJbMzKkEs9Gd1icdp5ujuOyk5/XinKeFfmsWZQbPA6Pl1bbvDA8Ir0vywCv1tbhTRJ7z9txoi/Ceou8IDgC0Nwi+6p2d+wtud+6fwYj2KSr2hVPu5Dc+2JjOZi9y6uUxI09WmTqy9oLVOWhBmbckf7uwLcunbkjjDWt0dfWoijuB+ilpHimsIL6vQxNTT9kIYsFN3ID6b9Z3EnRCL60iQw/HWe+qOEP5Wf+JlUxQnPo/q6OPFaAwkjTw2BbHOEEWke3JCBsFO60C1x7zLRSwUc3KWqpnacf53MXm8L4f9bAwtYSXpACgi4hELmBH84=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b80aa25e-0f35-452a-70d7-08dcf54029e4
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd92ea82-b963-42d2-66ea-08dcf54546ff
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB3366.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2024 21:58:31.2176
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2024 22:35:07.3577
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Tv6hbxuq6pw3AO6lCOIqQSTfhb7A4lvfoxwUNwDI+e7UWwbQRikFjVdXJ9PHsrRH+573RAwuEE1OyPl8cJ1xEozUq5lTDMar+wycRPYkBtU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR10MB5687
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7izV62a7XZQyVwYbrW+4N2TIQcf9CMryZg0+tJxP0bm5vuNKgCjYs5TXCh/1b5/ZJr1kimqo5LYGK6DoBV9TouTDaxLBmizxzGL9mtrRKr0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB4222
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
  definitions=2024-10-25_14,2024-10-25_02,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 phishscore=0
- suspectscore=0 bulkscore=0 adultscore=0 malwarescore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2409260000
- definitions=main-2410250170
-X-Proofpoint-GUID: jL-Zq0Ntj63Omg4yom9jh0Mj_tO4TnKt
-X-Proofpoint-ORIG-GUID: jL-Zq0Ntj63Omg4yom9jh0Mj_tO4TnKt
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0
+ mlxlogscore=999 mlxscore=0 bulkscore=0 spamscore=0 phishscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2409260000 definitions=main-2410250175
+X-Proofpoint-ORIG-GUID: vFuSRDv4ccs0zSghCPOtl9XyUAgA0Uac
+X-Proofpoint-GUID: vFuSRDv4ccs0zSghCPOtl9XyUAgA0Uac
 
-On Fri, Oct 25, 2024 at 08:13:26PM +0200, Vlastimil Babka wrote:
-> On 10/23/24 18:24, Lorenzo Stoakes wrote:
-> > The existing generic pagewalk logic permits the walking of page tables,
-> > invoking callbacks at individual page table levels via user-provided
-> > mm_walk_ops callbacks.
+On Fri, Oct 25, 2024 at 11:56:52PM +0200, Vlastimil Babka wrote:
+> On 10/25/24 19:12, Lorenzo Stoakes wrote:
+> > On Wed, Oct 23, 2024 at 05:24:40PM +0100, Lorenzo Stoakes wrote:
+> >> Implement a new lightweight guard page feature, that is regions of userland
+> >> virtual memory that, when accessed, cause a fatal signal to arise.
 > >
-> > This is useful for traversing existing page table entries, but precludes
-> > the ability to establish new ones.
+> > <snip>
 > >
-> > Existing mechanism for performing a walk which also installs page table
-> > entries if necessary are heavily duplicated throughout the kernel, each
-> > with semantic differences from one another and largely unavailable for use
-> > elsewhere.
+> > Hi Andrew - Could you apply the below fix-patch? I realise we must handle
+> > fatal signals and conditional rescheduling in the vector_madvise() special
+> > case.
 > >
-> > Rather than add yet another implementation, we extend the generic pagewalk
-> > logic to enable the installation of page table entries by adding a new
-> > install_pte() callback in mm_walk_ops. If this is specified, then upon
-> > encountering a missing page table entry, we allocate and install a new one
-> > and continue the traversal.
+> > Thanks!
 > >
-> > If a THP huge page is encountered at either the PMD or PUD level we split
-> > it only if there are ops->pte_entry() (or ops->pmd_entry at PUD level),
-> > otherwise if there is only an ops->install_pte(), we avoid the unnecessary
-> > split.
+> > ----8<----
+> > From 546d7e1831c71599fc733d589e0d75f52e84826d Mon Sep 17 00:00:00 2001
+> > From: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+> > Date: Fri, 25 Oct 2024 18:05:48 +0100
+> > Subject: [PATCH] mm: yield on fatal signal/cond_sched() in vector_madvise()
 > >
-> > We do not support hugetlb at this stage.
-> >
-> > If this function returns an error, or an allocation fails during the
-> > operation, we abort the operation altogether. It is up to the caller to
-> > deal appropriately with partially populated page table ranges.
-> >
-> > If install_pte() is defined, the semantics of pte_entry() change - this
-> > callback is then only invoked if the entry already exists. This is a useful
-> > property, as it allows a caller to handle existing PTEs while installing
-> > new ones where necessary in the specified range.
-> >
-> > If install_pte() is not defined, then there is no functional difference to
-> > this patch, so all existing logic will work precisely as it did before.
-> >
-> > As we only permit the installation of PTEs where a mapping does not already
-> > exist there is no need for TLB management, however we do invoke
-> > update_mmu_cache() for architectures which require manual maintenance of
-> > mappings for other CPUs.
-> >
-> > We explicitly do not allow the existing page walk API to expose this
-> > feature as it is dangerous and intended for internal mm use only. Therefore
-> > we provide a new walk_page_range_mm() function exposed only to
-> > mm/internal.h.
-> >
-> > Reviewed-by: Jann Horn <jannh@google.com>
-> > Signed-off-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+> > While we have to treat -ERESTARTNOINTR specially here as we are looping
+> > through a vector of operations and can't simply restart the entire
+> > operation, we mustn't hold up fatal signals or RT kernels.
 >
-> Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+> For plain madvise() syscall returning -ERESTARTNOINTR does the right thing
+> and checks fatal_signal_pending() before returning, right?
 
-Thanks!
+I believe so. But now you've caused me some doubt so let me double check
+and make absolutely sure :)
 
 >
-> Just a small subjective suggestion in case you agree and there's a respin or
-> followups:
+> Uh actually can we be just returning -ERESTARTNOINTR or do we need to use
+> restart_syscall()?
+
+Yeah I was wondering about that, but restart_syscall() seems to set
+TIF_SIGPENDING, and I wondered if that was correct... but then I saw other
+places that seemed to use it direct so it seemed so.
+
+Let's eliminiate doubt, will check this next week and make sure.
+
 >
-> > @@ -109,18 +131,19 @@ static int walk_pmd_range(pud_t *pud, unsigned long addr, unsigned long end,
+> > ---
+> >  mm/madvise.c | 8 +++++++-
+> >  1 file changed, 7 insertions(+), 1 deletion(-)
 > >
-> >  		if (walk->action == ACTION_AGAIN)
-> >  			goto again;
-> > -
-> > -		/*
-> > -		 * Check this here so we only break down trans_huge
-> > -		 * pages when we _need_ to
-> > -		 */
-> > -		if ((!walk->vma && (pmd_leaf(*pmd) || !pmd_present(*pmd))) ||
-> > -		    walk->action == ACTION_CONTINUE ||
-> > -		    !(ops->pte_entry))
-> > +		if (walk->action == ACTION_CONTINUE)
+> > diff --git a/mm/madvise.c b/mm/madvise.c
+> > index 48eba25e25fe..127aa5d86656 100644
+> > --- a/mm/madvise.c
+> > +++ b/mm/madvise.c
+> > @@ -1713,8 +1713,14 @@ static ssize_t vector_madvise(struct mm_struct *mm, struct iov_iter *iter,
+> >  		 * we have already rescinded locks, it should be no problem to
+> >  		 * simply try again.
+> >  		 */
+> > -		if (ret == -ERESTARTNOINTR)
+> > +		if (ret == -ERESTARTNOINTR) {
+> > +			if (fatal_signal_pending(current)) {
+> > +				ret = -EINTR;
+> > +				break;
+> > +			}
+> > +			cond_resched();
+>
+> Should be unnecessary as we're calling an operation that takes a rwsem so
+> there are reschedule points already. And with lazy preempt hopefully
+> cond_resched()s will become history, so let's not add more only to delete later.
+
+Ack will remove on respin.
+
+>
 > >  			continue;
-> > +		if (!ops->install_pte && !ops->pte_entry)
-> > +			continue; /* Nothing to do. */
-> > +		if (!ops->pte_entry && ops->install_pte &&
-> > +		    pmd_present(*pmd) &&
-> > +		    (pmd_trans_huge(*pmd) || pmd_devmap(*pmd)))
-> > +			continue; /* Avoid unnecessary split. */
->
-> Much better now, thanks, but maybe the last 2 parts could be:
->
-> if (!ops->pte_entry) {
-> 	if (!ops->install_pte)
-> 		continue; /* Nothing to do. */
-> 	else if (pmd_present(*pmd)
-> 		 && (pmd_trans_huge(*pmd) || pmd_devmap(*pmd)))
-> 		continue; /* Avoid unnecessary split. */
-> }
-
-I quite liked separating out the 'nothing to do' vs. the 'unnecessary split'
-cases, but I agree it makes it harder to see that the 2nd case is an 'install
-pte ONLY' case.
-
-Yeah so I think your version is better, but maybe we can find a way to be more
-expressive somehow... if we could declare vars mid-way thhrough it'd be easier
-:P
-
-Will improve on respin if it comes up
-
->
-> Or at least put !ops->pte_entry first in both conditions?
-
-Ack yeah that'd be better!
-
->
-> >  		if (walk->vma)
-> >  			split_huge_pmd(walk->vma, pmd, addr);
-> > +		else if (pmd_leaf(*pmd) || !pmd_present(*pmd))
-> > +			continue; /* Nothing to do. */
-> >
-> >  		err = walk_pte_range(pmd, addr, next, walk);
-> >  		if (err)
-> > @@ -148,11 +171,14 @@ static int walk_pud_range(p4d_t *p4d, unsigned long addr, unsigned long end,
-> >   again:
-> >  		next = pud_addr_end(addr, end);
-> >  		if (pud_none(*pud)) {
-> > -			if (ops->pte_hole)
-> > +			if (ops->install_pte)
-> > +				err = __pmd_alloc(walk->mm, pud, addr);
-> > +			else if (ops->pte_hole)
-> >  				err = ops->pte_hole(addr, next, depth, walk);
-> >  			if (err)
-> >  				break;
-> > -			continue;
-> > +			if (!ops->install_pte)
-> > +				continue;
-> >  		}
-> >
-> >  		walk->action = ACTION_SUBTREE;
-> > @@ -164,14 +190,20 @@ static int walk_pud_range(p4d_t *p4d, unsigned long addr, unsigned long end,
-> >
-> >  		if (walk->action == ACTION_AGAIN)
-> >  			goto again;
-> > -
-> > -		if ((!walk->vma && (pud_leaf(*pud) || !pud_present(*pud))) ||
-> > -		    walk->action == ACTION_CONTINUE ||
-> > -		    !(ops->pmd_entry || ops->pte_entry))
-> > +		if (walk->action == ACTION_CONTINUE)
-> >  			continue;
-> > +		if (!ops->install_pte && !ops->pte_entry && !ops->pmd_entry)
-> > +			continue;  /* Nothing to do. */
-> > +		if (!ops->pmd_entry && !ops->pte_entry && ops->install_pte &&
-> > +		    pud_present(*pud) &&
-> > +		    (pud_trans_huge(*pud) || pud_devmap(*pud)))
-> > +			continue; /* Avoid unnecessary split. */
->
-> Ditto.
-
-Ack!
-
->
-> Thanks!
+> > +		}
+> >  		if (ret < 0)
+> >  			break;
+> >  		iov_iter_advance(iter, iter_iov_len(iter));
+> > --
+> > 2.47.0
 >
 
-Cheers!
+For simplicitly with your other comments too I think I'll respin this next
+week.
