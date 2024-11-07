@@ -1,47 +1,32 @@
-Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6B2F209F38;
-	Wed,  6 Nov 2024 20:05:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AE777F9;
+	Thu,  7 Nov 2024 05:21:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730923519; cv=none; b=WPfdJQzs+bGYcw4DrPKVHv0CJHJekHF4ejGtyQvxYmKFRBDYFs1bM/H2yJi+amwdh1g0Copmf/VBH/TwxHd5JBfObn5Yl2b4mesOWgnceP3qj0vkTF44D0u03EAynGF1RnldNtsPpevjZZbIssfj8hLnO5az3eadUI7wqiRjZWY=
+	t=1730956880; cv=none; b=LENYGg9hdEDWuy1wvheYJ/544oaV4tMKP//gXXHhWPoaYJXiJetWQSCWpALra8mXrI3i+rvGStRehiJqO8gjfJsV1/SzUPZtK5htckjmXYfYZZfrZInz2Le1fluze4xFCqKvSBFaV5wgUtvGKlavxwerC6XakolkLF5EkKf8k2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730923519; c=relaxed/simple;
-	bh=EQyA/ww37V7yAawtBTPhDySHgSA0BwaQRKu2lAhQyPE=;
+	s=arc-20240116; t=1730956880; c=relaxed/simple;
+	bh=LcTJNuAS+0u64bln2s0a89deCwW+g5Nrojs1Slddt/Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RNC5YuEtsXnctuBFhL5irfpmG4aU0PFZs1scf1DNmq5T1gZyiUZQs97ACDLywuaBbAPtP6u/k6lkd5i6WZflbK4PJ5AX2qkAhDvHXx6EikLT1RZ/IYGOG0gBQw2E5bvcEWOssYsue9DGU10dmZrT5aZDQgYxvi2kTxKCWWBM1oQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.214.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2113da91b53so1654785ad.3;
-        Wed, 06 Nov 2024 12:05:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730923516; x=1731528316;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=57haWgxVK3Bhz2CTFQJdY/J31Debho+HXpt9b6frcmw=;
-        b=qfQaU53HzKBFTrK0c6g7QuZTQZcv0eDF0o/puRxunjb5tSd1zbHdzDcE7hqEAO+UFp
-         PxZQgwfoN+0lyimRni4rZvwOWdp6xZuNJV3JCY+85JRh1/Heq9nyN0FK7m1RKdv0BvvV
-         GRM6WNNjBwOkDM9xbZ/Y8eXlD0YFBhio0OE10qmrKgu4Qx/8Hh6tMKyrKpOC/P1cwTtI
-         DWxdv45irbyihb3lhvqa8b5gCfiMgissLtxHPnA/mJYzB4y3m3xyBuQ9f1Yf2dOkEdjJ
-         22VXGDmGaQXZ56RcMDkBKuYhPzmG2AmBTqttjDylsmp5TscccQgb8H5CBvjZMvdOseiR
-         aO0A==
-X-Forwarded-Encrypted: i=1; AJvYcCU0GDEsAiWFCEst9CSN9/DmbbxduKYZZk7rhqGFukbdKq1TCX7Gf0ouH6aW3xON+HbZzV6P+51AL4lggnM0@vger.kernel.org, AJvYcCU3bK/dnS61xtactLsUT/H8ceWq2QAY9X5ttnwMR6MLthbsACW1vMC5bvgp3WGjx88B8CXFEi7HHX3+VVdsc61bewfeXg==@vger.kernel.org, AJvYcCUTWrBxj8Vtryya959PAL1lt/E8WgcXQoXN9o2r5PLabJpHEjLKo4AKZZzsTyrgKqyOGtkOEaC5CuNS@vger.kernel.org, AJvYcCUmWVTlNwrWN6pKVgypvY5Q89csehOTfRkPaRI103wotpJsHYP8o9vWWOGFRqvOtl2TGsl2vq1UQEgx@vger.kernel.org, AJvYcCVKJ139WZ9zOvaUcuEOBoS/OYD3vxot8UDqchV+ZsU4YsFkYlHreuxaucdHC91NLD9S3G5MBMI3HcY70g==@vger.kernel.org, AJvYcCWyWpKjacsMLD2XKDtaRNGwD3uS1Hz3FH3g0415XD1NylBv+jHhxbx5QT//lndYw7nNo+5IF+Wb6W5cUg==@vger.kernel.org, AJvYcCX/RGyludkZbuL0ELUN5L/nMt5WQ+bUcX7Gul+KuIisNTSm5Bhnu7TjrBzmSryLkxNp3aDM/rTD1lEjKA==@vger.kernel.org, AJvYcCXBeghjvHd/iZVVl9GSUb00OGlFIfDYHghaZHijw/+7fQ/EL2PMww96L1scKGB78gCySbaZJ/hQ8bQr@vger.kernel.org, AJvYcCXb5VHrjkRtCQ6CNtuQ36/NhyfIrMJNGLQQs22D/PcpyNbCrFoVSldaiPopIw9TxsTMjES1j+zdq30JFlh+@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyk4xaEQeTM8S2Ack0oUZV412sLvANUkNCJ3VS5NDapaKXm7oZm
-	WNaTVw9e/07eEb3zVwkNkAtfpuIwf7OPDGUGJmOzY3KvcpoJeqhP
-X-Google-Smtp-Source: AGHT+IFmoIbZw8g1IipDn3Lp+ri/9C7OdJSPor3hPH1pRa7RYRF3y6lGuH/8ZaeEQ1eFo8eAFPaCWQ==
-X-Received: by 2002:a17:902:cecd:b0:20c:a97d:cc7f with SMTP id d9443c01a7336-210c6c3ec78mr567878865ad.41.1730923515866;
-        Wed, 06 Nov 2024 12:05:15 -0800 (PST)
-Received: from localhost (fpd11144dd.ap.nuro.jp. [209.17.68.221])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-211057c076bsm99997795ad.197.2024.11.06.12.05.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Nov 2024 12:05:15 -0800 (PST)
-Date: Thu, 7 Nov 2024 05:05:13 +0900
-From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-To: Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	 Content-Type:Content-Disposition:In-Reply-To; b=LO99nVgrqp4dw8p7qVK2jfBGh9eIGIKpk+5etsZf8dDM4FuysxBcQqw9KiQ50cVPfbyh+tkJ0iWPxTiNl4jjq32Jd09oczcLL3oO5hJbTM4BO+AGpzvwEMvd2nIpBFFZkARR2Qc3MqlHhUGPsC0kbPNRCn7myndMAHw2yhsTfVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=LqZ6urMl; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="LqZ6urMl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 064BBC4CECC;
+	Thu,  7 Nov 2024 05:21:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1730956880;
+	bh=LcTJNuAS+0u64bln2s0a89deCwW+g5Nrojs1Slddt/Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LqZ6urMldxlvEBhdUM/g9ay6JBw8MxGPCgUReHarZ5Rrrup6qtaAMbkDd8Ut3yIvJ
+	 TB3aWEUF8ij6xyiKo01mFPXSemUmYSpWT2Gfca8HAeh7vk2NMp5wXiqsR3jTvujmXl
+	 Vml1yQf1y5lU0zvuowqmi415BENx3kOsFR8a5uB8=
+Date: Thu, 7 Nov 2024 06:21:00 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+Cc: Thomas =?iso-8859-1?Q?Wei=DFschuh?= <linux@weissschuh.net>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
 	Bjorn Helgaas <bhelgaas@google.com>,
 	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
@@ -52,7 +37,7 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Vishal Verma <vishal.l.verma@intel.com>,
 	Ira Weiny <ira.weiny@intel.com>,
 	Alex Deucher <alexander.deucher@amd.com>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
 	Xinhui Pan <Xinhui.Pan@amd.com>, David Airlie <airlied@gmail.com>,
 	Simona Vetter <simona@ffwll.ch>,
 	Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
@@ -66,7 +51,7 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Naveen Krishna Chatradhi <naveenkrishna.chatradhi@amd.com>,
 	Carlos Bilbao <carlos.bilbao.osdev@gmail.com>,
 	Hans de Goede <hdegoede@redhat.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	"David E. Box" <david.e.box@linux.intel.com>,
 	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
 	"Martin K. Petersen" <martin.petersen@oracle.com>,
@@ -88,46 +73,53 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-hyperv@vger.kernel.org
 Subject: Re: [PATCH v2 02/10] sysfs: introduce callback
  attribute_group::bin_size
-Message-ID: <20241106200513.GB174958@rocinante>
+Message-ID: <2024110726-hasty-obsolete-3780@gregkh>
 References: <20241103-sysfs-const-bin_attr-v2-0-71110628844c@weissschuh.net>
  <20241103-sysfs-const-bin_attr-v2-2-71110628844c@weissschuh.net>
+ <20241106200513.GB174958@rocinante>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20241103-sysfs-const-bin_attr-v2-2-71110628844c@weissschuh.net>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20241106200513.GB174958@rocinante>
 
-Hello,
-
-> Several drivers need to dynamically calculate the size of an binary
-> attribute. Currently this is done by assigning attr->size from the
-> is_bin_visible() callback.
+On Thu, Nov 07, 2024 at 05:05:13AM +0900, Krzysztof Wilczyński wrote:
+> Hello,
 > 
-> This has drawbacks:
-> * It is not documented.
-> * A single attribute can be instantiated multiple times, overwriting the
->   shared size field.
-> * It prevents the structure to be moved to read-only memory.
+> > Several drivers need to dynamically calculate the size of an binary
+> > attribute. Currently this is done by assigning attr->size from the
+> > is_bin_visible() callback.
+> > 
+> > This has drawbacks:
+> > * It is not documented.
+> > * A single attribute can be instantiated multiple times, overwriting the
+> >   shared size field.
+> > * It prevents the structure to be moved to read-only memory.
+> > 
+> > Introduce a new dedicated callback to calculate the size of the
+> > attribute.
 > 
-> Introduce a new dedicated callback to calculate the size of the
-> attribute.
+> Would it be possible to have a helper that when run against a specific
+> kobject reference, then it would refresh or re-run the size callbacks?
+> 
+> We have an use case where we resize BARs on demand via sysfs, and currently
+> the only way to update the size of each resource sysfs object is to remove
+> and added them again, which is a bit crude, and can also be unsafe.
 
-Would it be possible to have a helper that when run against a specific
-kobject reference, then it would refresh or re-run the size callbacks?
+How is it unsafe?
 
-We have an use case where we resize BARs on demand via sysfs, and currently
-the only way to update the size of each resource sysfs object is to remove
-and added them again, which is a bit crude, and can also be unsafe.
+> Hence the question.
+> 
+> There exist the sysfs_update_groups(), but the BAR resource sysfs objects
+> are currently, at least not yet, added to any attribute group.
 
-Hence the question.
+then maybe they should be added to one :)
 
-There exist the sysfs_update_groups(), but the BAR resource sysfs objects
-are currently, at least not yet, added to any attribute group.
+thanks,
 
-Thank you!
-
-	Krzysztof
+greg k-h
