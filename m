@@ -1,80 +1,75 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3CFB0198832;
-	Fri,  8 Nov 2024 16:15:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CFD18BE8
+	for <linux-alpha@vger.kernel.org>; Sat, 16 Nov 2024 15:40:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731082513; cv=none; b=ErnAzfrgfGBWWqUE5wt8sTfVLImaI8SWq5YmAd6cOltDCl2jpJk1eVixK2/lMJLnkIgtEGRyzsFVN1sQReEMRvxwgFkLPTgoXI5tc5aciXzJMX89YvMcUoXLji/wMzXecpzG30wbl4K8nTejdp1GRi+u42buaK86lXRVlg/iDo4=
+	t=1731771621; cv=none; b=EHCmDHzSFGoMQTmGW1Pff9brZ2o2tV6FWLesTG6GnlUfEVuDh3YbNNvZwcr6UivizqLUVHknWK27q08zaXYqmkpmqduWoZ+P9eb69t8eAHOJWuqfv7d4g0ALKoDj70B6oT5q6cPAECBIW+rygMbwmLNCCasbN54H1hYtKFmPIKQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731082513; c=relaxed/simple;
-	bh=bFhnOvy3oXvekdAzi7JwR/DSXn6oZNXcae4+2IYc9aA=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=amt7SESmmXeh+flMh01uominHtNFBqziG4Hk05Vqpw4VGIO1iPUjtVQMAX0k5IvJRFb6epXChweLbfmFJ6OPPCvHjwXDPA5ChzZfNTrqwpvieHDEUTerHpNnOBMC07YgVHTvqx3H6TNEZF1hTW7Nm+qUsKrtyvktxE3EBXsVEKE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=QWPKChN1; arc=none smtp.client-ip=220.197.31.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1731771621; c=relaxed/simple;
+	bh=Wd+7kLQISUZlzyPvYmSUTVOb8NV4Vyd3OpsFXw6X7a0=;
+	h=From:Message-ID:To:Subject:Date:MIME-Version:Content-Type; b=RQZO0VpL2sRBkB/qjF1stRsjSsB6XATha/kIgpoZN82GMOUhojfXQRCDtj6u1zZLZh67WQhueBORQVoatPneHXBO0w61D/ZEZG0a8ryrbY6mMYV15+BBTWfwPKsdduGwtu8BdP+H46nPl+6Nm56VYU9ycYB9NSaPWaluwKpFN6Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=W+A680Ay; arc=none smtp.client-ip=209.85.216.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="QWPKChN1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=6suNy
-	6fpLRH3gMhdwsiqTGDSFnS7ZCDGgGa9XwyECm0=; b=QWPKChN1/lQDMMxXA/H/f
-	6Wrh7fp3eVeF0w0/naQDMymOtKyMrWhdUEprOMDltiNSuBuSixvR656XYrTJosrq
-	s6Ew2SLhCueLrfohheCYaTF+puyJn/oEJ2pKFmknmWl1kT79cH61FpzAd1llzkDl
-	tBl6KuwToL4rCL3ggSnAkk=
-Received: from localhost.localdomain (unknown [111.35.191.191])
-	by gzga-smtp-mtada-g1-2 (Coremail) with SMTP id _____wD3_z77OC5n51Z_GA--.50163S4;
-	Sat, 09 Nov 2024 00:14:58 +0800 (CST)
-From: David Wang <00107082@163.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W+A680Ay"
+Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-2e3010478e6so488038a91.1
+        for <linux-alpha@vger.kernel.org>; Sat, 16 Nov 2024 07:40:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1731771619; x=1732376419; darn=vger.kernel.org;
+        h=mime-version:date:subject:to:reply-to:message-id:from:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=XHEOkgJ64rwJ+cv0sVIqPUmbc8l+iTifR7HzGzNced0=;
+        b=W+A680AyZzJPLVmBHf/baoXmqU3gio4HcXNj2glBzE7tTyOQIyWcA/UGudttnc9agt
+         DKI0DtbU7RlsDRIDnnxiO7UrlKXOP50UWYYpXbX+mLs8P248HvmNiHIwFHh9sOHIIJIq
+         SjhPdCJDOZnMUZHEP5YmK/bRDXpr0Sbt52wCNUM1hg5FCINYcq2QBJcgtLBVncsgPpK5
+         kKBSwdHgI2KUKAUmeO9oMWELvXGClsd9imBZhR+jtG4KPERhc4IU9caZz4aAMcjmFQP4
+         MMZ2QgXv0lXjLJm8mRb5/L3JRcU4XdbCHmSCcpUqF4QT1KndgS5v/G6oaXqqFQumTzJ5
+         J3Nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731771619; x=1732376419;
+        h=mime-version:date:subject:to:reply-to:message-id:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XHEOkgJ64rwJ+cv0sVIqPUmbc8l+iTifR7HzGzNced0=;
+        b=QobLxZIkJhxlFK5ApJXJHs8gzCY/YnuFErOMC2wsikdxJLWC+4dn3QcD7aVuecU9Cb
+         3fn5K8VviFkqNCLsL1tAeLOZINzxkamtlVehHKzGNtlGG7KSsoiEc+scaTCQSb7cvgVt
+         koqjHQIPF++H7QcV6qvBW6p2H74x4OnfkdiuzPY0s+uvoi+us5oWPLmAhpp6bnF8Mp2q
+         nvNKyq9csZ4Th1TZrejja2I80zVXpoiHaaSgzwRbTZLAFaVylEYqhEkaVdhPNnKvNxc6
+         tt25Bcctzt8tYuyd4DBBPIt17EdUkV6Tu/9Uq4cY7jC1fcx3YZ57unESFGCGy6UwBdu+
+         Gi0A==
+X-Gm-Message-State: AOJu0Yx3/gZp5+qKkWsB4AtuQuDw/dr7+dUEAG/R0Awvnw8xFCaWljGX
+	3Fs9AbqcdGzhRkc0A7z5ln7KPpbfNUERAfjInUg1xnzTC4sKY/JJHcgHtQ==
+X-Google-Smtp-Source: AGHT+IH1FlNLEhcwj1Je5vT7YNwvZY7j8Bo/u1LCJ5Ip8aUzXFs5mU0LOXwDUYITsF5ocwbz1pWvzw==
+X-Received: by 2002:a17:90b:1844:b0:2ea:3f34:f19d with SMTP id 98e67ed59e1d1-2ea3f34f399mr2035992a91.18.1731771619383;
+        Sat, 16 Nov 2024 07:40:19 -0800 (PST)
+Received: from [103.67.163.162] ([103.67.163.162])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2ea06f9c64esm4644320a91.42.2024.11.16.07.40.16
+        for <linux-alpha@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 16 Nov 2024 07:40:17 -0800 (PST)
+From: "Van. HR" <garciadaecioe@gmail.com>
+X-Google-Original-From: "Van. HR" <infodesk@information.com>
+Message-ID: <5b4a66292bb6a053c86b880c45ae664ee6443c9fc36ac6a48dd49149d39cc78f@mx.google.com>
+Reply-To: dirofdptvancollin@gmail.com
 To: linux-alpha@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	tglx@linutronix.de,
-	David Wang <00107082@163.com>
-Subject: [PATCH 05/13] alpha/irq: use seq_put_decimal_ull_width() for decimal values
-Date: Sat,  9 Nov 2024 00:14:49 +0800
-Message-Id: <20241108161449.9698-1-00107082@163.com>
-X-Mailer: git-send-email 2.39.2
+Subject: Nov:16:24
+Date: Sat, 16 Nov 2024 10:40:14 -0500
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3_z77OC5n51Z_GA--.50163S4
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Gry5Cw4UJw48ZF15ur1xKrg_yoWDurbE9r
-	WI9w1UKFWUJr1Fqr1jy3WfJryqya9Iqr90y34IgFWjvw1kWw15tFs8JF45XF4kWa15KFZ3
-	u34rArn0vw4rKjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7VUU6wZ5UUUUU==
-X-CM-SenderInfo: qqqrilqqysqiywtou0bp/1tbiMwORqmcuKsHkPgAAsz
+Content-Type: text/plain; charset=us-ascii
 
-Performance improvement for reading /proc/interrupts on arch alpha
+Hello,
+I am a private investment consultant representing the interest of a multinational  conglomerate that wishes to place funds into a trust management portfolio.
 
-Signed-off-by: David Wang <00107082@163.com>
----
- arch/alpha/kernel/irq.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Please indicate your interest for additional information.
 
-diff --git a/arch/alpha/kernel/irq.c b/arch/alpha/kernel/irq.c
-index c67047c5d830..0dbb8d3ed647 100644
---- a/arch/alpha/kernel/irq.c
-+++ b/arch/alpha/kernel/irq.c
-@@ -72,14 +72,14 @@ int arch_show_interrupts(struct seq_file *p, int prec)
- 	int j;
- 
- #ifdef CONFIG_SMP
--	seq_puts(p, "IPI: ");
-+	seq_puts(p, "IPI:");
- 	for_each_online_cpu(j)
--		seq_printf(p, "%10lu ", cpu_data[j].ipi_count);
-+		seq_put_decimal_ull_width(p, " ", cpu_data[j].ipi_count, 10);
- 	seq_putc(p, '\n');
- #endif
--	seq_puts(p, "PMI: ");
-+	seq_puts(p, "PMI:");
- 	for_each_online_cpu(j)
--		seq_printf(p, "%10lu ", per_cpu(irq_pmi_count, j));
-+		seq_put_decimal_ull_width(p, " ", per_cpu(irq_pmi_count, j), 10);
- 	seq_puts(p, "          Performance Monitoring\n");
- 	seq_printf(p, "ERR: %10lu\n", irq_err_count);
- 	return 0;
--- 
-2.39.2
+Regards,
+
+Van Collin.
 
