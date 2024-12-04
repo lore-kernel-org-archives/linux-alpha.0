@@ -1,158 +1,73 @@
-Received: from todd.t-8ch.de (todd.t-8ch.de [159.69.126.157])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF7291F76D5;
-	Tue,  3 Dec 2024 16:11:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.69.126.157
+Received: from cmccmta2.chinamobile.com (cmccmta6.chinamobile.com [111.22.67.139])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D489F191489;
+	Wed,  4 Dec 2024 08:40:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.22.67.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733242274; cv=none; b=H00SFwAIGMzxML6BoK05PVrh+axHGzN5LGC4FKvMTVC0SjhDbhgh+FVW0wnEsToUt/MhmBWMo9O5ajlXXHhwPyMC3PG6FKVIi5C6sXTQEPdmGHKQPzzR1KltOTe+MBGjqw7LETxv+FqX9Fid6yL7+C262aFQIhDV5c25s0YMG0U=
+	t=1733301637; cv=none; b=f5N8RoTBXhaLUQaY/ooc735pOA3AVBf7aGQ8EFIzp0JyAEmjCi+TRQ2qukJT1RE1lZ/BspQUKVo7lUzbssU0XylOfcxUXwEtA5EYF+iazSSu51C9NbXXcH9vFSsOpbRWF2BivCOBOjzU2AtWnTXiDOIF8Ff6X9nlUVcyYICkoi0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733242274; c=relaxed/simple;
-	bh=277NQChdWnV4HacrcegFUWzVRwOH48nxQcs2AvUWU/M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lGXaFk9hK96JaCeFodjWvUoSRcALoVvacJpLSwcJVZJQQa9WcT4ayy/THVgawXHlMrzGptCbKlwU9RxEyfdPP0br0rY/Aoz2PWe163A81Z5xIrn+yOJwPFAsEUVRk8X5nLmXsTKfM6oCCvPIQFG8InDrEUUyNC1JDYR7Fdil3ts=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=weissschuh.net; spf=pass smtp.mailfrom=weissschuh.net; dkim=pass (1024-bit key) header.d=weissschuh.net header.i=@weissschuh.net header.b=sizE5QoI; arc=none smtp.client-ip=159.69.126.157
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=weissschuh.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=weissschuh.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=weissschuh.net header.i=@weissschuh.net header.b="sizE5QoI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=weissschuh.net;
-	s=mail; t=1733242270;
-	bh=277NQChdWnV4HacrcegFUWzVRwOH48nxQcs2AvUWU/M=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=sizE5QoIfdIYrqxRdwX94ZC/agXw0pa0PTSsY+EhiaHK9ZyNdezGC3st3dTpS0o5y
-	 8J4Rum3nNJJc9R7oV79zFn2aPNNgOgAo2+kTKS3uiDI40pDCkYOi6LivymYIQUOLVi
-	 Vh/4iUKA2LVrdrQMyxIcCg+a3+hHswgOA9DOmlgg=
-Date: Tue, 3 Dec 2024 17:11:10 +0100
-From: Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>
-To: James Bottomley <James.Bottomley@hansenpartnership.com>
-Cc: Xinhui.Pan@amd.com, airlied@gmail.com, ajd@linux.ibm.com, 
-	alexander.deucher@amd.com, alison.schofield@intel.com, amd-gfx@lists.freedesktop.org, 
-	arnd@arndb.de, bhelgaas@google.com, carlos.bilbao.osdev@gmail.com, 
-	christian.koenig@amd.com, dan.j.williams@intel.com, dave.jiang@intel.com, 
-	dave@stgolabs.net, david.e.box@linux.intel.com, decui@microsoft.com, 
-	dennis.dalessandro@cornelisnetworks.com, dri-devel@lists.freedesktop.org, fbarrat@linux.ibm.com, 
-	gregkh@linuxfoundation.org, haiyangz@microsoft.com, hdegoede@redhat.com, 
-	ilpo.jarvinen@linux.intel.com, ira.weiny@intel.com, jgg@ziepe.ca, jonathan.cameron@huawei.com, 
-	kys@microsoft.com, leon@kernel.org, linux-alpha@vger.kernel.org, 
-	linux-cxl@vger.kernel.org, linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mtd@lists.infradead.org, linux-pci@vger.kernel.org, linux-rdma@vger.kernel.org, 
-	linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	logang@deltatee.com, martin.petersen@oracle.com, mattst88@gmail.com, 
-	miquel.raynal@bootlin.com, mwalle@kernel.org, naveenkrishna.chatradhi@amd.com, 
-	platform-driver-x86@vger.kernel.org, pratyush@kernel.org, rafael@kernel.org, 
-	richard.henderson@linaro.org, richard@nod.at, simona@ffwll.ch, srinivas.kandagatla@linaro.org, 
-	tudor.ambarus@linaro.org, vigneshr@ti.com, vishal.l.verma@intel.com, wei.liu@kernel.org
-Subject: Re: [PATCH v2 09/10] sysfs: bin_attribute: add const read/write
- callback variants
-Message-ID: <5b589ddb-e3c9-40e1-987f-30ba81dc8ace@t-8ch.de>
-References: <20241103-sysfs-const-bin_attr-v2-9-71110628844c@weissschuh.net>
- <7ed3b713f8901398f52d7485d59613c19ea0e752.camel@HansenPartnership.com>
+	s=arc-20240116; t=1733301637; c=relaxed/simple;
+	bh=D0+CwvJjK4KkI3Qr0Lhqfqdn9zkfNfWbDrrcicnW4v8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=g3o3uhdW8lefNrq1CF39b18MkH0upmDHAAIXQHRBY8lvU8BjMFP+vnH+YhwEhcq8IS8bLtiHdQEBa1v8IGvGrf82Q7KbwppVqEwxe8rr7Q1brERzKYcCj3h1dy6r4jCQS0fNtA8YvGTvQgwQZc8LShAYpPkBJMcX/wDjHyGNynM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com; spf=pass smtp.mailfrom=cmss.chinamobile.com; arc=none smtp.client-ip=111.22.67.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app05-12005 (RichMail) with SMTP id 2ee56750157dec9-caee0;
+	Wed, 04 Dec 2024 16:40:30 +0800 (CST)
+X-RM-TRANSID:2ee56750157dec9-caee0
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from 192.168.28.197 (unknown[10.55.1.72])
+	by rmsmtp-syy-appsvr07-12007 (RichMail) with SMTP id 2ee76750157ce96-60ac4;
+	Wed, 04 Dec 2024 16:40:30 +0800 (CST)
+X-RM-TRANSID:2ee76750157ce96-60ac4
+From: liujing <liujing@cmss.chinamobile.com>
+To: richard.henderson@linaro.org,
+	ink@jurassic.park.msu.ru,
+	mattst88@gmail.com,
+	paulmck@kernel.org,
+	arnd@arndb.de
+Cc: linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	liujing <liujing@cmss.chinamobile.com>
+Subject: [PATCH] alpha: Fix condition 'i>40' is always false
+Date: Wed,  4 Dec 2024 16:40:28 +0800
+Message-Id: <20241204084028.6067-1-liujing@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.27.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7ed3b713f8901398f52d7485d59613c19ea0e752.camel@HansenPartnership.com>
+Content-Transfer-Encoding: 8bit
 
-On 2024-12-03 11:06:16-0500, James Bottomley wrote:
-> > diff --git a/include/linux/sysfs.h b/include/linux/sysfs.h
-> > index
-> > d17c473c1ef292875475bf3bdf62d07241c13882..d713a6445a6267145a7014f308d
-> > f3bb25b8c3287 100644
-> > --- a/include/linux/sysfs.h
-> > +++ b/include/linux/sysfs.h
-> > @@ -305,8 +305,12 @@ struct bin_attribute {
-> >  	struct address_space *(*f_mapping)(void);
-> >  	ssize_t (*read)(struct file *, struct kobject *, struct
-> > bin_attribute *,
-> >  			char *, loff_t, size_t);
-> > +	ssize_t (*read_new)(struct file *, struct kobject *, const
-> > struct bin_attribute *,
-> > +			    char *, loff_t, size_t);
-> >  	ssize_t (*write)(struct file *, struct kobject *, struct
-> > bin_attribute *,
-> >  			 char *, loff_t, size_t);
-> > +	ssize_t (*write_new)(struct file *, struct kobject *,
-> > +			     const struct bin_attribute *, char *,
-> > loff_t, size_t);
-> >  	loff_t (*llseek)(struct file *, struct kobject *, const
-> > struct bin_attribute *,
-> >  			 loff_t, int);
-> >  	int (*mmap)(struct file *, struct kobject *, const struct
-> > bin_attribute *attr,
-> > @@ -325,11 +329,28 @@ struct bin_attribute {
-> >   */
-> >  #define sysfs_bin_attr_init(bin_attr) sysfs_attr_init(&(bin_attr)-
-> > >attr)
-> >  
-> > +typedef ssize_t __sysfs_bin_rw_handler_new(struct file *, struct
-> > kobject *,
-> > +					   const struct
-> > bin_attribute *, char *, loff_t, size_t);
-> > +
-> >  /* macros to create static binary attributes easier */
-> >  #define __BIN_ATTR(_name, _mode, _read, _write, _size)
-> > {		\
-> >  	.attr = { .name = __stringify(_name), .mode = _mode
-> > },		\
-> > -	.read	=
-> > _read,						\
-> > -	.write	=
-> > _write,						\
-> > +	.read =
-> > _Generic(_read,						\
-> > +		__sysfs_bin_rw_handler_new * :
-> > NULL,			\
-> > +		default :
-> > _read						\
-> > +	),							
-> > 	\
-> > +	.read_new =
-> > _Generic(_read,					\
-> > +		__sysfs_bin_rw_handler_new * :
-> > _read,			\
-> > +		default :
-> > NULL						\
-> > +	),							
-> > 	\
-> > +	.write =
-> > _Generic(_write,					\
-> > +		__sysfs_bin_rw_handler_new * :
-> > NULL,			\
-> > +		default :
-> > _write					\
-> > +	),							
-> > 	\
-> > +	.write_new =
-> > _Generic(_write,					\
-> > +		__sysfs_bin_rw_handler_new * :
-> > _write,			\
-> > +		default :
-> > NULL						\
-> > +	),							
-> > 	\
-> >  	.size	=
-> > _size,						\
-> >  }
-> 
-> It's probably a bit late now, but you've done this the wrong way
-> around.  What you should have done is added the const to .read/.write
-> then added a .read_old/.write_old with the original function prototype
-> and used _Generic() to switch between them.  Then when there are no
-> more non const left, you can simply remove .read_old and .write_old
-> without getting Linus annoyed by having to do something like this:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e70140ba0d2b1a30467d4af6bcfe761327b9ec95
+The i variable is used to count the number of stack frames printed,
+but it is initialized to 0 only at the beginning of the loop, and
+is not increased later in the loop. Therefore, the value of i is
+always 0, resulting in the condition if (i > 40) never being true.
 
-Not all users are using the macros to define their attributes.
-(Nor do they want to)
+To ensure that i counts correctly, you need to increase the value
+of i each time the stack frame is successfully printed.
 
-These users would break with your suggestion.
-Otherwise I agree.
+Signed-off-by: liujing <liujing@cmss.chinamobile.com>
+
+diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+index 6afae65e9a8b..65c44756f949 100644
+--- a/arch/alpha/kernel/traps.c
++++ b/arch/alpha/kernel/traps.c
+@@ -100,6 +100,7 @@ dik_show_trace(unsigned long *sp, const char *loglvl)
+ 		if (!is_kernel_text(tmp))
+ 			continue;
+ 		printk("%s[<%lx>] %pSR\n", loglvl, tmp, (void *)tmp);
++		i++;
+ 		if (i > 40) {
+ 			printk("%s ...", loglvl);
+ 			break;
+-- 
+2.27.0
 
 
-Thomas
+
