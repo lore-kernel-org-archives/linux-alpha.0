@@ -1,89 +1,70 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-179.mta1.migadu.com (out-179.mta1.migadu.com [95.215.58.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2AA3189B85
-	for <linux-alpha@vger.kernel.org>; Mon,  9 Dec 2024 08:11:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 049AF13D518
+	for <linux-alpha@vger.kernel.org>; Mon,  9 Dec 2024 16:43:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733731884; cv=none; b=HewnkpFOTXv6kBUDcOpbHaSgXYBgaboiyyFJ+VZGBH3pikiB417HCxdFUOPmlSoi+u8L/ow/ilNkJiOa5Map9zDd5tNoWeB6eL0TBq9JKpWvT/6Xv+rta5kTYl1KPdMJ7gooHKTeyp80+4cnxkALA3au9UXQ9A/apKNufPKLuIA=
+	t=1733762596; cv=none; b=tCG4CQgBhNM6GsolWtEbc1UI1EF33sbmLAtKTi2p6Wu67eELCWJudWFg5YBPObUoCLkifDFUHoZ6F9bhOCgV1tuxvvp8HicEmYcMX9ESTS50cjvlI1YgLq3gzKCtuszOiToDQs8EWX8pU4lIkAB5Qo/EC44R07zw/1qzigrL7nQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733731884; c=relaxed/simple;
-	bh=EMMVAhqvsok8+jrby2Irlase1bXcUqVVDtnrl/lCNZg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=HtqeRrjEc0iWWvbPD/tWbOeN9Hd7igeEhQwvWKET0Bkm3nd/BEl9wt9z0qz8Os9oaMmif7cgfxi0tR6ZEzJPvli0v3RoxMpnYfHVb0yDnrfjguFCocEKx9SSulPvhcJipndeeWHCceu0ocISzAEngg+wxjyAa47XGcARC0NM+F0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LsC8sL6H; arc=none smtp.client-ip=209.85.167.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1733762596; c=relaxed/simple;
+	bh=nBYB5Xg+BKjQqhoyzRiKH6a173lAGOtUAU2g7YLzwr8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=X9O9qE7cmMQ0k9ezq5k0GfLR9ZkguFoBSROGApghTT+GO9LxL7uFWF0IbiG/SomRgCWDtkAEDlwUl0H3wzUgpjlqI3iVyiCGggOZoCUUCHSVYe0lwUlvCW2z9ggUYaXcoLDu7ThUakeH+YL7vvoAoEFlE5MnPfxKUO7kl0djzEM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=lg/aGiJ8; arc=none smtp.client-ip=95.215.58.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LsC8sL6H"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5401c52000dso848363e87.3
-        for <linux-alpha@vger.kernel.org>; Mon, 09 Dec 2024 00:11:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733731881; x=1734336681; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=EMMVAhqvsok8+jrby2Irlase1bXcUqVVDtnrl/lCNZg=;
-        b=LsC8sL6Hh068a8tVVYcyQ+uuRa0lGyQWYnCQeCA9w/3CpXFSi5L5Vi0ueAxugrK9q+
-         ktYNMT/SD9HAsUo1GxWTPolrQQ2bP0vX/zefE3Fwspuv9fx0P529jhK0u4SEA93url8x
-         MSNayo0RehoBl94F+WoJQUg0xIw9K7r/fpQOt2sZ/SI+addYl12rWCjHpCWXSWtV74dL
-         DuEQWY2DQa5PKoYfve2SqNj2VAyRrzlDmfJ168v7dvtFO9HFXjpEmW5yYrb9oZVFXRGu
-         mCN2dhgFIEutZBXPhIv5oxJADYdczH/HgBTOw/x8xphG9ss9FsirEJdwu4AZj3UTo/Ft
-         2Rbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733731881; x=1734336681;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EMMVAhqvsok8+jrby2Irlase1bXcUqVVDtnrl/lCNZg=;
-        b=l+TtZOXIxPGjLWADkK3G+M7hXW4YelVc88n8h3I3/rOcAbF2fLtZhLIs+L5Rv7Uy08
-         bbzOiDLv3VoUtkUdZ0JUUzPukIN8z6fILvzjmdJkJ6uX2jGKMyeremIKLffsb8esrE9o
-         vX7VqXJ9giwayypHX1EsNt/4ZHgQ08PZHjGlupoJqZoEdaZMDdfa+cdxlazzCoHJScBn
-         evP1jFuoHCmAWEUYLKVzu8uNclAZhWVdhvFNS1uv+M+UvxjvtxB34tTWD6ytPsHm+NWo
-         bNO2UZpgVJ2gPMYHVrRNGtmiVWkLUyed/NtEkGqr62+xQWcy68CeiiTVOBICS/p+si0p
-         K6SA==
-X-Forwarded-Encrypted: i=1; AJvYcCXCQFhCxObnn+QNOGccaAzQPXBQ1B+EPFapVxizjFWLlTTnkA2NMHw3wJyKBXLyFdIiyGLj+GrFM7tM4Q==@vger.kernel.org
-X-Gm-Message-State: AOJu0YyYaOdo8T4mlOYPTLTSu1OzODVpSPsadwccIw7nMqScFwIvGpWX
-	lfqTfZvd+NxVbtHVvkpWa55ddXZBSmASaSNq0WU/VJKwEi4h2GJdumrxip7AOD1+mm+46/heXYM
-	kc3ZFanU1uqR4mVyB3JriuIge2Bc=
-X-Gm-Gg: ASbGnct9/VN6lPGaV7jMwsR1MzOCh3Vo0G6td2xalZXAAK0cyMnbmLqdnfwD/GjA44T
-	W5u7u2cioiwOC5SlabBiLZA5EzUGj8A==
-X-Google-Smtp-Source: AGHT+IGRL3096LydMjAsKPpyK1vAqIa4BT0xkb1eB5bu+gEQG4AhdyxQeyVq9cHTC9LyJYFhma/VrIjkyMZ85x0Eq10=
-X-Received: by 2002:a05:6512:1048:b0:53e:21df:427e with SMTP id
- 2adb3069b0e04-53e2c2e8a0fmr4657908e87.41.1733731880551; Mon, 09 Dec 2024
- 00:11:20 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="lg/aGiJ8"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1733762592;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=b0TCN20N6Jt0mRB8VQbmu+9cK5ofHCns5KRUsuZgT+A=;
+	b=lg/aGiJ8Pg7m67V+hZdRMfgGfVv8lRJEG2K74gr/viHBR1cKDSQM9QeJ1oMsNX7OgIFEUJ
+	kipy30LFIB1fieo4M5sItewGZL3CJWEIArht/dC8LsZ/pkphpMYW9aL/5KwFSI5EBl++yA
+	tuwsC2u0T2Mg3EsiDXqlok4vq6x6dwI=
+From: Thorsten Blum <thorsten.blum@linux.dev>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>
+Cc: linux-hardening@vger.kernel.org,
+	Thorsten Blum <thorsten.blum@linux.dev>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH] alpha: Replace one-element array with flexible array member
+Date: Mon,  9 Dec 2024 17:42:52 +0100
+Message-ID: <20241209164254.43724-2-thorsten.blum@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <51ce38fe2fa34ec79ad07a96feaea597af07bac7.camel@physik.fu-berlin.de>
- <CA+=Fv5RaMF2ohojG+U0MG-dpLHS4x-Tc41+fOLZwrWqu7T0L0A@mail.gmail.com>
- <CA+=Fv5QH1nUO1D1=Osqic6mNN6vLxiLqvNA4D9uAUgZA_w+7Tw@mail.gmail.com>
- <0b338882a82c3f505407cb313b89a2c7f891d982.camel@physik.fu-berlin.de>
- <CA+=Fv5RDcgm4YSX1AcpOgLvL=XXKyA=71ZasbJSc7+79Kh_Xpg@mail.gmail.com>
- <d9330edfca0fb34c69a68c56924fa0b074b26d29.camel@physik.fu-berlin.de>
- <CA+=Fv5T9nrQjGHOR+42tfgT723TJGgyVqBY7CwY4L-gYSoWTag@mail.gmail.com>
- <c661a771a86267c158d7f2eba1494fe94350fb06.camel@physik.fu-berlin.de>
- <CA+=Fv5Rxrwn0SEMgjufJcxSaB0_gOiKBjXuZnSKzgKakDHeCOw@mail.gmail.com>
- <CA+=Fv5R+8y2hCq7p-xo5qZ0CyinR_0aAndUkoEAweCVs_95SMw@mail.gmail.com>
- <Z1YpKFQGtMWF3yy3@creeky> <3926f510ba2d3069ff038cdae256ed5c8438ad19.camel@physik.fu-berlin.de>
-In-Reply-To: <3926f510ba2d3069ff038cdae256ed5c8438ad19.camel@physik.fu-berlin.de>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Mon, 9 Dec 2024 09:11:10 +0100
-Message-ID: <CA+=Fv5TG+Vc80VU5ofb53iRXOpFPHpgqYb2Ck-pgQrwahuDb4A@mail.gmail.com>
-Subject: Re: Kernel Oops on alpha with kernel version >=6.9.x
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: Michael Cree <mcree@orcon.net.nz>, linux-alpha@vger.kernel.org, 
-	"Maciej W.Rozycki" <macro@orcam.me.uk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-> Maciej (CC'ed) is currently working on improving the Alpha backend in GCC and he would
-> need access to a real alpha machine to test his patches.
->
-> Would either of you be able to help him? I have taken my XP1000 out of storage yesterday,
-> but unfortunately it won't power on at the moment as the power supply needs to be serviced.
+Replace the deprecated one-element array with a modern flexible array
+member in the struct crb_struct.
 
-I can probably set something up on one of my systems, I'm traveling
-this week but I can get back
-to you guys off-list regarding this.
+Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
+---
+ arch/alpha/include/asm/hwrpb.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/alpha/include/asm/hwrpb.h b/arch/alpha/include/asm/hwrpb.h
+index fc76f36265ad..db831cf8de10 100644
+--- a/arch/alpha/include/asm/hwrpb.h
++++ b/arch/alpha/include/asm/hwrpb.h
+@@ -135,7 +135,7 @@ struct crb_struct {
+ 	/* virtual->physical map */
+ 	unsigned long map_entries;
+ 	unsigned long map_pages;
+-	struct vf_map_struct map[1];
++	struct vf_map_struct map[];
+ };
+ 
+ struct memclust_struct {
+-- 
+2.47.1
+
