@@ -1,116 +1,88 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9212239BA0
-	for <linux-alpha@vger.kernel.org>; Wed, 11 Dec 2024 10:42:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5FF31FA8FF;
+	Wed, 11 Dec 2024 22:32:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733913734; cv=none; b=ZfiTY+x7L3iZXVIMCb3xOSBdf9f6JlmSBeUkn4waWKuI6haW94rDxS2SY4w0iAK6wJsDCn5yOsRe9gy7Bm+msGj6TO6vGS6Rc0DAKQeo4IjzaoowZlskz543T3H6hsC1amhEKZeoou1KD4/QeAYKi7pNPkDQFrpc5Me+YF6kGiw=
+	t=1733956349; cv=none; b=VLo7clw6Ql40dWKU/1ZFpIqMTBrTBa6w4fUdcbcKAV/UbtUEoovZojBT5o3anAEPjcGtYF7c6uoodQ4/gEENp/rh0rGedligKeaBsqTY0JekttdToUFddTjM9HJVTtqALH1O9SkLXb7ZtyRHY92tfXpPWBFwTL10KrDjdydl8Gc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733913734; c=relaxed/simple;
-	bh=FPLwP94tvfnaOZZuqTW2n9DL0W6ejE+gSlaVu74MKTI=;
-	h=Message-ID:Subject:From:To:Cc:Date:Content-Type:MIME-Version; b=OzGMJrSz8u6/K+RAVauh65ypFjjfwuYPX53P7ijWBYY47h4TGZu9w5I/cV2F8Fy97E0mpTXimmGpzAfUmlz1iYbTM5+O7dPv6thVPyyc5me97rVVXsV+Eoh1u8ZomAT0N47/eybSwsNdWiAr2ddpGbh+qN1yJFm9GbbKFLr2loY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=L2s9w0pg; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	s=arc-20240116; t=1733956349; c=relaxed/simple;
+	bh=BsLL13WVfc3NzEKIjd52mjnoMrC/Et1GCt0kRWiLCQo=;
+	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
+	 In-Reply-To:To:Cc; b=bPth9QcmsZNdlBbPF7WHBbwtm8uYLNUDlciBjNkTVzk3utk+02KTIJPJEzhisp4M/zntbH7im217JL2FN6IPsvdGHmbOGqs8pApGIs8pLHyXwqBYHzzN0RU7b1Wb/iMM9m2gI2BmwS6PwAzwXjEmdHdotnbk9I+Hd/Bm1LoC7ho=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qv6gvZPd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="L2s9w0pg"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=g1YgB9/RaFivOGMDw1FVKg3LqVjQMbEYv5f1CbxCsOs=; t=1733913729; x=1734518529; 
-	b=L2s9w0pgYzumLlISnZZkdaIekqFdzDkeDsVIpgYJ5jNhtonZRofKDBMIKAqRe+3GuZMOqWwzvcL
-	sG1SYKWi/vuXeOX7qQG0P51nTmUUdE+JSJwPtQaZ28bIvb1AZyCROKmomkDZIRCV2wDFKuU3gm/3C
-	CnYsijK71tkSm7vbSQuif30pg5mM1cmHpXcAmyC6+o4D/Df5s9xGQ/h6ar74d8n9zx8h19CdeTtHl
-	uYfk1CbW2bj3h/FfQ3H/SZSnRDibig3FyQsGFx+941zV5N0wGjxWcA8vFOVIM37xqFKK0O96tLm4T
-	1jo9HltLjCQUJ01QxLQ81tVW+9vPi4pAcwVQ==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.98)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1tLKAJ-00000003aZG-0bcf; Wed, 11 Dec 2024 11:41:59 +0100
-Received: from p57bd9274.dip0.t-ipconnect.de ([87.189.146.116] helo=[192.168.178.61])
-          by inpost2.zedat.fu-berlin.de (Exim 4.98)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1tLKAI-00000000Rze-3u8o; Wed, 11 Dec 2024 11:41:59 +0100
-Message-ID: <28c6fc52d40d53200f411355f988cb7eb7e93269.camel@physik.fu-berlin.de>
-Subject: Main issues on Alpha that need attention
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: "Maciej W.Rozycki" <macro@orcam.me.uk>
-Cc: Magnus Lindholm <linmag7@gmail.com>, Michael Cree <mcree@orcon.net.nz>, 
- Richard Henderson	 <rth@gcc.gnu.org>, Matt Turner <mattst88@gmail.com>, Sam
- James <sam@gentoo.org>,  linux-alpha <linux-alpha@vger.kernel.org>
-Date: Wed, 11 Dec 2024 11:41:58 +0100
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.2 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qv6gvZPd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2AB6C4CED2;
+	Wed, 11 Dec 2024 22:32:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733956348;
+	bh=BsLL13WVfc3NzEKIjd52mjnoMrC/Et1GCt0kRWiLCQo=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=qv6gvZPdDzbdVPybtFSPx8+F0xql/LHjAUoa61PxHbq7BiNILQmSVN3xV/Fk+jm3l
+	 eRj2euKpGQwhzha10D0yvWpJ5jdjr8+V1iYsps4/RL/90xpWyAoPlqxLTgT8H2p1Qr
+	 znxHE8HzGGVb3bxCyQgvVT/2hoGKZW56OU+GylgAoSP4eq7TpXB3MZRt3VoyD522af
+	 qGwcNNMDDsGqYKHkYodSX7oguHOLk4TTwi/8Q8fATZ6k5VUR9Dw7CkfxIhk8aSQAz0
+	 q46lv24Cq5nGqzFQZkxa8IXK7+L/Hgf8e5dM0N1jW5ubxUNiav+to559ZbObo4j7v8
+	 24oLtA9z8Jf7w==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id EAFBE380A965;
+	Wed, 11 Dec 2024 22:32:45 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/2] asm-generic: provide generic page_to_phys and
+ phys_to_page implementations
+From: patchwork-bot+linux-riscv@kernel.org
+Message-Id: 
+ <173395636448.1729195.13128530873311699126.git-patchwork-notify@kernel.org>
+Date: Wed, 11 Dec 2024 22:32:44 +0000
+References: <20241023053644.311692-2-hch@lst.de>
+In-Reply-To: <20241023053644.311692-2-hch@lst.de>
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-riscv@lists.infradead.org, arnd@arndb.de,
+ linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+ loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org,
+ linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org,
+ linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
+ linux-arch@vger.kernel.org
 
-Hi Maciej,
+Hello:
 
-since you are planning to work on the Alpha backend in GCC, I would briefly=
- like
-to summarize the most pressing issues with GCC on Alpha and the toolchain.
+This series was applied to riscv/linux.git (fixes)
+by Arnd Bergmann <arnd@arndb.de>:
 
-First and foremost, the most important task is of course converting the Alp=
-ha backend
-in GCC to LRA [1]. I have already played around switching the backend to LR=
-A [2] and
-ran into an issue with the M2 compiler [3] as well as with non-BWX targets =
-[4] which
-I have already reported. Thus, besides your patches to address data races w=
-ith
-sub-longword accesses [5], the issues above need to be addressed as well.
+On Wed, 23 Oct 2024 07:36:36 +0200 you wrote:
+> page_to_phys is duplicated by all architectures, and from some strange
+> reason placed in <asm/io.h> where it doesn't fit at all.
+> 
+> phys_to_page is only provided by a few architectures despite having a lot
+> of open coded users.
+> 
+> Provide generic versions in <asm-generic/memory_model.h> to make these
+> helpers more easily usable.
+> 
+> [...]
 
-Outside GCC, there is still an issue with SMP on Alpha [6] which may or may=
- not be a
-result of miscompiled code. I have not been able to track the origin of thi=
-s SMP
-bug down yet.
+Here is the summary with links:
+  - [1/2] asm-generic: provide generic page_to_phys and phys_to_page implementations
+    https://git.kernel.org/riscv/c/c5c3238d9b8c
+  - [2/2] asm-generic: add an optional pfn_valid check to page_to_phys
+    https://git.kernel.org/riscv/c/3e25d5a49f99
 
-Finally, there is currently an issue with the mold linker which caused the =
-upstream
-maintainer to drop support for Alpha [7]. He argues that one of the main pr=
-oblems is
-that there is no psABI document [8] available for Alpha which documents the=
- ELF ABI.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Maybe Richard Henderson knows more about this. I have a contact at HP which=
- I am trying
-to reach and ask him whether he can find anything in the archives with rega=
-rds to that.
 
-If anyone knows any other issues that need to be worked on Alpha, please le=
-t me know.
-
-Thanks,
-Adrian
-
-> [1] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D66207
-> [2] https://gcc.gnu.org/pipermail/gcc-patches/2024-October/665484.html
-> [3] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D117184
-> [4] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D117185
-> [5] https://gcc.gnu.org/pipermail/gcc-patches/2024-November/669217.html
-> [6] https://bugzilla.kernel.org/show_bug.cgi?id=3D213143
-> [7] https://github.com/rui314/mold/commit/3711ddb95e23c12991f6b8c7bfeba4f=
-1421d19d4
-> [8] https://uclibc.org/specs.html
-
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
