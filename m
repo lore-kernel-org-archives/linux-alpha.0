@@ -1,98 +1,143 @@
-Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD19819CC24;
-	Wed, 18 Dec 2024 11:58:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AC6015530B;
+	Wed, 18 Dec 2024 19:33:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734523082; cv=none; b=fDvSQxlxleRUN8M0zGeE5GodINO80LrpGEYmYBGnhpgsG9GbOGxj3Qo7TGr3w70dfMNKkGiksqAKIjZAp/E/68YgJkg1b4j0qV9PPYydcemVWijTBn7IxyCe4DXW1TSFgFPPwS3zJ4v5Mo2lTe60VmjeAF+Y6m2adbTF/UXKD00=
+	t=1734550405; cv=none; b=SPFjiuFpZNoWYaRp/CxCGBw5/yP9QTMvkm1QPWHSR9LEsV9co/eVwokdb4MthVlN0LakgYNddCPuXGGPwEdWN8Mk7Yio+BpCftirG1orAUH3PRP9uq7lyHNE+KYk0sjEggjqmUfzSXG+ROG8L2/NlTxpFh3Z0i4Xrg5uaqfEAAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734523082; c=relaxed/simple;
-	bh=oDanH9KbcyqaAgrkfJgfC45F72HSRGgPBJUOe3njE2M=;
+	s=arc-20240116; t=1734550405; c=relaxed/simple;
+	bh=+ZAP7+0oy3nKZio2i6ug1WK09BMQLlLYlaeIKRXupWA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=F/fBTJExOEeRWcohHqqTtg/KFM/qvQBvMCP+2+cg/eAlm7ccESwv2WVsmvz1x8gmLCds0M6O9H2tFjCLQ0mL2oE0z5UKn2XdbjAWLob6yTHXfHKv+PMHrxUzLhJ4Or0JbUaVFTKu66xR7i/tq7YNa3rtx1VF69VTfPDQ9dq4yA0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aZdD5dzo; arc=none smtp.client-ip=209.85.166.175
+	 To:Cc:Content-Type; b=grp6bB9bcmwrWlUkJXKBCYeCru3WaLm3rN4yrShVLMQUVthJHkz2xmtQEUlZ132Mc5vqq/YUkOymtggBckFboZp/xsqZC69hQMirTPBPvdflvhLg7qbvwPLB7bHgfohG3soOtcSdLYhWxqcGjjC/Vr13bZyRnT5hlB9Ney9WUL4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M6e07Imc; arc=none smtp.client-ip=209.85.208.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aZdD5dzo"
-Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-3a7d7db4d89so18301755ab.1;
-        Wed, 18 Dec 2024 03:58:00 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M6e07Imc"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-5d3f57582a2so2058571a12.1;
+        Wed, 18 Dec 2024 11:33:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1734523080; x=1735127880; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oDanH9KbcyqaAgrkfJgfC45F72HSRGgPBJUOe3njE2M=;
-        b=aZdD5dzoKsp4l74jP/zOEEKWca3RRWi1ccYAWIjMC9+4pf4tKThgkO4Pua+8RYaA3c
-         icoR8gTCSY0KAXXK7g5xRPAH/fiEG7MhEIBh8tF0MF/grY4aD6TykN096IM7VAeMh/h0
-         wQonvnb85qM3NT8+aOtCnoPWoctqVz2CfERLHr3a4cZdNdPJshRGEWPNDdPw1bcgma9w
-         mFplRaMt1688yscCalOu50+nLeIUt0f4bPUmKsiG9Y6rgbjRlZVFg9RijQtGkBhQ+PjN
-         AfJQlUFjkxophLqHGT+HUGR0WlfjAMGD54peyQXMJhCxbcJnUYYEBjknrT0vARBoW4rv
-         qQOQ==
+        d=gmail.com; s=20230601; t=1734550402; x=1735155202; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=hWtbSFsMz/oC2jOH0aIgScA+tGd7yJMd0DBJ4xjasjI=;
+        b=M6e07ImcgV9x9I9Iku2hSpnD8aA//vlqtshQRK4n7IWT/pepNSsGshSXfnCSFj4FWm
+         xEE1p+2FmESj6qScSAbjmt6gfV+j4HtwWfV1HbF67ZedmgdJUd9GhyqvIJtYFu+QUE+Q
+         GohfSu0eoca10lY4E3muhTKC7K4d1Hgv03aQEG230wF+vQZM2RtBV//+hNoRQjEapD6Z
+         58qM2+vD5YwAX+YhLH2JJuAMK5Qr+dh7A6hs1MijRqooQk1LDnIQd2LbBWE5YLtvxz8Z
+         tnqLB5jMlLJ81bhKuiWd1zKi/hTy3J0SOMzeSRB+7I4IZTos9T05Xu4xHP4UoEMyh85P
+         OVVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734523080; x=1735127880;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oDanH9KbcyqaAgrkfJgfC45F72HSRGgPBJUOe3njE2M=;
-        b=qEvotuc9nIUb9sM09Xia83Juv8GtteihtxAN+LFtZLul/TXPlGsGbeOrExC7KjCcGj
-         Zanv62WTI6x9P7zBn4+Jrrqiii998bEhe+1SlSztnc1CDBqieVAzUdqvdXu+HHZ1tlRn
-         Id2+gr/5MEvm2Cwk6mUa6F0QvwfWi8H30Vmb7U4rXImVV0QkRifT23wyjmbaIKVURfzH
-         tjfw7A4wCbTR1lmQUtG2BqJhRTvMKXsPdycmUUf0ultcIcQdrIHT+9kvZQsrOOkfKfvg
-         EHyTcmNuXuSDxF804G3g8bkQ8dfUECJvGTH/d4HdoiKePulRfsrq0KEDeWn/lOkAucbT
-         GORg==
-X-Forwarded-Encrypted: i=1; AJvYcCUuIB/lqbYWQaRHksfMAE4zzV8y8K13hvRNT/bvunJQilbpmn/poLwkhOE4/ae9Oe16aMX7el6qsg86OQ==@vger.kernel.org, AJvYcCVjR5WOuB6eUVEPyQ5Hm8mUu02GjUs1NnAicxCbkDz4r4BeTbiKJVna0l5JLCY2WsIJMLc3xUVBBy+NcQ==@vger.kernel.org, AJvYcCW5sJQBwl8oHKk11LMgUSHSjCR6EkgDCOxBhZ4BHqxWwnPp2EjZ3A956eqcIopM5yW2119EPAVdPAVDqG/SRBld@vger.kernel.org, AJvYcCWPgpPiGie1AROjORv2kfXvxGu0OQe5vuG2p28jnbbqEWnIIB4rnhbzrtO8FTcqGILDUttymNUmlY5uWM29@vger.kernel.org, AJvYcCWRmemiWENLHQQiCECQvIepDJGW7zuWVnDwYNtLQ6lioq4/o9ZUoxlBbKkaVsar5zuVQkoed2hIwpZ/Og==@vger.kernel.org, AJvYcCXv1T2SXyLdwq/dgH+H199j7rP4TvT3hQiPIA0iW3pvlcsY9NS1PldRtPId2r0QGPEmcBb/I5NON0QA@vger.kernel.org, AJvYcCXzlI0aigyxLCkgE/XXesHPK+XGHEcG5z+JYi6GztF7h3+7ukLtWX8GjZSNsdqX3XNbqS2u7WDrS2G8rg==@vger.kernel.org
-X-Gm-Message-State: AOJu0YycX/t3HNg2icVnYeVQuTZIvOWkePGPh/WcNBb1OMlmSN3IrUcv
-	ZbXvPUL2eJ0TaHsYJwfFzhC/SwMwDDVJye++TlkfUCLjRdbD9lxfDRQYc7TjChbH1UT+At+nMlz
-	R6nAzwYfLtzbMW+53DS3bV1rNeTs=
-X-Gm-Gg: ASbGnculHUIHafJDWNpbWTmd9B2SwdArswVdgRCIUJEa+B4HkDXXm9yyM8t9TdXtEbx
-	aK6OW/u3W7UARieyTYsCbi+dSdhikBxM3szkMvbfFQIvjJlD88KanxNYRb2+rgwfOnO/luKc=
-X-Google-Smtp-Source: AGHT+IE9XVHYAxxlYi/lIqkTbCEk29pY3s/JbrTHqng5uSXtp2yGtDmOz0gqvTFlowYDieODZLuKDePCSd4DCR7eu4U=
-X-Received: by 2002:a05:6e02:1565:b0:3a7:8720:9deb with SMTP id
- e9e14a558f8ab-3bdc1b288c8mr17567595ab.11.1734523079863; Wed, 18 Dec 2024
- 03:57:59 -0800 (PST)
+        d=1e100.net; s=20230601; t=1734550402; x=1735155202;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hWtbSFsMz/oC2jOH0aIgScA+tGd7yJMd0DBJ4xjasjI=;
+        b=Md8V47BXc2C1oTrGK46WB4m2GnsaOlR398pVDXDKAZBG+Cr6d3IVufMjw6cfaSj04R
+         YmikGcg9f425vh0JnLtblNMxCPK4p2ct/Q0LnFhuemj/hV8B505JXDF+qojQo0bpxhDU
+         LSumvPSD2DxpQOsC5HALMM0Ni6mUITfr77q/vv3rYBKxA3rhinx3iFFH396ocCgPHVO5
+         66OHkeGfoH6GpWZ4XI+VzQdMvydDkyIYPQzmRtJE1WXIaWXITQuuOrdxv4EyrBxAoB9x
+         b++NZWXnhy2FQtAohS7eNOQ8ZAImug2PWqRnM4S2Q3+NoX//sukUbNw9nWP3n1nhyVKs
+         z8VA==
+X-Forwarded-Encrypted: i=1; AJvYcCUZbPZH/zn1vm4CxlUZkTqZrfVPQPXU9tjetprHzgWw4AgcVCQMk/4qm9jYM2X86yzkJwi0HSfc/CkyJw==@vger.kernel.org, AJvYcCVMFn78bHI75bcNRprS4pDce8X2af0fMuvBv1MAmbfhF4SE57L0/Mmg8C7iCbTqSf6Hkunz@vger.kernel.org
+X-Gm-Message-State: AOJu0YxESIuzRRP6cu77vXdZs0lFQQ1Mt12AGOB+BlTMlkF9j637Dfpl
+	EtfkP1Cbcv2o7s/Clr8EGzxuIodCdP3tUZ9Xnxp2kCU3d4aomGCE5m7Kagx4zdaQCjHEVS3fOox
+	ttn9wexWs2umUhkUJNVSbo2paaX3kx6QM
+X-Gm-Gg: ASbGncts+hju8vU0EusfMn5XNpgL8NUirp4Nikqcx/I4qeYDx/ZtrszW6zZkm9NjvcO
+	WtdQ/a/uwK75SceWJ3Kkq0TjEKywCUIqdl3wsNps=
+X-Google-Smtp-Source: AGHT+IG4QvqgLNADjWMXuG9FuJApOyyQbltuSf/xlK1NiiagTINcsY9FTyVPMn3ZfjRiCMX5GuTptbBWJyDdquFkEj4=
+X-Received: by 2002:a05:6402:390b:b0:5d0:e461:68e6 with SMTP id
+ 4fb4d7f45d1cf-5d8024822a5mr457904a12.17.1734550401381; Wed, 18 Dec 2024
+ 11:33:21 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241213084457.45120-1-annaemesenyiri@gmail.com>
- <20241213084457.45120-5-annaemesenyiri@gmail.com> <20241216182001.557e2c19@kernel.org>
-In-Reply-To: <20241216182001.557e2c19@kernel.org>
-From: Anna Nyiri <annaemesenyiri@gmail.com>
-Date: Wed, 18 Dec 2024 12:57:49 +0100
-Message-ID: <CAKm6_RsVpJjA2uHMJQO=5X-GJthkNnHJS=qHbiM2wy0AdADRhg@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 4/4] sock: Introduce SO_RCVPRIORITY socket option
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org, fejes@inf.elte.hu, edumazet@google.com, 
-	pabeni@redhat.com, willemb@google.com, idosch@idosch.org, horms@kernel.org, 
-	dsahern@kernel.org, linux-can@vger.kernel.org, socketcan@hartkopp.net, 
-	mkl@pengutronix.de, linux-kselftest@vger.kernel.org, shuah@kernel.org, 
-	tsbogend@alpha.franken.de, kaiyuanz@google.com, 
-	James.Bottomley@hansenpartnership.com, richard.henderson@linaro.org, 
-	arnd@arndb.de, almasrymina@google.com, asml.silence@gmail.com, 
-	linux-mips@vger.kernel.org, andreas@gaisler.com, mattst88@gmail.com, 
-	kerneljasonxing@gmail.com, sparclinux@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, linux-arch@vger.kernel.org, deller@gmx.de, 
-	vadim.fedorenko@linux.dev, linux-parisc@vger.kernel.org
+References: <CA+=Fv5QH1nUO1D1=Osqic6mNN6vLxiLqvNA4D9uAUgZA_w+7Tw@mail.gmail.com>
+ <0b338882a82c3f505407cb313b89a2c7f891d982.camel@physik.fu-berlin.de>
+ <CA+=Fv5RDcgm4YSX1AcpOgLvL=XXKyA=71ZasbJSc7+79Kh_Xpg@mail.gmail.com>
+ <d9330edfca0fb34c69a68c56924fa0b074b26d29.camel@physik.fu-berlin.de>
+ <CA+=Fv5T9nrQjGHOR+42tfgT723TJGgyVqBY7CwY4L-gYSoWTag@mail.gmail.com>
+ <c661a771a86267c158d7f2eba1494fe94350fb06.camel@physik.fu-berlin.de>
+ <CA+=Fv5Rxrwn0SEMgjufJcxSaB0_gOiKBjXuZnSKzgKakDHeCOw@mail.gmail.com>
+ <CA+=Fv5R+8y2hCq7p-xo5qZ0CyinR_0aAndUkoEAweCVs_95SMw@mail.gmail.com>
+ <Z1YpKFQGtMWF3yy3@creeky> <CA+=Fv5Q=f-6y=EhZhG2XfZB0O=m+yOiv+gmtmMABVQZieKdwbQ@mail.gmail.com>
+ <Z2ClSlwznfuk8Uwr@creeky> <CA+=Fv5RaqHL6MJjvhF-mn3CVY10e=2QqFBSVO6YXLUJ7WV9zGQ@mail.gmail.com>
+In-Reply-To: <CA+=Fv5RaqHL6MJjvhF-mn3CVY10e=2QqFBSVO6YXLUJ7WV9zGQ@mail.gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Wed, 18 Dec 2024 20:33:09 +0100
+Message-ID: <CA+=Fv5RP=NoWo4VeTX7hx103=jP2d-NC-jFo+ePXLBRubCxc_w@mail.gmail.com>
+Subject: Re: Kernel Oops on alpha with kernel version >=6.9.x
+To: Michael Cree <mcree@orcon.net.nz>, Magnus Lindholm <linmag7@gmail.com>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, paulmck@kernel.org, rcu@vger.kernel.org, 
+	linux-alpha@vger.kernel.org
+Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Jakub Kicinski <kuba@kernel.org> ezt =C3=ADrta (id=C5=91pont: 2024. dec. 17=
-., K, 3:20):
->
-> On Fri, 13 Dec 2024 09:44:57 +0100 Anna Emese Nyiri wrote:
-> > Add new socket option, SO_RCVPRIORITY, to include SO_PRIORITY in the
-> > ancillary data returned by recvmsg().
-> > This is analogous to the existing support for SO_RCVMARK,
-> > as implemented in commit <6fd1d51cfa253>
-> > ("net: SO_RCVMARK socket option for SO_MARK with recvmsg()").
->
-> Could you follow up with a test? The functionality is pretty
-> straightforward but it'd nonetheless be good to exercise it,
-> even if it's a trivial C program which sends a UDP packet to
-> itself over loopback?
+Hi again,
 
-Sure, I will send the test after the Christmas holidays.
+So, various versions of GCC can trigger/untrigger the RCU bugs that
+I've been hitting. This may of course still be due to GCC miscompiling
+some code on alpha but that said I've taken another look at the code
+involved when this is triggered. From what I've seen so far, this
+happens when kernel threads are used in the code to access structured
+data stored on the stack (structs). The quote below is from a comment
+in the kernel code (include/linux/percpu-defs.h)
+
+"s390 and alpha modules require percpu variables to be defined as weak
+to force the compiler to generate GOT based external references for
+them. This is necessary because percpu sections will be located
+outside of the usually addressable area. This definition puts the
+following two extra restrictions when defining percpu variables.
+
+1. The symbol must be globally unique, even the static ones.
+
+2. Static percpu variables cannot be defined inside a function."
+
+
+Taking these notes into account I've made some minor modifications to
+the code (briefly described below). The modifications involve
+declaring some structs previously placed on stack as
+DEFINE_PER_CPU_SHARED_ALIGNED. This is already done for some strucs in
+rcu/smp code. Making these modifications fixes the problem and I can
+build the kernel with GCC versions that previously triggered the bug.
+The same approach fixed both the network interface-rename bug as well
+as the scsi module unload bug.
+
+in kernel/smp/smp.c
+-------------------
+#if  defined(ARCH_NEEDS_WEAK_PER_CPU)
+smp_call_function_single(...) use csd = this_cpu_ptr(&csd_data)
+regardless if its called with wait = 0 or 1. Make sure to declare
+csd_data as "DEFINE_PER_CPU_SHARED_ALIGNED"
+#endif
+
+
+in kernel/rcu/tree.c
+--------------------
+#use rew_data instead of stack allocated struct
+static DEFINE_PER_CPU_SHARED_ALIGNED(struct rcu_exp_work, rew_data);
+
+
+in kernel/rcu/tree_exp.h
+------------------------
+#if  defined(ARCH_NEEDS_WEAK_PER_CPU)
+void synchronize_rcu_expedited(void)
+
+in stead of:
+struct rcu_exp_work rew;
+
+do:
+#if  defined(ARCH_NEEDS_WEAK_PER_CPU)
+struct rcu_exp_work *rewp;
+rewp=this_cpu_ptr(&rew_data);
+
+rew_data is declared "DEFINE_PER_CPU_SHARED_ALIGNED"
+
+#endif
+
+/Magnus
