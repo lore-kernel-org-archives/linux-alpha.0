@@ -1,87 +1,244 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9186D4690;
-	Wed, 18 Dec 2024 22:50:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BCB9B4EB48;
+	Thu, 19 Dec 2024 16:46:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734562216; cv=none; b=k51BHcu6iDgRYdzmwc5sKEeb160mkyDeepd7G2NeN+GBIVOZoQbh8VnSK8duVDX1jtOsvTBDDs08281WnFhYxwO52gx6M/HY7WBbUSnJjTadoVHw79ANmipSxtvrgwIhpkmpCA+uaJyX0E8mu7UjnjN8WVpJaSLG7Qe9Ef19AEI=
+	t=1734626774; cv=none; b=FELZh4sOmnb3FiRUljIRE0Vw2ULBEBEoUrHO2phDvdgVVOgSezyS9YT3pScvdK2B3nu2VX7M24gqb9I1exxheTuYjehB/UTBsQIeA7rfWYOophI3ga3BEdo96M2yQomWtrnZvDWpm7ms1Z+gLGUqvzAJlGLaXpMY/qREorYgobA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734562216; c=relaxed/simple;
-	bh=Q8kVodaBIldUSutyV5hCIyKeYwGk8jQY5NcxeuVA/1g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QN3Y71ybNKfeRnSu0g28izPdoGfOFdLr/3lKrcotRya2ZcAQNTciBFd6SAtJc0rH0wPBlbYCk1NaBUS+D3r4iVWBPtWu+IlByp0tgWqFpcDVjomOp2Uy91gYN54KjSyosnwCK2hdpgG+ASGXfzUtZxYqqtj9EQ8NWlHQIH0vKRQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZxpAjGCj; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZxpAjGCj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E67DC4CECD;
-	Wed, 18 Dec 2024 22:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1734562216;
-	bh=Q8kVodaBIldUSutyV5hCIyKeYwGk8jQY5NcxeuVA/1g=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=ZxpAjGCjio6PGq/eI5NlN+tsd5+4xVGlZxyac0vSeyQ/j9RUJsMxRR6VxrcjsL8RR
-	 tIczXyQlCOy32pQzmAuItSq7a45P6T8yLKTfHWdO10dBZ4NI4mnxeOqjHFLmgElpnc
-	 LeOyKD6HmObEJC0I7KNcIlZ/fzhB9PV5z3KyoWALhsaQS8rhRIW7GrtgLWiHHJY6kn
-	 ge7QbD8/zp1fhohSNQgumE/Fb4jqbWVXzDQN0Dv1DGwL4sMZUSH64T/bhzUAgy2AhC
-	 VC1UjzhKt81XweecNaxBVgg1ZUTZDcgpehTME77GR2ud+NwGuEOWKBWw1erY+5FOeK
-	 SonqT22ylmASg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id B8A9BCE0924; Wed, 18 Dec 2024 14:50:15 -0800 (PST)
-Date: Wed, 18 Dec 2024 14:50:15 -0800
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: Michael Cree <mcree@orcon.net.nz>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	rcu@vger.kernel.org, linux-alpha@vger.kernel.org,
-	"Maciej W. Rozycki" <macro@orcam.me.uk>
-Subject: Re: Kernel Oops on alpha with kernel version >=6.9.x
-Message-ID: <be4fe590-b41c-4033-91c1-94f10c4f3d40@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <c661a771a86267c158d7f2eba1494fe94350fb06.camel@physik.fu-berlin.de>
- <CA+=Fv5Rxrwn0SEMgjufJcxSaB0_gOiKBjXuZnSKzgKakDHeCOw@mail.gmail.com>
- <CA+=Fv5R+8y2hCq7p-xo5qZ0CyinR_0aAndUkoEAweCVs_95SMw@mail.gmail.com>
- <Z1YpKFQGtMWF3yy3@creeky>
- <CA+=Fv5Q=f-6y=EhZhG2XfZB0O=m+yOiv+gmtmMABVQZieKdwbQ@mail.gmail.com>
- <Z2ClSlwznfuk8Uwr@creeky>
- <CA+=Fv5RaqHL6MJjvhF-mn3CVY10e=2QqFBSVO6YXLUJ7WV9zGQ@mail.gmail.com>
- <CA+=Fv5RP=NoWo4VeTX7hx103=jP2d-NC-jFo+ePXLBRubCxc_w@mail.gmail.com>
- <ef49a479-2000-42ee-9b10-9f3b6a68ec35@paulmck-laptop>
- <CA+=Fv5REK+xbA49zD3aYBgG2J1Xw1FWP02qjyyOTrwbzMRXu3w@mail.gmail.com>
+	s=arc-20240116; t=1734626774; c=relaxed/simple;
+	bh=3q80Bx5bppZj+CXnaPreUsTLT6OlZBNzKMfGvb3ctc4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ds1lWfbmy62Wdxq5egDhUGME4CohT0tpWlz6kagmDPMe3nnkbtIwariESJbcvqGwR5KutQmPI6zFw0Pfk1ik3IYrhbaR9MzmRPMyqZ0aJFKLOzbcyjpKwmms2eCJQsGMPrydcbEvjBNTkGFLGsJRdc1IY414MvGucz6Y+/loJrM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3235D1480;
+	Thu, 19 Dec 2024 08:46:39 -0800 (PST)
+Received: from e123572-lin.arm.com (e123572-lin.cambridge.arm.com [10.1.194.54])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2E9D63F58B;
+	Thu, 19 Dec 2024 08:46:07 -0800 (PST)
+From: Kevin Brodsky <kevin.brodsky@arm.com>
+To: linux-mm@kvack.org
+Cc: Kevin Brodsky <kevin.brodsky@arm.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	"Mike Rapoport (IBM)" <rppt@kernel.org>,
+	Ryan Roberts <ryan.roberts@arm.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Will Deacon <will@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	linux-alpha@vger.kernel.org,
+	linux-arch@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-csky@vger.kernel.org,
+	linux-hexagon@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-mips@vger.kernel.org,
+	linux-openrisc@vger.kernel.org,
+	linux-parisc@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org,
+	linux-snps-arc@lists.infradead.org,
+	linux-um@lists.infradead.org,
+	loongarch@lists.linux.dev,
+	x86@kernel.org
+Subject: [PATCH 00/10] Account page tables at all levels
+Date: Thu, 19 Dec 2024 16:44:15 +0000
+Message-ID: <20241219164425.2277022-1-kevin.brodsky@arm.com>
+X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+=Fv5REK+xbA49zD3aYBgG2J1Xw1FWP02qjyyOTrwbzMRXu3w@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Dec 18, 2024 at 10:54:21PM +0100, Magnus Lindholm wrote:
-> > If I understand your proposed changes correctly, this could increase
-> > the amount of time CPUs spend waiting for for the csd_data to become free.
-> > This would be a very unwelcome development in some quarters.
-> 
-> you're probably right, this might not be the right approach.
-> 
-> > preventing it from happening.
-> >
-> > So what am I missing here?
-> 
-> Maybe a per-cpu variable is the wrong way to go about it. I'm trying to get a
-> better understanding of why, even quite simple, structs get corrupted when
-> accessed by kernel threads. The compiler may be at fault, but is it possible
-> that there is something else going on, which is specific to alpha and we're
-> seeing more of this on more recent kernels which makes better use of
-> threads?
+We currently have a pair of ctor/dtor calls for lower page table levels,
+up to PUD. At PTE and PMD level, these handle split locks,
+if supported. Additionally, the helpers ensure correct accounting of
+page table pages to the corresponding process.
 
-Are the s390 guys seeing this problem?  Maybe they saw it in the past
-and did something to work around it.
+This series takes that principle to its logical conclusion: account all
+page table pages, at all levels and on all architectures (see caveat
+below), through suitable ctor/dtor calls. This means concretely:
 
-In the past, there have been compiler optimizations that would use a large
-store to update a smaller variable, and then do small stores to fix up the
-clobbered areas.  These were all supposed to have been removed for C11.
-Might some linger in Alpha's compilers?
+* Ensuring that the existing pagetable_{pte,pmd,pud}_[cd]tor are called
+  on all architectures.
 
-							Thanx, Paul
+* Introduce pagetable_{p4d,pgd}_[cd]tor and call them at P4D/PGD level.
+
+The primary motivation for this series is not page accounting, though.
+P4D/PGD-level pages represent a tiny proportion of the memory used by a
+process. Rather, the appeal comes from the introduction of a single,
+generic place where construction/destruction hooks can be called for all
+page table pages at all levels. This will come in handy for protecting
+page tables using kpkeys [1]. Peter Zijlstra suggested this approach [2]
+to avoid handling this in arch code.
+
+With this series, __pagetable_ctor() and __pagetable_dtor() (introduced
+in patch 1) should be called when page tables are allocated/freed at any
+level on any architecture. Note however that only P*D that consist of
+one or more regular pages are handled. This excludes:
+
+* All P*D allocated from a kmem_cache (or kmalloc).
+* P*D that are not allocated via GFP (only an issue on sparc).
+
+The table at the end of this email gives more details for each
+architecture.
+
+Patches in details:
+
+* Patch 1 factors out the common implementation of all
+  pagetable_*_[cd]tor.
+
+* Patch 2-4: PMD/PUD; add missing calls to pagetable_{pmd,pud}_[cd]tor
+  on various architectures.
+
+* Patch 5-7: P4D; move most arch to using generic alloc/free functions
+  at P4D level, and then have them call pagetable_p4d_[cd]tor.
+
+* Patch 8-10: PGD; same principle at PGD level.
+
+The patches were build-tested on all architectures (thanks Linus Walleij
+for triggering the LKP CI for me!), and boot-tested on arm64 and x86_64.
+
+- Kevin
+
+[1] https://lore.kernel.org/linux-hardening/20241206101110.1646108-1-kevin.brodsky@arm.com/
+[2] https://lore.kernel.org/linux-hardening/20241210122355.GN8562@noisy.programming.kicks-ass.net/
+---
+
+Overview of the situation on all arch after this series is applied:
+
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | arch          | #include                | Complete ctor/dtor    | ctor/dtor    | Notes                              |
+  |               | <asm-generic/pgalloc.h> | calls up to p4d level | at pgd level |                                    |
+  +===============+=========================+=======================+==============+====================================+
+  | alpha         | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | arc           | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | arm           | Y                       | Y                     | Y/N          | kmalloc at pgd level if LPAE       |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | arm64         | Y                       | Y                     | Y/N          | kmem_cache if pgd not page-sized   |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | csky          | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | hexagon       | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | loongarch     | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | m68k (Sun3)   | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | m68k (others) | N                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | microblaze    | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | mips          | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | nios2         | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | openrisc      | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | parisc        | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | powerpc       | N                       | Y/N                   | N            | kmem_cache at:                     |
+  |               |                         |                       |              | - pgd level                        |
+  |               |                         |                       |              | - pud level in 64-bit              |
+  |               |                         |                       |              | - pmd level in 64-bit on !book3s   |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | riscv         | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | s390          | N                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | sh            | Y                       | N                     | N            | kmem_cache at pmd/pgd level        |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | sparc         | N                       | N                     | N            | 32-bit: special memory             |
+  |               |                         |                       |              | 64-bit: kmem_cache above pte level |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | um            | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | x86           | Y                       | Y                     | Y/N          | kmem_cache at pgd level if PAE     |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+  | xtensa        | Y                       | Y                     | Y            |                                    |
+  +---------------+-------------------------+-----------------------+--------------+------------------------------------+
+
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: "Mike Rapoport (IBM)" <rppt@kernel.org>
+Cc: Ryan Roberts <ryan.roberts@arm.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Will Deacon <will@kernel.org>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-csky@vger.kernel.org
+Cc: linux-hexagon@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-openrisc@vger.kernel.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linux-riscv@lists.infradead.org
+Cc: linux-s390@vger.kernel.org
+Cc: linux-snps-arc@lists.infradead.org
+Cc: linux-um@lists.infradead.org
+Cc: loongarch@lists.linux.dev
+Cc: x86@kernel.org
+---
+Kevin Brodsky (10):
+  mm: Move common parts of pagetable_*_[cd]tor to helpers
+  parisc: mm: Ensure pagetable_pmd_[cd]tor are called
+  m68k: mm: Add calls to pagetable_pmd_[cd]tor
+  s390/mm: Add calls to pagetable_pud_[cd]tor
+  riscv: mm: Skip pgtable level check in {pud,p4d}_alloc_one
+  asm-generic: pgalloc: Provide generic p4d_{alloc_one,free}
+  mm: Introduce ctor/dtor at P4D level
+  ARM: mm: Rename PGD helpers
+  asm-generic: pgalloc: Provide generic __pgd_{alloc,free}
+  mm: Introduce ctor/dtor at PGD level
+
+ arch/alpha/mm/init.c                     |  2 +-
+ arch/arc/include/asm/pgalloc.h           |  9 +--
+ arch/arm/mm/pgd.c                        | 16 +++--
+ arch/arm64/include/asm/pgalloc.h         | 17 ------
+ arch/arm64/mm/pgd.c                      |  4 +-
+ arch/csky/include/asm/pgalloc.h          |  2 +-
+ arch/hexagon/include/asm/pgalloc.h       |  2 +-
+ arch/loongarch/mm/pgtable.c              |  7 +--
+ arch/m68k/include/asm/mcf_pgalloc.h      |  2 +
+ arch/m68k/include/asm/motorola_pgalloc.h |  6 +-
+ arch/m68k/include/asm/sun3_pgalloc.h     |  2 +-
+ arch/m68k/mm/motorola.c                  | 31 ++++++++--
+ arch/microblaze/include/asm/pgalloc.h    |  7 +--
+ arch/mips/include/asm/pgalloc.h          |  6 --
+ arch/mips/mm/pgtable.c                   |  8 +--
+ arch/nios2/mm/pgtable.c                  |  3 +-
+ arch/openrisc/include/asm/pgalloc.h      |  6 +-
+ arch/parisc/include/asm/pgalloc.h        | 39 ++++--------
+ arch/riscv/include/asm/pgalloc.h         | 46 ++------------
+ arch/s390/include/asm/pgalloc.h          | 33 +++++++---
+ arch/um/kernel/mem.c                     |  7 +--
+ arch/x86/include/asm/pgalloc.h           | 18 ------
+ arch/x86/mm/pgtable.c                    | 27 +++++----
+ arch/xtensa/include/asm/pgalloc.h        |  2 +-
+ include/asm-generic/pgalloc.h            | 76 +++++++++++++++++++++++-
+ include/linux/mm.h                       | 64 +++++++++++++-------
+ 26 files changed, 234 insertions(+), 208 deletions(-)
+
+
+base-commit: 78d4f34e2115b517bcbfe7ec0d018bbbb6f9b0b8
+-- 
+2.47.0
+
