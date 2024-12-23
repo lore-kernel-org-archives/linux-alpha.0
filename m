@@ -1,166 +1,69 @@
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-175.mta0.migadu.com (out-175.mta0.migadu.com [91.218.175.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08D5017E473;
-	Mon, 23 Dec 2024 07:32:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57BDC28E3F
+	for <linux-alpha@vger.kernel.org>; Mon, 23 Dec 2024 07:40:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734939134; cv=none; b=C3V1k0A54CTuiXsy3u8WkQrmNkb1ykfYjGXJtl+HDn2/GdrE5A30fgDwWe7CGhUspIvIBFIQedte4VFH/k13RW6gDIWo6rGuiPCZSd3wOQ8ycGJbH6bTN+4ArldYqnpwFch7WREEz2wh8u1L9FI3M1KikugwuR9ksQiGEsg/Myo=
+	t=1734939660; cv=none; b=Ji1PsDejHb+QPQpCcjpLxi4tTezZsk8kXvO9dFYrd0KZuwb+v5MB4fN43puUi1dxNnU8rrRxlInWwnDmvMC5h9oX/tjdT31lYuL6s1JwaQT3KJJVIdRZlEbUrlNAEEz9rj3YHcGD7Mabev5a8Si1zN19/hajzWTuMqKzDRyYUlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734939134; c=relaxed/simple;
-	bh=OHoKVoEfq+gvl63nyXxm0Fs3Th2pjhxHONc5vMgjP0s=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KeWFbkF6OBjvE4Wwm5drn7OEGmbID8CvsmVYPOa9LKe/TCGqDN5ACEqAVhyNhO72LPHVgW7fQiwpRRf8xcF7ouu7iF3AymDaplextW3pVbIi3yjKR9pFhXPdownxC0/MBWtFwFjiEuELvLONl+2xLc/5b0mkr0tNz8WaLKFz0WU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BP22g1SQ; arc=none smtp.client-ip=209.85.128.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1734939660; c=relaxed/simple;
+	bh=4ahCFuU7clUrGou7iErZdZolhTn7t0Sk2+czTt2uZuY=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=AggMznUR96n+efBCh20rXJhassskmCzg8rwq5ZtWAqpKj/14i7em2KDTQjSIuVJWy6BKGm7h+XWsVB1a7i8L2tbncRDYqJWLTWoEQwTWmc3vpIEsyDY/I7bfmjHGpuk4GPdKiFGNlNh3DBk6elcWffUPxDKS43jFw8ns+s95e58=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=KBeO1QBl; arc=none smtp.client-ip=91.218.175.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BP22g1SQ"
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-6eff4f0d627so33673057b3.1;
-        Sun, 22 Dec 2024 23:32:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1734939132; x=1735543932; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=0v6aG1YFkKVxPZgrKFkppCnD7setaclMAdKcShBz7Ms=;
-        b=BP22g1SQZbY9i1od9T1kbvclOQnH3UsBl9Mka2uHPJPhZs7CGx7onXRvo88+2mgqNW
-         g3K3qwzYPZKbVJaDCQOjTCeD5ldUP+p+eAknIbqtARokWH6vsYF1vX/C8s922zGNViBO
-         py1wDEqnHzNuHxuuTcyCCGscnoLR1ZwpoiWbfUdTTWt2Tw2x/06i9iWDoNqpEZ6qnfrT
-         DmRyhhJr89bPZKMhIfLRJwrtDJ2pFmMbJCIWov4OK0emlTuDCOlt4MycWH47ICOHLNKX
-         Ps/Bra3ALoIPlLWex5UzdG5yBMZ/4aJ7Rz7A+VehvZtjfa++2zUjc6f42eab+eMeumIk
-         hJQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734939132; x=1735543932;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0v6aG1YFkKVxPZgrKFkppCnD7setaclMAdKcShBz7Ms=;
-        b=X9Y1Z9Qi2cTcN2++HNHF0ZNFZRFV+qiM2xtBgqJxSr/ARtq9PkzqjCaYWsGlUJvtJx
-         2uhLwMyGxP/Wb3eVZuE+CZsh1u4YLudAQ5wiQDRVSS7mOGHZ0NEdOr3AQtzcRoeNQ1qG
-         +SGqWT/gSyUOEUhH8JxF+dZiaEA9e33pcmujqjJhCYVjfr8N/lF1f6BF+MUua/iiskYA
-         RGSitURlTZAZ2GNVxrEke+ddBzw9DpBxdsrcODimznDOlBtTkW13+awkOG6C34oVblF9
-         33GvZpu8A2Y+N+MQkUfe7uWnuxR/fwkUCpE0Pox0iVePxiQ1E5AHhS8fWMVFniCxoXQi
-         vjhg==
-X-Forwarded-Encrypted: i=1; AJvYcCU0gUzov8039tC6llGwkPckrSz06aWG4/zzZw86VUQfcVuv1pqCcq9hD7nVq/p3HfJM48ykseCBzbs=@vger.kernel.org, AJvYcCU9tax9EQ4iLlAr9lKPq1cP+yOz/KyCuERxxC95zQSTgIipdCsXuLVExUN5gNHviutdNScQnOqFO9yjnA==@vger.kernel.org, AJvYcCUMG8ACjtWY4lA5mmFuoMm4VQT2qeBPkAEg3wzqrISO7WcUiY0bH70fyg493Ctt81n+19oKNVlE/wBA30Y=@vger.kernel.org, AJvYcCUcxdMRlqWc2gWBG3WEnuCPsccHiIM9DV6NsanKb14I8uiBOr6p51PBjSibpAigPquhjy3/XgAwq4N2@vger.kernel.org, AJvYcCUvBZYEufWrncCeJuGQfXDFluLbMWLHn+RL5hsy8QZ++W4q4smrcsSCYtVJLTGuEUEpVaSILZ4WEhS4Deam@vger.kernel.org, AJvYcCV/S3DFRNc1G+aRSYwLd+PAkGMyjFFTzleUHRIL+iBBHakVQkajRXWdR6+Hg+KZw7/QbiP32QIFeafq/ufS@vger.kernel.org, AJvYcCVEDGcRO4DcpIBIEx3SmHK85Ba6wEPx3qZ9GOA/wLAGW//feGj/8+HCjS/fw2Zn07LBt9AahsDA9mPs/A==@vger.kernel.org, AJvYcCVaUsfHj5FAAtSoQBJn9a1xHrHIJQHI3+nIf81n8cd8bfkI3hJHGZEsjtBMMdIrRIR6OolgtQwwhSaPvg==@vger.kernel.org, AJvYcCW+R5duvAk+mkTVcOrqZpUb3Uige0W6XK1JP7QCZCcCfAaBma/wNrFAPzB6w1OSpXiTg4AXKoep9N+ARanUK5I=@vger.kernel.org, AJvYcCWAwlzq3LM0ioytEJvWoPV6vjsTUq7z7Veu2ljWFluOvVB3++Zz0tl+RLTpCWLUX+VbK3zl5QOx4AgiUg==@vger.kernel.org, AJvYcCWWci2QX4PvBsf06e9b3Ye5s51Ag352ZAzWVjQDBE9/mxeHRY6eabit0/zt/wVDZLyjT4hJW2my6MIcqw==@vger.kernel.org, AJvYcCWbpyJGeKVUulH5t6cRXti41VJ9KoFhzPhpC5Q9E0Z9+w0UlSC/GAqdDsxy72zrtVtnHKRyzRZsCfY7@vger.kernel.org, AJvYcCX9EbXXRiQiS/vjgsdbFXU4yFWqtugccQr+YIuZyYMX14H+aCkouFTyvKt4j6fsWaCcIwBRe0qbVsU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyEY7S8Xm9nhlPmnKYmk1GVw/obRqTr8r/eKAcFAURue957d6kE
-	yltRt9EEOWedqFFY03TnSBC5gLGogI/Lho60KN0V4uWTj58O2biA+uVj0phlDIEhk6I/OondMDk
-	vp7gze5RB7Q7oTaFipK+noaMTx3A=
-X-Gm-Gg: ASbGncsRWRfUa+x3zY+Iez1jWv6JqvDfSlFJA+xH+ux2OmITjlrNwiMb23B6ZPrVH9b
-	z+DCfU8Tuou3JiZPQS5g9jfpkS6E6tpYAqes4NHM=
-X-Google-Smtp-Source: AGHT+IE9Zx6rrSxmo/TfVMJEMfCSEvv5kTOAJj2WU/ZWv6yREWR2EgA4NDWJv08ZAUMMHtBOTiCxaj5H+lZ0CIJRFqw=
-X-Received: by 2002:a05:690c:6e0c:b0:6ef:6b56:fb46 with SMTP id
- 00721157ae682-6f3f824cb08mr87351047b3.40.1734939131915; Sun, 22 Dec 2024
- 23:32:11 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="KBeO1QBl"
+Content-Type: text/plain;
+	charset=us-ascii
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1734939655;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6hH+En7lYpNxr/MhBj1Xan3maLqDPbCX7PuOWLPIjvE=;
+	b=KBeO1QBlI1Kq1Qzc1KljsNkFxMR4A+Gp3FdjbVgGZP19gq13Rv0BzRXe70Y+OFF4G3GmPt
+	rPOjGzSMU3rR+pHBNQF+83+ZwDERP3JF+T7nMuEZ25n37dAX9FpcZdq4t/vmVz4rb0ayVZ
+	Pij/347AjusT7+gE2vpylEwZIepSQQ8=
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20241222111537.2720303-1-guoweikang.kernel@gmail.com> <Z2kNTjO8hXzN66bX@kernel.org>
-In-Reply-To: <Z2kNTjO8hXzN66bX@kernel.org>
-From: Weikang Guo <guoweikang.kernel@gmail.com>
-Date: Mon, 23 Dec 2024 15:32:01 +0800
-Message-ID: <CAOm6qnkRUMnVGj7tnem822nRpJ8R6kFVf6B4W9MhMSBQY8X7Kg@mail.gmail.com>
-Subject: Re: [PATCH v7] mm/memblock: Add memblock_alloc_or_panic interface
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Geert Uytterhoeven <geert@linux-m68k.org>, 
-	Dennis Zhou <dennis@kernel.org>, Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Sam Creasey <sammy@sammy.net>, 
-	Huacai Chen <chenhuacai@kernel.org>, Will Deacon <will@kernel.org>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Oreoluwa Babatunde <quic_obabatun@quicinc.com>, 
-	rafael.j.wysocki@intel.com, Palmer Dabbelt <palmer@rivosinc.com>, 
-	Hanjun Guo <guohanjun@huawei.com>, Easwar Hariharan <eahariha@linux.microsoft.com>, 
-	Johannes Berg <johannes.berg@intel.com>, Ingo Molnar <mingo@kernel.org>, 
-	Dave Hansen <dave.hansen@intel.com>, Christian Brauner <brauner@kernel.org>, 
-	KP Singh <kpsingh@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, 
-	Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, 
-	WANG Xuerui <kernel@xen0n.name>, Michael Ellerman <mpe@ellerman.id.au>, 
-	Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, Stafford Horne <shorne@gmail.com>, 
-	Helge Deller <deller@gmx.de>, Nicholas Piggin <npiggin@gmail.com>, 
-	Christophe Leroy <christophe.leroy@csgroup.eu>, Naveen N Rao <naveen@kernel.org>, 
-	Madhavan Srinivasan <maddy@linux.ibm.com>, Geoff Levand <geoff@infradead.org>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Andrey Ryabinin <ryabinin.a.a@gmail.com>, 
-	Alexander Potapenko <glider@google.com>, Andrey Konovalov <andreyknvl@gmail.com>, 
-	Dmitry Vyukov <dvyukov@google.com>, Vincenzo Frascino <vincenzo.frascino@arm.com>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
-	Sven Schnelle <svens@linux.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, 
-	Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
-	Andreas Larsson <andreas@gaisler.com>, Richard Weinberger <richard@nod.at>, 
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes Berg <johannes@sipsolutions.net>, 
-	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, linux-alpha@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, 
-	linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	linux-riscv@lists.infradead.org, kasan-dev@googlegroups.com, 
-	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-um@lists.infradead.org, 
-	linux-acpi@vger.kernel.org, xen-devel@lists.xenproject.org, 
-	linux-omap@vger.kernel.org, linux-clk@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-mm@kvack.org, linux-pm@vger.kernel.org, 
-	Xi Ruoyao <xry111@xry111.site>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.1\))
+Subject: Re: [RESEND PATCH] alpha: Replace one-element array with flexible
+ array member
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Thorsten Blum <thorsten.blum@linux.dev>
+In-Reply-To: <202412222144.61622A2@keescook>
+Date: Mon, 23 Dec 2024 08:40:38 +0100
+Cc: Richard Henderson <richard.henderson@linaro.org>,
+ Matt Turner <mattst88@gmail.com>,
+ linux-hardening@vger.kernel.org,
+ linux-alpha@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <2248C26D-E4E4-4993-BF0A-96A613D1D4F0@linux.dev>
+References: <20241220192020.1667-3-thorsten.blum@linux.dev>
+ <202412222144.61622A2@keescook>
+To: Kees Cook <kees@kernel.org>
+X-Migadu-Flow: FLOW_OUT
 
-Mike Rapoport <rppt@kernel.org> wrote on Monday 23 December 2024 at 15:12
->
-> On Sun, Dec 22, 2024 at 07:15:37PM +0800, Guo Weikang wrote:
-> > Before SLUB initialization, various subsystems used memblock_alloc to
-> > allocate memory. In most cases, when memory allocation fails, an immediate
-> > panic is required. To simplify this behavior and reduce repetitive checks,
-> > introduce `memblock_alloc_or_panic`. This function ensures that memory
-> > allocation failures result in a panic automatically, improving code
-> > readability and consistency across subsystems that require this behavior.
-> >
-> > Changelog:
-> > ----------
-> > v1: initial version
-> > v2: add __memblock_alloc_or_panic support panic output caller
-> > v3: panic output phys_addr_t use printk's %pap
-> > v4: make __memblock_alloc_or_panic out-of-line, move to memblock.c
-> > v6: Fix CI compile error
-> > Links to CI: https://lore.kernel.org/oe-kbuild-all/202412221000.r1NzXJUO-lkp@intel.com/
-> > v6: Fix CI compile warinigs
-> > Links to CI: https://lore.kernel.org/oe-kbuild-all/202412221259.JuGNAUCq-lkp@intel.com/
-> > v7: add chagelog and adjust function declaration alignment format
-> > ----------
-> >
-> > Signed-off-by: Guo Weikang <guoweikang.kernel@gmail.com>
-> > Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
-> > Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Reviewed-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
-> > Acked-by: Xi Ruoyao <xry111@xry111.site>
->
-> If people commented on your patch it does not mean you should add
-> Reviewed-by or Acked-by tags for them. Wait for explicit tags from the
-> reviewers.
+On 23. Dec 2024, at 06:46, Kees Cook wrote:
+> On Fri, Dec 20, 2024 at 08:20:20PM +0100, Thorsten Blum wrote:
+>> Replace the deprecated one-element array with a modern flexible array
+>> member in the struct crb_struct.
+>> 
+>> Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
+>> ---
+> 
+> Seems like this could use __counted_by(map_entries) as well?
 
-First of all, thank you for your reminder and patience. In fact, this
-is the first time I received a patch discussion when submitting a
-patch.
-About Reviewed-by or Acked-by tags, I will not add it myself in the
-future. Regarding this patch, do I need to provide a new patch to
-update it? Or will you modify it?  Looking forward to your reply
+Yes, but alpha doesn't seem to support __counted_by() yet. Does it still
+make sense to add it then?
 
->
-> And don't respin that often, "Reviewers are busy people and may not get to
-> your patch right away" [1].
->
-
-OK, I will be more patient and update after confirming that there are
-no more comments.
-
-> [1] https://docs.kernel.org/process/submitting-patches.html
->
->
-> --
-> Sincerely yours,
-> Mike.
-
-
---
-Best regards,
-Guo
+Thanks,
+Thorsten
