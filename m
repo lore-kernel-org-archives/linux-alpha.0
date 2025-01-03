@@ -1,136 +1,136 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E6061C3C05;
-	Fri,  3 Jan 2025 10:36:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7581D1FA8D2;
+	Fri,  3 Jan 2025 14:02:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735900576; cv=none; b=rCw9ie1BUqfQUsnx7pwt2ODVRLBnwY/tSea6FRVwFtuZekBrmm//uq0yNsaBT/cWiKCrA0KYAlK1qQ/KU9zLxBU3WAXDo64gkcwVsm14weYtyQSOTWWA5j7joGSw69coyoQdyQFwIx/DxTJpVe/cSMpgAvUlYF565V5Ucsfa4gw=
+	t=1735912957; cv=none; b=HoA0r/uAl/RXp0XGKO4+A1qIBYYr2U7vKMhGMhLpprRMF3Ywtx1oLYys/URlQzkI74A8GHJD9LcG4P14TVMdHElkY3g8sOUZcR8ee8U7CfxWBLi4++CVsdd0bCxU3WWphwoHW4Hne4elKxmbX2pE93qAGWk7F71s/SE3a4UAg+8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735900576; c=relaxed/simple;
-	bh=KqzYXTStRwHdA2r44yWtS6M9tFw/JByatD25oVsaaPw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BU+4jAtGdsUBBBIbBkHlvgEeHY+TO+RaAOhh2jjyR1zluC5l1RXs7+JNRSoSps61I0No0I3tNabcGL4eXZ6CZq0VZCEfX4BZfTqkxZP+tixD5+I49zSyBceA31SntVsW5YnYunjamUbKryZZKB0Gcr+imw+5ttnpMgsTAmW5e5s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 45A1D150C;
-	Fri,  3 Jan 2025 02:36:41 -0800 (PST)
-Received: from [10.44.160.93] (e126510-lin.lund.arm.com [10.44.160.93])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8736A3F6A8;
-	Fri,  3 Jan 2025 02:36:06 -0800 (PST)
-Message-ID: <39925677-4619-411d-b0b1-40f9db09374f@arm.com>
-Date: Fri, 3 Jan 2025 11:36:03 +0100
+	s=arc-20240116; t=1735912957; c=relaxed/simple;
+	bh=RcFRE1wCQwZTbVVMt/Q7RQndy+HdeYB/CgEaSruEwBU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=nomf/xo/D3XnXiE6GV5lJ/mmJRaH13XdDfKbqAI9QTpWM74JU1RT/CaHf33TCIQ/tLGqJBTuAT7Fn+ur8c0scId90ZXmv4zcBsD5mRNek/TOnHvHuGMq89/hpRmuO8sVUST0W8rs9yxcyVXDdu4VUfUp8SRGq2eGORzytEKSqFc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=fcyzG6BL; arc=none smtp.client-ip=130.133.4.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="fcyzG6BL"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=fu-berlin.de; s=fub01; h=Content-Transfer-Encoding:MIME-Version:Message-Id:
+	Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=I8WoaN64gHSpe9wGDSBv1yuM3/6je8qwnfXSNYl8V4Y=; t=1735912950; x=1736517750; 
+	b=fcyzG6BLK8eJ2XTS0YCrXWcYUAXgyPIb8pWqZYhV93Yi90mFa7wbuL1GHsj1DJQP0wgvraz3tO+
+	muMNbiwXY/1yJ1oiwRZyPVLIsBp1kLOrKf/NDSkG0GSW4uP5MUAFsi/kxm30bufsrvMVpgOoKw7Yc
+	DkevO6Bp5CPfnXte0Tq7LHLBSJAT1QbBFMhCjosDw07pv269GQVIBEqfhQE0gRtDhUeFE3vmn17BL
+	Z3B4MtDylYzdD3bmJTlNS4Pf6RN2UZWFO8Sz+cHZLVBnlUvOjxFGME5z8VbG/H1Jwm/0Xwh5txXHv
+	eIJINX0f2ynWoKQpDh3smHbhdBB8G3X2o19g==;
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.98)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1tTiFX-00000000P7D-23jf; Fri, 03 Jan 2025 15:02:03 +0100
+Received: from p57bd9274.dip0.t-ipconnect.de ([87.189.146.116] helo=z6.fritz.box)
+          by inpost2.zedat.fu-berlin.de (Exim 4.98)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1tTiFX-00000002btC-0ulp; Fri, 03 Jan 2025 15:02:03 +0100
+Received: from glaubitz by z6.fritz.box with local (Exim 4.96)
+	(envelope-from <glaubitz@physik.fu-berlin.de>)
+	id 1tTiFW-001YM0-2E;
+	Fri, 03 Jan 2025 15:02:02 +0100
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Eric Biederman <ebiederm@xmission.com>,
+	Kees Cook <kees@kernel.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	linux-alpha@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org
+Cc: Michael Cree <mcree@orcon.net.nz>,
+	Sam James <sam@gentoo.org>,
+	"Maciej W . Rozycki" <macro@orcam.me.uk>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>,
+	Chris Hofstaedtler <zeha@debian.org>,
+	util-linux@vger.kernel.org
+Subject: [PATCH] alpha: Fix personality flag propagation across an exec
+Date: Fri,  3 Jan 2025 15:01:46 +0100
+Message-Id: <20250103140148.370368-1-glaubitz@physik.fu-berlin.de>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 05/10] riscv: mm: Skip pgtable level check in
- {pud,p4d}_alloc_one
-To: Alexandre Ghiti <alex@ghiti.fr>, linux-mm@kvack.org
-Cc: Andrew Morton <akpm@linux-foundation.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- Dave Hansen <dave.hansen@linux.intel.com>,
- Linus Walleij <linus.walleij@linaro.org>, Andy Lutomirski <luto@kernel.org>,
- Peter Zijlstra <peterz@infradead.org>, "Mike Rapoport (IBM)"
- <rppt@kernel.org>, Ryan Roberts <ryan.roberts@arm.com>,
- Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
- Matthew Wilcox <willy@infradead.org>, linux-alpha@vger.kernel.org,
- linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
- linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org,
- linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
- linux-s390@vger.kernel.org, linux-snps-arc@lists.infradead.org,
- linux-um@lists.infradead.org, loongarch@lists.linux.dev, x86@kernel.org,
- Qi Zheng <zhengqi.arch@bytedance.com>
-References: <20241219164425.2277022-1-kevin.brodsky@arm.com>
- <20241219164425.2277022-6-kevin.brodsky@arm.com>
- <2aed338a-97a4-40e3-8a95-99458756ca28@ghiti.fr>
-Content-Language: en-GB
-From: Kevin Brodsky <kevin.brodsky@arm.com>
-In-Reply-To: <2aed338a-97a4-40e3-8a95-99458756ca28@ghiti.fr>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-ZEDAT-Hint: PO
 
-+Qi
+It was observed that on alpha, the misc/setarch test of
+the util-linux testsuite failed with the following error:
 
-On 03/01/2025 11:31, Alexandre Ghiti wrote:
-> Hi Kevin,
->
-> On 19/12/2024 17:44, Kevin Brodsky wrote:
->> {pmd,pud,p4d}_alloc_one() is never called if the corresponding page
->> table level is folded, as {pmd,pud,p4d}_alloc() already does the
->> required check. We can therefore remove the runtime page table level
->> checks in {pud,p4d}_alloc_one. The PUD helper becomes equivalent to
->> the generic version, so we remove it altogether.
->>
->> This is consistent with the way arm64 and x86 handle this situation
->> (runtime check in p4d_free() only).
->>
->> Signed-off-by: Kevin Brodsky <kevin.brodsky@arm.com>
->> ---
->>   arch/riscv/include/asm/pgalloc.h | 22 ++++------------------
->>   1 file changed, 4 insertions(+), 18 deletions(-)
->>
->> diff --git a/arch/riscv/include/asm/pgalloc.h
->> b/arch/riscv/include/asm/pgalloc.h
->> index f52264304f77..8ad0bbe838a2 100644
->> --- a/arch/riscv/include/asm/pgalloc.h
->> +++ b/arch/riscv/include/asm/pgalloc.h
->> @@ -12,7 +12,6 @@
->>   #include <asm/tlb.h>
->>     #ifdef CONFIG_MMU
->> -#define __HAVE_ARCH_PUD_ALLOC_ONE
->>   #define __HAVE_ARCH_PUD_FREE
->>   #include <asm-generic/pgalloc.h>
->>   @@ -88,15 +87,6 @@ static inline void pgd_populate_safe(struct
->> mm_struct *mm, pgd_t *pgd,
->>       }
->>   }
->>   -#define pud_alloc_one pud_alloc_one
->> -static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned
->> long addr)
->> -{
->> -    if (pgtable_l4_enabled)
->> -        return __pud_alloc_one(mm, addr);
->> -
->> -    return NULL;
->> -}
->> -
->>   #define pud_free pud_free
->>   static inline void pud_free(struct mm_struct *mm, pud_t *pud)
->>   {
->> @@ -118,15 +108,11 @@ static inline void __pud_free_tlb(struct
->> mmu_gather *tlb, pud_t *pud,
->>   #define p4d_alloc_one p4d_alloc_one
->>   static inline p4d_t *p4d_alloc_one(struct mm_struct *mm, unsigned
->> long addr)
->>   {
->> -    if (pgtable_l5_enabled) {
->> -        gfp_t gfp = GFP_PGTABLE_USER;
->> -
->> -        if (mm == &init_mm)
->> -            gfp = GFP_PGTABLE_KERNEL;
->> -        return (p4d_t *)get_zeroed_page(gfp);
->> -    }
->> +    gfp_t gfp = GFP_PGTABLE_USER;
->>   -    return NULL;
->> +    if (mm == &init_mm)
->> +        gfp = GFP_PGTABLE_KERNEL;
->> +    return (p4d_t *)get_zeroed_page(gfp);
->>   }
->>     static inline void __p4d_free(struct mm_struct *mm, p4d_t *p4d)
->
->
-> Reviewed-by: Alexandre Ghiti <alexghiti@rivosinc.com>
+   misc: setarch                        ...
+          : options                     ... OK
+          : uname26                     ... OK
+          : uname26-version             ... FAILED (misc/setarch-uname26-version)
+          : show                        ... OK
+     ... FAILED (1 from 4 sub-tests)
 
-Thanks for the review! Just FYI this patch is now part of Qi's series
-[1], I will drop it when posting the next version of this series.
+Running the setarch binary manually confirmed that setting
+the kernel version with the help --uname-2.6 flag does not
+work and the version remains unchanged.
 
-- Kevin
+It turned out that on alpha, the personality flags are not
+propagated but overridden during an exec. The same issue was
+previously fixed on arm in commit 5e143436d044 ("ARM: 6878/1:
+fix personality flag propagation across an exec") and on powerpc
+in commit a91a03ee31a5 ("powerpc: Keep 3 high personality bytes
+across exec"). This patch fixes the issue on alpha.
 
-[1]
-https://lore.kernel.org/linux-mm/84ddf857508b98a195a790bc6ff6ab8849b44633.1735549103.git.zhengqi.arch@bytedance.com/
+With the patch applied, the misc/setarch test succeeds on
+alpha as expected:
+
+   misc: setarch                        ...
+          : options                     ... OK
+          : uname26                     ... OK
+          : uname26-version             ... OK
+          : show                        ... OK
+     ... OK (all 4 sub-tests PASSED)
+
+However, as a side-effect, a warning is printed on the kernel
+message buffer which might indicate another unreleated bug:
+
+[   39.964823] pid=509, couldn't seal address 0, ret=-12.
+
+Signed-off-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+---
+ arch/alpha/include/asm/elf.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/alpha/include/asm/elf.h b/arch/alpha/include/asm/elf.h
+index 4d7c46f50382..81f8473bb7c0 100644
+--- a/arch/alpha/include/asm/elf.h
++++ b/arch/alpha/include/asm/elf.h
+@@ -138,8 +138,8 @@ extern int dump_elf_task(elf_greg_t *dest, struct task_struct *task);
+ })
+ 
+ #define SET_PERSONALITY(EX)					\
+-	set_personality(((EX).e_flags & EF_ALPHA_32BIT)		\
+-	   ? PER_LINUX_32BIT : PER_LINUX)
++	set_personality((((EX).e_flags & EF_ALPHA_32BIT)	\
++	   ? PER_LINUX_32BIT : PER_LINUX) | (current->personality & (~PER_MASK)))
+ 
+ extern int alpha_l1i_cacheshape;
+ extern int alpha_l1d_cacheshape;
+-- 
+2.39.5
+
