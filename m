@@ -1,149 +1,195 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+Received: from fout-b2-smtp.messagingengine.com (fout-b2-smtp.messagingengine.com [202.12.124.145])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAE5B2010EB;
-	Thu,  9 Jan 2025 09:12:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8861139D19;
+	Thu,  9 Jan 2025 16:52:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736413930; cv=none; b=nvQkC54EGhB03gUUA3/ORZzKz7LkkfgqwjxbJGz6SN33m3oDlCltGbqlaKR8Mc77EZu9Bx38Hed3/9aC2MEFg0PchiLRpJyiKzBArk+Vbw0MmF6z0oqlgz5jXbJWdQFxbE4RdtJHw1ybot/XnOK4XJq61Po/3ggZa79RZ6AnKDQ=
+	t=1736441564; cv=none; b=J+ECB8EqlWmYdKGQM7NS8FT5fX+9BYR6UTXJZtG7qsagCA3NvIpLIgtf0DwzhaGLqnZK7V/vdGGXFe/GEuvLfP+Amlwul7nfYxp31hlYflxfLodYZHljr6zCpQeeJlfSw9iiF+GIRGFdQckPXxuiIu5O0o4ZiEsTof5PtK0klao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736413930; c=relaxed/simple;
-	bh=uWstjnaDMBC/DC8rErmB9L3ULfT+RS/dR4tnmM3JbfU=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=bTFS7QmojLA2vrFJ2Dckw/yNO3HPHL3FwKSiNlasnq+fsFiYcxFMr+mBcKnc1jTGxQeaujoJC6y2zmRjlz19bqYyWB8BAU3upSnh/dcr6xGRFUqPydDFkIAEff4YTkj+BX7Kz8wgo0xHGj4aC5vFI0v/8JslNOqeiolVN2sE5vw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=FGcfiPTs; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	s=arc-20240116; t=1736441564; c=relaxed/simple;
+	bh=luB/Q7Pr54h8XDanrm9In8nLROzm5SSp1mJmyiSn6SI=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=nAqK2WFUCs+m2qy4SiOgDc557xSdL1+uwf4jv1DD3jEKCXFEWV9cM4rk5VySIucO97yWqIEvqf5RGdsKWPavYvN/Jdnwh2grmTUvoYyWs0q2xGpWA2gEZnzbHZwrq1oH7Cc6WG1L22A1YEYYEY/14oMkWmWEJOOfvC4rDpeyV0w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=gOTKsWAv; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=DLvVmNVm; arc=none smtp.client-ip=202.12.124.145
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="FGcfiPTs"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=kczkN1t1mZsZMoxXbPcY2HTX2BfCPejPhaev8OStMg4=; t=1736413928; x=1737018728; 
-	b=FGcfiPTsjSZxMZj1dw+DXq2f4hHzvUesrSf8yF3oTrgjGObrUp8DrC78khgaNBP9awERLF6g0cW
-	BhBXOgKC0NFmgGW7y1SbUzVmSNqrtUL2Jzz4PJTsYJfWVB/6mjX62w05JBUk6MmSm/mQbvNh18Jp6
-	2MxWu7BIkNJ35Or5401bo0vfqJG5NMEWPGIAGsVOgIWW2yzj/u/96BoUSVVSx2cia9Y5BaDUyIXst
-	Hb7DRX5cgIYRMJ7aVLS5vjS4aQ9oBu9s//i2IrMXxipV4oFo8YYYnHHLW8FzcGj468iu8170rsdC1
-	Lebu7mki6cjhQmnrWu8iseR7tfYUYVkNOHNw==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.98)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1tVoaC-00000003tfA-1TV5; Thu, 09 Jan 2025 10:12:04 +0100
-Received: from p57bd9274.dip0.t-ipconnect.de ([87.189.146.116] helo=[192.168.178.61])
-          by inpost2.zedat.fu-berlin.de (Exim 4.98)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1tVoaC-000000037Ep-0LtI; Thu, 09 Jan 2025 10:12:04 +0100
-Message-ID: <cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de>
-Subject: Re: [PATCH] alpha: Fix personality flag propagation across an exec
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: Arnd Bergmann <arnd@arndb.de>, Richard Henderson	
- <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, "Eric W.
- Biederman" <ebiederm@xmission.com>, Kees Cook <kees@kernel.org>, "Paul E.
- McKenney" <paulmck@kernel.org>, 	linux-alpha@vger.kernel.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc: Michael Cree <mcree@orcon.net.nz>, Sam James <sam@gentoo.org>, "Maciej
- W. Rozycki" <macro@orcam.me.uk>, Geert Uytterhoeven <geert@linux-m68k.org>,
- Michael Karcher	 <kernel@mkarcher.dialup.fu-berlin.de>, Chris Hofstaedtler
- <zeha@debian.org>, 	util-linux@vger.kernel.org, linux-mips@vger.kernel.org,
- 	loongarch@lists.linux.dev
-Date: Thu, 09 Jan 2025 10:12:03 +0100
-In-Reply-To: <82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com>
-References: <20250103140148.370368-1-glaubitz@physik.fu-berlin.de>
-	 <24f03227-1b55-4e50-b6e9-7ac74fda2602@app.fastmail.com>
-	 <678ee681-12c3-4e79-a04b-495daf343846@app.fastmail.com>
-	 <bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de>
-	 <82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.2 
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="gOTKsWAv";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="DLvVmNVm"
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfout.stl.internal (Postfix) with ESMTP id 72DED1140137;
+	Thu,  9 Jan 2025 11:52:41 -0500 (EST)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Thu, 09 Jan 2025 11:52:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1736441561;
+	 x=1736527961; bh=/rcKcUgOCZt40Un+pkihZ5X0Uu+7S4RKKMTZS1cf54U=; b=
+	gOTKsWAvZ1JEALHrwD/oajJGGxAcx2U/RSOyBlM8m+cHfL5IEyEqXSDdRHm10huj
+	vqyfZHkgoOpSMt1LVLFKEG3O/l+wzre9xJxQSRFff6cD2QdmCcWoBCkmmIVzlZV7
+	9JMH37sR7cFSdrcczqkiSA+/eZHkbt1dDLsBGimqn/NkbNjGbjUNkmOUSgYg7O1c
+	BmzcI/5NSzuCAwmDA8x46RXBKrwSGFxsFcoQ1gvw5RmLvz39Ws5TqLmZHAfBH1df
+	kXs1058mtncX1v8ksZ//WTMeAvXmc+KU3nWFBsjBOyjpZsq6sI6T+u+GgGaYMwPc
+	Li8OlGseAVR0KZK6hn9fdQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1736441561; x=
+	1736527961; bh=/rcKcUgOCZt40Un+pkihZ5X0Uu+7S4RKKMTZS1cf54U=; b=D
+	LvVmNVmSLnLjGstioKiE6GNIH7n48D8d7QeqviiRaTqI8dmZKwHpm84ExKPwnZ+q
+	7JZl5d5RC4nvK+jEwPD0cafJcqisdN/aD+fXkbXHddkvpIGW56Crc9RfV3RPB4Kr
+	hZ7KR8q7Nuo51zN/tft2F39Lzu6LesJ+fHSR4VvUGvH4Gs90I/hN5HD7g25VjHVc
+	KhaaJRC4uhSNzBoZuNHuUwEPTauRJj2YwvynYhJGCl3oExZq8VU5faLFfrjajKWN
+	s/Xe/9AuqSbQcTqLKimhnkv1pLP3btobq0mCbWBDJeooN06/aC7Ep41Bv3Wchncp
+	d3CWy9RwO/ytOXmrSP26A==
+X-ME-Sender: <xms:1_5_Z6YmniTm5qBTb57UMp88kRBJ6-R6sh054AcN7yR6tCwzgZ-PiA>
+    <xme:1_5_Z9a0DYvnw7UbAdf1aMjj21RjnmHyuxzzWx3-xoVNBOYNgfUpGU9VESbhrWIw4
+    TQPfr4iRQPBJXnrmUg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrudegiedgleduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
+    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrd
+    guvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefg
+    gfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepudek
+    pdhmohguvgepshhmthhpohhuthdprhgtphhtthhopeiivghhrgesuggvsghirghnrdhorh
+    hgpdhrtghpthhtohepshgrmhesghgvnhhtohhordhorhhgpdhrtghpthhtohepmhgrthht
+    shhtkeeksehgmhgrihhlrdgtohhmpdhrtghpthhtohepkhgvvghssehkvghrnhgvlhdroh
+    hrghdprhgtphhtthhopehprghulhhmtghksehkvghrnhgvlhdrohhrghdprhgtphhtthho
+    pehlihhnuhigqdhmmheskhhvrggtkhdrohhrghdprhgtphhtthhopehrihgthhgrrhgurd
+    hhvghnuggvrhhsohhnsehlihhnrghrohdrohhrghdprhgtphhtthhopehgvggvrhhtsehl
+    ihhnuhigqdhmieekkhdrohhrghdprhgtphhtthhopehlohhonhhgrghrtghhsehlihhsth
+    hsrdhlihhnuhigrdguvghv
+X-ME-Proxy: <xmx:1_5_Z0-b9sXywAWK6nVe4mNlyXUIR65b62h0JtSprMMaWhSeqmnrBg>
+    <xmx:1_5_Z8qGQM3FHB4zqKGinuIPOTEks_QFKJBr6t_RY3FPoOcZ3swRpA>
+    <xmx:1_5_Z1qkDgjnyFfScoIhoayyrreVnDCRVePDSzeiCGIrtYQheeCuGw>
+    <xmx:1_5_Z6Ryw6X7xWMAOnC7qSRcQkY5xdtH9n2QzGU2u_tPqQ4xly14UQ>
+    <xmx:2f5_Z08eeA-zBPAw9NGwkPs0AKkpYY4i2SVGT55o8VtwTdxLoccgkpnY>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 33BF12220072; Thu,  9 Jan 2025 11:52:39 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+Date: Thu, 09 Jan 2025 17:52:18 +0100
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Eric W. Biederman" <ebiederm@xmission.com>,
+ "John Paul Adrian Glaubitz" <glaubitz@physik.fu-berlin.de>
+Cc: "Richard Henderson" <richard.henderson@linaro.org>,
+ "Matt Turner" <mattst88@gmail.com>, "Kees Cook" <kees@kernel.org>,
+ "Paul E. McKenney" <paulmck@kernel.org>, linux-alpha@vger.kernel.org,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ "Michael Cree" <mcree@orcon.net.nz>, "Sam James" <sam@gentoo.org>,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>,
+ "Geert Uytterhoeven" <geert@linux-m68k.org>,
+ "Michael Karcher" <kernel@mkarcher.dialup.fu-berlin.de>,
+ "Chris Hofstaedtler" <zeha@debian.org>, util-linux@vger.kernel.org,
+ linux-mips@vger.kernel.org, loongarch@lists.linux.dev
+Message-Id: <9b1749f0-e936-4bf5-90d6-8cf15e4f0ed9@app.fastmail.com>
+In-Reply-To: <87ed1cufj1.fsf@email.froward.int.ebiederm.org>
+References: <20250103140148.370368-1-glaubitz@physik.fu-berlin.de>
+ <24f03227-1b55-4e50-b6e9-7ac74fda2602@app.fastmail.com>
+ <678ee681-12c3-4e79-a04b-495daf343846@app.fastmail.com>
+ <bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de>
+ <82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com>
+ <cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de>
+ <87ed1cufj1.fsf@email.froward.int.ebiederm.org>
+Subject: Re: [PATCH] alpha: Fix personality flag propagation across an exec
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-Hi Arnd,
+On Thu, Jan 9, 2025, at 17:18, Eric W. Biederman wrote:
+> John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de> writes:
+>> On Thu, 2025-01-09 at 09:56 +0100, Arnd Bergmann wrote:
+>>> On Thu, Jan 9, 2025, at 09:46, John Paul Adrian Glaubitz wrote:
+>>> > On Thu, 2025-01-09 at 09:43 +0100, Arnd Bergmann wrote:
+>>> > > On Thu, Jan 9, 2025, at 09:01, Arnd Bergmann wrote:
+>>> > > > This looks wrong to me: since ADDR_LIMIT_32BIT is not part of
+>>> > > > PER_MASK, executing a regular binary from a taso binary no longer
+>>> > > > reverts back to the entire 64-bit address space.
+>>> > > > 
+>>> > > > It seems that the behavior on most other architectures changed in 2012
+>>> > > > commit 16f3e95b3209 ("cross-arch: don't corrupt personality flags upon
+>>> > > > exec()").
+>>> > > > 
+>>> > 
+>>> > So, if I understand this correctly, we should just use PER_MASK on alpha
+>>> > for 64-bit executables and allow the bits to be cleared for 32-bit binaries?
+>>> 
+>>> I think ideally the EF_ALPHA_32BIT handling should use TIF_32BIT
+>>> as we do on other architectures, at that point the custom SET_PERSONALITY()
+>>> can be removed in favor of the asm-generic version.
+>>
+>> I have thought about that as well but I wasn't sure whether the extra
+>> mangling on alpha was necessary.
+>>
+>>> Alternatively this could do something like the arm32 version (note
+>>> that on arm, PER_LINUX_32BIT/ADDR_LIMIT_32BIT means "allow using
+>>> the entire 32-bit address space rather than limiting to 26 bits for
+>>> compatibility", while on alpha it means "use only 31 instead of
+>>> 42 bits for addressing", but the logic can be the same):
+>>> 
+>>>         unsigned int personality = current->personality & ~PER_MASK;
+>>>         /*
+>>>          * APCS-26 is only valid for OABI executables
+>>>          */
+>>>         if ((eflags & EF_ARM_EABI_MASK) == EF_ARM_EABI_UNKNOWN &&
+>>>             (eflags & EF_ARM_APCS_26))
+>>>                 personality &= ~ADDR_LIMIT_32BIT;
+>>>         else
+>>>                 personality |= ADDR_LIMIT_32BIT;
+>>>         set_personality(personality);
+>>
+>> So, this would be the 100% correct for alpha then which would not loose
+>> any functionality even for 32-bit binaries?
+>
+> I don't think it is correct to think about 32-bit binaries on alpha.
+>
+> Alpha never had a 32bit instruction set.  But at some point it looks
+> like binaries that could not handle more than 31 bits of address
+> space got ported and someone implemented a work-around.  I guess this
+> is the --taso option that Arnd mentioned.
 
-On Thu, 2025-01-09 at 09:56 +0100, Arnd Bergmann wrote:
-> On Thu, Jan 9, 2025, at 09:46, John Paul Adrian Glaubitz wrote:
-> > On Thu, 2025-01-09 at 09:43 +0100, Arnd Bergmann wrote:
-> > > On Thu, Jan 9, 2025, at 09:01, Arnd Bergmann wrote:
-> > > > On Fri, Jan 3, 2025, at 15:01, John Paul Adrian Glaubitz wrote:
-> > > >=20
-> > > > >=20
-> > > > >  #define SET_PERSONALITY(EX)					\
-> > > > > -	set_personality(((EX).e_flags & EF_ALPHA_32BIT)		\
-> > > > > -	   ? PER_LINUX_32BIT : PER_LINUX)
-> > > > > +	set_personality((((EX).e_flags & EF_ALPHA_32BIT)	\
-> > > > > +	   ? PER_LINUX_32BIT : PER_LINUX) | (current->personality & (~P=
-ER_MASK)))
-> > > >=20
-> > > > This looks wrong to me: since ADDR_LIMIT_32BIT is not part of
-> > > > PER_MASK, executing a regular binary from a taso binary no longer
-> > > > reverts back to the entire 64-bit address space.
-> > > >=20
-> > > > It seems that the behavior on most other architectures changed in 2=
-012
-> > > > commit 16f3e95b3209 ("cross-arch: don't corrupt personality flags u=
-pon
-> > > > exec()").
-> > > >=20
-> >=20
-> > So, if I understand this correctly, we should just use PER_MASK on alph=
-a
-> > for 64-bit executables and allow the bits to be cleared for 32-bit bina=
-ries?
->=20
-> I think ideally the EF_ALPHA_32BIT handling should use TIF_32BIT
-> as we do on other architectures, at that point the custom SET_PERSONALITY=
-()
-> can be removed in favor of the asm-generic version.
+There was a well-documented use case for taso with emulation for
+OSF/1 a.out binaries, in particular Netscape used 32-bit pointers.
+However, the a.out support got removed a while back, and I have
+not figured out why it was ever added for ELF. Maybe it was just
+easy to duplicate this from the a.out loader?
 
-I have thought about that as well but I wasn't sure whether the extra
-mangling on alpha was necessary.
+Obviously some 30 years ago it was common that software was
+broken on 64-bit because of invalid integer-pointer casting,
+but these days, it's much more common to be broken on 32-bit
+instead.
 
-> Alternatively this could do something like the arm32 version (note
-> that on arm, PER_LINUX_32BIT/ADDR_LIMIT_32BIT means "allow using
-> the entire 32-bit address space rather than limiting to 26 bits for
-> compatibility", while on alpha it means "use only 31 instead of
-> 42 bits for addressing", but the logic can be the same):
->=20
->         unsigned int personality =3D current->personality & ~PER_MASK;
->         /*
->          * APCS-26 is only valid for OABI executables
->          */
->         if ((eflags & EF_ARM_EABI_MASK) =3D=3D EF_ARM_EABI_UNKNOWN &&
->             (eflags & EF_ARM_APCS_26))
->                 personality &=3D ~ADDR_LIMIT_32BIT;
->         else
->                 personality |=3D ADDR_LIMIT_32BIT;
->         set_personality(personality);
+> I think the alpha version would look like:
+>
+> #define SET_PERSONALITY(ex) 							\
+> 	do {									\
+> 		unsigned long personality = current->personality & ~PER_MASK;	\
+>                 if ((EX).e_flags & EF_ALPHA_32BIT)				\
+>                 	personality |= ADDR_LIMIT_32BIT;			\
+> 		else								\
+>                 	personality &= ~ADDR_LIMIT_32BIT			\
+> 		set_personality(personality);					\
+> 	while (0)
 
-So, this would be the 100% correct for alpha then which would not loose
-any functionality even for 32-bit binaries?
+Yes, that was what I was suggesting.
 
-> In any case, I think we should fix alpha, mips and loongarch at
-> the same time, to make sure it doesn't take another decade to
-> fix the rest.
+> I do see code under arch/alpha/ testing ADDR_LIMIT_32BIT when
+> setting STACK_TOP, TASK_UNMAPPED_BASE, and arch_get_unmapped_area.
+> So I think the code still works.
 
-If you're willing to fix all three at once, I would be happy to help
-with the testing on all three architectures as I have machines for all
-of these.
+MIPS introduced the SET_PERSONALITY2() macro specifically to
+allow the TIF flags to be set early enough to apply to the
+stack allocation, so I suspect it only works partially.
 
-Adrian
-
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+         Arnd
