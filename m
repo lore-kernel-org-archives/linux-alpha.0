@@ -1,134 +1,76 @@
-Received: from fhigh-a3-smtp.messagingengine.com (fhigh-a3-smtp.messagingengine.com [103.168.172.154])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4D4C1FBEB6;
-	Thu,  9 Jan 2025 20:00:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.154
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8966A1F9428;
+	Thu,  9 Jan 2025 20:10:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736452811; cv=none; b=sVbqXsO1e0wTAt/yCkdz1lY5Hx0JJO3D44XqAzaYjA8mVeR/Yfc4SKKbdIzpvXC8CpSszp2YQtdNua2cEqnt1nPdASDGwN/emh6ofThKJRL8BPDTOCX/vPV2Lc3koxp+psrgLVwIrudnKuVNenA3y+dXBGAPGgzQ8CfMqKJo3Ew=
+	t=1736453449; cv=none; b=qXfX37AelnGE72ASpqiM6xpCbiyIeOOfuQQOyrbKV474M4CFE1XNUNPlTbx0ii9OmlE7RYruZa1+9+KZVfjNtVzMUTQO1vMQ5JXovHVLDcJhWGefrvAA6j5eXbSO7Bu19wMUVUEH8j8OW4tSPg3scyeklyXGMfJXQTVVigC1Rak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736452811; c=relaxed/simple;
-	bh=Z2Nx8enSglc7LcdfuFFSOlFjCaW3fClvgCHT8rxPpww=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=Dgg1m4cVnugJA+6c3j4wVpiyWwDMs0F2KRs55SA9fDP73L9WKi552Rtwv+ELRX1v/bZ1zL5r/ziQU2ZOh3Cn4gxpIdlubRg5WXq6b+Yp1Hp5OvDAHxhRTJlagQ/WFI7q5cS5khZngH3yyxc9SYSZwBa0gu7jA1cEJLwucjCKJQI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=wqTVVK7d; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=bA527m9P; arc=none smtp.client-ip=103.168.172.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="wqTVVK7d";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="bA527m9P"
-Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id 744621140235;
-	Thu,  9 Jan 2025 15:00:07 -0500 (EST)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-10.internal (MEProxy); Thu, 09 Jan 2025 15:00:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1736452807;
-	 x=1736539207; bh=XLTeDIvd7zmMPfL4q/D1OTLpXR3HFsMk56y3E9zO+KA=; b=
-	wqTVVK7dPXJAB2lQStsN6IxoHN2Pj6d34ve3t+KQvJ1KMQpnsys/eJQxWbYklwb4
-	OsAq8M5IBNnqSL6OP9ObN9lr1L2N76Jh+6gWue2R38DKnnIcsvnf5SSJ0z+xqUHQ
-	k5dOQV1qZHGqvuxUSA02veKmYONF1xtJvge/c/zqo/kH6B8bYyNs93WlOHT71sGP
-	OlC6sDDYVpY9/OGJbtI1wLJYkApPIRi0rjmpZfypp+IxOMcDTNEytl825EaViivU
-	32seRLxpGbGkw6mREV5QxVROg6A++lg+UsVLWipHxI/BkNAcGSx08Ye90dmQzxxq
-	/FY6hWjgMoCCZh//DUbtbA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1736452807; x=
-	1736539207; bh=XLTeDIvd7zmMPfL4q/D1OTLpXR3HFsMk56y3E9zO+KA=; b=b
-	A527m9PBFcwabQVd8yZImD6568uyMmtm1JIXXCIYUtS3OODLVDiYD73bOCWkQxOq
-	IGGey/epZxo5OWqYFPFL8rmC7fhw/Q+IyiAT4QmpyKQt71us7NEESH5zp+RMXxna
-	6lCvGMlG4XUUcA+x0ENll/WMwi8uArmiDWwLZy8Lhkk+o47kJY7jFeGE/fMWv+Kq
-	ZGb3DufO/RK2ExnAnrnEyiPiU1W3sCftOJ7rPnMecgSN25NPcw3XLMBl+cGdfdek
-	Hm9ctEPXkfxwxvPkYjHAYb4ZCzrSz/fuTqKDVscM59oGy2U+fe1Pg6ZVHUUHociA
-	kPLBFE8EdrdczZbulsLGg==
-X-ME-Sender: <xms:xSqAZxrURnPaa3dQJakFaALo8nuiVsSBuuMgSpV2-x-zITx1qK10sg>
-    <xme:xSqAZzrHpROl3dL67vMtZhKKA_tifFhkQO_R26Mf-AF2U_ABfXmWosZQou3cFhhqa
-    uM3BVx34LXfG9uiZj0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrudegiedguddvkecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
-    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
-    hnthhsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredt
-    tdenucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusg
-    druggvqeenucggtffrrghtthgvrhhnpefhtdfhvddtfeehudekteeggffghfejgeegteef
-    gffgvedugeduveelvdekhfdvieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggvpdhnsggprhgtphhtthhopeef
-    uddpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepsghpsegrlhhivghnkedruggvpd
-    hrtghpthhtoheptghhrhhishhtohhphhgvrdhlvghrohihsegtshhgrhhouhhprdgvuhdp
-    rhgtphhtthhopehmphgvsegvlhhlvghrmhgrnhdrihgurdgruhdprhgtphhtthhopehjtg
-    hmvhgskhgstgesghhmrghilhdrtghomhdprhgtphhtthhopehnphhighhgihhnsehgmhgr
-    ihhlrdgtohhmpdhrtghpthhtohepsghrrghunhgvrheskhgvrhhnvghlrdhorhhgpdhrtg
-    hpthhtoheplhhuthhosehkvghrnhgvlhdrohhrghdprhgtphhtthhopehnrghvvggvnhes
-    khgvrhhnvghlrdhorhhgpdhrtghpthhtohepgiekieeskhgvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:xSqAZ-NHbDtZv25PVnvrhdYKkO_XGBK5uacgLxnGjuRiVCxVJfbe3g>
-    <xmx:xSqAZ8751_nx_wm3T7pycbKPKjyX_DprmSOI810Jf_zWkUQlYQfEwA>
-    <xmx:xSqAZw41kJVFxoksZLEJIHGUPsJY1LDXgJMdaMNo21UuhcvsUuDuMQ>
-    <xmx:xSqAZ0jH38ur-qtEMUQVvfGvkDvk5Ja80JKFM3V-VkHaqlAUxsRLKg>
-    <xmx:xyqAZ8FPs8CB2q6dYLLfVz8oFDTaugCG4o3zlqe7SWmIznMsnuK4VEBV>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 6DFD82220072; Thu,  9 Jan 2025 15:00:05 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
+	s=arc-20240116; t=1736453449; c=relaxed/simple;
+	bh=VclW05EJZR4//jLyhzl8TppV3uaV262jvEjPzwv3XD4=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=rJGZF3Haie4GMBZg5B3ebc0WMr9PAjZT9XvWW+OAE2xmCxNs4wkhxwGQ/5EWEqHgRgqFWDzVK3oLjrIoHNgDMmyhbClC6sSyMXdFQHiJmjfTgMmiz2SfMIPg21l6E6WIKHMbCyZT13apl4Hlda9xQBf1hWU+u2RYY0/gYx0hdQY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 834E392009D; Thu,  9 Jan 2025 21:10:39 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 7D11292009C;
+	Thu,  9 Jan 2025 20:10:39 +0000 (GMT)
+Date: Thu, 9 Jan 2025 20:10:39 +0000 (GMT)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: "Eric W. Biederman" <ebiederm@xmission.com>
+cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+    Arnd Bergmann <arnd@arndb.de>, 
+    Richard Henderson <richard.henderson@linaro.org>, 
+    Matt Turner <mattst88@gmail.com>, Kees Cook <kees@kernel.org>, 
+    "Paul E. McKenney" <paulmck@kernel.org>, linux-alpha@vger.kernel.org, 
+    linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+    Michael Cree <mcree@orcon.net.nz>, Sam James <sam@gentoo.org>, 
+    Geert Uytterhoeven <geert@linux-m68k.org>, 
+    Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>, 
+    Chris Hofstaedtler <zeha@debian.org>, util-linux@vger.kernel.org, 
+    linux-mips@vger.kernel.org, loongarch@lists.linux.dev
+Subject: Re: [PATCH] alpha: Fix personality flag propagation across an exec
+In-Reply-To: <87ed1cufj1.fsf@email.froward.int.ebiederm.org>
+Message-ID: <alpine.DEB.2.21.2501091953050.18889@angie.orcam.me.uk>
+References: <20250103140148.370368-1-glaubitz@physik.fu-berlin.de> <24f03227-1b55-4e50-b6e9-7ac74fda2602@app.fastmail.com> <678ee681-12c3-4e79-a04b-495daf343846@app.fastmail.com> <bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de>
+ <82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com> <cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de> <87ed1cufj1.fsf@email.froward.int.ebiederm.org>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Thu, 09 Jan 2025 20:59:45 +0100
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Andrey Albershteyn" <aalbersh@redhat.com>, linux-fsdevel@vger.kernel.org
-Cc: linux-api@vger.kernel.org, "Michal Simek" <monstr@monstr.eu>,
- "Michael Ellerman" <mpe@ellerman.id.au>,
- "Nicholas Piggin" <npiggin@gmail.com>,
- "Christophe Leroy" <christophe.leroy@csgroup.eu>,
- "Naveen N Rao" <naveen@kernel.org>,
- "Madhavan Srinivasan" <maddy@linux.ibm.com>,
- "Andy Lutomirski" <luto@kernel.org>,
- "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
- "Borislav Petkov" <bp@alien8.de>,
- "Dave Hansen" <dave.hansen@linux.intel.com>, x86@kernel.org,
- "H. Peter Anvin" <hpa@zytor.com>, chris@zankel.net,
- "Max Filippov" <jcmvbkbc@gmail.com>,
- "Alexander Viro" <viro@zeniv.linux.org.uk>,
- "Christian Brauner" <brauner@kernel.org>, "Jan Kara" <jack@suse.cz>,
- linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-m68k@lists.linux-m68k.org, linux-parisc@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
- linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
- linux-security-module@vger.kernel.org,
- Linux-Arch <linux-arch@vger.kernel.org>
-Message-Id: <e7deabf6-8bba-45d7-a0f4-395bc8e5aabe@app.fastmail.com>
-In-Reply-To: <20250109174540.893098-1-aalbersh@kernel.org>
-References: <20250109174540.893098-1-aalbersh@kernel.org>
-Subject: Re: [PATCH] fs: introduce getfsxattrat and setfsxattrat syscalls
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 
-On Thu, Jan 9, 2025, at 18:45, Andrey Albershteyn wrote:
->
->  arch/alpha/kernel/syscalls/syscall.tbl      |   2 +
->  arch/m68k/kernel/syscalls/syscall.tbl       |   2 +
->  arch/microblaze/kernel/syscalls/syscall.tbl |   2 +
->  arch/parisc/kernel/syscalls/syscall.tbl     |   2 +
->  arch/powerpc/kernel/syscalls/syscall.tbl    |   2 +
->  arch/s390/kernel/syscalls/syscall.tbl       |   2 +
->  arch/sh/kernel/syscalls/syscall.tbl         |   2 +
->  arch/sparc/kernel/syscalls/syscall.tbl      |   2 +
->  arch/x86/entry/syscalls/syscall_32.tbl      |   2 +
->  arch/x86/entry/syscalls/syscall_64.tbl      |   2 +
->  arch/xtensa/kernel/syscalls/syscall.tbl     |   2 +
+On Thu, 9 Jan 2025, Eric W. Biederman wrote:
 
-You seem to be missing a couple of files here: 
+> > So, this would be the 100% correct for alpha then which would not loose
+> > any functionality even for 32-bit binaries?
+> 
+> I don't think it is correct to think about 32-bit binaries on alpha.
+> 
+> Alpha never had a 32bit instruction set.  But at some point it looks
+> like binaries that could not handle more than 31 bits of address
+> space got ported and someone implemented a work-around.  I guess this
+> is the --taso option that Arnd mentioned.
 
-arch/arm/tools/syscall.tbl
-arch/arm64/tools/syscall_32.tbl
-arch/mips/kernel/syscalls/syscall_n32.tbl
-arch/mips/kernel/syscalls/syscall_n64.tbl
-arch/mips/kernel/syscalls/syscall_o32.tbl
+ This also saves some code space in non-PIE and plain static executables 
+as it takes fewer machine instructions to load a 64-bit address that is 
+known beforehand to be a sign-extended 32-bit value.
 
-       Arnd
+ This is similar to the MIPS n32 ABI, which also implies a 32-bit address 
+space while still using 64-bit registers for everything, starting from 
+stack slots (it's also ILP32 with the `long long' C data type only making 
+proper use of the full width of the CPU registers, while Alpha's --taso 
+ABI is I believe IP32 (?) with the plain `long' C data type still 64-bit, 
+just as with the regular LP64 ABI).
+
+ This saving turned out quite important for some MIPS applications; less 
+so for the Alpha, where indeed it was mainly a portability matter at the 
+time when going beyond 32 bits (and writing clean code in the first place) 
+was a big thing for some people.
+
+  Maciej
