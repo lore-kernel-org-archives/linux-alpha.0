@@ -1,141 +1,125 @@
-Received: from fout-a8-smtp.messagingengine.com (fout-a8-smtp.messagingengine.com [103.168.172.151])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7ED62054F3;
-	Thu,  9 Jan 2025 20:54:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.151
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CECDC20C00F
+	for <linux-alpha@vger.kernel.org>; Fri, 10 Jan 2025 09:44:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736456056; cv=none; b=G9u1/+EJ0/NRxSJqg4A/CATWWQogYxKoaLvWGDX8F6NtYeedkb2dbzidXr3hnNo3VuJTYwmZMUA4fkKq3rV/TLgemTlNE4CaE0mqgOpz41C1rG1bn2EacmKhN6QQIRtydllrtZk/VjDFA1EI4+Ud6rTh9jTj3FA5cI7OwlJtrV0=
+	t=1736502299; cv=none; b=Gq6lGtAAqJunXes9pQAjfRMWR3ZegxRkbAbrlTYAu8KnHuRbVOWarRTrwFcR2waSJWe1G3kB0UcvPMZNelAKwBSvO/fqip3YfmhWNZ6NOtAlCfjRuB4kIKQtXrKTzNRJ05w/vzZVmg3+p9UojNPV0MEU9m877Iz8h3Mk/i+Ey+M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736456056; c=relaxed/simple;
-	bh=5/C7Qk/iqHGdIjlwh5HEHVsPXP190aXPuUkUTyQD9aE=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=tnfxlPEJtnq6b/OrfOzlfwbgrsa+Y60/ZpEHY9bANcyOkmILRse/o7uVg3sWJEDczSQgr+IfmHp6/6AQUTJOr7ijUBSgvRhk43+rimo7hE/0baFai7eIRrBEiDC8JSqKlVMQHA2ysu7f0JGc9CIon7DqSbNJtDeuZV0mZZjM+xk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=MY8X4Hqe; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=ozPEQ20c; arc=none smtp.client-ip=103.168.172.151
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1736502299; c=relaxed/simple;
+	bh=ENLLV/0PrVWHZJnSd10hwquS1U8BMVZB3K1bFjotxyc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Yoo6BShGSmTHfxcKWnojgilay5TBsHB0/OnjQ6H1FqIza9oXJIf/7aerpHB4NG02hgqW3pqCbpPZDyH6qIp/7nJRCgWjv1EyT9QNGGKNqN8pUkXcAVNBiVIQhBrrCA9mDoGER7tl9tFxbWnDuVpYaJ7iJKtZDm0Abbcw38KUlGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UIFsE3fM; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="MY8X4Hqe";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="ozPEQ20c"
-Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
-	by mailfout.phl.internal (Postfix) with ESMTP id F0BC313801A0;
-	Thu,  9 Jan 2025 15:54:13 -0500 (EST)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-10.internal (MEProxy); Thu, 09 Jan 2025 15:54:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1736456053;
-	 x=1736542453; bh=LV6jQYO6s0OpqVr09VODFifJLCcP1dDB4WHODaY6vAU=; b=
-	MY8X4HqeV7scGXk3qO8Yo6Q/GHyskxaU7hmTXvLVIXsMLl+dm3AB9S4dI+h5kHOP
-	Bi/75K+4CiP/MVByS+h4oKimNOjfA9kiFQzTrhqg51CCSR9o23xbkr+RkH/2zEfq
-	lF2IfaMGdirOTUL/aLNqFHtCXq3CbzrEMe+IoA2/zCvLcGGZW9lAiNQTm+ZkAOF9
-	3bK1oOdB+o6jhGiuE77ykDhWuRU9Bsa234t9fqBRFSwZvXvbQaZ25Or/Lt7rQiGa
-	4Ue/Fglrmx53ZsRg/2OitF8FjyHMjmEOtmbL7p48i32NrIV5hzTjxYRrROJ2f4IT
-	hUBy0VLP5meYXkK9WmyGFg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1736456053; x=
-	1736542453; bh=LV6jQYO6s0OpqVr09VODFifJLCcP1dDB4WHODaY6vAU=; b=o
-	zPEQ20cJaEtO6r/thYRekT7MtdmFULtPsWNlXU1m+r9tKuBmhHD9jnlQGMnfjCUd
-	pEa9DAyqHeM2cxuXZxMX35qpPW3H7lxfk/yqkWI+MXuSUHjECxY301i+lSZSZnow
-	woIuIYU0GE647Uh6t3EoGVSrvdRhyHVV8+5ZXX097BvmigbJBaVK6YVg8t9QD8Lf
-	/LLI35vxXpSQbiU7SRTVmHstYIUVeitcKaDBYavJ7fjPTF+m/b1cS/VtYiiw+Vg1
-	dlUQAFQ3ZQNXOaBEHlc93/ohwndtQi9AAWXgV6IKISScDOwa5yS/CpYjr9d0CaYg
-	n5MTe7Oy2zmxk8A2QYqTQ==
-X-ME-Sender: <xms:czeAZ-gsPK8ZMADacYPNsfr1GINwZPKG5xzPhI5dWs7r5sPtghCiYg>
-    <xme:czeAZ_CqzYpjcaatlp4brem-c4aizxGAyPNmcVhiA8Un9zNs0o4udmU-Z7LQ3sXcc
-    B4zoqcWOk1YG_1iAfo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrudegiedgudeflecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
-    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
-    hnthhsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredt
-    tdenucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusg
-    druggvqeenucggtffrrghtthgvrhhnpefhtdfhvddtfeehudekteeggffghfejgeegteef
-    gffgvedugeduveelvdekhfdvieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggvpdhnsggprhgtphhtthhopedu
-    kedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepiigvhhgrseguvggsihgrnhdroh
-    hrghdprhgtphhtthhopehsrghmsehgvghnthhoohdrohhrghdprhgtphhtthhopehmrght
-    thhsthekkeesghhmrghilhdrtghomhdprhgtphhtthhopehkvggvsheskhgvrhhnvghlrd
-    horhhgpdhrtghpthhtohepphgruhhlmhgtkheskhgvrhhnvghlrdhorhhgpdhrtghpthht
-    oheplhhinhhugidqmhhmsehkvhgrtghkrdhorhhgpdhrtghpthhtoheprhhitghhrghrug
-    drhhgvnhguvghrshhonheslhhinhgrrhhordhorhhgpdhrtghpthhtohepghgvvghrthes
-    lhhinhhugidqmheikehkrdhorhhgpdhrtghpthhtoheplhhoohhnghgrrhgthheslhhish
-    htshdrlhhinhhugidruggvvh
-X-ME-Proxy: <xmx:czeAZ2HAxY2Z9dwqbKEczu6HdQ0Xb05bDuKR0Z9AwM5LUrpX0u0E8A>
-    <xmx:czeAZ3R7WcSKplNyC-jAFLDQ4ktyj1SZYTEiW3zm4pjfpOAZsS7NVQ>
-    <xmx:czeAZ7yMN6I34dojSie-x3eeTfx3J7Sudz8D-0vux6v5_jHwYgTAkQ>
-    <xmx:czeAZ15wTkCQKRU29OPw-xqaFW1U6m1_uOe5vUXhqMBFI8KFiQD-tA>
-    <xmx:dTeAZ7kMR0CFbnJAS9hzGTJyKp12YyashwZxdj08sKfsDYYsL1I1cIru>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id A68C92220072; Thu,  9 Jan 2025 15:54:11 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UIFsE3fM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1736502295;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=A4Kw1qoNYerqhNjh25Dgp7jdmE++mW9Fl3ZiJ8T3co8=;
+	b=UIFsE3fM8ZpT28RgTD/VWrQgEAnTkGjPT7UbRMlcM0A3WZUp3DhNJ0v0QFBh450AL2dUF2
+	1rk+agWGcGiZ9i74yLeJbYlEoWeR6NzBDaiJjp4lAMBOkt46WyA1BMrDxOCmGN/VpP3McP
+	TQbg59XT+08yYB3kLiyn5GjAlHUungM=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-407-67UXM_3iN_GWSLdDgkym7A-1; Fri, 10 Jan 2025 04:44:54 -0500
+X-MC-Unique: 67UXM_3iN_GWSLdDgkym7A-1
+X-Mimecast-MFC-AGG-ID: 67UXM_3iN_GWSLdDgkym7A
+Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-385dcae001fso783575f8f.1
+        for <linux-alpha@vger.kernel.org>; Fri, 10 Jan 2025 01:44:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736502293; x=1737107093;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=A4Kw1qoNYerqhNjh25Dgp7jdmE++mW9Fl3ZiJ8T3co8=;
+        b=g35bdknrWWua4h3LpHWmo9gt9RFHsorXV2Tk16VTF2U8c3PbyBck7expvUtTNIDm8Z
+         hVd9bO7bbK1tDhkeffnF4cvdFpVyyf+i6FTzl7eSH2W8HlimQ2hORrzbvQtf5NegAc6k
+         Hjg7JjcHqYTckY2ojyQrtSZ67Vs1X2FGUlXeWElmEQ/4f3Nt01jfIVtURKTFeiAk70md
+         tobGmVYyiwAQxVT/myoFpk8MXATl/hvBnRXsoKkypVmKcIfSSCmnAfnwn4AqzMUxWvuC
+         db41wYgh0f9DmywtvsdezQ0xQ6GrNCAHmSYXwiLggNcW2SRhTul/0VmPQW4UUIKemspY
+         wFwg==
+X-Forwarded-Encrypted: i=1; AJvYcCXZtXZvEDXBphvNfqk9SryajLLCKb9fK2PeW0n9sHcEJ+A3emWpkxlisoBj1vtayEPd8Vblh93ekwP3OQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxeYW3fDjDLTV5DiZ/A9YlQG3FCtoEP4P+DkbSuwsM42hFtlncf
+	zJ2rRAc5zkiWx5Ccck0BfGxKETvwtO+bi2y1rycw/Qp2ssDGwk33D9WFm8Tf4+qHShom7eOJN98
+	mVnvI+NV3gwYAepxZ5mHQCn1xh0AwJlokChurPGp1KH5eIJKg8NhjlK8yiP4=
+X-Gm-Gg: ASbGncuar08BUoL3ZynL8ymgxQBUBgk/PLwYPjALfosAuy6nWBBWWHNWOwRD2WIBsum
+	ZHqFgpBAf0yIJoYnNlUAuqg6OPi71m1lreIgykIbhzU7mYbINBfiokNbN0O43Go1yoHEo7KnK5+
+	U40ppYJCxuMe3B/PBbdE6DDiwLlpqS7bjUNrrdSw7+D7+P/2jB5Q6udoWdaB1IWC8uWgO5P5Tgg
+	B+oTDqDD140NIhkBdOMcPNLC/bMo553+7dYhGnUt3QGteYMdBvA6nFY3RbT2QJaoB8ZBKUtKe+K
+X-Received: by 2002:a05:6000:709:b0:386:3803:bbd5 with SMTP id ffacd0b85a97d-38a8733a1f9mr9910089f8f.45.1736502293459;
+        Fri, 10 Jan 2025 01:44:53 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFWMxVaNXeUTe+wjdV2pCbQXCctILb5vVg9f3+psJOjGS23Sr767uuQBsbyCemBlGukLyZjgw==
+X-Received: by 2002:a05:6000:709:b0:386:3803:bbd5 with SMTP id ffacd0b85a97d-38a8733a1f9mr9910059f8f.45.1736502293124;
+        Fri, 10 Jan 2025 01:44:53 -0800 (PST)
+Received: from thinky (ip-217-030-074-039.aim-net.cz. [217.30.74.39])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a8e383965sm4140444f8f.31.2025.01.10.01.44.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jan 2025 01:44:52 -0800 (PST)
+Date: Fri, 10 Jan 2025 10:44:51 +0100
+From: Andrey Albershteyn <aalbersh@redhat.com>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org, 
+	Michal Simek <monstr@monstr.eu>, Michael Ellerman <mpe@ellerman.id.au>, 
+	Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
+	Naveen N Rao <naveen@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, 
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, 
+	chris@zankel.net, Max Filippov <jcmvbkbc@gmail.com>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, 
+	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, 
+	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, 
+	linux-security-module@vger.kernel.org, Linux-Arch <linux-arch@vger.kernel.org>
+Subject: Re: [PATCH] fs: introduce getfsxattrat and setfsxattrat syscalls
+Message-ID: <4ad35w4mrxb4likkqijkivrkom5rpfdja6klb5uoufdjdyjioq@ksxubq4xb7ei>
+References: <20250109174540.893098-1-aalbersh@kernel.org>
+ <e7deabf6-8bba-45d7-a0f4-395bc8e5aabe@app.fastmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Thu, 09 Jan 2025 21:53:51 +0100
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>,
- "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: "John Paul Adrian Glaubitz" <glaubitz@physik.fu-berlin.de>,
- "Richard Henderson" <richard.henderson@linaro.org>,
- "Matt Turner" <mattst88@gmail.com>, "Kees Cook" <kees@kernel.org>,
- "Paul E. McKenney" <paulmck@kernel.org>, linux-alpha@vger.kernel.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- "Michael Cree" <mcree@orcon.net.nz>, "Sam James" <sam@gentoo.org>,
- "Geert Uytterhoeven" <geert@linux-m68k.org>,
- "Michael Karcher" <kernel@mkarcher.dialup.fu-berlin.de>,
- "Chris Hofstaedtler" <zeha@debian.org>, util-linux@vger.kernel.org,
- linux-mips@vger.kernel.org, loongarch@lists.linux.dev
-Message-Id: <bff9bd35-4d47-45fc-90c5-28b79425fc8b@app.fastmail.com>
-In-Reply-To: <alpine.DEB.2.21.2501091953050.18889@angie.orcam.me.uk>
-References: <20250103140148.370368-1-glaubitz@physik.fu-berlin.de>
- <24f03227-1b55-4e50-b6e9-7ac74fda2602@app.fastmail.com>
- <678ee681-12c3-4e79-a04b-495daf343846@app.fastmail.com>
- <bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de>
- <82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com>
- <cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de>
- <87ed1cufj1.fsf@email.froward.int.ebiederm.org>
- <alpine.DEB.2.21.2501091953050.18889@angie.orcam.me.uk>
-Subject: Re: [PATCH] alpha: Fix personality flag propagation across an exec
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e7deabf6-8bba-45d7-a0f4-395bc8e5aabe@app.fastmail.com>
 
-On Thu, Jan 9, 2025, at 21:10, Maciej W. Rozycki wrote:
-> On Thu, 9 Jan 2025, Eric W. Biederman wrote:
->
->> > So, this would be the 100% correct for alpha then which would not loose
->> > any functionality even for 32-bit binaries?
->> 
->> I don't think it is correct to think about 32-bit binaries on alpha.
->> 
->> Alpha never had a 32bit instruction set.  But at some point it looks
->> like binaries that could not handle more than 31 bits of address
->> space got ported and someone implemented a work-around.  I guess this
->> is the --taso option that Arnd mentioned.
->
->  This also saves some code space in non-PIE and plain static executables 
-> as it takes fewer machine instructions to load a 64-bit address that is 
-> known beforehand to be a sign-extended 32-bit value.
->
->  This is similar to the MIPS n32 ABI, which also implies a 32-bit address 
-> space while still using 64-bit registers for everything, starting from 
-> stack slots (it's also ILP32 with the `long long' C data type only making 
-> proper use of the full width of the CPU registers, while Alpha's --taso 
-> ABI is I believe IP32 (?) with the plain `long' C data type still 64-bit, 
-> just as with the regular LP64 ABI).
+On 2025-01-09 20:59:45, Arnd Bergmann wrote:
+> On Thu, Jan 9, 2025, at 18:45, Andrey Albershteyn wrote:
+> >
+> >  arch/alpha/kernel/syscalls/syscall.tbl      |   2 +
+> >  arch/m68k/kernel/syscalls/syscall.tbl       |   2 +
+> >  arch/microblaze/kernel/syscalls/syscall.tbl |   2 +
+> >  arch/parisc/kernel/syscalls/syscall.tbl     |   2 +
+> >  arch/powerpc/kernel/syscalls/syscall.tbl    |   2 +
+> >  arch/s390/kernel/syscalls/syscall.tbl       |   2 +
+> >  arch/sh/kernel/syscalls/syscall.tbl         |   2 +
+> >  arch/sparc/kernel/syscalls/syscall.tbl      |   2 +
+> >  arch/x86/entry/syscalls/syscall_32.tbl      |   2 +
+> >  arch/x86/entry/syscalls/syscall_64.tbl      |   2 +
+> >  arch/xtensa/kernel/syscalls/syscall.tbl     |   2 +
+> 
+> You seem to be missing a couple of files here: 
+> 
+> arch/arm/tools/syscall.tbl
+> arch/arm64/tools/syscall_32.tbl
+> arch/mips/kernel/syscalls/syscall_n32.tbl
+> arch/mips/kernel/syscalls/syscall_n64.tbl
+> arch/mips/kernel/syscalls/syscall_o32.tbl
+> 
+>        Arnd
+> 
 
-I'm pretty sure it's still LP64 on Alpha Linux with gcc. There is an
--mpointer-size=32 option in gcc for VMS, but I don't see anything like
-that in Linux. The only thing that is implemented here is the option
-for the linker that sets the EF_ALPHA_32BIT bit, but none of the
-code generation takes advantage of the upper bits being zero.
+Thanks! Added
 
-       Arnd
+-- 
+- Andrey
+
