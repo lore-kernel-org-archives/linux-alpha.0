@@ -1,132 +1,93 @@
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9D252F852;
-	Mon, 13 Jan 2025 05:33:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=166.70.13.231
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EC8A1C3306;
+	Mon, 13 Jan 2025 05:59:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736746428; cv=none; b=SSwT0Y+NFQgHpHyCTiRs+GJWzz+NhPJyUYr8QKZkwdNgVjvUvYPi9wj8sgs36Wg4Crcd0/C3nwKSChZt7H6J1JHCp6dbK2bA/qs4NLN3d40hJCMMZ4wpPWmSGL9NcPVEXHuD8vKnFTBMp2tj8qTPB757f6oOo+mhDl7wegGqhhI=
+	t=1736748000; cv=none; b=Vfz5hjIkmgjR4rVqqZQb+xyy+xmXVUBePeuYeBeFEHnW2AuUB2EDkW2gLrh98Z4orZpxPkazzB77S5rqkAVW/+oeSekqaOVHVUElnsyMXwQOTBAY3asz3nkx3ni/AiFk8VeVxGaYzOneB8YhkC/woHPZV+5l+Lpwn/1SUt8Zedo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736746428; c=relaxed/simple;
-	bh=6kgf0Y1DnjB7/4vkH8/ROm9TSERfddva2KwyJlW1rSc=;
-	h=From:To:Cc:References:Date:In-Reply-To:Message-ID:MIME-Version:
-	 Content-Type:Subject; b=eOLLDhiZyCESVtKjD2/jOFafDOMGR7EUn/EnoISKV+PjOb6XBONwmCw3KJQAEVe6MB5byZhXz49NSNJsFTQujyfMdJ98dt/hVJx9wDsNcJZO7VAdGImWajvfmjtS8k/kw+eDCdoR71FK9gI3f2BFEzPxcybLB9kSH28WETLOKdc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xmission.com; spf=pass smtp.mailfrom=xmission.com; arc=none smtp.client-ip=166.70.13.231
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xmission.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xmission.com
-Received: from in01.mta.xmission.com ([166.70.13.51]:43564)
-	by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.93)
-	(envelope-from <ebiederm@xmission.com>)
-	id 1tXD4v-000YH6-OQ; Sun, 12 Jan 2025 22:33:33 -0700
-Received: from ip72-198-198-28.om.om.cox.net ([72.198.198.28]:36184 helo=email.froward.int.ebiederm.org.xmission.com)
-	by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.93)
-	(envelope-from <ebiederm@xmission.com>)
-	id 1tXD4u-00HTmM-DJ; Sun, 12 Jan 2025 22:33:33 -0700
-From: "Eric W. Biederman" <ebiederm@xmission.com>
-To: Ivan Kokshaysky <ink@unseen.parts>
-Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,  Arnd Bergmann
- <arnd@arndb.de>,  Richard Henderson <richard.henderson@linaro.org>,  Matt
- Turner <mattst88@gmail.com>,  Kees Cook <kees@kernel.org>,  "Paul E.
- McKenney" <paulmck@kernel.org>,  linux-alpha@vger.kernel.org,
-  linux-mm@kvack.org,  linux-kernel@vger.kernel.org,  Michael Cree
- <mcree@orcon.net.nz>,  Sam James <sam@gentoo.org>,  "Maciej W. Rozycki"
- <macro@orcam.me.uk>,  Geert Uytterhoeven <geert@linux-m68k.org>,  Michael
- Karcher <kernel@mkarcher.dialup.fu-berlin.de>,  Chris Hofstaedtler
- <zeha@debian.org>,  util-linux@vger.kernel.org,
-  linux-mips@vger.kernel.org,  loongarch@lists.linux.dev
-References: <20250103140148.370368-1-glaubitz@physik.fu-berlin.de>
-	<24f03227-1b55-4e50-b6e9-7ac74fda2602@app.fastmail.com>
-	<678ee681-12c3-4e79-a04b-495daf343846@app.fastmail.com>
-	<bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de>
-	<82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com>
-	<cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de>
-	<87jzb2tdb7.fsf_-_@email.froward.int.ebiederm.org>
-	<Z4KN_aOT6uZRAm8a@minute>
-Date: Sun, 12 Jan 2025 23:32:54 -0600
-In-Reply-To: <Z4KN_aOT6uZRAm8a@minute> (Ivan Kokshaysky's message of "Sat, 11
-	Jan 2025 16:27:57 +0100")
-Message-ID: <875xmjth15.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.2 (gnu/linux)
+	s=arc-20240116; t=1736748000; c=relaxed/simple;
+	bh=T0SFzWLHnj+Q4QvKspaAQeyurquuWReeOKvELWMKqn4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=KVBQPWI5LWQuybhGIMZmPGwTZO45HWqlcURWWc4wocbxdyQmHUavOq3PPB4rIGjUaqMI2dM/oiANsQZRXVt7rbKy4+rIXyW0sMRzHgv5iVm+ipz2NPpGhs8MnkhGDqOdCFeZp6sdo/G/Bi0IvNR6NBtxnC8SGrCsfEaA19KvdRs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kVsNEbp+; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kVsNEbp+"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-aab6fa3e20eso701658066b.2;
+        Sun, 12 Jan 2025 21:59:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1736747997; x=1737352797; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=E/G30vGUx/6t/QcniaQm9FHpMQLWUhu/pJjwyN8QZak=;
+        b=kVsNEbp+I7qGdFbMCoR22+I3JZJkRiWmA0aDX/WFwxerw2ipMSVF7jGmAP0f8tgxYC
+         RRj3+6eFN8iA80KMe+iaDt0C7z+IYXMQPi2xRsChqRlxkdGdQ8SokFzZnxwd/t1K6ssN
+         qDXVxPaVKVFGtiaVWIQlx5g1DN4NGLwTGW8aRHVwJ8vWsPGp5PX6FWA/2Y1uASbnw+lh
+         XUqDjHkpBMKuCUTzfPmFAba3nJ3ncjY4jWQRDURSVIYOrTw16JxqVD+/tYjecQngO8y+
+         4SfKKSHvFSagBzODsbvruouQXQtBhL9knSb28t9FwLeK6FMgzLmUL5oiN+oPrMuAV7Fz
+         zF9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736747997; x=1737352797;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=E/G30vGUx/6t/QcniaQm9FHpMQLWUhu/pJjwyN8QZak=;
+        b=db564kZsginILNIwPe8pBfJnxLqSTdsNPEntvP61BbvUxE+gFBljNLvb8sNYbzFaEm
+         Ddsq7eEhBFyqJJEZZAPD/KzlafzIEQ9vGkcA302ulsnwzh1SUTM0QzLpcdd+PBFs8uMU
+         e2K1i5NcjqFJ609ihS1ojWyQdrynx6IJ0mUyUdJ2oB96kdmtVjfbF7rvwHbM3odWnhkV
+         gN9XNvYzHarf4712tJ1N0SnZ6eQ0mqtxDdRTjWcSpPZexJuwnc8eV7XlqQsOOe/8MMO8
+         V8Is5dqhQ2qzlsA2FDZeNAy5r1zQUKKCdkYzN4DvKJhSK+pLEpH/ILvXrKlbDK5Utw1L
+         nEYw==
+X-Forwarded-Encrypted: i=1; AJvYcCUuf1avt+AOTOuqwEuwtVjxjhp5LPxxW28pMSHfl0PM9kJREW3jriSJB9v8Uws81f4F0q+5oJOIiFTmnA==@vger.kernel.org, AJvYcCXxJ5jSqHJAtX9SEvHb85tzvjUU8boleul00WEZfCrRX3LG8nQ5bxsfqdFV9Kbb5S63HrjH@vger.kernel.org
+X-Gm-Message-State: AOJu0YxCjZeNtYNA/gAcD94rrT/8OrGcHF0HA88hX0i79XV5i6ne1KWM
+	F2HRuApHE+iTbnxjPO7m0Y1Mtc7wdYUM9HC0m6RPXpkap/w5lDcn+0t8cQRUvM4dCU/XYzQMGd+
+	rXE/mHW/PcY9ajSla8hDC4zqTjhw=
+X-Gm-Gg: ASbGncv6qzGVxHn2nPamfx9FJQH4Cnm1EEK4gSfSY2iGojNbyemzaVyAlcMC6u2EKXd
+	a6ZFvUbFo8gqD0P4VXIaV2aIAJvPV4KNRmxKVJgE=
+X-Google-Smtp-Source: AGHT+IE0oU2XF0Eu5iaqJexjJI8um9V3FOiLY3BumqufuaicveM49iDSGBZB3DJnn6eEk7NsXqw4UrlNCO/j7aVLQc8=
+X-Received: by 2002:a17:907:9687:b0:aa6:912f:7ec1 with SMTP id
+ a640c23a62f3a-ab2abc779dcmr1990231366b.39.1736747997240; Sun, 12 Jan 2025
+ 21:59:57 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1tXD4u-00HTmM-DJ;;;mid=<875xmjth15.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=72.198.198.28;;;frm=ebiederm@xmission.com;;;spf=pass
-X-XM-AID: U2FsdGVkX19mzMcFcnq2MyXKMRJsTojlTxbl78vUQO0=
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	*  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-	*      [score: 0.4714]
-	*  0.7 XMSubLong Long Subject
-	*  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
-	* -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
-	*      [sa06 1397; Body=1 Fuz1=1 Fuz2=1]
-	*  0.0 T_TooManySym_01 4+ unique symbols in subject
-X-Spam-DCC: XMission; sa06 1397; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: ;Ivan Kokshaysky <ink@unseen.parts>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 763 ms - load_scoreonly_sql: 0.09 (0.0%),
-	signal_user_changed: 12 (1.5%), b_tie_ro: 10 (1.3%), parse: 1.27
-	(0.2%), extract_message_metadata: 18 (2.3%), get_uri_detail_list: 1.68
-	(0.2%), tests_pri_-2000: 14 (1.8%), tests_pri_-1000: 3.4 (0.5%),
-	tests_pri_-950: 1.28 (0.2%), tests_pri_-900: 1.07 (0.1%),
-	tests_pri_-90: 441 (57.9%), check_bayes: 430 (56.3%), b_tokenize: 8
-	(1.1%), b_tok_get_all: 8 (1.1%), b_comp_prob: 2.4 (0.3%),
-	b_tok_touch_all: 407 (53.4%), b_finish: 1.12 (0.1%), tests_pri_0: 256
-	(33.5%), check_dkim_signature: 0.84 (0.1%), check_dkim_adsp: 2.7
-	(0.4%), poll_dns_idle: 0.89 (0.1%), tests_pri_10: 2.8 (0.4%),
-	tests_pri_500: 9 (1.2%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: [PATCH] alpha/elf: Fix misc/setarch test of util-linux by
- removing 32bit support
-X-SA-Exim-Connect-IP: 166.70.13.51
-X-SA-Exim-Rcpt-To: loongarch@lists.linux.dev, linux-mips@vger.kernel.org, util-linux@vger.kernel.org, zeha@debian.org, kernel@mkarcher.dialup.fu-berlin.de, geert@linux-m68k.org, macro@orcam.me.uk, sam@gentoo.org, mcree@orcon.net.nz, linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-alpha@vger.kernel.org, paulmck@kernel.org, kees@kernel.org, mattst88@gmail.com, richard.henderson@linaro.org, arnd@arndb.de, glaubitz@physik.fu-berlin.de, ink@unseen.parts
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-X-SA-Exim-Scanned: No (on out01.mta.xmission.com); SAEximRunCond expanded to false
+References: <CA+=Fv5R+8y2hCq7p-xo5qZ0CyinR_0aAndUkoEAweCVs_95SMw@mail.gmail.com>
+ <Z1YpKFQGtMWF3yy3@creeky> <CA+=Fv5Q=f-6y=EhZhG2XfZB0O=m+yOiv+gmtmMABVQZieKdwbQ@mail.gmail.com>
+ <Z2ClSlwznfuk8Uwr@creeky> <CA+=Fv5RaqHL6MJjvhF-mn3CVY10e=2QqFBSVO6YXLUJ7WV9zGQ@mail.gmail.com>
+ <CA+=Fv5RP=NoWo4VeTX7hx103=jP2d-NC-jFo+ePXLBRubCxc_w@mail.gmail.com>
+ <ef49a479-2000-42ee-9b10-9f3b6a68ec35@paulmck-laptop> <CA+=Fv5REK+xbA49zD3aYBgG2J1Xw1FWP02qjyyOTrwbzMRXu3w@mail.gmail.com>
+ <be4fe590-b41c-4033-91c1-94f10c4f3d40@paulmck-laptop> <CA+=Fv5Tk-vbAK72ZOK-bPwvnx9w_1ATH=S9t-LW8gBEgQPYa3A@mail.gmail.com>
+ <b3cd5af3-4b8f-43bd-b3f3-c9f4644c95d4@paulmck-laptop> <alpine.DEB.2.21.2412192347450.20821@angie.orcam.me.uk>
+ <CA+=Fv5TJhDrrxG82=MNPFEFFwKD4NDYyB1u32ZvnGv6Ma0h_Nw@mail.gmail.com>
+ <alpine.DEB.2.21.2412271452100.20821@angie.orcam.me.uk> <CA+=Fv5SW-N+5KzsnVdHvy406-p+g7giUbt626xwDduy6xjaPkw@mail.gmail.com>
+ <CA+=Fv5TtOQkDMPnuPrPGcB0VGhUHUDqe5=Z+ovd5x5rBJ-Hsjw@mail.gmail.com> <alpine.DEB.2.21.2501122348510.18889@angie.orcam.me.uk>
+In-Reply-To: <alpine.DEB.2.21.2501122348510.18889@angie.orcam.me.uk>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Mon, 13 Jan 2025 06:59:45 +0100
+X-Gm-Features: AbW1kvYIvMGeKnEUIBgpK5UhGynimFWiiDZtRcCQPJr3yBdB0x8VWo2m1lxB5M4
+Message-ID: <CA+=Fv5Q9UxeSP0U10d281Nbm3agyFgpwyY95+d2pAWVWJP=2Yg@mail.gmail.com>
+Subject: Re: Kernel Oops on alpha with kernel version >=6.9.x
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>, Michael Cree <mcree@orcon.net.nz>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, rcu@vger.kernel.org, 
+	linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Ivan Kokshaysky <ink@unseen.parts> writes:
-
-> On Fri, Jan 10, 2025 at 06:16:28PM -0600, Eric W. Biederman wrote:
->> 
->> Richard Henderson <richard.henderson@linaro.org> writes[1]:
->> 
->> > There was a Spec benchmark (I forget which) which was memory bound and ran
->> > twice as fast with 32-bit pointers.
->> >
->> > I copied the idea from DEC to the ELF abi, but never did all the other work
->> > to allow the toolchain to take advantage.
->> >
->> > Amusingly, a later Spec changed the benchmark data sets to not fit into a
->> > 32-bit address space, specifically because of this.
->> >
->> > I expect one could delete the ELF bit and personality and no one would
->> > notice. Not even the 10 remaining Alpha users.
->> 
->> In [2] it was pointed out that parts of setarch weren't working
->> properly on alpha because it has it's own SET_PERSONALITY
->> implementation.  In the discussion that followed Richard Henderson
->> pointed out that the 32bit pointer support for alpha was never
->> completed.
->> 
->> Fix this by removing alpha's 32bit pointer support.
->> 
->> As a bit of paranoia refuse to execute any alpha binaries that hafe
->> the EF_ALPHA_32BIT flag set.  Just to fail explicitly in case someone
->> somewhere has binaries that trying to use alpha's 32bit pointer
->> support.
+>  Can you please retrieve the value of SP in `smp_call_function_single'?
+> Just something such as:
 >
-> In general I agree, but then someone ought to remove the "--taso" option
-> from GNU ld, which produces such binaries.
+>         printk("SP: %016lx\n", __builtin_frame_address(0));
+>
 
-Please feel free to write such a patch.  I don't know the GNU ld process
-well enough to write that patch.
 
-It would be good to remove dead code and confusing code from GNU ld,
-as well as from the linux kernel.
+I will check!
 
-Eric
+Also wondering if this may be relevant?
+
+ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=16660
