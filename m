@@ -1,163 +1,120 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 267DE240221;
-	Mon, 13 Jan 2025 15:48:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6D81190692;
+	Mon, 13 Jan 2025 16:52:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736783291; cv=none; b=ZS+4g7j0xezCjwwpJSIspGPKpqkXNW762nNaTeKnl41yBJu7ieYo3sLiYxGiVZjUXwESIDd6TEsUFCCqhtQ9y/iHJMyyfjtK4f84C0pfr9w2jQDdLbiQvSUaLJvle7tc0l0OENkiYt1e54K5Fbrp3hpXQhc4DTvril8nq8FSwtk=
+	t=1736787152; cv=none; b=eERLZOl54lSs42iWJasu0RDzWEZIv7e4PHSQPGTTdEDecZy9NFsIQy0tXFQl9XbGenz+5ZAMBO1lSWgDEG2VRRQFBCIKJlxwMUXfj5iin0cpYeyswXakDhFNBk71tvJ9R67XIOBpxBJrFLgkGpKwd+V7MuPBnIxVCdFynV51vqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736783291; c=relaxed/simple;
-	bh=ExydEF6oUbBv3mhxl1sgVJvfB6r3da1uy1h0Ey5whoQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=atkNRdODTGq9V0Cqwx1M/fF6WXhZzUQ3T13OSZ7s/pjZfmy/+uWEBP+Iv6AlUc8LpQ946n4KQZDMqrWOpZoYJ+G6FoNBiD+4M+9U2oRDkkXzCuMivZ/ZF5jG9/GYAFaKg6YZ7/hn5YwTB2skrR5phGeFKf82icvTLCHrFFRCkbs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iE/CT9Gs; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1736787152; c=relaxed/simple;
+	bh=DMoxqLiFfhY7CL47LQcap+sW3j0RiI3MKZajpknZvTQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=BJKCT2rfpio0GPbJ3DFhYNI4VFN3J/AzL2sQU1vtX0BxGdZrHDBlYcGQzdUnh08P5wL9bHWee8LQAkr1Buq4I1Bzxb//lLEvEfDCsWeyXXoopNJMaf5JuL+dGZQQHm/euTctZ3qXQBCkZp2grlX8S/KfISh0YJbzc7z5ny2pUMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=na7GKajg; arc=none smtp.client-ip=209.85.208.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iE/CT9Gs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736783289; x=1768319289;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=ExydEF6oUbBv3mhxl1sgVJvfB6r3da1uy1h0Ey5whoQ=;
-  b=iE/CT9Gson6D3bFW+s7Bgby4OwbOTaNxvZMXsVlhlfmGR9OTeS7P4NPn
-   RXdjPTRY2CaXMuXQv2933QdWLv2AbhFcpBAFJXjikKCNJQNcQIYKizQ50
-   Y2CTJ9Q61hLRAH7zdYa3mD9v1HviBsW679kpWCZNxFRDzc5UKHO31lCrV
-   ICa/qBanp6MHR+VqXrznlGSHBFY76YGyqwwB4ou5jsOs66jXjyjoxoYSQ
-   pvk7O9iE+sPdfiiS92wzCeVxfKj1T6Pt5EDLoZaYDi9gWtcM/egE77y0P
-   68zyzY2o7E1XC635cegZf021mB61LoYeGgdF+TSHpU8AKODttDtbV+RT2
-   Q==;
-X-CSE-ConnectionGUID: IsQ+kTlqSIuTx9stxs+LjA==
-X-CSE-MsgGUID: xPzJLRa/TjCHnLqULFbWsg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11314"; a="36340679"
-X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
-   d="scan'208";a="36340679"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2025 07:48:08 -0800
-X-CSE-ConnectionGUID: tF9prx5vSTOp32e9QHNHAA==
-X-CSE-MsgGUID: idxS4SPKSjyFVgzRZeU+/A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
-   d="scan'208";a="104693236"
-Received: from stinkpipe.fi.intel.com (HELO stinkbox) ([10.237.72.74])
-  by fmviesa008.fm.intel.com with SMTP; 13 Jan 2025 07:47:55 -0800
-Received: by stinkbox (sSMTP sendmail emulation); Mon, 13 Jan 2025 17:47:54 +0200
-Date: Mon, 13 Jan 2025 17:47:54 +0200
-From: Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Cc: Borislav Petkov <bp@alien8.de>, Mike Rapoport <rppt@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Andy Lutomirski <luto@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>, Brian Cain <bcain@quicinc.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Christoph Hellwig <hch@infradead.org>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Guo Ren <guoren@kernel.org>, Helge Deller <deller@gmx.de>,
-	Huacai Chen <chenhuacai@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Kent Overstreet <kent.overstreet@linux.dev>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Michal Simek <monstr@monstr.eu>, Oleg Nesterov <oleg@redhat.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Richard Weinberger <richard@nod.at>,
-	Russell King <linux@armlinux.org.uk>, Song Liu <song@kernel.org>,
-	Stafford Horne <shorne@gmail.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Vineet Gupta <vgupta@kernel.org>, Will Deacon <will@kernel.org>,
-	bpf@vger.kernel.org, linux-alpha@vger.kernel.org,
-	linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-	linux-mips@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, linux-openrisc@vger.kernel.org,
-	linux-parisc@vger.kernel.or
-Subject: Re: [PATCH] x86: Disable EXECMEM_ROX support
-Message-ID: <Z4U1qqBekZ-_l1NS@intel.com>
-References: <20241023162711.2579610-1-rppt@kernel.org>
- <20241023162711.2579610-9-rppt@kernel.org>
- <Z4QM_RFfhNX_li_C@intel.com>
- <20250112190755.GCZ4QTC01KzoZkxel9@fat_crate.local>
- <20250113111116.GF5388@noisy.programming.kicks-ass.net>
- <20250113112934.GA8385@noisy.programming.kicks-ass.net>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="na7GKajg"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5d3e8f64d5dso8793802a12.3;
+        Mon, 13 Jan 2025 08:52:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1736787149; x=1737391949; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HfN5f0SNNeovJ6u2fLvDjtdxvC4rmZaKjrkepOGojiw=;
+        b=na7GKajgK0ElHFuvf+lgGABdj/JoT/LCzLtzyhC3oTdUpRWnTOn4NBJSTdm9PCGu26
+         83JFosLV+aaJYeDYCNBXn5yJhDVoJ17XZTxhcdIWZWZ/mA+MShOO7mtOzcJlcxx5wz76
+         6uKSmdrEjvVl6OqTw2PKyz95GFjBRuRKIF7Cwf3yncw8QqgYZI4IhOuBbF07lmfyl2Lt
+         /rLCgE3fK9qnNTiLgY7OxYuqt2WOv4r2WWEi6nn1wO5TvXlBgiR7uNaWHji6iDZaZS7U
+         HNLTz0/DJj+e4EIUaszYAmcC4mgQrZW/Lw9ObNiDUSm3sZ1a8GTa8JczJJrkjkiqDfWZ
+         kDVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736787149; x=1737391949;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HfN5f0SNNeovJ6u2fLvDjtdxvC4rmZaKjrkepOGojiw=;
+        b=i1hcpHZ3hwc2Cr+p6pm/aw2gJ92r+UWBHyBUyBLJLE7XDvojW1kUaL+pqzNvcU+YHj
+         j8N23ND5OsNLnrBTV3hP5WVjIBgAiYSMOdVbu75UJldd/At/6wZCOM4vduMgYR4aEEzi
+         D0HwLAILCkChF5eiEZBT409sZ7Sc9vT78AWdSyOiaSlOmxN/97EGWEVoIEnohnMgPq9J
+         XH9XAX5msjQzDll+OpSE4jYFWbZt5AUq3t8IQUCSRGn6ZHY46JB2Zqf1hVhQNSpNr5ph
+         o99EMlQS9j252Kd/uBJ81NJUUN2wLZNCQWMelefVGwQ7glen4/DNmDK+HdjAfQ9f4i5R
+         nNig==
+X-Forwarded-Encrypted: i=1; AJvYcCWahRne2aNpwHdS/ZGr95HRh/s0ctUGYPjU8vaotrLcnua7hiQy9yftu4WHZ0B+BklL285W@vger.kernel.org, AJvYcCWgFOBaR7c/pNmXhwb/PIVvwb2x8fFj0KlAaxdQHg0g/dKfSfUjFmfEk2AWJMR5JcXQnwVFw1nYKQ3COg==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx0nAfUQHy9BqtLjlpfyTNlqXpYz93B9QpmgGd73UekTRl3aue2
+	3QHYqm0suXtM7vgMqvmbaqMgnvQyvhLzU9x+phSo7YlEX6i3O4vJ+MIiAio0eFi4D23GqRGv010
+	R+eaYXbaZ45ox1VXkQRChqDSr9xbX4eqjp1E=
+X-Gm-Gg: ASbGncvzDcGyp2aWMOIP1GO4rHQJa5XuQ2fwCeLcK19MuzSPwDD+rYRPfNHWi2Xocfz
+	RbnH+nyvfyQYo2V5tMwAs3Z2eFlpEco9eikUu8Ao=
+X-Google-Smtp-Source: AGHT+IHaPJsi8VD+62eBbqkZD4L9x4tHOjuiovoyWhFt2/mNjjcQs0jUFwHLZsk07LmFykx9Br9tY8xC5y5fX1Mcc+E=
+X-Received: by 2002:a17:906:478d:b0:aa6:841a:dff0 with SMTP id
+ a640c23a62f3a-ab2ab73e6e9mr1905039166b.32.1736787148943; Mon, 13 Jan 2025
+ 08:52:28 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250113112934.GA8385@noisy.programming.kicks-ass.net>
-X-Patchwork-Hint: comment
+References: <CA+=Fv5R+8y2hCq7p-xo5qZ0CyinR_0aAndUkoEAweCVs_95SMw@mail.gmail.com>
+ <Z1YpKFQGtMWF3yy3@creeky> <CA+=Fv5Q=f-6y=EhZhG2XfZB0O=m+yOiv+gmtmMABVQZieKdwbQ@mail.gmail.com>
+ <Z2ClSlwznfuk8Uwr@creeky> <CA+=Fv5RaqHL6MJjvhF-mn3CVY10e=2QqFBSVO6YXLUJ7WV9zGQ@mail.gmail.com>
+ <CA+=Fv5RP=NoWo4VeTX7hx103=jP2d-NC-jFo+ePXLBRubCxc_w@mail.gmail.com>
+ <ef49a479-2000-42ee-9b10-9f3b6a68ec35@paulmck-laptop> <CA+=Fv5REK+xbA49zD3aYBgG2J1Xw1FWP02qjyyOTrwbzMRXu3w@mail.gmail.com>
+ <be4fe590-b41c-4033-91c1-94f10c4f3d40@paulmck-laptop> <CA+=Fv5Tk-vbAK72ZOK-bPwvnx9w_1ATH=S9t-LW8gBEgQPYa3A@mail.gmail.com>
+ <b3cd5af3-4b8f-43bd-b3f3-c9f4644c95d4@paulmck-laptop> <alpine.DEB.2.21.2412192347450.20821@angie.orcam.me.uk>
+ <CA+=Fv5TJhDrrxG82=MNPFEFFwKD4NDYyB1u32ZvnGv6Ma0h_Nw@mail.gmail.com>
+ <alpine.DEB.2.21.2412271452100.20821@angie.orcam.me.uk> <CA+=Fv5SW-N+5KzsnVdHvy406-p+g7giUbt626xwDduy6xjaPkw@mail.gmail.com>
+ <CA+=Fv5TtOQkDMPnuPrPGcB0VGhUHUDqe5=Z+ovd5x5rBJ-Hsjw@mail.gmail.com>
+ <alpine.DEB.2.21.2501122348510.18889@angie.orcam.me.uk> <CA+=Fv5Q9UxeSP0U10d281Nbm3agyFgpwyY95+d2pAWVWJP=2Yg@mail.gmail.com>
+In-Reply-To: <CA+=Fv5Q9UxeSP0U10d281Nbm3agyFgpwyY95+d2pAWVWJP=2Yg@mail.gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Mon, 13 Jan 2025 17:52:17 +0100
+X-Gm-Features: AbW1kva6O8CuLelkV9iY03YjoeTnQqzvdfQGSQd4PFU_H1b6Cpy8pzAHcM62Yl0
+Message-ID: <CA+=Fv5RU946-r5S8hZKTF4w20s82Oc-JDe-pCa1W7zjr6nEoag@mail.gmail.com>
+Subject: Re: Kernel Oops on alpha with kernel version >=6.9.x
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>, Michael Cree <mcree@orcon.net.nz>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, rcu@vger.kernel.org, 
+	linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 13, 2025 at 12:29:34PM +0100, Peter Zijlstra wrote:
-> On Mon, Jan 13, 2025 at 12:11:16PM +0100, Peter Zijlstra wrote:
-> 
-> > There's definiltely breakage with that module_writable_address()
-> > nonsense in alternative.c that will not be fixed by that patch.
-> > 
-> > The very simplest thing at this point is to remove:
-> > 
-> >      select ARCH_HAS_EXECMEM_ROX             if X86_64
-> > 
-> > and try again next cycle.
-> 
-> Boris asked I send it as a proper patch, so here goes. Perhaps next time
-> let x86 merge x86 code :/
-> 
-> ---
-> Subject: x86: Disable EXECMEM_ROX support
-> 
-> The whole module_writable_address() nonsense made a giant mess of
-> alternative.c, not to mention it still contains bugs -- notable some of the CFI
-> variants crash and burn.
-> 
-> Mike has been working on patches to clean all this up again, but given the
-> current state of things, this stuff just isn't ready.
-> 
-> Disable for now, lets try again next cycle.
-> 
-> Fixes: 5185e7f9f3bd ("x86/module: enable ROX caches for module text on 64 bit")
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> ---
->  arch/x86/Kconfig | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 9d7bd0ae48c4..ef6cfea9df73 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -83,7 +83,6 @@ config X86
->  	select ARCH_HAS_DMA_OPS			if GART_IOMMU || XEN
->  	select ARCH_HAS_EARLY_DEBUG		if KGDB
->  	select ARCH_HAS_ELF_RANDOMIZE
-> -	select ARCH_HAS_EXECMEM_ROX		if X86_64
->  	select ARCH_HAS_FAST_MULTIPLIER
->  	select ARCH_HAS_FORTIFY_SOURCE
->  	select ARCH_HAS_GCOV_PROFILE_ALL
+Hi, I've sprinkled some stack pointer printouts and its seems like (as
+suspected) the kernel stack pointer is not 16-byte aligned, at least
+not in kernel-mode.
 
-This one works for my hibernate woes.
+Example printouts:
+SP: fffffc00059dfc08
+SP: fffffc00059dfe48
+SP: fffffc00059dfc08
 
-In case you want it:
-Tested-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+I found some ML threads that seemed relevant one on stack alignment in
+NetBSD-alpha after changes in GCC and one on x86_64 with linux/gcc
 
--- 
-Ville Syrjälä
-Intel
+https://mail-index.netbsd.org/port-alpha/2021/07/05/msg001145.html
+
+https://patchwork.kernel.org/project/linux-crypto/patch/20170110143340.GA37=
+87@gondor.apana.org.au/
+
+
+
+/Magnus
+
+On Mon, Jan 13, 2025 at 6:59=E2=80=AFAM Magnus Lindholm <linmag7@gmail.com>=
+ wrote:
+>
+> >  Can you please retrieve the value of SP in `smp_call_function_single'?
+> > Just something such as:
+> >
+> >         printk("SP: %016lx\n", __builtin_frame_address(0));
+> >
+>
+>
+> I will check!
+>
+> Also wondering if this may be relevant?
+>
+>  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D16660
