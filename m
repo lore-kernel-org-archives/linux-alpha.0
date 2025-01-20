@@ -1,122 +1,150 @@
-Received: from minute.unseen.parts (minute.unseen.parts [139.162.151.61])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE06618755C;
-	Sat, 18 Jan 2025 10:36:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=139.162.151.61
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 997011FC8;
+	Mon, 20 Jan 2025 13:01:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737196611; cv=none; b=CUnD8iau942JYTVi4doAcGHKT1u73y3riuj4K0MNp7u+ng24aRnQRHlpzdDFfYP7Lgki1GCQoW9idB9jdYl8R4B5Bd9jKSL5gQyZ5+XVaOrjsGZI6OqGhbfhet80DQBsAsqPMK2XxV6robhUUSyzrRGgNuU8jrneADVH9quXFm8=
+	t=1737378108; cv=none; b=i+8w+rG117E1xuSfbMPFPiBuN8/BwOUpqjkgjZfWhfpHvFu1DyV21RpHaV3UKbE8IBieQz23BC00ab18uZSShoD8IZHieKWs7d7GS08xYfKOtmhxl2WU1Q/k9CpYfbCUeaw6WgiQc/4/HNMffQOeJ5q1LU2YTJ+CP3tZLWvTBso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737196611; c=relaxed/simple;
-	bh=/WL9Al1gHJtt5RyHtH8e1SSbM0KijPA5LnNJsgpki20=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pmNCJZs3S9GfPNwwl1W0meo2K8kate7iGI1P6P1ObW66p6xhPO2qS1pLKSRqIPDcxw2jqq1XIL0QP9ryRBMgzIiHbWIM3eivw36pwrrShp+VygAVu2eTxxgzEtsEdFoDfmTINE2AY5UbSroy1o36SeKm0kYtKEv+6IGTjuezowo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unseen.parts; spf=pass smtp.mailfrom=unseen.parts; dkim=pass (2048-bit key) header.d=unseen.parts header.i=@unseen.parts header.b=yX0E5LlK; arc=none smtp.client-ip=139.162.151.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unseen.parts
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unseen.parts
+	s=arc-20240116; t=1737378108; c=relaxed/simple;
+	bh=K9iRMUDhv0rs7d0AKQiPe0lt8dvk6O8u7LQKbnOUEl8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=P1YqvEwNAMInrk11LapiidZr5JfS/U/jVHD5GppmPZbCf6FmZefwErayV7IYJ4HoEGFSUQkSuBHrTcKo36iRZnd/hHFi7/MH7UHVln1zGQi+HaBUOfPumP+DEe5PgXp78xK2xq90gF0gLxgy03Wc59iS1FKgHrUN/xdwV4lur3k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kEtxili5; arc=none smtp.client-ip=209.85.208.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=unseen.parts header.i=@unseen.parts header.b="yX0E5LlK"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=unseen.parts; s=sig; h=In-Reply-To:Content-Type:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=c9nSAqqWxyLaQqHtxXscYRgnpeMDtXLRxxYGRZPtQRA=; b=yX0E5LlK9F2HN4W1Zv9JcuRMTX
-	qqomh8v1zoxquNIyyvGByazKGWw7JHdNxdbnv2e8QxK2R1DvLGhgucUJfYOi66IEreurkcfZR81KR
-	5k7qoIGAVBT4Cs1Ptu6FuEiNXRo/VUlP4fwsCouDBR+JKfWepdPIx9hiIL12wyeo8ly32hQKvqAmg
-	pATkNY4JwZVfVWSdLDXoKe+pN8Fg6sj/CTjoRk+I6X9F2WrmjkGQ2onLIz1DsLeIWNnGOw4jTMapW
-	N6DJNCaaDE6clMZV1JZtc7Bhb/wjgbmByiIlVMBDph8awc6rE9tZG8+/bQ7i6Nq1PzpmWkNQ8DrxB
-	WpxzQz8w==;
-Received: from minute.unseen.parts ([139.162.151.61]:46722 helo=minute)
-	by minute.unseen.parts with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.96)
-	(envelope-from <ink@unseen.parts>)
-	id 1tZ6BI-0006Jw-1V;
-	Sat, 18 Jan 2025 11:35:56 +0100
-Date: Sat, 18 Jan 2025 11:35:54 +0100
-From: Ivan Kokshaysky <ink@unseen.parts>
-To: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	"Maciej W. Rozycki" <macro@orcam.me.uk>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>, Kees Cook <kees@kernel.org>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	linux-alpha@vger.kernel.org, linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>,
-	Sam James <sam@gentoo.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>,
-	Chris Hofstaedtler <zeha@debian.org>, util-linux@vger.kernel.org,
-	linux-mips@vger.kernel.org, loongarch@lists.linux.dev
-Subject: Re: [PATCH v2] alpha/elf: Fix misc/setarch test of util-linux by
- removing 32bit support
-Message-ID: <Z4uECl9wQ2sqdKym@minute>
-References: <24f03227-1b55-4e50-b6e9-7ac74fda2602@app.fastmail.com>
- <678ee681-12c3-4e79-a04b-495daf343846@app.fastmail.com>
- <bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de>
- <82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com>
- <cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de>
- <87jzb2tdb7.fsf_-_@email.froward.int.ebiederm.org>
- <2758fa70d237ff972b0c8d7114777dc4a20c8f3b.camel@physik.fu-berlin.de>
- <alpine.DEB.2.21.2501120146480.18889@angie.orcam.me.uk>
- <78f3ae1f68842a9d1af62caaac3929834ce6ecfa.camel@physik.fu-berlin.de>
- <87y0zfs26i.fsf_-_@email.froward.int.ebiederm.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kEtxili5"
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-5d3f57582a2so11086103a12.1;
+        Mon, 20 Jan 2025 05:01:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1737378105; x=1737982905; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CzbBSvQ2fJboSP9XzDbnbob6fwTWVoHDrWCjAFghTh0=;
+        b=kEtxili5sIh/s4RkSy0yEU4e1bSyACNM1RccRXSmD+gUdnelfMPcE9QYCr4yU2z4/M
+         M6edCKcK6T0IQZChrIrdkgd1/KC8ceHylTfqwY8fGxiJ+yN8ULzqCuRK0UQB9o5X9yhj
+         ktW1Cs4WYINu4KjVhFy9bYNbA9aFVW5HAxftkf5aFE4Y1cEZrgbKOCS9OlpWX3DqnZGD
+         7SN0etvzrTI3Jw7KW5pn3P2VKmQsjwCYPHi7ZaJanGJPE3TwLVnKT+BQBm1uv5etswFC
+         C5FlTt02GqEN6u0pu+slu6yiGCoA/XHdRng50F5km8GAE0dQfZYk1GNgx9Jm0D1dWzpK
+         xBYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737378105; x=1737982905;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=CzbBSvQ2fJboSP9XzDbnbob6fwTWVoHDrWCjAFghTh0=;
+        b=paBgiOTcz+rMpNn2TIyczpB5rQ39fI5I6QVZxI6gxvxXGeSkWQCpnT8Vta7zFbcQig
+         zGtb7gGtBxFAQ4EUuPTeTIWtVOQ9iNIt2d4iZTKD6/qwroas6xSCH9nn1msSMlfFg3Dj
+         UsRqk1RVvyUomgYUX+6sow/nOd9UUNqBPa78r35v7HSQduHIiWQxRL//ho5iyh45UpSf
+         ZUXBVKXla97jthQlU/WuPfh5x3/PGtCEubJYovOK4j7hIybdhfscjiKtAAI3Z6T6WgRh
+         11Foy4ldebsPYZnRYTw6djb2jvKRGFQcbqR6AZlGBQtWb+WoWcZCB+rcnik2dkJkOMuD
+         WujA==
+X-Forwarded-Encrypted: i=1; AJvYcCW3oohLjKak1Jx+2NuAKY9YLplXw1lwDg58WZJbaOfIX+rGLiHtb51zVr7BJ0QBFE8N14BjcbANxq80OA==@vger.kernel.org, AJvYcCWuJq1C2XFM/Hp3qzn2isuD9refasjfALExSt0MbhFERU0DuJi1fV1vXwlQ9BnZwtP+BBpt@vger.kernel.org
+X-Gm-Message-State: AOJu0YwcdRxcw5HSinshxG5oA8b6afRHxtB3MW1Nk5/CQpYK4s5iCcTB
+	sKhMro03CQMMI1cinWLLvQIfbA0OgAVY7aWKTcgqAKALUr46AvW/aj/1PqRIsg06s/8+d+NooCK
+	Moiyc1iU7IDP8iC67gbsOasO+foQ=
+X-Gm-Gg: ASbGncvKeKH5KddK/amesKWXcYZicIgkCE7U+WYbgxcm/tzEMcZ91YUuFn0BmzQjFFJ
+	eRU1Fe7C+NBRMaTn9XgoreWpspXiykrFP+X6cAMWm9oW3GgZm7n+t
+X-Google-Smtp-Source: AGHT+IGs4lyXV9f4kP8/HQcftAAjfVo0Lhua/zM/u2ToVU/hR0jR3rADkEEw2ec6M/BMJEb3bwS749JaJfr2ZBiswjs=
+X-Received: by 2002:a05:6402:51d3:b0:5d4:c0c:70f9 with SMTP id
+ 4fb4d7f45d1cf-5da0c27e591mr18638532a12.6.1737378104463; Mon, 20 Jan 2025
+ 05:01:44 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87y0zfs26i.fsf_-_@email.froward.int.ebiederm.org>
+References: <CA+=Fv5R+8y2hCq7p-xo5qZ0CyinR_0aAndUkoEAweCVs_95SMw@mail.gmail.com>
+ <Z1YpKFQGtMWF3yy3@creeky> <CA+=Fv5Q=f-6y=EhZhG2XfZB0O=m+yOiv+gmtmMABVQZieKdwbQ@mail.gmail.com>
+ <Z2ClSlwznfuk8Uwr@creeky> <CA+=Fv5RaqHL6MJjvhF-mn3CVY10e=2QqFBSVO6YXLUJ7WV9zGQ@mail.gmail.com>
+ <CA+=Fv5RP=NoWo4VeTX7hx103=jP2d-NC-jFo+ePXLBRubCxc_w@mail.gmail.com>
+ <ef49a479-2000-42ee-9b10-9f3b6a68ec35@paulmck-laptop> <CA+=Fv5REK+xbA49zD3aYBgG2J1Xw1FWP02qjyyOTrwbzMRXu3w@mail.gmail.com>
+ <be4fe590-b41c-4033-91c1-94f10c4f3d40@paulmck-laptop> <CA+=Fv5Tk-vbAK72ZOK-bPwvnx9w_1ATH=S9t-LW8gBEgQPYa3A@mail.gmail.com>
+ <b3cd5af3-4b8f-43bd-b3f3-c9f4644c95d4@paulmck-laptop> <alpine.DEB.2.21.2412192347450.20821@angie.orcam.me.uk>
+ <CA+=Fv5TJhDrrxG82=MNPFEFFwKD4NDYyB1u32ZvnGv6Ma0h_Nw@mail.gmail.com>
+ <alpine.DEB.2.21.2412271452100.20821@angie.orcam.me.uk> <CA+=Fv5SW-N+5KzsnVdHvy406-p+g7giUbt626xwDduy6xjaPkw@mail.gmail.com>
+ <CA+=Fv5TtOQkDMPnuPrPGcB0VGhUHUDqe5=Z+ovd5x5rBJ-Hsjw@mail.gmail.com>
+ <alpine.DEB.2.21.2501122348510.18889@angie.orcam.me.uk> <CA+=Fv5Q9UxeSP0U10d281Nbm3agyFgpwyY95+d2pAWVWJP=2Yg@mail.gmail.com>
+ <CA+=Fv5RU946-r5S8hZKTF4w20s82Oc-JDe-pCa1W7zjr6nEoag@mail.gmail.com>
+In-Reply-To: <CA+=Fv5RU946-r5S8hZKTF4w20s82Oc-JDe-pCa1W7zjr6nEoag@mail.gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Mon, 20 Jan 2025 14:01:32 +0100
+X-Gm-Features: AbW1kvbY_2TBUNeXR1ZOUrMLsSjN72qRl_8ezN1aoEB9yy_6_41YOTVf40D3hQM
+Message-ID: <CA+=Fv5RntE=Z=PgYYxBDLTDES6aWkg-+yqEPPDjv-E7GCcoufg@mail.gmail.com>
+Subject: Re: Kernel Oops on alpha with kernel version >=6.9.x
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>, Michael Cree <mcree@orcon.net.nz>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, rcu@vger.kernel.org, 
+	linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 12, 2025 at 11:39:01PM -0600, Eric W. Biederman wrote:
-...
-> --- a/arch/alpha/include/asm/pgtable.h
-> +++ b/arch/alpha/include/asm/pgtable.h
-> @@ -360,7 +360,7 @@ static inline pte_t pte_swp_clear_exclusive(pte_t pte)
->  
->  extern void paging_init(void);
->  
-> -/* We have our own get_unmapped_area to cope with ADDR_LIMIT_32BIT.  */
-> +/* We have our own get_unmapped_area */
->  #define HAVE_ARCH_UNMAPPED_AREA
+Hi,
 
-Just remove the definition. As the comment suggests, the only reason
-it exists is ADDR_LIMIT_32BIT, which is gone.
+Attempting to summarize the findings relating to this bug as well as
+the comments in the mail thread, my understanding is this: In order to
+conform to the psABI, gcc was changed (back in 2004?) to assume
+16-byte stack alignment on Linux/alpha. This seems to be the case for
+user-mode processes stacks, however not for the stack in kernel-mode.
+Some simple printouts of stack pointers in kernel mode suggest that
+the kernel stack is in fact only 8-byte aligned on Linux/alpha. In
+comparison, I've made similar checks on hppa, sparc and x86_64 and on
+these platforms the kernel stack seems to be 16-byte aligned (at
+least). If gcc assumes 16-byte alignment, and the code uses
+__attribute__((__aligned__(x))) gcc will generate assembly code that
+may cause stack corruption, if the stack at run-time is in fact only
+8-byte aligned. A quick-fix/workaround for this might be to avoid
+using the __attribute__((__aligned__(x))) directive on
+variables/structs declared on the stack in the kernel code (at least
+for alpha), but to really get to the bottom of this, the kernel needs
+to be fixed so that the kernel stack is in fact always 16-byte aligned
+on alpha. This means that this bug is not really related to rcu or smp
+but rather a mismatch between gcc and linux-alpha regarding psABI
+compliance.
 
-> --- a/arch/alpha/kernel/osf_sys.c
-> +++ b/arch/alpha/kernel/osf_sys.c
-> @@ -1210,8 +1210,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
->  	return ret;
->  }
->  
-> -/* Get an address range which is currently unmapped.  Similar to the
-> -   generic version except that we know how to honor ADDR_LIMIT_32BIT.  */
-> +/* Get an address range which is currently unmapped. */
->  
->  static unsigned long
->  arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
-> @@ -1230,13 +1229,7 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
->  		       unsigned long len, unsigned long pgoff,
->  		       unsigned long flags, vm_flags_t vm_flags)
->  {
-> -	unsigned long limit;
-> -
-> -	/* "32 bit" actually means 31 bit, since pointers sign extend.  */
-> -	if (current->personality & ADDR_LIMIT_32BIT)
-> -		limit = 0x80000000;
-> -	else
-> -		limit = TASK_SIZE;
-> +	unsigned long limit = TASK_SIZE;
->  
->  	if (len > limit)
->  		return -ENOMEM;
+/Magnus
 
-Likewise, just remove these functions. The generic_get_unmapped_area()
-works fine, tested on up1500.
-
-Ivan.
+On Mon, Jan 13, 2025 at 5:52=E2=80=AFPM Magnus Lindholm <linmag7@gmail.com>=
+ wrote:
+>
+> Hi, I've sprinkled some stack pointer printouts and its seems like (as
+> suspected) the kernel stack pointer is not 16-byte aligned, at least
+> not in kernel-mode.
+>
+> Example printouts:
+> SP: fffffc00059dfc08
+> SP: fffffc00059dfe48
+> SP: fffffc00059dfc08
+>
+> I found some ML threads that seemed relevant one on stack alignment in
+> NetBSD-alpha after changes in GCC and one on x86_64 with linux/gcc
+>
+> https://mail-index.netbsd.org/port-alpha/2021/07/05/msg001145.html
+>
+> https://patchwork.kernel.org/project/linux-crypto/patch/20170110143340.GA=
+3787@gondor.apana.org.au/
+>
+>
+>
+> /Magnus
+>
+> On Mon, Jan 13, 2025 at 6:59=E2=80=AFAM Magnus Lindholm <linmag7@gmail.co=
+m> wrote:
+> >
+> > >  Can you please retrieve the value of SP in `smp_call_function_single=
+'?
+> > > Just something such as:
+> > >
+> > >         printk("SP: %016lx\n", __builtin_frame_address(0));
+> > >
+> >
+> >
+> > I will check!
+> >
+> > Also wondering if this may be relevant?
+> >
+> >  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=3D16660
