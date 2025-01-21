@@ -1,59 +1,83 @@
-Received: from minute.unseen.parts (minute.unseen.parts [139.162.151.61])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E9051E4113;
-	Tue, 21 Jan 2025 13:39:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=139.162.151.61
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05DF01F03D8;
+	Tue, 21 Jan 2025 16:37:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737466785; cv=none; b=fjuWHBsmcsYDUUtJQWn5PTOcxT3OB8TsshkjzWDz47zM4hXqxwmWZmAS9n1ljJILEI1pUKmh8v95lRyFMrGFHssTq1+X7WiT+K6ilBfudVxa/j4Ym/rSLN548N3N6CKGqGu45StxSUHA24FkemH+gM+1JbWbmxW3dZ7nix0E6TY=
+	t=1737477460; cv=none; b=utX4/wrKEjtobppy6bhePAdpdhNMPzO3eXK43K/m3vHX2BMbXaMpmaYL+dP9G+KPR0Y7nmNQGUzveVxuRkXA2z1xPYzWrWSvGOASVlbLAnWz7/rjL1FUgsUys3FmSVF3DdSOvsBl152NV5rJOTyvd+cqp/MhmOKvs2wDVqab6JI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737466785; c=relaxed/simple;
-	bh=P/rdejKtkGF7phqCOM1uX7H/szH93gaF6eitNY7+Nl8=;
+	s=arc-20240116; t=1737477460; c=relaxed/simple;
+	bh=2Bll/kQz90Tn4jHBA7WS0kX/UcVPGVgEgqRQA0g7Tpw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KdHbUkMshGf9ZvCykK+4NkUef/ZFxtuh4IE6dOL+m/cLWKb2QNMOnAFhAAL5G9NiGah2UpkWjpB2DTzOhWZuHBZTNNcQWQy66WlfKA4NrdLzHrYZZnYpX8Vxy7hl09QangKYtL6pOGoTZzQjZ0TXAXwJjzLlNQBMyQtZpJyINEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unseen.parts; spf=pass smtp.mailfrom=unseen.parts; dkim=pass (2048-bit key) header.d=unseen.parts header.i=@unseen.parts header.b=PL7Pk3OK; arc=none smtp.client-ip=139.162.151.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unseen.parts
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unseen.parts
+	 Content-Type:Content-Disposition:In-Reply-To; b=X2qRHTE5M7Muz8YWu9hYK5Fm/jDogKAJbRyNmo9T4eqKPTyJtpkgttJg9hpXvBEvlEcA8n/ZezfjIB0AxKmixVJmdvNjrJ5T86U4KnRMLvspXxMxkVoS4dZZCtlS7ewFK0JJQ2YMn9qT2erDc0ShA1u8X7urf0APZ9XNag7QtzM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=fz8cQTU8; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=unseen.parts header.i=@unseen.parts header.b="PL7Pk3OK"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=unseen.parts; s=sig; h=In-Reply-To:Content-Type:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=yazK1+ptatThFrK4cT6AJGjYa0I7KYWYmu0jGBS9ews=; b=PL7Pk3OK72VyUslTKuVwbvRL4v
-	1FB7WXS8NCFgOADlGDdPvSCF1M7960sX6m2/HkUHQS70KS54dKYQVj3DrdfCX+PCB4uBB8BCtHifO
-	aBcydd4sGwDjtX78CC+7FFv9Bir5aruxG2wdn5fHE2GPWKy5K138bOoqIEzJ9BV+9mp4jqOB1od/a
-	f4dnxqF1dNUrrv8ug5Ir2P0QFDYfv1lHB0AgUcH30i6zC9h6CR2Srs9q2caG3g2u2nYuIlC8/atNQ
-	OqaquNQie/M6UFjNIkdbC6hmphhYcH+VCp1T68sfuzBJoqWxZTjAddwx+yskdGdkdsee5+SY8B2yF
-	gjQCtiaA==;
-Received: from minute.unseen.parts ([139.162.151.61]:53062 helo=minute)
-	by minute.unseen.parts with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.96)
-	(envelope-from <ink@unseen.parts>)
-	id 1taETK-00027I-1u;
-	Tue, 21 Jan 2025 14:39:14 +0100
-Date: Tue, 21 Jan 2025 14:39:12 +0100
-From: Ivan Kokshaysky <ink@unseen.parts>
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: Magnus Lindholm <linmag7@gmail.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Michael Cree <mcree@orcon.net.nz>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	rcu@vger.kernel.org, linux-alpha@vger.kernel.org
-Subject: Re: Kernel Oops on alpha with kernel version >=6.9.x
-Message-ID: <Z4-jgMJgbVriLaCr@minute>
-References: <alpine.DEB.2.21.2412192347450.20821@angie.orcam.me.uk>
- <CA+=Fv5TJhDrrxG82=MNPFEFFwKD4NDYyB1u32ZvnGv6Ma0h_Nw@mail.gmail.com>
- <alpine.DEB.2.21.2412271452100.20821@angie.orcam.me.uk>
- <CA+=Fv5SW-N+5KzsnVdHvy406-p+g7giUbt626xwDduy6xjaPkw@mail.gmail.com>
- <CA+=Fv5TtOQkDMPnuPrPGcB0VGhUHUDqe5=Z+ovd5x5rBJ-Hsjw@mail.gmail.com>
- <alpine.DEB.2.21.2501122348510.18889@angie.orcam.me.uk>
- <CA+=Fv5Q9UxeSP0U10d281Nbm3agyFgpwyY95+d2pAWVWJP=2Yg@mail.gmail.com>
- <CA+=Fv5RU946-r5S8hZKTF4w20s82Oc-JDe-pCa1W7zjr6nEoag@mail.gmail.com>
- <CA+=Fv5RntE=Z=PgYYxBDLTDES6aWkg-+yqEPPDjv-E7GCcoufg@mail.gmail.com>
- <alpine.DEB.2.21.2501201317060.27432@angie.orcam.me.uk>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="fz8cQTU8"
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50LFdu2e007924;
+	Tue, 21 Jan 2025 16:37:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=pp1; bh=rk7YrE6UBezqaR/fdDYkZZ8HhhiqPd
+	u23Nnd1oC9law=; b=fz8cQTU8PvP8JVPbKU6Ynem/RjPPMY4uzRJefS9/1Tx/qT
+	LzhhVSjzTVTggodrGdoC7U7DKDLLylgyhVs2FXbeQ7/tfYw6bKUuWYwWuOif/J55
+	axSnjLRVcxlX4rVFmGjI9yaNmgps2TdyXZGRxYJBxyypnf4KKtSpIijUn0tx2sG2
+	UQkEtTDltlKN8Af1rd91bT/prAvISQdM/HX80B8iBN3U4iv/2IgONEpJfBHX5Mtz
+	927QozGW/1WX1WRlYYGSfytKSwEZp1r05DyTHoaBZJKMtMvgB8PB502t9kcSNrkN
+	9ZetdoZIDddF9W2j5/S1Aryn/L+NhiQXTESjl6tQ==
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 44aee188u7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 21 Jan 2025 16:37:37 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 50LDIAgN024307;
+	Tue, 21 Jan 2025 16:37:37 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 448q0y45w6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 21 Jan 2025 16:37:36 +0000
+Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
+	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 50LGbZgU57803258
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 21 Jan 2025 16:37:35 GMT
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id DB61420040;
+	Tue, 21 Jan 2025 16:37:34 +0000 (GMT)
+Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3F9B220043;
+	Tue, 21 Jan 2025 16:37:34 +0000 (GMT)
+Received: from li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com (unknown [9.155.204.135])
+	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Tue, 21 Jan 2025 16:37:34 +0000 (GMT)
+Date: Tue, 21 Jan 2025 17:37:33 +0100
+From: Alexander Gordeev <agordeev@linux.ibm.com>
+To: Kevin Brodsky <kevin.brodsky@arm.com>
+Cc: linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Mike Rapoport (IBM)" <rppt@kernel.org>,
+        Ryan Roberts <ryan.roberts@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Qi Zheng <zhengqi.arch@bytedance.com>, linux-alpha@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+        linux-um@lists.infradead.org, loongarch@lists.linux.dev,
+        x86@kernel.org
+Subject: Re: [PATCH v2 6/6] mm: Introduce ctor/dtor at PGD level
+Message-ID: <Z4/NTRDBXEEimdvc@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
+References: <20250103184415.2744423-1-kevin.brodsky@arm.com>
+ <20250103184415.2744423-7-kevin.brodsky@arm.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -62,25 +86,52 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2501201317060.27432@angie.orcam.me.uk>
+In-Reply-To: <20250103184415.2744423-7-kevin.brodsky@arm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: owdc1hfezV5r1qMyZ-PJv6g9U8L_bBb5
+X-Proofpoint-GUID: owdc1hfezV5r1qMyZ-PJv6g9U8L_bBb5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-01-21_07,2025-01-21_03,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1011
+ lowpriorityscore=0 mlxlogscore=494 priorityscore=1501 bulkscore=0
+ spamscore=0 malwarescore=0 phishscore=0 suspectscore=0 mlxscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501210134
 
-On Mon, Jan 20, 2025 at 01:19:23PM +0000, Maciej W. Rozycki wrote:
-> On Mon, 20 Jan 2025, Magnus Lindholm wrote:
-> 
-> > 8-byte aligned. A quick-fix/workaround for this might be to avoid
-> > using the __attribute__((__aligned__(x))) directive on
-> > variables/structs declared on the stack in the kernel code (at least
-> > for alpha), but to really get to the bottom of this, the kernel needs
-> > to be fixed so that the kernel stack is in fact always 16-byte aligned
-> > on alpha. This means that this bug is not really related to rcu or smp
-> > but rather a mismatch between gcc and linux-alpha regarding psABI
-> > compliance.
-> 
->  Correct.  Unless someone beats me to it, I'll work on a fix, but I'm busy
-> with other stuff right now, so it may take a few weeks.
+On Fri, Jan 03, 2025 at 06:44:15PM +0000, Kevin Brodsky wrote:
 
-I'll look into that (I owe you for helping me with the binutils patch :)
+Hi Kevin,
+...
+> diff --git a/arch/s390/include/asm/pgalloc.h b/arch/s390/include/asm/pgalloc.h
+> index 5fced6d3c36b..b19b6ed2ab53 100644
+> --- a/arch/s390/include/asm/pgalloc.h
+> +++ b/arch/s390/include/asm/pgalloc.h
+> @@ -130,11 +130,18 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
+>  
+>  static inline pgd_t *pgd_alloc(struct mm_struct *mm)
+>  {
+> -	return (pgd_t *) crst_table_alloc(mm);
+> +	unsigned long *table = crst_table_alloc(mm);
+> +
+> +	if (!table)
+> +		return NULL;
 
-Indeed, SP_OFF in entry.S is the main suspect at the moment.
+I do not know status of this series, but FWIW, this call is missed:
 
-Ivan.
+	crst_table_init(table, _REGION1_ENTRY_EMPTY); 
+
+> +	pagetable_pgd_ctor(virt_to_ptdesc(table));
+> +
+> +	return (pgd_t *) table;
+>  }
+>  
+>  static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
+>  {
+> +	pagetable_dtor(virt_to_ptdesc(pgd));
+>  	crst_table_free(mm, (unsigned long *) pgd);
+>  }
+
+...
+
+Thanks!
