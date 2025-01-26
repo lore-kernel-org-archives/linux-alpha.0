@@ -1,110 +1,146 @@
-Received: from minute.unseen.parts (minute.unseen.parts [139.162.151.61])
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFE7825A64C;
-	Sun, 26 Jan 2025 14:00:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=139.162.151.61
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A12626ADD;
+	Sun, 26 Jan 2025 17:15:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737900052; cv=none; b=kYNo4EYD3NbpKOJ7EYz77b8VDMxLKh8h+H1gOXBRSo6K7IjRgfRebS/kf76+pXCLMxPbkSYAJMwaQGxu3Yy59m0Upth8aawvjwAh1I1HxHo4HrBNXyRJW8cJjZKYQvLCnH8kiDar+06ivsF0dVQlm+U6xHOmB71x/ohM2I4tpeo=
+	t=1737911756; cv=none; b=cMo0QTjtGq8+pCcgF6M8ATnAQaM0IyEt5jb1GlzxcKLeKbNEcrIsysud86V2y1EVhAMb+TARh3tiem5vUGNCXh96IsNbC6Lbcu4HWeZgouGHNo/Fo6uBHTs1i/PfEhJcnmS8d92TJGUdRiLkh25OPUcExmK4YiDXvH+ZY5se618=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737900052; c=relaxed/simple;
-	bh=jl5iwPrDVPIlm0Bf7MPaw6Ahqk/8YNdgvjWICISZUqo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mtOR5X5KobCJS34iJDFGbaNlZiuCL5NFfBBpS7lG6m2tCZV8l1svE9eyECPilNluKSTjF9u/KTbdQmt4Nzq/NMQoqX4jFgtaBc3ilAH+iAr24eEy+pMgZp6iJXYdb3i0PZlapGERBvloKbVZ1ABRrIrZgCGJt1yY6RzKaZnU/yA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unseen.parts; spf=pass smtp.mailfrom=unseen.parts; dkim=pass (2048-bit key) header.d=unseen.parts header.i=@unseen.parts header.b=XSeeBzgX; arc=none smtp.client-ip=139.162.151.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unseen.parts
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unseen.parts
+	s=arc-20240116; t=1737911756; c=relaxed/simple;
+	bh=E1aDrkDg06ajDWt6df67vANzGulUVW1sjcT1EnH0Jdk=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=aVZhCGjfuaxzxe3ADE+eWdGejHWLH2crE6HRbtxG11HvO2RvKX9kwokVir9wpomIvjQrEBZWiI8+cjdcYmRGseUM9pOndXuLaUcTkJ9SHJINUafM78IH6p1Crlp38ewThqyJa/ZeoAO85gYG6SH/z/8HqYM3hRs1IHPe5jPAg9Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=i5/LfFq5; arc=none smtp.client-ip=130.133.4.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=unseen.parts header.i=@unseen.parts header.b="XSeeBzgX"
+	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="i5/LfFq5"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=unseen.parts; s=sig; h=In-Reply-To:Content-Type:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=tUxaWyy7BwLBxJKdYAsYMsFfgwGGC2RsPkyNogf+gVI=; b=XSeeBzgXcPOVCSYoPuGNsuOuT3
-	Ckmh0iXQCx926mXiAvRoD4WRK/kHHvk6wj6iiDY7MPf0z2hGiTxoZolvVZoteovYZchhawI8f7jHw
-	IvfeX9YQMZzDeBfxT0BREbe56kxmrbLTWBASJjDvakaswx+Z0HYthfV0pxgLTqcjHXXLUGuHRedk8
-	M38gcxuaIJcsE2rkt9SwcE5c9JM05XYwB7xfTz+4bZWtzK5MfuFyGHjQqyNO3m0K3GAohZk8IXhP+
-	ET7k7UrdkHM5rjf6AccdpzRYp/6gGZIyYrZrQVrjQZl34TRCZRJoHpIEEotv0dEooHWNjKKUMfKeS
-	wpp16ZsQ==;
-Received: from minute.unseen.parts ([139.162.151.61]:52772 helo=minute)
-	by minute.unseen.parts with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.96)
-	(envelope-from <ink@unseen.parts>)
-	id 1tc3Be-0001ZX-2o;
-	Sun, 26 Jan 2025 15:00:30 +0100
-Date: Sun, 26 Jan 2025 15:00:29 +0100
-From: Ivan Kokshaysky <ink@unseen.parts>
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: Magnus Lindholm <linmag7@gmail.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Michael Cree <mcree@orcon.net.nz>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	rcu@vger.kernel.org, linux-alpha@vger.kernel.org
-Subject: Re: Kernel Oops on alpha with kernel version >=6.9.x
-Message-ID: <Z5Y__QtiySs8UeTK@minute>
-References: <Z5NxuIFsMUvqWUtC@minute>
- <CA+=Fv5QmSkP4Ysp1zHNmUPftXYbSquTCsO_o3Rcgi2T5RcPj5A@mail.gmail.com>
- <Z5UAFAD6xCSpKJYw@minute>
- <alpine.DEB.2.21.2501251543460.27203@angie.orcam.me.uk>
- <Z5Uit9F7xF0ZlMk2@minute>
- <alpine.DEB.2.21.2501251806280.27203@angie.orcam.me.uk>
- <alpine.DEB.2.21.2501251839440.27203@angie.orcam.me.uk>
- <Z5U__sztq2P2UKWk@minute>
- <alpine.DEB.2.21.2501252129060.27203@angie.orcam.me.uk>
- <Z5Vtl8PzOY66bp9K@minute>
+	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=NDGj5KhhYs5RVS0ic+JKR8T7bxhK3ms7bWt/FFk0Cns=; t=1737911752; x=1738516552; 
+	b=i5/LfFq5gUnK6HOLO4eUm+xv09FDkSlu1rN6ZLlKWC8PZGZ8SVkJrIw45b5jHHAB1jwH0/fHE2W
+	nyA5dhq0FIYy7Fz2t7aIAN6G62BfvT2W2zAOegXQKzdhsPlWiM5R2uBMYRO8007PtV54ZXHWLPpPj
+	0VZCQbY1+V7pOVkUxgvXn++tscv6dzWMo7TaFT/1J7KrvjmDoHS/19c0bL3Xal5zB5AC1P1Wpv/bh
+	l3hzM2DG+qI3eoW+zGtJwz59W6bL+Oicdh258Wp9ioYSqaKQglU8cM1tq1fKMfsBkr0dGSeNKIWbn
+	Y/tG21KwYcuzwkFVSPWCfitD1eW8UqqTgciQ==;
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.98)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1tc6Ea-00000000TuC-2XmK; Sun, 26 Jan 2025 18:15:44 +0100
+Received: from p5dc55cec.dip0.t-ipconnect.de ([93.197.92.236] helo=[192.168.178.61])
+          by inpost2.zedat.fu-berlin.de (Exim 4.98)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1tc6Ea-00000002hZK-1Oqp; Sun, 26 Jan 2025 18:15:44 +0100
+Message-ID: <5cff63bf0fc9e62772fb24bc919c591acbd10d53.camel@physik.fu-berlin.de>
+Subject: Re: [PATCH v2] alpha/elf: Fix misc/setarch test of util-linux by
+ removing 32bit support
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To: Ivan Kokshaysky <ink@unseen.parts>, "Eric W. Biederman"
+	 <ebiederm@xmission.com>
+Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, Arnd Bergmann <arnd@arndb.de>, 
+ Richard Henderson <richard.henderson@linaro.org>, Matt Turner
+ <mattst88@gmail.com>, Kees Cook <kees@kernel.org>,  "Paul E. McKenney"	
+ <paulmck@kernel.org>, linux-alpha@vger.kernel.org, linux-mm@kvack.org, 
+	linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, Sam James	
+ <sam@gentoo.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michael
+ Karcher	 <kernel@mkarcher.dialup.fu-berlin.de>, Chris Hofstaedtler
+ <zeha@debian.org>, 	util-linux@vger.kernel.org, linux-mips@vger.kernel.org,
+ 	loongarch@lists.linux.dev
+Date: Sun, 26 Jan 2025 18:15:43 +0100
+In-Reply-To: <Z4uECl9wQ2sqdKym@minute>
+References: <24f03227-1b55-4e50-b6e9-7ac74fda2602@app.fastmail.com>
+	 <678ee681-12c3-4e79-a04b-495daf343846@app.fastmail.com>
+	 <bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de>
+	 <82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com>
+	 <cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de>
+	 <87jzb2tdb7.fsf_-_@email.froward.int.ebiederm.org>
+	 <2758fa70d237ff972b0c8d7114777dc4a20c8f3b.camel@physik.fu-berlin.de>
+	 <alpine.DEB.2.21.2501120146480.18889@angie.orcam.me.uk>
+	 <78f3ae1f68842a9d1af62caaac3929834ce6ecfa.camel@physik.fu-berlin.de>
+	 <87y0zfs26i.fsf_-_@email.froward.int.ebiederm.org>
+	 <Z4uECl9wQ2sqdKym@minute>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.3 
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z5Vtl8PzOY66bp9K@minute>
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-ZEDAT-Hint: PO
 
-On Sun, Jan 26, 2025 at 12:02:47AM +0100, Ivan Kokshaysky wrote:
-> >  Erm, that's a good starting point but offsets for the individual register 
-> > slots need to be updated as well for `do_page_fault' and `do_entUnaUser' 
-> > to get at the correct ones for those that are at negative indices from the 
-> > `regs' pointer supplied, i.e. $9 at 8($sp), $10 at 16($sp), etc., and with 
-> > 0($sp) now unoccupied.  Sorry to get it through unclear after all.
-> 
-> Ah, thanks a lot! Should've noticed that myself, but I've booted with the
-> last patch and it didn't crash on me, so I thought the deed is done...
-> 
-> I'll fix that tomorrow.
+Hi Eric,
 
-Fixed in C, I guess it's easier to review.
+On Sat, 2025-01-18 at 11:35 +0100, Ivan Kokshaysky wrote:
+> On Sun, Jan 12, 2025 at 11:39:01PM -0600, Eric W. Biederman wrote:
+> ...
+> > --- a/arch/alpha/include/asm/pgtable.h
+> > +++ b/arch/alpha/include/asm/pgtable.h
+> > @@ -360,7 +360,7 @@ static inline pte_t pte_swp_clear_exclusive(pte_t p=
+te)
+> > =20
+> >  extern void paging_init(void);
+> > =20
+> > -/* We have our own get_unmapped_area to cope with ADDR_LIMIT_32BIT.  *=
+/
+> > +/* We have our own get_unmapped_area */
+> >  #define HAVE_ARCH_UNMAPPED_AREA
+>=20
+> Just remove the definition. As the comment suggests, the only reason
+> it exists is ADDR_LIMIT_32BIT, which is gone.
+>=20
+> > --- a/arch/alpha/kernel/osf_sys.c
+> > +++ b/arch/alpha/kernel/osf_sys.c
+> > @@ -1210,8 +1210,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __us=
+er *, txc_p)
+> >  	return ret;
+> >  }
+> > =20
+> > -/* Get an address range which is currently unmapped.  Similar to the
+> > -   generic version except that we know how to honor ADDR_LIMIT_32BIT. =
+ */
+> > +/* Get an address range which is currently unmapped. */
+> > =20
+> >  static unsigned long
+> >  arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
+> > @@ -1230,13 +1229,7 @@ arch_get_unmapped_area(struct file *filp, unsign=
+ed long addr,
+> >  		       unsigned long len, unsigned long pgoff,
+> >  		       unsigned long flags, vm_flags_t vm_flags)
+> >  {
+> > -	unsigned long limit;
+> > -
+> > -	/* "32 bit" actually means 31 bit, since pointers sign extend.  */
+> > -	if (current->personality & ADDR_LIMIT_32BIT)
+> > -		limit =3D 0x80000000;
+> > -	else
+> > -		limit =3D TASK_SIZE;
+> > +	unsigned long limit =3D TASK_SIZE;
+> > =20
+> >  	if (len > limit)
+> >  		return -ENOMEM;
+>=20
+> Likewise, just remove these functions. The generic_get_unmapped_area()
+> works fine, tested on up1500.
 
-Ivan.
+Can you send a follow-up integrating those changes? It would be good if
+SET_PERSONALITY() could be fixed on alpha for v6.14.
 
-diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
-index a9a38c80c4a7..035086e19d64 100644
---- a/arch/alpha/kernel/traps.c
-+++ b/arch/alpha/kernel/traps.c
-@@ -649,7 +649,7 @@ s_reg_to_mem (unsigned long s_reg)
- static int unauser_reg_offsets[32] = {
- 	R(r0), R(r1), R(r2), R(r3), R(r4), R(r5), R(r6), R(r7), R(r8),
- 	/* r9 ... r15 are stored in front of regs.  */
--	-56, -48, -40, -32, -24, -16, -8,
-+	-64, -56, -48, -40, -32, -24, -16,
- 	R(r16), R(r17), R(r18),
- 	R(r19), R(r20), R(r21), R(r22), R(r23), R(r24), R(r25), R(r26),
- 	R(r27), R(r28), R(gp),
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index 8c9850437e67..a9816bbc9f34 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -78,8 +78,8 @@ __load_new_mm_context(struct mm_struct *next_mm)
- 
- /* Macro for exception fixup code to access integer registers.  */
- #define dpf_reg(r)							\
--	(((unsigned long *)regs)[(r) <= 8 ? (r) : (r) <= 15 ? (r)-16 :	\
--				 (r) <= 18 ? (r)+10 : (r)-10])
-+	(((unsigned long *)regs)[(r) <= 8 ? (r) : (r) <= 15 ? (r)-17 :	\
-+				 (r) <= 18 ? (r)+11 : (r)-10])
- 
- asmlinkage void
- do_page_fault(unsigned long address, unsigned long mmcsr,
+Adrian
+
+--=20
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
