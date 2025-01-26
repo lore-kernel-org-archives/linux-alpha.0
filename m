@@ -1,146 +1,82 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A12626ADD;
-	Sun, 26 Jan 2025 17:15:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 425D217F7;
+	Sun, 26 Jan 2025 19:15:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737911756; cv=none; b=cMo0QTjtGq8+pCcgF6M8ATnAQaM0IyEt5jb1GlzxcKLeKbNEcrIsysud86V2y1EVhAMb+TARh3tiem5vUGNCXh96IsNbC6Lbcu4HWeZgouGHNo/Fo6uBHTs1i/PfEhJcnmS8d92TJGUdRiLkh25OPUcExmK4YiDXvH+ZY5se618=
+	t=1737918956; cv=none; b=cDUnNH4v8t96bkZZFFSq/8hdqv0Kp4mj8KXIwztBWpluSTfExfW+C593H2ZGQ+lA99WHCnY9SH8MRT7r9iGbKs5DOGhMihsUubfqgcVUfiMDB1FHluKM8fIFdEWzLsxOtoG6GxNrj/VdmUBztlIZQ+m+NLoulaSayfayHjfXFsE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737911756; c=relaxed/simple;
-	bh=E1aDrkDg06ajDWt6df67vANzGulUVW1sjcT1EnH0Jdk=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=aVZhCGjfuaxzxe3ADE+eWdGejHWLH2crE6HRbtxG11HvO2RvKX9kwokVir9wpomIvjQrEBZWiI8+cjdcYmRGseUM9pOndXuLaUcTkJ9SHJINUafM78IH6p1Crlp38ewThqyJa/ZeoAO85gYG6SH/z/8HqYM3hRs1IHPe5jPAg9Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=i5/LfFq5; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	s=arc-20240116; t=1737918956; c=relaxed/simple;
+	bh=UPF6SmgIy9a8xVdFqgBHiWMyk7YU9obpQrulR7785Fg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=P15e8y5qRebc8ysIF7ruq+ge0f2E7bZP1tp3RGoyfHwaOTuqp4J6WzO3ZK3ptJQz7iVbm3fN0sg3x7DyvdJ0aI5WRG8HkUreY9+fjil1kFCIh7ZOlO00PDMDWql8jM0xzygjZzOvRBB7Y14WSlCQ/DnYhfV3VejVAmO40mbfR2c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eOLP02Vd; arc=none smtp.client-ip=209.85.218.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="i5/LfFq5"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=NDGj5KhhYs5RVS0ic+JKR8T7bxhK3ms7bWt/FFk0Cns=; t=1737911752; x=1738516552; 
-	b=i5/LfFq5gUnK6HOLO4eUm+xv09FDkSlu1rN6ZLlKWC8PZGZ8SVkJrIw45b5jHHAB1jwH0/fHE2W
-	nyA5dhq0FIYy7Fz2t7aIAN6G62BfvT2W2zAOegXQKzdhsPlWiM5R2uBMYRO8007PtV54ZXHWLPpPj
-	0VZCQbY1+V7pOVkUxgvXn++tscv6dzWMo7TaFT/1J7KrvjmDoHS/19c0bL3Xal5zB5AC1P1Wpv/bh
-	l3hzM2DG+qI3eoW+zGtJwz59W6bL+Oicdh258Wp9ioYSqaKQglU8cM1tq1fKMfsBkr0dGSeNKIWbn
-	Y/tG21KwYcuzwkFVSPWCfitD1eW8UqqTgciQ==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.98)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1tc6Ea-00000000TuC-2XmK; Sun, 26 Jan 2025 18:15:44 +0100
-Received: from p5dc55cec.dip0.t-ipconnect.de ([93.197.92.236] helo=[192.168.178.61])
-          by inpost2.zedat.fu-berlin.de (Exim 4.98)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1tc6Ea-00000002hZK-1Oqp; Sun, 26 Jan 2025 18:15:44 +0100
-Message-ID: <5cff63bf0fc9e62772fb24bc919c591acbd10d53.camel@physik.fu-berlin.de>
-Subject: Re: [PATCH v2] alpha/elf: Fix misc/setarch test of util-linux by
- removing 32bit support
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: Ivan Kokshaysky <ink@unseen.parts>, "Eric W. Biederman"
-	 <ebiederm@xmission.com>
-Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, Arnd Bergmann <arnd@arndb.de>, 
- Richard Henderson <richard.henderson@linaro.org>, Matt Turner
- <mattst88@gmail.com>, Kees Cook <kees@kernel.org>,  "Paul E. McKenney"	
- <paulmck@kernel.org>, linux-alpha@vger.kernel.org, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, Sam James	
- <sam@gentoo.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michael
- Karcher	 <kernel@mkarcher.dialup.fu-berlin.de>, Chris Hofstaedtler
- <zeha@debian.org>, 	util-linux@vger.kernel.org, linux-mips@vger.kernel.org,
- 	loongarch@lists.linux.dev
-Date: Sun, 26 Jan 2025 18:15:43 +0100
-In-Reply-To: <Z4uECl9wQ2sqdKym@minute>
-References: <24f03227-1b55-4e50-b6e9-7ac74fda2602@app.fastmail.com>
-	 <678ee681-12c3-4e79-a04b-495daf343846@app.fastmail.com>
-	 <bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de>
-	 <82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com>
-	 <cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de>
-	 <87jzb2tdb7.fsf_-_@email.froward.int.ebiederm.org>
-	 <2758fa70d237ff972b0c8d7114777dc4a20c8f3b.camel@physik.fu-berlin.de>
-	 <alpine.DEB.2.21.2501120146480.18889@angie.orcam.me.uk>
-	 <78f3ae1f68842a9d1af62caaac3929834ce6ecfa.camel@physik.fu-berlin.de>
-	 <87y0zfs26i.fsf_-_@email.froward.int.ebiederm.org>
-	 <Z4uECl9wQ2sqdKym@minute>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.3 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eOLP02Vd"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-ab68a4ab074so206324566b.0;
+        Sun, 26 Jan 2025 11:15:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1737918953; x=1738523753; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=UPF6SmgIy9a8xVdFqgBHiWMyk7YU9obpQrulR7785Fg=;
+        b=eOLP02VdcQiO+AaTDAzpWz/0bX+qDfD721+TLu+26mRFY9N22NCTw4CvNhMw50mqhW
+         JdYeCkOZQw03mykr/TE0PefHwWyq2kyNflRpHcWWPGVV1eL/OEOYv40803K+KCxlQUVK
+         v5Ee3Jgtpz0L/SmXdy09hiY3rF2UnGlYNWHmhExmvpggfD1MA6LFDEEOOTbHgoRhdnpZ
+         TyIWjgW3vPBuCmCM6OTy0Im6blZQMkgotirx2RwR9/Kzre3ChOZ0HjzoIwjsTubo3UOq
+         0VQU2dhxIbL9Vp1Slg4e6NCVpMAsa5e7OPpFRQTXAshsTVjewhsOBzDHM8YHD1HXyhI3
+         Pg5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737918953; x=1738523753;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=UPF6SmgIy9a8xVdFqgBHiWMyk7YU9obpQrulR7785Fg=;
+        b=JiVlKut7vVeK8/DQaI/AtAMBGvGsRapDW8b0wsS9M6MpTvYW9UH/24zi4MWvwUe5DZ
+         V1sMyPnK6BjYTggg5Jd6m3OsZLB+LPee8SmGrUW0wiE6yZNEuvVkULlWALssBtnX3TR8
+         C3NXtDb5PulbxWzUoRA+pbZRrKfCWQaqhU5oVJzwg6j3C6qzvb6ma06qUCiBNG5yaIQQ
+         7vulxTA2dvtwgH7kUpv7to454ebk/HodAwDM0hQTJzJJrjVmPimVVebIHwNeHKJ+vCIL
+         w0D2M2XzJaH05JqSAO0dannhtqfo6Q8qzKc+lsSa+cYn2iLWeon79EOwMijlpNfBZzzo
+         slFQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUg8b2q4bXv66MA6vwIP6AhAOOTwxQlmisEYRMX3mSOOHZMlT2/v55VXjlVqIQwpI/MKk+E@vger.kernel.org, AJvYcCUys0pw5KyX4SutrwE27O01O0mVDG1i7+x8AWMm04VIhwzOD0z2oV08XM/G6pQVST8+9rwUycj2zBU6tA==@vger.kernel.org
+X-Gm-Message-State: AOJu0YyEt/0peslVeUZSoQT3R5JR3HYNQk6lgLHjVmLMosA+yHFvcn5F
+	OELxT/4gqlT1vruzmW8pXvG0XeTKTWwr54QBlNoZj/KirTvYHnoBDf8GCIDpBd78B8Uy5B4ZCwO
+	7Y9n1FAf6jHFMvRvRNMMS4IRbnxI=
+X-Gm-Gg: ASbGncv5izj9sqp1JMgm0E25LY5Xhso3ah/P6o1DCF7U6qyOZfOWoJe3bAvcY4M6WGm
+	du3m+V04sYX0kGvoWKX3GKaMOZYC0724pnFfGbkH7UbzaTAQJA4Z/i8vxpM8upOw=
+X-Google-Smtp-Source: AGHT+IG+wHl1DPmcbsl3K+lsZmVfCTwk5Tn8g3JUT185tsQqAcGbtrsKVhQ3+etfkJUA/SCBTSRaq6ShtN7eEcHDSVk=
+X-Received: by 2002:a05:6402:84c:b0:5d0:d818:559d with SMTP id
+ 4fb4d7f45d1cf-5db7d2f5e2amr97067894a12.11.1737918953364; Sun, 26 Jan 2025
+ 11:15:53 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+References: <Z5NxuIFsMUvqWUtC@minute> <CA+=Fv5QmSkP4Ysp1zHNmUPftXYbSquTCsO_o3Rcgi2T5RcPj5A@mail.gmail.com>
+ <Z5UAFAD6xCSpKJYw@minute> <alpine.DEB.2.21.2501251543460.27203@angie.orcam.me.uk>
+ <Z5Uit9F7xF0ZlMk2@minute> <alpine.DEB.2.21.2501251806280.27203@angie.orcam.me.uk>
+ <alpine.DEB.2.21.2501251839440.27203@angie.orcam.me.uk> <Z5U__sztq2P2UKWk@minute>
+ <alpine.DEB.2.21.2501252129060.27203@angie.orcam.me.uk> <Z5Vtl8PzOY66bp9K@minute>
+ <Z5Y__QtiySs8UeTK@minute>
+In-Reply-To: <Z5Y__QtiySs8UeTK@minute>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sun, 26 Jan 2025 20:15:41 +0100
+X-Gm-Features: AWEUYZnUTdVi9y3cp5SEs8V5h4S_4SZrca76m7H9w3Lw-IAsXtXJ0OdXGLh8Fx4
+Message-ID: <CA+=Fv5QOxs4mp0CEiyhFQJNxunye1aJMXDSzZ5U04QeQEYzt+A@mail.gmail.com>
+Subject: Re: Kernel Oops on alpha with kernel version >=6.9.x
+To: Ivan Kokshaysky <ink@unseen.parts>
+Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, "Paul E. McKenney" <paulmck@kernel.org>, 
+	Michael Cree <mcree@orcon.net.nz>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, rcu@vger.kernel.org, 
+	linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Eric,
+I've applied the patches provided by Ivan, so far both systems are
+running fine, compiling kernels and such to provide some load.
 
-On Sat, 2025-01-18 at 11:35 +0100, Ivan Kokshaysky wrote:
-> On Sun, Jan 12, 2025 at 11:39:01PM -0600, Eric W. Biederman wrote:
-> ...
-> > --- a/arch/alpha/include/asm/pgtable.h
-> > +++ b/arch/alpha/include/asm/pgtable.h
-> > @@ -360,7 +360,7 @@ static inline pte_t pte_swp_clear_exclusive(pte_t p=
-te)
-> > =20
-> >  extern void paging_init(void);
-> > =20
-> > -/* We have our own get_unmapped_area to cope with ADDR_LIMIT_32BIT.  *=
-/
-> > +/* We have our own get_unmapped_area */
-> >  #define HAVE_ARCH_UNMAPPED_AREA
->=20
-> Just remove the definition. As the comment suggests, the only reason
-> it exists is ADDR_LIMIT_32BIT, which is gone.
->=20
-> > --- a/arch/alpha/kernel/osf_sys.c
-> > +++ b/arch/alpha/kernel/osf_sys.c
-> > @@ -1210,8 +1210,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __us=
-er *, txc_p)
-> >  	return ret;
-> >  }
-> > =20
-> > -/* Get an address range which is currently unmapped.  Similar to the
-> > -   generic version except that we know how to honor ADDR_LIMIT_32BIT. =
- */
-> > +/* Get an address range which is currently unmapped. */
-> > =20
-> >  static unsigned long
-> >  arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
-> > @@ -1230,13 +1229,7 @@ arch_get_unmapped_area(struct file *filp, unsign=
-ed long addr,
-> >  		       unsigned long len, unsigned long pgoff,
-> >  		       unsigned long flags, vm_flags_t vm_flags)
-> >  {
-> > -	unsigned long limit;
-> > -
-> > -	/* "32 bit" actually means 31 bit, since pointers sign extend.  */
-> > -	if (current->personality & ADDR_LIMIT_32BIT)
-> > -		limit =3D 0x80000000;
-> > -	else
-> > -		limit =3D TASK_SIZE;
-> > +	unsigned long limit =3D TASK_SIZE;
-> > =20
-> >  	if (len > limit)
-> >  		return -ENOMEM;
->=20
-> Likewise, just remove these functions. The generic_get_unmapped_area()
-> works fine, tested on up1500.
-
-Can you send a follow-up integrating those changes? It would be good if
-SET_PERSONALITY() could be fixed on alpha for v6.14.
-
-Adrian
-
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+/Magnus
