@@ -1,132 +1,101 @@
 Received: from minute.unseen.parts (minute.unseen.parts [139.162.151.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12D41FC7C5;
-	Mon, 27 Jan 2025 13:28:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D3721AC448;
+	Wed, 29 Jan 2025 09:43:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=139.162.151.61
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737984517; cv=none; b=qJ990C0VuPDDbcBMODmbNz+xk9G4TXQJANK3ySVEV0skaUT86kLhdd4hWt0aZtN9wz3zam8nP+lfy5w9WtMmCSB+KK5QQzQeK4VglkNDtyIaCGIF9N84Ahg0kFUM4/9wRr8OuqqCMZNqM3gKGxRvUveL5TJVj4iOn10krIggep4=
+	t=1738143812; cv=none; b=kdonvKqYi8Ba04VDBx4zsSNxv+QUub7H0/5OKaakSYdMAgEPEo2In0M7oNeQCnefPJKrastc3k3hJeZqR84ZndNcgLyVVXwLQ02fteZGEFqcpyPA1oY1P6D0jwQebx71bJ7hgRUQdsJxd9yirioOyMDUS7XYVHugrTlxI3fDphQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737984517; c=relaxed/simple;
-	bh=wBwfKx9WEzL0Yj7iv2tHVfsT5U2zNVKgBcChzeYkTyQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PyDdtjW6KSLkBxa3BACm8yEd8ZqLhUDAm1UOCzaQOCtk+5icY2Jy2tw+8EQSKsX8WJE9YbAz19rXlHnwyen7gyruTXjided0bd2KyIuxyG6Glolj1E1LKsDKroxgHEIzTJdIWbmZwEIqExJmEGOmyFCvYoG17UsOkLEpCBl+g6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unseen.parts; spf=pass smtp.mailfrom=unseen.parts; dkim=pass (2048-bit key) header.d=unseen.parts header.i=@unseen.parts header.b=vxMygNh9; arc=none smtp.client-ip=139.162.151.61
+	s=arc-20240116; t=1738143812; c=relaxed/simple;
+	bh=DI0hsQKSBth0HcOjTYmd0vSlA71BbKEJz3zGU40mDcM=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=CSrJdYw4blohxmD2P7ZXmJBEMZKATjyQG3ixs28XVR3kJoVIb93jhjoG1YLPKCiu2AueTMnzT/r5LBScp03o43LVImDwLsROuDlSploCggaB381/xGTs2cowNPTX+WR4qTslXuRhs5hcTXpPvp1tUFR+1AcyQRk7OCLQKcHQu2g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unseen.parts; spf=pass smtp.mailfrom=unseen.parts; dkim=pass (2048-bit key) header.d=unseen.parts header.i=@unseen.parts header.b=P6ztastu; arc=none smtp.client-ip=139.162.151.61
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unseen.parts
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unseen.parts
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=unseen.parts header.i=@unseen.parts header.b="vxMygNh9"
+	dkim=pass (2048-bit key) header.d=unseen.parts header.i=@unseen.parts header.b="P6ztastu"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=unseen.parts; s=sig; h=In-Reply-To:Content-Type:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
+	d=unseen.parts; s=sig; h=Content-Transfer-Encoding:MIME-Version:References:
+	In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
 	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
 	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
 	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=lP0T7f795wt9O6cEneFd8O1nW/DjYKsbv0oA6g5csSw=; b=vxMygNh9DcqVgPttcu5rOL5rma
-	mKNKBGDokTrpImq9eHVt5tE+Y6DerEZvh1fQvwX/9MYb/hUzjVdOs6dZAUwUV2qHE8fMoOo5rXtpY
-	92uLIk3/0e8YWHLU85jiQt/vZ8uHInePKoQ20rol8dIzRcrms7HJnbXazvx4bFYo12PzDtTAmTWo3
-	5CWufywRDqlMjoXh+d6zheKKnV9npvIlRNKATCmoW5DspZpIF25YF7L46olFS1uYzkz+w54XeoAgt
-	aBb0qnMPzrKKRYXhRzIFKMwz4wgXG9dYhOhJEChsZkC2SJDZ0MGp3ayzaw1QGy2bSqCbKGq6OKB6A
-	amktslmQ==;
-Received: from minute.unseen.parts ([139.162.151.61]:40488 helo=minute)
-	by minute.unseen.parts with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.96)
+	bh=QsJX2q4R1vVtgWZPKumYna8ezYIFmpagPEpx7dAVMdY=; b=P6ztastui7IkTdgb1eXG1dRXTU
+	hf6roInMc/xvUYnjoE5a+jnsTat9nmKzTI5661vHACPSbi9qy1csGm4LGnI67JDlReNckY8hEaLPM
+	NshIfIbotq7qF18EPIPXkxU2/TRBxYdrlHpm7bKdNaURyGeIiNAyD82k30pz/LtN3FcZXNKBIpcbk
+	Oy4PUA/bSDggoaSjhE1WMrFdlJmv4qjD0nBgnjnH9SSEtgMAkJZJEjcRJpO/aSzO56xdgQvirAs8R
+	3qy17uPF8WBRtyhdoF/CGJstj9po2UGivKvCguWsWpSqEM1Bt6ug9bcQa9b2772FPhmaBVtqe2bdw
+	L72dAHIQ==;
+Received: from ink by minute.unseen.parts with local (Exim 4.96)
 	(envelope-from <ink@unseen.parts>)
-	id 1tcP9g-0003AM-1p;
-	Mon, 27 Jan 2025 14:27:56 +0100
-Date: Mon, 27 Jan 2025 14:27:54 +0100
+	id 1td4bI-00078C-1j;
+	Wed, 29 Jan 2025 10:43:12 +0100
 From: Ivan Kokshaysky <ink@unseen.parts>
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>,
-	"Maciej W. Rozycki" <macro@orcam.me.uk>,
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Al Viro <viro@zeniv.linux.org.uk>,
 	Arnd Bergmann <arnd@arndb.de>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>, Kees Cook <kees@kernel.org>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	linux-alpha@vger.kernel.org, linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>,
-	Sam James <sam@gentoo.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>,
-	Chris Hofstaedtler <zeha@debian.org>, util-linux@vger.kernel.org,
-	linux-mips@vger.kernel.org, loongarch@lists.linux.dev
-Subject: Re: [PATCH v2] alpha/elf: Fix misc/setarch test of util-linux by
- removing 32bit support
-Message-ID: <Z5eJ2p5IeNzPDuVH@minute>
-References: <bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de>
- <82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com>
- <cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de>
- <87jzb2tdb7.fsf_-_@email.froward.int.ebiederm.org>
- <2758fa70d237ff972b0c8d7114777dc4a20c8f3b.camel@physik.fu-berlin.de>
- <alpine.DEB.2.21.2501120146480.18889@angie.orcam.me.uk>
- <78f3ae1f68842a9d1af62caaac3929834ce6ecfa.camel@physik.fu-berlin.de>
- <87y0zfs26i.fsf_-_@email.froward.int.ebiederm.org>
- <Z4uECl9wQ2sqdKym@minute>
- <5cff63bf0fc9e62772fb24bc919c591acbd10d53.camel@physik.fu-berlin.de>
+	"Paul E. McKenney" <paulmck@kernel.org>
+Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 2/4] alpha: replace hardcoded stack offsets with autogenerated ones
+Date: Wed, 29 Jan 2025 10:43:10 +0100
+Message-Id: <20250129094312.27399-3-ink@unseen.parts>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20250129094312.27399-1-ink@unseen.parts>
+References: <20250129094312.27399-1-ink@unseen.parts>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5cff63bf0fc9e62772fb24bc919c591acbd10d53.camel@physik.fu-berlin.de>
+Content-Transfer-Encoding: 8bit
 
-On Sun, Jan 26, 2025 at 06:15:43PM +0100, John Paul Adrian Glaubitz wrote:
-> Hi Eric,
-> 
-> On Sat, 2025-01-18 at 11:35 +0100, Ivan Kokshaysky wrote:
-> > On Sun, Jan 12, 2025 at 11:39:01PM -0600, Eric W. Biederman wrote:
-> > ...
-> > > --- a/arch/alpha/include/asm/pgtable.h
-> > > +++ b/arch/alpha/include/asm/pgtable.h
-> > > @@ -360,7 +360,7 @@ static inline pte_t pte_swp_clear_exclusive(pte_t pte)
-> > >  
-> > >  extern void paging_init(void);
-> > >  
-> > > -/* We have our own get_unmapped_area to cope with ADDR_LIMIT_32BIT.  */
-> > > +/* We have our own get_unmapped_area */
-> > >  #define HAVE_ARCH_UNMAPPED_AREA
-> > 
-> > Just remove the definition. As the comment suggests, the only reason
-> > it exists is ADDR_LIMIT_32BIT, which is gone.
-> > 
-> > > --- a/arch/alpha/kernel/osf_sys.c
-> > > +++ b/arch/alpha/kernel/osf_sys.c
-> > > @@ -1210,8 +1210,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
-> > >  	return ret;
-> > >  }
-> > >  
-> > > -/* Get an address range which is currently unmapped.  Similar to the
-> > > -   generic version except that we know how to honor ADDR_LIMIT_32BIT.  */
-> > > +/* Get an address range which is currently unmapped. */
-> > >  
-> > >  static unsigned long
-> > >  arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
-> > > @@ -1230,13 +1229,7 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
-> > >  		       unsigned long len, unsigned long pgoff,
-> > >  		       unsigned long flags, vm_flags_t vm_flags)
-> > >  {
-> > > -	unsigned long limit;
-> > > -
-> > > -	/* "32 bit" actually means 31 bit, since pointers sign extend.  */
-> > > -	if (current->personality & ADDR_LIMIT_32BIT)
-> > > -		limit = 0x80000000;
-> > > -	else
-> > > -		limit = TASK_SIZE;
-> > > +	unsigned long limit = TASK_SIZE;
-> > >  
-> > >  	if (len > limit)
-> > >  		return -ENOMEM;
-> > 
-> > Likewise, just remove these functions. The generic_get_unmapped_area()
-> > works fine, tested on up1500.
-> 
-> Can you send a follow-up integrating those changes? It would be good if
-> SET_PERSONALITY() could be fixed on alpha for v6.14.
+Signed-off-by: Ivan Kokshaysky <ink@unseen.parts>
+---
+ arch/alpha/kernel/asm-offsets.c | 4 ++++
+ arch/alpha/kernel/entry.S       | 4 ----
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Oh, the changes I proposed are mere cleanup suggestions.
-The original patch would do just fine.
+diff --git a/arch/alpha/kernel/asm-offsets.c b/arch/alpha/kernel/asm-offsets.c
+index 4cfeae42c79a..e9dad60b147f 100644
+--- a/arch/alpha/kernel/asm-offsets.c
++++ b/arch/alpha/kernel/asm-offsets.c
+@@ -19,9 +19,13 @@ static void __used foo(void)
+ 	DEFINE(TI_STATUS, offsetof(struct thread_info, status));
+ 	BLANK();
+ 
++	DEFINE(SP_OFF, offsetof(struct pt_regs, ps));
+ 	DEFINE(SIZEOF_PT_REGS, sizeof(struct pt_regs));
+ 	BLANK();
+ 
++	DEFINE(SWITCH_STACK_SIZE, sizeof(struct switch_stack));
++	BLANK();
++
+ 	DEFINE(HAE_CACHE, offsetof(struct alpha_machine_vector, hae_cache));
+ 	DEFINE(HAE_REG, offsetof(struct alpha_machine_vector, hae_register));
+ }
+diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
+index dd26062d75b3..6fb38365539d 100644
+--- a/arch/alpha/kernel/entry.S
++++ b/arch/alpha/kernel/entry.S
+@@ -15,10 +15,6 @@
+ 	.set noat
+ 	.cfi_sections	.debug_frame
+ 
+-/* Stack offsets.  */
+-#define SP_OFF			184
+-#define SWITCH_STACK_SIZE	64
+-
+ .macro	CFI_START_OSF_FRAME	func
+ 	.align	4
+ 	.globl	\func
+-- 
+2.39.5
 
-Ivan.
