@@ -1,253 +1,327 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.166])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29C49204C0D;
-	Mon,  3 Feb 2025 11:55:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738583758; cv=none; b=HDx7sZGeTfsPHmU8taJ0hy3ZkNVuqLQ8F1ecyEbvk6997tReEZ2h4EWlonVw/6KqYmRaO5SE+T5i1Nl9MyrE/B0CS8fTSTv4LrGEqolrfzlFnzKj7i8Ha/LJAZP4MpKy1RIMT3UmT86xeBO+Sh9+EC02mdbKfbzSEKgAGs6u8l4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738583758; c=relaxed/simple;
-	bh=vUDUAA2Mwdbp1/Er12nWiPLs910s5YY8Kv4CQwNzd9o=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=AmtmZZHNYsbNqaU+V+SkQUBSUq56XC8Q46O9PARPmeDU7AypXjcKFTpICifpzXSbMbO2rfQJ+We9wfsa2X6t05CeQbsiQP6GQ+btelAGiFoe8yLdeCVKzjxYURNdKSEoGCk//NoHCD3zYwYQWrsBECJTQK/I8V42bzRIK8vRx5Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=l4QysHYf; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D94F2046A2;
+	Mon,  3 Feb 2025 14:18:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=81.169.146.166
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738592299; cv=pass; b=ZDKocs1JXtPR0KMho19CQXGBk/PYyA20x7xlnuHwiUX2BNEAtsP+UY5+NUB5qa7usBu5Cf/zAYNef2Mt+NpGaFeFS9uo9rtvRzRiVgrxSogkCm2iXBaOjaXwwHes+ozLjrLxMi7gcz4ib3FF/ZzrvT8/p7wHN4YLviwpgpV8zOM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738592299; c=relaxed/simple;
+	bh=+OIJLbwmbRBq/6x/XEMioIyjMHXSo65wOIRrkNqktwM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=B1zfpSiEmK8RvRL+my4pr0DIPZ9u/ZjPUrweNMGDGkShrxhtszRszbAFRo5TB6r6zMzCSiyoPXVJ1mDMhhUccij6RGiF02tXc+toS9BhxDSoMOLZuPTiPey6L/3E+I4CDUOHQ9Y8oPbJhqTTMQaLDgnZgg472lRDh2zkcu5pxG0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=outer-limits.org; spf=none smtp.mailfrom=outer-limits.org; dkim=pass (2048-bit key) header.d=outer-limits.org header.i=@outer-limits.org header.b=nOtWyHqu; dkim=permerror (0-bit key) header.d=outer-limits.org header.i=@outer-limits.org header.b=ywuXFvMX; arc=pass smtp.client-ip=81.169.146.166
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=outer-limits.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=outer-limits.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="l4QysHYf"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=WuSovR9QdAIaryYdW+A1g1o31MDAJLE+4vMtcjJlDmY=; t=1738583755; x=1739188555; 
-	b=l4QysHYfInJ5lc4c+anDe87jmyOuknNbBpJ+IrCjAowpK7bVG653YlDCfwvWTEdqY3PibFqcFYc
-	gaMOodkJRJ0DtZrvCc1++zdbVNLqLbgUG5pNofE95VpIJxeSVzaIHm5F3zYO+nekU525HxYnyN3h8
-	cbqCuoa1pXa4zntJsgAjXdPV81fYgafExMKURzUT9zOEQ8ZgBSYQNrcxrxvXrZVw2VwqKRgRyQA4D
-	S3C8kAROTVAoVjBF9HuleS5ZBNi2BZLIHiLt6jVuXr/prlZ2EhjDI3QfPoD5DvGOtNoq/PfWb3lw0
-	Dt8IMoYewk9xgLcrXwSUPosLYLca0oL0f6zQ==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.98)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1tev3M-00000003S4r-39wC; Mon, 03 Feb 2025 12:55:48 +0100
-Received: from p5dc55198.dip0.t-ipconnect.de ([93.197.81.152] helo=[192.168.178.61])
-          by inpost2.zedat.fu-berlin.de (Exim 4.98)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1tev3M-00000003WUE-1xuf; Mon, 03 Feb 2025 12:55:48 +0100
-Message-ID: <950a85c8651b193f95fa839fceaec68d40356555.camel@physik.fu-berlin.de>
-Subject: Re: [PATCH v2] alpha/elf: Fix misc/setarch test of util-linux by
- removing 32bit support
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: "Eric W. Biederman" <ebiederm@xmission.com>
-Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, Arnd Bergmann <arnd@arndb.de>, 
- Richard Henderson <richard.henderson@linaro.org>, Matt Turner
- <mattst88@gmail.com>, Kees Cook <kees@kernel.org>,  "Paul E. McKenney"	
- <paulmck@kernel.org>, linux-alpha@vger.kernel.org, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org, Michael Cree <mcree@orcon.net.nz>, Sam James	
- <sam@gentoo.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Michael
- Karcher	 <kernel@mkarcher.dialup.fu-berlin.de>, Chris Hofstaedtler
- <zeha@debian.org>, 	util-linux@vger.kernel.org, linux-mips@vger.kernel.org,
- 	loongarch@lists.linux.dev
-Date: Mon, 03 Feb 2025 12:55:47 +0100
-In-Reply-To: <87y0zfs26i.fsf_-_@email.froward.int.ebiederm.org>
-References: <20250103140148.370368-1-glaubitz@physik.fu-berlin.de>
-		<24f03227-1b55-4e50-b6e9-7ac74fda2602@app.fastmail.com>
-		<678ee681-12c3-4e79-a04b-495daf343846@app.fastmail.com>
-		<bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de>
-		<82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com>
-		<cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de>
-		<87jzb2tdb7.fsf_-_@email.froward.int.ebiederm.org>
-		<2758fa70d237ff972b0c8d7114777dc4a20c8f3b.camel@physik.fu-berlin.de>
-		<alpine.DEB.2.21.2501120146480.18889@angie.orcam.me.uk>
-		<78f3ae1f68842a9d1af62caaac3929834ce6ecfa.camel@physik.fu-berlin.de>
-	 <87y0zfs26i.fsf_-_@email.froward.int.ebiederm.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.3 
+	dkim=pass (2048-bit key) header.d=outer-limits.org header.i=@outer-limits.org header.b="nOtWyHqu";
+	dkim=permerror (0-bit key) header.d=outer-limits.org header.i=@outer-limits.org header.b="ywuXFvMX"
+ARC-Seal: i=1; a=rsa-sha256; t=1738592287; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=Yh6k7SlfBzetURdHUt5Afcle/68U30OfP54PfRfiDq6m/ClmKyJk9IInXvQsb/Fb4a
+    e1jRIxnoC9yn660olLSZUzeX4InKD6XckyBp65tjKOAKEkuOKZVN2dIJoh6RqETNwa6D
+    dWHuR72GW7Ry73/dPM4W4r2Ms5JP09XN6v+lijAPIpCqMPScAPLk2Lb7vatrIcS2oHw4
+    PtqlREqgjm/94c9vinGO8pbLAqcyLb4md//7UtCMTh5EnpOcb9Z6q/6a3/BlvJgxDznJ
+    eisYCWAaWvtFi8cJEh2TS681hCA7Y3G4Sd4/VGh3RTcOabDdwcrtNmwOjJr3+zn0yzbH
+    6TrQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1738592287;
+    s=strato-dkim-0002; d=strato.com;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=rry/LL5P0o3dYdcGPj9esery0p5jm2k5jqTCr1NFU6c=;
+    b=QsgeMWnUdwo7Jb976YBehMC6dJ9uxat3mm2UW1gzCDDu/Kxwc+6kTjYWVq+nspeIuu
+    WQW9OvJo3YMVJOJILq5Zb2WWU2jIokAHoHqCo5ccLBMLvXKz/+YTakq/31pCo+gjY6lY
+    5nLnJKg35repTktWawwXt7I7X2WgQFc2Jd8ZTzXs7t8T6q4jAsJR6sK8MBwnVJ6NbQmI
+    kpgc1dcY91a2Sema7ZynF2S7H15ssBHStzVMbnF99L8KoxMGo8lFWC1bBz5EVz11TEPX
+    jQcDoelZRMT/N/YiLUteR5n1rmfdh2Uqvpr5e8kAllaGSXGYRy5nfYVAYjm9fLZCpV8P
+    0cEw==
+ARC-Authentication-Results: i=1; strato.com;
+    arc=none;
+    dkim=none
+X-RZG-CLASS-ID: mo01
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1738592287;
+    s=strato-dkim-0002; d=outer-limits.org;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=rry/LL5P0o3dYdcGPj9esery0p5jm2k5jqTCr1NFU6c=;
+    b=nOtWyHqut25nEe/u0+XHRo0ieVOL3ulOku4hRQ4QnSXZwxz8tb+vt7Twkk/prImRHM
+    Y+8nx3EKjVU3U/659vLOvk1MZaBWCiJMvceKiHPo/bLZR15vVMfCRvL74cq/0PdwZQN0
+    e9WCAJWwZs5QD9hNClNsElK/9rrEX54QycmujJk/x5bm54jJMOEvrE3SmcdEs9bW3EET
+    XiT1MD5lMGbmL0VQEitV/MU6pJqebQnvxLZF99CiJe1eecQ61gHhHbQMQYFMQidNLzLd
+    ttWbKQ5amjKgLtI3LFTGlnHtl1J+hcMTJ/ihavyjBfBK+Kewc8leh2kZqxclHoc6BBjC
+    9gEA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; t=1738592287;
+    s=strato-dkim-0003; d=outer-limits.org;
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=rry/LL5P0o3dYdcGPj9esery0p5jm2k5jqTCr1NFU6c=;
+    b=ywuXFvMXKQlaGJKHJO/4/hWt8B5jQVhfIswESfvUgd2PNBf+me7G/XhycRdGcoHrZ3
+    gu1HLbgFH0J1CLGtKHAw==
+X-RZG-AUTH: ":JnkIfEGmW/AMJS6HttH4FbRVwc4dHlPLCp4e/IoHo8zEMMHAgwTfqBEHcVJSv9P5mRTGd2ImeA=="
+Received: from ws2104.lan.kalrayinc.com
+    by smtp.strato.de (RZmta 51.2.17 AUTH)
+    with ESMTPSA id J1a251113EI7EJR
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+	(Client did not present a certificate);
+    Mon, 3 Feb 2025 15:18:07 +0100 (CET)
+From: Julian Vetter <julian@outer-limits.org>
+To: Arnd Bergmann <arnd@arndb.de>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	"Paul E . McKenney" <paulmck@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Al Viro <viro@zeniv.linux.org.uk>
+Cc: linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Julian Vetter <julian@outer-limits.org>
+Subject: [PATCH] alpha: Remove IO memcpy and memset
+Date: Mon,  3 Feb 2025 15:18:00 +0100
+Message-Id: <20250203141800.69126-1-julian@outer-limits.org>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
 
-Hi,
+Recently a new IO memcpy and memset was added in libs/iomem_copy.c. So,
+remove the alpha specific implementations and use the one from the lib.
 
-On Sun, 2025-01-12 at 23:39 -0600, Eric W. Biederman wrote:
-> Richard Henderson <richard.henderson@linaro.org> writes[1]:
->=20
-> > There was a Spec benchmark (I forget which) which was memory bound and =
-ran
-> > twice as fast with 32-bit pointers.
-> >=20
-> > I copied the idea from DEC to the ELF abi, but never did all the other =
-work
-> > to allow the toolchain to take advantage.
-> >=20
-> > Amusingly, a later Spec changed the benchmark data sets to not fit into=
- a
-> > 32-bit address space, specifically because of this.
-> >=20
-> > I expect one could delete the ELF bit and personality and no one would
-> > notice. Not even the 10 remaining Alpha users.
->=20
-> In [2] it was pointed out that parts of setarch weren't working
-> properly on alpha because it has it's own SET_PERSONALITY
-> implementation.  In the discussion that followed Richard Henderson
-> pointed out that the 32bit pointer support for alpha was never
-> completed.
->=20
-> Fix this by removing alpha's 32bit pointer support.
->=20
-> As a bit of paranoia refuse to execute any alpha binaries that have
-> the EF_ALPHA_32BIT flag set.  Just in case someone somewhere has
-> binaries that try to use alpha's 32bit pointer support.
->=20
-> [1] https://lkml.kernel.org/r/CAFXwXrkgu=3D4Qn-v1PjnOR4SG0oUb9LSa0g6QXpBq=
-4ttm52pJOQ@mail.gmail.com
-> [2] https://lkml.kernel.org/r/20250103140148.370368-1-glaubitz@physik.fu-=
-berlin.de
-> v1: https://lkml.kernel.org/r/87jzb2tdb7.fsf_-_@email.froward.int.ebieder=
-m.org
-> Reviewed-by: Richard Henderson <richard.henderson@linaro.org>
-> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-> Reviewed-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-> Tested-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
-> ---
->=20
-> Kees can you pick this one up?
->=20
->  arch/alpha/include/asm/elf.h       |  6 +-----
->  arch/alpha/include/asm/pgtable.h   |  2 +-
->  arch/alpha/include/asm/processor.h |  8 ++------
->  arch/alpha/kernel/osf_sys.c        | 11 ++---------
->  4 files changed, 6 insertions(+), 21 deletions(-)
->=20
-> diff --git a/arch/alpha/include/asm/elf.h b/arch/alpha/include/asm/elf.h
-> index 4d7c46f50382..50c82187e60e 100644
-> --- a/arch/alpha/include/asm/elf.h
-> +++ b/arch/alpha/include/asm/elf.h
-> @@ -74,7 +74,7 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
->  /*
->   * This is used to ensure we don't load something for the wrong architec=
-ture.
->   */
-> -#define elf_check_arch(x) ((x)->e_machine =3D=3D EM_ALPHA)
-> +#define elf_check_arch(x) (((x)->e_machine =3D=3D EM_ALPHA) && !((x)->e_=
-flags & EF_ALPHA_32BIT))
-> =20
->  /*
->   * These are used to set parameters in the core dumps.
-> @@ -137,10 +137,6 @@ extern int dump_elf_task(elf_greg_t *dest, struct ta=
-sk_struct *task);
->  	: amask (AMASK_CIX) ? "ev6" : "ev67");	\
->  })
-> =20
-> -#define SET_PERSONALITY(EX)					\
-> -	set_personality(((EX).e_flags & EF_ALPHA_32BIT)		\
-> -	   ? PER_LINUX_32BIT : PER_LINUX)
-> -
->  extern int alpha_l1i_cacheshape;
->  extern int alpha_l1d_cacheshape;
->  extern int alpha_l2_cacheshape;
-> diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pg=
-table.h
-> index 635f0a5f5bbd..02e8817a8921 100644
-> --- a/arch/alpha/include/asm/pgtable.h
-> +++ b/arch/alpha/include/asm/pgtable.h
-> @@ -360,7 +360,7 @@ static inline pte_t pte_swp_clear_exclusive(pte_t pte=
-)
-> =20
->  extern void paging_init(void);
-> =20
-> -/* We have our own get_unmapped_area to cope with ADDR_LIMIT_32BIT.  */
-> +/* We have our own get_unmapped_area */
->  #define HAVE_ARCH_UNMAPPED_AREA
-> =20
->  #endif /* _ALPHA_PGTABLE_H */
-> diff --git a/arch/alpha/include/asm/processor.h b/arch/alpha/include/asm/=
-processor.h
-> index 55bb1c09fd39..5dce5518a211 100644
-> --- a/arch/alpha/include/asm/processor.h
-> +++ b/arch/alpha/include/asm/processor.h
-> @@ -8,23 +8,19 @@
->  #ifndef __ASM_ALPHA_PROCESSOR_H
->  #define __ASM_ALPHA_PROCESSOR_H
-> =20
-> -#include <linux/personality.h>	/* for ADDR_LIMIT_32BIT */
-> -
->  /*
->   * We have a 42-bit user address space: 4TB user VM...
->   */
->  #define TASK_SIZE (0x40000000000UL)
-> =20
-> -#define STACK_TOP \
-> -  (current->personality & ADDR_LIMIT_32BIT ? 0x80000000 : 0x00120000000U=
-L)
-> +#define STACK_TOP (0x00120000000UL)
-> =20
->  #define STACK_TOP_MAX	0x00120000000UL
-> =20
->  /* This decides where the kernel will search for a free chunk of vm
->   * space during mmap's.
->   */
-> -#define TASK_UNMAPPED_BASE \
-> -  ((current->personality & ADDR_LIMIT_32BIT) ? 0x40000000 : TASK_SIZE / =
-2)
-> +#define TASK_UNMAPPED_BASE (TASK_SIZE / 2)
-> =20
->  /* This is dead.  Everything has been moved to thread_info.  */
->  struct thread_struct { };
-> diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-> index 86185021f75a..a08e8edef1a4 100644
-> --- a/arch/alpha/kernel/osf_sys.c
-> +++ b/arch/alpha/kernel/osf_sys.c
-> @@ -1210,8 +1210,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user=
- *, txc_p)
->  	return ret;
->  }
-> =20
-> -/* Get an address range which is currently unmapped.  Similar to the
-> -   generic version except that we know how to honor ADDR_LIMIT_32BIT.  *=
-/
-> +/* Get an address range which is currently unmapped. */
-> =20
->  static unsigned long
->  arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
-> @@ -1230,13 +1229,7 @@ arch_get_unmapped_area(struct file *filp, unsigned=
- long addr,
->  		       unsigned long len, unsigned long pgoff,
->  		       unsigned long flags, vm_flags_t vm_flags)
->  {
-> -	unsigned long limit;
-> -
-> -	/* "32 bit" actually means 31 bit, since pointers sign extend.  */
-> -	if (current->personality & ADDR_LIMIT_32BIT)
-> -		limit =3D 0x80000000;
-> -	else
-> -		limit =3D TASK_SIZE;
-> +	unsigned long limit =3D TASK_SIZE;
-> =20
->  	if (len > limit)
->  		return -ENOMEM;
+Signed-off-by: Julian Vetter <julian@outer-limits.org>
+---
+ arch/alpha/include/asm/io.h  |  22 -----
+ arch/alpha/include/asm/vga.h |   2 +-
+ arch/alpha/kernel/io.c       | 171 -----------------------------------
+ 3 files changed, 1 insertion(+), 194 deletions(-)
 
-Tested-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
+index 65fe1e54c6da..2de75404bda1 100644
+--- a/arch/alpha/include/asm/io.h
++++ b/arch/alpha/include/asm/io.h
+@@ -587,28 +587,6 @@ extern inline u64 readq_relaxed(const volatile void __iomem *addr)
+ #define writel_relaxed	writel
+ #define writeq_relaxed	writeq
+ 
+-/*
+- * String version of IO memory access ops:
+- */
+-extern void memcpy_fromio(void *, const volatile void __iomem *, long);
+-extern void memcpy_toio(volatile void __iomem *, const void *, long);
+-extern void _memset_c_io(volatile void __iomem *, unsigned long, long);
+-
+-static inline void memset_io(volatile void __iomem *addr, u8 c, long len)
+-{
+-	_memset_c_io(addr, 0x0101010101010101UL * c, len);
+-}
+-
+-#define __HAVE_ARCH_MEMSETW_IO
+-static inline void memsetw_io(volatile void __iomem *addr, u16 c, long len)
+-{
+-	_memset_c_io(addr, 0x0001000100010001UL * c, len);
+-}
+-
+-#define memset_io memset_io
+-#define memcpy_fromio memcpy_fromio
+-#define memcpy_toio memcpy_toio
+-
+ /*
+  * String versions of in/out ops:
+  */
+diff --git a/arch/alpha/include/asm/vga.h b/arch/alpha/include/asm/vga.h
+index 919931cb5b63..cac735bc3e16 100644
+--- a/arch/alpha/include/asm/vga.h
++++ b/arch/alpha/include/asm/vga.h
+@@ -34,7 +34,7 @@ static inline u16 scr_readw(volatile const u16 *addr)
+ static inline void scr_memsetw(u16 *s, u16 c, unsigned int count)
+ {
+ 	if (__is_ioaddr(s))
+-		memsetw_io((u16 __iomem *) s, c, count);
++		memset_io((u16 __iomem *) s, c, count);
+ 	else
+ 		memset16(s, c, count / 2);
+ }
+diff --git a/arch/alpha/kernel/io.c b/arch/alpha/kernel/io.c
+index c28035d6d1e6..0d24a6ad682c 100644
+--- a/arch/alpha/kernel/io.c
++++ b/arch/alpha/kernel/io.c
+@@ -476,177 +476,6 @@ void outsl(unsigned long port, const void *src, unsigned long count)
+ EXPORT_SYMBOL(iowrite32_rep);
+ EXPORT_SYMBOL(outsl);
+ 
+-
+-/*
+- * Copy data from IO memory space to "real" memory space.
+- * This needs to be optimized.
+- */
+-void memcpy_fromio(void *to, const volatile void __iomem *from, long count)
+-{
+-	/* Optimize co-aligned transfers.  Everything else gets handled
+-	   a byte at a time. */
+-
+-	if (count >= 8 && ((u64)to & 7) == ((u64)from & 7)) {
+-		count -= 8;
+-		do {
+-			*(u64 *)to = __raw_readq(from);
+-			count -= 8;
+-			to += 8;
+-			from += 8;
+-		} while (count >= 0);
+-		count += 8;
+-	}
+-
+-	if (count >= 4 && ((u64)to & 3) == ((u64)from & 3)) {
+-		count -= 4;
+-		do {
+-			*(u32 *)to = __raw_readl(from);
+-			count -= 4;
+-			to += 4;
+-			from += 4;
+-		} while (count >= 0);
+-		count += 4;
+-	}
+-
+-	if (count >= 2 && ((u64)to & 1) == ((u64)from & 1)) {
+-		count -= 2;
+-		do {
+-			*(u16 *)to = __raw_readw(from);
+-			count -= 2;
+-			to += 2;
+-			from += 2;
+-		} while (count >= 0);
+-		count += 2;
+-	}
+-
+-	while (count > 0) {
+-		*(u8 *) to = __raw_readb(from);
+-		count--;
+-		to++;
+-		from++;
+-	}
+-	mb();
+-}
+-
+-EXPORT_SYMBOL(memcpy_fromio);
+-
+-
+-/*
+- * Copy data from "real" memory space to IO memory space.
+- * This needs to be optimized.
+- */
+-void memcpy_toio(volatile void __iomem *to, const void *from, long count)
+-{
+-	/* Optimize co-aligned transfers.  Everything else gets handled
+-	   a byte at a time. */
+-	/* FIXME -- align FROM.  */
+-
+-	if (count >= 8 && ((u64)to & 7) == ((u64)from & 7)) {
+-		count -= 8;
+-		do {
+-			__raw_writeq(*(const u64 *)from, to);
+-			count -= 8;
+-			to += 8;
+-			from += 8;
+-		} while (count >= 0);
+-		count += 8;
+-	}
+-
+-	if (count >= 4 && ((u64)to & 3) == ((u64)from & 3)) {
+-		count -= 4;
+-		do {
+-			__raw_writel(*(const u32 *)from, to);
+-			count -= 4;
+-			to += 4;
+-			from += 4;
+-		} while (count >= 0);
+-		count += 4;
+-	}
+-
+-	if (count >= 2 && ((u64)to & 1) == ((u64)from & 1)) {
+-		count -= 2;
+-		do {
+-			__raw_writew(*(const u16 *)from, to);
+-			count -= 2;
+-			to += 2;
+-			from += 2;
+-		} while (count >= 0);
+-		count += 2;
+-	}
+-
+-	while (count > 0) {
+-		__raw_writeb(*(const u8 *) from, to);
+-		count--;
+-		to++;
+-		from++;
+-	}
+-	mb();
+-}
+-
+-EXPORT_SYMBOL(memcpy_toio);
+-
+-
+-/*
+- * "memset" on IO memory space.
+- */
+-void _memset_c_io(volatile void __iomem *to, unsigned long c, long count)
+-{
+-	/* Handle any initial odd byte */
+-	if (count > 0 && ((u64)to & 1)) {
+-		__raw_writeb(c, to);
+-		to++;
+-		count--;
+-	}
+-
+-	/* Handle any initial odd halfword */
+-	if (count >= 2 && ((u64)to & 2)) {
+-		__raw_writew(c, to);
+-		to += 2;
+-		count -= 2;
+-	}
+-
+-	/* Handle any initial odd word */
+-	if (count >= 4 && ((u64)to & 4)) {
+-		__raw_writel(c, to);
+-		to += 4;
+-		count -= 4;
+-	}
+-
+-	/* Handle all full-sized quadwords: we're aligned
+-	   (or have a small count) */
+-	count -= 8;
+-	if (count >= 0) {
+-		do {
+-			__raw_writeq(c, to);
+-			to += 8;
+-			count -= 8;
+-		} while (count >= 0);
+-	}
+-	count += 8;
+-
+-	/* The tail is word-aligned if we still have count >= 4 */
+-	if (count >= 4) {
+-		__raw_writel(c, to);
+-		to += 4;
+-		count -= 4;
+-	}
+-
+-	/* The tail is half-word aligned if we have count >= 2 */
+-	if (count >= 2) {
+-		__raw_writew(c, to);
+-		to += 2;
+-		count -= 2;
+-	}
+-
+-	/* And finally, one last byte.. */
+-	if (count) {
+-		__raw_writeb(c, to);
+-	}
+-	mb();
+-}
+-
+-EXPORT_SYMBOL(_memset_c_io);
+-
+ #if IS_ENABLED(CONFIG_VGA_CONSOLE) || IS_ENABLED(CONFIG_MDA_CONSOLE)
+ 
+ #include <asm/vga.h>
+-- 
+2.34.1
 
-Can someone pick up this patch for v6.14?
-
-Adrian
-
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
