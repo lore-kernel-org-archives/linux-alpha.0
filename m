@@ -1,90 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from server-598995.kolorio.com (server-598995.kolorio.com [162.241.152.247])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D5AF246339;
-	Thu,  6 Feb 2025 15:42:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 139FE194096
+	for <linux-alpha@vger.kernel.org>; Sat,  8 Feb 2025 06:20:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.241.152.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738856564; cv=none; b=QrPkZlmz9/UFbMHFwnRcljnz76HBb5IvgSwxhAf+pOV7slwtBIlLjn7CLGubKW3uftW4rDViPcsLSe2QTUHFJ9lkjp8NRWhqCZ2oR3fYjOa5bmB6xbFj445xDX7WaC/m6r8RtNQNrct3PQhq2eA3tOnm8BgFNhDyMHv+4V8hcCU=
+	t=1738995648; cv=none; b=CDVQKPZOXMymvAqWG/OvhkBteEq3jv1/XMrHHVntVm0Bcf8V4id/OyTkUUocu3+ykRwIyuwvJd+u5tR8NQ+fB0YQm5JqZWDTIVsMKKEp3AndduOGS53VWCsNLz67AMJqeYgq8BsyahaBId9HnTNr8KrvoZqNhLkE+0hUvcRkMtA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738856564; c=relaxed/simple;
-	bh=5+FTDlmQWovIleUiA1q3Ejj7y/6w0GAkmYeDjxkywuo=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=uN1Ixfv/+vAvQ5CkxlZGcGjiGQJM+ss9z573M/LohG84xRhi9sO5pImb5BprYfI24wrOwRCOUsx/ldhYI/vfW5gq5kozpPG3iS7lH27HgQvqkLLG3hJ5CldTKG+I61AddVvcPVAJbqqHblgTm0fPumFZTvmytCGwLpOVMi5DtAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qWo1Xryo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1738995648; c=relaxed/simple;
+	bh=gl4+7vNxgV9+JzZtw7EthQ6aGDgi0WVn3wQV/lnKiyo=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=uYehTXJyb8RSnUtgWa0oTlN9Fe9v0uw5oUIZQjXaBeQ0VXyLaAh5h7pL+A1eJQOEh+0s/lweeo2iYtYUGI1nHr2w0Y0Q8hGDbm0ZQF7T74WkVOXy8PWNrAHEFM7yJHGDD4x0UIBqKf8kqPnMl5YmAk9sNsnFOBtGtpZ1pt37C04=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=truemaisha.co.tz; spf=pass smtp.mailfrom=truemaisha.co.tz; dkim=pass (2048-bit key) header.d=truemaisha.co.tz header.i=@truemaisha.co.tz header.b=hGwhfWyD; arc=none smtp.client-ip=162.241.152.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=truemaisha.co.tz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=truemaisha.co.tz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qWo1Xryo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ACEDC4CEDF;
-	Thu,  6 Feb 2025 15:42:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738856563;
-	bh=5+FTDlmQWovIleUiA1q3Ejj7y/6w0GAkmYeDjxkywuo=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=qWo1XryojRSFF9wT8B7l4iOecPgHYZ7k5Ae2GLEIa0/ihek84O+EkuT1S1pqAzVDv
-	 0k38KtKYCeoauKmS7ue4uwAi21xOrY58QoogK6BQQfQuSkiWQKtcsa8KPV5ShDbKYF
-	 yResPzeAXpbUr5HnAt9WHoVqnRO+BVuLfoXwGW+KtluQ2Ipgu2QZyQXezBdjyJfJ9Y
-	 mF4cODLjdNx0HB/1O9g0PNoCMJAOpUKxcJe7MyWpjVWT9xDXsFxeFylps/Lds9q3b8
-	 GBemcQoPVLHTlgD2kQjMeLjuTRM1oS+9Z65kphdSaIpwR5yNL6lCDBE8Ch6moXsH/I
-	 Tn2tm3drx5/eg==
-From: Kees Cook <kees@kernel.org>
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	"Eric W. Biederman" <ebiederm@xmission.com>
-Cc: Kees Cook <kees@kernel.org>,
-	"Maciej W. Rozycki" <macro@orcam.me.uk>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	linux-alpha@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org,
-	Michael Cree <mcree@orcon.net.nz>,
-	Sam James <sam@gentoo.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Michael Karcher <kernel@mkarcher.dialup.fu-berlin.de>,
-	Chris Hofstaedtler <zeha@debian.org>,
-	util-linux@vger.kernel.org,
-	linux-mips@vger.kernel.org,
-	loongarch@lists.linux.dev
-Subject: Re: [PATCH v2] alpha/elf: Fix misc/setarch test of util-linux by removing 32bit support
-Date: Thu,  6 Feb 2025 07:42:32 -0800
-Message-Id: <173885655037.1454207.17881331998395742818.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <87y0zfs26i.fsf_-_@email.froward.int.ebiederm.org>
-References: <20250103140148.370368-1-glaubitz@physik.fu-berlin.de> <24f03227-1b55-4e50-b6e9-7ac74fda2602@app.fastmail.com> <678ee681-12c3-4e79-a04b-495daf343846@app.fastmail.com> <bff3cfad8a87799101891b4f786c5104db9dab13.camel@physik.fu-berlin.de> <82d33a2d-dffe-4268-a175-4536b3f9c07f@app.fastmail.com> <cc420e1a843da3cf349607369851c338f4049c4e.camel@physik.fu-berlin.de> <87jzb2tdb7.fsf_-_@email.froward.int.ebiederm.org> <2758fa70d237ff972b0c8d7114777dc4a20c8f3b.camel@physik.fu-berlin.de> <alpine.DEB.2.21.2501120146480.18889@angie.orcam.me.uk> <78f3ae1f68842a9d1af62caaac3929834ce6ecfa.camel@physik.fu-berlin.de> <87y0zfs26i.fsf_-_@email.froward.int.ebiederm.org>
+	dkim=pass (2048-bit key) header.d=truemaisha.co.tz header.i=@truemaisha.co.tz header.b="hGwhfWyD"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=truemaisha.co.tz; s=default; h=Content-Transfer-Encoding:Content-Type:
+	MIME-Version:Message-ID:Date:Subject:To:From:Reply-To:Sender:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=gl4+7vNxgV9+JzZtw7EthQ6aGDgi0WVn3wQV/lnKiyo=; b=hGwhfWyDW5INUhrgan8bzYZBok
+	3Ha564JtzZjAOnlXiId2OscC/NoCTRLQnAd6wJUuFBIiZy7+65pjdbcQhNG9oM3S01w2T3H3GL2Kv
+	X5gdpDp/lkQkLcrz3+/3KPXuvMgPxc4IbmkLeAn4mZ342KI78dwLtw3fitBqUjrRviO/KWZ/GAWfJ
+	xirVmHC0Dg6LS9vYiADptQll4xonv6b0WzvhBY1De33TH4jiQSjudecOfFbTyGWNO59+pV+Zhqd+Q
+	xJXUcW/vjPCiF0/SvPou+Zsa8Iiq9pXr3UFtPmCQV6+y/FmFexKSjJ1CELc/5VtpFzSDJij9OQMND
+	qmwPCo9A==;
+Received: from [74.208.124.33] (port=54028 helo=truemaisha.co.tz)
+	by server-598995.kolorio.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96.2)
+	(envelope-from <chrispinerick@truemaisha.co.tz>)
+	id 1tgeCp-00039W-19
+	for linux-alpha@vger.kernel.org;
+	Sat, 08 Feb 2025 00:20:44 -0600
+Reply-To: dsong@aa4financialservice.com
+From: David Song <chrispinerick@truemaisha.co.tz>
+To: linux-alpha@vger.kernel.org
+Subject: Re: The business loan- 
+Date: 08 Feb 2025 06:20:45 +0000
+Message-ID: <20250208015436.8850B8C0271C9E64@truemaisha.co.tz>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - server-598995.kolorio.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - truemaisha.co.tz
+X-Get-Message-Sender-Via: server-598995.kolorio.com: authenticated_id: chrispinerick@truemaisha.co.tz
+X-Authenticated-Sender: server-598995.kolorio.com: chrispinerick@truemaisha.co.tz
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 
-On Sun, 12 Jan 2025 23:39:01 -0600, Eric W. Biederman wrote:
-> Richard Henderson <richard.henderson@linaro.org> writes[1]:
-> 
-> > There was a Spec benchmark (I forget which) which was memory bound and ran
-> > twice as fast with 32-bit pointers.
-> >
-> > I copied the idea from DEC to the ELF abi, but never did all the other work
-> > to allow the toolchain to take advantage.
-> >
-> > Amusingly, a later Spec changed the benchmark data sets to not fit into a
-> > 32-bit address space, specifically because of this.
-> >
-> > I expect one could delete the ELF bit and personality and no one would
-> > notice. Not even the 10 remaining Alpha users.
-> 
-> [...]
+Hello,
 
-Applied to for-next/topic/execve/core, thanks!
+My name is David Song, at AA4 FS, we are a consultancy and
+brokerage Firm specializing in Growth Financial Loan and joint
+partnership venture. We specialize in investments in all Private
+and public sectors in a broad range of areas within our Financial
+Investment Services.
 
-[1/1] alpha/elf: Fix misc/setarch test of util-linux by removing 32bit support
-      https://git.kernel.org/kees/c/b029628be267
+ We are experts in financial and operational management, due
+diligence and capital planning in all markets and industries. Our
+Investors wish to invest in any viable Project presented by your
+Management after reviews on your Business Project Presentation
+Plan.
 
-Take care,
+ We look forward to your Swift response. We also offer commission
+to consultants and brokers for any partnership referrals.
 
--- 
-Kees Cook
+ Regards,
+David Song
+Senior Broker
+
+AA4 Financial Services
+13 Wonersh Way, Cheam,
+Sutton, Surrey, SM2 7LX
+Email: dsong@aa4financialservice.com
 
