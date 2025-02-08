@@ -1,74 +1,88 @@
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 48269241CB5;
-	Sat,  8 Feb 2025 17:05:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
+Received: from server-598995.kolorio.com (server-598995.kolorio.com [162.241.152.247])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46A531F3BB0
+	for <linux-alpha@vger.kernel.org>; Sat,  8 Feb 2025 21:57:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.241.152.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739034320; cv=none; b=F+6r2SbDkZ84JJY8oYS5FY3E/FsFRmrrDi3M1rQEdq0pqh4012Ep4IRrbLPomFZ58CWr642gK5n85zrWp3n1V2iWBjNmzsLSN3esyt0kD7qXpTwZjlHfrlMenkBFFLh7tj+PwGXWpmdz6KCPNTcDb9f9EtHofCn9POjCrGK0iN8=
+	t=1739051845; cv=none; b=mxbHf/t9wRmp8v+iwDaUOT1PPDYfRK/JHwiLFgcg2HRRnnuvq7bzDJo3TJ6p0UWON3+Gjfl/e2YxQyR6oqdK0/TdQlDmcINPDf1HBSq5TQSwFZOwaj6a2GxmwfRVC9KoqU7AbWo5EBnp/lgZlV+IOE/7tAMRql+Bh4Xvk0O6oF8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739034320; c=relaxed/simple;
-	bh=zuYhn2pZEXodm+71qFxugC5Ci4V4PpwIhddMW96LO5I=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=QnvPNOkCCQjQTOvQzJPlAw/hsOZ6ODeSGQ5D9Tgi3BNgT0DiOncvN8DtmOSJjW4X3qNRAKN9S6OWp61D9Xc5hJfrvYf+/pxrJdu/CsPeQachzlQuuLoBV5iYQLUR2Pc2ciROKUh3ZYk2LMHBnMRAG7wrRCnHjMBQZ0ajsmpaSYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 9694192009C; Sat,  8 Feb 2025 18:05:16 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 8F80F92009B;
-	Sat,  8 Feb 2025 17:05:16 +0000 (GMT)
-Date: Sat, 8 Feb 2025 17:05:16 +0000 (GMT)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Ivan Kokshaysky <ink@unseen.parts>
-cc: Richard Henderson <richard.henderson@linaro.org>, 
-    Matt Turner <mattst88@gmail.com>, Oleg Nesterov <oleg@redhat.com>, 
-    Al Viro <viro@zeniv.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, 
-    "Paul E. McKenney" <paulmck@kernel.org>, 
-    Magnus Lindholm <linmag7@gmail.com>, linux-alpha@vger.kernel.org, 
-    linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] alpha: stack fixes
-In-Reply-To: <20250204223524.6207-1-ink@unseen.parts>
-Message-ID: <alpine.DEB.2.21.2502081630030.65342@angie.orcam.me.uk>
-References: <20250204223524.6207-1-ink@unseen.parts>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	s=arc-20240116; t=1739051845; c=relaxed/simple;
+	bh=gl4+7vNxgV9+JzZtw7EthQ6aGDgi0WVn3wQV/lnKiyo=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=C8Ol0Fa1OvCMabgDvXuQ4FnQoPqZcrTq/OC+wrM69daQ8oqHeTs+yjAJDoJ8AlxkLJhg/kMr/38MJY0O0CIdev1cSkS7vRAF+E+Sixf467E/a+zl/QnFVKtqhrzZzd+Un6CM22Jm6fUgpHBTyiI9aSlaakFq15ly9FyorGsdwQA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=truemaisha.co.tz; spf=pass smtp.mailfrom=truemaisha.co.tz; dkim=pass (2048-bit key) header.d=truemaisha.co.tz header.i=@truemaisha.co.tz header.b=VGW9/SDJ; arc=none smtp.client-ip=162.241.152.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=truemaisha.co.tz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=truemaisha.co.tz
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=truemaisha.co.tz header.i=@truemaisha.co.tz header.b="VGW9/SDJ"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=truemaisha.co.tz; s=default; h=Content-Transfer-Encoding:Content-Type:
+	MIME-Version:Message-ID:Date:Subject:To:From:Reply-To:Sender:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=gl4+7vNxgV9+JzZtw7EthQ6aGDgi0WVn3wQV/lnKiyo=; b=VGW9/SDJ0SU33yRpfb90QE9jYE
+	+uLEOwciXcm1Xa8q6NxdIOMAyfv+i/qVw2v4IeifrnKlZZ3WKReHDMNFLufe3bL7VRuRinOtu6xDz
+	0UqWCKqFEgO85F28V1AbZoYOEa02tfB+/EUtRA2fD01QQ+3vkdMjXBUoOuyvzITobT7WfggL1pFVn
+	lLjz/HqZslLLods9Yg5L99keJFAHjaMknwAwQO1MukCY7GxLoDVoaiYJZRLpp/EYkRzvh79xT6RhD
+	3TWm+ODgMlMNei2iX0PdL6XLp8Qsh5Pvx5FlD6Hq1bQZVMrPqIa6t5uyX5eQam5YFYDU5+Fpnfi2n
+	D9prMzug==;
+Received: from [74.208.124.33] (port=59301 helo=truemaisha.co.tz)
+	by server-598995.kolorio.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96.2)
+	(envelope-from <chrispinerick@truemaisha.co.tz>)
+	id 1tgspE-0004YN-0n
+	for linux-alpha@vger.kernel.org;
+	Sat, 08 Feb 2025 15:57:21 -0600
+Reply-To: dsong@aa4financialservice.com
+From: David Song <chrispinerick@truemaisha.co.tz>
+To: linux-alpha@vger.kernel.org
+Subject: Re: The business loan- 
+Date: 08 Feb 2025 21:57:22 +0000
+Message-ID: <20250208210541.6E5E17F1F9DE293B@truemaisha.co.tz>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - server-598995.kolorio.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - truemaisha.co.tz
+X-Get-Message-Sender-Via: server-598995.kolorio.com: authenticated_id: chrispinerick@truemaisha.co.tz
+X-Authenticated-Sender: server-598995.kolorio.com: chrispinerick@truemaisha.co.tz
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 
-On Tue, 4 Feb 2025, Ivan Kokshaysky wrote:
+Hello,
 
-> This series fixes oopses on Alpha/SMP observed since kernel v6.9. [1]
-> Thanks to Magnus Lindholm for identifying that remarkably longstanding
-> bug.
+My name is David Song, at AA4 FS, we are a consultancy and
+brokerage Firm specializing in Growth Financial Loan and joint
+partnership venture. We specialize in investments in all Private
+and public sectors in a broad range of areas within our Financial
+Investment Services.
 
- Thank you.  TL;DR: I've completed regression testing now and the results 
-are looking good, so I have posted my Tested-by: tags now.
+ We are experts in financial and operational management, due
+diligence and capital planning in all markets and industries. Our
+Investors wish to invest in any viable Project presented by your
+Management after reviews on your Business Project Presentation
+Plan.
 
- Sadly original verification triggered a glitch which sometimes happens in 
-the operation of my server's intranet network card that puts the device 
-offline until it's hot-removed and the re-discovered.  I suspect a driver 
-bug triggering under higher traffic, but that yet has to be investigated 
-and it's a bit of a challenge with a machine that is at a remote location 
-and in constant use.
+ We look forward to your Swift response. We also offer commission
+to consultants and brokers for any partnership referrals.
 
- I have only discovered it once 1023 tests got affected and consequently 
-failed due to the inability to reach the target Alpha system.  I concluded 
-it was infeasible to run the failed tests by hand and then try to merge 
-the results.
+ Regards,
+David Song
+Senior Broker
 
- Instead I disabled the extra prolonged tests discussed in the previous  
-update and rerun the remaining whole testsuite.  That completed in ~23h 
-and produced a few regressions and progressions, the former for the "math" 
-and "nptl" test subsets, as well as one "string" test ("test-strnlen").  I 
-have therefore verified them by hand and triggered the failures with your 
-patchset removed, so I concluded their failed results are not the outcome 
-of your changes.
+AA4 Financial Services
+13 Wonersh Way, Cheam,
+Sutton, Surrey, SM2 7LX
+Email: dsong@aa4financialservice.com
 
- So this is good to go in as far as I'm concerned, as noted at the top.  
-Thank you for taking time to work on this problem.
-
-  Maciej
