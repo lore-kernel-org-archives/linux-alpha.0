@@ -1,88 +1,72 @@
-Received: from server-598995.kolorio.com (server-598995.kolorio.com [162.241.152.247])
+Received: from out-184.mta1.migadu.com (out-184.mta1.migadu.com [95.215.58.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46A531F3BB0
-	for <linux-alpha@vger.kernel.org>; Sat,  8 Feb 2025 21:57:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.241.152.247
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D415C146D6A
+	for <linux-alpha@vger.kernel.org>; Sun,  9 Feb 2025 08:13:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739051845; cv=none; b=mxbHf/t9wRmp8v+iwDaUOT1PPDYfRK/JHwiLFgcg2HRRnnuvq7bzDJo3TJ6p0UWON3+Gjfl/e2YxQyR6oqdK0/TdQlDmcINPDf1HBSq5TQSwFZOwaj6a2GxmwfRVC9KoqU7AbWo5EBnp/lgZlV+IOE/7tAMRql+Bh4Xvk0O6oF8=
+	t=1739088790; cv=none; b=fRXyhvHFEMZ43TIFiDgzghhIAgIbUbYBbwrbQOt1tZdAkgdgTiNGrdqCGghuL0JrtvQ2zeDhF+O0Ne2yjzH5xLkU2zrsJtDgg2m+f9eppk7iKESXmASd0kHThjGyCnXHiz8PfojfufYaUTc+kFofuvZFlTyM33LSKga939I64FM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739051845; c=relaxed/simple;
-	bh=gl4+7vNxgV9+JzZtw7EthQ6aGDgi0WVn3wQV/lnKiyo=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=C8Ol0Fa1OvCMabgDvXuQ4FnQoPqZcrTq/OC+wrM69daQ8oqHeTs+yjAJDoJ8AlxkLJhg/kMr/38MJY0O0CIdev1cSkS7vRAF+E+Sixf467E/a+zl/QnFVKtqhrzZzd+Un6CM22Jm6fUgpHBTyiI9aSlaakFq15ly9FyorGsdwQA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=truemaisha.co.tz; spf=pass smtp.mailfrom=truemaisha.co.tz; dkim=pass (2048-bit key) header.d=truemaisha.co.tz header.i=@truemaisha.co.tz header.b=VGW9/SDJ; arc=none smtp.client-ip=162.241.152.247
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=truemaisha.co.tz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=truemaisha.co.tz
+	s=arc-20240116; t=1739088790; c=relaxed/simple;
+	bh=XmJ6hFd4AqZnPTA12AytxeiboiRNcWpq+HTPWc/wvoc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AbqrKWoYn8/za3dCKSbVGDQ73j6GyaSQOjj0nSdt+oRJakR4X/RwuZAqSygwrurTTz9k8q0xSdCfYA8I59ARDb0HOoHh8QUaEn01ma+BH1HsudB73UghrNtyzkf+3LOBZXVlBS4vLzhsxME8HrtRAmg/R1O0gAckwfmJwht30gI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=AWtbbvoz; arc=none smtp.client-ip=95.215.58.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=truemaisha.co.tz header.i=@truemaisha.co.tz header.b="VGW9/SDJ"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=truemaisha.co.tz; s=default; h=Content-Transfer-Encoding:Content-Type:
-	MIME-Version:Message-ID:Date:Subject:To:From:Reply-To:Sender:Cc:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=gl4+7vNxgV9+JzZtw7EthQ6aGDgi0WVn3wQV/lnKiyo=; b=VGW9/SDJ0SU33yRpfb90QE9jYE
-	+uLEOwciXcm1Xa8q6NxdIOMAyfv+i/qVw2v4IeifrnKlZZ3WKReHDMNFLufe3bL7VRuRinOtu6xDz
-	0UqWCKqFEgO85F28V1AbZoYOEa02tfB+/EUtRA2fD01QQ+3vkdMjXBUoOuyvzITobT7WfggL1pFVn
-	lLjz/HqZslLLods9Yg5L99keJFAHjaMknwAwQO1MukCY7GxLoDVoaiYJZRLpp/EYkRzvh79xT6RhD
-	3TWm+ODgMlMNei2iX0PdL6XLp8Qsh5Pvx5FlD6Hq1bQZVMrPqIa6t5uyX5eQam5YFYDU5+Fpnfi2n
-	D9prMzug==;
-Received: from [74.208.124.33] (port=59301 helo=truemaisha.co.tz)
-	by server-598995.kolorio.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.96.2)
-	(envelope-from <chrispinerick@truemaisha.co.tz>)
-	id 1tgspE-0004YN-0n
-	for linux-alpha@vger.kernel.org;
-	Sat, 08 Feb 2025 15:57:21 -0600
-Reply-To: dsong@aa4financialservice.com
-From: David Song <chrispinerick@truemaisha.co.tz>
-To: linux-alpha@vger.kernel.org
-Subject: Re: The business loan- 
-Date: 08 Feb 2025 21:57:22 +0000
-Message-ID: <20250208210541.6E5E17F1F9DE293B@truemaisha.co.tz>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="AWtbbvoz"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1739088787;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=41wAe+tnVVO2C9ftsR61fEgGhOiIc0Khigau4m7DRLQ=;
+	b=AWtbbvozROB/Go5n4MKKs1zFU7v1x2bNIdhq8dN8V0erAWfVO9s725Vh87LV7tbeEX4ypD
+	rLT/7SRrX1wIn5+wzv+PHrfcF5snITHdprxw+MBiz4jijptI4Jl7Z1JcizIq6Vk6VtcmMP
+	S1jjTEeZVvDQLzpGedK3YQc/2pCdIX8=
+From: Thorsten Blum <thorsten.blum@linux.dev>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>
+Cc: Thorsten Blum <thorsten.blum@linux.dev>,
+	Kees Cook <kees@kernel.org>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [RESEND PATCH] alpha: Replace one-element array with flexible array member
+Date: Sun,  9 Feb 2025 09:12:57 +0100
+Message-ID: <20250209081259.2460-1-thorsten.blum@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - server-598995.kolorio.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - truemaisha.co.tz
-X-Get-Message-Sender-Via: server-598995.kolorio.com: authenticated_id: chrispinerick@truemaisha.co.tz
-X-Authenticated-Sender: server-598995.kolorio.com: chrispinerick@truemaisha.co.tz
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-Hello,
+Replace the deprecated one-element array with a modern flexible array
+member in the struct crb_struct.
 
-My name is David Song, at AA4 FS, we are a consultancy and
-brokerage Firm specializing in Growth Financial Loan and joint
-partnership venture. We specialize in investments in all Private
-and public sectors in a broad range of areas within our Financial
-Investment Services.
+Link: https://github.com/KSPP/linux/issues/79
+Reviewed-by: Kees Cook <kees@kernel.org>
+Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
+---
+ arch/alpha/include/asm/hwrpb.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- We are experts in financial and operational management, due
-diligence and capital planning in all markets and industries. Our
-Investors wish to invest in any viable Project presented by your
-Management after reviews on your Business Project Presentation
-Plan.
-
- We look forward to your Swift response. We also offer commission
-to consultants and brokers for any partnership referrals.
-
- Regards,
-David Song
-Senior Broker
-
-AA4 Financial Services
-13 Wonersh Way, Cheam,
-Sutton, Surrey, SM2 7LX
-Email: dsong@aa4financialservice.com
+diff --git a/arch/alpha/include/asm/hwrpb.h b/arch/alpha/include/asm/hwrpb.h
+index fc76f36265ad..db831cf8de10 100644
+--- a/arch/alpha/include/asm/hwrpb.h
++++ b/arch/alpha/include/asm/hwrpb.h
+@@ -135,7 +135,7 @@ struct crb_struct {
+ 	/* virtual->physical map */
+ 	unsigned long map_entries;
+ 	unsigned long map_pages;
+-	struct vf_map_struct map[1];
++	struct vf_map_struct map[];
+ };
+ 
+ struct memclust_struct {
+-- 
+2.48.1
 
