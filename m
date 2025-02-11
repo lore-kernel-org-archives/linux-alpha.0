@@ -1,136 +1,172 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 634BF25291B
-	for <linux-alpha@vger.kernel.org>; Tue, 11 Feb 2025 16:52:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59C5E1FDA9C;
+	Tue, 11 Feb 2025 17:15:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739292753; cv=none; b=XByHoAa49ERsL420E2+Ycl2iAeSpe2kCntTp4gQ+kvZSTuDqk9B1wpIHc/W8ftuuv/O4V6ZW66CA8osoZyS5r8ZrISAkFctVsGPCxEmVDrfCO8zRAbkAgzekEDhNg+ohIsFso+OSLRsVQWk+zyai3bZ3aJ5P4ZDivoKT3lh4518=
+	t=1739294142; cv=none; b=oxpBHbEs8IdMDvJ7D6p2b3sftzcRlovDYCT0a9EGM2LuOM27Yh0oJwk6UKx1aRUfQFviALp6SfgOnR6FwiWmpON2+suaUvOaxDA1W3kOKvMRITWXst3WnYJZj/g450bp5HJ1AJX51dGcvwZN2Jpdr0SasbPj7lIh7DXqqoXe0x0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739292753; c=relaxed/simple;
-	bh=gRo3G5m5Ukoont1Qsvcp35qa8dNR7KZETpu+sXWIZJg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=X0Bc0lydcJN8ZIg2hjrbut9ooTHErzlC6WoOucv2baXTd+4p6+uEpCqMUPAYx6X9TchWmta/CByTLCdTrRdqep6rmus1G+30j1LjlOf+F+IowF6cHN8HdYKN3kdTMgrtcqJVrocDWmMD0OrfjX35CAsyCtrbpP02D4XRhl1wTFg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=B8wwIxY/; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1739294142; c=relaxed/simple;
+	bh=T1Q1rk0OE80nhZXV4WGQJSdwO49rfsJCVQlO2XadBdM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=WsBhM7zohunlnNecxNhUnQ9RfNFwHpS7A/6+ns/Bj3ZU/np9AgDaxYYur3L/sykksfNBle9eRTEBaTMm/sREwSpqt32Lc1Y6WnfxoVZRQKthSvxwoJvh46iWT3/oLrLWvFahMEqxhasvrud8pRrfyr5+KeGECC1ReCxjn1C/JZk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bbTu3voo; arc=none smtp.client-ip=209.85.208.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="B8wwIxY/"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-21f92258aa6so66129605ad.3
-        for <linux-alpha@vger.kernel.org>; Tue, 11 Feb 2025 08:52:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bbTu3voo"
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-30227c56b11so60401211fa.3;
+        Tue, 11 Feb 2025 09:15:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1739292751; x=1739897551; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6sNX3j45BuYX0jqFY0bgET5KHTO0uCeEEB9Pem3dY6c=;
-        b=B8wwIxY/YKmZJtr6UculWh2VeAs0XBlW4ZJ5aWznZAN5rIUPHD/+wS5GNA21xz89iu
-         nagTc3FdIMYPMksxnc+hRyfFoKcZSO6xG81Tm0jFBY8jMKmhCx4LfFOcP9uMFcbO+D+p
-         NKO8XecguS6UlkWelKZ66urx6gB7YaROx0Xogjrc4+8pW22ZFkfRAY7m3gQYxWdIlaXP
-         j+dMG38cal+XTIX7LMiWwhCsnxnIRs8iYHifjErqRGTESc8UJ4kAatQ0Pyy4VRszF1Ud
-         kbFOFsBbaTWoO2Y4NkfbwCIfj1qH1SYQXBZQMpInn+xbmbdxwyXOvLwjl7HmWxRrwsCd
-         76xA==
+        d=gmail.com; s=20230601; t=1739294138; x=1739898938; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kfGl96TFJZs2GWRZT7rxZNxukJBT7ZKMuf9258x9V60=;
+        b=bbTu3voom/QhAAf5sJcArCFcCcbNY1CYqjvacHrutrp4T1L0WC3x36xYInuJGzvvJu
+         lrKpib6NxkVLH4twUmvmWzGYkq0oEfpLecMK/2nCl8go5EN49n5ijSVMR1pZq+hPZRAP
+         gXWGTz2hoB2nScEO9CuSDCpc72fZ6jHOdbG/iBd8N0v0drEzSDAPisaKxKK6G43GgwtL
+         ZXoA1/+LqWTcQmlCKuag3lOI6fSxNTIXfWJGjVWJUbyeN+aM3uCQaayK7GqASxJBPOUN
+         YC9P/WQyzFIg0CSWmMQ0J/gB51gO9Tec9utmQOv2Lyu+EVAV1uE1KHXezsv6we6yU7Kf
+         xulg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739292751; x=1739897551;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=6sNX3j45BuYX0jqFY0bgET5KHTO0uCeEEB9Pem3dY6c=;
-        b=tdel42yp57v7xS/O1sYfDj3AbEPvTGfmR+XgQiG5LYedX3AbPrqnfm4sk5ZJR4EvaO
-         gqomPlI2wGMPT8H3OZNqqeEpFRP/DCHmxdnznwoGronsmNhzrGVvRR3/y1U9SrcoJ67o
-         hw3FmFfh06wLnjiuiFv95k5MVhql6ErLutpvoQd0/ZPRKI3WXPQFS9I7frKNVps96vC1
-         +GwoS4XlFIDcLwsYVnnih4m71z4GVKX6AcHYZ0EYKldsriKhmvJ82vcUwCpka4k8IwHZ
-         gYuLxHcI44vuiuB9bBYcJ5Trcp+ftAHnkvziW4Q0katPkLxDV4UWXNdulZZ+F44vfkL/
-         yAMA==
-X-Gm-Message-State: AOJu0YwGBNVJa6pL7q1Q1d0e+jx+L9jC3RMkRZ5NFOJrUtIPVVGHCfUx
-	zqm7KYL2/EX2yfbBBJdrmgb8sIOCL7YBEOIdtCqOGN7C640b3S9Rkvf656Qiqpo=
-X-Gm-Gg: ASbGncs0kiou6yQwdwqYdkFH0wQ9RCMXgIBQYaDDnR9HE2lA6+d6/0SojP0C49N/MSB
-	fc7Iauowszj4xRaUPGMg9kyDfQ9HR1l4yTEBPTT+6Tx7D9giz1q2vM737rgWSMdO13yy9g3TfHt
-	GvTR5zdWUrBiBkhaFaIa8QcI4KfiFPBRFS2JSmVvIGETm4UGwJVFYHd4OZ9l0g3eZiY0n7shBtE
-	TKjZRAEpG8JhDl+Af+yzauRgHdvRrRto9+M03oLOgyHmLrL/dGSm0Vj5WhTUmESR+fuRmj7raw8
-	gZEuMTaR1c4y2Fzl2XTgKZgBmX+qWBAxsDsckxQq/arru9zH72XH+WQ=
-X-Google-Smtp-Source: AGHT+IGwAQZHSvMn3LFzLELKwxJYuB/UImaOPmixiwxZOIOHILOslZ5QYNsoJGgex4CGSOLd3rMkpw==
-X-Received: by 2002:a05:6a21:9184:b0:1ed:75f4:d290 with SMTP id adf61e73a8af0-1ee03b41778mr35357775637.29.1739292750665;
-        Tue, 11 Feb 2025 08:52:30 -0800 (PST)
-Received: from [192.168.0.4] (71-212-39-66.tukw.qwest.net. [71.212.39.66])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73048a9d7aesm9610968b3a.33.2025.02.11.08.52.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Feb 2025 08:52:30 -0800 (PST)
-Message-ID: <a1803d33-c92a-4294-acd0-a2152fb0c163@linaro.org>
-Date: Tue, 11 Feb 2025 08:52:28 -0800
+        d=1e100.net; s=20230601; t=1739294138; x=1739898938;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=kfGl96TFJZs2GWRZT7rxZNxukJBT7ZKMuf9258x9V60=;
+        b=BkU4d/ekxlHrZ/0Z31t+oln0jjlTP9XGFAhMusP1/sNl53auvcQ4r/Lgd/nPuAf64o
+         LRox10eFvJ/axQv65KQ73h30oLruEyzHiYAYgkUvxcGS5UDUg+o8J6WssKKLBMD/NNWD
+         vFpKKpGxWh7bVd4vnthotN254kkslfxz5DyebFa41BjQOKgZ7qkvzqepPC3FjEMNm+hK
+         P1YnqFW9/EHDOde3Nvk9zTalZE/tdG1JpC5pYOBhGUIyJtQG4oKQGi/RdnvSyFgsBo3F
+         NJi2chySE6n/wuxAidBf8O1BPBsIemFGVS1MvrZri2RpuhuCty+MD+VwldSW3tQxgR+j
+         WN+w==
+X-Forwarded-Encrypted: i=1; AJvYcCUkUC/II9T1pQlhzHwg+FnVKTgIbudaI+VodwlJy1i2P9UX1+gBTd87cuQJuQgIjeg/CHd47cX43O7ScsYm@vger.kernel.org, AJvYcCW9SaO3aGmWer6AsEZJHc185YCRKDhQR0rkNTLD8i3o/9BgGGLKbou9wz5uBRSDegghAShloStg6Wzd2Q==@vger.kernel.org, AJvYcCXAmj9pawRe6E+ANaRzkOK2lZKHlbmaS0kzgadO0C+gc6Ffgu8vLZjpeV16IjKVWiQuNxnKMaZP@vger.kernel.org
+X-Gm-Message-State: AOJu0YwOuX5shYLCMlH4rsOAWd5fduPAD5EF+zgE8L15H1DP+RsRdER+
+	T9+f9ayYMd8nc3ol4QevCMcT88gMkTHDAQYBVX+0ePsqA3q7E/DQWdSJDzsMTTOwPk2JbgHADCb
+	QoESuPSeWXtYOh4kJWSWlzNikNC+V065g
+X-Gm-Gg: ASbGnctH7S0dHoKSoICdYsjPYDLfmKRrYi3ntsknzYzNClzPJhG6hPVF+7B5Gczu0D7
+	UMSeswKGWXvqGt4e9aP2CFOO8ooZP80G9m4Qq+pE25OTpW5Z1OlvrsU0PRuIyO8JNUVqMJ2g=
+X-Google-Smtp-Source: AGHT+IHXhXIil0mJkKjM0UNPwB+/GIcgp4QxQg+uZGbCFB7Hzd0beIjAU9fNHW0TvAqCYPNh0xLEqV7JrtPYjKUwYE4=
+X-Received: by 2002:a05:651c:4cb:b0:308:eb34:1037 with SMTP id
+ 38308e7fff4ca-309036d7af3mr1310821fa.23.1739294138031; Tue, 11 Feb 2025
+ 09:15:38 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] arch/alpha: optimize virt_to_phys with compiler automatic
- sign extension
-To: Zhou Stephen Eta <stephen.eta.zhou@outlook.com>,
- "mattst88@gmail.com" <mattst88@gmail.com>, "arnd@arndb.de" <arnd@arndb.de>,
- "paulmck@kernel.org" <paulmck@kernel.org>,
- "linus.walleij@linaro.org" <linus.walleij@linaro.org>
-Cc: "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <BYAPR12MB32057EF854A36230B5BC7E1AD5FD2@BYAPR12MB3205.namprd12.prod.outlook.com>
-Content-Language: en-US
-From: Richard Henderson <richard.henderson@linaro.org>
-In-Reply-To: <BYAPR12MB32057EF854A36230B5BC7E1AD5FD2@BYAPR12MB3205.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20250204223524.6207-1-ink@unseen.parts> <9a70a5806083499db5649f8c76167a1a61cde058.camel@physik.fu-berlin.de>
+In-Reply-To: <9a70a5806083499db5649f8c76167a1a61cde058.camel@physik.fu-berlin.de>
+From: Matt Turner <mattst88@gmail.com>
+Date: Tue, 11 Feb 2025 12:15:25 -0500
+X-Gm-Features: AWEUYZkLtW6GbKRbmIuUzfDkea097tD_F3kJE3D2DWvxdVKj23WttOx86_vFV4g
+Message-ID: <CAEdQ38EwN5Ybm31GxOdo-tE6U8Wa4imWZgY=VjmGB=X_XQSaog@mail.gmail.com>
+Subject: Re: [PATCH v3 0/3] alpha: stack fixes
+To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc: Ivan Kokshaysky <ink@unseen.parts>, Richard Henderson <richard.henderson@linaro.org>, 
+	Oleg Nesterov <oleg@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, 
+	"Paul E. McKenney" <paulmck@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>, 
+	Magnus Lindholm <linmag7@gmail.com>, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2/11/25 01:32, Zhou Stephen Eta wrote:
->  From 0bf2dd816c8369e2c690869b5f6c671f28c2b196 Mon Sep 17 00:00:00 2001
-> From: "stephen.eta.zhou" <stephen.eta.zhou@outlook.com>
-> Date: Tue, 11 Feb 2025 16:48:14 +0800
-> Subject: [PATCH] arch/alpha: optimize virt_to_phys with compiler automatic
->   sign extension
-> 
-> In the `virt_to_phys` function, the following changes have been made:
-> 1. **Automatic Sign Extension**:
->     - The manual sign extension code has been replaced with the
->       compiler's automatic sign extension.
->     - This simplifies the code and leverages the
->       compiler's optimization.
-> 
-> 2. **Fix for 64-bit Address Overflow**:
->     - Previously, when the input was a 64-bit address with a
->       negative high bit (sign bit), the sign extension caused an
->       overflow, resulting in an incorrect conversion to 0.
->     - This issue has been addressed by using the compiler's
->       automatic sign extension,
->       which ensures proper handling of negative addresses.
-> 
-> 3. **NULL Pointer Check**:
->     - A NULL pointer check has been added at the
->       beginning of the function.
->     - If the address is NULL, the function now
->       returns 0 to prevent potential crashes.
-> 
-> Signed-off-by: stephen.eta.zhou <stephen.eta.zhou@outlook.com>
-> ---
->   arch/alpha/include/asm/io.h | 8 +++++---
->   1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h
-> index 65fe1e54c6da..4d7cd7486b7d 100644
-> --- a/arch/alpha/include/asm/io.h
-> +++ b/arch/alpha/include/asm/io.h
-> @@ -70,9 +70,11 @@ static inline unsigned long virt_to_phys(volatile void *address)
->   {
->           unsigned long phys = (unsigned long)address;
->   
-> -	/* Sign-extend from bit 41.  */
-> -	phys <<= (64 - 41);
-> -	phys = (long)phys >> (64 - 41);
-> +	if (!address)
-> +		return 0;
-> +
-> +	/* Automatic Sign-extend  */
-> +	phys = (long)phys;
+On Tue, Feb 11, 2025 at 2:20=E2=80=AFAM John Paul Adrian Glaubitz
+<glaubitz@physik.fu-berlin.de> wrote:
+>
+> Hi,
+>
+> On Tue, 2025-02-04 at 23:35 +0100, Ivan Kokshaysky wrote:
+> > This series fixes oopses on Alpha/SMP observed since kernel v6.9. [1]
+> > Thanks to Magnus Lindholm for identifying that remarkably longstanding
+> > bug.
+> >
+> > The problem is that GCC expects 16-byte alignment of the incoming stack
+> > since early 2004, as Maciej found out [2]:
+> >   Having actually dug speculatively I can see that the psABI was change=
+d in
+> >  GCC 3.5 with commit e5e10fb4a350 ("re PR target/14539 (128-bit long do=
+uble
+> >  improperly aligned)") back in Mar 2004, when the stack pointer alignme=
+nt
+> >  was increased from 8 bytes to 16 bytes, and arch/alpha/kernel/entry.S =
+has
+> >  various suspicious stack pointer adjustments, starting with SP_OFF whi=
+ch
+> >  is not a whole multiple of 16.
+> >
+> > Also, as Magnus noted, "ALPHA Calling Standard" [3] required the same:
+> >  D.3.1 Stack Alignment
+> >   This standard requires that stacks be octaword aligned at the time a
+> >   new procedure is invoked.
+> >
+> > However:
+> > - the "normal" kernel stack is always misaligned by 8 bytes, thanks to
+> >   the odd number of 64-bit words in 'struct pt_regs', which is the very
+> >   first thing pushed onto the kernel thread stack;
+> > - syscall, fault, interrupt etc. handlers may, or may not, receive alig=
+ned
+> >   stack depending on numerous factors.
+> >
+> > Somehow we got away with it until recently, when we ended up with
+> > a stack corruption in kernel/smp.c:smp_call_function_single() due to
+> > its use of 32-byte aligned local data and the compiler doing clever
+> > things allocating it on the stack.
+> >
+> > Patche 1 is preparatory; 2 - the main fix; 3 - fixes remaining
+> > special cases.
+> >
+> > Ivan.
+> >
+> > [1] https://lore.kernel.org/rcu/CA+=3DFv5R9NG+1SHU9QV9hjmavycHKpnNyerQ=
+=3DEi90G98ukRcRJA@mail.gmail.com/#r
+> > [2] https://lore.kernel.org/rcu/alpine.DEB.2.21.2501130248010.18889@ang=
+ie.orcam.me.uk/
+> > [3] https://bitsavers.org/pdf/dec/alpha/Alpha_Calling_Standard_Rev_2.0_=
+19900427.pdf
+> > ---
+> > Changes in v2:
+> > - patch #1: provide empty 'struct pt_regs' to fix compile failure in li=
+bbpf,
+> >   reported by John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>;
+> >   update comment and commit message accordingly;
+> > - cc'ed <stable@vger.kernel.org> as older kernels ought to be fixed as =
+well.
+> >
+> > Changes in v3:
+> > - patch #1 dropped for the time being;
+> > - updated commit messages as Maciej suggested.
+> > ---
+> > Ivan Kokshaysky (3):
+> >   alpha: replace hardcoded stack offsets with autogenerated ones
+> >   alpha: make stack 16-byte aligned (most cases)
+> >   alpha: align stack for page fault and user unaligned trap handlers
+> >
+> >  arch/alpha/include/uapi/asm/ptrace.h |  2 ++
+> >  arch/alpha/kernel/asm-offsets.c      |  4 ++++
+> >  arch/alpha/kernel/entry.S            | 24 ++++++++++--------------
+> >  arch/alpha/kernel/traps.c            |  2 +-
+> >  arch/alpha/mm/fault.c                |  4 ++--
+> >  5 files changed, 19 insertions(+), 17 deletions(-)
+>
+> Can we get this landed this week, maybe for v6.14-rc3? This way it will q=
+uickly
+> backported to various stable kernels which means it will reach Debian uns=
+table
+> within a few days.
+>
+> Thanks,
+> Adrian
 
-NACK.  What do you think this does?  What it doesn't do is sign-extend from bit 41.
+Yeah, I'll vacuum the patches up and send them to Linus.
 
+I've been running them on my ES47 and while my ES47 is still unstable,
+these patches definitely solve this bug [1] and fix failures I saw
+with the rcu_torture module!
 
-r~
+Thanks a bunch to all of you!
+
+[1] https://bugzilla.kernel.org/show_bug.cgi?id=3D213143
