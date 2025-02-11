@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70DCD1E4937;
-	Tue, 11 Feb 2025 01:32:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A1DC1E5B72;
+	Tue, 11 Feb 2025 01:32:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739237525; cv=none; b=cY95daU3AK150KMTOtn4icGWpq/YLSi99d3BdhFhonMej359eegNs6kSSNYfcq3EN7Sle5hT5KeoG1THbEG/CjHYVxE4EuZ9iByMHNZ8GeVfkNnNXp4f4jFWCsedEoHoexNefIQHTXg+uM898D6I7wJ2H88HZkyOaCWiNLtYf2g=
+	t=1739237548; cv=none; b=NagzCO2raVJ8QVexyQyR0zMhW7dWrbotgwS8y/pmJix07dYIgiuyp0jObJrdhJD6LikilbkGhEsC3cdWvAb9Pbqa4f6yMF3pSuSBDfjmhM0Wt9cADG2VTbFTJ4Hv6+/gHtYbmPUBeLicM8KktbbTEQ5SzwvR5qzq1YcHIk2Ym6I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739237525; c=relaxed/simple;
-	bh=P72an3e1vo2m0gnAleO0ICIl3WNOaFBtZO7YjWEr43k=;
+	s=arc-20240116; t=1739237548; c=relaxed/simple;
+	bh=0ug/+8KuAHUsl07eDqakTaAjCd0t7b1nPlP7xiUXDxI=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Aro606RABh1WQl5PGtGnb24cm1DZ1CQpA2NUPTr5uvguzO5dxWtRNTwLyAkuK0ZNbdSjBAid4rqCukz8Gv08ePpshgTna0xdT3hvQnNHGb7nGqxDvQfRDMQRhxMeZ8jhdKxMiNHGKp8HnyAAn35yRHZRE1xTeV/qIs3DZq7F6J0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qk3Zun0I; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=t1co4HeqH05OTw3dxcOeGK2LZc82LV23IdIdg5OcxbYFSpKsV4q30w594jyWVMexMm9wqV4qJAbDWgD76bOH2aROivBQX05cb1rPYu4tCnt8SgqV9OMCto6JNLtgmC3Pa/mTtiq6lxnDBaHDe45gOFHIKhDRjR1HIgSYh+jnomA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RTu2tmLt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qk3Zun0I"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 443E0C4CEE7;
-	Tue, 11 Feb 2025 01:32:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RTu2tmLt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E659C4CED1;
+	Tue, 11 Feb 2025 01:32:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739237525;
-	bh=P72an3e1vo2m0gnAleO0ICIl3WNOaFBtZO7YjWEr43k=;
+	s=k20201202; t=1739237548;
+	bh=0ug/+8KuAHUsl07eDqakTaAjCd0t7b1nPlP7xiUXDxI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Qk3Zun0IjIT+484QXLNzqrxCpkJXlTl3KjTKSRJPwHhhaNPiCcp/dNFh+4f1/RxEi
-	 iIDhuvK+QLyPhzGzj4CTMULXZrzcj0HcEuZGzVERAbSM18IbAT4nFMNoqa5HnanUgh
-	 KnsE5EWN0v96okuZUEHRbXuiNM6/h7im5wN+ub8s3Yf1ySINb1B7OOHgHt+DBujV/R
-	 IiAFhKkmERpX1koiWdAsUDIGmD+DQOmSpiSAgVvqJWHfBtZsVCp5WKrLQ1tHRcbsRW
-	 3v+BwN8MpeG0dv/w5gK2qrIgYKZkxkd3/EvvZuvVwFThL2uVicEr0DIZIWoE6TfzIx
-	 hDFtW3ZL7MCvA==
+	b=RTu2tmLthjgRXNHKOsjQtA8iWVdZB6fqZY2UlXRJTsiC13g5nX19w4A/dB2fKOihZ
+	 pzXz6f+D8fQha+QaR6TxwC4MUmVDMAvuIebxPJtYxvsAjwKaMHM1j2lqrTilqckoX8
+	 NPB7DalKaTticbOS9EmGsBsUGXShn7Ow5vLrgFaGiCcEKoHa95X5PmXzti04nGgZ3G
+	 p/8F9Z2nAfJIGClAd12Rxs+5HVOkeCjUb2G2O6tCIp1iecANQma2efgorGWNs9Gmw9
+	 VK+LDjyXVc9Zvf+vZTVYzHEJqOD+VjBCRuzlR87SdQyD6+zq1jx2sFMc5NI9uJaUu5
+	 8vtbETvGG8bnw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -37,19 +37,20 @@ Cc: "Eric W. Biederman" <ebiederm@xmission.com>,
 	Sasha Levin <sashal@kernel.org>,
 	mattst88@gmail.com,
 	paulmck@kernel.org,
-	brauner@kernel.org,
 	viro@zeniv.linux.org.uk,
 	akpm@linux-foundation.org,
-	broonie@kernel.org,
+	brauner@kernel.org,
+	Liam.Howlett@Oracle.com,
 	rick.p.edgecombe@intel.com,
+	broonie@kernel.org,
 	linux-alpha@vger.kernel.org,
 	linux-mm@kvack.org
-Subject: [PATCH AUTOSEL 6.6 14/15] alpha/elf: Fix misc/setarch test of util-linux by removing 32bit support
-Date: Mon, 10 Feb 2025 20:31:34 -0500
-Message-Id: <20250211013136.4098219-14-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 10/11] alpha/elf: Fix misc/setarch test of util-linux by removing 32bit support
+Date: Mon, 10 Feb 2025 20:32:05 -0500
+Message-Id: <20250211013206.4098522-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250211013136.4098219-1-sashal@kernel.org>
-References: <20250211013136.4098219-1-sashal@kernel.org>
+In-Reply-To: <20250211013206.4098522-1-sashal@kernel.org>
+References: <20250211013206.4098522-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -58,7 +59,7 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.6.76
+X-stable-base: Linux 6.1.128
 Content-Transfer-Encoding: 8bit
 
 From: "Eric W. Biederman" <ebiederm@xmission.com>
@@ -109,7 +110,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  4 files changed, 6 insertions(+), 21 deletions(-)
 
 diff --git a/arch/alpha/include/asm/elf.h b/arch/alpha/include/asm/elf.h
-index e6da23f1da830..adc87404ef87f 100644
+index 8049997fa372a..2039a8c8d5473 100644
 --- a/arch/alpha/include/asm/elf.h
 +++ b/arch/alpha/include/asm/elf.h
 @@ -74,7 +74,7 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
@@ -121,7 +122,7 @@ index e6da23f1da830..adc87404ef87f 100644
  
  /*
   * These are used to set parameters in the core dumps.
-@@ -139,10 +139,6 @@ extern int dump_elf_task(elf_greg_t *dest, struct task_struct *task);
+@@ -145,10 +145,6 @@ extern int dump_elf_task_fp(elf_fpreg_t *dest, struct task_struct *task);
  	: amask (AMASK_CIX) ? "ev6" : "ev67");	\
  })
  
@@ -133,10 +134,10 @@ index e6da23f1da830..adc87404ef87f 100644
  extern int alpha_l1d_cacheshape;
  extern int alpha_l2_cacheshape;
 diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
-index 635f0a5f5bbde..02e8817a89212 100644
+index 9e45f6735d5d2..6fe4e9deeb5ef 100644
 --- a/arch/alpha/include/asm/pgtable.h
 +++ b/arch/alpha/include/asm/pgtable.h
-@@ -360,7 +360,7 @@ static inline pte_t pte_swp_clear_exclusive(pte_t pte)
+@@ -322,7 +322,7 @@ extern inline pte_t mk_swap_pte(unsigned long type, unsigned long offset)
  
  extern void paging_init(void);
  
@@ -146,7 +147,7 @@ index 635f0a5f5bbde..02e8817a89212 100644
  
  #endif /* _ALPHA_PGTABLE_H */
 diff --git a/arch/alpha/include/asm/processor.h b/arch/alpha/include/asm/processor.h
-index 55bb1c09fd39d..5dce5518a2111 100644
+index 714abe494e5fd..916a2dd782c1a 100644
 --- a/arch/alpha/include/asm/processor.h
 +++ b/arch/alpha/include/asm/processor.h
 @@ -8,23 +8,19 @@
@@ -176,10 +177,10 @@ index 55bb1c09fd39d..5dce5518a2111 100644
  /* This is dead.  Everything has been moved to thread_info.  */
  struct thread_struct { };
 diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index 5db88b6274396..ebd076fad804f 100644
+index c54469b369cb6..03b70b6c92502 100644
 --- a/arch/alpha/kernel/osf_sys.c
 +++ b/arch/alpha/kernel/osf_sys.c
-@@ -1211,8 +1211,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
+@@ -1213,8 +1213,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
  	return ret;
  }
  
@@ -189,7 +190,7 @@ index 5db88b6274396..ebd076fad804f 100644
  
  static unsigned long
  arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
-@@ -1234,13 +1233,7 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
+@@ -1236,13 +1235,7 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
  		       unsigned long len, unsigned long pgoff,
  		       unsigned long flags)
  {
