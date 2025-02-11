@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AD06268347;
-	Tue, 11 Feb 2025 01:32:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0DA826A191;
+	Tue, 11 Feb 2025 01:33:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739237567; cv=none; b=QysLhsCs5kwJE/d2DSRfjDEOvWCROjgo/E6ICwtxu94YVBfH04Nl8Iye0VgcFJLzqA++yHJgOoSQ59mXI+TaOx/WSehUiD8HPPE/cWOwz4+uDcFYbG7qU1+Us80bN/ta/BQJ2ZlRq7QCItkQLuLeKl3+MNDFBxkFM4uaSFChV5U=
+	t=1739237584; cv=none; b=u8ZH9FWWMf+emsXTA19cJ+WV20Ht3rnNvAE/Bz1ojEnT9SBX8XiRPsWIhtampiiRcfiKuHrHYG/62p96nsNBCv7sl649cm6haZoMqeFW84HQrIHNxD2gGfJza97JsJc89pcfiiq1+DdtoNy20KNS3uIAfrwI3S6FRNPpsp8TyPk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739237567; c=relaxed/simple;
-	bh=4FeYUV86SVK6fSi2L6wSPLJGlg2gxzYIzB41ZvNrLMs=;
+	s=arc-20240116; t=1739237584; c=relaxed/simple;
+	bh=9JDAfwiHQZA0CMfuWS0zwByLT1iFvASOULym5ITbciI=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=IDJk9jQWxS/aLKdkvwE8sRBbmDmXElMlAfv0b4eAorRRLdFKhT3c5sLtvXYtX+y+4SJg5QKUaMpqQmnce3i2YOqH+TKOTPBPi/cfJkqdxBv4q7Er41a9GSqiv5/fo46QhJIRcKnIzUPjzckvrpoZFWfaxoZD2wOM1nHgFfOqVzQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=T2OYidUT; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=Pt+3r+T4NPBrGj6WE84ihPix8XrhMKmjIX+jHdVoje3rRrG97bRiHY29GiE3Dsz3q+b27/+xZrlVtipNqDM1ZFqEMfKZ4YUk3wxQFSczTfL8bq/IEI6mkcrgRQlroS3JLLcZa8U29srSG/9zfl+yaQTMQBsYKhpDfteO98uI4Ys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xd1oqB50; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="T2OYidUT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A817C4CED1;
-	Tue, 11 Feb 2025 01:32:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xd1oqB50"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADE12C4CED1;
+	Tue, 11 Feb 2025 01:33:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739237566;
-	bh=4FeYUV86SVK6fSi2L6wSPLJGlg2gxzYIzB41ZvNrLMs=;
+	s=k20201202; t=1739237583;
+	bh=9JDAfwiHQZA0CMfuWS0zwByLT1iFvASOULym5ITbciI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=T2OYidUTZZc3YiUKkOq5sV2Sx8FBQe6nfYibml8bXIgVHb06sIPUvW1j5Qy0NUI6C
-	 kFUXWqj3hlEOcUP2cOb2MsRXuB3HSv13RZjJK6Ic7n2BCV6pRamD/iEz6O4/fW6dC8
-	 V6vo6iD+zYJASpvEdVKQz7Qs0NhR+isZVenrq5RU8oqxT7KSSkJQBQMz3sK4IWk9bO
-	 fdGf99bb8ppXfBOFBu4HqnhflQKLwlf4hlKhceCBiiJmqY3KuPJoafJTU5rrl6k3xa
-	 CG+wrsC0UCHyfpSSwAe3ciF6nNQOLm+LxEdVCBUZt15Ki4obN5v6XNBqRGZ/y6E6mo
-	 R8JJPYWNpx6fQ==
+	b=Xd1oqB50Tt9ZCuGlpy5eSCd9dgAWHu+WTbX2/+qmH2rS8nT+H6Ht998Tw9a8xeElO
+	 FN6H5u4/WJBFD3qlrDHP8iMjokhAzq7B1v/0oyC8L9JSo0YMxAgDaMWlfFaZHiCVJe
+	 D5dZvsRPE/twz5/eiPR7Kj07/boDeWDdaGR32x4F96zp67av7+5gOXwnzkBUD8Yhq9
+	 yrzfF0h012gkxqPgLRpA12i66zh2LdFfQhJoTKbh1jvGR9hh+4Nk89nfGtjHyjheMy
+	 VNNzQD8PkWafnMg88PAVtt3UTCXCItwQfWhrBhIfIbLEoFuebFUaQirISuKLJBg6gB
+	 CSG9p5tcLMcHA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -37,19 +37,19 @@ Cc: "Eric W. Biederman" <ebiederm@xmission.com>,
 	Sasha Levin <sashal@kernel.org>,
 	mattst88@gmail.com,
 	paulmck@kernel.org,
-	viro@zeniv.linux.org.uk,
 	brauner@kernel.org,
+	viro@zeniv.linux.org.uk,
 	akpm@linux-foundation.org,
 	rick.p.edgecombe@intel.com,
 	broonie@kernel.org,
 	linux-alpha@vger.kernel.org,
 	linux-mm@kvack.org
-Subject: [PATCH AUTOSEL 5.15 8/9] alpha/elf: Fix misc/setarch test of util-linux by removing 32bit support
-Date: Mon, 10 Feb 2025 20:32:29 -0500
-Message-Id: <20250211013230.4098681-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 7/8] alpha/elf: Fix misc/setarch test of util-linux by removing 32bit support
+Date: Mon, 10 Feb 2025 20:32:47 -0500
+Message-Id: <20250211013248.4098848-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250211013230.4098681-1-sashal@kernel.org>
-References: <20250211013230.4098681-1-sashal@kernel.org>
+In-Reply-To: <20250211013248.4098848-1-sashal@kernel.org>
+References: <20250211013248.4098848-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -58,7 +58,7 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.15.178
+X-stable-base: Linux 5.10.234
 Content-Transfer-Encoding: 8bit
 
 From: "Eric W. Biederman" <ebiederm@xmission.com>
@@ -133,10 +133,10 @@ index 8049997fa372a..2039a8c8d5473 100644
  extern int alpha_l1d_cacheshape;
  extern int alpha_l2_cacheshape;
 diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
-index 02f0429f1068a..8e3cf3c9f913d 100644
+index 12c120e436a24..1cffeda415a44 100644
 --- a/arch/alpha/include/asm/pgtable.h
 +++ b/arch/alpha/include/asm/pgtable.h
-@@ -340,7 +340,7 @@ extern inline pte_t mk_swap_pte(unsigned long type, unsigned long offset)
+@@ -347,7 +347,7 @@ extern inline pte_t mk_swap_pte(unsigned long type, unsigned long offset)
  
  extern void paging_init(void);
  
@@ -176,7 +176,7 @@ index 6100431da07a3..d27db62c3247d 100644
  typedef struct {
  	unsigned long seg;
 diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index 8bbeebb73cf03..2dfb69a2ae43a 100644
+index d5367a1c6300c..6f53eecbb5755 100644
 --- a/arch/alpha/kernel/osf_sys.c
 +++ b/arch/alpha/kernel/osf_sys.c
 @@ -1212,8 +1212,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
