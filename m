@@ -1,209 +1,154 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0DA826A191;
-	Tue, 11 Feb 2025 01:33:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D30601EDA37;
+	Tue, 11 Feb 2025 07:23:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739237584; cv=none; b=u8ZH9FWWMf+emsXTA19cJ+WV20Ht3rnNvAE/Bz1ojEnT9SBX8XiRPsWIhtampiiRcfiKuHrHYG/62p96nsNBCv7sl649cm6haZoMqeFW84HQrIHNxD2gGfJza97JsJc89pcfiiq1+DdtoNy20KNS3uIAfrwI3S6FRNPpsp8TyPk=
+	t=1739258612; cv=none; b=PZXpsmvZNZO+IEKuCJxbmhaQr2kjtvjpQ2TtMmCTDGGF7HzZuDb6/BeJynYQAHmoRFs8pSdMOqOIYfI7RMRg9zoiCdMf9wvICObEezLEr6ZkggIYzmEosmY7g/0sEsJyPtmgMSdNpTGv/sOlbyPT+9epEcJ2mvCkq2+POf5slcw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739237584; c=relaxed/simple;
-	bh=9JDAfwiHQZA0CMfuWS0zwByLT1iFvASOULym5ITbciI=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Pt+3r+T4NPBrGj6WE84ihPix8XrhMKmjIX+jHdVoje3rRrG97bRiHY29GiE3Dsz3q+b27/+xZrlVtipNqDM1ZFqEMfKZ4YUk3wxQFSczTfL8bq/IEI6mkcrgRQlroS3JLLcZa8U29srSG/9zfl+yaQTMQBsYKhpDfteO98uI4Ys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xd1oqB50; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739258612; c=relaxed/simple;
+	bh=UWJM5C0X6jg73GF3CAKzpkI5JGcapvJ3PDDVYAlgRc0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Tkir7h7cQCfySEbXYU/7bmWXDgCq/BYSOzS26CjtLbX0J/pJ9fX3rzMJbYJuGhCVj6J3Aq/uSgvQjmnpTc5dShiM8Emb28+nZTXIIvykCrjf2hHbSat49syVyG0Qh3daEUKJ+qFtd8GFPzvw0EoGhSAYUcikHkpmjn7E6dpe/38=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=Nko3S0IT; arc=none smtp.client-ip=130.133.4.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xd1oqB50"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADE12C4CED1;
-	Tue, 11 Feb 2025 01:33:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739237583;
-	bh=9JDAfwiHQZA0CMfuWS0zwByLT1iFvASOULym5ITbciI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Xd1oqB50Tt9ZCuGlpy5eSCd9dgAWHu+WTbX2/+qmH2rS8nT+H6Ht998Tw9a8xeElO
-	 FN6H5u4/WJBFD3qlrDHP8iMjokhAzq7B1v/0oyC8L9JSo0YMxAgDaMWlfFaZHiCVJe
-	 D5dZvsRPE/twz5/eiPR7Kj07/boDeWDdaGR32x4F96zp67av7+5gOXwnzkBUD8Yhq9
-	 yrzfF0h012gkxqPgLRpA12i66zh2LdFfQhJoTKbh1jvGR9hh+4Nk89nfGtjHyjheMy
-	 VNNzQD8PkWafnMg88PAVtt3UTCXCItwQfWhrBhIfIbLEoFuebFUaQirISuKLJBg6gB
-	 CSG9p5tcLMcHA==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Kees Cook <kees@kernel.org>,
-	Sasha Levin <sashal@kernel.org>,
-	mattst88@gmail.com,
-	paulmck@kernel.org,
-	brauner@kernel.org,
-	viro@zeniv.linux.org.uk,
-	akpm@linux-foundation.org,
-	rick.p.edgecombe@intel.com,
-	broonie@kernel.org,
-	linux-alpha@vger.kernel.org,
-	linux-mm@kvack.org
-Subject: [PATCH AUTOSEL 5.10 7/8] alpha/elf: Fix misc/setarch test of util-linux by removing 32bit support
-Date: Mon, 10 Feb 2025 20:32:47 -0500
-Message-Id: <20250211013248.4098848-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250211013248.4098848-1-sashal@kernel.org>
-References: <20250211013248.4098848-1-sashal@kernel.org>
+	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="Nko3S0IT"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=gXAxZaL3ngoWD1PltbbXQgbkIXLOLON/P4Nk8X4kGkY=; t=1739258609; x=1739863409; 
+	b=Nko3S0ITgh1+CDQWxBwJuX7fcsmQAsjjDSbVVOPkaADjdY4HQjuzqObLaiLxMkkzgLQIhUGotE+
+	VcDvMgG6x/aU0zsbmvnI1g/sy2rc173GpBrHy1IdusOXTxAD5c8s6CbyMkUwRzZsVCU0w4tUB0jXZ
+	yy1K6bQpMI13KuXC8ib8kxCI30x1G/7auP1mQqmjVW1kzKkGT+mPfEFcKOIjbgd7by2lS8C5QEsiD
+	K2ec8MLyHO5eodrIq2ffIOtGPvT2vo5+CnBF17ueM+keeH4Y+AFlLDZvMdhq5T2FYeM6i/vmJ7NE2
+	o6rdlp57BPqc7h+A+PN0xYoA+mo0FsA8Y4rg==;
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.98)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1thkYo-00000003Hlj-0Vvt; Tue, 11 Feb 2025 08:19:58 +0100
+Received: from p5dc5515a.dip0.t-ipconnect.de ([93.197.81.90] helo=suse-laptop.fritz.box)
+          by inpost2.zedat.fu-berlin.de (Exim 4.98)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1thkYn-00000000VEl-3bs6; Tue, 11 Feb 2025 08:19:58 +0100
+Message-ID: <9a70a5806083499db5649f8c76167a1a61cde058.camel@physik.fu-berlin.de>
+Subject: Re: [PATCH v3 0/3] alpha: stack fixes
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To: Ivan Kokshaysky <ink@unseen.parts>, Richard Henderson	
+ <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, Oleg
+ Nesterov	 <oleg@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>, Arnd
+ Bergmann	 <arnd@arndb.de>, "Paul E. McKenney" <paulmck@kernel.org>
+Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, Magnus Lindholm
+ <linmag7@gmail.com>, 	linux-alpha@vger.kernel.org,
+ linux-kernel@vger.kernel.org, 	stable@vger.kernel.org
+Date: Tue, 11 Feb 2025 08:19:57 +0100
+In-Reply-To: <20250204223524.6207-1-ink@unseen.parts>
+References: <20250204223524.6207-1-ink@unseen.parts>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.3 
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.10.234
-Content-Transfer-Encoding: 8bit
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-ZEDAT-Hint: PO
 
-From: "Eric W. Biederman" <ebiederm@xmission.com>
+Hi,
 
-[ Upstream commit b029628be267cba3c7684ec684749fe3e4372398 ]
+On Tue, 2025-02-04 at 23:35 +0100, Ivan Kokshaysky wrote:
+> This series fixes oopses on Alpha/SMP observed since kernel v6.9. [1]
+> Thanks to Magnus Lindholm for identifying that remarkably longstanding
+> bug.
+>=20
+> The problem is that GCC expects 16-byte alignment of the incoming stack
+> since early 2004, as Maciej found out [2]:
+>   Having actually dug speculatively I can see that the psABI was changed =
+in
+>  GCC 3.5 with commit e5e10fb4a350 ("re PR target/14539 (128-bit long doub=
+le
+>  improperly aligned)") back in Mar 2004, when the stack pointer alignment
+>  was increased from 8 bytes to 16 bytes, and arch/alpha/kernel/entry.S ha=
+s
+>  various suspicious stack pointer adjustments, starting with SP_OFF which
+>  is not a whole multiple of 16.
+>=20
+> Also, as Magnus noted, "ALPHA Calling Standard" [3] required the same:
+>  D.3.1 Stack Alignment
+>   This standard requires that stacks be octaword aligned at the time a
+>   new procedure is invoked.
+>=20
+> However:
+> - the "normal" kernel stack is always misaligned by 8 bytes, thanks to
+>   the odd number of 64-bit words in 'struct pt_regs', which is the very
+>   first thing pushed onto the kernel thread stack;
+> - syscall, fault, interrupt etc. handlers may, or may not, receive aligne=
+d
+>   stack depending on numerous factors.
+>=20
+> Somehow we got away with it until recently, when we ended up with
+> a stack corruption in kernel/smp.c:smp_call_function_single() due to
+> its use of 32-byte aligned local data and the compiler doing clever
+> things allocating it on the stack.
+>=20
+> Patche 1 is preparatory; 2 - the main fix; 3 - fixes remaining
+> special cases.
+>=20
+> Ivan.
+>=20
+> [1] https://lore.kernel.org/rcu/CA+=3DFv5R9NG+1SHU9QV9hjmavycHKpnNyerQ=3D=
+Ei90G98ukRcRJA@mail.gmail.com/#r
+> [2] https://lore.kernel.org/rcu/alpine.DEB.2.21.2501130248010.18889@angie=
+.orcam.me.uk/
+> [3] https://bitsavers.org/pdf/dec/alpha/Alpha_Calling_Standard_Rev_2.0_19=
+900427.pdf
+> ---
+> Changes in v2:
+> - patch #1: provide empty 'struct pt_regs' to fix compile failure in libb=
+pf,
+>   reported by John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>;
+>   update comment and commit message accordingly;
+> - cc'ed <stable@vger.kernel.org> as older kernels ought to be fixed as we=
+ll.
+>=20
+> Changes in v3:
+> - patch #1 dropped for the time being;
+> - updated commit messages as Maciej suggested.
+> ---
+> Ivan Kokshaysky (3):
+>   alpha: replace hardcoded stack offsets with autogenerated ones
+>   alpha: make stack 16-byte aligned (most cases)
+>   alpha: align stack for page fault and user unaligned trap handlers
+>=20
+>  arch/alpha/include/uapi/asm/ptrace.h |  2 ++
+>  arch/alpha/kernel/asm-offsets.c      |  4 ++++
+>  arch/alpha/kernel/entry.S            | 24 ++++++++++--------------
+>  arch/alpha/kernel/traps.c            |  2 +-
+>  arch/alpha/mm/fault.c                |  4 ++--
+>  5 files changed, 19 insertions(+), 17 deletions(-)
 
-Richard Henderson <richard.henderson@linaro.org> writes[1]:
+Can we get this landed this week, maybe for v6.14-rc3? This way it will qui=
+ckly
+backported to various stable kernels which means it will reach Debian unsta=
+ble
+within a few days.
 
-> There was a Spec benchmark (I forget which) which was memory bound and ran
-> twice as fast with 32-bit pointers.
->
-> I copied the idea from DEC to the ELF abi, but never did all the other work
-> to allow the toolchain to take advantage.
->
-> Amusingly, a later Spec changed the benchmark data sets to not fit into a
-> 32-bit address space, specifically because of this.
->
-> I expect one could delete the ELF bit and personality and no one would
-> notice. Not even the 10 remaining Alpha users.
+Thanks,
+Adrian
 
-In [2] it was pointed out that parts of setarch weren't working
-properly on alpha because it has it's own SET_PERSONALITY
-implementation.  In the discussion that followed Richard Henderson
-pointed out that the 32bit pointer support for alpha was never
-completed.
-
-Fix this by removing alpha's 32bit pointer support.
-
-As a bit of paranoia refuse to execute any alpha binaries that have
-the EF_ALPHA_32BIT flag set.  Just in case someone somewhere has
-binaries that try to use alpha's 32bit pointer support.
-
-Link: https://lkml.kernel.org/r/CAFXwXrkgu=4Qn-v1PjnOR4SG0oUb9LSa0g6QXpBq4ttm52pJOQ@mail.gmail.com [1]
-Link: https://lkml.kernel.org/r/20250103140148.370368-1-glaubitz@physik.fu-berlin.de [2]
-Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
-Reviewed-by: Richard Henderson <richard.henderson@linaro.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Tested-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Link: https://lore.kernel.org/r/87y0zfs26i.fsf_-_@email.froward.int.ebiederm.org
-Signed-off-by: Kees Cook <kees@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/alpha/include/asm/elf.h       |  6 +-----
- arch/alpha/include/asm/pgtable.h   |  2 +-
- arch/alpha/include/asm/processor.h |  8 ++------
- arch/alpha/kernel/osf_sys.c        | 11 ++---------
- 4 files changed, 6 insertions(+), 21 deletions(-)
-
-diff --git a/arch/alpha/include/asm/elf.h b/arch/alpha/include/asm/elf.h
-index 8049997fa372a..2039a8c8d5473 100644
---- a/arch/alpha/include/asm/elf.h
-+++ b/arch/alpha/include/asm/elf.h
-@@ -74,7 +74,7 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
- /*
-  * This is used to ensure we don't load something for the wrong architecture.
-  */
--#define elf_check_arch(x) ((x)->e_machine == EM_ALPHA)
-+#define elf_check_arch(x) (((x)->e_machine == EM_ALPHA) && !((x)->e_flags & EF_ALPHA_32BIT))
- 
- /*
-  * These are used to set parameters in the core dumps.
-@@ -145,10 +145,6 @@ extern int dump_elf_task_fp(elf_fpreg_t *dest, struct task_struct *task);
- 	: amask (AMASK_CIX) ? "ev6" : "ev67");	\
- })
- 
--#define SET_PERSONALITY(EX)					\
--	set_personality(((EX).e_flags & EF_ALPHA_32BIT)		\
--	   ? PER_LINUX_32BIT : PER_LINUX)
--
- extern int alpha_l1i_cacheshape;
- extern int alpha_l1d_cacheshape;
- extern int alpha_l2_cacheshape;
-diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
-index 12c120e436a24..1cffeda415a44 100644
---- a/arch/alpha/include/asm/pgtable.h
-+++ b/arch/alpha/include/asm/pgtable.h
-@@ -347,7 +347,7 @@ extern inline pte_t mk_swap_pte(unsigned long type, unsigned long offset)
- 
- extern void paging_init(void);
- 
--/* We have our own get_unmapped_area to cope with ADDR_LIMIT_32BIT.  */
-+/* We have our own get_unmapped_area */
- #define HAVE_ARCH_UNMAPPED_AREA
- 
- #endif /* _ALPHA_PGTABLE_H */
-diff --git a/arch/alpha/include/asm/processor.h b/arch/alpha/include/asm/processor.h
-index 6100431da07a3..d27db62c3247d 100644
---- a/arch/alpha/include/asm/processor.h
-+++ b/arch/alpha/include/asm/processor.h
-@@ -8,23 +8,19 @@
- #ifndef __ASM_ALPHA_PROCESSOR_H
- #define __ASM_ALPHA_PROCESSOR_H
- 
--#include <linux/personality.h>	/* for ADDR_LIMIT_32BIT */
--
- /*
-  * We have a 42-bit user address space: 4TB user VM...
-  */
- #define TASK_SIZE (0x40000000000UL)
- 
--#define STACK_TOP \
--  (current->personality & ADDR_LIMIT_32BIT ? 0x80000000 : 0x00120000000UL)
-+#define STACK_TOP (0x00120000000UL)
- 
- #define STACK_TOP_MAX	0x00120000000UL
- 
- /* This decides where the kernel will search for a free chunk of vm
-  * space during mmap's.
-  */
--#define TASK_UNMAPPED_BASE \
--  ((current->personality & ADDR_LIMIT_32BIT) ? 0x40000000 : TASK_SIZE / 2)
-+#define TASK_UNMAPPED_BASE (TASK_SIZE / 2)
- 
- typedef struct {
- 	unsigned long seg;
-diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index d5367a1c6300c..6f53eecbb5755 100644
---- a/arch/alpha/kernel/osf_sys.c
-+++ b/arch/alpha/kernel/osf_sys.c
-@@ -1212,8 +1212,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
- 	return ret;
- }
- 
--/* Get an address range which is currently unmapped.  Similar to the
--   generic version except that we know how to honor ADDR_LIMIT_32BIT.  */
-+/* Get an address range which is currently unmapped. */
- 
- static unsigned long
- arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
-@@ -1235,13 +1234,7 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
- 		       unsigned long len, unsigned long pgoff,
- 		       unsigned long flags)
- {
--	unsigned long limit;
--
--	/* "32 bit" actually means 31 bit, since pointers sign extend.  */
--	if (current->personality & ADDR_LIMIT_32BIT)
--		limit = 0x80000000;
--	else
--		limit = TASK_SIZE;
-+	unsigned long limit = TASK_SIZE;
- 
- 	if (len > limit)
- 		return -ENOMEM;
--- 
-2.39.5
-
+--=20
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
