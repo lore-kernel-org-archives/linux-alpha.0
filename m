@@ -1,154 +1,185 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04olkn2079.outbound.protection.outlook.com [40.92.46.79])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D30601EDA37;
-	Tue, 11 Feb 2025 07:23:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739258612; cv=none; b=PZXpsmvZNZO+IEKuCJxbmhaQr2kjtvjpQ2TtMmCTDGGF7HzZuDb6/BeJynYQAHmoRFs8pSdMOqOIYfI7RMRg9zoiCdMf9wvICObEezLEr6ZkggIYzmEosmY7g/0sEsJyPtmgMSdNpTGv/sOlbyPT+9epEcJ2mvCkq2+POf5slcw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739258612; c=relaxed/simple;
-	bh=UWJM5C0X6jg73GF3CAKzpkI5JGcapvJ3PDDVYAlgRc0=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Tkir7h7cQCfySEbXYU/7bmWXDgCq/BYSOzS26CjtLbX0J/pJ9fX3rzMJbYJuGhCVj6J3Aq/uSgvQjmnpTc5dShiM8Emb28+nZTXIIvykCrjf2hHbSat49syVyG0Qh3daEUKJ+qFtd8GFPzvw0EoGhSAYUcikHkpmjn7E6dpe/38=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=Nko3S0IT; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5EBF1E9B03;
+	Tue, 11 Feb 2025 09:32:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.46.79
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739266332; cv=fail; b=Uy31CAlALb7IAJEzxlbFjWxNnTSuIDnJMkrYh5deosD92YFs3ePg0c//KfRp1r2lGG0u/ku6X2DFK51jggtlx9fEISDpSQl8abdWp/axEkc5Xn6RS7bBw68zjlv55L4T6SQJBc+6FNVrZHEhK+8Ybs6hcTSyvOQ7sqN5x5pTCno=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739266332; c=relaxed/simple;
+	bh=e3vA3cdqJ/nbpne+XOXKFCm9omBKYmuns200vOG+b2w=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=ZybN8vbbUndpPywsoyQDK8RSVozXsr7DPsbuxT2XjeM4sNc8s0c50yQaWLaz8WNhFjafd4cNav5tZ8fbrW4pduCWw2/RYzo+fPtefXpgNlOUNB3lMVUKHkTF5+AkoBbMYbCQg6dV3T0YBEuvgztZfl9dejujVubsg/ThGZggzYI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=YMNBlERf; arc=fail smtp.client-ip=40.92.46.79
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="Nko3S0IT"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=gXAxZaL3ngoWD1PltbbXQgbkIXLOLON/P4Nk8X4kGkY=; t=1739258609; x=1739863409; 
-	b=Nko3S0ITgh1+CDQWxBwJuX7fcsmQAsjjDSbVVOPkaADjdY4HQjuzqObLaiLxMkkzgLQIhUGotE+
-	VcDvMgG6x/aU0zsbmvnI1g/sy2rc173GpBrHy1IdusOXTxAD5c8s6CbyMkUwRzZsVCU0w4tUB0jXZ
-	yy1K6bQpMI13KuXC8ib8kxCI30x1G/7auP1mQqmjVW1kzKkGT+mPfEFcKOIjbgd7by2lS8C5QEsiD
-	K2ec8MLyHO5eodrIq2ffIOtGPvT2vo5+CnBF17ueM+keeH4Y+AFlLDZvMdhq5T2FYeM6i/vmJ7NE2
-	o6rdlp57BPqc7h+A+PN0xYoA+mo0FsA8Y4rg==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.98)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1thkYo-00000003Hlj-0Vvt; Tue, 11 Feb 2025 08:19:58 +0100
-Received: from p5dc5515a.dip0.t-ipconnect.de ([93.197.81.90] helo=suse-laptop.fritz.box)
-          by inpost2.zedat.fu-berlin.de (Exim 4.98)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1thkYn-00000000VEl-3bs6; Tue, 11 Feb 2025 08:19:58 +0100
-Message-ID: <9a70a5806083499db5649f8c76167a1a61cde058.camel@physik.fu-berlin.de>
-Subject: Re: [PATCH v3 0/3] alpha: stack fixes
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: Ivan Kokshaysky <ink@unseen.parts>, Richard Henderson	
- <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, Oleg
- Nesterov	 <oleg@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>, Arnd
- Bergmann	 <arnd@arndb.de>, "Paul E. McKenney" <paulmck@kernel.org>
-Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, Magnus Lindholm
- <linmag7@gmail.com>, 	linux-alpha@vger.kernel.org,
- linux-kernel@vger.kernel.org, 	stable@vger.kernel.org
-Date: Tue, 11 Feb 2025 08:19:57 +0100
-In-Reply-To: <20250204223524.6207-1-ink@unseen.parts>
-References: <20250204223524.6207-1-ink@unseen.parts>
-Content-Type: text/plain; charset="UTF-8"
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="YMNBlERf"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=NyXD6SKzsSJXi04E745lYenHOdRio6UYSwFewz+O5OMbmBKrN2ovsXhBq1w/ubxywkjfFS/j4ipsg766B+soyIvMj6mR160S3K5JBTDciglub5PdWYejEEtnmIb+otXnSpUc+ei6+ZZReJ9ZwJOdykNcoE16Fc+kt40fansVDObqNAXNHcobz9ZGIQWwkbgDZk3fi3Vzmz0/hiqQRj8F8miOhVSnweV7yM2xyAfEFEYjZuNEgdaoSuY/xoXPM2kSRA/xmkO1ee3EwfvBT/Sze8O0xx9EraiZwW5qbAn/PJ+6XEdjU1iX3LW9wQgUG1e1zJEXM0QHWMHllgabREpM7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cLh2VJMQuV822bogWn6lLj3879BSGO0GePo4oisjVSY=;
+ b=FeuveVDKxIGv30drxT489rKTi2qTNVw92H8scIDEKSOMj8Lcxi/sYeWinwBorW8XxuOJAJvCgUX92cboDB4LC3S3Dneui3WKLHON7rVieYcJwcneI8aaAF1HQQ1K2yl7/l0lkN8XcNg8yupor83hA9aVvdwu3RcKdy6tFkKrWNjLYdd10p/vmwKLwVZpMUZ2/PBwLtzTExzZFb2gGKX4p0Zus2Z8CoTmiBf5YDQtN2m1TeSvJNV/tL0H7wiSHbjsULe3sDulzHB9Hhhifk1IzihZjbTw+XeTSZivbNnpnZLCOdKRPRGd04spJc7DQcMLgJ6UA0jkrajCtG13Yo4MlA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cLh2VJMQuV822bogWn6lLj3879BSGO0GePo4oisjVSY=;
+ b=YMNBlERfCIkQA7pGD0zuMB/lMt4zOkSWpBVhc2z+NxarwjBGg/tY86LMEDZAIFu3KiSQOWJhoURWmPmJ/AFMtf/18o7nzW4ynIaJdFP6EFx25mBOsRAosa+m1D30m2VDf4vA5q8S1EqeeYZQ0sDAbf3dX4ODKJXAbI77E1mxCkeQ9Wd1FBKN3qhm2gDjswERpdZYXzncL+uiv5o3ZsP0XxddW8rH5p7JxFbZSQvcoZsyDZKl0xEbiqm8ijIGWbOu3T7IwDjBycrqd9fl2tOuVlKDHhQvpSX878bNoRIdffur0AurS1FcfzfrYpVCS/EOObRxT6cIKwCjZAeNckgYMw==
+Received: from BYAPR12MB3205.namprd12.prod.outlook.com (2603:10b6:a03:134::32)
+ by MW4PR12MB7166.namprd12.prod.outlook.com (2603:10b6:303:224::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8422.16; Tue, 11 Feb
+ 2025 09:32:08 +0000
+Received: from BYAPR12MB3205.namprd12.prod.outlook.com
+ ([fe80::489:5515:fcf2:b991]) by BYAPR12MB3205.namprd12.prod.outlook.com
+ ([fe80::489:5515:fcf2:b991%5]) with mapi id 15.20.8422.012; Tue, 11 Feb 2025
+ 09:32:08 +0000
+From: Zhou Stephen Eta <stephen.eta.zhou@outlook.com>
+To: "richard.henderson@linaro.org" <richard.henderson@linaro.org>,
+	"mattst88@gmail.com" <mattst88@gmail.com>, "arnd@arndb.de" <arnd@arndb.de>,
+	"paulmck@kernel.org" <paulmck@kernel.org>, "linus.walleij@linaro.org"
+	<linus.walleij@linaro.org>
+CC: "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH] arch/alpha: optimize virt_to_phys with compiler automatic
+ sign extension
+Thread-Topic: [PATCH] arch/alpha: optimize virt_to_phys with compiler
+ automatic sign extension
+Thread-Index: AQHbfGT8bXQnnoZcCkuc2ewxr4TU+w==
+Date: Tue, 11 Feb 2025 09:32:08 +0000
+Message-ID:
+ <BYAPR12MB32057EF854A36230B5BC7E1AD5FD2@BYAPR12MB3205.namprd12.prod.outlook.com>
+Accept-Language: en-US, zh-CN
+Content-Language: aa
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BYAPR12MB3205:EE_|MW4PR12MB7166:EE_
+x-ms-office365-filtering-correlation-id: b2b1f6ca-5198-4cf5-5a32-08dd4a7ef443
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|8060799006|15080799006|461199028|15030799003|19110799003|8062599003|102099032|440099028|3412199025|41001999003;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?rLLU7vJ12ohGwYSlxUmrvzYNrC5k3AFtxLzDUjSPMXh6FHwQn+AJA39C33RA?=
+ =?us-ascii?Q?Lr/+TjJEVN7my8xPUqXkM2YyXoL4jfGiD3DWHJW7othPtxRD9mnMyBZleR0m?=
+ =?us-ascii?Q?/o+dLT6n4mcZlhHf6i5EjqG4NaDC4RIBnUSYvhN061cJmA0XFPC8niNYIFBW?=
+ =?us-ascii?Q?uXBJlUsrYKxkhISJWDwjedpRpMYTW3fzihgvzlAxoAUah+ETiRpjNN6gJXbM?=
+ =?us-ascii?Q?PGpJ2xNBtG9fm0STv0nIfdiPTVZqHJhy20H5uWOA4SjeNIjQFJ9OPH9iwG65?=
+ =?us-ascii?Q?Iv43dYQ20KMgt0aoqqysdetZrdAHOs22aPX5mknZcnZmC4P70GSjvegjhfEw?=
+ =?us-ascii?Q?aw7xUxNG1VNGE+EZ2Mgq76Uh46gk+jjOjMJijAevowf6XMwUt/4vYHp6TbbP?=
+ =?us-ascii?Q?lE5V07prIpQWHPM3DtyPesnRaJ+ioH1kRHnmMcCmGVYVk76Z1IzGk1T9FwzG?=
+ =?us-ascii?Q?Swh7KiPS2IUppLkJ6FM69Wk0qz+8JNxAZo4JAdP2mOwozY0ghDyhq9oRFz2E?=
+ =?us-ascii?Q?I1vUGC4Dtenhiwe6deWzQdIOxyJaoLPpL+wQ64VwJ/AvVat0+TBBWU+MhHV8?=
+ =?us-ascii?Q?tlefGZxcF/X719vd1hbwJcuvQ919OsYEt8F8Pv8b3JP8guedoXt/8kTiRkji?=
+ =?us-ascii?Q?8OCHphh1jd5fXteo0oyae/a6uIrBAiXUD60Si8cXSgFsbvv0NRT/A7DAV1BK?=
+ =?us-ascii?Q?0feWxs504DNiKcmv/b6jnKL/dB8f/0YmoMUV678r7v6mkRfT3ux7l66+wptS?=
+ =?us-ascii?Q?ethSJJVfp4EMPix5GOY60j7zSTBjoIWDj2M3ulHDIqLtP/lDjv5fiY/oOJ8v?=
+ =?us-ascii?Q?Xf3rrIgb/K6IlMcmhzpVTXg58qMRisMMZ7ugauSJreY7OtQTrd6RfIeGx8vf?=
+ =?us-ascii?Q?ywopNFS/rQDZF1PfSCvMYzneBWeOkso6Se1MdiCc5JX85dwdmdJOSH83q5XI?=
+ =?us-ascii?Q?/rFzzL7AxiXpoVixoqAMXXX4tKHxr97ycgaKxCKM+2/xJs0m6+XK5cOhhjHY?=
+ =?us-ascii?Q?wFC+9nTcFaiYSUSXn7wMfylX6WgySAavwO5EwxLeI4Us9O+msbR2ENUR8DCq?=
+ =?us-ascii?Q?F4bJsgB0Ili2RjPFKrW1dLwj2v3UUx6Ief+2MNQ12jkOi47nj+w=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?eMqqc4po4Mg5fteATIcSOq4d4FmrsfbidjW0eV+BssIveGG9c4JRkY7u3i7z?=
+ =?us-ascii?Q?DRqvCnRb7WIWJ+dJ8tNmj5l+tS4yvojkM+H4zHZ4WmMMDovm+xyLix6FW2ae?=
+ =?us-ascii?Q?T2cixlgGjRZ4BzBPSdgu7TKvsPNVIqPWvWrw6oxneEH8lmXK6QA8TpgXx/LH?=
+ =?us-ascii?Q?iRzUiXXQi3AAyaPqPt0MZ3KnOhYdDOsSXNKGd0CsWFVrD3NXZwh24IFh9OBf?=
+ =?us-ascii?Q?OtleHNyLEza1WMY9bNuRKRfP/kbW/MgSqQY+Ham441/FbRp20Z/BDupw8ytQ?=
+ =?us-ascii?Q?nnatdDh0UvTW4BaXN/8mdDX5nYDQ1aFc8wjGBxg8Y2Rvhx3G2pxD1DmDjud4?=
+ =?us-ascii?Q?HdThqcBwexpQbgK8QDUQdrt2fGJBFvGelEnNTD8dg502h5Q72gZdp1CEQJB3?=
+ =?us-ascii?Q?/GkdxGCOJupUFyPfPEjNpo/PIf61lsTnwb2+kQKATlsFkqORF43OodTEKvt1?=
+ =?us-ascii?Q?GyEajaASI55JbZSKc10RsKl6o05JpgQLEhZt0MiXmoQjTMEGsj3QIvTHPNNS?=
+ =?us-ascii?Q?fvDF4U8eAdQfmOJ0CqoQKdR59GhAbm7Nl77XOW0LBTH5TrBxuGW89MwYobC5?=
+ =?us-ascii?Q?hu9wbO7h8MnPugYkdB8oat4zRXuRwfbbSNVKsFKn5BOXZnL21mwtQLnzxFjS?=
+ =?us-ascii?Q?jrAgshdgipOLqTfpyvyj71fkwEHyMbA96QY5F/1aVNLUenexGhxvMJ+B+Gef?=
+ =?us-ascii?Q?kUMEcNUH5k9HfYlUcYZejWInSCK2VHE6Qjfb1aD2dAGRKUZFsJ2UpBhROxV+?=
+ =?us-ascii?Q?OgKEA9pXTetzZP83ZKmDp2r53vbajJwH+F8FTnxNUfRD5UErNgNhH+M87q4k?=
+ =?us-ascii?Q?FDnLZEY6TZxbl4mPcV/9kn5C7QAjU8GOEo/xqwjz6pXuJKMb8TiUfj0Kc18W?=
+ =?us-ascii?Q?yOxF8S/lLQUKPlxFDJj0gJHqOpPtzIVbjwqptZZRlAAjGdHiXVaZRtqYz+j4?=
+ =?us-ascii?Q?F5cJlvA3XhyLqAcyN33l9EL1zBa0AucNdjSHmEyQaxIqmf+UcnnZF3qmOSNC?=
+ =?us-ascii?Q?QfxJ8mePuSHtThl1cr8LkbJxubvDZ+0OKQitPz2cBZj4/YmIyklZl9lha+W/?=
+ =?us-ascii?Q?IdN/H+Z6VAV7VVesIIOsb9HtM9YDWN4x5Uq9BwtWsVrbD/Iqd4t/BuY1gaBB?=
+ =?us-ascii?Q?LQSkDxkVXr8IcJpsNsWIZB4UEkgB2w9GECvEUV7VtGSFwp9fvzlpKz2+uHrI?=
+ =?us-ascii?Q?UVlUKJogGVmNNW+GzBMF+OcwvjIPHJaW+uokHbOwvB+HC/tLTPC/yMnN5ykC?=
+ =?us-ascii?Q?pvA7XknRvXKZJDUVpJ3e?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.3 
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3205.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: b2b1f6ca-5198-4cf5-5a32-08dd4a7ef443
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Feb 2025 09:32:08.0634
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7166
 
-Hi,
-
-On Tue, 2025-02-04 at 23:35 +0100, Ivan Kokshaysky wrote:
-> This series fixes oopses on Alpha/SMP observed since kernel v6.9. [1]
-> Thanks to Magnus Lindholm for identifying that remarkably longstanding
-> bug.
->=20
-> The problem is that GCC expects 16-byte alignment of the incoming stack
-> since early 2004, as Maciej found out [2]:
->   Having actually dug speculatively I can see that the psABI was changed =
-in
->  GCC 3.5 with commit e5e10fb4a350 ("re PR target/14539 (128-bit long doub=
-le
->  improperly aligned)") back in Mar 2004, when the stack pointer alignment
->  was increased from 8 bytes to 16 bytes, and arch/alpha/kernel/entry.S ha=
-s
->  various suspicious stack pointer adjustments, starting with SP_OFF which
->  is not a whole multiple of 16.
->=20
-> Also, as Magnus noted, "ALPHA Calling Standard" [3] required the same:
->  D.3.1 Stack Alignment
->   This standard requires that stacks be octaword aligned at the time a
->   new procedure is invoked.
->=20
-> However:
-> - the "normal" kernel stack is always misaligned by 8 bytes, thanks to
->   the odd number of 64-bit words in 'struct pt_regs', which is the very
->   first thing pushed onto the kernel thread stack;
-> - syscall, fault, interrupt etc. handlers may, or may not, receive aligne=
-d
->   stack depending on numerous factors.
->=20
-> Somehow we got away with it until recently, when we ended up with
-> a stack corruption in kernel/smp.c:smp_call_function_single() due to
-> its use of 32-byte aligned local data and the compiler doing clever
-> things allocating it on the stack.
->=20
-> Patche 1 is preparatory; 2 - the main fix; 3 - fixes remaining
-> special cases.
->=20
-> Ivan.
->=20
-> [1] https://lore.kernel.org/rcu/CA+=3DFv5R9NG+1SHU9QV9hjmavycHKpnNyerQ=3D=
-Ei90G98ukRcRJA@mail.gmail.com/#r
-> [2] https://lore.kernel.org/rcu/alpine.DEB.2.21.2501130248010.18889@angie=
-.orcam.me.uk/
-> [3] https://bitsavers.org/pdf/dec/alpha/Alpha_Calling_Standard_Rev_2.0_19=
-900427.pdf
-> ---
-> Changes in v2:
-> - patch #1: provide empty 'struct pt_regs' to fix compile failure in libb=
-pf,
->   reported by John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>;
->   update comment and commit message accordingly;
-> - cc'ed <stable@vger.kernel.org> as older kernels ought to be fixed as we=
-ll.
->=20
-> Changes in v3:
-> - patch #1 dropped for the time being;
-> - updated commit messages as Maciej suggested.
-> ---
-> Ivan Kokshaysky (3):
->   alpha: replace hardcoded stack offsets with autogenerated ones
->   alpha: make stack 16-byte aligned (most cases)
->   alpha: align stack for page fault and user unaligned trap handlers
->=20
->  arch/alpha/include/uapi/asm/ptrace.h |  2 ++
->  arch/alpha/kernel/asm-offsets.c      |  4 ++++
->  arch/alpha/kernel/entry.S            | 24 ++++++++++--------------
->  arch/alpha/kernel/traps.c            |  2 +-
->  arch/alpha/mm/fault.c                |  4 ++--
->  5 files changed, 19 insertions(+), 17 deletions(-)
-
-Can we get this landed this week, maybe for v6.14-rc3? This way it will qui=
-ckly
-backported to various stable kernels which means it will reach Debian unsta=
-ble
-within a few days.
-
-Thanks,
-Adrian
-
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+From 0bf2dd816c8369e2c690869b5f6c671f28c2b196 Mon Sep 17 00:00:00 2001=0A=
+From: "stephen.eta.zhou" <stephen.eta.zhou@outlook.com>=0A=
+Date: Tue, 11 Feb 2025 16:48:14 +0800=0A=
+Subject: [PATCH] arch/alpha: optimize virt_to_phys with compiler automatic=
+=0A=
+ sign extension=0A=
+=0A=
+In the `virt_to_phys` function, the following changes have been made:=0A=
+1. **Automatic Sign Extension**:=0A=
+   - The manual sign extension code has been replaced with the=0A=
+     compiler's automatic sign extension.=0A=
+   - This simplifies the code and leverages the=0A=
+     compiler's optimization.=0A=
+=0A=
+2. **Fix for 64-bit Address Overflow**:=0A=
+   - Previously, when the input was a 64-bit address with a=0A=
+     negative high bit (sign bit), the sign extension caused an=0A=
+     overflow, resulting in an incorrect conversion to 0.=0A=
+   - This issue has been addressed by using the compiler's=0A=
+     automatic sign extension,=0A=
+     which ensures proper handling of negative addresses.=0A=
+=0A=
+3. **NULL Pointer Check**:=0A=
+   - A NULL pointer check has been added at the=0A=
+     beginning of the function.=0A=
+   - If the address is NULL, the function now=0A=
+     returns 0 to prevent potential crashes.=0A=
+=0A=
+Signed-off-by: stephen.eta.zhou <stephen.eta.zhou@outlook.com>=0A=
+---=0A=
+ arch/alpha/include/asm/io.h | 8 +++++---=0A=
+ 1 file changed, 5 insertions(+), 3 deletions(-)=0A=
+=0A=
+diff --git a/arch/alpha/include/asm/io.h b/arch/alpha/include/asm/io.h=0A=
+index 65fe1e54c6da..4d7cd7486b7d 100644=0A=
+--- a/arch/alpha/include/asm/io.h=0A=
++++ b/arch/alpha/include/asm/io.h=0A=
+@@ -70,9 +70,11 @@ static inline unsigned long virt_to_phys(volatile void *=
+address)=0A=
+ {=0A=
+         unsigned long phys =3D (unsigned long)address;=0A=
+ =0A=
+-	/* Sign-extend from bit 41.  */=0A=
+-	phys <<=3D (64 - 41);=0A=
+-	phys =3D (long)phys >> (64 - 41);=0A=
++	if (!address)=0A=
++		return 0;=0A=
++=0A=
++	/* Automatic Sign-extend  */=0A=
++	phys =3D (long)phys;=0A=
+ =0A=
+ 	/* Crop to the physical address width of the processor.  */=0A=
+         phys &=3D (1ul << hwrpb->pa_bits) - 1;=0A=
+-- =0A=
+2.25.1=0A=
+=0A=
