@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4559EC5;
-	Tue, 11 Feb 2025 01:31:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70DCD1E4937;
+	Tue, 11 Feb 2025 01:32:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739237491; cv=none; b=JUTr+WqVVRT+dF22E6lIWIATQdwZ+i/U/HSCOfQcDYtMPJB8DzXGaKjk4AnAFYszmw+TlCxTDneMBLl8nU4I+/Zb9qkkcX3uRIDg0FwtpevYhXS2JyfrdK4WZ5H9pss6JkiUGhjb2Tt9L+34az5AwogoMpRMfOnaNT8vExh3IVQ=
+	t=1739237525; cv=none; b=cY95daU3AK150KMTOtn4icGWpq/YLSi99d3BdhFhonMej359eegNs6kSSNYfcq3EN7Sle5hT5KeoG1THbEG/CjHYVxE4EuZ9iByMHNZ8GeVfkNnNXp4f4jFWCsedEoHoexNefIQHTXg+uM898D6I7wJ2H88HZkyOaCWiNLtYf2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739237491; c=relaxed/simple;
-	bh=Ig8qMJYAZQesBNaEZK5qBZeRt3E0wfZj2uGiS9IzUYc=;
+	s=arc-20240116; t=1739237525; c=relaxed/simple;
+	bh=P72an3e1vo2m0gnAleO0ICIl3WNOaFBtZO7YjWEr43k=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=nEX5qvLrpxnB35fpSnre1W/B2UC9ZtWRi2u2kKo6BOP3d/vTA8WLkN6uEnVtxLmBQCLtjMMrJAmtwILoFkEWdPPNqKzGWBAVKf1sJQh4qTUnlfZtISvE1VU2FTw6+k9szBhyQzYeLpRVxiUFgdXvId1htB94TBbHKfyN84Op5YI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tRJkQRTH; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=Aro606RABh1WQl5PGtGnb24cm1DZ1CQpA2NUPTr5uvguzO5dxWtRNTwLyAkuK0ZNbdSjBAid4rqCukz8Gv08ePpshgTna0xdT3hvQnNHGb7nGqxDvQfRDMQRhxMeZ8jhdKxMiNHGKp8HnyAAn35yRHZRE1xTeV/qIs3DZq7F6J0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qk3Zun0I; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tRJkQRTH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9BA9C4CED1;
-	Tue, 11 Feb 2025 01:31:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qk3Zun0I"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 443E0C4CEE7;
+	Tue, 11 Feb 2025 01:32:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739237491;
-	bh=Ig8qMJYAZQesBNaEZK5qBZeRt3E0wfZj2uGiS9IzUYc=;
+	s=k20201202; t=1739237525;
+	bh=P72an3e1vo2m0gnAleO0ICIl3WNOaFBtZO7YjWEr43k=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=tRJkQRTHAURM9owh9TbWPruUwz96QVSbCA0oYnlfjTkSP/kF5GmP9Shwyi7z0jN0A
-	 V7mFOp0XEZEhgBiZIbzf7yTVduaa3PWFEI5TuPuuSY0FMbSUOUTa2tofhGH2Qj+oiT
-	 5gGNNmR7IYbcPMBQpU77Z1+o2YxXV0IHBPgPfjMnCcwK1Vy10obNMm4XIw1yIX5DCJ
-	 J21/wJ9B89sOsnTq6nNHXQEYwrWPZb1RB23g2j0PinTinoeWjNZ8wupxGGjF/Vr5UA
-	 XsC2TScd3n3RwD8Q//ADX7oYkUycyi+9FRNy4YB9pOO2MGU4yGYPMRvY19lpNqqd3Q
-	 RWqm+gWqsgnHA==
+	b=Qk3Zun0IjIT+484QXLNzqrxCpkJXlTl3KjTKSRJPwHhhaNPiCcp/dNFh+4f1/RxEi
+	 iIDhuvK+QLyPhzGzj4CTMULXZrzcj0HcEuZGzVERAbSM18IbAT4nFMNoqa5HnanUgh
+	 KnsE5EWN0v96okuZUEHRbXuiNM6/h7im5wN+ub8s3Yf1ySINb1B7OOHgHt+DBujV/R
+	 IiAFhKkmERpX1koiWdAsUDIGmD+DQOmSpiSAgVvqJWHfBtZsVCp5WKrLQ1tHRcbsRW
+	 3v+BwN8MpeG0dv/w5gK2qrIgYKZkxkd3/EvvZuvVwFThL2uVicEr0DIZIWoE6TfzIx
+	 hDFtW3ZL7MCvA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -36,19 +36,20 @@ Cc: "Eric W. Biederman" <ebiederm@xmission.com>,
 	Kees Cook <kees@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
 	mattst88@gmail.com,
-	viro@zeniv.linux.org.uk,
+	paulmck@kernel.org,
 	brauner@kernel.org,
+	viro@zeniv.linux.org.uk,
 	akpm@linux-foundation.org,
 	broonie@kernel.org,
 	rick.p.edgecombe@intel.com,
 	linux-alpha@vger.kernel.org,
 	linux-mm@kvack.org
-Subject: [PATCH AUTOSEL 6.12 17/19] alpha/elf: Fix misc/setarch test of util-linux by removing 32bit support
-Date: Mon, 10 Feb 2025 20:30:45 -0500
-Message-Id: <20250211013047.4096767-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.6 14/15] alpha/elf: Fix misc/setarch test of util-linux by removing 32bit support
+Date: Mon, 10 Feb 2025 20:31:34 -0500
+Message-Id: <20250211013136.4098219-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250211013047.4096767-1-sashal@kernel.org>
-References: <20250211013047.4096767-1-sashal@kernel.org>
+In-Reply-To: <20250211013136.4098219-1-sashal@kernel.org>
+References: <20250211013136.4098219-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -57,7 +58,7 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.12.13
+X-stable-base: Linux 6.6.76
 Content-Transfer-Encoding: 8bit
 
 From: "Eric W. Biederman" <ebiederm@xmission.com>
@@ -108,7 +109,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  4 files changed, 6 insertions(+), 21 deletions(-)
 
 diff --git a/arch/alpha/include/asm/elf.h b/arch/alpha/include/asm/elf.h
-index 4d7c46f50382e..50c82187e60ec 100644
+index e6da23f1da830..adc87404ef87f 100644
 --- a/arch/alpha/include/asm/elf.h
 +++ b/arch/alpha/include/asm/elf.h
 @@ -74,7 +74,7 @@ typedef elf_fpreg_t elf_fpregset_t[ELF_NFPREG];
@@ -120,7 +121,7 @@ index 4d7c46f50382e..50c82187e60ec 100644
  
  /*
   * These are used to set parameters in the core dumps.
-@@ -137,10 +137,6 @@ extern int dump_elf_task(elf_greg_t *dest, struct task_struct *task);
+@@ -139,10 +139,6 @@ extern int dump_elf_task(elf_greg_t *dest, struct task_struct *task);
  	: amask (AMASK_CIX) ? "ev6" : "ev67");	\
  })
  
@@ -175,7 +176,7 @@ index 55bb1c09fd39d..5dce5518a2111 100644
  /* This is dead.  Everything has been moved to thread_info.  */
  struct thread_struct { };
 diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
-index c0424de9e7cda..077a1407be6d7 100644
+index 5db88b6274396..ebd076fad804f 100644
 --- a/arch/alpha/kernel/osf_sys.c
 +++ b/arch/alpha/kernel/osf_sys.c
 @@ -1211,8 +1211,7 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __user *, txc_p)
@@ -188,9 +189,9 @@ index c0424de9e7cda..077a1407be6d7 100644
  
  static unsigned long
  arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
-@@ -1231,13 +1230,7 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
+@@ -1234,13 +1233,7 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
  		       unsigned long len, unsigned long pgoff,
- 		       unsigned long flags, vm_flags_t vm_flags)
+ 		       unsigned long flags)
  {
 -	unsigned long limit;
 -
