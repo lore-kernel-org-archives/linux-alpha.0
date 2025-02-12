@@ -1,82 +1,92 @@
-Received: from out-183.mta1.migadu.com (out-183.mta1.migadu.com [95.215.58.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7184A20B7E7
-	for <linux-alpha@vger.kernel.org>; Wed, 12 Feb 2025 11:15:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AAC2271824;
+	Wed, 12 Feb 2025 12:57:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739358960; cv=none; b=kRU8aHPte1Nei1o+3fJNShzB+B6SoTXNlfLkEq663X5QlSnzsoiGCjoKroUniqYQ5ubQEUspoS42LyeAhScCE0TRgKbUkL1Y/7jpl5MjixbiXdvrnw0674OMBbyeKTLVBT7QYxVxzVN8vPOeJ1khff9zQjruAsVRXqKpDNhGkPw=
+	t=1739365071; cv=none; b=uZFDGlHOA5e9t8HUWf4NU6PrQUQ5gT1ti2cgMqaITjNFzLIAcTKYRBjBG//KAqU8YE+uX2oOBMAmKQrC2/vy3XqC/xF4EmUvloVbmZ0i1Ys1dCj6jI4Nu/EuPbe899f45oO0WsJMswcLfr+n9FlJf2nmsv6r8nnDrnl9QPnUyNw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739358960; c=relaxed/simple;
-	bh=WYtHUND9hBAbnQwP77+rUM/btGdN4jw7BzumAFm3fH4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cUdvn6M6efezbxZXvXmZkdjq5FT8ohSArFeQLWJKXocs2dkgnapjeQUQgTrb6/hWITjg1wS5ixxODtkBrkoel4gA6ywuJcVGI2chsZhEegSyYbJM5Io4NF9TAhvltM0KAbK59mhNdznGXJYnG/FLY81wNZJFALLu9DG4gN3SyDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=WazfGzcz; arc=none smtp.client-ip=95.215.58.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="WazfGzcz"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1739358956;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=Kr/yp+z2yzlhwItC3YopAzacvObrzqFyIuCIGJbNTsA=;
-	b=WazfGzczwVB7vraan4TB295PIh5r+q8uwKgMAwmlHTdxZYvHPJF+CPAS8WY3UbxQaySpHq
-	x0m+wpuljobzunU0hdgCf1MhQBT3We38G5I8IeOzirO1GAVbrRvAz9eVBXIb9v1dKV+m49
-	Mid//t3hC/ak43XDZqIvp3TqSTa5fJE=
-From: Thorsten Blum <thorsten.blum@linux.dev>
-To: Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Guo Weikang <guoweikang.kernel@gmail.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	"Mike Rapoport (Microsoft)" <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>
-Cc: Thorsten Blum <thorsten.blum@linux.dev>,
-	linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] alpha: Use str_yes_no() helper in pci_dac_dma_supported()
-Date: Wed, 12 Feb 2025 12:14:47 +0100
-Message-ID: <20250212111449.3675-2-thorsten.blum@linux.dev>
+	s=arc-20240116; t=1739365071; c=relaxed/simple;
+	bh=1fQJ9/QoaiCE3XRCo0rze42eHMuZ87wHTMYWXy0JzSk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rEJryDGqUyp0UTiULYNLLpGSxmcwxuZ/eEbN0cFg+ay7VO2j3Wr5sSLSnpJev1rihWW9tsD/Ybo70TuhELyDYUFpQq4tfnxCrTEGghduUXJMk0Qse31Oz4j3snC0JLcO9Hl8njH45WeoPF6lhRkxFUOBcb1Jo5dO/9L1++M9ZAE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-aaf0f1adef8so1256650766b.3;
+        Wed, 12 Feb 2025 04:57:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739365067; x=1739969867;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=j+omTqBzUILm+6CyB0Br0bTGYlVV+kHRwXXStam8eq0=;
+        b=FidvBiEo5R2x9KaabmY/XnkLcnSV8/sESRkB33QTHuMKNvozdIGrahxDbmKbs1ER1r
+         opi3zt6CelV2EiylSQsbXYY0/wyrDLefJ38JFBGe48+Y9GaHLuXjmxlEtgIo29Fvhv3T
+         458AE+TA7Fi7RhGJ7U9VXVYw1TXBdYZU98OuBwNDlvCsIyMHCAmRltFBOzGq87NTarqC
+         cFOLK00+Et9HGLSFowSrBi5TJQT7dhEMv6oAlAyqYmFrH20MonMlP5Gvb/gw4Zymol2n
+         4KTEZ2jZqFFcvfTlEVHahQD8OQEWAZh4ezJZuIF1wAfIjCXPFW2dAa//P7FYnVMPpyW0
+         NA0g==
+X-Forwarded-Encrypted: i=1; AJvYcCVUAFo/3YKRCli/px2AvsA2s9JiQBaPg4HDMq8Y9va0KZjH3zs9ctadXIUAHqvd+NxLlT9LTL5TYD0u68k8@vger.kernel.org, AJvYcCXP0o20to/rUW0AZvHN9oKfLqUdIE4F8QBtsDdSZvtFKGSiLFygtaA3zZhO4lICKi1dY9O6klrH5kLvog==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwzekzaZff2I0zkvL1Xr2TEg9TQQ1XihW6ekapI6g5sFOktX9yo
+	zMUior+58MIHwEYB7QPNLSjVj9W0YELV7FYMTTm9CPkXcRQ/PPjq7A6rxIjAJOY=
+X-Gm-Gg: ASbGncsiHJOppVbRZzxZEI2EIhN8dTAKzUov6MA0ppKSS3UtpfaAA58hwjUhruWhnQc
+	Eez53XQAM0uxTL0tc1Xl16lcj3AIaE0snVioyj4eJuvUbwveRYa7V48IeLRNH2EimzoKznwar6E
+	MZ+3/cgeaqoEGhqo36bxVsTWbtzjHMXgRGKH/VSw8LCehTh0rvyMybpdsUr0SBFdAlhbr+qoUTL
+	HJootsUyksS9JpHVY5rHS5vJRYX+UQsGoSR9aqg2jW5vOyF5ML31n7VHj6ccEhZbk52xCzsigkx
+	rkad6rHNlJtV95dhFtof8jrFIrm79wOfB93wMddFMXK+mqKzsA7OFQ==
+X-Google-Smtp-Source: AGHT+IGOq9ERUslcLV2yMahTl/DW/mD3ioaQPVufgDYepNMLUztCai413N2H0Ft4q8c8y+OxwSQcNA==
+X-Received: by 2002:a17:907:6e8c:b0:ab7:d59c:41d0 with SMTP id a640c23a62f3a-ab7f3381283mr263332366b.20.1739365066844;
+        Wed, 12 Feb 2025 04:57:46 -0800 (PST)
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com. [209.85.208.46])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab7ced6fe0dsm487000166b.179.2025.02.12.04.57.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Feb 2025 04:57:44 -0800 (PST)
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-5de4f4b0e31so8755516a12.0;
+        Wed, 12 Feb 2025 04:57:43 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUha9wqxpDdqoRtSt1h/RsL8rue6fblttCjQV4LpyPj85ihvAA/SrbB1s+4zJ1byEqNdl0i22USGNgAvi1B@vger.kernel.org, AJvYcCXlvvqtP5oTAaqM4DKbd+Ww/Ztyby+0VfgXNg4JSlsqSzdfs15n5SkEYaNXW+42ixFAdo+YMwvxMiJ7lQ==@vger.kernel.org
+X-Received: by 2002:a05:6402:34d2:b0:5d3:cff5:634f with SMTP id
+ 4fb4d7f45d1cf-5deadde6002mr2835112a12.24.1739365063427; Wed, 12 Feb 2025
+ 04:57:43 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+References: <20250212111449.3675-2-thorsten.blum@linux.dev>
+In-Reply-To: <20250212111449.3675-2-thorsten.blum@linux.dev>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Wed, 12 Feb 2025 13:57:26 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXSaRCQMePxnfP7EdMUf4PU9ZCC09NsyHUSjhhXC=eT2A@mail.gmail.com>
+X-Gm-Features: AWEUYZnrp1PaU2E7y_Z-ScKjyKKRUdtJyijVggRYIiNip4_87QuBmsShUjRCjAY
+Message-ID: <CAMuHMdXSaRCQMePxnfP7EdMUf4PU9ZCC09NsyHUSjhhXC=eT2A@mail.gmail.com>
+Subject: Re: [PATCH] alpha: Use str_yes_no() helper in pci_dac_dma_supported()
+To: Thorsten Blum <thorsten.blum@linux.dev>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Guo Weikang <guoweikang.kernel@gmail.com>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, "Mike Rapoport (Microsoft)" <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Remove hard-coded strings by using the str_yes_no() helper function.
+On Wed, 12 Feb 2025 at 12:15, Thorsten Blum <thorsten.blum@linux.dev> wrote:
+> Remove hard-coded strings by using the str_yes_no() helper function.
+>
+> Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
 
-Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
----
- arch/alpha/kernel/pci_iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index 681f56089d9c..dc91de50f906 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -13,6 +13,7 @@
- #include <linux/log2.h>
- #include <linux/dma-map-ops.h>
- #include <linux/iommu-helper.h>
-+#include <linux/string_choices.h>
- 
- #include <asm/io.h>
- #include <asm/hwrpb.h>
-@@ -212,7 +213,7 @@ static int pci_dac_dma_supported(struct pci_dev *dev, u64 mask)
- 
- 	/* If both conditions above are met, we are fine. */
- 	DBGA("pci_dac_dma_supported %s from %ps\n",
--	     ok ? "yes" : "no", __builtin_return_address(0));
-+	     str_yes_no(ok), __builtin_return_address(0));
- 
- 	return ok;
- }
+Can't test it, though, my UDB died +20y ago...
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.48.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
