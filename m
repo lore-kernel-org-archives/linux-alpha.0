@@ -1,83 +1,63 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D700717E;
-	Fri, 14 Feb 2025 21:36:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC47717E;
+	Fri, 14 Feb 2025 21:39:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739569019; cv=none; b=WQY19768KJIV4ZaXUz2T8l6g5/GCfZqjfrrUg4qttIjK4aCXt4p+2CKbBN/h3J6/5jiIjB9P76HwujShfVwr9xDETY//TZawmmEzOFM3eQpQq04tPb0kKYeCaV+kWOzxcdkpgK2hM8wRfuN9dJBjtt5An3KXmxMrOC8omHs0Xtc=
+	t=1739569188; cv=none; b=G5dnKp/p+pP4gIu/9uIi+RPQqi2CLJPwPPbpceodTnlsdOHtDgLyvyEA09Laj9FHer/5w0MVRUeg6metXJhmOaGX5X9nmOD3S508Dt05EBFCcg8eV+uWR5xq6S+ATLgAWhV3S5Fq5rn/zGwn/UClSHoiYQT+2p1+aUpLElY0QGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739569019; c=relaxed/simple;
-	bh=SnQf8foKvD8I6yba94kKtPHlpE7Jkb6+41mwfXZKEIc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=opYwt8mNJsBywWhvwbTq+2X6Qvf6mZxcpeKDrflnvP1mjdNqguq+DOO09XJG5PNT0DCQK5JDjMRxBwsOuDd0EzDPuhur8ZV5wzPIDBjE88j9dx7CRjWw0qq3RQcA0CgLM8UxtGexwmK2DhQptY8PmlEENkUJDjYJVjxeX3NunpM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=htnhcFeN; arc=none smtp.client-ip=209.85.167.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1739569188; c=relaxed/simple;
+	bh=VzkB9qap+1n17Gpo5YQ5v9RQPiib6OD1lTvBAlIEUKU=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=ikfNCYYhGL+F4yoy5DExhgomSFzJ+LbSBhYidkn2dEJyeSdCdjFlDnJFD6XVMhBg1hIgwA24VE5i1/d3y8jCO7f7PNX8WhNAdvqfv0O1xR7193WJ38xkwSR+sJFK38kdNPYG1rrUCoeDnYUY6guhx1FBKJduvL9uvuXLNIkOtyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K7uns2QL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="htnhcFeN"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5450abbdce0so2687191e87.3;
-        Fri, 14 Feb 2025 13:36:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1739569016; x=1740173816; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=SnQf8foKvD8I6yba94kKtPHlpE7Jkb6+41mwfXZKEIc=;
-        b=htnhcFeNOy2H8p7heJ385L10EjxwFpT9KTPDJ9x/qB0dNlv2qZzZE/QIxx2GVUcWfq
-         gVk3BM++z+bVyQvx+edvWwA+b8ohW6bafVyuiJmNQvSHWXgZbwbk9pna/iumBinLweMP
-         8F+2f6HmxUzt73Hoe+0fX4rIWrEBiuHgNpdzF9ks9Sz/Yw62gB3KH4F7FX7lFAMnUH6N
-         +sZIC+jhPOMUR70vwYdWeSoek9RgxHrcI9kjwsq8V10ObHMZKbtfYCoE/cnvYNELoq/T
-         r8/iWiA80y4/zKlzfWziT6fRxJ/Wvgcx6PXJG9HX0bAN0sFue/ltOWniFirNoIUIOSZi
-         lZ1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739569016; x=1740173816;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=SnQf8foKvD8I6yba94kKtPHlpE7Jkb6+41mwfXZKEIc=;
-        b=lVdnSGQ/c+DuXZEuSYdIJ7RBNV9QAG3eep6Lv+4QbyY9pDKxK+d0Mp5g7syJNfCwYZ
-         fKeTgDyCC1n46zA/j4zUO+7yjA2Y4iarLQ6FjAUKP2FLuUK5NwtTm1U0SXR7Xhun+mM5
-         i8cf+Lqvs3YzCbk3Zn9pl6aWVpaCOiQK80ByOJ0S+lX/3t2n30kYQuFpIqdlQ3VTGKpw
-         izOWLQPBsXLJvpUa7mKVCuB3OgS1Dpw69RBnj1A7kTTOAOnZXPJuAmIienS1FjAJcV/0
-         YOQcibjQWEgo7kv85LzIOACcTNGaDpywiadGRM1JwTHNEn99S9UhgI5weEqyAo6PjfTD
-         6tRQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW+Zd7BW/UNAsoy854dYwgEEWZd+a1mG5jcxOVLPDNLkXt4Tmkz5tYb+I2DuJ8o1qDJeLDRKqBs1Ojg7g==@vger.kernel.org, AJvYcCW/4ndcxNq45PoayOY7l2rxAVkkxyXezV8y5zlS92NKVraZ2209DY26D+Ul2lZwdKti4taeSfFNrC3c7+Rn@vger.kernel.org
-X-Gm-Message-State: AOJu0YwGKVHJQbBfyVnz9on4jeSKrYA1YAqLPWJI60ULt9bTyZU8+rtb
-	zlDdYdolRvbSluCkVqTd09phUFCyBM3UgwJNoRbv7rmURq4oE4nHoUy2arrb0v9c6rfEy7bM4d8
-	caPMHo/aygkVOvRbg+3dXmVN5jGQxgw3x
-X-Gm-Gg: ASbGncsaEjAb4kdGyzIokQgep6jF7FD4np5bM143VDR0SNJzZzr/woSJ/uNWu0la03j
-	FBUnAxAmvgs4pI3vGaVEpCZ3EScsh8yV9poLtWA52gzrbKMSqjTaWn7wSd6b0xkbuzo/Ddzk=
-X-Google-Smtp-Source: AGHT+IFzoowX+0qzWRAqeyxZpxC+64fiapQHcokyXowLghWbeIi7apbulDxYg7/ETOnYQ0PZaiibVL8kVIZzq3O7V44=
-X-Received: by 2002:a05:6512:108a:b0:545:441:52d2 with SMTP id
- 2adb3069b0e04-5452fe5836emr380059e87.23.1739569015500; Fri, 14 Feb 2025
- 13:36:55 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K7uns2QL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26C3CC4CED1;
+	Fri, 14 Feb 2025 21:39:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739569188;
+	bh=VzkB9qap+1n17Gpo5YQ5v9RQPiib6OD1lTvBAlIEUKU=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=K7uns2QLllvT+SY8fJ/YHqgLpmMMliDpeMvq1PyBU2C4Lg7hmOWSpwILm1wYhkKIP
+	 pyUFWF/xAeq47gpFoXOlXXcsqRzRYonOGMr5Q+AsqWfwhnwh8hsTVhsehbr74fRgJL
+	 Qqenu+JXfnbTW27IrzXUlWiKzFNBcSUlXLsarZOlcqtQAP2X9OL//ayJSxaPIO/mZ4
+	 /jlN8xOBUfbrTknRlOU0DPNCFRAR7k1yx0in2h8+isWl0kFsVLiQtlCSSJGC+8P8Z2
+	 COjb22GUElm71R5D/Zel4CQ25zoGyFzQhOxRBmbF2dPIZHVuGraSMuTOFbpx6kGhlv
+	 +Im7xwQ/tzAHQ==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id B2E4F380CEE8;
+	Fri, 14 Feb 2025 21:40:18 +0000 (UTC)
+Subject: Re: Re: [PULL] alpha.git
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <CAEdQ38F6ts1qXj2xb+PN=O_byGwZAp1mvF8aRdTEq2zrzLBFSA@mail.gmail.com>
+References: <w3rw6n4cbgmlcylf5gbzzocqhyxjoyjy3qiedb7fzvd7jdwgap@44d323cbjljd> <CAEdQ38F6ts1qXj2xb+PN=O_byGwZAp1mvF8aRdTEq2zrzLBFSA@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAEdQ38F6ts1qXj2xb+PN=O_byGwZAp1mvF8aRdTEq2zrzLBFSA@mail.gmail.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git refs/heads/master
+X-PR-Tracked-Commit-Id: a80099a152d0719e2d8d750e07f4ffa991553d30
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/for-next
+X-PR-Merge-Commit-Id: 3447d220155bd9f4b5435ea6e9d58b536c7e94dd
+Message-Id: <173956921724.2112695.11506562234571397782.pr-tracker-bot@kernel.org>
+Date: Fri, 14 Feb 2025 21:40:17 +0000
+To: Matt Turner <mattst88@gmail.com>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>, Linus Torvalds <torvalds@linux-foundation.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <w3rw6n4cbgmlcylf5gbzzocqhyxjoyjy3qiedb7fzvd7jdwgap@44d323cbjljd>
-In-Reply-To: <w3rw6n4cbgmlcylf5gbzzocqhyxjoyjy3qiedb7fzvd7jdwgap@44d323cbjljd>
-From: Matt Turner <mattst88@gmail.com>
-Date: Fri, 14 Feb 2025 16:36:43 -0500
-X-Gm-Features: AWEUYZlqxfIUQ_BwTucFKH6H9EeGUkxGVRw42TkVJagTqreLLgS2GWG0ar3rdok
-Message-ID: <CAEdQ38F6ts1qXj2xb+PN=O_byGwZAp1mvF8aRdTEq2zrzLBFSA@mail.gmail.com>
-Subject: Re: [PULL] alpha.git
-To: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-alpha@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 
-Hi Stephen,
+The pull request you sent on Fri, 14 Feb 2025 16:36:43 -0500:
 
-The last time I sent a pull request to Linus he noted that the commits
-weren't in linux-next. I meant to sort that out before next time, but
-well, better late than never!
+> https://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git refs/heads/master
 
-Could you please add
-https://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git
-alpha-next to linux-next?
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/3447d220155bd9f4b5435ea6e9d58b536c7e94dd
 
-Thanks,
-Matt
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
