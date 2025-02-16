@@ -1,112 +1,83 @@
-Received: from mail.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE3CA3209;
-	Sun, 16 Feb 2025 11:06:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02D0B1AAC9;
+	Sun, 16 Feb 2025 17:08:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739704001; cv=none; b=hi1uWVFvKq7PNf2jmaJGVU808A1iuUG+nEgFH2MTUFQBDzE/M6Y6azgDwZwp9wX/4JjgTmF0oOhTB8nKm5rvHZf2vnxWTVMTmTdGxZvBtbVwzAJXtJvHrVC8zpGvQz0BTMMlaQETmryp2G2WNOYX5ku+ikn0nNOHUvA+vOSbHOw=
+	t=1739725695; cv=none; b=SrTmE9e8MnabfuPULrMHcVrF9/lwMOzmQBwJty3QUlsxaZDCjXjkc+lLDvXC7cR8c71gyg+XlNnRGHL0CcuvGybnt08ByJhxPUyp/mz3qKyowzh/uVwwNDJdl0xbiDlWVyHz0ei3C92m0xl1Ox4cDzqRSo8MzgJkq6GjpOCZeTw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739704001; c=relaxed/simple;
-	bh=2sLUpHPjXnj29AqxoEcLA40AhQ30jI32qBjj6pdtTe4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=n/V25Kf3DNoOArujrrHeg3X/Thm3qqQy3y/hbZGYAtaH23mCeAbWo2goJCMtYe2bBiQ1DdaD6ch4QckS0eB01v/qob4CO7/aK55Lc/jQybg3I6RtMpIi/Wi2+6T4dzszTEe/kDbga71G4BkGI4ieHSkSnsL1walHO+s7P7GwtV0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canb.auug.org.au; spf=pass smtp.mailfrom=canb.auug.org.au; dkim=pass (2048-bit key) header.d=canb.auug.org.au header.i=@canb.auug.org.au header.b=lcnM8hqF; arc=none smtp.client-ip=150.107.74.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canb.auug.org.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canb.auug.org.au
+	s=arc-20240116; t=1739725695; c=relaxed/simple;
+	bh=/N419Jjps23Vm5o3weAzAHFlgOhhlc9/Av3/FoZCn8k=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version; b=lrzOF3rdngKe56ehMoJGaVYTRvZjOWCAC2cFwutPy/7lup8i7fKlS/JkxsWE6HnF+8hktHw47I8VuN6Qwax1+Xq2yj1MH8gs8cUlWtmSeKbu1eO3WSRjD3lNxX9c5LPayJmsjTl8Rh5oXb9qeFDD+kp6WAtFKsIinMST8DAjqvo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D5Cc86cz; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=canb.auug.org.au header.i=@canb.auug.org.au header.b="lcnM8hqF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-	s=201702; t=1739703987;
-	bh=Bk42sfpIFzn5GMpdjl9AQd6GOHPhbLJezzNmh2dxWdI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=lcnM8hqFbq58IPUGvye+YYa8CDqNAZ4+c10uTczXKKfKy4UQRKFhHqFJhxMp3YGy+
-	 It6LSQ28PpSGDEuIclpPbY39jqYFSTXlisv/xn0iEzBESIq/rdM+NsHdBgngysp71t
-	 pvle0yyXmXKOWOksfHgdHlnINg/ASJpMj3JFsXBqo6Ss2aaqoyLoUFcHYIIt9ryhuP
-	 SnGVjrOONWy7Fw9XpBx72z8xw4ivR73jC36El58558sLp6np0wTuW6Lj126ZLZHDyb
-	 HQkUIV+jW8o4bf51YlMYc7/bNNZccEhRtQ2gNQ165L9uIqSutXGpVc4yVXjQ/tPiFO
-	 bHzfXfMWSlQOw==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ywjdv1L6tz4wvg;
-	Sun, 16 Feb 2025 22:06:27 +1100 (AEDT)
-Date: Sun, 16 Feb 2025 22:06:11 +1100
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-To: Matt Turner <mattst88@gmail.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
- linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PULL] alpha.git
-Message-ID: <20250216220611.41e33084@canb.auug.org.au>
-In-Reply-To: <CAEdQ38F6ts1qXj2xb+PN=O_byGwZAp1mvF8aRdTEq2zrzLBFSA@mail.gmail.com>
-References: <w3rw6n4cbgmlcylf5gbzzocqhyxjoyjy3qiedb7fzvd7jdwgap@44d323cbjljd>
-	<CAEdQ38F6ts1qXj2xb+PN=O_byGwZAp1mvF8aRdTEq2zrzLBFSA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D5Cc86cz"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-54622829175so79302e87.0;
+        Sun, 16 Feb 2025 09:08:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1739725692; x=1740330492; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/N419Jjps23Vm5o3weAzAHFlgOhhlc9/Av3/FoZCn8k=;
+        b=D5Cc86czePK3ElxOp4gv7LXDMhulXmbgpf38B5IzZS+3XKcSqpolRSlVypEYAQjaIm
+         MUj46jxNakescDg0rhWMKTN/XyN7ACXEDZ0Qa+eDSBeg8rxTxtTv4lJcMeRwGk3TGgVc
+         AGXIPJOcEUeQioyd6DczjnncIuAAL3MaEq1+xvyVWCXXXtjNLwuf7SVEW8VqRXwWHMtz
+         El7tj+idaDS5n/FsEnDEf8YWJkUNjgLd91bKtKAzwBoTWDeAe5D0WBqTChIEUqlseGtI
+         /3UtzJTKudT85dwa3X/R4WgBNyOKilTPgwaevEP55jhxLz3cBYhfVBNHcbZClr1mmlqS
+         8wlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739725692; x=1740330492;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/N419Jjps23Vm5o3weAzAHFlgOhhlc9/Av3/FoZCn8k=;
+        b=Bb+Axrke36wLJfzus0YgfDAWiOdBQjJVpdIHM8TBulelAPNM7nhU2BsHumvvS8yRKO
+         SFildBjYzamQh4jsLug5EwnNcxPD+MYq19eiACqQOS2DgoiBzJDIuyOS0KDc/+3kK8vO
+         undGSoB8mEDn3XO5P78+f7bh4Xr+QWEL1Jm7bL0JhAyj0ENK7JEWefBVTNX7Xa5Bmk0N
+         eMy1INZKsTbyn7+bKqHwcXOCdJ1e9froLNLhv1OMqGUA7nT4l3oU6E/snbj8RWuoYieS
+         M6F+jID8a8UFe0xYOmneUI9BbJwueSWIdsoThfWL4ph7K1pz2zZ0y6IRbTsviluidnOU
+         U3gw==
+X-Forwarded-Encrypted: i=1; AJvYcCVKIw6xJui6MrjP+oW8RdDSGHm+ogE84vyQGEo80WKk6vY0PUXZYfnY5G+92SWlYIb1L2MXlP7THVzSN44A@vger.kernel.org, AJvYcCXjv7ssJcstKi1mTxgaqP7J8D+txzRVU5CiBY1BC5fGpcpBaYwGAW76m/pHTboYY+MZWqQ/NpTFkE6Ctg==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxjhPwPyzYyh2x3NymegtbrvQr0lPpWjjSHxSl6ndhl7sD2Ofp/
+	Wt4uLfJ+qN5C+SZFcsDdZGrlzssnV8Ru60HelejK6YBH+m5OZQd/
+X-Gm-Gg: ASbGncu8D9kEZCq+YQaP4bbiw19h3O46TLgrkHdMLuOeHRA6795zq60ZVRPvHOJ8WX0
+	8B0495KHfz4na3OJIcYksPgqKg6hAENdPHeYnY2B3UXBdVkuXRDxWzg0Mx5Go8s6u6tC61mM4oJ
+	kjTtnJW+ZfYZt5CXSNpe/MkXp7xQqBXX5yk1OBK8zJ3yNESAOZwRuBrh1X+QAIUAnLGHcu0F29l
+	rc/fpByvI73yjTrq4WZondCOOZmuTJxiAqcSB0szP5bwLCOZluDgGRb5gxfOFAgxR7OBmuwXMTu
+	2d5XfvfBArI0CzFvtLEOEmv8PCga0UGgmP223G1LiOMW6dyrWJ/PiPwLX6MxXg==
+X-Google-Smtp-Source: AGHT+IG79RCqXdLXG/HYFwClaSDt/ZsTMc6dIp2bgXOZ71fA6MF40N8lXz97AC8QaU45ONheAhjtlw==
+X-Received: by 2002:a05:6512:ea1:b0:545:ae6:d73d with SMTP id 2adb3069b0e04-5452fe767f3mr2112547e87.45.1739725691902;
+        Sun, 16 Feb 2025 09:08:11 -0800 (PST)
+Received: from es40.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5452a67e6c3sm921808e87.1.2025.02.16.09.08.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 16 Feb 2025 09:08:11 -0800 (PST)
+From: Magnus Lindholm <linmag7@gmail.com>
+To: linmag7@gmail.com,
+	richard.henderson@linaro.org,
+	mattst88@gmail.com,
+	glaubitz@physik.fu-berlin.de,
+	ink@unseen.parts,
+	kees@kernel.org,
+	arnd@arndb.de,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org
+Subject: [PATCH 0/1] alpha: Fix pte_swp_exclusive on alpha
+Date: Sun, 16 Feb 2025 18:04:52 +0100
+Message-ID: <20250216170748.2258-1-linmag7@gmail.com>
+X-Mailer: git-send-email 2.48.1
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/3OIeJvs353bilnFMy4SaGNU";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 
---Sig_/3OIeJvs353bilnFMy4SaGNU
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi Matt,
-
-On Fri, 14 Feb 2025 16:36:43 -0500 Matt Turner <mattst88@gmail.com> wrote:
->
-> The last time I sent a pull request to Linus he noted that the commits
-> weren't in linux-next. I meant to sort that out before next time, but
-> well, better late than never!
->=20
-> Could you please add
-> https://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git
-> alpha-next to linux-next?
-
-Added from tomorrow.  I have put just you as a contact for problems
-with the tree (conflict, build failures ...), do you want anyone else -
-or a mailing list?
-
-Thanks for adding your subsystem tree as a participant of linux-next.  As
-you may know, this is not a judgement of your code.  The purpose of
-linux-next is for integration testing and to lower the impact of
-conflicts between subsystems in the next merge window.=20
-
-You will need to ensure that the patches/commits in your tree/series have
-been:
-     * submitted under GPL v2 (or later) and include the Contributor's
-        Signed-off-by,
-     * posted to the relevant mailing list,
-     * reviewed by you (or another maintainer of your subsystem tree),
-     * successfully unit tested, and=20
-     * destined for the current or next Linux merge window.
-
-Basically, this should be just what you would send to Linus (or ask him
-to fetch).  It is allowed to be rebased if you deem it necessary.
-
---=20
-Cheers,
-Stephen Rothwell=20
-sfr@canb.auug.org.au
-
---Sig_/3OIeJvs353bilnFMy4SaGNU
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmexxqQACgkQAVBC80lX
-0Gx7eQf9H1IkgWlGsdKYPZJE0JpJsLZxJwLsmAm9j0rTCgLYoo0UxXBFRiQsNGJO
-5YC/a7F/xjm/1TGb6Sk1ngjY+9o8QhtvjXJy2ZkzuHEDIy4GLj18igS5fdJkA9j2
-cmt61ufgV5uw2IsNHvbUuIfj67EmPT7Xfo/ZTKTscOA1cqiKWUoe6kuoFxL5oVQq
-ouogk6aVnbjTobyoW7IFMNNayFZ2yO2a8chmICin9+MzZg/HP84fAI7hE60X+N9w
-44x/hXjDSjKrBfUgcnkQhxsEvPYUdBr6s8G6fReEtgO7wwQR+s4NhD1OOd8M4LY6
-thp/S65/LwMASCbhEkdy+DATL1dtSA==
-=1J1E
------END PGP SIGNATURE-----
-
---Sig_/3OIeJvs353bilnFMy4SaGNU--
+First noticed that swapoff fails to unmount/free a previously used swap
+file or partition on alpha. swapoff fails to writeback exclusive swap
+pages and gets stuck in an infinite loop trying to do so. This was
+introduced in commit a172d5128706028ac07b8db709728379ecc72f6e. This
+patch provides a fix for pte_swp_exclusive. Verified on UP2000 alpha.
