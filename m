@@ -1,35 +1,35 @@
 Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFA3AD299;
-	Sun, 16 Feb 2025 17:22:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80562D299;
+	Sun, 16 Feb 2025 17:26:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739726559; cv=none; b=M0zSXqiNREaL/mztreAo76t529EYCgnOTIhqyMPiQbGnnpL0QhKav03yodMWszjx2VrayUCihXOjHVO3sEgAqt9yPHOakpwuh0oRBYxc5KjGXN03cq7dnHFpVr4CxbEtcZ3nJWXPwXlpC3kqYIkIOv+WiSLiXGtlm15I9YKW0d4=
+	t=1739726802; cv=none; b=IBW5EcFYP1AMXtzgtIVXAeQlHudG9kdSY05ipTBUZebFXvZNjB6B/+B9ce3NGlAa0+45INHiH6s4vVrVy0aWEUzUWZDe2+7QgvVOyuOpcRWUdaXJ8DVzn1BZtEe5AR4APB8yTKF3uwxmw6AOrMoYu7mNXVY/eMkluIMOyLQMhx4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739726559; c=relaxed/simple;
-	bh=sbVTzp/aswZC9d4F2sy5ZqtotgGiFEnB+GOs2yOh1hw=;
+	s=arc-20240116; t=1739726802; c=relaxed/simple;
+	bh=uEt464/h2m3GqGiapkNB2JJvR+MVEX5A4+rFNpOFjck=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nqtk6gB8gsjEL81xZt3JbiL/6qB3Bqz5/IGnqApaEtX45m5YvSIohlsbozhLCjlQfEqjTB0j+y6rMDTgdWFBFFfFfrsI3joNYbKNjrwkAQrVaAY40vD/73NRm5Xvmcj5u3XD+ZozmaxjUcvngpzvXPTmPYs72M70sYwH83u/6fA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=QdUZXIQD; arc=none smtp.client-ip=62.89.141.173
+	 Content-Type:Content-Disposition:In-Reply-To; b=O/ZfEbzjeVzuOSXXXpVuFmCEOEA3DY5q+kBWL+RvEs3Sd5CXsy/Q8+qzipoHsrF+9eYMrMtHezy0T4kYbSZ25yxmG/F6z4vg1HjfuftAzuZ6lXWShhKY0TsMmjIkfMPkyEYnGe9s3tx6t+rw3LyEIyKDJW9Rqo9Dp6+M/hRtqYs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=uJa+qLc3; arc=none smtp.client-ip=62.89.141.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="QdUZXIQD"
+	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="uJa+qLc3"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
 	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=C3NYI4M2D6dwE52ZoZ0uhhAoWlcFjeRkijtSlVl8rCw=; b=QdUZXIQDj1CvWPFT4RlV40fM70
-	xVVA+ebyhYGjjHlNPIfhIlq9C6FQg4XS4P4H0PeiXQOKRiXcPzk6GlZD6O25ZOb8IJt+bJDO6iq2l
-	6GRV2kKWppONJqKfzNybnfd8+LAkWrNgi9Evjuhp7dB2SwUegqtNH13jICdbcmmz2Li3asRfW5LEX
-	dP7ZVIAKxwagxBFap9GB44qznj2V2XY1hGSo7CbQdzfifrkphwespKkJD2DxmCKknCV4WdDepxfLM
-	L3kEiiK7qSzlLOMaUHfrmwPZm7eHBGUMkJCEYVfOMGCD/5yYr1+cP1Ib9iIVHGFEP0CAtyyd9+HFU
-	sJezaALQ==;
+	bh=jmWOQZCXMxbv82cQngQGVJfiQD14sQuWaCtfDjrw/2o=; b=uJa+qLc35duMilGvoz3lM8gxlz
+	g58gA8YPlRXZeeTTYAsTYrpRA9AM/0SvrUkuG+CougKPe/CA0Xq992zlq6BtHUrddDQmrD1p/cpbD
+	eqEkW2Ur1utltygrmi7C6C92IhkuCaLJiQP68tr+3ht1JDNQYZ4+iOrKe0i0yYYZpZHNnaxh+PuNB
+	/66GluGIJvXetwCix84Yxjr/y1HumtQVM25ys6cTq+AmutSifVfNuA3QfffD8i6JXv6yq3iCP5eQU
+	GOiJ7sYCNQ7e5ICthYnDBDCqzq9MCojerhG0lymQCZbeEgk5My/HRxfiDFlHuNF45j6s2TZEosyFR
+	lORUZ+mw==;
 Received: from viro by zeniv.linux.org.uk with local (Exim 4.98 #2 (Red Hat Linux))
-	id 1tjiLi-0000000G1L4-34Rp;
-	Sun, 16 Feb 2025 17:22:34 +0000
-Date: Sun, 16 Feb 2025 17:22:34 +0000
+	id 1tjiPd-0000000G1Vi-23bL;
+	Sun, 16 Feb 2025 17:26:37 +0000
+Date: Sun, 16 Feb 2025 17:26:37 +0000
 From: Al Viro <viro@zeniv.linux.org.uk>
 To: Magnus Lindholm <linmag7@gmail.com>
 Cc: richard.henderson@linaro.org, mattst88@gmail.com,
@@ -37,7 +37,7 @@ Cc: richard.henderson@linaro.org, mattst88@gmail.com,
 	arnd@arndb.de, linux-kernel@vger.kernel.org,
 	linux-alpha@vger.kernel.org
 Subject: Re: [PATCH 1/1] alpha: Fix pte_swp_exclusive on alpha
-Message-ID: <20250216172234.GH1977892@ZenIV>
+Message-ID: <20250216172637.GI1977892@ZenIV>
 References: <20250216170748.2258-1-linmag7@gmail.com>
  <20250216170748.2258-2-linmag7@gmail.com>
  <20250216171741.GG1977892@ZenIV>
@@ -66,6 +66,11 @@ On Sun, Feb 16, 2025 at 05:17:41PM +0000, Al Viro wrote:
 > 
 > No need to shift anything - compiler probably will figure out that
 > 	if ((int)((x & (1UL<<39)>>32)))
+
+Sorry,
+
+	if ((int)(((x & (1UL<<39))>>32))
+
 > is equivalent to
 > 	if (x & (1UL<<39))
 > but why bother with such convolutions in the first place?
@@ -78,9 +83,4 @@ On Sun, Feb 16, 2025 at 05:17:41PM +0000, Al Viro wrote:
 > }
 > 
 > and that's it - conversion from arithmetical types to bool will do the right thing.
-
-FWIW,
-
-sed -i -e '/pte_swp_exclusive/s/int/bool/' `git grep -l pte_swp_exclusive arch/`
-
-will do the right thing - check and you'll see.
+> 
