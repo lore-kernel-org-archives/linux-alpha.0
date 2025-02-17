@@ -1,86 +1,121 @@
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80562D299;
-	Sun, 16 Feb 2025 17:26:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A916216E1B;
+	Mon, 17 Feb 2025 10:54:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739726802; cv=none; b=IBW5EcFYP1AMXtzgtIVXAeQlHudG9kdSY05ipTBUZebFXvZNjB6B/+B9ce3NGlAa0+45INHiH6s4vVrVy0aWEUzUWZDe2+7QgvVOyuOpcRWUdaXJ8DVzn1BZtEe5AR4APB8yTKF3uwxmw6AOrMoYu7mNXVY/eMkluIMOyLQMhx4=
+	t=1739789661; cv=none; b=gr6u8bNfHx9DB9e1sPZ7Od7CGmOHOADiTT/PktY7OtuB3/whldSfn36nun94okBQnJUCM/hCPx9lEiaO9B3ndBektipzjWIyCjwBFaknumWTipVHHqENLp/+5m2agcF0bbiwdG/9MgcR/qs3NnXTT1g4R/AClTeyT3yH5o/TnNI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739726802; c=relaxed/simple;
-	bh=uEt464/h2m3GqGiapkNB2JJvR+MVEX5A4+rFNpOFjck=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O/ZfEbzjeVzuOSXXXpVuFmCEOEA3DY5q+kBWL+RvEs3Sd5CXsy/Q8+qzipoHsrF+9eYMrMtHezy0T4kYbSZ25yxmG/F6z4vg1HjfuftAzuZ6lXWShhKY0TsMmjIkfMPkyEYnGe9s3tx6t+rw3LyEIyKDJW9Rqo9Dp6+M/hRtqYs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=uJa+qLc3; arc=none smtp.client-ip=62.89.141.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
+	s=arc-20240116; t=1739789661; c=relaxed/simple;
+	bh=FLV6psWylR8njShJdM0jNzmDsgfHMmGF37Pv4HRIQNA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=S3k3VeY/s4DqCdRItp2D7bjH1w0EaVZiJ3mePwl/tP0EWXHaiMbJJpagd+q/hoLIk1JrCg0SPMYXL5xpJvKXwpwKy1Qpc/hfSJtymbmrh4wdIkA0tcpy1IGtyAWOjEnpqvtoGdrUTkYakO3AymEhjmc139dbolb1fWtvAnKfWCo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Bcb/K9dS; arc=none smtp.client-ip=209.85.218.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="uJa+qLc3"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=jmWOQZCXMxbv82cQngQGVJfiQD14sQuWaCtfDjrw/2o=; b=uJa+qLc35duMilGvoz3lM8gxlz
-	g58gA8YPlRXZeeTTYAsTYrpRA9AM/0SvrUkuG+CougKPe/CA0Xq992zlq6BtHUrddDQmrD1p/cpbD
-	eqEkW2Ur1utltygrmi7C6C92IhkuCaLJiQP68tr+3ht1JDNQYZ4+iOrKe0i0yYYZpZHNnaxh+PuNB
-	/66GluGIJvXetwCix84Yxjr/y1HumtQVM25ys6cTq+AmutSifVfNuA3QfffD8i6JXv6yq3iCP5eQU
-	GOiJ7sYCNQ7e5ICthYnDBDCqzq9MCojerhG0lymQCZbeEgk5My/HRxfiDFlHuNF45j6s2TZEosyFR
-	lORUZ+mw==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.98 #2 (Red Hat Linux))
-	id 1tjiPd-0000000G1Vi-23bL;
-	Sun, 16 Feb 2025 17:26:37 +0000
-Date: Sun, 16 Feb 2025 17:26:37 +0000
-From: Al Viro <viro@zeniv.linux.org.uk>
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: richard.henderson@linaro.org, mattst88@gmail.com,
-	glaubitz@physik.fu-berlin.de, ink@unseen.parts, kees@kernel.org,
-	arnd@arndb.de, linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org
-Subject: Re: [PATCH 1/1] alpha: Fix pte_swp_exclusive on alpha
-Message-ID: <20250216172637.GI1977892@ZenIV>
-References: <20250216170748.2258-1-linmag7@gmail.com>
- <20250216170748.2258-2-linmag7@gmail.com>
- <20250216171741.GG1977892@ZenIV>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bcb/K9dS"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-abb9709b5b5so178703366b.2;
+        Mon, 17 Feb 2025 02:54:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1739789658; x=1740394458; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Jcji6zvbpo9vFZ47dnV7L58ocmgj3T9wLoXyVIiguBw=;
+        b=Bcb/K9dSAOBU2Bt6da33GhOORErdX1QPfDAqAtpx2lxX6UoxEePGO9yGOPDEtxF9Dv
+         iFgLu/S89+gJJeIeSRobHZCY2fC1Xf+uWtuuwk+en4S4+mivzxXeKEw2BL27+h7awTtJ
+         3vdT8220rDGpYc/ZRvbplS+5GdpT4jp46Xj1fy0Z9FYaN1Yu4iq6vYb3zmKC6uo4eyGR
+         lvoTeJMye/mvbCH5iKrlDwp/yhTYdl0ypU1nz7Zju7CXTpnumhGqbDM7DQrieewVHkaM
+         z0zmWM7wDjuAXhpHJCOhKAVyQCyVhlzDAEO8kMHoRdPDyoIpWnspueLtJ6clG0V4Itsd
+         tg0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739789658; x=1740394458;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Jcji6zvbpo9vFZ47dnV7L58ocmgj3T9wLoXyVIiguBw=;
+        b=wcW/DTvI9VBnoKtqQz76mlwj07OC2oqmWX5YmEGpcxitfPBsT2OtVhDKDrZY3tIA3A
+         gIcIQ8bh20EWYlK7Fe1xRWpNFONoAJRq/M2Wh4SotHOV+h4lMsYd7msgfv10dxjKnkVY
+         SiNG6tsboe9FKeLUr8u7+jNvlXvX9ApfNtCNh0MEqtHiWhchPUWx82aLlF7fXw0EPyUQ
+         WAj9RUCR89a8uBfYtz/D938wlPmrH3g1Zmb2ctegL9FdUjekM/2UDcDY6PdXZQnA5jrg
+         a8L8nMhlMq6JjS1DVA4nLmFEG/CINbKVO8kzIJ7lWMCV7nvmKcUCD5gNHTyrqN0nEcaz
+         76bQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUlGaW/leURF8iFE39aAths7DEztTUaD7fDjncAOj0kzUE1dnZFbi2BH7hVzwL4Zw4/bHqmi3rBcg4q7/22@vger.kernel.org, AJvYcCWG83wwU/rtEYVkg8g+5u6eYgESdKBgisNryzcDGtWMn+KOQTIuhW9v6apmPVsToYD1JRNUUNVKv5yBzg==@vger.kernel.org
+X-Gm-Message-State: AOJu0YycUXj/3Z4Bf/VxYPWMkLbdALjdfxMTZtiRgg/qTeYDcn+cwlqv
+	f1eaHd3/+zvtwi/ur6lQemYln5gcsAtExurw3kpfDsieHeWD0b8U7UD1jlbFywnA9hme2+Fifxi
+	fZG8sX4frT7DIxtUirbEXnG5et+9eh+iKK08=
+X-Gm-Gg: ASbGncucO5Cqth6jAR/vUjy1ngLLfcrco53RseMEvmPtqOCfBFUGo7pKloScxeOnEtW
+	8RXi0ssly1IOmJJ6XJ0Z640iupBZ7SnhUHK62jLlQrxFaxUyUPOAH+BFaSru8Il+Aai/WUojcrg
+	==
+X-Google-Smtp-Source: AGHT+IEC+NbT4E5MWrj2goW4uS/lXva/MPJztFSzDofNfjfg+EbIiSanisxYd8OGyCYJ8gseWW6pONvqcwNmCTUpeIU=
+X-Received: by 2002:a17:907:9716:b0:aba:519b:f7c5 with SMTP id
+ a640c23a62f3a-abb70c412b1mr1014656966b.4.1739789657615; Mon, 17 Feb 2025
+ 02:54:17 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20250216170748.2258-1-linmag7@gmail.com> <20250216170748.2258-2-linmag7@gmail.com>
+ <20250216171741.GG1977892@ZenIV>
 In-Reply-To: <20250216171741.GG1977892@ZenIV>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Mon, 17 Feb 2025 11:54:05 +0100
+X-Gm-Features: AWEUYZkJyJbp5XaLg_moRE3httrT6T5YfsSFP-_B8ALCnIWt5co6aHHP9Dew2H0
+Message-ID: <CA+=Fv5TwwXiAdqUuUOPnwHTWz15Bj2UsGP=7+SQRM0MDXKnopg@mail.gmail.com>
+Subject: Re: [PATCH 1/1] alpha: Fix pte_swp_exclusive on alpha
+To: Al Viro <viro@zeniv.linux.org.uk>
+Cc: richard.henderson@linaro.org, mattst88@gmail.com, 
+	glaubitz@physik.fu-berlin.de, ink@unseen.parts, kees@kernel.org, 
+	arnd@arndb.de, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Feb 16, 2025 at 05:17:41PM +0000, Al Viro wrote:
+Hi,
+
+Making pte_swp_exclusive return bool is a neat solution! As Al pointed out,
+it will better reflect how pte_swp_exclusive is actually used in the code.
+I assume we would want this for all architectures implementing
+pte_swp_exclusive? This implies that this change will have a wider
+impact and not be an alpha specific fix.
+I can prepare and post a v2 of this patch using this approach.
+
+Magnus
+
+On Sun, Feb 16, 2025 at 6:17=E2=80=AFPM Al Viro <viro@zeniv.linux.org.uk> w=
+rote:
+>
 > On Sun, Feb 16, 2025 at 06:04:53PM +0100, Magnus Lindholm wrote:
-> > Function pte_swp_exclusive() checks if _PAGE_SWP_EXCLUSIVE bit is set in
-> > PTE but returns lower 32-bits only. Shift bits right by 32 to return upper
-> > 32-bits of PTE which contain the _PAGE_SWP_EXCLUSIVE bit. On alpha this is
-> > bit 39 but on most other architectures this bit already resides somewhere
+> > Function pte_swp_exclusive() checks if _PAGE_SWP_EXCLUSIVE bit is set i=
+n
+> > PTE but returns lower 32-bits only. Shift bits right by 32 to return up=
+per
+> > 32-bits of PTE which contain the _PAGE_SWP_EXCLUSIVE bit. On alpha this=
+ is
+> > bit 39 but on most other architectures this bit already resides somewhe=
+re
 > > in the first 32-bits and hence a shift is not necessary on those archs.
-> 
+>
 > Just make it return bool and be done with that - all users are either
-> if (pte_swp_exclusive(...)) or if (!pte_swp_exclusive(...)) or assignments
+> if (pte_swp_exclusive(...)) or if (!pte_swp_exclusive(...)) or assignment=
+s
 > to bool variable.
-> 
+>
 > No need to shift anything - compiler probably will figure out that
-> 	if ((int)((x & (1UL<<39)>>32)))
-
-Sorry,
-
-	if ((int)(((x & (1UL<<39))>>32))
-
+>         if ((int)((x & (1UL<<39)>>32)))
 > is equivalent to
-> 	if (x & (1UL<<39))
+>         if (x & (1UL<<39))
 > but why bother with such convolutions in the first place?
-> 
+>
 > Seriously, just make it
-> 
+>
 > bool pte_swp_exclusive(pte_t pte)
 > {
-> 	return pte_val(pte) & _PAGE_SWP_EXCLUSIVE;
+>         return pte_val(pte) & _PAGE_SWP_EXCLUSIVE;
 > }
-> 
-> and that's it - conversion from arithmetical types to bool will do the right thing.
-> 
+>
+> and that's it - conversion from arithmetical types to bool will do the ri=
+ght thing.
