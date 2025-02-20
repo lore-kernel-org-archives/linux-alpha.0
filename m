@@ -1,193 +1,162 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3455C1B4259;
-	Thu, 20 Feb 2025 21:49:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D3081EEA56;
+	Thu, 20 Feb 2025 22:09:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740088155; cv=none; b=E9gfWVv06jQtzGkVJdX5noaVCyuillhdRcOHTQ6WGCq2QIJGHl4g+dR45FDZBDhX8BwXu6OCRatfE5msNOUPT2Tl8bUscNY3LG+kHiViFVSj4cvFXazX0J8CQKPa9XQPeXzUYm5/04CbTqetdz9ZwYqb5H3y/eRzmvXjHfRQxmA=
+	t=1740089364; cv=none; b=Oi3M6KXaKofdaS2Kr59mKZQrV0hOnZREWRxmt5Zb1j6++z0tYUB8IveJ9tFUCMfkB5mgN8gDonbG3NPMT4InKsYqsbFm1ruPb7jeAhVS0++d3SULVn9roRYwqIE5ulpsbL3SVsonn7iEzw8/pv9ydMDpmL3htPC7iNR8nTBPdXI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740088155; c=relaxed/simple;
-	bh=AQYQMGpBWk2y9F/ajrYPRCHCpKiCNoJBOWBrz6bmQV4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dzCAxTb5B9zzp0/ozFag7xUymmphawzX/yRk7lRJY/Vk1bIiyYeeGKFnQ044aXmLK5KogMaWyp3k8Yp1g/lIpa/qLM5rno0D59k+F7Uug+pdGoQ/a3x+AsJ8XjSHFYgcrce2JZYC4ERuqHO/7jRIaTbVOAZVFuiNVcPiKLqX8wE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ht+6jh6X; arc=none smtp.client-ip=209.85.208.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ht+6jh6X"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5e050b1491eso4457878a12.0;
-        Thu, 20 Feb 2025 13:49:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1740088150; x=1740692950; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9whq2vsv/mk0BYyCs4wwDK57ulcjfcTEY+oV/RVpU7c=;
-        b=Ht+6jh6XQ1kzwkJto79NXFhTTPp8//lqhqAuRnrMBBgUwJ5IEsiiMb/birsdw6dpTn
-         q3a6r3BI4r0IfKYT7+WhtJhoQpo7YLGmltPuuSb28YRG1pBkuDKZCyGPj32U++nF1fwd
-         laHhxnF2aDvpprxxwlLWK/AqeZnRauSEv3eseihjm7+d523gwuffl/gUx4rkUdySc/Nq
-         gGYF5G7A3GpKyokLXfImKMSSKV6pWrJdlqHvWfCxOb/X1KJqa88Iyequ5789c2CmSlO0
-         wJvqUUeP6lrC5YJJo42ORFYCBjsN5YX/FAU0B0h0tGR4u1XL3S/wkfiGjud03CwfuKBV
-         jkJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740088150; x=1740692950;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9whq2vsv/mk0BYyCs4wwDK57ulcjfcTEY+oV/RVpU7c=;
-        b=a7HwjBwt5ZZPWScvaCwIexEyosky+NZQsMaeIZJ60/3WoJvBZueq2lghcFfmF5JfIN
-         /+dKFPUjgznVtME2OL3VajfUR8BPGe3YjrZAriDscG7PRqNLuhTROAlrkH3cRvOv3CGC
-         9T9/k91/F6ibv2nN5cx2kfW7JvFxZ4lJlUO9SIOK0O+pqy9gb6V/xo6fFPg9ffuJQr0v
-         6pr3tukLFhJcOq3IAtzYVpF1FC9CtrWaDzw7FEXNd1Mx/Z8Tb+syjiR8o3Qcdhco4KrZ
-         X1i3oO5kjNpSH/dfJcCPOxDqhepia7XJDIHKYXt8FGV6bkiYeBEq7yr0ii+hEGj/WK6F
-         DqrA==
-X-Forwarded-Encrypted: i=1; AJvYcCVVm6oYDFpEMjJij/tLIfi52NE/cG4f9Xwle+26SMB+aBR4ewIoJjBFComjNNVcKw1hCPqY3tUddCv5oQ==@vger.kernel.org, AJvYcCX3P1GX7OPC5x18vSsweXhbBuxe0pOcROF9exvKMxsYlgwirK6btAARXhxfnrC215tUg6ap3Unv7NwIsNgH@vger.kernel.org, AJvYcCXJ06afxLp3gCHaVTc/j/hofJwb3sT86hdIf4K+REffppYcfllf3kMEvYHhbk8oHwm7DBbtzkX3nqyPf5e1@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw3h92HcCcC5EbI9V0KOZKkm3e4TU3jI66CACfPZFCB/UneDIMu
-	WY6T5lPjGtTvAL8Ybx7URlNVuRHHdcVI74Qe+bx4QBUwrqvLQNw0yu2W5SAWa6b7qPn2jwefsSA
-	J7kmZ04X9QsNSsVrOiKifnOSiYD0=
-X-Gm-Gg: ASbGncvicopHUxjWutfV5Tp3XvqaxH40EChyU3couflr2GLJBxq3VDhyHx5ozIxs21Z
-	PL5NqiEi28w8eu6v8q5byZj/50zlot5AjfwlDa8Z+StayNzlroL4RViD84GJQlZkrVD86Miy54w
-	==
-X-Google-Smtp-Source: AGHT+IGp1YX/C7wUL2w/hbQEIMyIpKqLWwYKkh80rJxbmnRkhytjom/CeUJs3l44pnaCNarIHAF0ds5LNTtIeMKwxa4=
-X-Received: by 2002:a17:907:1c0e:b0:abb:e048:4f5e with SMTP id
- a640c23a62f3a-abc0b14d715mr75893066b.29.1740088150181; Thu, 20 Feb 2025
- 13:49:10 -0800 (PST)
+	s=arc-20240116; t=1740089364; c=relaxed/simple;
+	bh=+BSfG7XSQPs3WSZSD8uNQu9wxfwrYohVa9iEe4Bw6bo=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=rmhsML17S2CW/G8lBG6c9x2TVLx9TYXPE6pY2zQ1OzcNZxhOfqmizOEMsOaD2DWsox7YcAAl9dvQiQ5GJIQQL+E/5bwCEW1RHtB5fNmYqno6SWAbC5lcgoLG4E8zRUdwbwaMy8NGa4xXB9o5pZ20R/McRYAGqVPUXHLDF/Bj2jQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 89C8092009C; Thu, 20 Feb 2025 23:09:20 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 829CB92009B;
+	Thu, 20 Feb 2025 22:09:20 +0000 (GMT)
+Date: Thu, 20 Feb 2025 22:09:20 +0000 (GMT)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+cc: Richard Henderson <richard.henderson@linaro.org>, 
+    Ivan Kokshaysky <ink@unseen.parts>, Matt Turner <mattst88@gmail.com>, 
+    Arnd Bergmann <arnd@arndb.de>, 
+    John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+    Magnus Lindholm <linmag7@gmail.com>, 
+    "Paul E. McKenney" <paulmck@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, 
+    linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Alpha: Emulate unaligned LDx_L/STx_C for data
+ consistency
+In-Reply-To: <CAHk-=wgBZk1FFOyiTKLnz4jNe-eZtYsrztcYRRXZZxF8evk1Rw@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.2502202106200.65342@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk> <CAHk-=wgBZk1FFOyiTKLnz4jNe-eZtYsrztcYRRXZZxF8evk1Rw@mail.gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250220111606.138045-1-jirislaby@kernel.org> <20250220111606.138045-21-jirislaby@kernel.org>
-In-Reply-To: <20250220111606.138045-21-jirislaby@kernel.org>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Thu, 20 Feb 2025 22:48:59 +0100
-X-Gm-Features: AWEUYZlVB8Ilmwmyppyz3eSnc_9QchXf_BwskO6erv4yNirl5dmVaFDLRF_6T_E
-Message-ID: <CA+=Fv5RadC05i29h_geUq3Moyn3hGydoRu335T-q9vnfcwZqew@mail.gmail.com>
-Subject: Re: [PATCH 20/29] tty: srmcons: fix retval from srmcons_init()
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, 
-	Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
-	linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 
-I've applied and verified this patch on an Alphaserver ES40 with
-serial console.
+On Wed, 19 Feb 2025, Linus Torvalds wrote:
 
-Regarding the future use of label err_free_drv, is the intention to
-use it to break out early if tty_alloc_driver() fails?
+> > 1. A trapping unaligned LDx_L operation results in the pair of adjacent
+> >    aligned whole data quantities spanned being read and stored for the
+> >    reference with a subsequent STx_C operation, along with the width of
+> >    the data accessed and its virtual address, and the task referring or
+> >    NULL if the kernel.  The validity marker is set.
+> 
+> So I have a couple of comments. I don't care deeply because I do think
+> alpha is dead, but for completeness:
+> 
+>  (a) I don't think the task checking is correct.
+> 
+> You're only checking the task pointer, so what can happen is that a
+> task exits and another starts up with the same task pointer value, and
+> it all matches across one task doing a ld_l and another doing a st_c.
+> 
+> Does this matter? No. You'd literally have to *try* to create that
+> situation with identical mis-aligned addresses and data contents, and
+> an exit after a 'ld_l', and doing a 'st_c' in the new task without the
+> matching ld_l.
+> 
+> So I suspect this works in practice, but it's still worth mentioning.
 
+ It's an interesting corner case, but executing STx_C without preceding 
+matching LDx_L is hardly useful and depending on the circumstances may or 
+may not cause unpredictable results.  We can make it a part of the psABI 
+that such usage is not supported.  Otherwise we could clear `ll_bit' in 
+a task's termination path.
 
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
+>  (b) this is not truly atomic wrt concurrent aligned non-trapping
+> operations to the same words. Or in fact to current trapping ones,
+> since you end up inevitably releasing the spinlock before the final
+> stc emulation.
 
+ It is not supposed to be.  The only objective of this code is to protect 
+the *unchanged* part of the longword/quadword.
 
+> I think this is fundamental and non-fixable, because the stc is done
+> as two operations, and the first can succeed with the second failing
+> (or they can both succeed, just interleaved with other accesses).
 
+ It is absolutely fine and by design.  Atomicity of the unaligned store of 
+the quantity itself is not guaranteed by this sequence, just as it is not 
+with the original one using a pair of STQ_U operations, where a concurrent 
+write to the same location may cause the parts of the quantity to become 
+inconsistent with each other.
 
-On Thu, Feb 20, 2025 at 12:22=E2=80=AFPM Jiri Slaby (SUSE) <jirislaby@kerne=
-l.org> wrote:
->
-> The value returned from srmcons_init() was -ENODEV for over 2 decades.
-> But it does not matter, given device_initcall() ignores retvals.
->
-> But to be honest, return 0 in case the tty driver was registered
-> properly.
->
-> To do that, the condition is inverted and a short path taken in case of
-> error.
->
-> err_free_drv is introduced as it will be used from more places later.
->
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Richard Henderson <richard.henderson@linaro.org>
-> Cc: Matt Turner <mattst88@gmail.com>
-> Cc: linux-alpha@vger.kernel.org
-> ---
->  arch/alpha/kernel/srmcons.c | 62 ++++++++++++++++++++-----------------
->  1 file changed, 33 insertions(+), 29 deletions(-)
->
-> diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
-> index 3e61073f4b30..b9cd364e814e 100644
-> --- a/arch/alpha/kernel/srmcons.c
-> +++ b/arch/alpha/kernel/srmcons.c
-> @@ -196,40 +196,44 @@ static const struct tty_operations srmcons_ops =3D =
-{
->  static int __init
->  srmcons_init(void)
->  {
-> +       struct tty_driver *driver;
-> +       int err;
-> +
->         timer_setup(&srmcons_singleton.timer, srmcons_receive_chars, 0);
-> -       if (srm_is_registered_console) {
-> -               struct tty_driver *driver;
-> -               int err;
-> -
-> -               driver =3D tty_alloc_driver(MAX_SRM_CONSOLE_DEVICES, 0);
-> -               if (IS_ERR(driver))
-> -                       return PTR_ERR(driver);
-> -
-> -               tty_port_init(&srmcons_singleton.port);
-> -
-> -               driver->driver_name =3D "srm";
-> -               driver->name =3D "srm";
-> -               driver->major =3D 0;      /* dynamic */
-> -               driver->minor_start =3D 0;
-> -               driver->type =3D TTY_DRIVER_TYPE_SYSTEM;
-> -               driver->subtype =3D SYSTEM_TYPE_SYSCONS;
-> -               driver->init_termios =3D tty_std_termios;
-> -               tty_set_operations(driver, &srmcons_ops);
-> -               tty_port_link_device(&srmcons_singleton.port, driver, 0);
-> -               err =3D tty_register_driver(driver);
-> -               if (err) {
-> -                       tty_driver_kref_put(driver);
-> -                       tty_port_destroy(&srmcons_singleton.port);
-> -                       return err;
-> -               }
-> -               srmcons_driver =3D driver;
-> -       }
->
-> -       return -ENODEV;
-> +       if (!srm_is_registered_console)
-> +               return -ENODEV;
-> +
-> +       driver =3D tty_alloc_driver(MAX_SRM_CONSOLE_DEVICES, 0);
-> +       if (IS_ERR(driver))
-> +               return PTR_ERR(driver);
-> +
-> +       tty_port_init(&srmcons_singleton.port);
-> +
-> +       driver->driver_name =3D "srm";
-> +       driver->name =3D "srm";
-> +       driver->major =3D 0;      /* dynamic */
-> +       driver->minor_start =3D 0;
-> +       driver->type =3D TTY_DRIVER_TYPE_SYSTEM;
-> +       driver->subtype =3D SYSTEM_TYPE_SYSCONS;
-> +       driver->init_termios =3D tty_std_termios;
-> +       tty_set_operations(driver, &srmcons_ops);
-> +       tty_port_link_device(&srmcons_singleton.port, driver, 0);
-> +       err =3D tty_register_driver(driver);
-> +       if (err)
-> +               goto err_free_drv;
-> +
-> +       srmcons_driver =3D driver;
-> +
-> +       return 0;
-> +err_free_drv:
-> +       tty_driver_kref_put(driver);
-> +       tty_port_destroy(&srmcons_singleton.port);
-> +
-> +       return err;
->  }
->  device_initcall(srmcons_init);
->
-> -
->  /*
->   * The console driver
->   */
-> --
-> 2.48.1
->
->
+ If the trapping code wanted to make the data quantity accessed atomic, it 
+should have declared it atomic as well as made it aligned, in which case 
+the compiler would have done the right thing, including padding/separation 
+from other data objects where necessary for the minimum width of data that 
+hardware can guarantee atomicity for.  And then we would not have arrived 
+in this emulation path in the first place.
+
+> Again, I don't think we care, and it works in practice, but it does
+> mean that I *really* think that:
+> 
+>  (c) you should not handle the kernel case at all.
+> 
+> If the kernel does an unaligned ld_l/st_c, that's a fundamental kernel
+> bug. Don't emulate it. Particularly when the emulation fundamentally
+> is not truly atomic wrt other accesses.
+
+ Good point actually, I think I mentally drove myself into a dead end 
+here.  Yes, absolutely, it is not expected to happen unless we have a bug 
+in our code somewhere!
+
+> Finally:
+> 
+>  (d) I think you're doing a few too many inline asms by hand, and
+> you're masking the results too much.
+> 
+> On the read-side emulation, why do you do that
+> 
+> +               "1:     ldl %3,0(%5)\n"
+> +               "2:     ldl %4,4(%5)\n"
+> +               "       srl %3,%6,%1\n"
+> +               "       sll %4,%7,%2\n"
+> +               "       zapnot %1,15,%1\n"
+> +               "       zapnot %2,15,%2\n"
+> 
+> at all? Just do two aligned loads, and don't mask the bytes around
+> them. A *real* ldl/stc will fail not just when the exact bytes are
+> different, but when somebody has touched the same cacheline. So if the
+> aligned values have changed, you should fail the stc even if the
+> change was in other bytes.
+
+ We do need to extract the bytes desired for the result of LDx_L though.
+
+ Yes, it can be done in C, but the same stands for all the other emulation
+pieces here and yet they use inline assembly.  GCC is happy to do byte 
+extraction itself where necessary, it has machine description patterns for 
+that as it a fairly common operation (it does not for INSxH and MSKxH 
+though, they're handled as intrinsics only, which however we could use 
+instead).
+
+ I think there is value in consistency, and with this piece written as 
+inline assembly you can spot the difference from the other variants right 
+away.  Or I could rewrite the byte extraction in C across other patterns.
+
+> And doing two aligned loads don't need any inline asm at all.
+
+ Neither does unaligned loads, as GCC is happy to emit LDQ_U itself where 
+necessary, but we want to catch exceptions or we'd get an oops rather than 
+SIGSEGV.
+
+> On the st_c side, I think you're repeating the same inline asm twice,
+> and should have a single helper.
+
+ The masks are different as are displacements, but a good point otherwise.  
+I think this guarantees the prologue to the atomic loop to go away, which 
+is a good thing, but I'll yet double-check the quality of code produced.
+
+> Is this a NAK for the patch? No. But I do think it should be massaged a bit.
+
+ Thank you for your review, I'll post v2 once I'm done with the massage.
+
+  Maciej
