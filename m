@@ -1,105 +1,92 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 671381FF7BB
-	for <linux-alpha@vger.kernel.org>; Thu, 20 Feb 2025 18:12:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA5A1E9B1C;
+	Thu, 20 Feb 2025 19:07:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740075126; cv=none; b=fWmpjJvCLnW/bKXkVvDfvvB1QjA/TAUP1W2sbCvNvSgPbFT6wiZN1TY9MuOYT/OQRNO+NJ4MWTIAXxKOitpDKgKsM8/uY1Nzqor+8m0lo3UVlUu9is/c7A6v+Z/gFNRcXoc1fGYTIonlc203lalChGW0EUlEZBoC16FUjbNDp1A=
+	t=1740078445; cv=none; b=Ce5QLpJzktdp3qghB4dFrEVpi2i0tlZHZR31xA1s5laLhH8OkeaOvdiHJOvTGL6s8CQiSur8vN9Ydpp3f6yhyJkRupgYHMdFx/D6knPP0rwKlHkTmeaWw4HkrzvNgj5b4Dj9oH99KQG+GB85mZjprXurdqBVW42CjqTdb1jSfEc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740075126; c=relaxed/simple;
-	bh=U7NEU5p+86CmS2ot4xSRm3tLGJInLZjdrsEntbaiLRA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ukLVbyD2rasYqMFoLguJfHnM4BRWL6wgdQ6UMVIvmiVjW2JNbzCg+EMnZWh5tJPOjJVkPJ+ZOl/w3yTL5d5MJfEU94HcPaby3vCQLTJ6cG9qJ6W69BEirxPm13dSHjx3LiktA3vROssMGMZZZ/Ik5u0wYpnBG++eVE9Gm33jTVM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=gBxOHilS; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1740078445; c=relaxed/simple;
+	bh=2lv22/0ZdmRvcEbZ+G4sLiYdzTRf2qzrZtEczUjiOqo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=QJa4mvD+/PON1Rl4iKfGQ2/KzJBmiwMy0k/0deV2pNUgifhFBdB1FdgHsuwQCoEouUY9hPouXMuNgVoqHtyoc44AeyGIb286gGz2Ix60Hr0T6pbiricVlfbzF4nivNByMmkf8aPK41rX9HcSNYub40VIRS6LOh9H0vIsNBHq/QY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RwgxDtbC; arc=none smtp.client-ip=209.85.167.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="gBxOHilS"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-220e989edb6so34463225ad.1
-        for <linux-alpha@vger.kernel.org>; Thu, 20 Feb 2025 10:12:05 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RwgxDtbC"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-54838cd334cso83738e87.1;
+        Thu, 20 Feb 2025 11:07:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1740075125; x=1740679925; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JPYGV4/Ybq5Qlp+Qgl6PHP0uBHTPtS+cFplKODIBa0c=;
-        b=gBxOHilSHraDFl9BFQwNJSKLd67RETnveFaNS20138PAxx2tYixi7JSDodM9pNOSUJ
-         rMI+hrJ8k8WOV+nc2W0DzjE+Hv9rdV1hIYUuw8gWt7WKH1Y3BIUFfyYxMU046y4apTeN
-         NDpiMNJRvr/gW9SxxYhFxSuqmaGZsjjOu91SV/Kw5tofvvsr0GI4RNiMjvMhjnQZxu6J
-         tfUCd5gIexSDEU0EwXDrv+ZJ9hcEwAi/pvWd3qDWmknOghcahhrXpg/JmYeADxiFtxUo
-         1k/BuosOD4kb+mEHSX1wg4geCeu0/TaUKhLIxVLNlf+NS4Z8LwXaStIUDY7gEZDRn2Ia
-         nvwg==
+        d=gmail.com; s=20230601; t=1740078441; x=1740683241; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=A4tA+hBCjxCkj9qawoVnWYVmgmO9YLxcA7VHjkl9NMI=;
+        b=RwgxDtbClLdFbIGlXpWcA1q5z9As4MXQk++Ae3irCI+AOdpapEIv7heQSyVjEMy7eV
+         O4kwYv3AdSwceelhcEYTNSgdWj7y0ITV/5CaPvvvMTHAkG+n7h64X4HkOrYlfyDUAMql
+         fDVBPjxZwJF+WKllOP/cjEkHvGWZhp+hOnpqi6UWxGtHXXfbzHI/DdWoHcez8GrcF7PN
+         qUk1R2NvGA1h2yIGl0LSwtoeCzkWfhDy+mmrBY7v+gR7KA2BW7r36X9aFzwKuQnLOfLB
+         ZOqMjFJH5JPEyw41gk24tWNsPw6VWT+i5oqXhoN90UUyizaZ56ngcTDU7IIdryjPbarp
+         AiCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740075125; x=1740679925;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JPYGV4/Ybq5Qlp+Qgl6PHP0uBHTPtS+cFplKODIBa0c=;
-        b=Xxjb2Z+7mwMnBTkdpqQdKeImhQVYJ/GiTOsUJN7gAnmXWPfMjWV+54AGb9ZaEeYqaR
-         h7mEfcw25Jt3HQQVnCAxoFjHZthRQyaDjxfOVkSKwkz8/D+2KAvUGgzqrIN0RUer9Lh8
-         iZFBqEgSgybNgyMCqzI9S+Qw6Q8eu+U+FUmC/duLKucI0vh2FUpJ4n02sOwX0/RfeYaU
-         Tw/jbNPLVKfPfFQHNfm4/t9SJzgu+bkFJIPAF8GJECr9Ol4q5nK4O1UjEAsXAd/Ptr+1
-         9nc30QgILwNsISlQV4RIcLCCiudyBfO/r1e8J1eofC+i7z6eSLrrzMzqtWA5yoJJcALk
-         o7MA==
-X-Forwarded-Encrypted: i=1; AJvYcCXYRqSzQDV+L+3d32EITJCSGAGCVCQL5B6EaUEQmoCApAXWrM+cgnJj9WTlWRdVG2/wGUxCyuTYNdf0AA==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy3ICyGHaW/d1dbuJ1VDJqwEGPwgHktsyi5AoTDRslCRJ08Zk04
-	smYZ4hKJ5rIgUQXgOHYMpM46v/D5I5g80pIvjxCMHttTD3HGFbH5hQp/Q3syRqE=
-X-Gm-Gg: ASbGncuNuqvx86DHydV6m8H2nVrEAPD2BCOl5QPmBukBLi0z7saRvt4MI0issM4NZus
-	8NIrTGXibuXFUoclIDbc/ASnA1Cb6LvejOiAJmYqgPrbKzewzA1QhUXlM5kQMt6KmUjVFXtHL8X
-	0TlFEsoHOlAgUfYH0wTX2u9tDUkgu/IMvkKeF6sfq50b9SAmqJD8U6gzpDI1AYeNrjGMTU4X+WZ
-	8H6btUXUyIZReuC9MyebEYbGkEiAi8Io9QaBUe4lpvRXzQ2TThJPYxdsonRMWxkXOJOqJDc356e
-	lAYKeqHA92OZKxBt4aTLSAKSK1LhGpUb/072yOClyVN1Os9NKLw707c=
-X-Google-Smtp-Source: AGHT+IEYJgTH2xijRGZv7IRxIjgPMGI3m3DAMNwwlL4W85cg6VLecg7jKjF0QGzCafBl8PC63PSroA==
-X-Received: by 2002:a05:6a21:7011:b0:1ee:d860:61eb with SMTP id adf61e73a8af0-1eef3deaa0amr134496637.39.1740075124654;
-        Thu, 20 Feb 2025 10:12:04 -0800 (PST)
-Received: from [192.168.0.4] (71-212-39-66.tukw.qwest.net. [71.212.39.66])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-adb58618700sm13027051a12.36.2025.02.20.10.12.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Feb 2025 10:12:04 -0800 (PST)
-Message-ID: <dfb14748-c5b8-4a50-990b-d61765a6a75c@linaro.org>
-Date: Thu, 20 Feb 2025 10:12:02 -0800
+        d=1e100.net; s=20230601; t=1740078441; x=1740683241;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=A4tA+hBCjxCkj9qawoVnWYVmgmO9YLxcA7VHjkl9NMI=;
+        b=FT1NUazmw5vjyPrb+vFvtLN9Ic8j1/PboiNEvvXw1OycT+pcXNZvVX98aC8iL+p3Tc
+         YM5F7s7r1rrhLnPSQZIuJaVN2l5KtdK2MKJVXkMzVs9UI7yGk70Dz1n5eno0bzDfrCkq
+         yr1QlYhTJTWIwSZp6Vw4Om+vAhOXeU1Ga736YZyO9WX8iRpTKvGepyVNgy7uq7Q1zZ08
+         RYN9kB40x+8T8c8cECMx3yXjMflfuQIJsAByFM6XZ22juOSaJ5PhSWDgU01+xQNwRJpa
+         0zPE4ZCDrKgRXCavXj0nuvYQ3EnL7TW782Vz4tV5CkFGFcBJmmV0+47k7TkD6RFA5DVs
+         BCmA==
+X-Forwarded-Encrypted: i=1; AJvYcCWA+4Xp+NzZBnKtxDm/O3kHfUEr5M1fWAANtC3M9fPSWu8WkL3Dt4mabvLP+hgADTChdAYVbYs7VSL3Rg==@vger.kernel.org, AJvYcCXHlwFbpiEtdSw4tctM4wAdAbc0u6CQPkqPRUBYKtrwQzou8dnkbNKvcSsF1f6Rdy02m5JmCrSi50HlTcOB@vger.kernel.org
+X-Gm-Message-State: AOJu0YwwgIZ/gM1/85JtIyYl+G27+Lo+KwoGusjyDcGBLLTbF49JO19i
+	zd519N6LI7QiP4QjXNyLs0ZGL2mdaODHaDTcf/ZEfJ5D6uKWaRBwDDc3b0m85HStfCy/Bcgb1Zm
+	f60vV+o/FrRGhwKV9Bw9S6Z/l3wU=
+X-Gm-Gg: ASbGncs11m6AEt6sF50gWz1KQ+gPb0xk1ItwYnPLfgSO/KfI/kYXRlYf9JQNBJfdXy/
+	ztPpHQODv0YE5H61SKGWaSWknALtlcDoq92c7fpovhm3iPNaYc/6FVeoz/ivEiHTQV+zEnEw=
+X-Google-Smtp-Source: AGHT+IFXSri0zhcFQNr0oSzZzzluMpF6T39ljhMXJ+KkLg0h0xQyKFiBkEwV5jKHrZ/24YAmhMsx/x/p+sqBKNTt++E=
+X-Received: by 2002:a05:6512:1591:b0:545:102f:8788 with SMTP id
+ 2adb3069b0e04-54838ee917cmr69686e87.19.1740078440721; Thu, 20 Feb 2025
+ 11:07:20 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
+References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk> <45155869-1490-49ab-8df1-7ad13f79c09a@linaro.org>
+In-Reply-To: <45155869-1490-49ab-8df1-7ad13f79c09a@linaro.org>
+From: Matt Turner <mattst88@gmail.com>
+Date: Thu, 20 Feb 2025 14:07:09 -0500
+X-Gm-Features: AWEUYZmmsKYVlkSJ5dA-0IiuQ1seVgYz6jVGprgpKWssltV6SOSLNiiH1EgGHU8
+Message-ID: <CAEdQ38FMnWwT4bM41y2Zxh27KGbMokwc8YTBw4mYDZnaJPsSUw@mail.gmail.com>
 Subject: Re: [PATCH] Alpha: Emulate unaligned LDx_L/STx_C for data consistency
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>,
- Ivan Kokshaysky <ink@unseen.parts>, Matt Turner <mattst88@gmail.com>,
- Arnd Bergmann <arnd@arndb.de>,
- John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
- Magnus Lindholm <linmag7@gmail.com>, "Paul E. McKenney"
- <paulmck@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>,
- linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk>
- <45155869-1490-49ab-8df1-7ad13f79c09a@linaro.org>
- <CAHk-=wj42Dks1vknzKKBbXUMCrs-iuLZHq=0z3P0AN9TrXNP+A@mail.gmail.com>
-Content-Language: en-US
-From: Richard Henderson <richard.henderson@linaro.org>
-In-Reply-To: <CAHk-=wj42Dks1vknzKKBbXUMCrs-iuLZHq=0z3P0AN9TrXNP+A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To: Richard Henderson <richard.henderson@linaro.org>
+Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, Ivan Kokshaysky <ink@unseen.parts>, Arnd Bergmann <arnd@arndb.de>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Magnus Lindholm <linmag7@gmail.com>, 
+	"Paul E. McKenney" <paulmck@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, 
+	Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2/20/25 09:59, Linus Torvalds wrote:
-> On Thu, 20 Feb 2025 at 09:54, Richard Henderson
-> <richard.henderson@linaro.org> wrote:
->>
->> Crucially, when emulating non-aligned, you should not strive to make it atomic.  No other
->> architecture promises atomic non-aligned stores, so why should you do that here?
-> 
-> I'm not disagreeing with the "it doesn't necessarily have to be
-> atomic", but I will point out that x86 does indeed promise atomic
-> non-aligned accesses.
+On Thu, Feb 20, 2025 at 12:54=E2=80=AFPM Richard Henderson
+<richard.henderson@linaro.org> wrote:
+>
+> On 2/19/25 04:46, Maciej W. Rozycki wrote:
+> > Complementing compiler support for the `-msafe-bwa' and `-msafe-partial=
+'
+> > code generation options slated to land in GCC 15,
+>
+> Pointer?  I can't find it on the gcc-patches list.
 
-I should have been more expansive with that statement: I didn't mean "no unaligned 
-atomics" (e.g. lock orw), but "unaligned normal stores may be non-atomic" (e.g. movw 
-across a cacheline).
+I believe it's this:
 
-My guess about the gcc patches is that it's the latter that wanted emulation here.
+https://inbox.sourceware.org/gcc-patches/alpine.DEB.2.21.2411141652300.9262=
+@angie.orcam.me.uk/
 
-
-r~
+The first half or so have landed so far, right Maciej?
