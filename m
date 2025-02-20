@@ -1,92 +1,74 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA5A1E9B1C;
-	Thu, 20 Feb 2025 19:07:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F655214814;
+	Thu, 20 Feb 2025 19:58:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740078445; cv=none; b=Ce5QLpJzktdp3qghB4dFrEVpi2i0tlZHZR31xA1s5laLhH8OkeaOvdiHJOvTGL6s8CQiSur8vN9Ydpp3f6yhyJkRupgYHMdFx/D6knPP0rwKlHkTmeaWw4HkrzvNgj5b4Dj9oH99KQG+GB85mZjprXurdqBVW42CjqTdb1jSfEc=
+	t=1740081485; cv=none; b=rkJ3wEXVF+7r47KruXxGlKA5PeATzqCg4HnBMEDFAvqhYrdDvlOdPQfxHcNSEG7b8LpMeDVSuNF5dEIKg7RSBlWb4MR6/QvFQr/tQHifL3z7nFMgLc8Ii4SKXB3DC/1CGr/a3hST+90m8r0rn+/jz8Iqe+Hmi+1fo1m69d0rKWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740078445; c=relaxed/simple;
-	bh=2lv22/0ZdmRvcEbZ+G4sLiYdzTRf2qzrZtEczUjiOqo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QJa4mvD+/PON1Rl4iKfGQ2/KzJBmiwMy0k/0deV2pNUgifhFBdB1FdgHsuwQCoEouUY9hPouXMuNgVoqHtyoc44AeyGIb286gGz2Ix60Hr0T6pbiricVlfbzF4nivNByMmkf8aPK41rX9HcSNYub40VIRS6LOh9H0vIsNBHq/QY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RwgxDtbC; arc=none smtp.client-ip=209.85.167.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RwgxDtbC"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-54838cd334cso83738e87.1;
-        Thu, 20 Feb 2025 11:07:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1740078441; x=1740683241; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=A4tA+hBCjxCkj9qawoVnWYVmgmO9YLxcA7VHjkl9NMI=;
-        b=RwgxDtbClLdFbIGlXpWcA1q5z9As4MXQk++Ae3irCI+AOdpapEIv7heQSyVjEMy7eV
-         O4kwYv3AdSwceelhcEYTNSgdWj7y0ITV/5CaPvvvMTHAkG+n7h64X4HkOrYlfyDUAMql
-         fDVBPjxZwJF+WKllOP/cjEkHvGWZhp+hOnpqi6UWxGtHXXfbzHI/DdWoHcez8GrcF7PN
-         qUk1R2NvGA1h2yIGl0LSwtoeCzkWfhDy+mmrBY7v+gR7KA2BW7r36X9aFzwKuQnLOfLB
-         ZOqMjFJH5JPEyw41gk24tWNsPw6VWT+i5oqXhoN90UUyizaZ56ngcTDU7IIdryjPbarp
-         AiCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740078441; x=1740683241;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=A4tA+hBCjxCkj9qawoVnWYVmgmO9YLxcA7VHjkl9NMI=;
-        b=FT1NUazmw5vjyPrb+vFvtLN9Ic8j1/PboiNEvvXw1OycT+pcXNZvVX98aC8iL+p3Tc
-         YM5F7s7r1rrhLnPSQZIuJaVN2l5KtdK2MKJVXkMzVs9UI7yGk70Dz1n5eno0bzDfrCkq
-         yr1QlYhTJTWIwSZp6Vw4Om+vAhOXeU1Ga736YZyO9WX8iRpTKvGepyVNgy7uq7Q1zZ08
-         RYN9kB40x+8T8c8cECMx3yXjMflfuQIJsAByFM6XZ22juOSaJ5PhSWDgU01+xQNwRJpa
-         0zPE4ZCDrKgRXCavXj0nuvYQ3EnL7TW782Vz4tV5CkFGFcBJmmV0+47k7TkD6RFA5DVs
-         BCmA==
-X-Forwarded-Encrypted: i=1; AJvYcCWA+4Xp+NzZBnKtxDm/O3kHfUEr5M1fWAANtC3M9fPSWu8WkL3Dt4mabvLP+hgADTChdAYVbYs7VSL3Rg==@vger.kernel.org, AJvYcCXHlwFbpiEtdSw4tctM4wAdAbc0u6CQPkqPRUBYKtrwQzou8dnkbNKvcSsF1f6Rdy02m5JmCrSi50HlTcOB@vger.kernel.org
-X-Gm-Message-State: AOJu0YwwgIZ/gM1/85JtIyYl+G27+Lo+KwoGusjyDcGBLLTbF49JO19i
-	zd519N6LI7QiP4QjXNyLs0ZGL2mdaODHaDTcf/ZEfJ5D6uKWaRBwDDc3b0m85HStfCy/Bcgb1Zm
-	f60vV+o/FrRGhwKV9Bw9S6Z/l3wU=
-X-Gm-Gg: ASbGncs11m6AEt6sF50gWz1KQ+gPb0xk1ItwYnPLfgSO/KfI/kYXRlYf9JQNBJfdXy/
-	ztPpHQODv0YE5H61SKGWaSWknALtlcDoq92c7fpovhm3iPNaYc/6FVeoz/ivEiHTQV+zEnEw=
-X-Google-Smtp-Source: AGHT+IFXSri0zhcFQNr0oSzZzzluMpF6T39ljhMXJ+KkLg0h0xQyKFiBkEwV5jKHrZ/24YAmhMsx/x/p+sqBKNTt++E=
-X-Received: by 2002:a05:6512:1591:b0:545:102f:8788 with SMTP id
- 2adb3069b0e04-54838ee917cmr69686e87.19.1740078440721; Thu, 20 Feb 2025
- 11:07:20 -0800 (PST)
+	s=arc-20240116; t=1740081485; c=relaxed/simple;
+	bh=q4xMIrlT7iDF4ybjBQddUpy/XmtWWTzJeGWLMdPlYkg=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=TLiNR1cx/fHIy1e3yXH+Z3L2SWMoZy3po7n5puMtUDVRW2PFQlrSMcgnr4SKW58Pg8vO3voGZzIurI+eBy7CshG+s78EtqFyb89M50EhqGKvO6VkYRwruidHhpbZltNVJvhr9+lpE1sw2iFBZV8p0zyd8MbDUKkpoaX90DmLCtk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 4C1F192009C; Thu, 20 Feb 2025 20:57:56 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 45D1192009B;
+	Thu, 20 Feb 2025 19:57:56 +0000 (GMT)
+Date: Thu, 20 Feb 2025 19:57:56 +0000 (GMT)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Matt Turner <mattst88@gmail.com>
+cc: Richard Henderson <richard.henderson@linaro.org>, 
+    Ivan Kokshaysky <ink@unseen.parts>, Arnd Bergmann <arnd@arndb.de>, 
+    John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+    Magnus Lindholm <linmag7@gmail.com>, 
+    "Paul E. McKenney" <paulmck@kernel.org>, 
+    Linus Torvalds <torvalds@linux-foundation.org>, 
+    Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org, 
+    linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Alpha: Emulate unaligned LDx_L/STx_C for data
+ consistency
+In-Reply-To: <CAEdQ38FX4M1hKMgmNJD7s_eVa4-_J6e9+xCqTw653wbw8BNPWw@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.2502201951510.65342@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk> <CAEdQ38GUr2_0rCiN6GxE8rk6ex5m-Y5do=QdgKi-hb=1jMGj-w@mail.gmail.com> <CAEdQ38FX4M1hKMgmNJD7s_eVa4-_J6e9+xCqTw653wbw8BNPWw@mail.gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk> <45155869-1490-49ab-8df1-7ad13f79c09a@linaro.org>
-In-Reply-To: <45155869-1490-49ab-8df1-7ad13f79c09a@linaro.org>
-From: Matt Turner <mattst88@gmail.com>
-Date: Thu, 20 Feb 2025 14:07:09 -0500
-X-Gm-Features: AWEUYZmmsKYVlkSJ5dA-0IiuQ1seVgYz6jVGprgpKWssltV6SOSLNiiH1EgGHU8
-Message-ID: <CAEdQ38FMnWwT4bM41y2Zxh27KGbMokwc8YTBw4mYDZnaJPsSUw@mail.gmail.com>
-Subject: Re: [PATCH] Alpha: Emulate unaligned LDx_L/STx_C for data consistency
-To: Richard Henderson <richard.henderson@linaro.org>
-Cc: "Maciej W. Rozycki" <macro@orcam.me.uk>, Ivan Kokshaysky <ink@unseen.parts>, Arnd Bergmann <arnd@arndb.de>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Magnus Lindholm <linmag7@gmail.com>, 
-	"Paul E. McKenney" <paulmck@kernel.org>, Linus Torvalds <torvalds@linux-foundation.org>, 
-	Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-On Thu, Feb 20, 2025 at 12:54=E2=80=AFPM Richard Henderson
-<richard.henderson@linaro.org> wrote:
->
-> On 2/19/25 04:46, Maciej W. Rozycki wrote:
-> > Complementing compiler support for the `-msafe-bwa' and `-msafe-partial=
-'
-> > code generation options slated to land in GCC 15,
->
-> Pointer?  I can't find it on the gcc-patches list.
+On Thu, 20 Feb 2025, Matt Turner wrote:
 
-I believe it's this:
+> > On Wed, Feb 19, 2025 at 7:46 AM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+> > >  #define OP_INT_MASK    ( 1L << 0x28 | 1L << 0x2c   /* ldl stl */       \
+> > > +                       | 1L << 0x2a | 1L << 0x2e   /* ldl_l stl_c */   \
+> > >                         | 1L << 0x29 | 1L << 0x2d   /* ldq stq */       \
+> > > +                       | 1L << 0x2b | 1L << 0x2f   /* ldq_l stq_c */   \
+> > >                         | 1L << 0x0c | 1L << 0x0d   /* ldwu stw */      \
+> > >                         | 1L << 0x0a | 1L << 0x0e ) /* ldbu stb */
+> > >
+> > >  #define OP_WRITE_MASK  ( 1L << 0x26 | 1L << 0x27   /* sts stt */       \
+> > >                         | 1L << 0x2c | 1L << 0x2d   /* stl stq */       \
+> > > +                       | 1L << 0x2e | 1L << 0x2d   /* stl_c stq_c */   \
+> >
+> > stq_c should be 0x2f, not 0x2d. Looks like a copy-n-paste mistake.
+> 
+> The good news is that OP_WRITE_MASK appears to be unused going all the
+> way back to the import into git, so this doesn't indicate a problem
+> with any of the testing that's been done.
 
-https://inbox.sourceware.org/gcc-patches/alpine.DEB.2.21.2411141652300.9262=
-@angie.orcam.me.uk/
+ Good catch, thank you, and I guess the lack of use is why things haven't 
+broken.  I'll make a preparatory change in v2 and remove this macro then.
 
-The first half or so have landed so far, right Maciej?
+ FWIW it came with 2.1.36, already unused, so presumably a leftover from a 
+WIP version.
+
+ I'll fix the typo in the description as well, thank you.
+
+  Maciej
