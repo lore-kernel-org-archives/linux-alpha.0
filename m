@@ -1,23 +1,23 @@
 Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6F655214814;
-	Thu, 20 Feb 2025 19:58:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D32331E5B6C;
+	Thu, 20 Feb 2025 20:09:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740081485; cv=none; b=rkJ3wEXVF+7r47KruXxGlKA5PeATzqCg4HnBMEDFAvqhYrdDvlOdPQfxHcNSEG7b8LpMeDVSuNF5dEIKg7RSBlWb4MR6/QvFQr/tQHifL3z7nFMgLc8Ii4SKXB3DC/1CGr/a3hST+90m8r0rn+/jz8Iqe+Hmi+1fo1m69d0rKWw=
+	t=1740082156; cv=none; b=pKL7vIy/2p0/t9Pdtp5pp72tUacgcqn8v86UagcIeYVm/7goCMv9HNEJ69VAl8suhPUJxA+fhGUa6I/8VE8ceuIWynjEHlIVdTWxW7g8sUeqR+z5tqVBjeZR/WjUBqg33ZJljOU3OLPBq3k80Y6sopupStiDLQnEt1jDexDbjMg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740081485; c=relaxed/simple;
-	bh=q4xMIrlT7iDF4ybjBQddUpy/XmtWWTzJeGWLMdPlYkg=;
+	s=arc-20240116; t=1740082156; c=relaxed/simple;
+	bh=GeE1Y79wHUZQQCWuVYkBo/qm9ep3L0B2WVecTatnIcM=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=TLiNR1cx/fHIy1e3yXH+Z3L2SWMoZy3po7n5puMtUDVRW2PFQlrSMcgnr4SKW58Pg8vO3voGZzIurI+eBy7CshG+s78EtqFyb89M50EhqGKvO6VkYRwruidHhpbZltNVJvhr9+lpE1sw2iFBZV8p0zyd8MbDUKkpoaX90DmLCtk=
+	 MIME-Version:Content-Type; b=B92R5sc/PKeORJ9vHpV7XeXb/QdfNBOTiRnX8s4Bp7h4PjkS5rR1ByNALfAkCt0S8mobSP0w07RDouDaQwPwwUaCeZphcrLQjVJHfeP6Knu1cjNwObS8zqqgR8lYaHt5ne/vXKgPFg+CbvxsttqIl/zuBjHdqZ3y6KS9RROHaEo=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
 Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 4C1F192009C; Thu, 20 Feb 2025 20:57:56 +0100 (CET)
+	id 5CD3292009C; Thu, 20 Feb 2025 21:09:12 +0100 (CET)
 Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 45D1192009B;
-	Thu, 20 Feb 2025 19:57:56 +0000 (GMT)
-Date: Thu, 20 Feb 2025 19:57:56 +0000 (GMT)
+	by angie.orcam.me.uk (Postfix) with ESMTP id 55A4792009B;
+	Thu, 20 Feb 2025 20:09:12 +0000 (GMT)
+Date: Thu, 20 Feb 2025 20:09:12 +0000 (GMT)
 From: "Maciej W. Rozycki" <macro@orcam.me.uk>
 To: Matt Turner <mattst88@gmail.com>
 cc: Richard Henderson <richard.henderson@linaro.org>, 
@@ -30,9 +30,9 @@ cc: Richard Henderson <richard.henderson@linaro.org>,
     linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] Alpha: Emulate unaligned LDx_L/STx_C for data
  consistency
-In-Reply-To: <CAEdQ38FX4M1hKMgmNJD7s_eVa4-_J6e9+xCqTw653wbw8BNPWw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.2502201951510.65342@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk> <CAEdQ38GUr2_0rCiN6GxE8rk6ex5m-Y5do=QdgKi-hb=1jMGj-w@mail.gmail.com> <CAEdQ38FX4M1hKMgmNJD7s_eVa4-_J6e9+xCqTw653wbw8BNPWw@mail.gmail.com>
+In-Reply-To: <CAEdQ38FMnWwT4bM41y2Zxh27KGbMokwc8YTBw4mYDZnaJPsSUw@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.2502202000410.65342@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk> <45155869-1490-49ab-8df1-7ad13f79c09a@linaro.org> <CAEdQ38FMnWwT4bM41y2Zxh27KGbMokwc8YTBw4mYDZnaJPsSUw@mail.gmail.com>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
@@ -40,35 +40,29 @@ List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
 
 On Thu, 20 Feb 2025, Matt Turner wrote:
 
-> > On Wed, Feb 19, 2025 at 7:46 AM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
-> > >  #define OP_INT_MASK    ( 1L << 0x28 | 1L << 0x2c   /* ldl stl */       \
-> > > +                       | 1L << 0x2a | 1L << 0x2e   /* ldl_l stl_c */   \
-> > >                         | 1L << 0x29 | 1L << 0x2d   /* ldq stq */       \
-> > > +                       | 1L << 0x2b | 1L << 0x2f   /* ldq_l stq_c */   \
-> > >                         | 1L << 0x0c | 1L << 0x0d   /* ldwu stw */      \
-> > >                         | 1L << 0x0a | 1L << 0x0e ) /* ldbu stb */
-> > >
-> > >  #define OP_WRITE_MASK  ( 1L << 0x26 | 1L << 0x27   /* sts stt */       \
-> > >                         | 1L << 0x2c | 1L << 0x2d   /* stl stq */       \
-> > > +                       | 1L << 0x2e | 1L << 0x2d   /* stl_c stq_c */   \
+> > > Complementing compiler support for the `-msafe-bwa' and `-msafe-partial'
+> > > code generation options slated to land in GCC 15,
 > >
-> > stq_c should be 0x2f, not 0x2d. Looks like a copy-n-paste mistake.
+> > Pointer?  I can't find it on the gcc-patches list.
 > 
-> The good news is that OP_WRITE_MASK appears to be unused going all the
-> way back to the import into git, so this doesn't indicate a problem
-> with any of the testing that's been done.
+> I believe it's this:
+> 
+> https://inbox.sourceware.org/gcc-patches/alpine.DEB.2.21.2411141652300.9262@angie.orcam.me.uk/
 
- Good catch, thank you, and I guess the lack of use is why things haven't 
-broken.  I'll make a preparatory change in v2 and remove this macro then.
+ That's the original series; v2 is here:
 
- FWIW it came with 2.1.36, already unused, so presumably a leftover from a 
-WIP version.
+https://inbox.sourceware.org/gcc-patches/alpine.DEB.2.21.2501050246590.49841@angie.orcam.me.uk/
 
- I'll fix the typo in the description as well, thank you.
+> The first half or so have landed so far, right Maciej?
+
+ Yes, fixes for bugs discovered in the course have been committed and the 
+rest of changes already approved, although there were a couple of comments 
+I yet want to investigate/address by the end of next week.  Getting clean 
+GCC test results with the kernel emulation was my objective before moving 
+forward.
 
   Maciej
