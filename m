@@ -1,118 +1,193 @@
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C03FF1EDA1C;
-	Thu, 20 Feb 2025 21:05:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3455C1B4259;
+	Thu, 20 Feb 2025 21:49:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740085559; cv=none; b=netj5JoiknB+9fhYydbElaHYrpfyN3ah7+55cV37i89o6yJxfHeww0Zq8QPTulLlHnW6tXQzjVkcSfuoiXyn5R92ISRXwmS3GOAhR6ejbyLfzm0eP4bOg2iZBLVIvCHKG0SjKC0wCj4SsrG+geT6dypS+gktz31z6G0il/y3Nis=
+	t=1740088155; cv=none; b=E9gfWVv06jQtzGkVJdX5noaVCyuillhdRcOHTQ6WGCq2QIJGHl4g+dR45FDZBDhX8BwXu6OCRatfE5msNOUPT2Tl8bUscNY3LG+kHiViFVSj4cvFXazX0J8CQKPa9XQPeXzUYm5/04CbTqetdz9ZwYqb5H3y/eRzmvXjHfRQxmA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740085559; c=relaxed/simple;
-	bh=Z21VTHiZkTGyepyjiVPQ4h2mNI2Vsj2dBuWL5nHRIp4=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=d0kmZYJ9MBTl9cGqtTA7Cil+qIy7cble0MnmQmfSbhXzs4eTMZXakcw/4iHVihoeEW/CeKDtb/r8vK73IFnJj7Ez9BJt8d58M6PFt1jqGBz5y8buTuovcFWeHau1S/86nbgWAcESS6PY6JtuzYNDLOE51sL1dxVZnE2qvVRL7R8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id A62F392009C; Thu, 20 Feb 2025 22:05:54 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 9FF6E92009B;
-	Thu, 20 Feb 2025 21:05:54 +0000 (GMT)
-Date: Thu, 20 Feb 2025 21:05:54 +0000 (GMT)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Richard Henderson <richard.henderson@linaro.org>
-cc: Ivan Kokshaysky <ink@unseen.parts>, Matt Turner <mattst88@gmail.com>, 
-    Arnd Bergmann <arnd@arndb.de>, 
-    John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
-    Magnus Lindholm <linmag7@gmail.com>, 
-    "Paul E. McKenney" <paulmck@kernel.org>, 
-    Linus Torvalds <torvalds@linux-foundation.org>, 
-    Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org, 
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Alpha: Emulate unaligned LDx_L/STx_C for data
- consistency
-In-Reply-To: <45155869-1490-49ab-8df1-7ad13f79c09a@linaro.org>
-Message-ID: <alpine.DEB.2.21.2502202009470.65342@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk> <45155869-1490-49ab-8df1-7ad13f79c09a@linaro.org>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	s=arc-20240116; t=1740088155; c=relaxed/simple;
+	bh=AQYQMGpBWk2y9F/ajrYPRCHCpKiCNoJBOWBrz6bmQV4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=dzCAxTb5B9zzp0/ozFag7xUymmphawzX/yRk7lRJY/Vk1bIiyYeeGKFnQ044aXmLK5KogMaWyp3k8Yp1g/lIpa/qLM5rno0D59k+F7Uug+pdGoQ/a3x+AsJ8XjSHFYgcrce2JZYC4ERuqHO/7jRIaTbVOAZVFuiNVcPiKLqX8wE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ht+6jh6X; arc=none smtp.client-ip=209.85.208.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ht+6jh6X"
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5e050b1491eso4457878a12.0;
+        Thu, 20 Feb 2025 13:49:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1740088150; x=1740692950; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9whq2vsv/mk0BYyCs4wwDK57ulcjfcTEY+oV/RVpU7c=;
+        b=Ht+6jh6XQ1kzwkJto79NXFhTTPp8//lqhqAuRnrMBBgUwJ5IEsiiMb/birsdw6dpTn
+         q3a6r3BI4r0IfKYT7+WhtJhoQpo7YLGmltPuuSb28YRG1pBkuDKZCyGPj32U++nF1fwd
+         laHhxnF2aDvpprxxwlLWK/AqeZnRauSEv3eseihjm7+d523gwuffl/gUx4rkUdySc/Nq
+         gGYF5G7A3GpKyokLXfImKMSSKV6pWrJdlqHvWfCxOb/X1KJqa88Iyequ5789c2CmSlO0
+         wJvqUUeP6lrC5YJJo42ORFYCBjsN5YX/FAU0B0h0tGR4u1XL3S/wkfiGjud03CwfuKBV
+         jkJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740088150; x=1740692950;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9whq2vsv/mk0BYyCs4wwDK57ulcjfcTEY+oV/RVpU7c=;
+        b=a7HwjBwt5ZZPWScvaCwIexEyosky+NZQsMaeIZJ60/3WoJvBZueq2lghcFfmF5JfIN
+         /+dKFPUjgznVtME2OL3VajfUR8BPGe3YjrZAriDscG7PRqNLuhTROAlrkH3cRvOv3CGC
+         9T9/k91/F6ibv2nN5cx2kfW7JvFxZ4lJlUO9SIOK0O+pqy9gb6V/xo6fFPg9ffuJQr0v
+         6pr3tukLFhJcOq3IAtzYVpF1FC9CtrWaDzw7FEXNd1Mx/Z8Tb+syjiR8o3Qcdhco4KrZ
+         X1i3oO5kjNpSH/dfJcCPOxDqhepia7XJDIHKYXt8FGV6bkiYeBEq7yr0ii+hEGj/WK6F
+         DqrA==
+X-Forwarded-Encrypted: i=1; AJvYcCVVm6oYDFpEMjJij/tLIfi52NE/cG4f9Xwle+26SMB+aBR4ewIoJjBFComjNNVcKw1hCPqY3tUddCv5oQ==@vger.kernel.org, AJvYcCX3P1GX7OPC5x18vSsweXhbBuxe0pOcROF9exvKMxsYlgwirK6btAARXhxfnrC215tUg6ap3Unv7NwIsNgH@vger.kernel.org, AJvYcCXJ06afxLp3gCHaVTc/j/hofJwb3sT86hdIf4K+REffppYcfllf3kMEvYHhbk8oHwm7DBbtzkX3nqyPf5e1@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw3h92HcCcC5EbI9V0KOZKkm3e4TU3jI66CACfPZFCB/UneDIMu
+	WY6T5lPjGtTvAL8Ybx7URlNVuRHHdcVI74Qe+bx4QBUwrqvLQNw0yu2W5SAWa6b7qPn2jwefsSA
+	J7kmZ04X9QsNSsVrOiKifnOSiYD0=
+X-Gm-Gg: ASbGncvicopHUxjWutfV5Tp3XvqaxH40EChyU3couflr2GLJBxq3VDhyHx5ozIxs21Z
+	PL5NqiEi28w8eu6v8q5byZj/50zlot5AjfwlDa8Z+StayNzlroL4RViD84GJQlZkrVD86Miy54w
+	==
+X-Google-Smtp-Source: AGHT+IGp1YX/C7wUL2w/hbQEIMyIpKqLWwYKkh80rJxbmnRkhytjom/CeUJs3l44pnaCNarIHAF0ds5LNTtIeMKwxa4=
+X-Received: by 2002:a17:907:1c0e:b0:abb:e048:4f5e with SMTP id
+ a640c23a62f3a-abc0b14d715mr75893066b.29.1740088150181; Thu, 20 Feb 2025
+ 13:49:10 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20250220111606.138045-1-jirislaby@kernel.org> <20250220111606.138045-21-jirislaby@kernel.org>
+In-Reply-To: <20250220111606.138045-21-jirislaby@kernel.org>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Thu, 20 Feb 2025 22:48:59 +0100
+X-Gm-Features: AWEUYZlVB8Ilmwmyppyz3eSnc_9QchXf_BwskO6erv4yNirl5dmVaFDLRF_6T_E
+Message-ID: <CA+=Fv5RadC05i29h_geUq3Moyn3hGydoRu335T-q9vnfcwZqew@mail.gmail.com>
+Subject: Re: [PATCH 20/29] tty: srmcons: fix retval from srmcons_init()
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, 
+	Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
+	linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 20 Feb 2025, Richard Henderson wrote:
+I've applied and verified this patch on an Alphaserver ES40 with
+serial console.
 
-> > Complementing compiler support for the `-msafe-bwa' and `-msafe-partial'
-> > code generation options slated to land in GCC 15,
-> 
-> Pointer?  I can't find it on the gcc-patches list.
+Regarding the future use of label err_free_drv, is the intention to
+use it to break out early if tty_alloc_driver() fails?
 
- Here: 
-<https://inbox.sourceware.org/gcc-patches/alpine.DEB.2.21.2501050246590.49841@angie.orcam.me.uk/>
-and hopefully in your inbox/archive somewhere as well.
 
-> > 7. At this point both whole data quantities have been written, ensuring
-> >     that no third-party intervening write has changed them at the point
-> >     of the write from the values held at previous LDx_L.  Therefore 1 is
-> >     returned in the intended register as the result of the trapping STx_C
-> >     instruction.
-> 
-> I think general-purpose non-atomic emulation of STx_C is a really bad idea.
-> 
-> Without looking at your gcc patches, I can guess what you're after: you've
-> generated a ll/sc sequence for (aligned) short, and want to emulate if it
-> happens to be unaligned.
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
 
- It's a corner case, yes, when the compiler was told the access would be 
-aligned, but it turns out not.  It's where you cast a (char *) pointer to 
-(short *) that wasn't suitably aligned for such a cast and dereference it 
-(and the quadword case is similarly for the ends of misaligned inline 
-`memcpy'/`memset').
 
- Only two cases (plus a bug in GM2 frontend) hitting this throughout the 
-GCC testsuite show the rarity of this case.
 
-> Crucially, when emulating non-aligned, you should not strive to make it
-> atomic.  No other architecture promises atomic non-aligned stores, so why
-> should you do that here?
 
- This code doesn't strive to be atomic, but to preserve data *outside* the 
-quantity accessed from being clobbered, and for this purpose an atomic 
-sequence is both inevitable and sufficient, for both partial quantities 
-around the unaligned quantity written.  The trapping code does not expect 
-atomicity for the unaligned quantity itself -- it is handled in pieces 
-just as say with MIPS SWL/SWR masked store instruction pairs -- and this 
-code, effectively an Alpha/Linux psABI extension, does not guarantee it 
-either.
-
-> I suggest some sort of magic code sequence,
-> 
-> 	bic	addr_in, 6, addr_al
-> loop:
-> 	ldq_l	t0, 0(addr_al)
-> 	magic-nop done - loop
-> 	inswl	data, addr_in, t1
-> 	mskwl	t0, addr_in, t0
-> 	bis	t0, t1, t0
-> 	stq_c	t0, 0(addr_al)
-> 	beq	t0, loop
-> done:
-> 
-> With the trap, match the magic-nop, pick out the input registers from the
-> following inswl, perform the two (atomic!) byte stores to accomplish the
-> emulation, adjust the pc forward to the done label.
-
- It seems to make no sense to me to penalise all user code for the corner 
-case mentioned above while still having the emulation in the kernel, given 
-that 99.999...% of accesses will have been correctly aligned by GCC.  And 
-it gets even more complex when you have an awkward number of bytes to 
-mask, such as 3, 5, 6, 7, which will happen for example if inline `memcpy' 
-is expanded by GCC for a quadword-aligned block of 31-bytes, in which case 
-other instructions will be used for masking/insertion for the trailing 7 
-bytes, and the block turns out misaligned at run time.
-
- I'm inconvinced, it seems a lot of hassle for little gain to me.
-
-  Maciej
+On Thu, Feb 20, 2025 at 12:22=E2=80=AFPM Jiri Slaby (SUSE) <jirislaby@kerne=
+l.org> wrote:
+>
+> The value returned from srmcons_init() was -ENODEV for over 2 decades.
+> But it does not matter, given device_initcall() ignores retvals.
+>
+> But to be honest, return 0 in case the tty driver was registered
+> properly.
+>
+> To do that, the condition is inverted and a short path taken in case of
+> error.
+>
+> err_free_drv is introduced as it will be used from more places later.
+>
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Cc: Richard Henderson <richard.henderson@linaro.org>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: linux-alpha@vger.kernel.org
+> ---
+>  arch/alpha/kernel/srmcons.c | 62 ++++++++++++++++++++-----------------
+>  1 file changed, 33 insertions(+), 29 deletions(-)
+>
+> diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
+> index 3e61073f4b30..b9cd364e814e 100644
+> --- a/arch/alpha/kernel/srmcons.c
+> +++ b/arch/alpha/kernel/srmcons.c
+> @@ -196,40 +196,44 @@ static const struct tty_operations srmcons_ops =3D =
+{
+>  static int __init
+>  srmcons_init(void)
+>  {
+> +       struct tty_driver *driver;
+> +       int err;
+> +
+>         timer_setup(&srmcons_singleton.timer, srmcons_receive_chars, 0);
+> -       if (srm_is_registered_console) {
+> -               struct tty_driver *driver;
+> -               int err;
+> -
+> -               driver =3D tty_alloc_driver(MAX_SRM_CONSOLE_DEVICES, 0);
+> -               if (IS_ERR(driver))
+> -                       return PTR_ERR(driver);
+> -
+> -               tty_port_init(&srmcons_singleton.port);
+> -
+> -               driver->driver_name =3D "srm";
+> -               driver->name =3D "srm";
+> -               driver->major =3D 0;      /* dynamic */
+> -               driver->minor_start =3D 0;
+> -               driver->type =3D TTY_DRIVER_TYPE_SYSTEM;
+> -               driver->subtype =3D SYSTEM_TYPE_SYSCONS;
+> -               driver->init_termios =3D tty_std_termios;
+> -               tty_set_operations(driver, &srmcons_ops);
+> -               tty_port_link_device(&srmcons_singleton.port, driver, 0);
+> -               err =3D tty_register_driver(driver);
+> -               if (err) {
+> -                       tty_driver_kref_put(driver);
+> -                       tty_port_destroy(&srmcons_singleton.port);
+> -                       return err;
+> -               }
+> -               srmcons_driver =3D driver;
+> -       }
+>
+> -       return -ENODEV;
+> +       if (!srm_is_registered_console)
+> +               return -ENODEV;
+> +
+> +       driver =3D tty_alloc_driver(MAX_SRM_CONSOLE_DEVICES, 0);
+> +       if (IS_ERR(driver))
+> +               return PTR_ERR(driver);
+> +
+> +       tty_port_init(&srmcons_singleton.port);
+> +
+> +       driver->driver_name =3D "srm";
+> +       driver->name =3D "srm";
+> +       driver->major =3D 0;      /* dynamic */
+> +       driver->minor_start =3D 0;
+> +       driver->type =3D TTY_DRIVER_TYPE_SYSTEM;
+> +       driver->subtype =3D SYSTEM_TYPE_SYSCONS;
+> +       driver->init_termios =3D tty_std_termios;
+> +       tty_set_operations(driver, &srmcons_ops);
+> +       tty_port_link_device(&srmcons_singleton.port, driver, 0);
+> +       err =3D tty_register_driver(driver);
+> +       if (err)
+> +               goto err_free_drv;
+> +
+> +       srmcons_driver =3D driver;
+> +
+> +       return 0;
+> +err_free_drv:
+> +       tty_driver_kref_put(driver);
+> +       tty_port_destroy(&srmcons_singleton.port);
+> +
+> +       return err;
+>  }
+>  device_initcall(srmcons_init);
+>
+> -
+>  /*
+>   * The console driver
+>   */
+> --
+> 2.48.1
+>
+>
