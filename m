@@ -1,162 +1,147 @@
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0D3081EEA56;
-	Thu, 20 Feb 2025 22:09:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA05E1FF610;
+	Fri, 21 Feb 2025 07:53:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740089364; cv=none; b=Oi3M6KXaKofdaS2Kr59mKZQrV0hOnZREWRxmt5Zb1j6++z0tYUB8IveJ9tFUCMfkB5mgN8gDonbG3NPMT4InKsYqsbFm1ruPb7jeAhVS0++d3SULVn9roRYwqIE5ulpsbL3SVsonn7iEzw8/pv9ydMDpmL3htPC7iNR8nTBPdXI=
+	t=1740124418; cv=none; b=BzUfv99M6Hkm4j1HqY18svgCejdHBPQm4WhPYVFjDYQRaxKJexdPcKWyMZp+hWPj94EeIiBzHfTum8O6iq2rV9P5dKtmCVHPswRQBA3XbVndXhnwb1CpZ2w4p7leb1OQ0jfnIQ0/ssW6t4Or7BSkO/K5sJT+8/g2nNHfGzr/DeM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740089364; c=relaxed/simple;
-	bh=+BSfG7XSQPs3WSZSD8uNQu9wxfwrYohVa9iEe4Bw6bo=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=rmhsML17S2CW/G8lBG6c9x2TVLx9TYXPE6pY2zQ1OzcNZxhOfqmizOEMsOaD2DWsox7YcAAl9dvQiQ5GJIQQL+E/5bwCEW1RHtB5fNmYqno6SWAbC5lcgoLG4E8zRUdwbwaMy8NGa4xXB9o5pZ20R/McRYAGqVPUXHLDF/Bj2jQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 89C8092009C; Thu, 20 Feb 2025 23:09:20 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 829CB92009B;
-	Thu, 20 Feb 2025 22:09:20 +0000 (GMT)
-Date: Thu, 20 Feb 2025 22:09:20 +0000 (GMT)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-cc: Richard Henderson <richard.henderson@linaro.org>, 
-    Ivan Kokshaysky <ink@unseen.parts>, Matt Turner <mattst88@gmail.com>, 
-    Arnd Bergmann <arnd@arndb.de>, 
-    John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
-    Magnus Lindholm <linmag7@gmail.com>, 
-    "Paul E. McKenney" <paulmck@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, 
-    linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Alpha: Emulate unaligned LDx_L/STx_C for data
- consistency
-In-Reply-To: <CAHk-=wgBZk1FFOyiTKLnz4jNe-eZtYsrztcYRRXZZxF8evk1Rw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.2502202106200.65342@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk> <CAHk-=wgBZk1FFOyiTKLnz4jNe-eZtYsrztcYRRXZZxF8evk1Rw@mail.gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	s=arc-20240116; t=1740124418; c=relaxed/simple;
+	bh=bsl7AI4Fk69oe0KM3mv99Vgbb8n+nmX6nQ7QyQ3T9X8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QuOrJd+n78OUtOn1P7RCghhVpKehob+EMvKrQW8wic37EqBljULjNdi4MUie1bvzz5cOZvd22oqfTK1Q7+LHZSD8FGMZlXdCkHJBgssWpUm/TLkK/OkJDic5VcLNeXg8akJiio9GVk6lZxHOilCR6Psj1/WaC3bQYnuV0F+fTMg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=poXd0/F9; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="poXd0/F9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E78C4CED6;
+	Fri, 21 Feb 2025 07:53:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1740124418;
+	bh=bsl7AI4Fk69oe0KM3mv99Vgbb8n+nmX6nQ7QyQ3T9X8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=poXd0/F9tnQ8uQhBMXN59k88wJLDz+u6OCgcdsJ87flM06XJWDuk1j7LxXI/OZAyx
+	 ejQyH+zco0JM9nlkend+hVJKhfwQBkjUb8Qu0OzqXLi1OjatX/QI8CE3zanpmK7s2j
+	 ZDRWFFISZLXStK4j2Ik3/us/Z/UEBrCHEv8caobaifa4PazC9VCPaZNZq5uODiNhB9
+	 WPa4t0BtQBCvPbYGnzIZbocvEZVPIfnkn8n7rzCRQoREd+sn6bPZzUmx+1r95N66+r
+	 oVGZ2lZIk0X2BRi1hgVcvxmRkXD1vnh+isSgKTwW5NVVOJr+oe1O6qKvClNOoxI9JS
+	 hXsSDU6uOhghQ==
+Message-ID: <6e5ee9a3-f3fa-413e-b8cc-2fdfa8537590@kernel.org>
+Date: Fri, 21 Feb 2025 08:53:34 +0100
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 20/29] tty: srmcons: fix retval from srmcons_init()
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+References: <20250220111606.138045-1-jirislaby@kernel.org>
+ <20250220111606.138045-21-jirislaby@kernel.org>
+ <CA+=Fv5RadC05i29h_geUq3Moyn3hGydoRu335T-q9vnfcwZqew@mail.gmail.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <CA+=Fv5RadC05i29h_geUq3Moyn3hGydoRu335T-q9vnfcwZqew@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 19 Feb 2025, Linus Torvalds wrote:
-
-> > 1. A trapping unaligned LDx_L operation results in the pair of adjacent
-> >    aligned whole data quantities spanned being read and stored for the
-> >    reference with a subsequent STx_C operation, along with the width of
-> >    the data accessed and its virtual address, and the task referring or
-> >    NULL if the kernel.  The validity marker is set.
+On 20. 02. 25, 22:48, Magnus Lindholm wrote:
+> I've applied and verified this patch on an Alphaserver ES40 with
+> serial console.
 > 
-> So I have a couple of comments. I don't care deeply because I do think
-> alpha is dead, but for completeness:
-> 
->  (a) I don't think the task checking is correct.
-> 
-> You're only checking the task pointer, so what can happen is that a
-> task exits and another starts up with the same task pointer value, and
-> it all matches across one task doing a ld_l and another doing a st_c.
-> 
-> Does this matter? No. You'd literally have to *try* to create that
-> situation with identical mis-aligned addresses and data contents, and
-> an exit after a 'ld_l', and doing a 'st_c' in the new task without the
-> matching ld_l.
-> 
-> So I suspect this works in practice, but it's still worth mentioning.
+> Regarding the future use of label err_free_drv, is the intention to
+> use it to break out early if tty_alloc_driver() fails?
 
- It's an interesting corner case, but executing STx_C without preceding 
-matching LDx_L is hardly useful and depending on the circumstances may or 
-may not cause unpredictable results.  We can make it a part of the psABI 
-that such usage is not supported.  Otherwise we could clear `ll_bit' in 
-a task's termination path.
+...
 
->  (b) this is not truly atomic wrt concurrent aligned non-trapping
-> operations to the same words. Or in fact to current trapping ones,
-> since you end up inevitably releasing the spinlock before the final
-> stc emulation.
+>> +       if (!srm_is_registered_console)
+>> +               return -ENODEV;
+>> +
+>> +       driver = tty_alloc_driver(MAX_SRM_CONSOLE_DEVICES, 0);
+>> +       if (IS_ERR(driver))
+>> +               return PTR_ERR(driver);
+>> +
+>> +       tty_port_init(&srmcons_singleton.port);
+>> +
+>> +       driver->driver_name = "srm";
+>> +       driver->name = "srm";
+>> +       driver->major = 0;      /* dynamic */
+>> +       driver->minor_start = 0;
+>> +       driver->type = TTY_DRIVER_TYPE_SYSTEM;
+>> +       driver->subtype = SYSTEM_TYPE_SYSCONS;
+>> +       driver->init_termios = tty_std_termios;
+>> +       tty_set_operations(driver, &srmcons_ops);
+>> +       tty_port_link_device(&srmcons_singleton.port, driver, 0);
 
- It is not supposed to be.  The only objective of this code is to protect 
-the *unchanged* part of the longword/quadword.
+I plan on removing tty_port_link_device() as it was a temporary aid. 
+Yay, for 13 years! (commit 2cb4ca0208722).
 
-> I think this is fundamental and non-fixable, because the stc is done
-> as two operations, and the first can succeed with the second failing
-> (or they can both succeed, just interleaved with other accesses).
+>> +       err = tty_register_driver(driver);
+>> +       if (err)
+>> +               goto err_free_drv;
 
- It is absolutely fine and by design.  Atomicity of the unaligned store of 
-the quantity itself is not guaranteed by this sequence, just as it is not 
-with the original one using a pair of STQ_U operations, where a concurrent 
-write to the same location may cause the parts of the quantity to become 
-inconsistent with each other.
+Instead, the idea is to properly tty_port_register_device() after 
+tty_register_driver() instead. And that can fail. So is fail path reuses 
+err_free_drv (and adds tty_unregister_driver() on top).
 
- If the trapping code wanted to make the data quantity accessed atomic, it 
-should have declared it atomic as well as made it aligned, in which case 
-the compiler would have done the right thing, including padding/separation 
-from other data objects where necessary for the minimum width of data that 
-hardware can guarantee atomicity for.  And then we would not have arrived 
-in this emulation path in the first place.
+>> +
+>> +       srmcons_driver = driver;
+>> +
+>> +       return 0;
+>> +err_free_drv:
+>> +       tty_driver_kref_put(driver);
+>> +       tty_port_destroy(&srmcons_singleton.port);
+>> +
+>> +       return err;
 
-> Again, I don't think we care, and it works in practice, but it does
-> mean that I *really* think that:
-> 
->  (c) you should not handle the kernel case at all.
-> 
-> If the kernel does an unaligned ld_l/st_c, that's a fundamental kernel
-> bug. Don't emulate it. Particularly when the emulation fundamentally
-> is not truly atomic wrt other accesses.
-
- Good point actually, I think I mentally drove myself into a dead end 
-here.  Yes, absolutely, it is not expected to happen unless we have a bug 
-in our code somewhere!
-
-> Finally:
-> 
->  (d) I think you're doing a few too many inline asms by hand, and
-> you're masking the results too much.
-> 
-> On the read-side emulation, why do you do that
-> 
-> +               "1:     ldl %3,0(%5)\n"
-> +               "2:     ldl %4,4(%5)\n"
-> +               "       srl %3,%6,%1\n"
-> +               "       sll %4,%7,%2\n"
-> +               "       zapnot %1,15,%1\n"
-> +               "       zapnot %2,15,%2\n"
-> 
-> at all? Just do two aligned loads, and don't mask the bytes around
-> them. A *real* ldl/stc will fail not just when the exact bytes are
-> different, but when somebody has touched the same cacheline. So if the
-> aligned values have changed, you should fail the stc even if the
-> change was in other bytes.
-
- We do need to extract the bytes desired for the result of LDx_L though.
-
- Yes, it can be done in C, but the same stands for all the other emulation
-pieces here and yet they use inline assembly.  GCC is happy to do byte 
-extraction itself where necessary, it has machine description patterns for 
-that as it a fairly common operation (it does not for INSxH and MSKxH 
-though, they're handled as intrinsics only, which however we could use 
-instead).
-
- I think there is value in consistency, and with this piece written as 
-inline assembly you can spot the difference from the other variants right 
-away.  Or I could rewrite the byte extraction in C across other patterns.
-
-> And doing two aligned loads don't need any inline asm at all.
-
- Neither does unaligned loads, as GCC is happy to emit LDQ_U itself where 
-necessary, but we want to catch exceptions or we'd get an oops rather than 
-SIGSEGV.
-
-> On the st_c side, I think you're repeating the same inline asm twice,
-> and should have a single helper.
-
- The masks are different as are displacements, but a good point otherwise.  
-I think this guarantees the prologue to the atomic loop to go away, which 
-is a good thing, but I'll yet double-check the quality of code produced.
-
-> Is this a NAK for the patch? No. But I do think it should be massaged a bit.
-
- Thank you for your review, I'll post v2 once I'm done with the massage.
-
-  Maciej
+thanks,
+-- 
+js
+suse labs
