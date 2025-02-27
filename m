@@ -1,79 +1,176 @@
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2606C183CB0;
-	Tue, 25 Feb 2025 20:44:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A10A225761;
+	Thu, 27 Feb 2025 11:13:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740516270; cv=none; b=jcq9V3qjjyYoPIQCQB90EYWBi+O6/mJWuIQ3JWmH/S97oz7s8H25Hmp/7Nr1Gr+Gb9ULB+HdZStMyy4C2Kaxp4vXCtjFViNpg/cMDL2brWbsxf+m88XNtrr7zWcF4GNkyq2kjTS3w+wucLcKnTyo0XDYSjRH7F7giwd4cM63a+U=
+	t=1740654823; cv=none; b=AnDijjdMNsGDHSBR7eaegBrfJDLgQLmZ4yqFke+JgfMubzW1UYXGLf2tKUMnE2P63dPIvKw9Ze0NW2hnuIdV2gwh+QP07K5Jj8rZEtiR+VzdpFNuc3IE386qpTgvC5NxsvDBEuRKxRJcGAG9DqYlKzdsfeoYt6FtBH4LeFwZJdo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740516270; c=relaxed/simple;
-	bh=PH5YdRnivR9kB6Smke+lsCS/cQYYOFOc+a/7o9cCsl4=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=hjvF8rzX1U0/97AFfKcozSFMf6PnjuWwqoEI8Mlblzf5tRK/X/FxYqnitnFwQAxM+bK5Y0lgyJGf1G6fDbzwJRoKmYrycrIMjEZ2ChnAbPqI0JpbG8HCLWoF/J1yQ4nyHySHenub40dkdutbWHu7ueE6tKMa2Njl2ndAH3zl+2k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id DC8B492009C; Tue, 25 Feb 2025 21:44:20 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id D8F6A92009B;
-	Tue, 25 Feb 2025 20:44:20 +0000 (GMT)
-Date: Tue, 25 Feb 2025 20:44:20 +0000 (GMT)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Richard Henderson <richard.henderson@linaro.org>, 
-    Ivan Kokshaysky <ink@unseen.parts>, Matt Turner <mattst88@gmail.com>
-cc: Arnd Bergmann <arnd@arndb.de>, 
-    John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
-    Magnus Lindholm <linmag7@gmail.com>, 
-    "Paul E. McKenney" <paulmck@kernel.org>, 
-    Linus Torvalds <torvalds@linux-foundation.org>, 
-    Al Viro <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org, 
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Alpha: Emulate unaligned LDx_L/STx_C for data
- consistency
-In-Reply-To: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2502252030380.65342@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	s=arc-20240116; t=1740654823; c=relaxed/simple;
+	bh=SAqzx+hkCBMFjSaW75HdRmriaQmgXA3UpjpZK1/xZLI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SeHQ5FVkyKlUEOoG0+OgI2s6aF1YsAAza166Wjfgo3SVWD4hH+WT0gpYgV86UORlwiUJPZ3eB369gWCX7qjZEF5gfzoS9K+NPYuLcurXf3CbO9tC0ye5E+0UkIU4IFc8jLPu8jd7DOhnP6EneZIjRPz+yD5DR4oct2TRYAjVzgY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B40CD2C23;
+	Thu, 27 Feb 2025 03:13:56 -0800 (PST)
+Received: from [10.57.85.134] (unknown [10.57.85.134])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6FF103F6A8;
+	Thu, 27 Feb 2025 03:13:31 -0800 (PST)
+Message-ID: <16863478-2195-435e-a899-559df097bc59@arm.com>
+Date: Thu, 27 Feb 2025 11:13:29 +0000
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 7/8] execmem: add support for cache of large ROX pages
+Content-Language: en-GB
+To: Mike Rapoport <rppt@kernel.org>, Andrew Morton
+ <akpm@linux-foundation.org>, Luis Chamberlain <mcgrof@kernel.org>,
+ Dev Jain <dev.jain@arm.com>
+Cc: Andreas Larsson <andreas@gaisler.com>, Andy Lutomirski <luto@kernel.org>,
+ Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+ Borislav Petkov <bp@alien8.de>, Brian Cain <bcain@quicinc.com>,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ Christoph Hellwig <hch@infradead.org>,
+ Christophe Leroy <christophe.leroy@csgroup.eu>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Dinh Nguyen
+ <dinguyen@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
+ Guo Ren <guoren@kernel.org>, Helge Deller <deller@gmx.de>,
+ Huacai Chen <chenhuacai@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+ Johannes Berg <johannes@sipsolutions.net>,
+ John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+ Kent Overstreet <kent.overstreet@linux.dev>,
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ Mark Rutland <mark.rutland@arm.com>, Masami Hiramatsu <mhiramat@kernel.org>,
+ Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Michal Simek <monstr@monstr.eu>,
+ Oleg Nesterov <oleg@redhat.com>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Peter Zijlstra <peterz@infradead.org>, Richard Weinberger <richard@nod.at>,
+ Russell King <linux@armlinux.org.uk>, Song Liu <song@kernel.org>,
+ Stafford Horne <shorne@gmail.com>, Steven Rostedt <rostedt@goodmis.org>,
+ Suren Baghdasaryan <surenb@google.com>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Thomas Gleixner <tglx@linutronix.de>, Uladzislau Rezki <urezki@gmail.com>,
+ Vineet Gupta <vgupta@kernel.org>, Will Deacon <will@kernel.org>,
+ bpf@vger.kernel.org, linux-alpha@vger.kernel.org,
+ linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+ linux-mips@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, linux-openrisc@vger.kernel.org,
+ linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+ linux-sh@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+ linux-trace-kernel@vger.kernel.org, linux-um@lists.infradead.org,
+ linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev,
+ sparclinux@vger.kernel.org, x86@kernel.org
+References: <20241023162711.2579610-1-rppt@kernel.org>
+ <20241023162711.2579610-8-rppt@kernel.org>
+From: Ryan Roberts <ryan.roberts@arm.com>
+In-Reply-To: <20241023162711.2579610-8-rppt@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, 19 Feb 2025, Maciej W. Rozycki wrote:
+Hi Mike,
 
-> Interestingly enough no kernel mode traps have triggered with a kernel 
-> built with GCC 12 (and with most user traps coming from GCC verification):
+Drive by review comments below...
+
+
+On 23/10/2024 17:27, Mike Rapoport wrote:
+> From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
 > 
-> kernel unaligned acc	: 0 (pc=0,va=0)
-> user unaligned acc	: 1766720 (pc=20000053064,va=120020189)
+> Using large pages to map text areas reduces iTLB pressure and improves
+> performance.
 > 
-> but with GCC 15 a small quantity happened (even before I ran GCC testing):
+> Extend execmem_alloc() with an ability to use huge pages with ROX
+> permissions as a cache for smaller allocations.
 > 
-> kernel unaligned acc    : 78 (pc=fffffc0000ad5194,va=fffffc0002db5784)
-> user unaligned acc      : 883452 (pc=20000053064,va=120020189)
+> To populate the cache, a writable large page is allocated from vmalloc with
+> VM_ALLOW_HUGE_VMAP, filled with invalid instructions and then remapped as
+> ROX.
 > 
-> It seems a compiler regression worth checking -- the trap recorded was in 
-> `icmp6_dst_alloc' with a pair of quadword writes to `rt->rt6i_dst.addr', 
-> which however by its type (`struct in6_addr') is only longword-aligned and 
-> indeed starts at offset 148 from the outermost struct.  I have a sneaking 
-> suspicion one of my earlier GCC changes might be at fault.  At least I now 
-> have a test case to experiment with.
+> The direct map alias of that large page is exculded from the direct map.
+> 
+> Portions of that large page are handed out to execmem_alloc() callers
+> without any changes to the permissions.
+> 
+> When the memory is freed with execmem_free() it is invalidated again so
+> that it won't contain stale instructions.
+> 
+> An architecture has to implement execmem_fill_trapping_insns() callback
+> and select ARCH_HAS_EXECMEM_ROX configuration option to be able to use
+> the ROX cache.
+> 
+> The cache is enabled on per-range basis when an architecture sets
+> EXECMEM_ROX_CACHE flag in definition of an execmem_range.
+> 
+> Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+> Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+> Tested-by: kdevops <kdevops@lists.linux.dev>
+> ---
 
- FYI my suspicion wasn't wrong, I have submitted a compiler fix now[1].  
+[...]
 
- My plan has been to complete the GCC side first as it's more urgent given 
-its annual only release cycle model targetting April/May, whereas I think 
-the Linux side can slip a release or two in our roughly bi-monthly cycle.  
-I'm going to schedule my time accordinly and with my upcoming holiday also 
-in the picture I may not be able to post v2 of this proposal until around 
-end of March the earliest.
+> +
+> +static int execmem_cache_populate(struct execmem_range *range, size_t size)
+> +{
+> +	unsigned long vm_flags = VM_ALLOW_HUGE_VMAP;
+> +	unsigned long start, end;
+> +	struct vm_struct *vm;
+> +	size_t alloc_size;
+> +	int err = -ENOMEM;
+> +	void *p;
+> +
+> +	alloc_size = round_up(size, PMD_SIZE);
+> +	p = execmem_vmalloc(range, alloc_size, PAGE_KERNEL, vm_flags);
 
-References:
+Shouldn't this be passing PAGE_KERNEL_ROX? Otherwise I don't see how the
+allocated memory is ROX? I don't see any call below where you change the permission.
 
-[1] "Alpha: Fix base block alignment calculation regression", 
-    <https://inbox.sourceware.org/gcc-patches/alpine.DEB.2.21.2502251934260.65342@angie.orcam.me.uk/>
+Given the range has the pgprot in it, you could just drop passing the pgprot
+explicitly here and have execmem_vmalloc() use range->pgprot directly?
 
-  Maciej
+Thanks,
+Ryan
+
+> +	if (!p)
+> +		return err;
+> +
+> +	vm = find_vm_area(p);
+> +	if (!vm)
+> +		goto err_free_mem;
+> +
+> +	/* fill memory with instructions that will trap */
+> +	execmem_fill_trapping_insns(p, alloc_size, /* writable = */ true);
+> +
+> +	start = (unsigned long)p;
+> +	end = start + alloc_size;
+> +
+> +	vunmap_range(start, end);
+> +
+> +	err = execmem_set_direct_map_valid(vm, false);
+> +	if (err)
+> +		goto err_free_mem;
+> +
+> +	err = vmap_pages_range_noflush(start, end, range->pgprot, vm->pages,
+> +				       PMD_SHIFT);
+> +	if (err)
+> +		goto err_free_mem;
+> +
+> +	err = execmem_cache_add(p, alloc_size);
+> +	if (err)
+> +		goto err_free_mem;
+> +
+> +	return 0;
+> +
+> +err_free_mem:
+> +	vfree(p);
+> +	return err;
+> +}
+
+[...]
+
