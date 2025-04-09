@@ -1,144 +1,178 @@
-Received: from fhigh-a8-smtp.messagingengine.com (fhigh-a8-smtp.messagingengine.com [103.168.172.159])
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE6402627EA;
-	Tue,  8 Apr 2025 08:38:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.159
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5232B250EC;
+	Wed,  9 Apr 2025 16:40:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=166.70.13.231
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744101494; cv=none; b=OI3uqU9s9AHa8L0VomQ+HXjQthmzgfxc/s3hEf4+0pbWBpeSPK0EMAx+JbwVfSqWe9ZXEmT6zI5GF9fJWrvwl/Vvk9ynxE8j2MToWbN+kXnMxlGIL5jcDWZrV1XH4Q4ni24cIjfL98hvW2IBKkF+3sVHVQG+OSrZkEAjJdnt/j0=
+	t=1744216859; cv=none; b=V9SihzSRkbCzMMiVZ0axqhYyBcFUCY+fjY1kzuBcIn45KbrID0t2KzAvEWkZkI6sBw3dom2Gj7Qw3CjA8FBxW3unb2UuSi4EBi2j4prXWITMrPC8V7BPBmLtSMEFV/IFLxocbFrhdDQJS/tpLGBBPlXgpK1gycKElCZfI9JqSdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744101494; c=relaxed/simple;
-	bh=XX34lPy+Q29lQ57hsRPpZu70XY8syx0PGiPZ9KWfto4=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=UcUdXsMaof60w/gMGe6rH1FaTh6GQyvTZ2TAERWT4bmLURbVJAg1n+h/dR7ULNWYrilrx2rtFNusmwvNv2UFDeSsjb/jX9x0wZB3vHS+9OrGk8ZSztK26jssn3+hZ0CugUuYz42s0z1xSsnyims5xlI61eK+8iA2KEsUmN/QJjA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=d3gSowO5; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=c0vX2+O/; arc=none smtp.client-ip=103.168.172.159
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="d3gSowO5";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="c0vX2+O/"
-Received: from phl-compute-12.internal (phl-compute-12.phl.internal [10.202.2.52])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id C4F48114017C;
-	Tue,  8 Apr 2025 04:38:11 -0400 (EDT)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-12.internal (MEProxy); Tue, 08 Apr 2025 04:38:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1744101491;
-	 x=1744187891; bh=VlvkU1faDx+thQEdDrOoGOPLhFtXWFIgx9WnhEz6y6Y=; b=
-	d3gSowO5zzowHZ2h4AqNsVzu9wnZXqlT1UveryZFYO11x/R+WzxEbG7SbS0ZCKPd
-	y8bicZcOBeg/URkB010IHD4eZ4BY9pmR23R3IEgF2aStwFFpx/v7+mi022toaFpr
-	9uGD4z3t6Fv6a6HnTPFUpTN/xYmHSG8eOmR1SmwvGW01bcgpV96+Nz6JPvM+SJ2J
-	/Y6FqkFXSghM9MKEt//4vfLMH/n9YKzqohfpd/BiIUYMe12+ysS3Lwq36PeU1x3n
-	2IyOq+6Ksb4fqk0ZKwuhCGAuOyoxmlHrlawmmdhD+UtavNBO4KQ92Nj9pqaEWwJA
-	y2mYP84KYYHZ5wJNf41A/w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1744101491; x=
-	1744187891; bh=VlvkU1faDx+thQEdDrOoGOPLhFtXWFIgx9WnhEz6y6Y=; b=c
-	0vX2+O/tBfL+SfZ/cBvm6NUH0nAu6SUQeZe1kW++6GCH0XCzRzHVhkdH+nIcW79Q
-	Id00SH6dNRVSyhObO2J1FIkNCL/93+L+NhMs24v886kOoekO80jyFf6uTHExLTWd
-	2MZoQyfbVFCYtqvt/UFs1oJlmDAaY2hT5U7hCQnYGf3ilwFirYmMlS4GAPOuWpZc
-	mNuIjIckRSmXqskOYZ4CJOhSquM32S4Mi73WkJ0Koe4A3yUu2Iz3tWC+2y6WxjkF
-	ZQdf/u4a1TtcIVYRU0ibiaOZ0PdW6R6+DSdyx/SbwZhcDumnynvG14+xsehBuxb4
-	WrEsNwxeZ5L10Ao7opjLQ==
-X-ME-Sender: <xms:cuD0Zznghr422oPqDPolst399HuAmFd-Clo7xVYEpSpf4Ac0XLubkw>
-    <xme:cuD0Z23KYreNX_nkPYOohrNeTmnZeZrcqHUL_ASDg_jcR8_vTrW1oSoK9YJhlB1aD
-    EhHFzxhgIp8INrtzUg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvtddviedvucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
-    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertder
-    tddtnecuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnug
-    gsrdguvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeet
-    fefggfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
-    hmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohep
-    uddupdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehlihhnmhgrghejsehgmhgrih
-    hlrdgtohhmpdhrtghpthhtohepmhgrthhtshhtkeeksehgmhgrihhlrdgtohhmpdhrtghp
-    thhtohepphgruhhlmhgtkheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprhhitghhrg
-    hrugdrhhgvnhguvghrshhonheslhhinhgrrhhordhorhhgpdhrtghpthhtohepthhorhhv
-    rghlughssehlihhnuhigqdhfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehmrg
-    gtrhhosehorhgtrghmrdhmvgdruhhkpdhrtghpthhtohepghhlrghusghithiisehphhih
-    shhikhdrfhhuqdgsvghrlhhinhdruggvpdhrtghpthhtohepihhnkhesuhhnshgvvghnrd
-    hprghrthhspdhrtghpthhtoheplhhinhhugidqrghlphhhrgesvhhgvghrrdhkvghrnhgv
-    lhdrohhrgh
-X-ME-Proxy: <xmx:cuD0Z5p2yvCKgKIGVW4kpMODvptzKgkFKhSjrwpjtl1CCgpuRVZCog>
-    <xmx:cuD0Z7lHnpNeAU1-5Y_dV16uJuIqhP4BJXwcpWr2-nx558x4W_uITg>
-    <xmx:cuD0Zx2EpNc5h69ZU2yEht0pz4693TraFiNHcUMpFq4XDJz146rQDA>
-    <xmx:cuD0Z6vqYBG4PBFu0HbdLrZvGeiipMCwJwyQJ7dASSI2saQ1fo6PRw>
-    <xmx:c-D0Zz5O0f_2t6RPrZkGXiK8j5klBf1TEFNJ5yOBW8jX3idx6r7qqAr8>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 1F6232220073; Tue,  8 Apr 2025 04:38:10 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	s=arc-20240116; t=1744216859; c=relaxed/simple;
+	bh=OI5wgGn82uQMPS6lLA25QzrQbaTdxqnp0IH22m1DyYo=;
+	h=From:To:Cc:References:Date:In-Reply-To:Message-ID:MIME-Version:
+	 Content-Type:Subject; b=Nv06vjN3RoMDScrl7dpEEci8iVJkMVXB23gT+ziH1kYPjhYbg2bIzrDliGFH6OBBsDRuiZPlkIVIJeMG7j5YQOPIX1mb1uQxQff8CRwYRw9QydrLSKaZ5Fvv/OhU2vWN6ifJtsFr9i0c8OWq2SR8P0arPTHntFGvdgPZ82peB74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xmission.com; spf=pass smtp.mailfrom=xmission.com; arc=none smtp.client-ip=166.70.13.231
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xmission.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xmission.com
+Received: from in01.mta.xmission.com ([166.70.13.51]:43496)
+	by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.93)
+	(envelope-from <ebiederm@xmission.com>)
+	id 1u2XjD-003P6n-CY; Wed, 09 Apr 2025 09:52:39 -0600
+Received: from ip72-198-198-28.om.om.cox.net ([72.198.198.28]:42542 helo=email.froward.int.ebiederm.org.xmission.com)
+	by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.93)
+	(envelope-from <ebiederm@xmission.com>)
+	id 1u2XjC-005LKU-AL; Wed, 09 Apr 2025 09:52:39 -0600
+From: "Eric W. Biederman" <ebiederm@xmission.com>
+To: "Arnd Bergmann" <arnd@arndb.de>
+Cc: "Linus Torvalds" <torvalds@linux-foundation.org>,  "Maciej W. Rozycki"
+ <macro@orcam.me.uk>,  "Richard Henderson" <richard.henderson@linaro.org>,
+  "Ivan Kokshaysky" <ink@unseen.parts>,  "Matt Turner"
+ <mattst88@gmail.com>,  "John Paul Adrian Glaubitz"
+ <glaubitz@physik.fu-berlin.de>,  "Magnus Lindholm" <linmag7@gmail.com>,
+  "Paul E. McKenney" <paulmck@kernel.org>,  "Alexander Viro"
+ <viro@zeniv.linux.org.uk>,  linux-alpha@vger.kernel.org,
+  linux-kernel@vger.kernel.org
+References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk>
+	<CAHk-=wgBZk1FFOyiTKLnz4jNe-eZtYsrztcYRRXZZxF8evk1Rw@mail.gmail.com>
+	<alpine.DEB.2.21.2502202106200.65342@angie.orcam.me.uk>
+	<alpine.DEB.2.21.2504072042350.29566@angie.orcam.me.uk>
+	<CAHk-=whKa0-myNkpq2aMCQ=o7S+Sqj--TQEM8wfC9b2C04jidA@mail.gmail.com>
+	<e1356a60-525b-4405-ad5b-eb6e93de8fef@app.fastmail.com>
+Date: Wed, 09 Apr 2025 10:52:02 -0500
+In-Reply-To: <e1356a60-525b-4405-ad5b-eb6e93de8fef@app.fastmail.com> (Arnd
+	Bergmann's message of "Tue, 08 Apr 2025 10:37:49 +0200")
+Message-ID: <87v7rd8h99.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.2 (gnu/linux)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: T56050b542f246355
-Date: Tue, 08 Apr 2025 10:37:49 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Linus Torvalds" <torvalds@linux-foundation.org>,
- "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: "Richard Henderson" <richard.henderson@linaro.org>,
- "Ivan Kokshaysky" <ink@unseen.parts>, "Matt Turner" <mattst88@gmail.com>,
- "John Paul Adrian Glaubitz" <glaubitz@physik.fu-berlin.de>,
- "Magnus Lindholm" <linmag7@gmail.com>,
- "Paul E. McKenney" <paulmck@kernel.org>,
- "Alexander Viro" <viro@zeniv.linux.org.uk>, linux-alpha@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Message-Id: <e1356a60-525b-4405-ad5b-eb6e93de8fef@app.fastmail.com>
-In-Reply-To: 
- <CAHk-=whKa0-myNkpq2aMCQ=o7S+Sqj--TQEM8wfC9b2C04jidA@mail.gmail.com>
-References: <alpine.DEB.2.21.2502181912230.65342@angie.orcam.me.uk>
- <CAHk-=wgBZk1FFOyiTKLnz4jNe-eZtYsrztcYRRXZZxF8evk1Rw@mail.gmail.com>
- <alpine.DEB.2.21.2502202106200.65342@angie.orcam.me.uk>
- <alpine.DEB.2.21.2504072042350.29566@angie.orcam.me.uk>
- <CAHk-=whKa0-myNkpq2aMCQ=o7S+Sqj--TQEM8wfC9b2C04jidA@mail.gmail.com>
-Subject: Re: [PATCH] Alpha: Emulate unaligned LDx_L/STx_C for data consistency
 Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+X-XM-SPF: eid=1u2XjC-005LKU-AL;;;mid=<87v7rd8h99.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=72.198.198.28;;;frm=ebiederm@xmission.com;;;spf=pass
+X-XM-AID: U2FsdGVkX1+KvPU/sBTkEuKVGsgKzXmasJ0CNfVkiPI=
+X-Spam-Level: 
+X-Spam-Virus: No
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.0 BAYES_40 BODY: Bayes spam probability is 20 to 40%
+	*      [score: 0.3749]
+	*  0.7 XMSubLong Long Subject
+	*  0.0 T_TM2_M_HEADER_IN_MSG BODY: No description available.
+	* -0.0 DCC_CHECK_NEGATIVE Not listed in DCC
+	*      [sa02 1397; Body=1 Fuz1=1 Fuz2=1]
+	*  1.0 XM_B_Phish_Phrases Commonly used Phishing Phrases
+	*  0.0 T_TooManySym_01 4+ unique symbols in subject
+	*  0.2 XM_B_SpammyWords One or more commonly used spammy words
+X-Spam-DCC: XMission; sa02 1397; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: ;"Arnd Bergmann" <arnd@arndb.de>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 598 ms - load_scoreonly_sql: 0.03 (0.0%),
+	signal_user_changed: 3.7 (0.6%), b_tie_ro: 2.6 (0.4%), parse: 0.99
+	(0.2%), extract_message_metadata: 16 (2.6%), get_uri_detail_list: 3.6
+	(0.6%), tests_pri_-2000: 10 (1.7%), tests_pri_-1000: 2.2 (0.4%),
+	tests_pri_-950: 0.95 (0.2%), tests_pri_-900: 0.84 (0.1%),
+	tests_pri_-90: 165 (27.6%), check_bayes: 162 (27.1%), b_tokenize: 8
+	(1.4%), b_tok_get_all: 11 (1.8%), b_comp_prob: 2.6 (0.4%),
+	b_tok_touch_all: 136 (22.8%), b_finish: 0.90 (0.2%), tests_pri_0: 381
+	(63.8%), check_dkim_signature: 0.42 (0.1%), check_dkim_adsp: 4.2
+	(0.7%), poll_dns_idle: 4.8 (0.8%), tests_pri_10: 1.77 (0.3%),
+	tests_pri_500: 12 (2.1%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH] Alpha: Emulate unaligned LDx_L/STx_C for data consistency
+X-SA-Exim-Connect-IP: 166.70.13.51
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, viro@zeniv.linux.org.uk, paulmck@kernel.org, linmag7@gmail.com, glaubitz@physik.fu-berlin.de, mattst88@gmail.com, ink@unseen.parts, richard.henderson@linaro.org, macro@orcam.me.uk, torvalds@linux-foundation.org, arnd@arndb.de
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+X-SA-Exim-Scanned: No (on out01.mta.xmission.com); SAEximRunCond expanded to false
 
-On Tue, Apr 8, 2025, at 02:34, Linus Torvalds wrote:
-> On Mon, 7 Apr 2025 at 13:46, Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+"Arnd Bergmann" <arnd@arndb.de> writes:
+
+> On Tue, Apr 8, 2025, at 02:34, Linus Torvalds wrote:
+>> On Mon, 7 Apr 2025 at 13:46, Maciej W. Rozycki <macro@orcam.me.uk> wrote:
+>>>
+>>>  So unless I'm proved otherwise (e.g. that all such code paths are now
+>>> gone from networking, which may or may not be the case: I saw IPX go but I
+>>> can see AppleTalk still around; or that no sub-longword accesses are ever
+>>> used in the relevant networking paths), I'm going to keep kernel emulation
+>>> in v2, because what just used to be wrapped in an unaligned LDQ/STQ pair,
+>>> which we trapped on and emulated, will now become an LDQ_L/STQ_C loop.
+>>>
+>>>  Do you happen to know what the situation is here?
 >>
->>  So unless I'm proved otherwise (e.g. that all such code paths are now
->> gone from networking, which may or may not be the case: I saw IPX go but I
->> can see AppleTalk still around; or that no sub-longword accesses are ever
->> used in the relevant networking paths), I'm going to keep kernel emulation
->> in v2, because what just used to be wrapped in an unaligned LDQ/STQ pair,
->> which we trapped on and emulated, will now become an LDQ_L/STQ_C loop.
+>> I think networking ends up using 'get_unaligned()' properly for header
+>> accesses these days for any of this.
 >>
->>  Do you happen to know what the situation is here?
+>> If you don't, some architectures will literally silently give you
+>> garbage back and not even fault.
+>>
+>> Admittedly that's mainly some really broken old 32-bit ARM stuff and
+>> hopefully it's all dead by now.
 >
-> I think networking ends up using 'get_unaligned()' properly for header
-> accesses these days for any of this.
+> Yes, the last one doing this was EBSA110, which we removed in 2020.
 >
-> If you don't, some architectures will literally silently give you
-> garbage back and not even fault.
->
-> Admittedly that's mainly some really broken old 32-bit ARM stuff and
-> hopefully it's all dead by now.
+>> So unless you actually *see* the unaligned faults, I really think you
+>> shouldn't emulate them.
+>>
+>> And I'd like to know where they are if you do see them
 
-Yes, the last one doing this was EBSA110, which we removed in 2020.
+I was nerd sniped by this so I took a look.
 
-> So unless you actually *see* the unaligned faults, I really think you
-> shouldn't emulate them.
->
-> And I'd like to know where they are if you do see them
+I have a distinct memory that even the ipv4 stack can generate unaligned
+loads.  Looking at the code in net/ipv4/ip_input.c:ip_rcv_finish_core
+there are several unprotected accesses to iph->daddr.
 
-FWIW, all the major architectures that have variants without
-unaligned load/store (arm32, mips, ppc, riscv) trap and emulate
-them for both user and kernel access for normal memory, but
-they don't emulate it for atomic ll/sc type instructions.
-These instructions also trap and kill the task on the
-architectures that can do hardware unaligned access (x86
-cmpxchg8b being a notable exception).
+Which means that if the lower layers ever give something that is not 4
+byte aligned for ipv4 just reading the destination address will be an
+unaligned read.
 
-     Arnd
+There are similar unprotected accesses to the ipv6 destination address
+but it is declared as an array of bytes.  So that address can not
+be misaligned.
+
+There is a theoretical path through 802.2 that adds a 3 byte sap
+header that could cause problems.  We have LLC_SAP_IP defined
+but I don't see anything calling register_8022_client that would
+be needed to hook that up to the ipv4 stack.
+
+As long as the individual ethernet drivers have the hardware deliver
+packets 2 bytes into an aligned packet buffer the 14 byte ethernet
+header will end on a 16 byte aligned location, I don't think there
+is a way to trigger unaligned behavior with ipv4 or ipv6.
+
+Hmm.  Looking appletalk appears to be built on top of SNAP.
+So after the ethernet header processing the code goes through
+net/llc/llc_input.c:llc_rcv and then net/802/snap_rcv before
+reaching any of the appletalk protocols.
+
+I think the common case for llc would be 3 bytes + 5 bytes for snap,
+for 8 bytes in the common case.  But the code seems to be reading
+4 or 5 bytes for llc so I am confused.  In either case it definitely
+appears there are cases where the ethernet headers before appletalk
+can be an odd number of bytes which has the possibility of unaligning
+everything.
+
+Both of the appletalk protocols appear to make unguarded 16bit reads
+from their headers.  So having a buffer that is only 1 byte aligned
+looks like it will definitely be a problem.
+
+> FWIW, all the major architectures that have variants without
+> unaligned load/store (arm32, mips, ppc, riscv) trap and emulate
+> them for both user and kernel access for normal memory, but
+> they don't emulate it for atomic ll/sc type instructions.
+> These instructions also trap and kill the task on the
+> architectures that can do hardware unaligned access (x86
+> cmpxchg8b being a notable exception).
+
+I don't see anything that would get atomics involved in the networking
+stack.  No READ_ONCE on packet data or anything like that.  I believe
+that is fairly fundamental as well.  Whatever is processing a packet is
+the only code processing that packet.
+
+So I would be very surprised if the kernel needed emulation of any
+atomics, just emulation of normal unaligned reads.  I haven't looked to
+see if the transmission paths do things that will result in unaligned
+writes.
+
+Eric
