@@ -1,48 +1,42 @@
-Received: from out-178.mta1.migadu.com (out-178.mta1.migadu.com [95.215.58.178])
+Received: from out-189.mta0.migadu.com (out-189.mta0.migadu.com [91.218.175.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 139E026AF3
-	for <linux-alpha@vger.kernel.org>; Sat, 19 Apr 2025 11:43:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1FD3EACE
+	for <linux-alpha@vger.kernel.org>; Sat, 19 Apr 2025 12:00:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.189
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745063006; cv=none; b=XOvEZ6zZVtX1cE8hx6ApCpUOAlfIwxvK86WTgOfsP7+oqAtfVeBMEGkpcsvOZRv6NR+IdUkHj4EnpZS5XmwxCpXrNoyRZmriMnrB4VDsnGAtFBf9V7mpuQaBZ3Vg3qHya70DoHBEPopRSNmwUEprP/E7TLa53chtE0fnqVT5bbg=
+	t=1745064056; cv=none; b=DuwoaS9yjffTUFsMXtEfvQNiFHEJ6rEXF8QRkm7y8+PHBeBK6978W8NpQakfxwsz+Qx53ErG/RAI4bzQsJLjRUvsZpuf7pC5kxpmO5UZwRuiMP2Sbc1WRqUon1UUwhpXetLkK0ErgrshvZZVc9Al5lPDJXT98z9mtNyQa3gINfo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745063006; c=relaxed/simple;
-	bh=TUleW9KRGX0FGrCbp8T9MpS2ex+KPStgayd09seZX9k=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Dk9mu0+OD1/jR76S2cimK3IntyJH9UemR3WDSNFaMnBZ8e1gNo7JcpGwThmtOErTqL6Fr4/s7TaZoGUXhjmLhtoYqlfx7ODl0/Q2Nm26LFZOkns2pKDXfIHmJH6pxzquHudDwoQzO1/WnOCoWIDhugopq19Og09N5gyl3Y4Xeuk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=blwLTlLt; arc=none smtp.client-ip=95.215.58.178
+	s=arc-20240116; t=1745064056; c=relaxed/simple;
+	bh=S/JogNL0Z5r7fTN1TYZJwx0JV0BnRDzijgIYGg3OcAs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AOHJ9ODLaaBdBpc2KJD/ZJaUtOVId99iYbfkVyXNazaDDOrxPeaEjO9tOo+hhniqZ/sBF5QU3+Ljt0WtFYXv5AsZMhNg5POwODNoZtDMSqL0T2sktTihUnlrLOwSzm/Wd+hHf0ie/Aud/Lk292GCF7/9KuQJkqmawMVCV30d4dg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=but2MW+d; arc=none smtp.client-ip=91.218.175.189
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="blwLTlLt"
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="but2MW+d"
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1745063000;
+	t=1745064042;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding;
-	bh=QowPVoBoSNnEHK0cULG/V4c+a1cIPM2plKANNmK/tiU=;
-	b=blwLTlLtzlO6QHzgtCzVoPdEcKjZ9Iwa+POC7b+NgZOj9Ttmk+F2LvFhqK5C60dHGJTt/u
-	ij3VB7YvmsEO5Mt4gAUVl7FAh3lHuQ6VAhNR2LI0MmdiI1DoSfy7Ahd6jNshsjXH5BWoAc
-	uGoFUo+a/cHAsu3IiMHRMOUGH/daJ0g=
+	bh=AtQwAwd4D2QAaXwT+fjX/n4DbO60dxzK1kBHI70Rybc=;
+	b=but2MW+dKMSSeZZ8Nec+C/7lyAc4EvHBufP8jRjrk2y4ZGz8uJwkDiHEZfj3ygs0x/sOWg
+	CHVqw84fEzIV2HeGQ8PTfOMXonxh6XJ7T8kb3ZWpvrxaKZzN7Am2wWVg66Ri1GVk6e0jfn
+	h6rsU3XmFf5raFZyra5g5mjrL/xq7W0=
 From: Thorsten Blum <thorsten.blum@linux.dev>
 To: Richard Henderson <richard.henderson@linaro.org>,
 	Matt Turner <mattst88@gmail.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Al Viro <viro@zeniv.linux.org.uk>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	"Mike Rapoport (Microsoft)" <rppt@kernel.org>,
-	Guo Weikang <guoweikang.kernel@gmail.com>
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Arnd Bergmann <arnd@arndb.de>
 Cc: Thorsten Blum <thorsten.blum@linux.dev>,
 	linux-hardening@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
 	linux-alpha@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH] alpha: Replace sprintf()/strcpy() with scnprintf()/strscpy()
-Date: Sat, 19 Apr 2025 13:40:11 +0200
-Message-ID: <20250419114011.164512-3-thorsten.blum@linux.dev>
+Subject: [PATCH] alpha: Replace strcpy() with strscpy() in setup_arch()
+Date: Sat, 19 Apr 2025 14:00:04 +0200
+Message-ID: <20250419120005.177136-2-thorsten.blum@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -52,10 +46,12 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
 
-Replace sprintf() with the safer variant scnprintf() and use its return
-value instead of calculating the string length again using strlen().
+strcpy() is deprecated; use strscpy() instead.
 
-Use strscpy() instead of the deprecated strcpy().
+Since the destination buffer 'command_line' has a fixed length,
+strscpy() automatically determines its size using sizeof() when the size
+argument is omitted. This makes the explicit size argument for the
+existing strscpy() call unnecessary - remove it.
 
 No functional changes intended.
 
@@ -63,38 +59,33 @@ Link: https://github.com/KSPP/linux/issues/88
 Cc: linux-hardening@vger.kernel.org
 Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
 ---
- arch/alpha/kernel/core_marvel.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ arch/alpha/kernel/setup.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/alpha/kernel/core_marvel.c b/arch/alpha/kernel/core_marvel.c
-index b1bfbd11980d..d38f4d6759e4 100644
---- a/arch/alpha/kernel/core_marvel.c
-+++ b/arch/alpha/kernel/core_marvel.c
-@@ -17,6 +17,7 @@
- #include <linux/vmalloc.h>
- #include <linux/mc146818rtc.h>
- #include <linux/rtc.h>
-+#include <linux/string.h>
- #include <linux/module.h>
- #include <linux/memblock.h>
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index bebdffafaee8..8b51e6ca83d6 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -468,8 +468,8 @@ setup_arch(char **cmdline_p)
+ 	/* 
+ 	 * Locate the command line.
+ 	 */
+-	strscpy(command_line, COMMAND_LINE, sizeof(command_line));
+-	strcpy(boot_command_line, command_line);
++	strscpy(command_line, COMMAND_LINE);
++	strscpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
+ 	*cmdline_p = command_line;
  
-@@ -79,10 +80,12 @@ mk_resource_name(int pe, int port, char *str)
- {
- 	char tmp[80];
- 	char *name;
--	
--	sprintf(tmp, "PCI %s PE %d PORT %d", str, pe, port);
--	name = memblock_alloc_or_panic(strlen(tmp) + 1, SMP_CACHE_BYTES);
--	strcpy(name, tmp);
-+	size_t sz;
-+
-+	sz = scnprintf(tmp, sizeof(tmp), "PCI %s PE %d PORT %d", str, pe, port);
-+	sz += 1; /* NUL terminator */
-+	name = memblock_alloc_or_panic(sz, SMP_CACHE_BYTES);
-+	strscpy(name, tmp, sz);
+ 	/* 
+@@ -511,7 +511,7 @@ setup_arch(char **cmdline_p)
+ 	}
  
- 	return name;
- }
+ 	/* Replace the command line, now that we've killed it with strsep.  */
+-	strcpy(command_line, boot_command_line);
++	strscpy(command_line, boot_command_line);
+ 
+ 	/* If we want SRM console printk echoing early, do it now. */
+ 	if (alpha_using_srm && srmcons_output) {
 -- 
 2.49.0
 
