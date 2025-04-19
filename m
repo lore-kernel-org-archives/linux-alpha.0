@@ -1,99 +1,100 @@
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-178.mta1.migadu.com (out-178.mta1.migadu.com [95.215.58.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E8EA1A2658;
-	Fri, 18 Apr 2025 23:01:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 139E026AF3
+	for <linux-alpha@vger.kernel.org>; Sat, 19 Apr 2025 11:43:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745017281; cv=none; b=n8zqJxLbxb4W4UhWFNBXSLHQ4kbxXOQyZto8oo6QzGW4Rv4ZrjAyqDUy10BHe6cHeEVOfws+6vkQ3zwORiWPBz9lOoWIv9XCGNioZDD/LC91DIJSbn/AXrLukkh7dwiJcWzhx+h+4p9D2Czxsfgcyd3sGP86XZGyiqlFO/Ch7DQ=
+	t=1745063006; cv=none; b=XOvEZ6zZVtX1cE8hx6ApCpUOAlfIwxvK86WTgOfsP7+oqAtfVeBMEGkpcsvOZRv6NR+IdUkHj4EnpZS5XmwxCpXrNoyRZmriMnrB4VDsnGAtFBf9V7mpuQaBZ3Vg3qHya70DoHBEPopRSNmwUEprP/E7TLa53chtE0fnqVT5bbg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745017281; c=relaxed/simple;
-	bh=VQy0mOHcY16VbiuCnUNEHdfMlg4Hjotj7KFV8oi5pL4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dPNL1OCqkoSQbtG4CYOYQd8ap4Mbnnlib9WXxH6dBzukAYw5ydZXyIPwWRtsFw/e6P5Kk27VskKYtD/A+0k617FwDY8RCfaIHFBJ61mD2fgzjugA8Z+pwhXW8NEOwaNkaO1GdIe/dSf/PaDssi42vEjTjLvqC6s2zt3P7mrY0O8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IE5w0CiF; arc=none smtp.client-ip=209.85.208.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1745063006; c=relaxed/simple;
+	bh=TUleW9KRGX0FGrCbp8T9MpS2ex+KPStgayd09seZX9k=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Dk9mu0+OD1/jR76S2cimK3IntyJH9UemR3WDSNFaMnBZ8e1gNo7JcpGwThmtOErTqL6Fr4/s7TaZoGUXhjmLhtoYqlfx7ODl0/Q2Nm26LFZOkns2pKDXfIHmJH6pxzquHudDwoQzO1/WnOCoWIDhugopq19Og09N5gyl3Y4Xeuk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=blwLTlLt; arc=none smtp.client-ip=95.215.58.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IE5w0CiF"
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-30bf1d48843so20123711fa.2;
-        Fri, 18 Apr 2025 16:01:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745017277; x=1745622077; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VQy0mOHcY16VbiuCnUNEHdfMlg4Hjotj7KFV8oi5pL4=;
-        b=IE5w0CiF58pQbpPTuhMRSWmf1dEK8w+gFf7VQkf3C/FuVY7MwZ8tLq6jjPGUiqlYPS
-         gYE4lBvB2cpVHCAcL0fpaFwMOAN73dzf4GBKA1GqbBwrTcw0MKLaRi+VuQyajBSNcvSY
-         6hg1DyF63NBmOeQWfkZT/KDDnwuCfnKt3eMFmIOJYyKToxQErDin0M2yLOF2BmGEathM
-         fQkCzf+mlvpGze4NosIPMeGWMhd/lVcUpCw8ebLDuExDboFvLpyfFijIVQ/O9cJawjQg
-         5rBMn6GtzU0EZ3sujCF/cD5+G+Ypo9GqQyuiGd7r5EOu8GOghMQdZItNiEV6gah14/rW
-         bliA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745017277; x=1745622077;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VQy0mOHcY16VbiuCnUNEHdfMlg4Hjotj7KFV8oi5pL4=;
-        b=oLvgzUZvzgtQJNT0ku5fllDHE3j1EgTIsLE51tPOYkzGdioSJhkXDPK7B5cGIIXYZZ
-         aRxCP6cymOHPxj6ekOHJcElOGNf2KdeKs05j6vBsR+rc7AAst1Y42KOSzflz8o5rel1d
-         al2tQYChN/JohCKFo/LImtu4FVIt0Dhh25cFPyT8p9hqy2G8tJfxWvosHgiUkxUOB6Lq
-         z+kJ4GSMuJsUWpVg7OyjuGDQ1CVYCzPVf18vCMPN9WXlsfJlTg4hf23FzanaBEwq9JUK
-         3oIe2Mh4fRAL7kU2bDuOXO+PWq7ZKzfPs8TjBYgnva+clP69G6jWnZ28bl6vVdGensN0
-         c75A==
-X-Forwarded-Encrypted: i=1; AJvYcCUD4Lw36BeLlJLYjqNqTDSXXSKSGMktVbJW9pQniYQ3a0qECX9vLWxIpm0nCQU758q7TlGDd4aEgXYut3Y2@vger.kernel.org, AJvYcCUrNTP6oTcqJdGOjZ8i00edOwaJg+wJbg/6vwislt5PUxatzS3HH7GPbzUsU6LJfvX5RFYq0/DS1yilb0tvyWrO@vger.kernel.org, AJvYcCVvRvyg5UYmE1yqYtPmKcGE143OJ+b8md3b3FjaTA5dpsDxBsjpP/tZ3CVYNC8qwWbVWcT8DP9IY9g6jg==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy1cZ4s2/iwhHtVcfrhPmt3Ww0OeX7fahHb1iLWUF1yzuS9QAiU
-	c4GxK12IC8l4CiRYue9Z+qS0ffJkh0uYxR+rfjOaTVuNb+APJYHzLfY0h6DogeCnGitYHTJcupn
-	bfzoVnf4Jd1b44DjvnMO68nCHobuWJw==
-X-Gm-Gg: ASbGnctxAq+UttX9WAdXoAsyDKr1rCEdoRLjnwkrCoOI5P1YCtioVW05vQ5l0I6jXDl
-	wk0LUl3p2S/BMlUNgm2dFOVRf+NLWYrrip6HfcDpUa5PRbDBLWrqlJhLla32FtEp/faPy+ohq/I
-	+NnQkk2ErYpUy9Q7yIaJXCd2z2JfAtLYTDNh4=
-X-Google-Smtp-Source: AGHT+IFFJTxHPf+5+iXd4c3XocplOZE+gYZTmqAwnMiWmgDb0xL1UfWTnq5s+7K4B1jUk0E4pd13T5jtylfmkSUIvVE=
-X-Received: by 2002:a05:651c:19ac:b0:30b:f775:bae0 with SMTP id
- 38308e7fff4ca-31090559978mr14231121fa.36.1745017276927; Fri, 18 Apr 2025
- 16:01:16 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="blwLTlLt"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1745063000;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=QowPVoBoSNnEHK0cULG/V4c+a1cIPM2plKANNmK/tiU=;
+	b=blwLTlLtzlO6QHzgtCzVoPdEcKjZ9Iwa+POC7b+NgZOj9Ttmk+F2LvFhqK5C60dHGJTt/u
+	ij3VB7YvmsEO5Mt4gAUVl7FAh3lHuQ6VAhNR2LI0MmdiI1DoSfy7Ahd6jNshsjXH5BWoAc
+	uGoFUo+a/cHAsu3IiMHRMOUGH/daJ0g=
+From: Thorsten Blum <thorsten.blum@linux.dev>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Al Viro <viro@zeniv.linux.org.uk>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	"Mike Rapoport (Microsoft)" <rppt@kernel.org>,
+	Guo Weikang <guoweikang.kernel@gmail.com>
+Cc: Thorsten Blum <thorsten.blum@linux.dev>,
+	linux-hardening@vger.kernel.org,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] alpha: Replace sprintf()/strcpy() with scnprintf()/strscpy()
+Date: Sat, 19 Apr 2025 13:40:11 +0200
+Message-ID: <20250419114011.164512-3-thorsten.blum@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250417192054.69663-2-thorsten.blum@linux.dev>
- <202504181322.5D3B93E93@keescook> <ABD8884A-36DF-457C-83D4-49F4F63C339F@linux.dev>
-In-Reply-To: <ABD8884A-36DF-457C-83D4-49F4F63C339F@linux.dev>
-From: Matt Turner <mattst88@gmail.com>
-Date: Fri, 18 Apr 2025 19:01:03 -0400
-X-Gm-Features: ATxdqUFOZ5fvGt_IXXw9Q6D-_eoT7DrRF9bpv9M2IsYXr8gmnLcbrV2Ee9atLLM
-Message-ID: <CAEdQ38E4Hks+m=srZsuuu7g8N2z_hJT7oxyF_Nz3MYsm8wx9YQ@mail.gmail.com>
-Subject: Re: [PATCH] smp: Replace deprecated strcpy() with strscpy()
-To: Thorsten Blum <thorsten.blum@linux.dev>
-Cc: Kees Cook <kees@kernel.org>, Richard Henderson <richard.henderson@linaro.org>, 
-	"Paul E. McKenney" <paulmck@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, 
-	Arnd Bergmann <arnd@arndb.de>, linux-hardening@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On Fri, Apr 18, 2025 at 5:11=E2=80=AFPM Thorsten Blum <thorsten.blum@linux.=
-dev> wrote:
->
-> On 18. Apr 2025, at 22:23, Kees Cook wrote:
-> > On Thu, Apr 17, 2025 at 09:20:52PM +0200, Thorsten Blum wrote:
-> >> strcpy() is deprecated; use strscpy() instead.
-> >
-> > Are there more strcpy() uses in arch/alpha? Maybe do all of them and
-> > give the Subject prefix as "alpha:". If not, the "smp:" prefix is likel=
-y
-> > to non-specific. Maybe "alpha: smp:".
->
-> There are a handful left, but they're not as straightforward as this
-> one - so I'd prefer to keep them separate.
->
-> Could the committer change the subject to "alpha: smp:" or should I
-> submit a v2 just for the title?
+Replace sprintf() with the safer variant scnprintf() and use its return
+value instead of calculating the string length again using strlen().
 
-I'll fix it up when I add it to my tree.
+Use strscpy() instead of the deprecated strcpy().
 
-Thanks!
-Matt
+No functional changes intended.
+
+Link: https://github.com/KSPP/linux/issues/88
+Cc: linux-hardening@vger.kernel.org
+Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
+---
+ arch/alpha/kernel/core_marvel.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/arch/alpha/kernel/core_marvel.c b/arch/alpha/kernel/core_marvel.c
+index b1bfbd11980d..d38f4d6759e4 100644
+--- a/arch/alpha/kernel/core_marvel.c
++++ b/arch/alpha/kernel/core_marvel.c
+@@ -17,6 +17,7 @@
+ #include <linux/vmalloc.h>
+ #include <linux/mc146818rtc.h>
+ #include <linux/rtc.h>
++#include <linux/string.h>
+ #include <linux/module.h>
+ #include <linux/memblock.h>
+ 
+@@ -79,10 +80,12 @@ mk_resource_name(int pe, int port, char *str)
+ {
+ 	char tmp[80];
+ 	char *name;
+-	
+-	sprintf(tmp, "PCI %s PE %d PORT %d", str, pe, port);
+-	name = memblock_alloc_or_panic(strlen(tmp) + 1, SMP_CACHE_BYTES);
+-	strcpy(name, tmp);
++	size_t sz;
++
++	sz = scnprintf(tmp, sizeof(tmp), "PCI %s PE %d PORT %d", str, pe, port);
++	sz += 1; /* NUL terminator */
++	name = memblock_alloc_or_panic(sz, SMP_CACHE_BYTES);
++	strscpy(name, tmp, sz);
+ 
+ 	return name;
+ }
+-- 
+2.49.0
+
