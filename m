@@ -1,91 +1,70 @@
-Received: from out-189.mta0.migadu.com (out-189.mta0.migadu.com [91.218.175.189])
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1FD3EACE
-	for <linux-alpha@vger.kernel.org>; Sat, 19 Apr 2025 12:00:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.189
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF5B9184;
+	Sun, 20 Apr 2025 00:23:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745064056; cv=none; b=DuwoaS9yjffTUFsMXtEfvQNiFHEJ6rEXF8QRkm7y8+PHBeBK6978W8NpQakfxwsz+Qx53ErG/RAI4bzQsJLjRUvsZpuf7pC5kxpmO5UZwRuiMP2Sbc1WRqUon1UUwhpXetLkK0ErgrshvZZVc9Al5lPDJXT98z9mtNyQa3gINfo=
+	t=1745108615; cv=none; b=SF4vlS999K5kP27vzBZiqr2/gwEp3FLQ3nLxwkbkwOOR1/gv28HDlMIarWWIzzsgagAen8YHllQAmxoBfZnuIqLUiguqhMpXt+rOvzeHChmN6Vq6WDegvMHCEk7tdSOYEZzqbJc0xXnbIgWqKa+sQh+v/6H97++dYWswNUGxeQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745064056; c=relaxed/simple;
-	bh=S/JogNL0Z5r7fTN1TYZJwx0JV0BnRDzijgIYGg3OcAs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AOHJ9ODLaaBdBpc2KJD/ZJaUtOVId99iYbfkVyXNazaDDOrxPeaEjO9tOo+hhniqZ/sBF5QU3+Ljt0WtFYXv5AsZMhNg5POwODNoZtDMSqL0T2sktTihUnlrLOwSzm/Wd+hHf0ie/Aud/Lk292GCF7/9KuQJkqmawMVCV30d4dg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=but2MW+d; arc=none smtp.client-ip=91.218.175.189
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1745108615; c=relaxed/simple;
+	bh=7qmMOGLeorS24oT0CEaQyLEoiAXlG4rNvAsRmJBGfqg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AlLBI5zXT2k5cjD7j8UrV1ilB/A/IWKFlpyDh/RswQfBlfaXwOfTrTMVJlGC2FIprT4P9K7vvFF+BnY6082EEKQCIcnhBqrx8hU6oZKDQrEDbFV1FxQkzqYjEhUNlau+ZmTHJ3NBc8LiZVDAdSls4t61wWSb1JLqkU7OWNBTiD8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=sSK4ydse; arc=none smtp.client-ip=62.89.141.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="but2MW+d"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1745064042;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=AtQwAwd4D2QAaXwT+fjX/n4DbO60dxzK1kBHI70Rybc=;
-	b=but2MW+dKMSSeZZ8Nec+C/7lyAc4EvHBufP8jRjrk2y4ZGz8uJwkDiHEZfj3ygs0x/sOWg
-	CHVqw84fEzIV2HeGQ8PTfOMXonxh6XJ7T8kb3ZWpvrxaKZzN7Am2wWVg66Ri1GVk6e0jfn
-	h6rsU3XmFf5raFZyra5g5mjrL/xq7W0=
-From: Thorsten Blum <thorsten.blum@linux.dev>
-To: Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>
-Cc: Thorsten Blum <thorsten.blum@linux.dev>,
+	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="sSK4ydse"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=BaUykwIv3MMI2li2GGwFv/eaFgK+51gBnlvsi2PcbeQ=; b=sSK4ydse1q4p8P08II3rpaBzS5
+	w0eI+SD9ZfE0+8JNdMhmVyjz4nRcJGBAObkOBd69xcS5Rjlo8DC3z6NXUfxwPQ15zV7e1TY+22nrP
+	Kdsv2rnTC8sbmbbpSUNsKo7XS42Atibj4teZYZoZ+7KkDu9Of/wxztmFakf0+Sd/K+6leTrHv6/2Z
+	m9PW9d7PW7kcAdKIMnjuYFopxXMmweWxX3seTrRHSiF0Lq3lbDLjUcYTzD4BZx462vYAMvljEcWRT
+	21pqm5AtLoTT0H9aXMLnBkzd8i0IMxKMlZpBm8lHsqcc8Tq2DyDYS0ni0K5cWbzlMdO5TPyStQQDk
+	5GxktKKg==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1u6ISw-0000000ARBl-3EKu;
+	Sun, 20 Apr 2025 00:23:22 +0000
+Date: Sun, 20 Apr 2025 01:23:22 +0100
+From: Al Viro <viro@zeniv.linux.org.uk>
+To: Thorsten Blum <thorsten.blum@linux.dev>
+Cc: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	"Mike Rapoport (Microsoft)" <rppt@kernel.org>,
+	Guo Weikang <guoweikang.kernel@gmail.com>,
 	linux-hardening@vger.kernel.org,
-	linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] alpha: Replace strcpy() with strscpy() in setup_arch()
-Date: Sat, 19 Apr 2025 14:00:04 +0200
-Message-ID: <20250419120005.177136-2-thorsten.blum@linux.dev>
+	Andrew Morton <akpm@linux-foundation.org>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] alpha: Replace sprintf()/strcpy() with
+ scnprintf()/strscpy()
+Message-ID: <20250420002322.GP2023217@ZenIV>
+References: <20250419114011.164512-3-thorsten.blum@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250419114011.164512-3-thorsten.blum@linux.dev>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 
-strcpy() is deprecated; use strscpy() instead.
+On Sat, Apr 19, 2025 at 01:40:11PM +0200, Thorsten Blum wrote:
+> Replace sprintf() with the safer variant scnprintf() and use its return
+> value instead of calculating the string length again using strlen().
+> 
+> Use strscpy() instead of the deprecated strcpy().
 
-Since the destination buffer 'command_line' has a fixed length,
-strscpy() automatically determines its size using sizeof() when the size
-argument is omitted. This makes the explicit size argument for the
-existing strscpy() call unnecessary - remove it.
-
-No functional changes intended.
-
-Link: https://github.com/KSPP/linux/issues/88
-Cc: linux-hardening@vger.kernel.org
-Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
----
- arch/alpha/kernel/setup.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
-index bebdffafaee8..8b51e6ca83d6 100644
---- a/arch/alpha/kernel/setup.c
-+++ b/arch/alpha/kernel/setup.c
-@@ -468,8 +468,8 @@ setup_arch(char **cmdline_p)
- 	/* 
- 	 * Locate the command line.
- 	 */
--	strscpy(command_line, COMMAND_LINE, sizeof(command_line));
--	strcpy(boot_command_line, command_line);
-+	strscpy(command_line, COMMAND_LINE);
-+	strscpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
- 	*cmdline_p = command_line;
- 
- 	/* 
-@@ -511,7 +511,7 @@ setup_arch(char **cmdline_p)
- 	}
- 
- 	/* Replace the command line, now that we've killed it with strsep.  */
--	strcpy(command_line, boot_command_line);
-+	strscpy(command_line, boot_command_line);
- 
- 	/* If we want SRM console printk echoing early, do it now. */
- 	if (alpha_using_srm && srmcons_output) {
--- 
-2.49.0
-
+FWIW, an idiomatic variant would be
+	size = snprintf(NULL, 0, <....>);
+	buffer = <allocate size + 1 bytes>
+	if succeeded
+		snprintf(buffer, size + 1, <....>);
