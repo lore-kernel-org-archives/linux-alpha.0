@@ -1,171 +1,112 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B54FC2701AA
-	for <linux-alpha@vger.kernel.org>; Wed, 14 May 2025 11:02:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B09282882D6;
+	Wed, 14 May 2025 15:14:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747220557; cv=none; b=mAp9DAwovw9r4gkm852oqgqlQ3ia6vRun932O0n0oaQl2NgDaisXKr7HrBR6Y1B0vJYT2OxKDVXfSC3KDrjaimCKZEwqI3bVG4oLRrHEl0mU5bk+DOIEHdNs/mY8dTNVQnMkFga3gLVm0gKcT1ihU+3xvx/r8LbyLeSPSXjmYWg=
+	t=1747235692; cv=none; b=UFRdDmaT6ENc0wq1OnewGw9HaaWnFkJueIPmZKhia3ANo0AVDO/v+08U2m62Ks9nJUVbn0FI6TXc/SBHcVo4H4l4dL/IPZRSCWEWPsBtSYBQZA1mfZeYRUZ+4lFnYl3ugh0LElgJV2fGl4SmIjOTXb4xokHqYNU6TIgzZT9TqQI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747220557; c=relaxed/simple;
-	bh=g6FsWqajrTcVSIHknD3zeLY9flfbWnzSw3aQFZLECpw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mmvCRlTGyrjdmDdQ9R216hwIjWsfsUXqPdqh8P6jWyqSPC1E5//vuy+7U2bq+hDd2yDGi1U/O3lc+KdIeMD+hPe7wdNFHRj+QzXy1bTTPrm10+Tf4CwI5o8ZYyRO3xLwyuUbUmXj95hXtxalKV5f93AaEPBgprXaIq7eqVDrlOw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=MmDo9w0y; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1747235692; c=relaxed/simple;
+	bh=NhpvDIFF3RCGCMgFlua6GwCE5WabCIdXhqFSclRzhlI=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Z7fLj/lw0BwFZamsKJlFrY7hoWQTjtinPMOjxDs5LzrKZeKrg+RZzhx9+XEFKncxHAQkKWoS1AqB0HeoMA4K7eBD1LrlTZ5kHMOQq/4Hpqu7UpyWaN96FNHRkK5cLVJJP3wSbx6Fe8AUDMHFIJjvfDT+Yrc6I9MOZHoav+isxoc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Snfak2FR; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="MmDo9w0y"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1747220553;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Cav3Z4NY5VTBc23C/qTtaVoA8kEGEB5wAcjksldNIvE=;
-	b=MmDo9w0yz1Kn3sjpYTSSjD4KrGMy642rX6NeyGw0BXVGUAJtLpNr/jiSCs78/k6kPmZONb
-	1RW8FgVKyn4Xti1ZjFxpWYaJxj2Tcu+wyggyg2xIC+GcF3d775HpKZpGvBXNYkmv52waPk
-	mrns9bc03aeESHAE3VEXBSgaL59QP5U=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-498-Dn6elUSbMRCnmTmzvdL4kA-1; Wed, 14 May 2025 07:02:32 -0400
-X-MC-Unique: Dn6elUSbMRCnmTmzvdL4kA-1
-X-Mimecast-MFC-AGG-ID: Dn6elUSbMRCnmTmzvdL4kA_1747220551
-Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-5fbf6c98e2dso7469697a12.1
-        for <linux-alpha@vger.kernel.org>; Wed, 14 May 2025 04:02:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747220551; x=1747825351;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Cav3Z4NY5VTBc23C/qTtaVoA8kEGEB5wAcjksldNIvE=;
-        b=wzde6rKh5aLlJbuu4RQFMviAV7ILS5JdF4uyYL7/IPbAFQdN6DkxMHbr9ZdKJQ7Fj7
-         2+WYIfZl9YwppmC8rEu8bAHrHwPfSLG4PhzJwJDP9eo8HoGaZQH5lais4D/LkJ5NDoZ2
-         R9rnVom+J0jockJcDUkGUW3q5WTnWAxkZyScr349u6W1hWsMXLmdTeJ2Iw/ufHqu1DGT
-         akwwPuq9CbJepCbKH9hj8YHHAdlPijrL0AXayutiW1cjdKCUCzT7XMZ7/kNAGFX9DwpW
-         oCwbd1VbkW/lD2qp3Dcnzd9erJ2SFpTkxjjsJ2UaBTBJ6h9w+xE/EYzxApyhJbCTUD8g
-         EwBA==
-X-Forwarded-Encrypted: i=1; AJvYcCUzlQ7pKHtyMjksZKWItPTE0MMOi55WUKHVSZr7hN0CznFCm6gAoicqZej8wEDBdoggLplj3eDFoPrHZQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0YzBIBwTymqMhPDgYixSQHbMfdpJ9NgeITyEf62eQXljRXQOf+2O
-	gtai8dAw4KdxJL6FqtsNE3XNW9zFIC8ApiBP5E6bHNhKtkHuWf0DxWAAZ2DgUmJlJJyJ1zdw0Hw
-	f6u5Nj8dTHA/U0fY+LBvrEgQ8BKcHiq5ooKNXCD2HBnUKvAe6eex/UqyIoik=
-X-Gm-Gg: ASbGncuWAk4a2P6EjVMD8JydbbSy9R1eB6cI/Zok3qAMscLDyqKpfG4ZWbaptL195UY
-	rso7jcZ5UpN1dhHDkETZLunfLhaPvdbqeMvzDN0nfqwxDiQZ0YxZh+rdcsvygbkVLeV6Sg3aCJy
-	sxs0LaA4JHuV5ZQZH+7M1H/lWXCEhiPmsYu/cySwH1z2lYwuQHRcuOwaBtQl7PmpN3Vafcvm5Xk
-	lC9JJI7oSLzN00b86Ktin7guFtU3pCWG+421gOUG90C7KxACuldBR/9Z5Gi/hErWRp/BbV6bvSb
-	zA==
-X-Received: by 2002:a05:6402:234d:b0:5f4:ade4:88c5 with SMTP id 4fb4d7f45d1cf-5ff988dd135mr2082986a12.34.1747220551061;
-        Wed, 14 May 2025 04:02:31 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEs3ORoNcv9GW9V4gupozuqWmYmwSxEEUINo5zQzLXzCm36ngPWceLYKaaZhwPfqmrqY5iYdA==
-X-Received: by 2002:a05:6402:234d:b0:5f4:ade4:88c5 with SMTP id 4fb4d7f45d1cf-5ff988dd135mr2082854a12.34.1747220550339;
-        Wed, 14 May 2025 04:02:30 -0700 (PDT)
-Received: from thinky ([2a0e:fd87:a051:1:e664:4a86:4c01:c774])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5fe43357d45sm4879817a12.54.2025.05.14.04.02.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 May 2025 04:02:29 -0700 (PDT)
-Date: Wed, 14 May 2025 13:02:13 +0200
-From: Andrey Albershteyn <aalbersh@redhat.com>
-To: Casey Schaufler <casey@schaufler-ca.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>, 
-	Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
-	Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
-	Helge Deller <deller@gmx.de>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	Christophe Leroy <christophe.leroy@csgroup.eu>, Naveen N Rao <naveen@kernel.org>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
-	Sven Schnelle <svens@linux.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, 
-	Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
-	"David S. Miller" <davem@davemloft.net>, Andreas Larsson <andreas@gaisler.com>, 
-	Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, 
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, 
-	Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
-	=?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>, =?utf-8?Q?G=C3=BCnther?= Noack <gnoack@google.com>, 
-	Arnd Bergmann <arnd@arndb.de>, Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>, 
-	Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>, 
-	"Serge E. Hallyn" <serge@hallyn.com>, Stephen Smalley <stephen.smalley.work@gmail.com>, 
-	Ondrej Mosnacek <omosnace@redhat.com>, Tyler Hicks <code@tyhicks.com>, 
-	Miklos Szeredi <miklos@szeredi.hu>, Amir Goldstein <amir73il@gmail.com>, linux-alpha@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-security-module@vger.kernel.org, linux-api@vger.kernel.org, linux-arch@vger.kernel.org, 
-	selinux@vger.kernel.org, ecryptfs@vger.kernel.org, linux-unionfs@vger.kernel.org, 
-	linux-xfs@vger.kernel.org, Andrey Albershteyn <aalbersh@kernel.org>
-Subject: Re: [PATCH v5 2/7] lsm: introduce new hooks for setting/getting
- inode fsxattr
-Message-ID: <kgl5h2iruqnhmad65sonlvneu6mdj6jl3sd4aoc3us3lvrgviy@imce27t4nk2e>
-References: <20250512-xattrat-syscall-v5-0-4cd6821e8ff7@kernel.org>
- <20250512-xattrat-syscall-v5-2-4cd6821e8ff7@kernel.org>
- <f700845d-f332-4336-a441-08f98cd7f075@schaufler-ca.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Snfak2FR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1747235691; x=1778771691;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=NhpvDIFF3RCGCMgFlua6GwCE5WabCIdXhqFSclRzhlI=;
+  b=Snfak2FRQTTNEv02yZuXd9UI0Rnov3u8vn40QYa9crEgQlPeTsxcOt4D
+   FYz03DTBuWT9vzVbHRY3ctypNUc6pwt/RTcBjs7br0QT/cY9L4B5Clij2
+   nbxJhCAF4RrJ/SCwdVQzFyh1QtFAk2fvRygFUHxm2UMwvF1mvOPae5Xxw
+   5pMt/AoirExAGhAjwrXLWCNjC/uSoVBMu38vKdBMHjVGiEeBz/+KJ8IzT
+   xJA7YicXivuynRjCnil68LBNpUl9t0+iRsywzVdKq/YkrvbOpDCmF87Pa
+   vMnWW9A5ItYipioFSpw29sNTj+Vw1+3lkAhNWrhYNqaBr9j4BpAeypqar
+   w==;
+X-CSE-ConnectionGUID: rxRJj5EgRy6AzG7fUlzwIA==
+X-CSE-MsgGUID: dbC7JQHiRR2SVNahh+Uw9w==
+X-IronPort-AV: E=McAfee;i="6700,10204,11433"; a="49072766"
+X-IronPort-AV: E=Sophos;i="6.15,288,1739865600"; 
+   d="scan'208";a="49072766"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 May 2025 08:14:46 -0700
+X-CSE-ConnectionGUID: Z7MrihvETrqWO9x0Bqm68Q==
+X-CSE-MsgGUID: mwVaS7OrS2eDOd8QyPEg6g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,288,1739865600"; 
+   d="scan'208";a="142939173"
+Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
+  by fmviesa005.fm.intel.com with ESMTP; 14 May 2025 08:14:46 -0700
+From: kan.liang@linux.intel.com
+To: peterz@infradead.org,
+	mingo@redhat.com,
+	namhyung@kernel.org,
+	irogers@google.com,
+	mark.rutland@arm.com,
+	linux-kernel@vger.kernel.org,
+	linux-perf-users@vger.kernel.org
+Cc: eranian@google.com,
+	ctshao@google.com,
+	tmricht@linux.ibm.com,
+	Kan Liang <kan.liang@linux.intel.com>,
+	linux-alpha@vger.kernel.org
+Subject: [PATCH V2 09/15] alpha/perf: Remove driver-specific throttle support
+Date: Wed, 14 May 2025 08:13:55 -0700
+Message-Id: <20250514151401.2547932-10-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.38.1
+In-Reply-To: <20250514151401.2547932-1-kan.liang@linux.intel.com>
+References: <20250514151401.2547932-1-kan.liang@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f700845d-f332-4336-a441-08f98cd7f075@schaufler-ca.com>
+Content-Transfer-Encoding: 8bit
 
-On 2025-05-12 08:43:32, Casey Schaufler wrote:
-> On 5/12/2025 6:25 AM, Andrey Albershteyn wrote:
-> > Introduce new hooks for setting and getting filesystem extended
-> > attributes on inode (FS_IOC_FSGETXATTR).
-> >
-> > Cc: selinux@vger.kernel.org
-> > Cc: Paul Moore <paul@paul-moore.com>
-> >
-> > Signed-off-by: Andrey Albershteyn <aalbersh@kernel.org>
-> > ---
-> >  fs/file_attr.c                | 19 ++++++++++++++++---
-> >  include/linux/lsm_hook_defs.h |  2 ++
-> >  include/linux/security.h      | 16 ++++++++++++++++
-> >  security/security.c           | 30 ++++++++++++++++++++++++++++++
-> >  4 files changed, 64 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/fs/file_attr.c b/fs/file_attr.c
-> > index 2910b7047721..be62d97cc444 100644
-> > --- a/fs/file_attr.c
-> > +++ b/fs/file_attr.c
-> > @@ -76,10 +76,15 @@ EXPORT_SYMBOL(fileattr_fill_flags);
-> >  int vfs_fileattr_get(struct dentry *dentry, struct fileattr *fa)
-> >  {
-> >  	struct inode *inode = d_inode(dentry);
-> > +	int error;
-> >  
-> >  	if (!inode->i_op->fileattr_get)
-> >  		return -ENOIOCTLCMD;
-> >  
-> > +	error = security_inode_file_getattr(dentry, fa);
-> > +	if (error)
-> > +		return error;
-> > +
-> 
-> If you're changing VFS behavior to depend on LSMs supporting the new
-> hooks I'm concerned about the impact it will have on the LSMs that you
-> haven't supplied hooks for. Have you tested these changes with anything
-> besides SELinux?
+From: Kan Liang <kan.liang@linux.intel.com>
 
-Sorry, this thread is incomplete, I've resent full patchset again.
-If you have any further comments please comment in that thread [1]
+The throttle support has been added in the generic code. Remove
+the driver-specific throttle support.
 
-I haven't tested with anything except SELinux, but I suppose if
-module won't register any hooks, then security_inode_file_*() will
-return 0. Reverting SELinux implementation of the hooks doesn't
-cause any errors.
+Besides the throttle, perf_event_overflow may return true because of
+event_limit. It already does an inatomic event disable. The pmu->stop
+is not required either.
 
-I'm not that familiar with LSMs/selinux and its codebase, if you can
-recommend what need to be tested while adding new hooks, I will try
-to do that for next revision.
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Cc: linux-alpha@vger.kernel.org
+---
+ arch/alpha/kernel/perf_event.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-[1]: https://lore.kernel.org/linux-fsdevel/CAOQ4uxgOAxg7N1OUJfb1KMp7oWOfN=KV9Lzz6ZrX0=XRGOQrEQ@mail.gmail.com/T/#t
-
+diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
+index 1f0eb4f25c0f..a3eaab094ece 100644
+--- a/arch/alpha/kernel/perf_event.c
++++ b/arch/alpha/kernel/perf_event.c
+@@ -852,14 +852,9 @@ static void alpha_perf_event_irq_handler(unsigned long la_ptr,
+ 	alpha_perf_event_update(event, hwc, idx, alpha_pmu->pmc_max_period[idx]+1);
+ 	perf_sample_data_init(&data, 0, hwc->last_period);
+ 
+-	if (alpha_perf_event_set_period(event, hwc, idx)) {
+-		if (perf_event_overflow(event, &data, regs)) {
+-			/* Interrupts coming too quickly; "throttle" the
+-			 * counter, i.e., disable it for a little while.
+-			 */
+-			alpha_pmu_stop(event, 0);
+-		}
+-	}
++	if (alpha_perf_event_set_period(event, hwc, idx))
++		perf_event_overflow(event, &data, regs);
++
+ 	wrperfmon(PERFMON_CMD_ENABLE, cpuc->idx_mask);
+ 
+ 	return;
 -- 
-- Andrey
+2.38.1
 
