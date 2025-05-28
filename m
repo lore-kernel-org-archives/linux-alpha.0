@@ -1,116 +1,202 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B793270ED6
-	for <linux-alpha@vger.kernel.org>; Thu, 22 May 2025 22:26:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B26D2566FC
+	for <linux-alpha@vger.kernel.org>; Wed, 28 May 2025 08:10:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747952772; cv=none; b=YrTH2qUm2X/DkPSl08FMYIiX5uEofMBEA84ifqP/ApFm4BJQ2B7z9Nu6MpKeE3RYMX7/iXUWzgrFD50XehQAgfFPjjKSAgtMuek3rKOVs93l8agU7452MFvx0oSWwTF3uvHmT06bSHwOjWiPM3ETtFHyVaUSSJsxAFFmJFiGYL0=
+	t=1748419824; cv=none; b=m4l5EevB7izHc2YjvzWeC8RYEcXRCbCJjE+1fbrGoKy/8QGtigduWMkvooqtvD4dZXuuGhGatz1dRmBqW1BbT4Hlv2NfFdd1/bfRlp4/LvCqI7qyMW5MhIdZxSeLdhJqkz/Wa8MeDpbmYJmPigy6Igcntk9B3N+hJ+yOwrQRiQM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747952772; c=relaxed/simple;
-	bh=ERIIFgKxrnPwjSVA6jXYtUfeYroUqJBM9v+L48OiIjw=;
-	h=Date:Message-ID:MIME-Version:Content-Type:From:To:Cc:Subject:
-	 References:In-Reply-To; b=P0+HMMYHOxHi01d/oyjqOdVCwJpj2HHe1RH83pH3L+fDJmv9ttCcV6KnJLWCluJ/drYoL94QkCmvrPRuhp6r5BPs9qMvhTfsnY5Yh0I/CwehFKXDTS2bNzIFXrs4VKAyW2JYmRoMrs7YNM7fDMAlRe5zatstPTe6YPojko3LXhw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com; spf=pass smtp.mailfrom=paul-moore.com; dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b=ToVMF8Pc; arc=none smtp.client-ip=209.85.222.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=paul-moore.com
+	s=arc-20240116; t=1748419824; c=relaxed/simple;
+	bh=ikapsARXQZf8eA1s2Uf9Nwh181NRYDlZ4tzTwlRr+TY=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=rPzP1cK+b77QDEc+pc2+31gbSKN1/5jNm8BVwWnC1Mo4GfmlyP2T4yQ8SRHpkbmm6/66R1UVyD19KNj5M8ApdaufseTAaNOpwwB4vrEULzQVGmYMT2oaMR2lGONNSLic6U3jdiOTyzXRSJpSNS3YZ5RWdvfaf68Fd3pnBeb4T18=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=YYdiKkNU; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b="ToVMF8Pc"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7c5b2472969so897805085a.1
-        for <linux-alpha@vger.kernel.org>; Thu, 22 May 2025 15:26:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="YYdiKkNU"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-43edecbfb94so55947405e9.1
+        for <linux-alpha@vger.kernel.org>; Wed, 28 May 2025 01:10:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore.com; s=google; t=1747952768; x=1748557568; darn=vger.kernel.org;
-        h=in-reply-to:references:subject:cc:to:from:content-transfer-encoding
-         :mime-version:message-id:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=yW4BwrWRPMGZw+m/ri6EFRKCjP4k+SeXSk6ZWrWvJiA=;
-        b=ToVMF8PcVy37DRcyydOqAzRtU8MIfxnsQYcyTujtaPP+6rNuh10GiSxHl8BpEOL7Vl
-         xP549yj/DsBJfMi3qCROE0CjVVteyRyHylhdLw04oGcxRiQntTqkGaj0qxDt91en7Yaf
-         k+SmxoaFBB+G/5sErCk+bkQleUrTH6XQJe2p+LIipbvb4fbPmu1wnSD2q+VMoi0xxJsW
-         gaMrvrcaiHSnHiky9rJUvXODz2114Xg3/bkQmKiZIEtphocJflv5aC1cQ1XzMR2q+5M1
-         e5C3pB8Uc+2bJywG7HLAABdlrHUZ45rP3ykqZkmL5ezlodK/YayNjCLBFI5pn3kcMbPH
-         Giow==
+        d=linaro.org; s=google; t=1748419820; x=1749024620; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SP3lQumpM0dfeFGzUY60+iaib/G0AuztiOAfvL97QZU=;
+        b=YYdiKkNUQzfm3uiCpw0OxMdnOA9fZa31CaueYgpMwot0fqJ1Z6PVO837Tq9ptkc7Ig
+         UZUenSAGLREnWyUgck6qT0vHfMX1JWmMLdS0dlIAjpzh7afgFjsp3KOkVVKk9HxW9m0e
+         TU0vF3vP+3v1GcfI3LFQ6eqJ98SMdlPVuKWVhrTKqFok6wUn6QE3bWd9KDqB0kloY93K
+         srQo/Koec6913Wxj2yZVizRGti95aPnq9ldifIlofoIQQuApTeG86WUxcCTozJN8v7ZS
+         4SrfUMpchbpn5LQnTLMMMuaRF9IjCjoufsAcSvb2lky2ZbXpcXm3QehPxJGambebDLWf
+         7p8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747952768; x=1748557568;
-        h=in-reply-to:references:subject:cc:to:from:content-transfer-encoding
-         :mime-version:message-id:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=yW4BwrWRPMGZw+m/ri6EFRKCjP4k+SeXSk6ZWrWvJiA=;
-        b=BGyfcSFOWwEHgIlosuRlxgWKs5fqdVYomEKXRW/DEzwlaTM7vWfww0k1V4aMBLaA43
-         Bexa7PWTnB0Q1ebX5XQYEIXtL9gf/zozB9Yy3pyRQgCBr87xcD66HspmKt288PNNY+G2
-         mZWzRY1r6qDYdEM+LD6r7NT0Pj3zwhFclSaFPkGOpOLzqdFlzo0+Vglq1FYGGfDZojJr
-         IDlcHVQZAvymFBTpnoHUy/91XRhYHPgAdEW6z9kqOMqfH8uQFLOZXyQh1C0wRyXuqQ5M
-         iz/Qglx3X2jJ9CSCudabOrFIygF/5WtWOVRgMTI5pjJlrdsBntuRU4NrYwN1LIN9eIfu
-         7OQg==
-X-Gm-Message-State: AOJu0YydlM0fmIh4iEHBXZE6a9SHfrt2yylNR7hAGpV8g1Sabj1EcExO
-	yrx3pxySaDHkkck64FVbpxbTJ4sl3rg8asjM/GPnLqHAkZM4Vx6AChgoS1Q08tNkqg==
-X-Gm-Gg: ASbGncsD2J9wqFI00azxiewNnjTi/GXIeN6R6afx/R7FwOzNt8WXtg2IxKMkRaV2zTD
-	0EmtqMJEAhwpeJHMAwrJX13SEja47JppHbnLXfv1DGPZ3JgPILIMWw5QVnbuJl3jnQ1iw9vWJM+
-	9Jv9EVaEHBAurE8K6G8+l//ymmfIw3Z6IXd62X2r4L6xQgPtMfxIXPGjP439JAazPVbzrzkudY+
-	WHDXLBmM9cUx2r49YWkw5kA12fI9P54OE1pBKJBnFZ71fcwQI6A4gsPVMCvTKZdfvchh00MnYW7
-	KKRMB7ZYIFUsVdw23iUiLTRlZImdKpuEyUJCfgBbvs6bxozWCZWjB0kZY03F48f9NqWTjR3k7Wn
-	1AGnsuWGM3civyoU4ldHu
-X-Google-Smtp-Source: AGHT+IHmIlyqjG6e3vdHM+wi0UqPbDaDdVTY/IdBlClNAbyXhci/B2Ul0PB2ozu0sL7+1EWeTaPM2w==
-X-Received: by 2002:a05:620a:408e:b0:7ce:d352:668f with SMTP id af79cd13be357-7ced352670emr1334278485a.47.1747952768087;
-        Thu, 22 May 2025 15:26:08 -0700 (PDT)
-Received: from localhost (pool-71-126-255-178.bstnma.fios.verizon.net. [71.126.255.178])
-        by smtp.gmail.com with UTF8SMTPSA id af79cd13be357-7cd468b69dfsm1089029585a.79.2025.05.22.15.26.07
+        d=1e100.net; s=20230601; t=1748419820; x=1749024620;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SP3lQumpM0dfeFGzUY60+iaib/G0AuztiOAfvL97QZU=;
+        b=rdNs/krABuK1wZhcLzvR01sI5/GfVy1WeX+9Zf6i3J9W/+ODm10Eivatnbq8UNYY6d
+         Lxd/PmsUGZ0OpPqlyPFUsBNeOpfhygQX7oSVhOZiPJOkDeSecXuO5toZicWSA9JIdwmb
+         3D7rt2xOeuQZp/aOmXEkOXJuKnKFIlA8uyKZ2ZhY2sUSQMMYlEE2h58u9yNZovdR2HMV
+         YZaug5dCYFb9H5mgBskfG6CrRugt+qyRzTufaI40G5syLv2Xocd+D6tdq1V48/68MePf
+         GWgZusJ3O5wGfkAYwc6zFdt9mk/Il4WZmUUS209csNppKepdv/QuhUoTYhTRqZfXmV21
+         k72Q==
+X-Gm-Message-State: AOJu0Yym6rjZl/EjyF89X+bWRAUXnrOC32945X36Ls97wcc7ZK0c79U5
+	jqd+S/OoP3Qjl8E1210TbnL4gUssIcpYxENQaCa/m+XPRFKFFffjuTljNyX5JWu5FODssAkWZHF
+	RfpDa
+X-Gm-Gg: ASbGncs2QnVnDt9jwPpqOAmzJgD02yRKSaxAkndZQAlkuQQfsk92BOkFGFkjyMMl5dk
+	gLUq/7DuN7RAoYTbF5UYDvzExYz5ABHPtZAKjMjyD/tA6wdg9azcBYGypudRjGpNbtbnv4yVw5K
+	QA7kTT61Ic7lxt5ATzkvmEpCpwubDGWJcoKSRk4kWwzxlF4CdOWcDt0M1Q6Vzj45G4JfomN9RUO
+	fVAEDsT+lLCjrDUoMkIrnBgxD2KwQ+BNzuDdK8oKfjIJ9drD1EUQNCaSzi177xct66w0+Tfy+Bq
+	GnWwuWHdEpGVDeQpVfGyHjtr6rEnUr2Y/kYKJRaUqfX3CQKAFkPvw8Ny
+X-Google-Smtp-Source: AGHT+IHA/pQHUAxpz7PfNmC5aaLi/n/X+Y3CzijRgsbBgSjqgEGsJjQraN2Tg7ZSQn8QgYE+mtdhig==
+X-Received: by 2002:a05:600c:511d:b0:442:cab1:e092 with SMTP id 5b1f17b1804b1-44c91cc5591mr135670885e9.11.1748419820334;
+        Wed, 28 May 2025 01:10:20 -0700 (PDT)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-45072559736sm9495935e9.19.2025.05.28.01.10.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 May 2025 15:26:07 -0700 (PDT)
-Date: Thu, 22 May 2025 18:26:07 -0400
-Message-ID: <8bf36078ef8f3e884a1d3d8415834680@paul-moore.com>
+        Wed, 28 May 2025 01:10:19 -0700 (PDT)
+Date: Wed, 28 May 2025 11:10:16 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: linux-alpha@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>
+Subject: [bug report] Linux-2.6.12-rc2
+Message-ID: <aDbE6P6e4gd7pbMC@stanley.mountain>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0 
-Content-Type: text/plain; charset=UTF-8 
-Content-Transfer-Encoding: 8bit 
-X-Mailer: pstg-pwork:20250522_1740/pstg-lib:20250522_1730/pstg-pwork:20250522_1740
-From: Paul Moore <paul@paul-moore.com>
-To: Andrey Albershteyn <aalbersh@redhat.com>, Richard Henderson <richard.henderson@linaro.org>, 
-	Matt Turner <mattst88@gmail.com>, Russell King <linux@armlinux.org.uk>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
-	Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, 
-	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
-	Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
-	Naveen N Rao <naveen@kernel.org>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
-	Sven Schnelle <svens@linux.ibm.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, 
-	Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
-	"David S. Miller" <davem@davemloft.net>, Andreas Larsson <andreas@gaisler.com>, 
-	Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	"H. Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
-	=?UTF-8?B?TWlja2HDq2wgU2FsYcO8bg==?= <mic@digikod.net>, 
-	=?UTF-8?Q?G=C3=BCnther_Noack?= <gnoack@google.com>, 
-	Arnd Bergmann <arnd@arndb.de>, =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>, 
-	James Morris <jmorris@namei.org>, "Serge E. Hallyn" <serge@hallyn.com>, 
-	Stephen Smalley <stephen.smalley.work@gmail.com>, Ondrej Mosnacek <omosnace@redhat.com>, 
-	Tyler Hicks <code@tyhicks.com>, Miklos Szeredi <miklos@szeredi.hu>, 
-	Amir Goldstein <amir73il@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-security-module@vger.kernel.org, linux-api@vger.kernel.org, linux-arch@vger.kernel.org, selinux@vger.kernel.org, ecryptfs@vger.kernel.org, linux-unionfs@vger.kernel.org, linux-xfs@vger.kernel.org, Andrey Albershteyn <aalbersh@kernel.org>
-Subject: Re: [PATCH v5 3/7] selinux: implement inode_file_[g|s]etattr hooks
-References: <20250513-xattrat-syscall-v5-3-22bb9c6c767f@kernel.org>
-In-Reply-To: <20250513-xattrat-syscall-v5-3-22bb9c6c767f@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On May 13, 2025 Andrey Albershteyn <aalbersh@redhat.com> wrote:
-> 
-> These hooks are called on inode extended attribute retrieval/change.
-> 
-> Cc: selinux@vger.kernel.org
-> Cc: Paul Moore <paul@paul-moore.com>
-> 
-> Signed-off-by: Andrey Albershteyn <aalbersh@kernel.org>
-> ---
->  security/selinux/hooks.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
+Hello Alpha Maintainers,
 
-Acked-by: Paul Moore <paul@paul-moore.com>
+Commit 1da177e4c3f4 ("Linux-2.6.12-rc2") from Apr 16, 2005
+(linux-next), leads to the following Smatch static checker warning:
 
---
-paul-moore.com
+arch/alpha/kernel/err_marvel.c:884 marvel_find_io7_with_error() warn: statement has no effect 'csrs->POx_ERR_SUM.csr'
+arch/alpha/kernel/err_marvel.c:892 marvel_find_io7_with_error() warn: statement has no effect 'io7->csrs->PO7_ERROR_SUM.csr'
+
+arch/alpha/kernel/err_marvel.c
+    797 static struct ev7_pal_io_subpacket *
+    798 marvel_find_io7_with_error(struct ev7_lf_subpackets *lf_subpackets)
+    799 {
+    800         struct ev7_pal_io_subpacket *io = lf_subpackets->io;
+    801         struct io7 *io7;
+    802         int i;
+    803 
+    804         /*
+    805          * Caller must provide the packet to fill
+    806          */
+    807         if (!io)
+    808                 return NULL;
+    809 
+    810         /*
+    811          * Fill the subpacket with the console's standard fill pattern
+    812          */
+    813         memset(io, 0x55, sizeof(*io));
+    814 
+    815         for (io7 = NULL; NULL != (io7 = marvel_next_io7(io7)); ) {
+    816                 unsigned long err_sum = 0;
+    817 
+    818                 err_sum |= io7->csrs->PO7_ERROR_SUM.csr;
+    819                 for (i = 0; i < IO7_NUM_PORTS; i++) {
+    820                         if (!io7->ports[i].enabled)
+    821                                 continue;
+    822                         err_sum |= io7->ports[i].csrs->POx_ERR_SUM.csr;
+    823                 }
+    824 
+    825                 /*
+    826                  * Is there at least one error? 
+    827                  */
+    828                 if (err_sum & (1UL << 63))
+    829                         break;
+    830         }
+    831 
+    832         /*
+    833          * Did we find an IO7 with an error?
+    834          */
+    835         if (!io7)
+    836                 return NULL;
+    837 
+    838         /*
+    839          * We have an IO7 with an error. 
+    840          *
+    841          * Fill in the IO subpacket.
+    842          */
+    843         io->io_asic_rev   = io7->csrs->IO_ASIC_REV.csr;
+    844         io->io_sys_rev    = io7->csrs->IO_SYS_REV.csr;
+    845         io->io7_uph       = io7->csrs->IO7_UPH.csr;
+    846         io->hpi_ctl       = io7->csrs->HPI_CTL.csr;
+    847         io->crd_ctl       = io7->csrs->CRD_CTL.csr;
+    848         io->hei_ctl       = io7->csrs->HEI_CTL.csr;
+    849         io->po7_error_sum = io7->csrs->PO7_ERROR_SUM.csr;
+    850         io->po7_uncrr_sym = io7->csrs->PO7_UNCRR_SYM.csr;
+    851         io->po7_crrct_sym = io7->csrs->PO7_CRRCT_SYM.csr;
+    852         io->po7_ugbge_sym = io7->csrs->PO7_UGBGE_SYM.csr;
+    853         io->po7_err_pkt0  = io7->csrs->PO7_ERR_PKT[0].csr;
+    854         io->po7_err_pkt1  = io7->csrs->PO7_ERR_PKT[1].csr;
+    855         
+    856         for (i = 0; i < IO7_NUM_PORTS; i++) {
+    857                 io7_ioport_csrs *csrs = io7->ports[i].csrs;
+    858 
+    859                 if (!io7->ports[i].enabled)
+    860                         continue;
+    861 
+    862                 io->ports[i].pox_err_sum   = csrs->POx_ERR_SUM.csr;
+    863                 io->ports[i].pox_tlb_err   = csrs->POx_TLB_ERR.csr;
+    864                 io->ports[i].pox_spl_cmplt = csrs->POx_SPL_COMPLT.csr;
+    865                 io->ports[i].pox_trans_sum = csrs->POx_TRANS_SUM.csr;
+    866                 io->ports[i].pox_first_err = csrs->POx_FIRST_ERR.csr;
+    867                 io->ports[i].pox_mult_err  = csrs->POx_MULT_ERR.csr;
+    868                 io->ports[i].pox_dm_source = csrs->POx_DM_SOURCE.csr;
+    869                 io->ports[i].pox_dm_dest   = csrs->POx_DM_DEST.csr;
+    870                 io->ports[i].pox_dm_size   = csrs->POx_DM_SIZE.csr;
+    871                 io->ports[i].pox_dm_ctrl   = csrs->POx_DM_CTRL.csr;
+    872 
+    873                 /*
+    874                  * Ack this port's errors, if any. POx_ERR_SUM must be last.
+    875                  *
+    876                  * Most of the error registers get cleared and unlocked when
+    877                  * the associated bits in POx_ERR_SUM are cleared (by writing
+    878                  * 1). POx_TLB_ERR is an exception and must be explicitly 
+    879                  * cleared.
+    880                  */
+    881                 csrs->POx_TLB_ERR.csr = io->ports[i].pox_tlb_err;
+    882                 csrs->POx_ERR_SUM.csr =        io->ports[i].pox_err_sum;
+    883                 mb();
+--> 884                 csrs->POx_ERR_SUM.csr;                
+                        ^^^^^^^^^^^^^^^^^^^^^^
+I occasionally try to run Smatch against code that I can't actually
+compile and it found this code from before the git era.  These days
+we build with -Wall and so this kind of code doesn't normally compile
+on x86 or Arm.  We would get a warning like:
+
+test.c:18:9: warning: statement with no effect [-Wunused-value]
+   18 |         x;
+      |         ^
+
+So it makes me wonder if this code can actually build?
+
+    885         }
+    886 
+    887         /*
+    888          * Ack any port 7 error(s).
+    889          */
+    890         io7->csrs->PO7_ERROR_SUM.csr = io->po7_error_sum;
+    91         mb();
+--> 892         io7->csrs->PO7_ERROR_SUM.csr;
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    893         
+    894         /*
+    895          * Correct the io7_pid.
+    896          */
+    897         lf_subpackets->io_pid = io7->pe;
+    898 
+    899         return io;
+    900 }
+
+regards,
+dan carpenter
