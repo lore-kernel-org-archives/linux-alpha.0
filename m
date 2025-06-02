@@ -1,122 +1,122 @@
-Received: from fhigh-b2-smtp.messagingengine.com (fhigh-b2-smtp.messagingengine.com [202.12.124.153])
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2132028E7
-	for <linux-alpha@vger.kernel.org>; Fri, 30 May 2025 05:47:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.153
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99ABA182B7;
+	Mon,  2 Jun 2025 04:11:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748584024; cv=none; b=R0jV7XR/4IhwhWA9NyhXh28yKXATZgSNHmJmNvbqs90l4fiWSWDvN9jsQYQ6/4DsPVUlHOUJal+Yb2uRMLcY3ZC0QfqABRGydVo3aKBZfb7wArMHnZe9kSheb7Zj1crLwHBm3x71hNgLNtazMdGm5njiuJcJs8Gx43Qqb9040FM=
+	t=1748837490; cv=none; b=L37878dKjSGJWh6H7C3iiwwRaTn7cNAskkzzx0xVd5wP9g7N1gdxGryTUhSeC/VmEjqvS8Z7Jg47T8k9NMQrDArdt28wRSDapEJsr/MVSgXdsxL97gxjuja1UmieWoLtQSw4D8KXi6hR2h4MmBlCzPTYVABM4OaPlFlbQGD5RQ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748584024; c=relaxed/simple;
-	bh=NKZ8dlaFBByJpOMqTQRuFo+wHa4ddwn5NTpYF7cYOVY=;
-	h=MIME-Version:Date:From:To:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=l10rAtoY2qaXGsgZL2p50rwWKwL5Du8rgIW4S2uHjOXWu6vMMhVqg7brbYREhhhnSkh3zqCbn3m+spTKwnR6s1PuH8pF6V/D0AB6YvA0Xh4ubdgnT9dqNqgwjO5xVu03YPDTXtqYEh9xzYzxeDaNonp95Alcv2SQMrBacm4BnAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=M0cv0zFX; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=eiYLLS/O; arc=none smtp.client-ip=202.12.124.153
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1748837490; c=relaxed/simple;
+	bh=VNUqtAL1SHKb0pozQoeZywC6qZxi9oGNe5rRKbOsy4Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=biseBkn2Y23CItRRBVvCR4j8+4WkWsZP3wcAcZ9CKxU1Jm0DyzouZiMdZoEb1AEwAOybmqXY4GdbCBndC9f2dDedKD1tuNYeQpfbSaUxfgnhHHqtyrjHUuA9trfjY0Pwa6BD4jC6CZr4AJHmY2XDsriuUY2PzQ8aG5jYMHkp9H8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=cDLc7AG1; arc=none smtp.client-ip=62.89.141.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="M0cv0zFX";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="eiYLLS/O"
-Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id EFDD12540146;
-	Fri, 30 May 2025 01:47:00 -0400 (EDT)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-05.internal (MEProxy); Fri, 30 May 2025 01:47:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:content-transfer-encoding:content-type:content-type:date:date
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1748584020;
-	 x=1748670420; bh=jakZ95A68P0lTcX1Kidmk9FQL02m/iQ80KrmTnnDr8E=; b=
-	M0cv0zFXagBfvMDV6KycAjvIbQ+IBfgqe4h5bSPhPsp+NyHf1Kn9yKEA0Vn77TD7
-	KbEDCExJhzT8mMwtITcQ2cz3e4EIoRNUmf2S/yLEoypoYF0vPAdMhcYeHka+e7QY
-	rLdZp7iXwmrmqaPrTzk86xpH6yBKXt66ydJ19uJEBLdn+9gTgkMU5ASJF0jO+/3g
-	eBw+WO9DVNzf2rGs/1i/7h0LPC5kX2H9B726yIzUPUJJkO/8T3To9JKx5CVYYibS
-	D3aCYWtuB/gww7yqjKgnyijwlen+bRhWhwiLs0sVVavzst0JlK+gucRN69n2OPTr
-	vkgYBqbH/+Oi1CDQKLEwtg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:content-transfer-encoding:content-type
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm1; t=1748584020; x=1748670420; bh=j
-	akZ95A68P0lTcX1Kidmk9FQL02m/iQ80KrmTnnDr8E=; b=eiYLLS/ODoYNKV7MX
-	YvH+NjiLd2lSIpaJlsGgqs46vVp7n8jvW/JjRzskgQ+cooz+1uc7aslq7XjKV8Qp
-	vP7v2ZOcY/H7/Za3xovk+Z7De8KyyM4snlmRVe2t/+hnlylaS0k7kzY8kRFmWFAD
-	daTykXASEQwBYAkDp5YhXuuYr0EfX6O8/P2J+V+xenUn0XSLmOGGGn/jpwApzld5
-	Nc9rQ9kctMQdS0HOE6eHUEUbb5V4tGgJhIP46fWTSuo9gnlwW4pOHGcftBMivtrZ
-	tNWpoZqOHeY++niWeH0wiecMKKBfvlzg5W3RWqkqgJhLy57Hrgk6wmRuHx5wEysN
-	6nC8A==
-X-ME-Sender: <xms:VEY5aB-rp3ULMmeWl0xSbyKd0im0XN6NOSqz5q8vvAuyQ6Am7uxzkg>
-    <xme:VEY5aFvSq6ZFIklWU2C3yxyQtK8vJQX5U1RHPw2LyKiBFThs4QHCzm8z8otSzV14H
-    VWSPvP3kmCCxAyI1O0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtddtgddvkedvudculddtuddrgeefvddrtd
-    dtmdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggft
-    fghnshhusghstghrihgsvgdpuffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftd
-    dtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefoggffhffvkfgj
-    fhfutgfgsehtjeertdertddtnecuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuc
-    eorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrthhtvghrnhephfekledtffefhffg
-    hfetteehuefhgfetgefhtdeufeduueeltefghedtjeeifffhnecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdp
-    nhgspghrtghpthhtohepvddpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepuggrnh
-    drtggrrhhpvghnthgvrheslhhinhgrrhhordhorhhgpdhrtghpthhtoheplhhinhhugidq
-    rghlphhhrgesvhhgvghrrdhkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:VEY5aPCqaiMh0zb6fO3dv-DNanyJV8nD9sJkJYbFUM7suck-T8-Jeg>
-    <xmx:VEY5aFfUIeQtQrMz4eE2SSTdyIBFswu4aziB4O_1tncchTNXa-eoLQ>
-    <xmx:VEY5aGNXpfV5ALIYvW7O3chAdQvvE_9cA8ihkVtRh9xjsY5J1dS9vQ>
-    <xmx:VEY5aHnDEw6pOKwzDvcBf1p0LaOp5vTqOMjb7TH_B8wrb1jm_43-XA>
-    <xmx:VEY5aEvBQKX-1_l0ErfVVvLAYor75Zy2Rus9Tfjv2hgppzQSXm3GXAGE>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 6E4D7700061; Fri, 30 May 2025 01:47:00 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="cDLc7AG1"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=iuH08HhCzFKCMOC8/O0swKDH+rpWOadfk7Rm4fI946Q=; b=cDLc7AG1xVeGrDIh1peeN0IWEk
+	zSPl9poJhEGT0YoB/3XnvH6rSM6bY3xjL0IUqjUntiObN7RMhtlCPHuD3A62GgdK0UEACC5R8vd1k
+	nGJkZRQS6J7IpGD5Cac8ckt2eGuQw0ldn0T1SIMMph5HBpFztRTyZBhVmy8+xkbQoA7OwVtDKj3OZ
+	76BRcTLzVJZLqbCzOHiBTXoFLI5gsn+T2zZ4MU1RCovTNxA1K7wQ4w3A4hqY1qW3qspeqQLRXJ12A
+	qO/+nks1w4qOwDF7mdiodEdOvdFTMW5W0MgrK6eRVtCQ084Z11K100prR+Fy/v0Uyq+f2T84t8Tki
+	2y66Yf/A==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uLwW6-0000000BUl8-1UDJ;
+	Mon, 02 Jun 2025 04:11:18 +0000
+Date: Mon, 2 Jun 2025 05:11:18 +0100
+From: Al Viro <viro@zeniv.linux.org.uk>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linmag7@gmail.com, Al Viro <viro@ftp.linux.org.uk>, arnd@arndb.de,
+	chris@zankel.net, dinguyen@kernel.org, glaubitz@physik.fu-berlin.de,
+	ink@unseen.parts, jcmvbkbc@gmail.com, kees@kernel.org,
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org,
+	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+	linux-snps-arc@lists.infradead.org, linux-um@lists.infradead.org,
+	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev,
+	mattst88@gmail.com, monstr@monstr.eu, richard.henderson@linaro.org,
+	sparclinux@vger.kernel.org, x86@kernel.org,
+	Sam James <sam@gentoo.org>
+Subject: Re: [PATCH v2 1/1] mm: pgtable: fix pte_swp_exclusive
+Message-ID: <20250602041118.GA2675383@ZenIV>
+References: <87cyfejafj.fsf@gentoo.org>
+ <87v7rik020.fsf@gentoo.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: T3d2bbbcab8a9bc93
-Date: Fri, 30 May 2025 07:46:20 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Dan Carpenter" <dan.carpenter@linaro.org>, linux-alpha@vger.kernel.org
-Message-Id: <db221c64-0653-41c5-acfa-f7cb9e831150@app.fastmail.com>
-In-Reply-To: <aDbE6P6e4gd7pbMC@stanley.mountain>
-References: <aDbE6P6e4gd7pbMC@stanley.mountain>
-Subject: Re: [bug report] Linux-2.6.12-rc2
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87v7rik020.fsf@gentoo.org>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 
-On Wed, May 28, 2025, at 10:10, Dan Carpenter wrote:
->
-> arch/alpha/kernel/err_marvel.c:884 marvel_find_io7_with_error() warn: 
-> statement has no effect 'csrs->POx_ERR_SUM.csr'
-> arch/alpha/kernel/err_marvel.c:892 marvel_find_io7_with_error() warn: 
-> statement has no effect 'io7->csrs->PO7_ERROR_SUM.csr'
->
+On Sat, Apr 05, 2025 at 06:09:11PM +0100, Sam James wrote:
+> Sam James <sam@gentoo.org> writes:
+> 
+> > Lovely cleanup and a great suggestion from Al.
+> >
+> > Reviewed-by: Sam James <sam@gentoo.org>
+> >
+> > I'd suggest adding a:
+> > Suggested-by: Al Viro <viro@zeniv.linux.org.uk>
+> 
+> Al, were you planning on taking this through your tree?
 
-> I occasionally try to run Smatch against code that I can't actually
-> compile and it found this code from before the git era.  These days
-> we build with -Wall and so this kind of code doesn't normally compile
-> on x86 or Arm.  We would get a warning like:
->
-> test.c:18:9: warning: statement with no effect [-Wunused-value]
->    18 |         x;
->       |         ^
->
-> So it makes me wonder if this code can actually build?
->
+FWIW, I expected it to get sent to Linus as "please, run this
+sed script before -rc1" kind of thing, script being something
+like
 
-FWIW, I tried building the file with gcc-15 and don't see a
-warning for that construct, even with the -Wextra.
+sed -i -e 's/int pte_swp_exclusive/bool pte_swp_exclusive/' \
+	`git grep -l 'int pte_swp_exclusive'`
 
-After digging around some more, I found that this is the
-definition of the structure, and that the 'volatile' in there
-causes gcc and clang to not consider the statement to be
-free of side-effects. I assume it will actually cause a
-load from an MMIO register here:
+with suggested commit message...  It's absolutely regular and
+that kind of tree-wide change is easier handled that way.
 
-typedef struct {
- volatile unsigned long csr __attribute__((aligned(64)));
-} io7_csr;
+	Oh, well...  To restore the context: Magnus had spotted a fun
+bug on Alpha back in February - pte_swp_exclusive() there returned
+pte_val(pte) & _PAGE_SWP_EXCLUSIVE as int.  The problem is that
+_PAGE_SWP_EXCLUSIVE is 1UL<<39 there, with obvious results...
 
-     Arnd
+	I looked at the originally posted patch and suggested to
+make pte_swp_exclusive() return bool instead of int.  All users
+are in explicitly boolean contexts:
+
+include/linux/swapops.h:        if (pte_swp_exclusive(pte))
+mm/debug_vm_pgtable.c:  WARN_ON(pte_swp_exclusive(pte));
+mm/debug_vm_pgtable.c:  WARN_ON(!pte_swp_exclusive(pte));
+mm/debug_vm_pgtable.c:  WARN_ON(pte_swp_exclusive(pte));
+mm/internal.h:  if (pte_swp_exclusive(pte))
+mm/memory.c:            if (pte_swp_exclusive(orig_pte)) {
+mm/memory.c:            exclusive = pte_swp_exclusive(vmf->orig_pte);
+mm/swapfile.c:          if (pte_swp_exclusive(old_pte))
+mm/userfaultfd.c:               if (!pte_swp_exclusive(orig_src_pte)) {
+
+	Magnus posted patch of that form (see
+https://lore.kernel.org/all/20250218175735.19882-2-linmag7@gmail.com/),
+got no serious objections and then it went nowhere.
+
+	Bug is real and fairly obvious, fix is entirely mechanical and
+affects one line in each asm/pgtable.h out there.  Linus, could you
+run that sed script just before -rc1?  Commit message from the patch refered
+above looks sane:
+
+mm: pgtable: fix pte_swp_exclusive
+
+Make pte_swp_exclusive return bool instead of int. This will better reflect
+how pte_swp_exclusive is actually used in the code. This fixes swap/swapoff
+problems on Alpha due pte_swp_exclusive not returning correct values when
+_PAGE_SWP_EXCLUSIVE bit resides in upper 32-bits of PTE (like on alpha).
+
+Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+
