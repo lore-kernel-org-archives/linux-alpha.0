@@ -1,465 +1,121 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A54821FF37;
-	Sat,  7 Jun 2025 12:08:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B388113C3CD;
+	Sun,  8 Jun 2025 09:40:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749298118; cv=none; b=ELq7ZlF3x8BWE5u0Ah26um+LqSb6ZzL3ohLVVSsYqdt/ip2Z54JEezQEjgBk7kpYyCxTZBZAGftd1EvUJd0GlqUOaYG1nbvJSJE7+MBDryBzWPSk/JI4yPuMaNEcHCKNdRmklyop2mqkWXnZMfW2TI1KppgdJR/k8iDaORPpxa8=
+	t=1749375607; cv=none; b=DBrOrxa7fqAtxq7Z3mc+uoNrk8AjRx/6dPxakKQAmh2AhTDbATCLtuNvP1AoIWKC2XEUPtQ/iMyyYq/PCy27cPV0zZnCFAlQgy0UqYClLegqGn1o4Dvh0rLnDk3M04nwd/bqMEcCfLgYgT8v3mcD6CfDPOzCShRu6i1+mChiPsA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749298118; c=relaxed/simple;
-	bh=iaef8qmXNAq5l/9As63qndXfRVPmWNwMOYaxinGhHS8=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=WlVvuprmTNTzZ7WKtiYwogqTrhEGxUK0Esm5dquCatfczMNsg/3SLKU+8UhWUvE1Jb65MAXl2qglrRDz2ujQuIN4c1/xvB60xOPI2rpkSi+sXDhzOOUGWoWXq1UxzcpHSpLUnCD0ZIq5YE2LY+B/gyfwlJUByN2u1U+k+bgu36c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=Z9msa4X7; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="Z9msa4X7"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=FwM4OXMNxwD5om0/o3Aytg0dRVg/tzG+D8QfcuPysvA=; t=1749298114; x=1749902914; 
-	b=Z9msa4X7Y0nywltDrIQ3GIsTB8mZKkxvf0fl4IZLo/wb5FbGGHHftNtYJG/kB5vJ8bb5Cod3e+5
-	KPDn1S/Lzz12Z2VsXOt1WxmKEh7bMkMevfUPGdYB/1jMvycQqMcRYV8K68FoIAquUQSeMOvMiheGD
-	AEjXUFtTCN7WNgfpN2/OiQDWHTKrnJfob+v/+/sSkftKMFKzMr04d2xH1cD1BdJXvd29sVw9pmGFy
-	2eQkngIt7VDHuxa9qwsVWj1z7I8pmJKFDwz7s+0zpAbz8fzRW5xR6FG9R4BdRMTkrZ4CG38OGNNko
-	3to80Wg17JkVqQB0WEuls5+Ihvstb3KJwMJw==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.98)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1uNsLc-00000001cxo-1xRw; Sat, 07 Jun 2025 14:08:28 +0200
-Received: from p5b13afe4.dip0.t-ipconnect.de ([91.19.175.228] helo=[192.168.178.61])
-          by inpost2.zedat.fu-berlin.de (Exim 4.98)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1uNsLc-00000003H4l-0SRQ; Sat, 07 Jun 2025 14:08:28 +0200
-Message-ID: <6c7770dd1c216410fcff3bf0758a45d5afcb5444.camel@physik.fu-berlin.de>
-Subject: Re: [PATCH 2/6] sh: remove duplicate ioread/iowrite helpers
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: Arnd Bergmann <arnd@kernel.org>, linux-arch@vger.kernel.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Richard Henderson	
- <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, Geert
- Uytterhoeven <geert@linux-m68k.org>, Greg Ungerer <gerg@linux-m68k.org>,
- Thomas Bogendoerfer	 <tsbogend@alpha.franken.de>, "James E.J. Bottomley"	
- <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, 
- Madhavan Srinivasan	 <maddy@linux.ibm.com>, Michael Ellerman
- <mpe@ellerman.id.au>, Nicholas Piggin	 <npiggin@gmail.com>, Christophe
- Leroy <christophe.leroy@csgroup.eu>, Naveen N Rao <naveen@kernel.org>,
- Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker	
- <dalias@libc.org>, Julian Vetter <julian@outer-limits.org>, Bjorn Helgaas	
- <bhelgaas@google.com>, linux-alpha@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, 
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org
-Date: Sat, 07 Jun 2025 14:08:26 +0200
-In-Reply-To: <20250315105907.1275012-3-arnd@kernel.org>
-References: <20250315105907.1275012-1-arnd@kernel.org>
-	 <20250315105907.1275012-3-arnd@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 
+	s=arc-20240116; t=1749375607; c=relaxed/simple;
+	bh=jmOKtbWnlZR/Qj4SRxgpy6Bosb3xk2ulOZQUv/2xbV4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=tW74rKP6k0eQ28uD7L2ybq00w+8JTrkubZz8mBTg3CrpYpAde936FVg3gr0srbX1M65G9CrrjkAaqCnojOXa5fKip2j0m7zerFSKBqwLusGF5BQOmb0nCg7yv7o04u6EUiZMp91OkZuWjPBeaQlLw+SRwnhjIAQTRKqTzpjnExU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-86dc3482b3dso3311611241.0;
+        Sun, 08 Jun 2025 02:40:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1749375603; x=1749980403;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PEIWuLmQRMVnfGdgxWwMM+uZrcmSfOPwu48WTLXFYZc=;
+        b=FQ49nG+NYCapJSfIWvAlwycy5ndpx8FFnqNTWgzo7CHVdoBVq5deGBhww95xtAfz5I
+         cFy9n/6uTiS8r/KkBg4nr2d8atJwMPLJXILtNEjlohS/Dh45SahKjGzjev0eLsO72NQp
+         e8HDZArYL7UNIJbfiEq5tQ4sOm6zfz6se1N81ibS6R8gITeFDq5ZjH/RA5ANDTt4IIL8
+         DIp4yJUADtVxCdvB4ZpEtD9bkxg8nbHy4eJmReZ2fOvVCkZeKgTh3/zkgpjW1sNkjd9o
+         oRt6m4NolOPXwguJ5iFU2qqDosQcgujCVZq/+4NYNeafIPPA9/dGcjjwdx2wE5EbhZt9
+         +8Ww==
+X-Forwarded-Encrypted: i=1; AJvYcCUUOrQloc06UMSGIq7chphkSKUhmI9SVQpJEpqDTAeSX+O4dsVT7i38OsVFQDWDjaQ0HgrM9uapzkXnFg==@vger.kernel.org, AJvYcCUu63wOKaRIWLcYnFoCpr30beyPjEimyQku0bxy8sln/BZRzQdQd2JS6XBmTE7uudcPARf6SWNyfV0v9q9W@vger.kernel.org, AJvYcCVprdXgysrju6r2gTUV5GhSwRZPLTWsMhmx4bduAUex97sgJ+uOb2yCSpAx/zO65ebimisvW8CDAP6yLw==@vger.kernel.org, AJvYcCWur67BUROTjybMFyCZS3KSc/VZFPMgRpAR4xLfDP+2lkoTs+RMYuiqIdgkov9q8ls+5cgZ7PHzlmJSVA==@vger.kernel.org, AJvYcCX2dIXMCy9rzUM0k3Znvdf6VzHpWfYGMdtUyYKVSXsmnW7jBiZZG61GdnkLHJM+1vCzYP+jBmwRocL0QeV1@vger.kernel.org, AJvYcCXfuqrLSswtlqw4o3PVUyNSQ9mrFK8DBir+dECR6V7oYrwLeZRuSCJtUp8UNRBKcjPWN1V6lh7hxy0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwqccnZyyOeQ61Wm5ZQ/CA/5PdxHQ26FKRWu5B9MmguRKZlTEAA
+	qlOOm9WnY57efFNq1YjOilRssOfKfroQ5gyZxX20G4xBXixySZLDmeQAOqs257cZ
+X-Gm-Gg: ASbGncvi2+dI8D4GyaS5XklLUVJCX6KeByi8gLTbGMeFf+LoH+ergHuWgLFahwcNxZ+
+	Pk3Yws0Mz8PFZdzmhgm6itZxKbZJrMp3pa9eS6eRXH1ZEoMStMEfvTs2mRQI/cEar9js83dG4UW
+	qhhCn2TLDRW6gSiQ3IAxEYf67j7vjK7QqC0A/3/NxlsC+KjFOL4PP02XIz69Pjx4JbvdoUTxSWa
+	kdDYqhG7Hc3a9GMMsp3wozRQP3fwvCK0VpNF8RgZ21cbpr2yHj+yFZalZ3g1NHrCg3XLcz/+oLW
+	9q6m+I4dwzojCTLEWkUNO14PKflKF+I/g7v1joWLIzOAep0J4DGi8dqoEWP9W+MKYlv9r87Cdlz
+	tfdqmtKQoKAFLYQ==
+X-Google-Smtp-Source: AGHT+IFFRTsX4zji27GtOQhqbjypLPDgS4HW3J/n9oo3bfkpmbOXIglvGmWqTvAwWqyWO3L9/nYU4A==
+X-Received: by 2002:a05:6102:3c0a:b0:4df:9aed:3114 with SMTP id ada2fe7eead31-4e78415022bmr2156237137.8.1749375603104;
+        Sun, 08 Jun 2025 02:40:03 -0700 (PDT)
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-87ece19b65esm1223526241.9.2025.06.08.02.40.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Jun 2025 02:40:01 -0700 (PDT)
+Received: by mail-ua1-f45.google.com with SMTP id a1e0cc1a2514c-87ded9c6eb4so2331121241.0;
+        Sun, 08 Jun 2025 02:40:01 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVDUHBe8RWAKmGC23fYLFGcpZ+MOaRQx/0CgJ4xe0Hx03wEEVtkV4qB1zzjI0ZY+RcSAi4yGyNXVyNLUrvq@vger.kernel.org, AJvYcCVo2USSKofPQYPuy8hqjLozBCUtG5H+MFHcS2EHIWMGltSLqm5QbI9oQ+yEMgw/dSu1/Mg5b5Ocuwp3OA==@vger.kernel.org, AJvYcCW7mN/xMiI0FoL7GJqkPqlUUe/Sik/jbe6e6qFbX44zCVebWK5WxAeoR7+VQnbziRq3g3iakBvy2H2CKA==@vger.kernel.org, AJvYcCWTLZAGY7NB/FrSHIXe44cbuZTBhehwkInX+Ne2AED1V9hUxpp7tHkckQ2DtcSao6jVEcfSdZfYKE8YIg==@vger.kernel.org, AJvYcCWeoAymX/z6XHoJimghcF/0F7XHnP2fJTfvW0i0NtKSKMo03fR2jejbyl2L5E0u4G1rP3i45mx3uBQ=@vger.kernel.org, AJvYcCX5wIg2XHgA2s25ryc4EwEl7K4lNCnJtJkR3kxZJM5mriUMPSxLWtVX17OIA5htrBZAsNsRXu6TV4OrpNIt@vger.kernel.org
+X-Received: by 2002:a05:6102:12c7:b0:4e1:ec70:536 with SMTP id
+ ada2fe7eead31-4e784052d39mr1902461137.4.1749375601424; Sun, 08 Jun 2025
+ 02:40:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+References: <20250315105907.1275012-1-arnd@kernel.org> <20250315105907.1275012-3-arnd@kernel.org>
+ <6c7770dd1c216410fcff3bf0758a45d5afcb5444.camel@physik.fu-berlin.de>
+In-Reply-To: <6c7770dd1c216410fcff3bf0758a45d5afcb5444.camel@physik.fu-berlin.de>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Sun, 8 Jun 2025 11:39:49 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXeTWSU64jQt+nybsSBOpBEu_zO0WmE5FK1PnA3YkALUQ@mail.gmail.com>
+X-Gm-Features: AX0GCFt4vabIohtnnm_mFUKWYT8sgcrvXqd5vSNi-se7k7UhxzRe5PjaG9sA3nI
+Message-ID: <CAMuHMdXeTWSU64jQt+nybsSBOpBEu_zO0WmE5FK1PnA3YkALUQ@mail.gmail.com>
+Subject: Re: [PATCH 2/6] sh: remove duplicate ioread/iowrite helpers
+To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc: Arnd Bergmann <arnd@kernel.org>, linux-arch@vger.kernel.org, 
+	Arnd Bergmann <arnd@arndb.de>, Richard Henderson <richard.henderson@linaro.org>, 
+	Matt Turner <mattst88@gmail.com>, Greg Ungerer <gerg@linux-m68k.org>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>, 
+	Naveen N Rao <naveen@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>, 
+	Rich Felker <dalias@libc.org>, Julian Vetter <julian@outer-limits.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Arnd,
+Hi Adrian,
 
-On Sat, 2025-03-15 at 11:59 +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
->=20
-> The ioread/iowrite functions on sh only do memory mapped I/O like the
-> generic verion, and never map onto non-MMIO inb/outb variants, so they
-> just add complexity. In particular, the use of asm-generic/iomap.h
-> ties the declaration to the x86 implementation.
->=20
-> Remove the custom versions and use the architecture-independent fallback
-> code instead. Some of the calling conventions on sh are different here,
-> so fix that by adding 'volatile' keywords where required by the generic
-> implementation and change the cpg clock driver to no longer depend on
-> the interesting choice of return types for ioread8/ioread16/ioread32.
->=20
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  arch/sh/include/asm/io.h |  30 ++------
->  arch/sh/kernel/Makefile  |   3 -
->  arch/sh/kernel/iomap.c   | 162 ---------------------------------------
->  arch/sh/kernel/ioport.c  |   5 --
->  arch/sh/lib/io.c         |   4 +-
->  drivers/sh/clk/cpg.c     |  25 +++---
->  6 files changed, 21 insertions(+), 208 deletions(-)
->  delete mode 100644 arch/sh/kernel/iomap.c
->=20
-> diff --git a/arch/sh/include/asm/io.h b/arch/sh/include/asm/io.h
-> index cf5eab840d57..0f663ebec700 100644
-> --- a/arch/sh/include/asm/io.h
-> +++ b/arch/sh/include/asm/io.h
-> @@ -19,7 +19,6 @@
->  #include <asm/machvec.h>
->  #include <asm/page.h>
->  #include <linux/pgtable.h>
-> -#include <asm-generic/iomap.h>
-> =20
->  #define __IO_PREFIX     generic
->  #include <asm/io_generic.h>
-> @@ -100,7 +99,7 @@ pfx##writes##bwlq(volatile void __iomem *mem, const vo=
-id *addr,		\
->  	}								\
->  }									\
->  									\
-> -static inline void pfx##reads##bwlq(volatile void __iomem *mem,		\
-> +static inline void pfx##reads##bwlq(const volatile void __iomem *mem,	\
->  				    void *addr, unsigned int count)	\
->  {									\
->  	volatile type *__addr =3D addr;					\
-> @@ -114,37 +113,18 @@ static inline void pfx##reads##bwlq(volatile void _=
-_iomem *mem,		\
->  __BUILD_MEMORY_STRING(__raw_, b, u8)
->  __BUILD_MEMORY_STRING(__raw_, w, u16)
-> =20
-> -void __raw_writesl(void __iomem *addr, const void *data, int longlen);
-> -void __raw_readsl(const void __iomem *addr, void *data, int longlen);
-> +void __raw_writesl(void volatile __iomem *addr, const void *data, int lo=
-nglen);
-> +void __raw_readsl(const volatile void __iomem *addr, void *data, int lon=
-glen);
-> =20
->  __BUILD_MEMORY_STRING(__raw_, q, u64)
-> =20
->  #define ioport_map ioport_map
-> -#define ioport_unmap ioport_unmap
->  #define pci_iounmap pci_iounmap
-> =20
-> -#define ioread8 ioread8
-> -#define ioread16 ioread16
-> -#define ioread16be ioread16be
-> -#define ioread32 ioread32
-> -#define ioread32be ioread32be
-> -
-> -#define iowrite8 iowrite8
-> -#define iowrite16 iowrite16
-> -#define iowrite16be iowrite16be
-> -#define iowrite32 iowrite32
-> -#define iowrite32be iowrite32be
-> -
-> -#define ioread8_rep ioread8_rep
-> -#define ioread16_rep ioread16_rep
-> -#define ioread32_rep ioread32_rep
-> -
-> -#define iowrite8_rep iowrite8_rep
-> -#define iowrite16_rep iowrite16_rep
-> -#define iowrite32_rep iowrite32_rep
-> -
->  #ifdef CONFIG_HAS_IOPORT_MAP
-> =20
-> +extern void __iomem *ioport_map(unsigned long port, unsigned int nr);
-> +
->  /*
->   * Slowdown I/O port space accesses for antique hardware.
->   */
-> diff --git a/arch/sh/kernel/Makefile b/arch/sh/kernel/Makefile
-> index ba917008d63e..7b453592adaf 100644
-> --- a/arch/sh/kernel/Makefile
-> +++ b/arch/sh/kernel/Makefile
-> @@ -21,10 +21,7 @@ obj-y	:=3D head_32.o debugtraps.o dumpstack.o				\
->  	   syscalls_32.o time.o topology.o traps.o			\
->  	   traps_32.o unwinder.o
-> =20
-> -ifndef CONFIG_GENERIC_IOMAP
-> -obj-y				+=3D iomap.o
->  obj-$(CONFIG_HAS_IOPORT_MAP)	+=3D ioport.o
-> -endif
-> =20
->  obj-y				+=3D sys_sh32.o
->  obj-y				+=3D cpu/
-> diff --git a/arch/sh/kernel/iomap.c b/arch/sh/kernel/iomap.c
-> deleted file mode 100644
-> index 0a0dff4e66de..000000000000
-> --- a/arch/sh/kernel/iomap.c
-> +++ /dev/null
-> @@ -1,162 +0,0 @@
-> -// SPDX-License-Identifier: GPL-2.0
-> -/*
-> - * arch/sh/kernel/iomap.c
-> - *
-> - * Copyright (C) 2000  Niibe Yutaka
-> - * Copyright (C) 2005 - 2007 Paul Mundt
-> - */
-> -#include <linux/module.h>
-> -#include <linux/io.h>
-> -
-> -unsigned int ioread8(const void __iomem *addr)
-> -{
-> -	return readb(addr);
-> -}
-> -EXPORT_SYMBOL(ioread8);
-> -
-> -unsigned int ioread16(const void __iomem *addr)
-> -{
-> -	return readw(addr);
-> -}
-> -EXPORT_SYMBOL(ioread16);
-> -
-> -unsigned int ioread16be(const void __iomem *addr)
-> -{
-> -	return be16_to_cpu(__raw_readw(addr));
-> -}
-> -EXPORT_SYMBOL(ioread16be);
-> -
-> -unsigned int ioread32(const void __iomem *addr)
-> -{
-> -	return readl(addr);
-> -}
-> -EXPORT_SYMBOL(ioread32);
-> -
-> -unsigned int ioread32be(const void __iomem *addr)
-> -{
-> -	return be32_to_cpu(__raw_readl(addr));
-> -}
-> -EXPORT_SYMBOL(ioread32be);
-> -
-> -void iowrite8(u8 val, void __iomem *addr)
-> -{
-> -	writeb(val, addr);
-> -}
-> -EXPORT_SYMBOL(iowrite8);
-> -
-> -void iowrite16(u16 val, void __iomem *addr)
-> -{
-> -	writew(val, addr);
-> -}
-> -EXPORT_SYMBOL(iowrite16);
-> -
-> -void iowrite16be(u16 val, void __iomem *addr)
-> -{
-> -	__raw_writew(cpu_to_be16(val), addr);
-> -}
-> -EXPORT_SYMBOL(iowrite16be);
-> -
-> -void iowrite32(u32 val, void __iomem *addr)
-> -{
-> -	writel(val, addr);
-> -}
-> -EXPORT_SYMBOL(iowrite32);
-> -
-> -void iowrite32be(u32 val, void __iomem *addr)
-> -{
-> -	__raw_writel(cpu_to_be32(val), addr);
-> -}
-> -EXPORT_SYMBOL(iowrite32be);
-> -
-> -/*
-> - * These are the "repeat MMIO read/write" functions.
-> - * Note the "__raw" accesses, since we don't want to
-> - * convert to CPU byte order. We write in "IO byte
-> - * order" (we also don't have IO barriers).
-> - */
-> -static inline void mmio_insb(const void __iomem *addr, u8 *dst, int coun=
-t)
-> -{
-> -	while (--count >=3D 0) {
-> -		u8 data =3D __raw_readb(addr);
-> -		*dst =3D data;
-> -		dst++;
-> -	}
-> -}
-> -
-> -static inline void mmio_insw(const void __iomem *addr, u16 *dst, int cou=
-nt)
-> -{
-> -	while (--count >=3D 0) {
-> -		u16 data =3D __raw_readw(addr);
-> -		*dst =3D data;
-> -		dst++;
-> -	}
-> -}
-> -
-> -static inline void mmio_insl(const void __iomem *addr, u32 *dst, int cou=
-nt)
-> -{
-> -	while (--count >=3D 0) {
-> -		u32 data =3D __raw_readl(addr);
-> -		*dst =3D data;
-> -		dst++;
-> -	}
-> -}
-> -
-> -static inline void mmio_outsb(void __iomem *addr, const u8 *src, int cou=
-nt)
-> -{
-> -	while (--count >=3D 0) {
-> -		__raw_writeb(*src, addr);
-> -		src++;
-> -	}
-> -}
-> -
-> -static inline void mmio_outsw(void __iomem *addr, const u16 *src, int co=
-unt)
-> -{
-> -	while (--count >=3D 0) {
-> -		__raw_writew(*src, addr);
-> -		src++;
-> -	}
-> -}
-> -
-> -static inline void mmio_outsl(void __iomem *addr, const u32 *src, int co=
-unt)
-> -{
-> -	while (--count >=3D 0) {
-> -		__raw_writel(*src, addr);
-> -		src++;
-> -	}
-> -}
-> -
-> -void ioread8_rep(const void __iomem *addr, void *dst, unsigned long coun=
-t)
-> -{
-> -	mmio_insb(addr, dst, count);
-> -}
-> -EXPORT_SYMBOL(ioread8_rep);
-> -
-> -void ioread16_rep(const void __iomem *addr, void *dst, unsigned long cou=
-nt)
-> -{
-> -	mmio_insw(addr, dst, count);
-> -}
-> -EXPORT_SYMBOL(ioread16_rep);
-> -
-> -void ioread32_rep(const void __iomem *addr, void *dst, unsigned long cou=
-nt)
-> -{
-> -	mmio_insl(addr, dst, count);
-> -}
-> -EXPORT_SYMBOL(ioread32_rep);
-> -
-> -void iowrite8_rep(void __iomem *addr, const void *src, unsigned long cou=
-nt)
-> -{
-> -	mmio_outsb(addr, src, count);
-> -}
-> -EXPORT_SYMBOL(iowrite8_rep);
-> -
-> -void iowrite16_rep(void __iomem *addr, const void *src, unsigned long co=
-unt)
-> -{
-> -	mmio_outsw(addr, src, count);
-> -}
-> -EXPORT_SYMBOL(iowrite16_rep);
-> -
-> -void iowrite32_rep(void __iomem *addr, const void *src, unsigned long co=
-unt)
-> -{
-> -	mmio_outsl(addr, src, count);
-> -}
-> -EXPORT_SYMBOL(iowrite32_rep);
-> diff --git a/arch/sh/kernel/ioport.c b/arch/sh/kernel/ioport.c
-> index c8aff8a20164..915a3dfd9f02 100644
-> --- a/arch/sh/kernel/ioport.c
-> +++ b/arch/sh/kernel/ioport.c
-> @@ -23,8 +23,3 @@ void __iomem *ioport_map(unsigned long port, unsigned i=
-nt nr)
->  	return (void __iomem *)(port + sh_io_port_base);
->  }
->  EXPORT_SYMBOL(ioport_map);
-> -
-> -void ioport_unmap(void __iomem *addr)
-> -{
-> -}
-> -EXPORT_SYMBOL(ioport_unmap);
-> diff --git a/arch/sh/lib/io.c b/arch/sh/lib/io.c
-> index ebcf7c0a7335..dc6345e4c53b 100644
-> --- a/arch/sh/lib/io.c
-> +++ b/arch/sh/lib/io.c
-> @@ -11,7 +11,7 @@
->  #include <linux/module.h>
->  #include <linux/io.h>
-> =20
-> -void __raw_readsl(const void __iomem *addr, void *datap, int len)
-> +void __raw_readsl(const volatile void __iomem *addr, void *datap, int le=
-n)
->  {
->  	u32 *data;
-> =20
-> @@ -60,7 +60,7 @@ void __raw_readsl(const void __iomem *addr, void *datap=
-, int len)
->  }
->  EXPORT_SYMBOL(__raw_readsl);
-> =20
-> -void __raw_writesl(void __iomem *addr, const void *data, int len)
-> +void __raw_writesl(volatile void __iomem *addr, const void *data, int le=
-n)
->  {
->  	if (likely(len !=3D 0)) {
->  		int tmp1;
-> diff --git a/drivers/sh/clk/cpg.c b/drivers/sh/clk/cpg.c
-> index fd72d9088bdc..64ed7d64458a 100644
-> --- a/drivers/sh/clk/cpg.c
-> +++ b/drivers/sh/clk/cpg.c
-> @@ -26,6 +26,19 @@ static unsigned int sh_clk_read(struct clk *clk)
->  	return ioread32(clk->mapped_reg);
->  }
-> =20
-> +static unsigned int sh_clk_read_status(struct clk *clk)
-> +{
-> +	void __iomem *mapped_status =3D (phys_addr_t)clk->status_reg -
-> +		(phys_addr_t)clk->enable_reg + clk->mapped_reg;
-> +
-> +	if (clk->flags & CLK_ENABLE_REG_8BIT)
-> +		return ioread8(mapped_status);
-> +	else if (clk->flags & CLK_ENABLE_REG_16BIT)
-> +		return ioread16(mapped_status);
-> +
-> +	return ioread32(mapped_status);
-> +}
-> +
->  static void sh_clk_write(int value, struct clk *clk)
->  {
->  	if (clk->flags & CLK_ENABLE_REG_8BIT)
-> @@ -40,20 +53,10 @@ static int sh_clk_mstp_enable(struct clk *clk)
->  {
->  	sh_clk_write(sh_clk_read(clk) & ~(1 << clk->enable_bit), clk);
->  	if (clk->status_reg) {
-> -		unsigned int (*read)(const void __iomem *addr);
->  		int i;
-> -		void __iomem *mapped_status =3D (phys_addr_t)clk->status_reg -
-> -			(phys_addr_t)clk->enable_reg + clk->mapped_reg;
-> -
-> -		if (clk->flags & CLK_ENABLE_REG_8BIT)
-> -			read =3D ioread8;
-> -		else if (clk->flags & CLK_ENABLE_REG_16BIT)
-> -			read =3D ioread16;
-> -		else
-> -			read =3D ioread32;
-> =20
->  		for (i =3D 1000;
-> -		     (read(mapped_status) & (1 << clk->enable_bit)) && i;
-> +		     (sh_clk_read_status(clk) & (1 << clk->enable_bit)) && i;
->  		     i--)
->  			cpu_relax();
->  		if (!i) {
+On Sat, 7 Jun 2025 at 14:08, John Paul Adrian Glaubitz
+<glaubitz@physik.fu-berlin.de> wrote:
+> On Sat, 2025-03-15 at 11:59 +0100, Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > The ioread/iowrite functions on sh only do memory mapped I/O like the
+> > generic verion, and never map onto non-MMIO inb/outb variants, so they
+> > just add complexity. In particular, the use of asm-generic/iomap.h
+> > ties the declaration to the x86 implementation.
+> >
+> > Remove the custom versions and use the architecture-independent fallback
+> > code instead. Some of the calling conventions on sh are different here,
+> > so fix that by adding 'volatile' keywords where required by the generic
+> > implementation and change the cpg clock driver to no longer depend on
+> > the interesting choice of return types for ioread8/ioread16/ioread32.
+> >
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Those are quite a number of changes that I would like to test on real hardw=
-are
-first before merging them into the kernel.
+> Those are quite a number of changes that I would like to test on real hardware
+> first before merging them into the kernel.
+>
+> @Geert: Could you test it on your SH-7751 LANDISK board as well?
 
-@Geert: Could you test it on your SH-7751 LANDISK board as well?
+Already done for a while, as this patch is commit 2494fce26e434071 ("sh:
+remove duplicate ioread/iowrite helpers") in v6.15-rc1 ;-)
 
-Thanks,
-Adrian
+Gr{oetje,eeting}s,
 
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
