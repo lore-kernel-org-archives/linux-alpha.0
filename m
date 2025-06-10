@@ -1,87 +1,119 @@
-Received: from out-188.mta0.migadu.com (out-188.mta0.migadu.com [91.218.175.188])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC48B1A2564
-	for <linux-alpha@vger.kernel.org>; Tue, 10 Jun 2025 10:47:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3B8024166B;
+	Tue, 10 Jun 2025 16:28:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749552478; cv=none; b=IwA6QzRv4Yd/oH/u6TV5HFcFF8xi+zP8QAn0OMSF1z9UbMRA50D9j30r1iU3nTA69j/G5xaDK7Ji+Bz50DYavQ6eANrCw3gr/tbE6ADJFa/i2FYvpAMAWbv4Vb970Xyel28jhQ5gViITkv5zI12kn0aEXsvk0p8i283Io09+P70=
+	t=1749572889; cv=none; b=N3/2lJnIY02UVZgxjMqRzEHCY+RY4TTJ3LN+XhfnP3S6109zEamIbWOLmlfdmGgC7M2tm+VyPR60PazJpE83t2366uh0FwYVV2Xdt+3uLoVtd2AjAlaO4MNTTjYXB5C6lLkChM/mThOv2YabC1duX18SVSKS0ItHXSADx+jZydw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749552478; c=relaxed/simple;
-	bh=yqBGNHKHylLUbukGQanKBdMRqJDrnziE5o9wNGaF6So=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=aP68JcV+9IL4Y+sgHSslfGIXrEkmLFfD2jZ77hAOcrB6C1n9A27MYr6eq9R3oV9yLipPqp/UpO2ad1aTcAIbV7QPCwUHlSGyzSiab8NZa+T4Vv5Gxs6kpyQQ3f0yqpYDPzfdkEG+1NNVnEtiNNlbTWDMAolJMNjdweTtJVQxs+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=m515TzUh; arc=none smtp.client-ip=91.218.175.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1749572889; c=relaxed/simple;
+	bh=VGaA2UjcATw5usDRARWAGHoyvA3nRCcXodZF/+d4fPQ=;
+	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
+	 In-Reply-To:To:Cc; b=cRL7VOGtrA/8IooI67lQAjAprtTkDPiTx4O/41+GvUl8+VEw7vM6ER/AI6HbVFIkTa2jxIllHPB2aNTZ4Ce/JFppjOd657tuePT1QPUl+aBL1ETTcqyYKXnJxawLT859Tzm16ccrs0zdCq5AFXKKEHhbBfeuxuqSrqTm4YHYfZ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JJ1f2Y7N; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="m515TzUh"
-Content-Type: text/plain;
-	charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1749552463;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=yqBGNHKHylLUbukGQanKBdMRqJDrnziE5o9wNGaF6So=;
-	b=m515TzUhRMnpShWuFOdaQf3kDQRhcxCVgb7v7HNfCsEg7NhHxgEv9lneCdOKPCIS/rx1bn
-	A/es2VtwMSzQZ2a72Hdf0037DIbD/d8YHxYxECA3grwetAmM2PuBl6MaaDAeiJbMV1WMP3
-	JwaDsoECJuuYyebuviuqIdWuiT3FTCc=
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JJ1f2Y7N"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E19C4CEF0;
+	Tue, 10 Jun 2025 16:28:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1749572889;
+	bh=VGaA2UjcATw5usDRARWAGHoyvA3nRCcXodZF/+d4fPQ=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=JJ1f2Y7NQSd54tSszQLRiQIl7dD277rRFw5CD03cct8JsOIa9MeckGxwgeTNERJbY
+	 /Aq7k/QdxMobJHlLVMWLaBVYiO7WUz7b5oZF8aZHHmpn5SGMFxfrabCx4zi/NelVA7
+	 9tpmie/ZR7eRtm/GQUxR12kWA/MXW8KxThnLlIuGSON9FK96/TttZtzzrp91aMtCTf
+	 nkrgxszvlyVUm0gGo8/i60pLDKogQxJCIy6qqOtv6fYwtbh3P8fqWAcjVqLwJncDb0
+	 2wdFJTUv8YDSR+ksvQyqg1NCDe5af7sVQqmJb6cWow02fsajDICno0naOHZ+D1dFYd
+	 UMToThilj3zfw==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 33D5B39D6540;
+	Tue, 10 Jun 2025 16:28:41 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.2\))
-Subject: Re: [PATCH] smp: Replace deprecated strcpy() with strscpy()
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Thorsten Blum <thorsten.blum@linux.dev>
-In-Reply-To: <CAEdQ38E4Hks+m=srZsuuu7g8N2z_hJT7oxyF_Nz3MYsm8wx9YQ@mail.gmail.com>
-Date: Tue, 10 Jun 2025 12:47:18 +0200
-Cc: Kees Cook <kees@kernel.org>,
- Richard Henderson <richard.henderson@linaro.org>,
- "Paul E. McKenney" <paulmck@kernel.org>,
- Al Viro <viro@zeniv.linux.org.uk>,
- Arnd Bergmann <arnd@arndb.de>,
- linux-hardening@vger.kernel.org,
- linux-alpha@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <CBD9B075-41C1-4447-A432-6A0EED48545C@linux.dev>
-References: <20250417192054.69663-2-thorsten.blum@linux.dev>
- <202504181322.5D3B93E93@keescook>
- <ABD8884A-36DF-457C-83D4-49F4F63C339F@linux.dev>
- <CAEdQ38E4Hks+m=srZsuuu7g8N2z_hJT7oxyF_Nz3MYsm8wx9YQ@mail.gmail.com>
-To: Matt Turner <mattst88@gmail.com>
-X-Migadu-Flow: FLOW_OUT
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 2/2] arch: use always-$(KBUILD_BUILTIN) for vmlinux.lds
+From: patchwork-bot+linux-riscv@kernel.org
+Message-Id: 
+ <174957291974.2454024.16546912662876416180.git-patchwork-notify@kernel.org>
+Date: Tue, 10 Jun 2025 16:28:39 +0000
+References: <20250602181256.529033-2-masahiroy@kernel.org>
+In-Reply-To: <20250602181256.529033-2-masahiroy@kernel.org>
+To: Masahiro Yamada <masahiroy@kernel.org>
+Cc: linux-riscv@lists.infradead.org, linux-kbuild@vger.kernel.org,
+ aou@eecs.berkeley.edu, agordeev@linux.ibm.com, alex@ghiti.fr,
+ andreas@gaisler.com, anton.ivanov@cambridgegreys.com, bp@alien8.de,
+ bcain@kernel.org, catalin.marinas@arm.com, chris@zankel.net,
+ borntraeger@linux.ibm.com, christophe.leroy@csgroup.eu,
+ dave.hansen@linux.intel.com, davem@davemloft.net, dinguyen@kernel.org,
+ geert@linux-m68k.org, guoren@kernel.org, hpa@zytor.com, hca@linux.ibm.com,
+ deller@gmx.de, chenhuacai@kernel.org, mingo@redhat.com,
+ James.Bottomley@HansenPartnership.com, johannes@sipsolutions.net,
+ glaubitz@physik.fu-berlin.de, jonas@southpole.se, maddy@linux.ibm.com,
+ mattst88@gmail.com, jcmvbkbc@gmail.com, mpe@ellerman.id.au, monstr@monstr.eu,
+ naveen@kernel.org, npiggin@gmail.com, palmer@dabbelt.com,
+ paul.walmsley@sifive.com, dalias@libc.org, richard.henderson@linaro.org,
+ richard@nod.at, linux@armlinux.org.uk, shorne@gmail.com,
+ stefan.kristiansson@saunalahti.fi, svens@linux.ibm.com,
+ tsbogend@alpha.franken.de, tglx@linutronix.de, gor@linux.ibm.com,
+ vgupta@kernel.org, kernel@xen0n.name, will@kernel.org,
+ ysato@users.sourceforge.jp, linux-alpha@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
+ linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+ linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org,
+ linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+ linux-snps-arc@lists.infradead.org, linux-um@lists.infradead.org,
+ linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev,
+ sparclinux@vger.kernel.org, x86@kernel.org
 
-Hi Matt,
+Hello:
 
-On 19. Apr 2025, at 01:01, Matt Turner wrote:
-> On Fri, Apr 18, 2025 at 5:11=E2=80=AFPM Thorsten Blum wrote:
->>=20
->> On 18. Apr 2025, at 22:23, Kees Cook wrote:
->>> On Thu, Apr 17, 2025 at 09:20:52PM +0200, Thorsten Blum wrote:
->>>> strcpy() is deprecated; use strscpy() instead.
->>>=20
->>> Are there more strcpy() uses in arch/alpha? Maybe do all of them and
->>> give the Subject prefix as "alpha:". If not, the "smp:" prefix is =
-likely
->>> to non-specific. Maybe "alpha: smp:".
->>=20
->> There are a handful left, but they're not as straightforward as this
->> one - so I'd prefer to keep them separate.
->>=20
->> Could the committer change the subject to "alpha: smp:" or should I
->> submit a v2 just for the title?
->=20
-> I'll fix it up when I add it to my tree.
+This patch was applied to riscv/linux.git (fixes)
+by Masahiro Yamada <masahiroy@kernel.org>:
 
-This one didn't make it into the last merge window, did it?
+On Tue,  3 Jun 2025 03:12:54 +0900 you wrote:
+> The extra-y syntax is deprecated. Instead, use always-$(KBUILD_BUILTIN),
+> which behaves equivalently.
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+> 
+>  arch/alpha/kernel/Makefile      | 2 +-
+>  arch/arc/kernel/Makefile        | 2 +-
+>  arch/arm/kernel/Makefile        | 2 +-
+>  arch/arm64/kernel/Makefile      | 2 +-
+>  arch/csky/kernel/Makefile       | 2 +-
+>  arch/hexagon/kernel/Makefile    | 2 +-
+>  arch/loongarch/kernel/Makefile  | 2 +-
+>  arch/m68k/kernel/Makefile       | 2 +-
+>  arch/microblaze/kernel/Makefile | 2 +-
+>  arch/mips/kernel/Makefile       | 2 +-
+>  arch/nios2/kernel/Makefile      | 2 +-
+>  arch/openrisc/kernel/Makefile   | 2 +-
+>  arch/parisc/kernel/Makefile     | 2 +-
+>  arch/powerpc/kernel/Makefile    | 2 +-
+>  arch/riscv/kernel/Makefile      | 2 +-
+>  arch/s390/kernel/Makefile       | 2 +-
+>  arch/sh/kernel/Makefile         | 2 +-
+>  arch/sparc/kernel/Makefile      | 2 +-
+>  arch/um/kernel/Makefile         | 2 +-
+>  arch/x86/kernel/Makefile        | 2 +-
+>  arch/xtensa/kernel/Makefile     | 2 +-
+>  21 files changed, 21 insertions(+), 21 deletions(-)
 
-Should I resend it or can you take care of it?
+Here is the summary with links:
+  - [2/2] arch: use always-$(KBUILD_BUILTIN) for vmlinux.lds
+    https://git.kernel.org/riscv/c/e21efe833eae
 
-Thanks,
-Thorsten
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
