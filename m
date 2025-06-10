@@ -1,135 +1,87 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+Received: from out-188.mta0.migadu.com (out-188.mta0.migadu.com [91.218.175.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3331A13C3CD;
-	Sun,  8 Jun 2025 09:44:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC48B1A2564
+	for <linux-alpha@vger.kernel.org>; Tue, 10 Jun 2025 10:47:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749375890; cv=none; b=KnWhYCEbExGnPNSAv86S7/7I2t7rDc1XlHJ1taaoI59NJofyZK2X9fCO242Fww0/QNC2ma5mjCD//adVq0vo4WRcCHLcGfxW+IpzJvHmv+XG2P7jdBw6xmz/r+lXPpKtQdtUVBG7j41o7jfXt7mg155dXU58EAVjFHq2BfngyRQ=
+	t=1749552478; cv=none; b=IwA6QzRv4Yd/oH/u6TV5HFcFF8xi+zP8QAn0OMSF1z9UbMRA50D9j30r1iU3nTA69j/G5xaDK7Ji+Bz50DYavQ6eANrCw3gr/tbE6ADJFa/i2FYvpAMAWbv4Vb970Xyel28jhQ5gViITkv5zI12kn0aEXsvk0p8i283Io09+P70=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749375890; c=relaxed/simple;
-	bh=TCv1nBrubfIcsi4DlAa3/6ZRjyP5G7Lfpe6gnZZm6Ns=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=HwvqU5A8W7/YUI7VttXS/0qiMBvv9TGQ6rjex7dpKedWW5kdf4rltyxjuyd3kML5k+KsFyii5O7E9wLOdVjXZ+omJ2rsxkii3qTPft7+Q2OKhZvf+qmtyIgOLMmWnNeRqL/6Tv/h+InH/tfVNHsI0NyGONsAvmJwLunPbz71S9g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=XsF7RNTr; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	s=arc-20240116; t=1749552478; c=relaxed/simple;
+	bh=yqBGNHKHylLUbukGQanKBdMRqJDrnziE5o9wNGaF6So=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=aP68JcV+9IL4Y+sgHSslfGIXrEkmLFfD2jZ77hAOcrB6C1n9A27MYr6eq9R3oV9yLipPqp/UpO2ad1aTcAIbV7QPCwUHlSGyzSiab8NZa+T4Vv5Gxs6kpyQQ3f0yqpYDPzfdkEG+1NNVnEtiNNlbTWDMAolJMNjdweTtJVQxs+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=m515TzUh; arc=none smtp.client-ip=91.218.175.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="XsF7RNTr"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=AvQSbwk0OMZgevNebkqyi44TEBQebr6htxrvwpOZR80=; t=1749375887; x=1749980687; 
-	b=XsF7RNTrY6leik/CR49OltCXmZ+nmg2YeysRu2zcT3ZmKZ0KTI/9vIHQTdvHBDPZp3uOGkhnj6N
-	CGsuW/loLdu/7d7QXyIejxsVUOJ5PMiCXJhGFrl+ZKN4kAlLdxfKImpeA3McLvcXXjbkOWTUY3psl
-	GA36G4WhvFEdjldstuPb8CW3OC8DU7Td7nb7iNs7LTulSoumtHmMfshUxYGOpHCo99BmQHlq3dTuI
-	YG+RY5Mn2MrLq5Q1ExJB8yEp+mdDxwbilTzu4iBErGwB6tFKXsUAEIwIn/+wcTtqaOWSdBrDojB54
-	OgV9BQHCiSqGo9gdI3Asy0s0I8f1n20+K3Zg==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.98)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1uOCZv-00000000rzo-33xN; Sun, 08 Jun 2025 11:44:35 +0200
-Received: from p57bd96d0.dip0.t-ipconnect.de ([87.189.150.208] helo=[192.168.178.61])
-          by inpost2.zedat.fu-berlin.de (Exim 4.98)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1uOCZv-00000001WdX-1muC; Sun, 08 Jun 2025 11:44:35 +0200
-Message-ID: <ea09adb64428a73b84cc0199c3b1efb09b9db23c.camel@physik.fu-berlin.de>
-Subject: Re: [PATCH 2/6] sh: remove duplicate ioread/iowrite helpers
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Arnd Bergmann <arnd@kernel.org>, linux-arch@vger.kernel.org, Arnd
- Bergmann	 <arnd@arndb.de>, Richard Henderson
- <richard.henderson@linaro.org>, Matt Turner	 <mattst88@gmail.com>, Greg
- Ungerer <gerg@linux-m68k.org>, Thomas Bogendoerfer	
- <tsbogend@alpha.franken.de>, "James E.J. Bottomley"	
- <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
- Madhavan Srinivasan	 <maddy@linux.ibm.com>, Michael Ellerman
- <mpe@ellerman.id.au>, Nicholas Piggin	 <npiggin@gmail.com>, Christophe
- Leroy <christophe.leroy@csgroup.eu>, Naveen N Rao <naveen@kernel.org>,
- Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker	
- <dalias@libc.org>, Julian Vetter <julian@outer-limits.org>, Bjorn Helgaas	
- <bhelgaas@google.com>, linux-alpha@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, 
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org
-Date: Sun, 08 Jun 2025 11:44:34 +0200
-In-Reply-To: <CAMuHMdXeTWSU64jQt+nybsSBOpBEu_zO0WmE5FK1PnA3YkALUQ@mail.gmail.com>
-References: <20250315105907.1275012-1-arnd@kernel.org>
-	 <20250315105907.1275012-3-arnd@kernel.org>
-	 <6c7770dd1c216410fcff3bf0758a45d5afcb5444.camel@physik.fu-berlin.de>
-	 <CAMuHMdXeTWSU64jQt+nybsSBOpBEu_zO0WmE5FK1PnA3YkALUQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="m515TzUh"
+Content-Type: text/plain;
+	charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1749552463;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=yqBGNHKHylLUbukGQanKBdMRqJDrnziE5o9wNGaF6So=;
+	b=m515TzUhRMnpShWuFOdaQf3kDQRhcxCVgb7v7HNfCsEg7NhHxgEv9lneCdOKPCIS/rx1bn
+	A/es2VtwMSzQZ2a72Hdf0037DIbD/d8YHxYxECA3grwetAmM2PuBl6MaaDAeiJbMV1WMP3
+	JwaDsoECJuuYyebuviuqIdWuiT3FTCc=
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3776.700.51.11.2\))
+Subject: Re: [PATCH] smp: Replace deprecated strcpy() with strscpy()
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Thorsten Blum <thorsten.blum@linux.dev>
+In-Reply-To: <CAEdQ38E4Hks+m=srZsuuu7g8N2z_hJT7oxyF_Nz3MYsm8wx9YQ@mail.gmail.com>
+Date: Tue, 10 Jun 2025 12:47:18 +0200
+Cc: Kees Cook <kees@kernel.org>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ "Paul E. McKenney" <paulmck@kernel.org>,
+ Al Viro <viro@zeniv.linux.org.uk>,
+ Arnd Bergmann <arnd@arndb.de>,
+ linux-hardening@vger.kernel.org,
+ linux-alpha@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <CBD9B075-41C1-4447-A432-6A0EED48545C@linux.dev>
+References: <20250417192054.69663-2-thorsten.blum@linux.dev>
+ <202504181322.5D3B93E93@keescook>
+ <ABD8884A-36DF-457C-83D4-49F4F63C339F@linux.dev>
+ <CAEdQ38E4Hks+m=srZsuuu7g8N2z_hJT7oxyF_Nz3MYsm8wx9YQ@mail.gmail.com>
+To: Matt Turner <mattst88@gmail.com>
+X-Migadu-Flow: FLOW_OUT
 
-Hello Geert,
+Hi Matt,
 
-On Sun, 2025-06-08 at 11:39 +0200, Geert Uytterhoeven wrote:
-> Hi Adrian,
+On 19. Apr 2025, at 01:01, Matt Turner wrote:
+> On Fri, Apr 18, 2025 at 5:11=E2=80=AFPM Thorsten Blum wrote:
+>>=20
+>> On 18. Apr 2025, at 22:23, Kees Cook wrote:
+>>> On Thu, Apr 17, 2025 at 09:20:52PM +0200, Thorsten Blum wrote:
+>>>> strcpy() is deprecated; use strscpy() instead.
+>>>=20
+>>> Are there more strcpy() uses in arch/alpha? Maybe do all of them and
+>>> give the Subject prefix as "alpha:". If not, the "smp:" prefix is =
+likely
+>>> to non-specific. Maybe "alpha: smp:".
+>>=20
+>> There are a handful left, but they're not as straightforward as this
+>> one - so I'd prefer to keep them separate.
+>>=20
+>> Could the committer change the subject to "alpha: smp:" or should I
+>> submit a v2 just for the title?
 >=20
-> On Sat, 7 Jun 2025 at 14:08, John Paul Adrian Glaubitz
-> <glaubitz@physik.fu-berlin.de> wrote:
-> > On Sat, 2025-03-15 at 11:59 +0100, Arnd Bergmann wrote:
-> > > From: Arnd Bergmann <arnd@arndb.de>
-> > >=20
-> > > The ioread/iowrite functions on sh only do memory mapped I/O like the
-> > > generic verion, and never map onto non-MMIO inb/outb variants, so the=
-y
-> > > just add complexity. In particular, the use of asm-generic/iomap.h
-> > > ties the declaration to the x86 implementation.
-> > >=20
-> > > Remove the custom versions and use the architecture-independent fallb=
-ack
-> > > code instead. Some of the calling conventions on sh are different her=
-e,
-> > > so fix that by adding 'volatile' keywords where required by the gener=
-ic
-> > > implementation and change the cpg clock driver to no longer depend on
-> > > the interesting choice of return types for ioread8/ioread16/ioread32.
-> > >=20
-> > > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->=20
-> > Those are quite a number of changes that I would like to test on real h=
-ardware
-> > first before merging them into the kernel.
-> >=20
-> > @Geert: Could you test it on your SH-7751 LANDISK board as well?
->=20
-> Already done for a while, as this patch is commit 2494fce26e434071 ("sh:
-> remove duplicate ioread/iowrite helpers") in v6.15-rc1 ;-)
+> I'll fix it up when I add it to my tree.
 
-Well, there is no Tested-By from either of us, so this isn't optimal.
+This one didn't make it into the last merge window, did it?
 
-I wished Arnd could have at least pinged me back regarding this. He knows I=
-'m
-actively maintaining arch/sh and I would like to properly test and review
-such changes.
+Should I resend it or can you take care of it?
 
-But I'm not doing this professionally, so I cannot be always there with 100=
-%
-capacity. Just pushing such changes in without any input from me defeats th=
-e
-purpose of a maintainer.
+Thanks,
+Thorsten
 
-Adrian
-
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
