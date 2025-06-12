@@ -1,35 +1,58 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-176.mta1.migadu.com (out-176.mta1.migadu.com [95.215.58.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3B8024166B;
-	Tue, 10 Jun 2025 16:28:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A523F2745C
+	for <linux-alpha@vger.kernel.org>; Thu, 12 Jun 2025 07:55:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749572889; cv=none; b=N3/2lJnIY02UVZgxjMqRzEHCY+RY4TTJ3LN+XhfnP3S6109zEamIbWOLmlfdmGgC7M2tm+VyPR60PazJpE83t2366uh0FwYVV2Xdt+3uLoVtd2AjAlaO4MNTTjYXB5C6lLkChM/mThOv2YabC1duX18SVSKS0ItHXSADx+jZydw=
+	t=1749714956; cv=none; b=IbzFRSNgHXgNdDZgZ0N32sk+B43zXY0t55VoWrPTjWOLKITxcPHaJHHNfGM6AOehechc5xkIZfTDh+0uNBwpHKPswsS597p5Am2TF8dJV28eSv0yr1Jo4ZCRciULRaQXeHr3i0GQ2KomnkFYLzcP9LFS3Q7gbbsub41hx8WRwqM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749572889; c=relaxed/simple;
-	bh=VGaA2UjcATw5usDRARWAGHoyvA3nRCcXodZF/+d4fPQ=;
-	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=cRL7VOGtrA/8IooI67lQAjAprtTkDPiTx4O/41+GvUl8+VEw7vM6ER/AI6HbVFIkTa2jxIllHPB2aNTZ4Ce/JFppjOd657tuePT1QPUl+aBL1ETTcqyYKXnJxawLT859Tzm16ccrs0zdCq5AFXKKEHhbBfeuxuqSrqTm4YHYfZ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JJ1f2Y7N; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1749714956; c=relaxed/simple;
+	bh=73V610p+9JZCKE+W4vZAInC+NFR9o3D7SoSIakug6IQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=c15WdDkQ1kK43fz/5uv83lLXNbb18sHboD5DF6jUlv5/k5LawzncfZh6wpZEr1raYh9hGMq5IGVfnuXJHh3WSuQ/08GMnyZgdAlzflRaBlRA4f4tJrAlbc8AxOwnbVf+VK7rzGmOHP7vemQdoOmOVEPKtmJpnAg3vDURdVJ1J9k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=pAt24u3e; arc=none smtp.client-ip=95.215.58.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JJ1f2Y7N"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E19C4CEF0;
-	Tue, 10 Jun 2025 16:28:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749572889;
-	bh=VGaA2UjcATw5usDRARWAGHoyvA3nRCcXodZF/+d4fPQ=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=JJ1f2Y7NQSd54tSszQLRiQIl7dD277rRFw5CD03cct8JsOIa9MeckGxwgeTNERJbY
-	 /Aq7k/QdxMobJHlLVMWLaBVYiO7WUz7b5oZF8aZHHmpn5SGMFxfrabCx4zi/NelVA7
-	 9tpmie/ZR7eRtm/GQUxR12kWA/MXW8KxThnLlIuGSON9FK96/TttZtzzrp91aMtCTf
-	 nkrgxszvlyVUm0gGo8/i60pLDKogQxJCIy6qqOtv6fYwtbh3P8fqWAcjVqLwJncDb0
-	 2wdFJTUv8YDSR+ksvQyqg1NCDe5af7sVQqmJb6cWow02fsajDICno0naOHZ+D1dFYd
-	 UMToThilj3zfw==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 33D5B39D6540;
-	Tue, 10 Jun 2025 16:28:41 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="pAt24u3e"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1749714942;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=6LY4vo/bZ3YMDxVE6i6Ie0OrWW95nPMauCx+hjveabo=;
+	b=pAt24u3e6DtqHI3n6q714oL8sqKPM+Ragc6XP+y6q755JG00eCl7OA+DlnvcPn+25YcBxJ
+	juQr09jumKVG3bXGKcS4eMhi5pCXVXD1jxh+2oWhewoqv3uHp1ewyRGSiHelHz4vt7/eTN
+	blBCVG4IA6VWg16y48+NCwpOQ4HC2jE=
+From: Hao Ge <hao.ge@linux.dev>
+To: Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@redhat.com>,
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Mike Rapoport <rppt@kernel.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Dennis Zhou <dennis@kernel.org>,
+	Tejun Heo <tj@kernel.org>,
+	Christoph Lameter <cl@linux.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Kent Overstreet <kent.overstreet@linux.dev>
+Cc: linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org,
+	linux-s390@vger.kernel.org,
+	Hao Ge <hao.ge@linux.dev>,
+	Hao Ge <gehao@kylinos.cn>
+Subject: [PATCH 0/5] mm: Restrict the static definition of the per-CPU variable _shared_alloc_tag to s390 and alpha architectures only 
+Date: Thu, 12 Jun 2025 15:54:23 +0800
+Message-Id: <cover.1749698249.git.gehao@kylinos.cn>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -37,83 +60,83 @@ List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 2/2] arch: use always-$(KBUILD_BUILTIN) for vmlinux.lds
-From: patchwork-bot+linux-riscv@kernel.org
-Message-Id: 
- <174957291974.2454024.16546912662876416180.git-patchwork-notify@kernel.org>
-Date: Tue, 10 Jun 2025 16:28:39 +0000
-References: <20250602181256.529033-2-masahiroy@kernel.org>
-In-Reply-To: <20250602181256.529033-2-masahiroy@kernel.org>
-To: Masahiro Yamada <masahiroy@kernel.org>
-Cc: linux-riscv@lists.infradead.org, linux-kbuild@vger.kernel.org,
- aou@eecs.berkeley.edu, agordeev@linux.ibm.com, alex@ghiti.fr,
- andreas@gaisler.com, anton.ivanov@cambridgegreys.com, bp@alien8.de,
- bcain@kernel.org, catalin.marinas@arm.com, chris@zankel.net,
- borntraeger@linux.ibm.com, christophe.leroy@csgroup.eu,
- dave.hansen@linux.intel.com, davem@davemloft.net, dinguyen@kernel.org,
- geert@linux-m68k.org, guoren@kernel.org, hpa@zytor.com, hca@linux.ibm.com,
- deller@gmx.de, chenhuacai@kernel.org, mingo@redhat.com,
- James.Bottomley@HansenPartnership.com, johannes@sipsolutions.net,
- glaubitz@physik.fu-berlin.de, jonas@southpole.se, maddy@linux.ibm.com,
- mattst88@gmail.com, jcmvbkbc@gmail.com, mpe@ellerman.id.au, monstr@monstr.eu,
- naveen@kernel.org, npiggin@gmail.com, palmer@dabbelt.com,
- paul.walmsley@sifive.com, dalias@libc.org, richard.henderson@linaro.org,
- richard@nod.at, linux@armlinux.org.uk, shorne@gmail.com,
- stefan.kristiansson@saunalahti.fi, svens@linux.ibm.com,
- tsbogend@alpha.franken.de, tglx@linutronix.de, gor@linux.ibm.com,
- vgupta@kernel.org, kernel@xen0n.name, will@kernel.org,
- ysato@users.sourceforge.jp, linux-alpha@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
- linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
- linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org,
- linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
- linux-snps-arc@lists.infradead.org, linux-um@lists.infradead.org,
- linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev,
- sparclinux@vger.kernel.org, x86@kernel.org
+X-Migadu-Flow: FLOW_OUT
 
-Hello:
+From: Hao Ge <gehao@kylinos.cn>
 
-This patch was applied to riscv/linux.git (fixes)
-by Masahiro Yamada <masahiroy@kernel.org>:
+Recently discovered this entry while checking kallsyms on ARM64:
+ffff800083e509c0 D _shared_alloc_tag
 
-On Tue,  3 Jun 2025 03:12:54 +0900 you wrote:
-> The extra-y syntax is deprecated. Instead, use always-$(KBUILD_BUILTIN),
-> which behaves equivalently.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
-> 
->  arch/alpha/kernel/Makefile      | 2 +-
->  arch/arc/kernel/Makefile        | 2 +-
->  arch/arm/kernel/Makefile        | 2 +-
->  arch/arm64/kernel/Makefile      | 2 +-
->  arch/csky/kernel/Makefile       | 2 +-
->  arch/hexagon/kernel/Makefile    | 2 +-
->  arch/loongarch/kernel/Makefile  | 2 +-
->  arch/m68k/kernel/Makefile       | 2 +-
->  arch/microblaze/kernel/Makefile | 2 +-
->  arch/mips/kernel/Makefile       | 2 +-
->  arch/nios2/kernel/Makefile      | 2 +-
->  arch/openrisc/kernel/Makefile   | 2 +-
->  arch/parisc/kernel/Makefile     | 2 +-
->  arch/powerpc/kernel/Makefile    | 2 +-
->  arch/riscv/kernel/Makefile      | 2 +-
->  arch/s390/kernel/Makefile       | 2 +-
->  arch/sh/kernel/Makefile         | 2 +-
->  arch/sparc/kernel/Makefile      | 2 +-
->  arch/um/kernel/Makefile         | 2 +-
->  arch/x86/kernel/Makefile        | 2 +-
->  arch/xtensa/kernel/Makefile     | 2 +-
->  21 files changed, 21 insertions(+), 21 deletions(-)
+If ARCH_NEEDS_WEAK_PER_CPU is not defined((it is only defined for
+s390 and alpha architectures),there's no need to statically define
+the percpu variable _shared_alloc_tag. As the number of CPUs
+increases,the wasted memory will grow correspondingly.
 
-Here is the summary with links:
-  - [2/2] arch: use always-$(KBUILD_BUILTIN) for vmlinux.lds
-    https://git.kernel.org/riscv/c/e21efe833eae
+Therefore,we need to implement isolation for this purpose.
 
-You are awesome, thank you!
+However,currently ARCH_NEEDS_WEAK_PER_CPU is a #define and
+is enclosed within the #if defined(MODULE) conditional block.
+
+When building the core kernel code for s390 or alpha architectures,
+ARCH_NEEDS_WEAK_PER_CPU remains undefined (as it is gated
+by #if defined(MODULE)). However,when building modules for these
+architectures,the macro is explicitly defined.
+
+Therefore,we need to make ARCH_NEEDS_WEAK_PER_CPU a Kconfig option.
+And replace all instances of ARCH_NEEDS_WEAK_PER_CPU in the kernel
+code with MODULE_NEEDS_WEAK_PER_CPU,gated
+by#ifdef CONFIG_ARCH_NEEDS_WEAK_PER_CPU. Then,when defining the percpu
+variable _shared_alloc_tag,wrap it with the
+CONFIG_ARCH_NEEDS_WEAK_PER_CPU condition.
+
+The following version could be regarded as Version 1:
+https://lore.kernel.org/all/20250529073537.563107-1-hao.ge@linux.dev/
+But unfortunately,it caused build errors on s390.
+Based on Suren's guidance and suggestions,
+I've refined it into this patch series.
+Many thanks to Suren for his patient instruction.
+
+Verify:
+     1. On Arm64:
+	nm vmlinux | grep "_shared_alloc_tag",no output is returned.
+     2. On S390:
+	Compile tested.
+	nm vmlinux | grep "_shared_alloc_tag"
+	00000000015605b4 r __crc__shared_alloc_tag
+	0000000001585fef r __kstrtab__shared_alloc_tag
+	0000000001586897 r __kstrtabns__shared_alloc_tag
+	00000000014f6548 r __ksymtab__shared_alloc_tag
+	0000000001a8fa28 D _shared_alloc_tag
+	nm net/ceph/libceph.ko | grep "_shared"
+	U _shared_alloc_tag
+     3. On alpha
+	Compile tested.
+	nm vmlinux | grep "_shared_alloc_tag"
+	fffffc0000b080fa r __kstrtab__shared_alloc_tag
+	fffffc0000b07ee7 r __kstrtabns__shared_alloc_tag
+	fffffc0000adee98 r __ksymtab__shared_alloc_tag
+	fffffc0000b83d38 D _shared_alloc_tag
+	nm crypto/cryptomgr.ko | grep "_share"
+	U _shared_alloc_tag
+
+Hao Ge (5):
+  mm/Kconfig: add ARCH_NEEDS_WEAK_PER_CPU option
+  alpha: Modify the definition logic of WEAK_PER_CPU
+  s390: Modify the definition logic of WEAK_PER_CPU
+  mm: use MODULE_NEEDS_WEAK_PER_CPU instead of ARCH_NEEDS_WEAK_PER_CPU
+  mm/alloc_tag: add the CONFIG_ARCH_NEEDS_WEAK_PER_CPU macro when
+    statically defining the percpu variable _shared_alloc_tag
+
+ arch/alpha/Kconfig              | 1 +
+ arch/alpha/include/asm/percpu.h | 4 ++--
+ arch/s390/Kconfig               | 1 +
+ arch/s390/include/asm/percpu.h  | 4 ++--
+ include/linux/alloc_tag.h       | 6 +++---
+ include/linux/percpu-defs.h     | 4 ++--
+ lib/alloc_tag.c                 | 2 ++
+ mm/Kconfig                      | 4 ++++
+ 8 files changed, 17 insertions(+), 9 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
