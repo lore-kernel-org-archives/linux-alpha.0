@@ -1,130 +1,149 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from out-178.mta1.migadu.com (out-178.mta1.migadu.com [95.215.58.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 467C41EA65;
-	Thu, 12 Jun 2025 12:16:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B6441B393C
+	for <linux-alpha@vger.kernel.org>; Fri, 13 Jun 2025 03:06:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749730580; cv=none; b=jLe6s9CVUWEpwvwgKwg7KKq/hZRhn9cY4Wb2NJnO4ybHtRp3f608szOIp64FJ+ZZeJ56QOhAUXlouH48zIyENc+pPBbWC7S7Xo5Vbdadu+ZEZGtV9K97eEXDh7kEAC/1U4bH5J8qwaM0Li5YePiY2P860Oie36CzYUEh7NWpN28=
+	t=1749783965; cv=none; b=g3068O2gBncaUCJ16+bNKvHcgZ/4SI0TWRIXka81KuIFs1q8PApmBW9bDh3zzk/T1wnh7CggCd2H6yemmBUbh7r000LAMyMOkiIipmhdQWK2hth8T1Im+vDv8xLDuKOLiGosqEW8Oq6XAlrLLP0fwSvf8zKEXkeqW5WIBYB9N6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749730580; c=relaxed/simple;
-	bh=QYKln1FWkJkewV6m9D9iVAYsU7JrXPL0itElPg1yRp0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=d00DC/PH06VHmK1VHmElc9aXw1YXMzTGjtdKWqSiBRVjI9TnGnOqBW1pw2FvBX0os1JqBJqa0vj5Q8qUv9n5P2igjgFTHEhaGaWyCY7nJVFWc0bjEtp+stAiYqhVw7Xw95i4L8jOVId8sqE7f4gIfYvxkMafes+w147t5tvTuVE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=ZRCoBG68; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1749783965; c=relaxed/simple;
+	bh=z/S/D9daR3gFo9LIj+phlnAKojrB4QkRIZNduYVKywA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=NUtSOEa3Z0uGcAjCXoiMGKUW9OMal1JpURoCDM+3iNgz7guaqckf6F8m0YfBsBsooAgGOB0hYl6JeF2Haq7w/pMqTArnMXacFA0kwEeV31Bf9DVKgLdUq1RpfiwC9yDN061m3E5YoztnWIR3tNm/Mmrfb5SRh8VG8T8ZwgtQ1lM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=LgrxKJal; arc=none smtp.client-ip=95.215.58.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="ZRCoBG68"
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55C8QlUb000795;
-	Thu, 12 Jun 2025 12:15:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=pp1; bh=oWUl518ENhE+I//VZIwKOVmltiU0OD
-	OamU9HtHFT4ko=; b=ZRCoBG689NVVhqLKP7vze5DKf2BAnmXTflsjNIThBvGPlI
-	uIEJjP7Oxdueu/uF/ilUISry/+blVmZrdj1lI4jwmIajuM02kQ5aDHC/waEHNGXE
-	ZgjTahqs6XRKDwMwJjxn8qbmWyZetP6waqHk6dZiPSsact1WHPo/WMIeNovJYUhF
-	lMl6tMhY4UP5duvOTtZ82rXt3LhhcnVlad71gbpqMG5o8t7tIK2j/YypwZQ7mEY4
-	8DMYXv1nYzmb6NVT530Uhx5rx1q5hjKlfdSEC58ezgD4lFfQUP+UxuejtKCvbLxX
-	soIZ/o8ePAlbVKhv19rd4cllToF/i83nwTy1RSwg==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4769wyy8wq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 12 Jun 2025 12:15:54 +0000 (GMT)
-Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 55CCFCUT001664;
-	Thu, 12 Jun 2025 12:15:53 GMT
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4769wyy8wk-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 12 Jun 2025 12:15:53 +0000 (GMT)
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 55CB5COG028110;
-	Thu, 12 Jun 2025 12:15:52 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 47518mmhw8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 12 Jun 2025 12:15:51 +0000
-Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
-	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 55CCFmwq52822512
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 12 Jun 2025 12:15:48 GMT
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 0788E20043;
-	Thu, 12 Jun 2025 12:15:48 +0000 (GMT)
-Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id BBD7120040;
-	Thu, 12 Jun 2025 12:15:46 +0000 (GMT)
-Received: from osiris (unknown [9.87.144.171])
-	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Thu, 12 Jun 2025 12:15:46 +0000 (GMT)
-Date: Thu, 12 Jun 2025 14:15:45 +0200
-From: Heiko Carstens <hca@linux.ibm.com>
-To: Hao Ge <hao.ge@linux.dev>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        David Hildenbrand <david@redhat.com>,
-        Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
-        Richard Henderson <richard.henderson@linaro.org>,
-        Matt Turner <mattst88@gmail.com>, Dennis Zhou <dennis@kernel.org>,
-        Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Kent Overstreet <kent.overstreet@linux.dev>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
-        linux-s390@vger.kernel.org, Hao Ge <gehao@kylinos.cn>
-Subject: Re: [PATCH 2/5] alpha: Modify the definition logic of WEAK_PER_CPU
-Message-ID: <20250612121545.10868G00-hca@linux.ibm.com>
-References: <cover.1749715979.git.gehao@kylinos.cn>
- <4d78498def57e0df4c768ad9eb672cac68fb51dc.1749715979.git.gehao@kylinos.cn>
- <20250612112215.10868Da1-hca@linux.ibm.com>
- <496a782f-25f8-44c5-88dd-d2c56a585898@linux.dev>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="LgrxKJal"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1749783960;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=79H2iL8yRwKJxUH4hjS5H+3mFY7cHIskQpfR41dr/Cg=;
+	b=LgrxKJalnpIHKcvOlQxpXXyh23cer9UoHbXSdNiEqoufevAn+K+9zSSRAV3qDd8E7mLFGE
+	nRt0/+48wUlaIxLLqLgw/0EeMV1zxXkjL4GPu2A1JEJqnQTF/YVeidIlraSL4UoKPPIZxr
+	tIHFuCX5/f844z+Yp+t/YGzKBDlO2YY=
+From: Hao Ge <hao.ge@linux.dev>
+To: Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@redhat.com>,
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Mike Rapoport <rppt@kernel.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Dennis Zhou <dennis@kernel.org>,
+	Tejun Heo <tj@kernel.org>,
+	Christoph Lameter <cl@linux.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Kent Overstreet <kent.overstreet@linux.dev>
+Cc: linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org,
+	linux-s390@vger.kernel.org,
+	Hao Ge <hao.ge@linux.dev>,
+	Hao Ge <gehao@kylinos.cn>
+Subject: [PATCH v2 0/3] mm: Restrict the static definition of the per-CPU variable _shared_alloc_tag to s390 and alpha architectures only
+Date: Fri, 13 Jun 2025 11:05:04 +0800
+Message-Id: <cover.1749779391.git.gehao@kylinos.cn>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <496a782f-25f8-44c5-88dd-d2c56a585898@linux.dev>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 5ECCCBaGq-b_DYDsiRkDmnLOEbpQwJim
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjEyMDA5MCBTYWx0ZWRfXxUECaCqM6x6t s7fRYZxCkwb+mfNdorKCrdr9h/2Kd4a8ptgDxMXlhfwJhlnf4o9fYI3szL9PEzFn1EKlYFBHcqP G30vWpgQIxhLvtBJNMBfpj8TIO0lqXNbcNzgvYYuEG1/3AmcfyzoBAijj/vGkQ1kRg7QhstqhO3
- Q5o1etjsLGxmuaOTnSNxQn9GuOMbSKlYl5TeA9wrog8RdFr6+WfMn6kbHJHJG50gAH/1a0Fg1nE nbdiY39ZoeTcdD++XEWZcVQfurnvkixl3gxvBRhWHQGjfCDaRtCvXNbTExpYbE7OxmhYD03Tmag 1frXCKZ0FWX1VSlu+1XRb/XqvAmxiPVe+qrQQdKPtT08EDcHLOj3G8FOW8FFdgG9gbP5wq9DLDH
- 9kZfXuXfr1QTd7E+0m1yGiG7bLJNpRC+ec+YSs6AaHnYevnOAAgMqw6xtkL5+BZ43RjyNkv5
-X-Authority-Analysis: v=2.4 cv=YKGfyQGx c=1 sm=1 tr=0 ts=684ac4fa cx=c_pps a=3Bg1Hr4SwmMryq2xdFQyZA==:117 a=3Bg1Hr4SwmMryq2xdFQyZA==:17 a=kj9zAlcOel0A:10 a=6IFa9wvqVegA:10 a=PvjgP0zBWn8W4tAsNlkA:9 a=CjuIK1q_8ugA:10
-X-Proofpoint-GUID: uWhc6G93y2Cxo5Tu8uuCIUnZGVE0d5xZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-06-12_08,2025-06-10_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
- malwarescore=0 bulkscore=0 priorityscore=1501 phishscore=0 mlxscore=0
- lowpriorityscore=0 impostorscore=0 adultscore=0 mlxlogscore=621
- suspectscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2506120090
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On Thu, Jun 12, 2025 at 08:06:25PM +0800, Hao Ge wrote:
-> > Furthermore this removes ARCH_NEEDS_WEAK_PER_CPU and defines
-> > MODULE_NEEDS_WEAK_PER_CPU while the common code conversion happens
-> > only with patch 4. Or in other words: if patches are split like this
-> > things break.
-> > 
-> > Same is true for patch 3. Just merging patches 2-4 would be the
-> > easiest solution to this problem.
-> 
-> I think this should be CC'd to the stable branch.
+From: Hao Ge <gehao@kylinos.cn>
 
-Why should this go to stable? This is just a minor optimization.
+Recently discovered this entry while checking kallsyms on ARM64:
+ffff800083e509c0 D _shared_alloc_tag
 
-> I'm wondering if these need to be integrated into a single patch.
-> 
-> I'm not sure. What do you think?
+If ARCH_NEEDS_WEAK_PER_CPU is not defined((it is only defined for
+s390 and alpha architectures),there's no need to statically define
+the percpu variable _shared_alloc_tag. As the number of CPUs
+increases,the wasted memory will grow correspondingly.
 
-stable or not: this series must be bisectable, which is currently not the case.
+Therefore,we need to implement isolation for this purpose.
+
+However,currently ARCH_NEEDS_WEAK_PER_CPU is a #define and
+is enclosed within the #if defined(MODULE) conditional block.
+
+When building the core kernel code for s390 or alpha architectures,
+ARCH_NEEDS_WEAK_PER_CPU remains undefined (as it is gated
+by #if defined(MODULE)). However,when building modules for these
+architectures,the macro is explicitly defined.
+
+Therefore,we need to make ARCH_NEEDS_WEAK_PER_CPU a Kconfig option.
+And replace all instances of ARCH_NEEDS_WEAK_PER_CPU in the kernel
+code with MODULE_NEEDS_WEAK_PER_CPU,MODULE_NEEDS_WEAK_PER_CPU might
+be a more accurate description,because it was only needed for modules.
+Then,when defining the percpu variable _shared_alloc_tag,wrap it with the
+CONFIG_ARCH_NEEDS_WEAK_PER_CPU condition.
+
+The following version can be regarded as the most original version:
+https://lore.kernel.org/all/20250529073537.563107-1-hao.ge@linux.dev/
+But unfortunately,it caused build errors on s390.
+Based on Suren's guidance and suggestions,
+I've refined it into this patch series.
+Many thanks to Suren for his patient instruction.
+
+Verify:
+     1. On Arm64:
+        nm vmlinux | grep "_shared_alloc_tag",no output is returned.
+     2. On S390:
+        Compile tested.
+        nm vmlinux | grep "_shared_alloc_tag"
+        00000000015605b4 r __crc__shared_alloc_tag
+        0000000001585fef r __kstrtab__shared_alloc_tag
+        0000000001586897 r __kstrtabns__shared_alloc_tag
+        00000000014f6548 r __ksymtab__shared_alloc_tag
+        0000000001a8fa28 D _shared_alloc_tag
+        nm net/ceph/libceph.ko | grep "_shared"
+        U _shared_alloc_tag
+     3. On alpha
+        Compile tested.
+        nm vmlinux | grep "_shared_alloc_tag"
+        fffffc0000b080fa r __kstrtab__shared_alloc_tag
+        fffffc0000b07ee7 r __kstrtabns__shared_alloc_tag
+        fffffc0000adee98 r __ksymtab__shared_alloc_tag
+        fffffc0000b83d38 D _shared_alloc_tag
+        nm crypto/cryptomgr.ko | grep "_share"
+        U _shared_alloc_tag
+
+v2:
+    Heiko pointed out that when defining MODULE_NEEDS_WEAK_PER_CPU,
+    the CONFIG_ARCH_NEEDS_WEAK_PER_CPU condition in the v1 version
+    should be removed,as it is always true for s390 and alpha
+    architectures.And He also pointed out that patches 2-4 need to
+    be merged into one patch. Modify the code according to the suggestions
+    and update the corresponding commit message.
+
+Hao Ge (3):
+  mm/Kconfig: add ARCH_NEEDS_WEAK_PER_CPU Option and enable it for
+    s390/alpha
+  mm: replace ARCH_NEEDS_WEAK_PER_CPU with MODULE_NEEDS_WEAK_PER_CPU
+  mm/alloc_tag: add the CONFIG_ARCH_NEEDS_WEAK_PER_CPU macro when
+    statically defining the percpu variable _shared_alloc_tag
+
+ arch/alpha/Kconfig              | 1 +
+ arch/alpha/include/asm/percpu.h | 2 +-
+ arch/s390/Kconfig               | 1 +
+ arch/s390/include/asm/percpu.h  | 2 +-
+ include/linux/alloc_tag.h       | 6 +++---
+ include/linux/percpu-defs.h     | 4 ++--
+ lib/alloc_tag.c                 | 2 ++
+ mm/Kconfig                      | 4 ++++
+ 8 files changed, 15 insertions(+), 7 deletions(-)
+
+-- 
+2.25.1
+
