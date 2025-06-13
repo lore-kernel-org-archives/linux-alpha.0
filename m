@@ -1,72 +1,72 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE819248867
-	for <linux-alpha@vger.kernel.org>; Fri, 13 Jun 2025 19:19:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F3AB24BBE4
+	for <linux-alpha@vger.kernel.org>; Fri, 13 Jun 2025 19:21:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749842385; cv=none; b=kgrAHHEwiTVtg0GQaqw9P8+hiRjU/cP3H7xIwm+hQvkcuhTyf2oMoMdoBt8GInWX+/r79nyFX2T/ofC4Mx+6uBFPCmRUA2qciaN6EOd/WPs2rtOeyymwBzFu5dPZw/GvvK51knl/IlSPtI0Z8lic6D6jX2N7JfhielFmiNaRO8E=
+	t=1749842507; cv=none; b=rCskce/zw834KtWGHaiIYRjJ3I66uyq0uCcUKOKG8C9EsIKwHKTaAEKpw5R/9FZZ4nBgUgMIdE/nyGADLNEqgNZUSbXEk9pEfwtxP/x6ygRJ2AWy1sdkX2Mqwy6KpEsdDzzXVPoXx/sNdFf4gzRd4NyQObuZslBZe76s18VVNfQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749842385; c=relaxed/simple;
-	bh=pM17luptOPApGFcmRyWk1htxZ0mNvfQwmub7ljr5iN4=;
+	s=arc-20240116; t=1749842507; c=relaxed/simple;
+	bh=YLKpZILOwVtOfA0AbaKsPcVtXLdl14+iX8YDYOFnlek=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Nn9Fho2qL15gN23Oex6/siM95hYi+bkDQYwfraDbKTmvY9UmWvHK+tF7ONVf1TBuMqkV3T53HivQlbH3SQCuWD7JVPuCA69bdVLdfTd06Tgy8NrBTUjORsg9yqNw7fq7Ca7MZFR39Ks3Tl7VLTRZgVACxOO4hi059IMoWulTVc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cYfTCe6B; arc=none smtp.client-ip=209.85.160.178
+	 To:Cc:Content-Type; b=GlfkzByLiy/9lVGj7zIqMOsPVoyKbUDaxtv99hoAWHV6MFdGGwmGsnfea4P8uhfv86PksDzrh+4uH5WyoPO/zfWDr7kSbj4HbYWTUCfA7CH18vckN5FHALV95Hf338o4LViohzeXfHercBt078MKTY6f9491Q8kRwy1YTuxMyLs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ObXxzX29; arc=none smtp.client-ip=209.85.160.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cYfTCe6B"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-47e9fea29easo71861cf.1
-        for <linux-alpha@vger.kernel.org>; Fri, 13 Jun 2025 12:19:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ObXxzX29"
+Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-47e9fea29easo72761cf.1
+        for <linux-alpha@vger.kernel.org>; Fri, 13 Jun 2025 12:21:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1749842383; x=1750447183; darn=vger.kernel.org;
+        d=google.com; s=20230601; t=1749842503; x=1750447303; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ls4Y9HoT9VEjZR6n9L8mMlDWt5VvuU4t30VU2btZu64=;
-        b=cYfTCe6BSap1DF4SsVBI841wROw4zSvbrq/0JCSnzXSJicRhZYepPjyOkmDrwtmRKX
-         XLl62YpTdzbSkzwjEPYKQj5uBssIsQAWHwvxQS/Di0OUXys5i6XHvsmOOD30EUFTN3Y7
-         uwNhHbIyQ7k2CIlNpqnwkEUqj9rsQiv6fB11urZ0i8rS3ztJeKcX51lAXBUqDn3WpCDy
-         guZttu+N++AU4QECKygrXiqNjbTwxz9hgZZJPv25pK0ljGb84kooDVQqapnozCW1gxqB
-         qrYsgJi57gqeAUQq5cGDVS2TXW8Ws+FfR3OLK/jDeTjdKujoS1mUQQzoykto2/SV1gJF
-         uEKQ==
+        bh=SwsnYZZ63LvvlkMeoABDBQxLgrkaQY4fLJ1Enbyh2EY=;
+        b=ObXxzX29rZndd1MbjB6+7vqnl/35j6kXZZSxI803hD3AlyUcxnG4uoUeZ2BMbch15U
+         dZQfU1FIitEgdFJb+8FkQvqWoH4IhH6IX+jNPdFNnSSdqmSyhuqVwZTXgZdTTUpu+tOT
+         8Ya5f75I3Nqfi4N9gnv5+khvSLMMgjpQDNROa5maDl/yI/WuzTLsb8rBD1S5vXiNVP+O
+         V7SLh8PDQcodamaBmnAx9ioXgNtCb2OoFakp1cPw5EuGcMChNsz7kAGxOjn6BLfuZBGs
+         ldLuU8DmvcMc82QIQuWc3CWnyRu5AuvxIgUxFymCe2c1YKZIEujUm3a41SI4G1UzNUwT
+         8JJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749842383; x=1750447183;
+        d=1e100.net; s=20230601; t=1749842503; x=1750447303;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ls4Y9HoT9VEjZR6n9L8mMlDWt5VvuU4t30VU2btZu64=;
-        b=FNJKYaDYDMER/4brm2ACxI82tS8/ZfibpOgt9R5bo8tdc1gyw77N2/TOUdX1KhK4DM
-         aQiiUdFXIxFuJL104rQo2k3zSOkt36saYbX/+6X7BP3LQUV9Wb4SL5pSg1JCOriC5/IO
-         UiT/gNqJl9v5i4v7knqJn0TFH5TtpPG4hgN4ulo7xxOe86rIel4kJ7Qh5n4iLj4Gy/dF
-         coV1VaQmZ+7J2V8kJVMljKM4Tb0GSNa2n2EomnGBdGGp4CHJqZshXYUrCZJvWDT5qy38
-         mI4bumkdkSCAtpUcOdDhN6PFeGjPWfiT2Ml1+m8EO5JtrjzD0QYZ+55Hy2eNwph4jk4p
-         Ah0A==
-X-Forwarded-Encrypted: i=1; AJvYcCXLr8JP2N5DMvAmY2NgJ25jdpz+yGsZQLSJLNVRomAnVfbh3k87R1FPb+y4VxmxRUApaYfBEzYqQqXWbA==@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywv/CKh+BbjnUejTLlSbXi1nEwXRnnmFwcm3fucubDtS84Px54u
-	Yh8AFYNSW4YKslKrnPnZQuLQx4rAGuFr9pvtd9IyN6AbxP9SXDoLV8qM20Y2P6tDXJx87tdQCEZ
-	PBAIkckwxRGMHgBmfszpHNJFxWegyHkxvdDaEkykx
-X-Gm-Gg: ASbGncsaUBV3QQSzVqHTaqebNNkKudKTHQKNawunRtKrWS3V+R53hrxXQGtp1DiZquR
-	S4G2x8byFaLorxNYD0y9lN2jJ0oC4op26GeFk6ur8gTj069omi7ZV986zw2sPavl9XQ6MmrpybU
-	BnL312J6RD4yRolaxR+eMwAXCVuvmUl0GNflSNUg9LurrMrqr00RO9
-X-Google-Smtp-Source: AGHT+IHbm2b0b8YGHX28r7f2pzl1NXSMck+kvuJZCJIVk1NshA3nbRdTcXcdIfx+F3Jou0xe6PXvnume9QxDaU2tiYc=
-X-Received: by 2002:a05:622a:1829:b0:476:f1a6:d8e8 with SMTP id
- d75a77b69052e-4a73c737c96mr390081cf.11.1749842382290; Fri, 13 Jun 2025
- 12:19:42 -0700 (PDT)
+        bh=SwsnYZZ63LvvlkMeoABDBQxLgrkaQY4fLJ1Enbyh2EY=;
+        b=QKGSU+cCMbOzKgER062PURU51c16er8Ouige3QGKARVjgAvmAOKPDs71wsf5nS0F7V
+         5DJVzFNlCh48yE6ma+YMCBEXfTpIeb1zuYL8sUs2SUnBwhaG3mntlww6ASed7bPRAeiE
+         KrlolvboDr8k7J7j1ka5818A2PNANnW2zrN13z27C065fHHxmh/mDRSyuqKrzDzuFY7W
+         qBkMrrdPzfytxsKGFTuec/iCAF80saiOXI9HX2meB73594U/9P2dYSQ6iD4SLmiwFdv2
+         /lnXwbqUpZdjF6yJSqxkLBOBxVfzjrU41ltTBHaTEUmrpandXdN/OHGf7Y7rEWrOBizj
+         i0Lw==
+X-Forwarded-Encrypted: i=1; AJvYcCW0xE72I1fP6Tfh1PUX70zeUvoZcppiLEWYj7r6jC/LW8adVvPYFT/zM25MnWyKsa1mWncDKMyobXcMMQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzpoKgmlW78AzhdHUWg3f5ZrNFJ2q7otO/44FkemsSmGBpRPYgE
+	jeOZjj1Fqw3ioe1KEg9AskSZDlSH+mlihRpd0ZnsQ0b790JOSGSluYp2ImHvmRyf6EMxOOuKQaF
+	9sVik+Xiho3cB3Z/ubxAnkcFh8ucDU0ZLy3nZmQIc
+X-Gm-Gg: ASbGnctOp5eHtj01bOhPsHk4xMBMxubBEImWUmpU/b06s+OT9m0HUcZSRgxsZux+ZNt
+	ePbApvmEf/BY4KB1O20YF328uMosx1g6oaSK+Q4H4hSdO+by1FT2XAqMvLA5mqHcrb2YYOK7JSN
+	/YGh4yAiwnxb29bZwkMVMHrTvjOE69XRWomNwveeKvZQ==
+X-Google-Smtp-Source: AGHT+IEO+7tih5cXcAlJg0Vw2/Sois18XRurWIS2/frgQdC8+3vTxmNKORl6AWRcNFb2EewoNPpA6PIVNKd9BEEx0hI=
+X-Received: by 2002:ac8:5883:0:b0:47b:840:7f5b with SMTP id
+ d75a77b69052e-4a73c763a87mr516731cf.29.1749842503097; Fri, 13 Jun 2025
+ 12:21:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1749779391.git.gehao@kylinos.cn>
-In-Reply-To: <cover.1749779391.git.gehao@kylinos.cn>
+References: <cover.1749779391.git.gehao@kylinos.cn> <099651f46b0b57f6c7890a64608dc7ca44df7764.1749779391.git.gehao@kylinos.cn>
+In-Reply-To: <099651f46b0b57f6c7890a64608dc7ca44df7764.1749779391.git.gehao@kylinos.cn>
 From: Suren Baghdasaryan <surenb@google.com>
-Date: Fri, 13 Jun 2025 12:19:31 -0700
-X-Gm-Features: AX0GCFuV7BnvCEvakQqnTD_G0pwn3IuNvCBiUSnYUaTsvkP-nXz7XbXoATM8nbs
-Message-ID: <CAJuCfpHhVhAEPqGXR=b6gdykZTtZsOA7cXX2CJKcX3TX++bs6w@mail.gmail.com>
-Subject: Re: [PATCH v2 0/3] mm: Restrict the static definition of the per-CPU
- variable _shared_alloc_tag to s390 and alpha architectures only
+Date: Fri, 13 Jun 2025 12:21:32 -0700
+X-Gm-Features: AX0GCFu-OOwfRLFxcwNjR_GNWx_Buv2sRyKB524WUep1Vz9r7UOBtNhv2b7PdpU
+Message-ID: <CAJuCfpGkUk5RXm-HDLB2mr_mRbSxPV+kx116FFBhyYsf6pXNCg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] mm/alloc_tag: add the CONFIG_ARCH_NEEDS_WEAK_PER_CPU
+ macro when statically defining the percpu variable _shared_alloc_tag
 To: Hao Ge <hao.ge@linux.dev>
 Cc: Andrew Morton <akpm@linux-foundation.org>, David Hildenbrand <david@redhat.com>, 
 	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, "Liam R. Howlett" <Liam.Howlett@oracle.com>, 
@@ -88,87 +88,40 @@ On Thu, Jun 12, 2025 at 8:06=E2=80=AFPM Hao Ge <hao.ge@linux.dev> wrote:
 > Recently discovered this entry while checking kallsyms on ARM64:
 > ffff800083e509c0 D _shared_alloc_tag
 >
-> If ARCH_NEEDS_WEAK_PER_CPU is not defined((it is only defined for
+> If CONFIG_ARCH_NEEDS_WEAK_PER_CPU is not defined(it is only defined for
 > s390 and alpha architectures),there's no need to statically define
 > the percpu variable _shared_alloc_tag. As the number of CPUs
 > increases,the wasted memory will grow correspondingly.
+
+I don't think this patch needs all this background. Just say that
+_shared_alloc_tag is not used when CONFIG_ARCH_NEEDS_WEAK_PER_CPU=3Dn,
+so you want to compile it out.
+
 >
-> Therefore,we need to implement isolation for this purpose.
->
-> However,currently ARCH_NEEDS_WEAK_PER_CPU is a #define and
-> is enclosed within the #if defined(MODULE) conditional block.
->
-> When building the core kernel code for s390 or alpha architectures,
-> ARCH_NEEDS_WEAK_PER_CPU remains undefined (as it is gated
-> by #if defined(MODULE)). However,when building modules for these
-> architectures,the macro is explicitly defined.
->
-> Therefore,we need to make ARCH_NEEDS_WEAK_PER_CPU a Kconfig option.
-> And replace all instances of ARCH_NEEDS_WEAK_PER_CPU in the kernel
-> code with MODULE_NEEDS_WEAK_PER_CPU,MODULE_NEEDS_WEAK_PER_CPU might
-> be a more accurate description,because it was only needed for modules.
-> Then,when defining the percpu variable _shared_alloc_tag,wrap it with the
+> Enclose the definition of _shared_alloc_tag within the
 > CONFIG_ARCH_NEEDS_WEAK_PER_CPU condition.
 >
-> The following version can be regarded as the most original version:
-> https://lore.kernel.org/all/20250529073537.563107-1-hao.ge@linux.dev/
-> But unfortunately,it caused build errors on s390.
-> Based on Suren's guidance and suggestions,
-> I've refined it into this patch series.
-> Many thanks to Suren for his patient instruction.
-
-I think the first two patches in your patchset should be merged together.
-
+> Suggested-by: Suren Baghdasaryan <surenb@google.com>
+> Signed-off-by: Hao Ge <gehao@kylinos.cn>
+> ---
+>  lib/alloc_tag.c | 2 ++
+>  1 file changed, 2 insertions(+)
 >
-> Verify:
->      1. On Arm64:
->         nm vmlinux | grep "_shared_alloc_tag",no output is returned.
->      2. On S390:
->         Compile tested.
->         nm vmlinux | grep "_shared_alloc_tag"
->         00000000015605b4 r __crc__shared_alloc_tag
->         0000000001585fef r __kstrtab__shared_alloc_tag
->         0000000001586897 r __kstrtabns__shared_alloc_tag
->         00000000014f6548 r __ksymtab__shared_alloc_tag
->         0000000001a8fa28 D _shared_alloc_tag
->         nm net/ceph/libceph.ko | grep "_shared"
->         U _shared_alloc_tag
->      3. On alpha
->         Compile tested.
->         nm vmlinux | grep "_shared_alloc_tag"
->         fffffc0000b080fa r __kstrtab__shared_alloc_tag
->         fffffc0000b07ee7 r __kstrtabns__shared_alloc_tag
->         fffffc0000adee98 r __ksymtab__shared_alloc_tag
->         fffffc0000b83d38 D _shared_alloc_tag
->         nm crypto/cryptomgr.ko | grep "_share"
->         U _shared_alloc_tag
+> diff --git a/lib/alloc_tag.c b/lib/alloc_tag.c
+> index c7f602fa7b23..14fd66f26e42 100644
+> --- a/lib/alloc_tag.c
+> +++ b/lib/alloc_tag.c
+> @@ -24,8 +24,10 @@ static bool mem_profiling_support;
 >
-> v2:
->     Heiko pointed out that when defining MODULE_NEEDS_WEAK_PER_CPU,
->     the CONFIG_ARCH_NEEDS_WEAK_PER_CPU condition in the v1 version
->     should be removed,as it is always true for s390 and alpha
->     architectures.And He also pointed out that patches 2-4 need to
->     be merged into one patch. Modify the code according to the suggestion=
-s
->     and update the corresponding commit message.
+>  static struct codetag_type *alloc_tag_cttype;
 >
-> Hao Ge (3):
->   mm/Kconfig: add ARCH_NEEDS_WEAK_PER_CPU Option and enable it for
->     s390/alpha
->   mm: replace ARCH_NEEDS_WEAK_PER_CPU with MODULE_NEEDS_WEAK_PER_CPU
->   mm/alloc_tag: add the CONFIG_ARCH_NEEDS_WEAK_PER_CPU macro when
->     statically defining the percpu variable _shared_alloc_tag
+> +#ifdef CONFIG_ARCH_NEEDS_WEAK_PER_CPU
+>  DEFINE_PER_CPU(struct alloc_tag_counters, _shared_alloc_tag);
+>  EXPORT_SYMBOL(_shared_alloc_tag);
+> +#endif
 >
->  arch/alpha/Kconfig              | 1 +
->  arch/alpha/include/asm/percpu.h | 2 +-
->  arch/s390/Kconfig               | 1 +
->  arch/s390/include/asm/percpu.h  | 2 +-
->  include/linux/alloc_tag.h       | 6 +++---
->  include/linux/percpu-defs.h     | 4 ++--
->  lib/alloc_tag.c                 | 2 ++
->  mm/Kconfig                      | 4 ++++
->  8 files changed, 15 insertions(+), 7 deletions(-)
->
+>  DEFINE_STATIC_KEY_MAYBE(CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT,
+>                         mem_alloc_profiling_key);
 > --
 > 2.25.1
 >
