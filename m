@@ -1,107 +1,162 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB0C41DF982;
-	Mon, 16 Jun 2025 08:55:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4376D136349
+	for <linux-alpha@vger.kernel.org>; Mon, 16 Jun 2025 23:49:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750064112; cv=none; b=Nl+1y6cdAJyLGrfXsNuKc6Qt6uwn+MSuaWN0w7x0S0VCSIokgzk2wEEbzB10rWGrb/SMDGcLIZZHfoVh5s4HYG4iiCgjjgWQ9stTp/cUw9wsumEVyiT55TsxBySdvPYrharv0BVxoMVSeiKh3h895Tr3jJPtiode5kLA93W5ALg=
+	t=1750117792; cv=none; b=hD6a4FSGb29xtRNu1S+1Nj8XrRau4jH8r6EcWXGM1FSFrgD8Y/yNYDs1iADLzKxqwyqFXdoKwbPHpUBPYOTGdHJFkz2lFhXNUG5vPBW5w+3GKTLDRG0ranP5+qhb6BMdjs+LbFWEG7BH9NBsXxZmEyo36iIX77AjZm7ndih7I84=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750064112; c=relaxed/simple;
-	bh=yVMK7o6TEsrw4Q3fvl9FM+ShlUKqWavW41gkW+rpmNU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=brD65an6JaFnGe2/5ewGBPbwxAmyGJTP9ywIYEsQLCQ9C9rI10SA9/KwwM+HmgjSfYOA5wL3Wj3FuPe9c0TSe5EyE5Vp8ics4o5lAncCHdP/oX5TpqLNHQCsOnlihUSB73jHvwfGGFekIMB93r+T6GEdoFnA6y7m8mAwr/15yHI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D7/BL2qY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750117792; c=relaxed/simple;
+	bh=b3zKHLKAb1cvtSdrw3XxiNDONuchbnrNwEblCi3jEpo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hYx9pftXQlcYqXecJh2LUgYd7SGfqzfnnqn5g/TmJVJW3v/zD/x6IXHlDi1YuO5O6325ioswyjNah7v0bH9AB5M0qPTP2sTDztytcU9ulAgkxBrpQTAw+nWlaQm7hg76pXxFJVhVnoSkOATOQOH29DNXni5hfAtiHxacmblUsv0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vJG/Afws; arc=none smtp.client-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D7/BL2qY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54239C4CEEA;
-	Mon, 16 Jun 2025 08:55:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750064112;
-	bh=yVMK7o6TEsrw4Q3fvl9FM+ShlUKqWavW41gkW+rpmNU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=D7/BL2qYK+YG+ojniL/KBt0nWQXdG4qf3Jm32w2X6tFbOXvb1tTKbeR+BtGuiQppV
-	 tjqqf+YZH9c074Q2KfLZEu1ZqD2dicn1wPI8RLYgsub4TH71CZBENIpnMTel64DXay
-	 M+w9DO9z7qJbRAnyhuuUYDrmz56xKMfL+adRPVGCGIAmxauEWqAM4RltL5/3sOYQBF
-	 vqkTzHZ2CwTqPndh0KHWRxboh0cAEXLwuhahMJWTZ+THuRCxzyUqpW59mlrctnSAi6
-	 OMcY3gZvmbhF078IkIIklL8hK9VcN0F22qTV2YxTSO47EjYrBty289K/VkoYzuNBeR
-	 x/tPq4dEv6ISA==
-Date: Mon, 16 Jun 2025 11:55:01 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: David Hildenbrand <david@redhat.com>
-Cc: Hao Ge <hao.ge@linux.dev>, Andrew Morton <akpm@linux-foundation.org>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>, Dennis Zhou <dennis@kernel.org>,
-	Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Kent Overstreet <kent.overstreet@linux.dev>, linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
-	linux-s390@vger.kernel.org, Hao Ge <gehao@kylinos.cn>
-Subject: Re: [PATCH v3 1/2] mm: Optimize the ARCH_NEEDS_WEAK_PER_CPU logic
- for s390/alpha architectures
-Message-ID: <aE_b5X7NmOd5-SC5@kernel.org>
-References: <cover.1750040317.git.gehao@kylinos.cn>
- <57e110be6d8387e403b4ef1f3b10714c36afbb51.1750040317.git.gehao@kylinos.cn>
- <afcdc872-680e-40c6-98d0-6b6a43daedbf@redhat.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vJG/Afws"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-4a5ac8fae12so164251cf.0
+        for <linux-alpha@vger.kernel.org>; Mon, 16 Jun 2025 16:49:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1750117790; x=1750722590; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=b3zKHLKAb1cvtSdrw3XxiNDONuchbnrNwEblCi3jEpo=;
+        b=vJG/AfwsnMTMQI+IIqawW80lra0d3rIVjDMK/VIdjtKQMQQyxOKjQAFimnmQJMnwRl
+         hAHTj9hFf0aGXLGD0TXKP/3xU2tMD16/pll2Kwwkgj4J9ESgy+TfSo+z3HtIkj1yPpsC
+         T4tmKDyrKX1d2KhvBIRKSNNXbv4cHUUCpHmHXYl1tyaJkNWpFq925t/tDmVQLwxRL/hJ
+         R+fdZkh6fMdMGQQ+C7xYS9j/zdBWxmflE5i8XwFSw7xuGmc9c6eqKvhgAf8j0B5lLPJa
+         SKHXRyY90QWrCx6UfShuz6AzVhqFSpzHszYupy3XXD12qmme5qNK7CxvKii8G1o9X0/Z
+         yaCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750117790; x=1750722590;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=b3zKHLKAb1cvtSdrw3XxiNDONuchbnrNwEblCi3jEpo=;
+        b=Qg7pZy1SrCBUrgmTor6Cs5XV3xQkt5Sb8BvSUQeLGe2mEh+8ztsk/GMN6vTkvq+PWN
+         vCIX812jjbtOO69AU+ersqCMKropblFdMcwln3WtofUk80Vc9uPm1Rp7kov6U0o4AKnJ
+         ozLYbPwn+DskgVfvKB4T12ljhf6d1V/es1dYON+OwMK+r2yfxPaKjYJJQIcQ/MOaJaoM
+         IA5sJ/pcsKZi5JrTWUlZZeTGCTcAitWcrUrQzkFELa/4qonDAFHQa9LK9W7RBXtTbJCS
+         E7pznTf/Go1D42xo8XSC1t7VghUNrr8SidMKBrCtmY8H/wipkcuR0ad5KlYh+cagWrxC
+         qCEg==
+X-Forwarded-Encrypted: i=1; AJvYcCWpg8eBHAWj7Wi/SXeQ4fa/gNZsqsRWUd6sRJg5v0JCxAAGODblF11gP9O7rQa+kAo17RTUQGi5yS08Zg==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxbbLVMndwinaxU8Vww08eznsyOcTDCM2xiBhiK8ZwIcp65N/1n
+	GezIytypWquHkbObqIYXuXQwEzcF4wy0mUbdu59imkNMThmaB+xskWVP1HWAeqkyV9VnszrlmSU
+	fXeertURWCpJVxmQbbn2ny2oVf8aSy3zVwHIooxmh
+X-Gm-Gg: ASbGncuqo4DJv18Dyq3DsBJuXcrUc1Ulgo41hYO2VG03q6o6pSTpbHFKZz56ik57Z7l
+	1LLBEuN7bZKexK6f1oMiQqmzh9w7FO5EoQF9DxrhUFvcgNa5oAg5lOwypqfcZDTs2Dpr+oziSqX
+	vk8J2VUF0nIFMmZSrjl54ANrSALbchwbWaSmppVAzwyCzOw7vP9hMm
+X-Google-Smtp-Source: AGHT+IGfjcKJ8IuE5R9fjsgG5YLqJwjRuDqVQ24dCynAkDWc2+kl3bY0GD7TukkBzbd98jTpPP1I6GXluwgK3ALK8Nc=
+X-Received: by 2002:a05:622a:4d0:b0:4a6:f9d2:b538 with SMTP id
+ d75a77b69052e-4a73d78a66bmr9184781cf.28.1750117789687; Mon, 16 Jun 2025
+ 16:49:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <afcdc872-680e-40c6-98d0-6b6a43daedbf@redhat.com>
+References: <cover.1750040317.git.gehao@kylinos.cn> <57e110be6d8387e403b4ef1f3b10714c36afbb51.1750040317.git.gehao@kylinos.cn>
+ <afcdc872-680e-40c6-98d0-6b6a43daedbf@redhat.com> <aE_b5X7NmOd5-SC5@kernel.org>
+In-Reply-To: <aE_b5X7NmOd5-SC5@kernel.org>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Mon, 16 Jun 2025 16:49:38 -0700
+X-Gm-Features: AX0GCFuAg0WOrYYwGLiRGPPUQaw6f_v9xmxf5R_loH7rX4qxsikqGy9OZp4O2vA
+Message-ID: <CAJuCfpFOw+b_U8CiBpjm-4ehm-mGY5fRO8M-YiQ2PqvShCV04A@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] mm: Optimize the ARCH_NEEDS_WEAK_PER_CPU logic for
+ s390/alpha architectures
+To: Mike Rapoport <rppt@kernel.org>
+Cc: David Hildenbrand <david@redhat.com>, Hao Ge <hao.ge@linux.dev>, 
+	Andrew Morton <akpm@linux-foundation.org>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, 
+	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Vlastimil Babka <vbabka@suse.cz>, 
+	Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
+	Dennis Zhou <dennis@kernel.org>, Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>, 
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
+	Sven Schnelle <svens@linux.ibm.com>, Kent Overstreet <kent.overstreet@linux.dev>, linux-mm@kvack.org, 
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linux-s390@vger.kernel.org, Hao Ge <gehao@kylinos.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 16, 2025 at 09:59:09AM +0200, David Hildenbrand wrote:
-> On 16.06.25 04:29, Hao Ge wrote:
-> > From: Hao Ge <gehao@kylinos.cn>
-> 
-> subject is misleading: we are not optimizing anything in this patch, do we?
-> 
-> It should probably be called
-> 
-> "mm/percpu: rename ARCH_NEEDS_WEAK_PER_CPU to MODULE_NEED_WEAK_PER_CPU" or
-> sth. like that.
-> 
-> 
-> > Add the ARCH_NEEDS_WEAK_PER_CPU option to the mm Kconfig file
-> > and enable it for the s390 and alpha architectures.
-> > And replace all instances of ARCH_NEEDS_WEAK_PER_CPU
-> > in the kernel code with MODULE_NEEDS_WEAK_PER_CPU.
-> 
-> Most of the description here should likely go to patch #2. See below.
+On Mon, Jun 16, 2025 at 1:55=E2=80=AFAM Mike Rapoport <rppt@kernel.org> wro=
+te:
+>
+> On Mon, Jun 16, 2025 at 09:59:09AM +0200, David Hildenbrand wrote:
+> > On 16.06.25 04:29, Hao Ge wrote:
+> > > From: Hao Ge <gehao@kylinos.cn>
+> >
+> > subject is misleading: we are not optimizing anything in this patch, do=
+ we?
+> >
+> > It should probably be called
+> >
+> > "mm/percpu: rename ARCH_NEEDS_WEAK_PER_CPU to MODULE_NEED_WEAK_PER_CPU"=
+ or
+> > sth. like that.
+> >
+> >
+> > > Add the ARCH_NEEDS_WEAK_PER_CPU option to the mm Kconfig file
+> > > and enable it for the s390 and alpha architectures.
+> > > And replace all instances of ARCH_NEEDS_WEAK_PER_CPU
+> > > in the kernel code with MODULE_NEEDS_WEAK_PER_CPU.
+> >
+> > Most of the description here should likely go to patch #2. See below.
+>
+> ...
+>
+> > So what you could do is move the actual introduction of
+> > CONFIG_ARCH_NEEDS_WEAK_PER_CPU to patch #2, where it is actually used, =
+and
+> > limit this patch to the rename.
+> >
+> > Similarly, teak the patch description to reflect only that.
+>
+> Right, if the patch only renames ARCH_NEEDS_WEAK_PER_CPU to
+> MODULE_NEEDS_WEAK_PER_CPU the description can be as simple as
+>
+> mm/percpu: rename ARCH_NEEDS_WEAK_PER_CPU to MODULE_NEEDS_WEAK_PER_CPU
+>
+> as a preparation for introduction of CONFIG_ARCH_NEEDS_WEAK_PER_CPU.
+> No functional changes.
 
-...
+Yeah, the title is misleading and the description is too complicated.
 
-> So what you could do is move the actual introduction of
-> CONFIG_ARCH_NEEDS_WEAK_PER_CPU to patch #2, where it is actually used, and
-> limit this patch to the rename.
-> 
-> Similarly, teak the patch description to reflect only that.
+Mike's suggested title sounds better to me and for description I would
+say something like:
 
-Right, if the patch only renames ARCH_NEEDS_WEAK_PER_CPU to
-MODULE_NEEDS_WEAK_PER_CPU the description can be as simple as 
+ARCH_NEEDS_WEAK_PER_CPU is currently defined only for modules and
+therefore fails to represent requirements of the architecture. This
+prevents us using it for conditions which are applicable when building
+both modules and the kernel. To handle such conditions, make it a
+Kconfig option and add MODULE_NEEDS_WEAK_PER_CPU for the cases when
+the condition applies only to modules.
 
-mm/percpu: rename ARCH_NEEDS_WEAK_PER_CPU to MODULE_NEEDS_WEAK_PER_CPU
+And now that I'm looking at the change I realize that we probably
+don't even need a separate MODULE_NEEDS_WEAK_PER_CPU. It will be used
+only in one place and can be replaced with:
 
-as a preparation for introduction of CONFIG_ARCH_NEEDS_WEAK_PER_CPU.
-No functional changes.
- 
-> -- 
-> Cheers,
-> 
-> David / dhildenb
-> 
+#if defined(CONFIG_ARCH_NEEDS_WEAK_PER_CPU) && defined(MODULE)
 
--- 
-Sincerely yours,
-Mike.
+The code inside arch/{alpha|s390}/include/asm/percpu.h that defines
+MODULE_NEEDS_WEAK_PER_CPU can be completely removed and in
+arch/alpha/Kconfig you can have:
+
+select ARCH_NEEDS_WEAK_PER_CPU if CONFIG_SMP
+
+to preserve CONFIG_SMP dependency.
+That seems to me like a nicer cleanup.
+
+>
+> > --
+> > Cheers,
+> >
+> > David / dhildenb
+> >
+>
+> --
+> Sincerely yours,
+> Mike.
