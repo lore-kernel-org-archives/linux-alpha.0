@@ -1,96 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out-181.mta0.migadu.com (out-181.mta0.migadu.com [91.218.175.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4306223AB95;
-	Thu, 19 Jun 2025 05:44:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C741828E579
+	for <linux-alpha@vger.kernel.org>; Thu, 19 Jun 2025 14:58:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750311847; cv=none; b=a5rFdG/ytdkBkFzS8beGSChhu1VcPnCClxZu2CW3tuD+DpRtoEbW5oasra+6rVxDtmoYa0u85eJOaGDp5zc0P0S9mJTc5NVc8I1LuVnuth6KjgWw4qiLWVENwz4eoV3hCar4JZPxcOMyTNiU2JHo/9kLAro2IjsnPm6XwprbvL0=
+	t=1750345105; cv=none; b=Ay55EgGCiWoJKCc6CZVHjQthEebLGyVOsIY8Z7J/IZ1kfzo7me6XhO9YU1lhdsQluoqw6FU/dzEMvN3z2+Pz5cACHKBqCkwC4H3Xiaaxn8ldCImq87Q4/1W6aTgZe+HQszSG/XNZ3q7QquI/j9JYkrJMvOwH+v0eccyqYlHOkZs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750311847; c=relaxed/simple;
-	bh=52uw0NQcf5nihxhmjL59nvgPCruxZJbKveF+vLTbT9g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZbJsees37TEXjnkqPnFn60n8esPJveSWTqpHVhZph7LXHIc0lhdaAPkhNYI0HFeYEsvcD6DVZMB4fiz9S0za+OfDNvZAYwcv7pVpX8vf/iOu3YYpRwoFMaSHlTknlQJXHf+xWSEOtBYld4/FInCYd1mqsHUnxk/Bci06e2ZZfy0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HO445R6+; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750345105; c=relaxed/simple;
+	bh=GbdOj3vJ/q4X+/2t6OHFHhPM4HGzw4Vsiy/W4r3FnA0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ircjZW6Q61+G/+QRgRh4M/2qzD0Kb/pY+3ppAVu1BJGwZmbxIDrYracmgPxgZhYXu9IDjVIy8VcBpZCvsidtC8nacDb1sD0b2QMlugmUhQTkmlDpU2T+RG2ugWsfvaOwk32kb+myfVwXjSp50r5GJk5Jc9XEds+peaj3cvMF0LM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=X6TZWCD9; arc=none smtp.client-ip=91.218.175.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HO445R6+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75664C4CEEA;
-	Thu, 19 Jun 2025 05:43:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750311846;
-	bh=52uw0NQcf5nihxhmjL59nvgPCruxZJbKveF+vLTbT9g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=HO445R6+OAGiKmC8TLlHe/8nQdfhSr1pmEEVz6I5Pma5vcPbLfTtYBr+KSm8F5+W0
-	 760Ear1g0uCvzzIVZlh0PT60BOr/fgbZOJpj9QQaebMZyAguTGmREJMvLWwOl1bIlX
-	 x+Z3/3s9QyPRnMSmL+qjtd9QwNTHKcTqXHfDzvI48pHX3ZJwlad8srJSdrH00XUAMA
-	 XvvmQsUZKlVAP8zTU7pUo9TRw2805kOM+rvlKJXBvuad2IoIM7o+ogSTw1cVPeOmsY
-	 l6abUyFPH5lkB5zXbIbt9w0NqgA1R+6fsEXpCFzS+OSShF4M1ZyCukx9OHKgDejTSL
-	 wL5r16cLytZMA==
-Date: Thu, 19 Jun 2025 08:43:55 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: Hao Ge <hao.ge@linux.dev>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@redhat.com>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>, Dennis Zhou <dennis@kernel.org>,
-	Tejun Heo <tj@kernel.org>, Christoph Lameter <cl@linux.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Kent Overstreet <kent.overstreet@linux.dev>, linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
-	linux-s390@vger.kernel.org, Hao Ge <gehao@kylinos.cn>
-Subject: Re: [PATCH v6] mm/percpu: Conditionally define _shared_alloc_tag via
- CONFIG_ARCH_MODULE_NEEDS_WEAK_PER_CPU
-Message-ID: <aFOjm8pHuWTceIiD@kernel.org>
-References: <20250618015809.1235761-1-hao.ge@linux.dev>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="X6TZWCD9"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1750345091;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=Q9TvMyMwPK6rkSNheoWI19m/ZeeUWO8Bp2DZADsG/EE=;
+	b=X6TZWCD90sSZM9Q89BopqjTuweQk/EkFH2qeGCVx6gRJwqh9UVXxs/umJAspInvfvCmv6q
+	iErrlFtK44z+JMMHQquSNTwlLYLWYGPAKR17sf/qIRahNysM9ew4OJk1exqvHWfQHWUA9A
+	r9uETuFTx4VXT79dDByc+7XOziT+1GU=
+From: Thorsten Blum <thorsten.blum@linux.dev>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>
+Cc: Thorsten Blum <thorsten.blum@linux.dev>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND] alpha: Replace strcpy() with strscpy() in setup_arch()
+Date: Thu, 19 Jun 2025 16:58:04 +0200
+Message-ID: <20250619145806.174567-1-thorsten.blum@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250618015809.1235761-1-hao.ge@linux.dev>
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On Wed, Jun 18, 2025 at 09:58:09AM +0800, Hao Ge wrote:
-> From: Hao Ge <gehao@kylinos.cn>
-> 
-> Recently discovered this entry while checking kallsyms on ARM64:
-> ffff800083e509c0 D _shared_alloc_tag
-> 
-> If ARCH_NEEDS_WEAK_PER_CPU is not defined(it is only defined for
-> s390 and alpha architectures), there's no need to statically define
-> the percpu variable _shared_alloc_tag.
-> 
-> Therefore, we need to implement isolation for this purpose.
-> 
-> When building the core kernel code for s390 or alpha architectures,
-> ARCH_NEEDS_WEAK_PER_CPU remains undefined (as it is gated
-> by #if defined(MODULE)). However, when building modules for these
-> architectures, the macro is explicitly defined.
-> 
-> Therefore, we remove all instances of ARCH_NEEDS_WEAK_PER_CPU from
-> the code and introduced CONFIG_ARCH_MODULE_NEEDS_WEAK_PER_CPU to
-> replace the relevant logic. We can now conditionally define the perpcu
-> variable _shared_alloc_tag based on CONFIG_ARCH_MODULE_NEEDS_WEAK_PER_CPU.
-> This allows architectures (such as s390/alpha) that require weak
-> definitions for percpu variables in modules to include the definition,
-> while others can omit it via compile-time exclusion.
-> 
-> Suggested-by: Suren Baghdasaryan <surenb@google.com>
-> Acked-by: Alexander Gordeev <agordeev@linux.ibm.com> # s390
-> Signed-off-by: Hao Ge <gehao@kylinos.cn>
+strcpy() is deprecated; use strscpy() instead.
 
-Acked-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
+Since the destination buffer 'command_line' has a fixed length,
+strscpy() automatically determines its size using sizeof() when the size
+argument is omitted. This makes the explicit size argument for the
+existing strscpy() call unnecessary - remove it.
 
+No functional changes intended.
+
+Link: https://github.com/KSPP/linux/issues/88
+Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
+---
+ arch/alpha/kernel/setup.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index bebdffafaee8..8b51e6ca83d6 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -468,8 +468,8 @@ setup_arch(char **cmdline_p)
+ 	/* 
+ 	 * Locate the command line.
+ 	 */
+-	strscpy(command_line, COMMAND_LINE, sizeof(command_line));
+-	strcpy(boot_command_line, command_line);
++	strscpy(command_line, COMMAND_LINE);
++	strscpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
+ 	*cmdline_p = command_line;
+ 
+ 	/* 
+@@ -511,7 +511,7 @@ setup_arch(char **cmdline_p)
+ 	}
+ 
+ 	/* Replace the command line, now that we've killed it with strsep.  */
+-	strcpy(command_line, boot_command_line);
++	strscpy(command_line, boot_command_line);
+ 
+ 	/* If we want SRM console printk echoing early, do it now. */
+ 	if (alpha_using_srm && srmcons_output) {
 -- 
-Sincerely yours,
-Mike.
+2.49.0
+
