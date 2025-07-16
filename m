@@ -1,123 +1,88 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from out-188.mta1.migadu.com (out-188.mta1.migadu.com [95.215.58.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C51F52F88;
-	Wed, 16 Jul 2025 18:16:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0219919755B
+	for <linux-alpha@vger.kernel.org>; Wed, 16 Jul 2025 21:12:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752689765; cv=none; b=MUb+NLDl3umxOA+k0XN3Yt2pg9Mzu5NiLMDPhjCwN9iT8zptoNBLQDXgzjxMweN+Uvp1bV83mTWbefFrPCkikulHkKRd5h1iBFZ/6lWxx1MpRtAeZAmTumhgh6+GXA6fSf7vhnUK85f4Bdnte5Db9MlJGjQrEcDYdE04ITNaSWc=
+	t=1752700362; cv=none; b=fMc7lCrOOvJTALwRssc5OOJ/XimM8AJECs5hLgaCXUZB7qaar43K+3+0WTOjnSermPOrCE9482mlnZRANyWKJca5LqXVd6gSYFeYbck0uP8I42tHygmH4+41/zP1Vi3TkJeaqRwzWPRdQ8jRMd69snJTx6g8+Y8/vBJDWg51bLM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752689765; c=relaxed/simple;
-	bh=AxYk3hb0otPOpe8iCoKRDXyzipO8+IEj3pxhrwFiias=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=mv36Ox1PVk8hnD3xOC4ArP2C0pFpqq2+z1/sbV9o6l4M56er6JhN0x4fFODYCIdeuwg4xhSxltO5n5HpqPKg640zcUTQ9664JInY5hte0hvnuMaAjcCmPuRlEY2opVZb2MV+TqfJCOl9ogFF1HleuLA0yBegB0kQX4mhiXA0uzQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=PdYs1CW7; arc=none smtp.client-ip=198.137.202.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	s=arc-20240116; t=1752700362; c=relaxed/simple;
+	bh=/GxEl0QPjOg6ALkrg7qmzgWQ1rEayIF61MPgBUBRnkw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uY+fF38xvmmWbvIXkclWiZ6aKhnRJqQlyX3jlh2BmRLNeGUBH2WaD9BUZpzzQoP1Ey5yTHezcs4VHL2YFMoTeTOx72udiT1BDoyyI4lPavml94WtbX6FTb+TgXhZQtdwVZAipRTyA0R8oDF1VA/4YiT/YIrOriVCXq5zNON/pkA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=tSF+mquh; arc=none smtp.client-ip=95.215.58.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="PdYs1CW7"
-Received: from [127.0.0.1] (c-76-133-66-138.hsd1.ca.comcast.net [76.133.66.138])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 56GI4wZF1640497
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Wed, 16 Jul 2025 11:05:02 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 56GI4wZF1640497
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025062101; t=1752689107;
-	bh=AxYk3hb0otPOpe8iCoKRDXyzipO8+IEj3pxhrwFiias=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=PdYs1CW7P6NGZ7nqrSTKiw9kGz8+zKtbJLnnYWGn7EmE85IhMRHjUsfqejqSu3NpC
-	 F8mkqPxV94oRfsry8xLqbBh6TIeqEphXrM8IQVQXG98VV0VtmaqRkm8gcHZ1DS8I+Y
-	 9Ud40lsWpWvI8f/Mw4fJttPFSqVPnBxm60MpDadKClPpxIliIxgGgmXKbtvKQmNI4w
-	 9zRbpJ/rGGTy9XhzMH+JGYmHR8cviSmLp4ZAluTl43LX0HJw1hILVpbbrTd8F7h/pQ
-	 VEaChnOfID89c6bfwtXUBb4UKngfABWVJFjrAYzLGKal7C5mVferZwFoGX1uSfry52
-	 xqWYa7EnyTKlQ==
-Date: Wed, 16 Jul 2025 11:04:52 -0700
-From: "H. Peter Anvin" <hpa@zytor.com>
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Richard Henderson <richard.henderson@linaro.org>,
-        Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Brian Cain <bcain@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dinh Nguyen <dinguyen@kernel.org>, Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
-        Alexandre Ghiti <alex@ghiti.fr>, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Yoshinori Sato <ysato@users.osdn.me>, Rich Felker <dalias@libc.org>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andreas Larsson <andreas@gaisler.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-arch@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
-        Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-hexagon@vger.kernel.org, loongarch@lists.linux.dev,
-        linux-m68k@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-um@lists.infradead.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_1/1=5D_uapi/termios=3A_remov?=
- =?US-ASCII?Q?e_struct_ktermios_from_uapi_headers?=
-User-Agent: K-9 Mail for Android
-In-Reply-To: <aHfn9z9_oIVgNGgx@shell.armlinux.org.uk>
-References: <20250716164735.170713-1-hpa@zytor.com> <aHfn9z9_oIVgNGgx@shell.armlinux.org.uk>
-Message-ID: <9AEAF0BE-39D7-4617-9CB5-D0703B3E6DF8@zytor.com>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="tSF+mquh"
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1752700356;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=APR/43NyS5T31TxBUdjop0LMI0MLna0XIyK/upjGzA0=;
+	b=tSF+mquhSBzKeEnIvngkOGFoenZy9rCqUQzu2PZFeVtxcCIzonPvWRDN6PVa5PnP5BBuHB
+	fjnWSCGj6PBO9hQj23b5P9YvDNa6xEq2WTVHaajI8mMWxIxR7N/cJsrYG1qtlKDrNa+xJn
+	Q/GXvmiCqnt/UUTwecfLVvXx9oQDeN4=
+From: Thorsten Blum <thorsten.blum@linux.dev>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>
+Cc: linux-hardening@vger.kernel.org,
+	Thorsten Blum <thorsten.blum@linux.dev>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND] alpha: Replace strcpy() with strscpy() in setup_arch()
+Date: Wed, 16 Jul 2025 23:11:28 +0200
+Message-ID: <20250716211131.276774-1-thorsten.blum@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On July 16, 2025 10:57:11 AM PDT, "Russell King (Oracle)" <linux@armlinux=
-=2Eorg=2Euk> wrote:
->On Wed, Jul 16, 2025 at 09:47:32AM -0700, H=2E Peter Anvin wrote:
->> diff --git a/arch/arm/include/asm/ktermios=2Eh b/arch/arm/include/asm/k=
-termios=2Eh
->> new file mode 100644
->> index 000000000000=2E=2E4320921a82a9
->> --- /dev/null
->> +++ b/arch/arm/include/asm/ktermios=2Eh
->> @@ -0,0 +1 @@
->> +#include <asm-generic/ktermios=2Eh>
->
->Isn't this what arch/arm/include/asm/Kbuild's generic-y is for?
->
->Ditto for other arches=2E
->
+strcpy() is deprecated; use strscpy() instead.
 
-Ah, yes, you're right (except for those with nontrivial stubs=2E)
+Since the destination buffer 'command_line' has a fixed length,
+strscpy() automatically determines its size using sizeof() when the size
+argument is omitted. This makes the explicit size argument for the
+existing strscpy() call unnecessary - remove it.
 
-I also found that a handful of drivers and arch/sparc needs <asm/termios=
-=2Eh> =E2=86=92 <linux/termios=2Eh> in <linux/termios_internal=2Eh>=2E
+No functional changes intended.
+
+Link: https://github.com/KSPP/linux/issues/88
+Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
+---
+ arch/alpha/kernel/setup.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index bebdffafaee8..8b51e6ca83d6 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -468,8 +468,8 @@ setup_arch(char **cmdline_p)
+ 	/* 
+ 	 * Locate the command line.
+ 	 */
+-	strscpy(command_line, COMMAND_LINE, sizeof(command_line));
+-	strcpy(boot_command_line, command_line);
++	strscpy(command_line, COMMAND_LINE);
++	strscpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
+ 	*cmdline_p = command_line;
+ 
+ 	/* 
+@@ -511,7 +511,7 @@ setup_arch(char **cmdline_p)
+ 	}
+ 
+ 	/* Replace the command line, now that we've killed it with strsep.  */
+-	strcpy(command_line, boot_command_line);
++	strscpy(command_line, boot_command_line);
+ 
+ 	/* If we want SRM console printk echoing early, do it now. */
+ 	if (alpha_using_srm && srmcons_output) {
+-- 
+2.50.1
+
