@@ -1,92 +1,134 @@
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 29C70223DD6;
-	Thu, 31 Jul 2025 09:49:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CF90285CB4;
+	Mon,  4 Aug 2025 16:44:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753955366; cv=none; b=NRTWDOsERqSf/He5wOR8dslDcMW4q1jkXNKgUMy0TivJ7qHZ9Of/P8R/mpBgItjm8qAnK9dQEnOV0Za1PJwYUNavZCd5IyUq//74lmlEJOD9nEHBWSbEsCXttbRLe5zhrZKViJUw1Tx+XXkBDOgrP9SSAXcXu9DdBEdB1edBtwY=
+	t=1754325858; cv=none; b=WSNq1mC/KDvlcmwHxDw8FCOgDF0aaA15hB5yFvjdPgCO5OlPQcaE6FgH38E9mkf7Fnj0oFngUamQh+ANJX87bjh3aDeFcp2ghnCxxnrHb8/OeeHgmbNi/7hpjs8Avf7sosUZDn5kWVz+Yf5vaDdZcBcX81FElnXmRBCy9KoWRhs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753955366; c=relaxed/simple;
-	bh=vjvN1SaonJhbMKKt4uXmQHHCbIqO+IeGWQop9HuKB78=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=UBB18lWh96s6fuqXO49JrVXFi81rFgAdQSLzHeZZrxK8cEr3rR1Mt/wE4+Y6SyuaIAj1ZeObG7yqy9ggBQ12LjkiMoTlDy/OdqAA8kgVx+NPVTKO0IpZfzEhTm1aQ2lglhwvKiL3MRO0rZ/Lum08Nh2FXv/d0oCXrKc8yPhc46w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 483BC92009C; Thu, 31 Jul 2025 11:40:49 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 461A592009B;
-	Thu, 31 Jul 2025 10:40:49 +0100 (BST)
-Date: Thu, 31 Jul 2025 10:40:49 +0100 (BST)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Magnus Lindholm <linmag7@gmail.com>
-cc: linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, 
-    linux-alpha@vger.kernel.org, martin.petersen@oracle.com, 
-    James.Bottomley@HansenPartnership.com, hch@infradead.org
-Subject: Re: [PATCH 0/1] scsi: qla1280: Make 64-bit DMA addressing a Kconfig
- option
-In-Reply-To: <20250728163752.9778-1-linmag7@gmail.com>
-Message-ID: <alpine.DEB.2.21.2507291750390.5060@angie.orcam.me.uk>
-References: <20250728163752.9778-1-linmag7@gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	s=arc-20240116; t=1754325858; c=relaxed/simple;
+	bh=r2v62d4bVt9owj808SKHRzdSx9oLY8KjiUCy34x/12Y=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=WQVQ2nnyYT+7/wID2RgApF7nwkD5Xigec+azBHEQl736z6Vt3hMFF9209D7lTbsTFRUfaYWm1zfOS4dg9zsUY3xw1ayJC+9RqBqNRXrCq84Y81twEFa8DwdetY2cNfZ5GtqdfBbE+CLLrpL19nuppZKHHMjawe1+lOJZbjBWAUE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qoDkY9It; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qoDkY9It"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE13C4CEE7;
+	Mon,  4 Aug 2025 16:44:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1754325857;
+	bh=r2v62d4bVt9owj808SKHRzdSx9oLY8KjiUCy34x/12Y=;
+	h=From:To:Cc:Subject:Date:From;
+	b=qoDkY9It5/lqR9fbX6g8iGg/nmmtCv14BOgAwhkb5uNiClyFaMkiukY7Oc+J1MaKh
+	 dZnz4X/S3ajFCt76duYJHDx0quVZH6oSu/c0vStSRzaSzbCcMKFV4L18ye0ZTJoXPN
+	 i3oURUhH5BvGFLUiBhUMaVt9LAqwPNrH4pyC8RyKbvz3yMn0pqcXcQS+g91j40QHjM
+	 lNQCmlS8pNR7LcsmFHjuc2AbEWdFGnRvWbhlC/VB8DAo2fUatOIF7DscYokL7FpXgy
+	 l5z39sJCmL4o5lHPcQDJdF9jtn/jsrC9WDmDQnvKWCYKZ26XpAxSx9TjSBv7Ns52lt
+	 j7UHemkdNe4Mg==
+From: Kees Cook <kees@kernel.org>
+To: linux-arch@vger.kernel.org
+Cc: Kees Cook <kees@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	x86@kernel.org,
+	linux-alpha@vger.kernel.org,
+	linux-csky@vger.kernel.org,
+	linux-hexagon@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-mips@vger.kernel.org,
+	linux-openrisc@vger.kernel.org,
+	linux-parisc@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org,
+	linux-sh@vger.kernel.org,
+	sparclinux@vger.kernel.org,
+	llvm@lists.linux.dev,
+	linux-hardening@vger.kernel.org
+Subject: [PATCH 00/17] Add __attribute_const__ to ffs()-family implementations
+Date: Mon,  4 Aug 2025 09:43:56 -0700
+Message-Id: <20250804163910.work.929-kees@kernel.org>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3619; i=kees@kernel.org; h=from:subject:message-id; bh=r2v62d4bVt9owj808SKHRzdSx9oLY8KjiUCy34x/12Y=; b=owGbwMvMwCVmps19z/KJym7G02pJDBkTHofFXgjp7KzykhVPcF48Q+LLy7qNn3Wc38x5WLbt/ 44z4VPWdZSyMIhxMciKKbIE2bnHuXi8bQ93n6sIM4eVCWQIAxenAEzERo7hf8kiKe0FSd8l7Cv7 We7uUrdPYDs+m0lg/c5Dkx57tW49XMrwT2vS53lTDZ/v/XEnZcFFsaM9CXKfOL49eCxys3TZx5i tytwA
+X-Developer-Key: i=kees@kernel.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 
-On Mon, 28 Jul 2025, Magnus Lindholm wrote:
+Hi,
 
-> Some platforms like for example the SGI Octace2, require full 64-bit
-> addressing in order for the qla1280 driver to work. On other systems,
-> like the tsunami based Alpha systems, 32-bit PCI Qlogic SCSI controllers
-> (like the ISP1040 series) will not work properly on systems with more
-> than 2GB RAM installed. For some reason the combination of using PCI DAC
-> cycles and the enabling the DMA "monster window" on the tsunami based
-> alphas will result in file system corruption with the Qlogic ISP driver.
-> This is not the case on other alpha systems, such as rawhide based
-> systems, like the Alphaserver 4100, on this platform cards like
-> the qlogic 32-bit PCI (ISP1040B) works fine with PCI DAC cycles and
-> the "monster window" enabled. In order for the qla1280 driver to work
-> with ISP1040 chips on tsunami based alphas the driver must be compiled
-> with 32-bit DMA addressing. Most SRM firmware versions allow alphas to
-> boot from Qlogic ISP1040 SCSI controllers and hence having a simple way
-> to limit DMA addressing to 32-bits is relevant.
+While tracking down a problem where constant expressions used by
+BUILD_BUG_ON() suddenly stopped working[1], we found that an added static
+initializer was convincing the compiler that it couldn't track the state
+of the prior statically initialized value. Tracing this down found that
+ffs() was used in the initializer macro, but since it wasn't marked with
+__attribute_const__, the compiler had to assume the function might
+change variable states as a side-effect (which is not true for ffs(),
+which provides deterministic math results).
 
- Given the description it seems to me it will best be handled as a quirk 
-in arch/alpha/kernel/pci.c, at least in the interim.
+Add KUnit tests for the family of functions and then add __attribute_const__
+to all architecture implementations and wrappers.
 
- If it turns out a generic issue with DAC handling in the Tsunami chipset, 
-then a better approach would be a generic workaround for all potentially 
-affected devices, but it does not appear we have existing infrastructure 
-for that.  Just setting the global DMA mask would unnecessarily cripple 
-64-bit option cards as well, but it seems to me there might be something 
-relevant in arch/mips/pci/fixup-sb1250.c; see `quirk_sb1250_pci_dac' and 
-the comments above it.
+-Kees
 
- The situation is a bit different here as the bus is a proper 64-bit one, 
-but the quirk could only limit the individual DMA mask to 32 bits for 
-devices that have no 64-bit memory BARs.  I suspect there are no proper 
-64-bit PCI option cards that only have I/O bars and I don't think there's 
-any explicit status bit to tell 32-bit and 64-bit option cards apart.
+[1] https://github.com/KSPP/linux/issues/364
 
- FWIW I was able to obtain such an option card and try it with my HiFive 
-Unmatched RISC-V system, which has 16GiB of RAM.  It turned out picky 
-though and despite being DEC-branded it refused to talk to a number of 
-SCSI 1 CCS DEC disks, which work just fine with an Adaptec host adapter 
-using the same cables and with DECstation systems they came with, but also 
-break with a BusLogic MultiMaster host adapter (which seems odd as these 
-host adapters have been reputably very robust).
+Kees Cook (17):
+  KUnit: Introduce ffs()-family tests
+  bitops: Add __attribute_const__ to generic ffs()-family
+    implementations
+  csky: Add __attribute_const__ to ffs()-family implementations
+  x86: Add __attribute_const__ to ffs()-family implementations
+  powerpc: Add __attribute_const__ to ffs()-family implementations
+  sh: Add __attribute_const__ to ffs()-family implementations
+  alpha: Add __attribute_const__ to ffs()-family implementations
+  hexagon: Add __attribute_const__ to ffs()-family implementations
+  riscv: Add __attribute_const__ to ffs()-family implementations
+  openrisc: Add __attribute_const__ to ffs()-family implementations
+  m68k: Add __attribute_const__ to ffs()-family implementations
+  mips: Add __attribute_const__ to ffs()-family implementations
+  parisc: Add __attribute_const__ to ffs()-family implementations
+  s390: Add __attribute_const__ to ffs()-family implementations
+  xtensa: Add __attribute_const__ to ffs()-family implementations
+  sparc: Add __attribute_const__ to ffs()-family implementations
+  KUnit: ffs: Validate all the __attribute_const__ annotations
 
- So I could only do limited testing with a single SCSI 2 disk that works 
-everywhere, and that triggered no issues.  As I wanted to retain remote 
-access to said problematic disks from the Unmatched machine I have left 
-them wired to the Adaptec device, but I'll see if I can do more testing at 
-my next visit to the lab around the weekend after next as I'm going to 
-disassemble the Unmatched system anyway.
+ lib/Kconfig.debug                          |  14 +
+ lib/tests/Makefile                         |   1 +
+ arch/alpha/include/asm/bitops.h            |  14 +-
+ arch/csky/include/asm/bitops.h             |   8 +-
+ arch/hexagon/include/asm/bitops.h          |  10 +-
+ arch/m68k/include/asm/bitops.h             |  14 +-
+ arch/mips/include/asm/bitops.h             |   8 +-
+ arch/openrisc/include/asm/bitops/__ffs.h   |   2 +-
+ arch/openrisc/include/asm/bitops/__fls.h   |   2 +-
+ arch/openrisc/include/asm/bitops/ffs.h     |   2 +-
+ arch/openrisc/include/asm/bitops/fls.h     |   2 +-
+ arch/parisc/include/asm/bitops.h           |   6 +-
+ arch/powerpc/include/asm/bitops.h          |   4 +-
+ arch/riscv/include/asm/bitops.h            |   6 +-
+ arch/s390/include/asm/bitops.h             |  10 +-
+ arch/sh/include/asm/bitops.h               |   4 +-
+ arch/sparc/include/asm/bitops_64.h         |   8 +-
+ arch/x86/include/asm/bitops.h              |  12 +-
+ arch/xtensa/include/asm/bitops.h           |  10 +-
+ include/asm-generic/bitops/__ffs.h         |   2 +-
+ include/asm-generic/bitops/__fls.h         |   2 +-
+ include/asm-generic/bitops/builtin-__ffs.h |   2 +-
+ include/asm-generic/bitops/builtin-__fls.h |   2 +-
+ include/asm-generic/bitops/builtin-fls.h   |   2 +-
+ include/asm-generic/bitops/ffs.h           |   2 +-
+ include/asm-generic/bitops/fls.h           |   2 +-
+ include/asm-generic/bitops/fls64.h         |   4 +-
+ include/linux/bitops.h                     |   2 +-
+ lib/clz_ctz.c                              |   8 +-
+ lib/tests/ffs_kunit.c                      | 566 +++++++++++++++++++++
+ 30 files changed, 656 insertions(+), 75 deletions(-)
+ create mode 100644 lib/tests/ffs_kunit.c
 
- HTH,
+-- 
+2.34.1
 
-  Maciej
