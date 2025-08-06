@@ -1,122 +1,127 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C05B1C84B8;
-	Tue,  5 Aug 2025 08:52:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEA591FDD;
+	Wed,  6 Aug 2025 10:33:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754383949; cv=none; b=faMIfZobbdB0I2QFqzl404bfQsA08iosrgxqb+71YWmuMbOA7/WQ/GTlHvZGL3G4ZvIR9dgb7iKa6Wykn0mbZFxTJjdL6D0HmxxCtS0Fe3imwMGMky8JWn9I/km3+x8OfEyMsirQVILmXiaJt3K+XlREnlR+scCzRIzkLKCVMwg=
+	t=1754476399; cv=none; b=qQndD/3Z08iXRGfJwRi84C0p9IObQGvU9COeefF30/i91WFuPpYiFXA0rkOYhC1MZnYgd0/2WVXWPuMU6ePPSpa3wHT5ZnYDUQs375pHjQZro2Z8EFmJmnSM/X/AVubf8J1PPCwlw3h9Sc2rMRPGFye8Ru8ES0+pYu+4bi0ie/E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754383949; c=relaxed/simple;
-	bh=YZmcY1piegk1CkntdgiKfdMefpNM5+TLkKyEFcJnSFU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OhIlpPjRN7oKnYybth843KVcjQ/oUSdsTqwuMCKfbHuM6sW6OglO7PbeaZvZtYwu7L4kN9DNAIp6/SW1g8CI5iFxXvWOuhp2P20+4ej/rG5IwNCDNDdO4lCK56mYCEsAUwLY1pIsDZTMqh5WhbAZDS0CN96jMZtAYUsJ5rJkRZo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VmIk4F1k; arc=none smtp.client-ip=209.85.218.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1754476399; c=relaxed/simple;
+	bh=4ONmXejy9qRChYD8YFLgNZvQakZuFN0pKogdmn9BB7A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lECl74WgiAuBMxhS2Zvk7JkLFiWwgT0MYCLCaX7z3cYlsOr9bY+xIxtfIIHTgMVRTao6UMwhfGw8XIh05roYWoZzY8Yl83s0yvFbsYWlSYlMTmruUr1Wa68XFMGHzPgy+bMGFlM4n12ve7tuFH8Pbix6X+LIkGoEY9Pe9syjCMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=bXCsUiIU; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VmIk4F1k"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-ae9c2754a00so1289892066b.2;
-        Tue, 05 Aug 2025 01:52:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754383946; x=1754988746; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jaTy0xj/+3TuAzN0h+oW9IGZMVIadrvVCLKKqc1c/Xc=;
-        b=VmIk4F1kj20ue/F9qhlDtwHG94wk1rNRk1fExoAAWLeydvUGmD85rkRzafL/VD5d0A
-         q+8SPwUTkOrvtfkVADWpvN97D7kAQxKJCOj3hWBd/j/CDuDwpDJLJDgttNHGL1dfggJj
-         fSh8rP84wzLTcI220L7RqGmlPtv269yUlCktsl1prow2VWs/mdBC3vt8bEzBmQMrIQ12
-         Ku4NKx7ZYVCNAW6WNB1OHfh/sGcWs+Co10xeTmmEepAfdeNLXW62CrrQovC92d/EjyRW
-         /9fT6NtOLomsePR4EbvZcdcwoyKNtpKHvta3MtkYTOdnX691eZTkKWccuESDwizG6zPc
-         5fzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754383946; x=1754988746;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jaTy0xj/+3TuAzN0h+oW9IGZMVIadrvVCLKKqc1c/Xc=;
-        b=tsa9NmGB0yzYZuyRsZBFL387HczNbWnImn11ocX5uUmBoZ6t90BB5BXlSuUVDASqeQ
-         J8ZZ1yBA/dmdkYxfzJHZBjXF0hI5v7JhpMIYhjv9fNWQt1EO+s6abzni/vTQ0T4rtJX3
-         xSVb62RfnBueKvOB1VBTT5NMQM0pKmlHFYk8IrqT920BnPELUhXMs415lc5UlBLsHW+p
-         xbsxeYZzqnHceI2zxfBqpk9Cf/ECvVXBZHowwWE9NjDmzY1rRLfu9O44Lk8SJTPKRs4B
-         zJvxy1DlEfrG2YyK4ve/5VG+oNGVfBgjTZBG+xSS03xnrOPdCx1p6DMY5FB01Khe0qcy
-         OROQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUhbAMKzVGJ90MPjnPImUK6Wz1U4fENzYTsI1jHWjrg+5cJgAEmZT4GEjJ1kGeMG/gPdDnLLGW2hU+N+A==@vger.kernel.org, AJvYcCWM9XQH15WMFyzJarkSuGzpBrtiVcsz13PMd51iXJaBSCoHOFDJ/WLyn/8B34EEhzEAy+4plrDkGCYS+g==@vger.kernel.org
-X-Gm-Message-State: AOJu0YxT3bd6HNHK2AaZa8Ri/t8ChI3o79dRbpCxnjWAQ3s1LP1z249F
-	Ax6iXqUAEmo1ForejhMkWZGRaHJjDsv4ZJ7++6WqfOe9TLqGYDzWwGGF5dUpZgTJKuA0bur+eRR
-	xIyfW3/7lh3+Gh/6ktkSUJ9A+LDem5apAifQ5
-X-Gm-Gg: ASbGncuj0yh7I2uIP7H0Noz7I1PBmUmuPuSG/0cNUnUeBBgmeoAR0eP6/AsH+bjPySS
-	+B2MaJMKr5bZMEZX8atuMdbUDGmeacK1Zp4QZP6BIjq+PAZImFx8f/IYfmfe0bmMk/BDUVTe322
-	TZR9izx5Muwm1++Ky1qAAfIOh+x6fqQMRw4zd2aYF480o61QCyp58/ozj33oiQt5u9ebkHfb3Ux
-	oTV285p
-X-Google-Smtp-Source: AGHT+IHBzuvYOHqAFLPRu7Dv+DS+0hNgKeL15bJ6w48TWJQzYpyb/HUZYWNc+dgs7JiffMVDFytsA7Er/a2uo+t6Vzc=
-X-Received: by 2002:a17:906:478c:b0:ae0:e18b:e92f with SMTP id
- a640c23a62f3a-af94000bf11mr1291389966b.23.1754383946132; Tue, 05 Aug 2025
- 01:52:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="bXCsUiIU"
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57692NPP018065;
+	Wed, 6 Aug 2025 10:33:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=pp1; bh=3wBoqQwRkSBaQEVLP0xWuNtEXTupVT
+	vuJMqQFfbbBMk=; b=bXCsUiIUGuNdsnpstSK7KJ+EHWCL6u+flAEgHfLhazaMGZ
+	A2cOEBmYWln1FbP2qTEczCBjdPo+RtNzcIMRJ19xPazntSu2S12gUFaaHfuo/nQU
+	jHyAcBmYwm3yQi2lpywOWKhy9UgshrQmFDKiqSYdN0lvR6LteIeMno5fOYwy2N+1
+	SS8FrDWGFapdZMQYu8BDyoEf+invbVP0dQ13P+dm0meAwlmfJ5hGZ1W3Ffuv22RH
+	rVF7zho8Jk2fTvPROq5h3F2/8QA/aNNZQNOFLxnMzJDGjimVoQCGH45+KR3bmLfS
+	0wlyA9YB8dI+vXNZ7cjWcVN308jpV5LOdVcXGSzA==
+Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 48bq633jar-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 06 Aug 2025 10:33:04 +0000 (GMT)
+Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma21.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 57683Fvx020612;
+	Wed, 6 Aug 2025 10:33:04 GMT
+Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 48bpwmu5p9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 06 Aug 2025 10:33:03 +0000
+Received: from smtpav01.fra02v.mail.ibm.com (smtpav01.fra02v.mail.ibm.com [10.20.54.100])
+	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 576AX2qq32703150
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 6 Aug 2025 10:33:02 GMT
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 0C7912005A;
+	Wed,  6 Aug 2025 10:33:02 +0000 (GMT)
+Received: from smtpav01.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C7A652004B;
+	Wed,  6 Aug 2025 10:33:01 +0000 (GMT)
+Received: from osiris (unknown [9.152.212.133])
+	by smtpav01.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Wed,  6 Aug 2025 10:33:01 +0000 (GMT)
+Date: Wed, 6 Aug 2025 12:33:00 +0200
+From: Heiko Carstens <hca@linux.ibm.com>
+To: Kees Cook <kees@kernel.org>
+Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
+        linux-alpha@vger.kernel.org, linux-csky@vger.kernel.org,
+        linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 14/17] s390: Add __attribute_const__ to ffs()-family
+ implementations
+Message-ID: <20250806103300.11925Cbe-hca@linux.ibm.com>
+References: <20250804163910.work.929-kees@kernel.org>
+ <20250804164417.1612371-14-kees@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250728163752.9778-1-linmag7@gmail.com> <alpine.DEB.2.21.2507291750390.5060@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2507291750390.5060@angie.orcam.me.uk>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Tue, 5 Aug 2025 10:52:15 +0200
-X-Gm-Features: Ac12FXxU-rHEh5gdbPfppvGA6ajPoHppVbPMlauJt4ffpEOxH03xe1TVXQ2oZb8
-Message-ID: <CA+=Fv5TJRpFJ=p1MLcORDaqnSG-0AUEtSUw3Kek0vPGKbQZT9g@mail.gmail.com>
-Subject: Re: [PATCH 0/1] scsi: qla1280: Make 64-bit DMA addressing a Kconfig option
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, martin.petersen@oracle.com, 
-	James.Bottomley@hansenpartnership.com, hch@infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250804164417.1612371-14-kees@kernel.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODA2MDA2NCBTYWx0ZWRfX1ElbkHLwop5M
+ nPtrgbB752LU1pfAwNBDgIAJaBFi6LdxUXlVN+CUECGityjOLd34EGE9Toa3cseKpijmOYkbMrT
+ aNwZhYK7iA/bCymHo9U7IaM/O7Xot0VGlpwnnhV1aXHyUVrek/1n8npVMb07MiX+K+TDGIg0AO4
+ ihzZswvna0t8psGTcbnxJracRM2oTHbAzHtGyMCKd3aNtNi66J9AADNlixjxITc6ZJ7TjnULCHk
+ P4T4ObjAhkO8s+SveY8dJN1qu9r4TUmsgwFAOb96zQD69cH4RtCGyQz1GCIcyhMWlhz5kn2Ucc+
+ LWbDbC/Jrwgoq+v6/0pZM6yn2Dx13ovRiSUZITmIvPptutFSJZ1mNsE00D5CNG/6vkJ4UDgYu3T
+ wIBBzpQWWdbv/iQCNo1U4G1hbBeBXZZlCO1Mqsl7bXq7JJnmf6ZyHAANHSil8agH6h4bvtmd
+X-Proofpoint-GUID: eM8kqSdm0FroOEI9WgdEMMtevU6pWRX4
+X-Authority-Analysis: v=2.4 cv=PoCTbxM3 c=1 sm=1 tr=0 ts=68932f60 cx=c_pps
+ a=GFwsV6G8L6GxiO2Y/PsHdQ==:117 a=GFwsV6G8L6GxiO2Y/PsHdQ==:17
+ a=kj9zAlcOel0A:10 a=2OwXVqhp2XgA:10 a=NEAV23lmAAAA:8 a=VwQbUJbxAAAA:8
+ a=VnNF1IyMAAAA:8 a=La76t7K_3jgqz9qSpcQA:9 a=CjuIK1q_8ugA:10
+X-Proofpoint-ORIG-GUID: eM8kqSdm0FroOEI9WgdEMMtevU6pWRX4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-08-06_02,2025-08-04_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 malwarescore=0 adultscore=0 clxscore=1011 bulkscore=0
+ priorityscore=1501 impostorscore=0 mlxlogscore=896 mlxscore=0 phishscore=0
+ lowpriorityscore=0 spamscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2507300000
+ definitions=main-2508060064
 
-On Thu, Jul 31, 2025 at 11:49=E2=80=AFAM Maciej W. Rozycki <macro@orcam.me.=
-uk> wrote:
-ng a simple way
-> > to limit DMA addressing to 32-bits is relevant.
->
->  Given the description it seems to me it will best be handled as a quirk
-> in arch/alpha/kernel/pci.c, at least in the interim.
->
->  If it turns out a generic issue with DAC handling in the Tsunami chipset=
-,
-> then a better approach would be a generic workaround for all potentially
-> affected devices, but it does not appear we have existing infrastructure
-> for that.  Just setting the global DMA mask would unnecessarily cripple
-> 64-bit option cards as well, but it seems to me there might be something
-> relevant in arch/mips/pci/fixup-sb1250.c; see `quirk_sb1250_pci_dac' and
-> the comments above it.
->
->  The situation is a bit different here as the bus is a proper 64-bit one,
-> but the quirk could only limit the individual DMA mask to 32 bits for
-> devices that have no 64-bit memory BARs.  I suspect there are no proper
-> 64-bit PCI option cards that only have I/O bars and I don't think there's
-> any explicit status bit to tell 32-bit and 64-bit option cards apart.
->
+On Mon, Aug 04, 2025 at 09:44:10AM -0700, Kees Cook wrote:
+> While tracking down a problem where constant expressions used by
+> BUILD_BUG_ON() suddenly stopped working[1], we found that an added static
+> initializer was convincing the compiler that it couldn't track the state
+> of the prior statically initialized value. Tracing this down found that
+> ffs() was used in the initializer macro, but since it wasn't marked with
+> __attribute__const__, the compiler had to assume the function might
+> change variable states as a side-effect (which is not true for ffs(),
+> which provides deterministic math results).
+> 
+> Add missing __attribute_const__ annotations to S390's implementations of
+> ffs(), __ffs(), fls(), and __fls() functions. These are pure mathematical
+> functions that always return the same result for the same input with no
+> side effects, making them eligible for compiler optimization.
+> 
+> Build tested ARCH=s390 defconfig with GCC s390x-linux-gnu 14.2.0.
+> 
+> Link: https://github.com/KSPP/linux/issues/364 [1]
+> Signed-off-by: Kees Cook <kees@kernel.org>
+> ---
+>  arch/s390/include/asm/bitops.h | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 
-This approach would probably also work. This would mean limiting
-32-bit PCI cards from using DAC/monster window DMA on Tsunami based
-Alphas. In practice, I believe that there are very few 32-bit PCI cards tha=
-t
-are likely to be used on Alphas that have drivers which support 64-bit DMA
-addressing. The only example I've found so far is the qla1280 driver.
-
-Since not all tsunami based Alphas support more than 2GB RAM there are
-even fewer examples where this will be a real problem. I'm not 100% sure
-that there is a generic issue with DAC handling in the Tsunami chipset but
-I'm suspecting that there is. I think that for DS20/ES40 systems using
-Qlogic ISP1040 SCSI controllers would be the most likely (maybe the only)
-real use case that I can think of.
-
-I can put together a v2 patch based on  a similar approach as
-`quirk_sb1250_pci_dac' mentioned above, if this is a better approach
-than limiting the DMA mask on only the qlogic driver (by using a module opt=
-ion)
-
-Regards
-
-Magnus
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
