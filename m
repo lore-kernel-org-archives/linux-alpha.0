@@ -1,117 +1,63 @@
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+Received: from baidu.com (mx22.baidu.com [220.181.50.185])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FCE8262FF8;
-	Thu,  7 Aug 2025 14:43:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7CA02459E5;
+	Mon, 11 Aug 2025 08:13:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.181.50.185
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754577803; cv=none; b=dEED8LkZu/EpkzJXBhwRQ8b99IAGOmNEfhBW5EY7xE8EO6oxmaS62Dwu7UdMjSvtHW00HVRRjWRVV81REiNj9KzpzLx4JdPV5uXIsPl54a0Lk4/VV38uk9b9mopdXJqb3j2bet5qeU1x5WbmigJTdaqrUxnySV60J3AwB6tKAKo=
+	t=1754900038; cv=none; b=UF2DMbxJyw4TWjxLW3avdeWcXPjszD+X30R7EplKMrOLlemGgRFWXB53MuC9TUof2UI2I6aEkoTgfso/fTgO0IsLf14OLAKwivg50fQ5gYZhvoWem/rVySiG+dsXSDec2f2+vl3hAfKWkS2qMpWGvvp7CljwevfJixEXEiGq0Uk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754577803; c=relaxed/simple;
-	bh=y//IMsBANN67YjgRvFs1TqJNvAqanY/RR7wYOqvwarQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=j072cA7J2Xq6pyO2GSQS4o81rGlMfPRyEpUD/o+fZ6v5th8youJk50D4N1/pqeXoYf2GRFgN6dyqDKS8k5gGp2ioh2Mp1N7PBMFwkTpZ9l1wP37Cn1gt7Q1Wo7I33uBjniH3qTRT63NDXNymUAvGo3QqPjH5D/tIrUgmxkph27k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ghiti.fr; spf=pass smtp.mailfrom=ghiti.fr; arc=none smtp.client-ip=217.70.183.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ghiti.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ghiti.fr
-Received: by mail.gandi.net (Postfix) with ESMTPSA id D90BA4432A;
-	Thu,  7 Aug 2025 14:43:12 +0000 (UTC)
-Message-ID: <53b98e1e-4f7e-4320-8d04-d84dd2c4092d@ghiti.fr>
-Date: Thu, 7 Aug 2025 16:43:09 +0200
+	s=arc-20240116; t=1754900038; c=relaxed/simple;
+	bh=x1bDgwfeXw1Edvgyt0xb7BuxrJ4YuqV6Jd8p3l4JuJQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Ym8ODB6uQjf9cQaNPfrn3YlcQmnToUt6EolS4rwLQi8yP4RA9ROq9oBJsbjGnSFQGfhW4VxepLWWrr07AO/ZLhzxZf6nBUYbmFcROBfrHNYIeRAiMAi8ESESV7DDM21TMu/cFje5W9p1a+o6QIgakvg9NYF5i3vNXqXoewnJctY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; arc=none smtp.client-ip=220.181.50.185
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
+From: Fushuai Wang <wangfushuai@baidu.com>
+To: <linux-kernel@vger.kernel.org>, <linux-alpha@vger.kernel.org>,
+	<richard.henderson@linaro.org>, <mattst88@gmail.com>
+CC: Fushuai Wang <wangfushuai@baidu.com>
+Subject: [PATCH] alpha: kernel: Use for_each_online_cpu() in smp_cpus_done()
+Date: Mon, 11 Aug 2025 16:13:39 +0800
+Message-ID: <20250811081339.9401-1-wangfushuai@baidu.com>
+X-Mailer: git-send-email 2.39.2 (Apple Git-143)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 09/17] riscv: Add __attribute_const__ to ffs()-family
- implementations
-To: Kees Cook <kees@kernel.org>, linux-arch@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, x86@kernel.org,
- linux-alpha@vger.kernel.org, linux-csky@vger.kernel.org,
- linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
- linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org,
- linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, llvm@lists.linux.dev,
- linux-hardening@vger.kernel.org
-References: <20250804163910.work.929-kees@kernel.org>
- <20250804164417.1612371-9-kees@kernel.org>
-Content-Language: en-US
-From: Alexandre Ghiti <alex@ghiti.fr>
-In-Reply-To: <20250804164417.1612371-9-kees@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdduvdduudelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfevfhfhjggtgfesthejredttddvjeenucfhrhhomheptehlvgigrghnughrvgcuifhhihhtihcuoegrlhgvgiesghhhihhtihdrfhhrqeenucggtffrrghtthgvrhhnpeehiefhuddtuddukeetkeehhedtffduhfevfeeftdefveffgfeuffejjeejfeekueenucffohhmrghinhepghhithhhuhgsrdgtohhmnecukfhppedvtddtudemkeeiudemfeefkedvmegvfheltdemlehftghfmeeksghfleemleeludgumeekrggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvtddtudemkeeiudemfeefkedvmegvfheltdemlehftghfmeeksghfleemleeludgumeekrggrfhdphhgvlhhopeglkffrggeimedvtddtudemkeeiudemfeefkedvmegvfheltdemlehftghfmeeksghfleemleeludgumeekrggrfhgnpdhmrghilhhfrhhomheprghlvgigsehghhhithhirdhfrhdpnhgspghrtghpthhtohepudekpdhrtghpthhtohepkhgvvghssehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrrhgthhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehli
- hhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopeigkeeisehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgrlhhphhgrsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqtghskhihsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqhhgvgigrghhonhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhmieekkheslhhishhtshdrlhhinhhugidqmheikehkrdhorhhg
-X-GND-Sasl: alex@ghiti.fr
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: bjkjy-exc5.internal.baidu.com (172.31.50.49) To
+ bjhj-exc17.internal.baidu.com (172.31.4.15)
+X-FEAS-Client-IP: 172.31.4.15
+X-FE-Policy-ID: 52:10:53:SYSTEM
 
-Hi Kees,
+Replace the explicit for loop with for_each_online_cpu() to make
+the code cleaner.
 
-On 8/4/25 18:44, Kees Cook wrote:
-> While tracking down a problem where constant expressions used by
-> BUILD_BUG_ON() suddenly stopped working[1], we found that an added static
-> initializer was convincing the compiler that it couldn't track the state
-> of the prior statically initialized value. Tracing this down found that
-> ffs() was used in the initializer macro, but since it wasn't marked with
-> __attribute__const__, the compiler had to assume the function might
-> change variable states as a side-effect (which is not true for ffs(),
-> which provides deterministic math results).
->
-> Add missing __attribute_const__ annotations to RISC-V's implementations of
-> variable__ffs(), variable__fls(), and variable_ffs() functions. These are pure
-> mathematical functions that always return the same result for the same
-> input with no side effects, making them eligible for compiler optimization.
->
-> Build tested ARCH=riscv defconfig with GCC riscv64-linux-gnu 14.2.0.
->
-> Link: https://github.com/KSPP/linux/issues/364 [1]
-> Signed-off-by: Kees Cook <kees@kernel.org>
-> ---
->   arch/riscv/include/asm/bitops.h | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/arch/riscv/include/asm/bitops.h b/arch/riscv/include/asm/bitops.h
-> index d59310f74c2b..77880677b06e 100644
-> --- a/arch/riscv/include/asm/bitops.h
-> +++ b/arch/riscv/include/asm/bitops.h
-> @@ -45,7 +45,7 @@
->   #error "Unexpected BITS_PER_LONG"
->   #endif
->   
-> -static __always_inline unsigned long variable__ffs(unsigned long word)
-> +static __always_inline __attribute_const__ unsigned long variable__ffs(unsigned long word)
->   {
->   	asm goto(ALTERNATIVE("j %l[legacy]", "nop", 0,
->   				      RISCV_ISA_EXT_ZBB, 1)
-> @@ -74,7 +74,7 @@ static __always_inline unsigned long variable__ffs(unsigned long word)
->   	 (unsigned long)__builtin_ctzl(word) :	\
->   	 variable__ffs(word))
->   
-> -static __always_inline unsigned long variable__fls(unsigned long word)
-> +static __always_inline __attribute_const__ unsigned long variable__fls(unsigned long word)
->   {
->   	asm goto(ALTERNATIVE("j %l[legacy]", "nop", 0,
->   				      RISCV_ISA_EXT_ZBB, 1)
-> @@ -103,7 +103,7 @@ static __always_inline unsigned long variable__fls(unsigned long word)
->   	 (unsigned long)(BITS_PER_LONG - 1 - __builtin_clzl(word)) :	\
->   	 variable__fls(word))
->   
-> -static __always_inline int variable_ffs(int x)
-> +static __always_inline __attribute_const__ int variable_ffs(int x)
->   {
->   	asm goto(ALTERNATIVE("j %l[legacy]", "nop", 0,
->   				      RISCV_ISA_EXT_ZBB, 1)
+Signed-off-by: Fushuai Wang <wangfushuai@baidu.com>
+---
+ arch/alpha/kernel/smp.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-
-Tested-by: Alexandre Ghiti <alexghiti@rivosinc.com>
-Acked-by: Alexandre Ghiti <alexghiti@rivosinc.com>
-
-Thanks,
-
-Alex
-
+diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
+index ed06367ece57..741096076dbd 100644
+--- a/arch/alpha/kernel/smp.c
++++ b/arch/alpha/kernel/smp.c
+@@ -482,9 +482,8 @@ smp_cpus_done(unsigned int max_cpus)
+ 	int cpu;
+ 	unsigned long bogosum = 0;
+ 
+-	for(cpu = 0; cpu < NR_CPUS; cpu++) 
+-		if (cpu_online(cpu))
+-			bogosum += cpu_data[cpu].loops_per_jiffy;
++	for_each_online_cpu(cpu)
++		bogosum += cpu_data[cpu].loops_per_jiffy;
+ 	
+ 	printk(KERN_INFO "SMP: Total of %d processors activated "
+ 	       "(%lu.%02lu BogoMIPS).\n",
+-- 
+2.36.1
 
