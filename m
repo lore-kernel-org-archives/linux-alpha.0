@@ -1,209 +1,147 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A486A27E066
-	for <linux-alpha@vger.kernel.org>; Wed, 27 Aug 2025 15:15:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6BD5257AF3;
+	Sat, 30 Aug 2025 19:11:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756307747; cv=none; b=EFyW3wpkdq2V6blPRHhYaIuJCuI/wt2lY/SdCfR4MHYaNqEcpRnP4LxYJ0iRRmTJBCeQVyHr3Kf/BVy1X4RO3RE8tlg3QEu1AZ8MDe95DfKzrk/DHUjI0S0yxoQHo33lE/QCYyX1DAnjk/udHWzndzUd5BNuFE5tOr2qhumItjs=
+	t=1756581104; cv=none; b=qQWBPqekGZQ/M4ZB+xsdog1p1FmsyDMsqPaOMzZv7jVp2NmOU3raBL5/vpjGzIFiT2VkSrN7P9bAEuwdTG2B9ik9MYMRWN2xD1Z1x+WJE7QRC6x/9HQaRmNBhZkY5isyBJdspiFE/vqZkxeeVtiWLjeDMQDyD4D8g6ejsPdW5ss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756307747; c=relaxed/simple;
-	bh=PgEPxKHnOwEJrisDshuEuJU9SWQbfG1NSTYMYsAtWZE=;
+	s=arc-20240116; t=1756581104; c=relaxed/simple;
+	bh=50gJbBwtixydMvDBUecf/dpBUon5/5931vcLJn4NeMk=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qKeruX+Lv4TGirzv7RXxsCHI92rmn7Dz79kLDXhsJsinCV3c6V3w+Hc2Lcgl0b9W4JCX8dI1Sr3wDone9Oy7K/6PXu6cI+2DTRSd3rFK2qXTdX+IOlxlCoZjDlZ+9dWinwOufF/p0BgTthPz1/1uDfPQZ985oicVYOaE0QAodAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SSFbhUaY; arc=none smtp.client-ip=209.85.214.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 To:Cc:Content-Type; b=reoe6407QQeq8p4F/uKenosJEdIZ+dbNSme1sBA/nzUbF7gUEnjSRHC1tFbuFnUxoqIhQFvi/Qn2WXsVyGapSmnET5aWYDFEbl1HvceK4q775rGiksw+C7LyLvnUW39ecBy28gzg6p9rlqE4f+FpKGM7lvhiEDfLcYseRIxcyK8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ue34I0Mh; arc=none smtp.client-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SSFbhUaY"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-24611734e50so164615ad.1
-        for <linux-alpha@vger.kernel.org>; Wed, 27 Aug 2025 08:15:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ue34I0Mh"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-61cbfa1d820so6031898a12.3;
+        Sat, 30 Aug 2025 12:11:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1756307744; x=1756912544; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1756581101; x=1757185901; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=aGPhYDWt388RttmicU0o24RVsxY/twdNMb4O/vzImCs=;
-        b=SSFbhUaYSdGFBbG5CfGErl8PBJrdJ0XQ6Ofi8i4VHffvxMFqpxvd+tBC70A4/nMPRf
-         ybU1ppZn3tbfrOKYfvpliGhWaHEjfd5gmSxVQ/LbuKHpjRkSVK/4QDjzT58X9EiCYNwA
-         VD20oxfdWFrKFhsWdsiCSaeb4dGSHE6WYM7wX1tKv/9tXSTFRPgl7S0bV6soxF8q1uLR
-         qxqz6E2uiRoLyV2iMsgCO9EDPozzvbWTmTIFD9Mqi0RfocbBhhawnxcyQPOk098SvjNw
-         4KYeQe65GchDlKYvnMaty9HoninLLGNTawIlgfvoFCkk4VwTfWXkTNirqjX14LEt8qKn
-         OHIg==
+        bh=TE7opTv+bXEDaK/8HEHI+O6QGRpRy4oLfrvJAj6i/zQ=;
+        b=Ue34I0MhiVNYm/G3kGZWxCjOIsyY7beANFraJam6pd0euluY4yFFYc699v2xf/6gCJ
+         1+iAX914vODo0522jNGb58+I+Ajemda7iDf06m5T6OufeggdQkxD64d+6H3hshxkPFTp
+         mCPCYfHtXPjuR5zNgvoQqBWTyvnGnxx93wVIC+oiG61/WeEeAs40iwGPj0pj2EeGAoOu
+         17ZF6300JHOaW0WrIf3mGZ97gNzitIy/tok7tSow1OPy/CUzH+m8NIt0YiTlgQIHtWCT
+         LQLVauSt354nGRYpZRYWugzaOLb86TwFHMmHq/tQFGfSg1PBgsbEQjFrNEHjvIr5lOrx
+         VacA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756307744; x=1756912544;
+        d=1e100.net; s=20230601; t=1756581101; x=1757185901;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=aGPhYDWt388RttmicU0o24RVsxY/twdNMb4O/vzImCs=;
-        b=w2BRZEzWVThE8sNZTKvIxnBO29QyKzAMjcKF6UdH/b4zT7cKmW/SX6Y/48ZgokaQlH
-         ytfXonQuvPuU38O9YIGOe9pEVop4WqkG5N8p12RLGx624Pbj3Rl/mdoA/h/3z+vb90dN
-         AW9OR3Pw0qwUPG9z4xZkbt+IbvOoeGp6TkJSULRWmMqhhSzpGaw+IlMXVXkw6ohpdes7
-         C5xVSGIIh2XCyaTykmvItjUACHLLCmXUl7ma+Q+SDw+q9lnTrlPXwyYHIc9+DP4/cL3c
-         YnJMp0EEAPWvs5LFkgFXIPr3NvhYLfnrDOg3OftOUgioMt2pgK4FaqWn2TuFwIjJDWo+
-         7ZsA==
-X-Forwarded-Encrypted: i=1; AJvYcCX4Xxr0bCOV736ZKOKNWTLgOjnpXDJVe3itg88Gf4D4GUUjsJWcQkdRTNV45hduB0oXm8MR1oVznySxrA==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw093dOeWjLvWFsDiIYmxUa25czzwE432X58pxgC3FYu3NVS8Ls
-	tC+PbP5p3MmVR0KFKw4zAS+eHuNOE3y2TX3nDeevtNQz/Jd0OJYiXs9diQXvtfhUHQJQuPFmSi0
-	fOgiDzgbMFQdOmy/c7K955qjSadu5208OYLH0nNsI
-X-Gm-Gg: ASbGnctE2DPIwM8qCMq64gQNVYJ0fOm6d7F165IlcYWjU/LY7oz3oSZnZUJq2FKPYcH
-	jtrgqYT1+BqVlpE7Mr+dIuAPUqWMq2X6dSjOMB8YLy1oardub+oRRjKIDkl79wh6fW83rCerOks
-	w1MGigaLQJzn9lezKJJMDsiDLyydclbTq2aZpUR7NNfXC+fpSl1bSaxPwNHd3fvEr9NJvaGWvyQ
-	isZmYBV0xmcSOCYaofBVqQeU5EmjqVGcJnqAHA7H5A=
-X-Google-Smtp-Source: AGHT+IExi0QgPJP/5AblrVahQdACSVklatzIIhzDoM8PROF9H/mRXxhxpv9GhjknP28Wz6ljzGsei6gbP7f3oTXJLVM=
-X-Received: by 2002:a17:902:ec87:b0:246:a8ac:1a36 with SMTP id
- d9443c01a7336-2485ba5311amr9397575ad.2.1756307741849; Wed, 27 Aug 2025
- 08:15:41 -0700 (PDT)
+        bh=TE7opTv+bXEDaK/8HEHI+O6QGRpRy4oLfrvJAj6i/zQ=;
+        b=TeXb6tNjy/P3GA2SA7X/hMkCsRW7z8d82xUvhN1ZaCXyED7k0aMg4czCR5kqNyvlgv
+         GKnetk8/2cY3zXJhHxmNVhFXQjYskwhuPpVo2s0krZb3hNg8maiv5eqtm1z5yU5JJ1YQ
+         4jab2P1I15qjUPAnpDJDZFlkdjQTY84zZCZe2dcIEwwAm7oLODfE72T3VNgoKAawsjkC
+         k0gGIYtlxRnLpSTT+HQT1lOKRkez50ApjfoSc+Sy7xBUCYWlgR7b4zPMI1acYG/hLNSN
+         LZMXDVlrqQD8OhnPBUZISIRsrQ2n/vHsGou2cGAgh5sU5X9nc8GXwUlSZgFswb+2Yfrd
+         10Ag==
+X-Forwarded-Encrypted: i=1; AJvYcCVEtCMNo6asxR6aVzdQgw+KazIcYSM714dpRGyFmANSBq+slAQvWFZmkeKvFmTyGWpKSQbwABtF2M9+fQ==@vger.kernel.org, AJvYcCVslEbPdM+yBwgIF1YQYYihf1mAo7YubgojXpDtVzgo+r+8Qc6Wdrvsy/Bs682jLesedeC9zhE5FA6BQFR9tigu@vger.kernel.org, AJvYcCWnFFT/EobY/pkk2am5cyb3s9i5hK99EszVEchieb3BpRUdHzscdfiTWrulGzYoWUWoWFVS+Yxhk9GVueW6@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx6JUmkbDLUumV5W6Za89XCP+ckWZLWnYAxcRz/OXzXpWRWHD6C
+	faYBOEfRz2DgZiPawBBt/sfEdXuVuYi8SM5sOvqODzjD3UeiVcgXL7QdLq9x8b1HuNHOznizE3p
+	/bS+8uNXQDTrUFN0x1AvsRg674rwIIfrDpko5
+X-Gm-Gg: ASbGncuaE7jRsfgMPlWi8Ajpzl0CetCDkwIPNTbt5xSKfkUaSKUzgU6Gypmn/mKXsZy
+	alYIQFad+uDRR1tcQlRu2VT639a+po3xcNixs1jJNc/aZZNXL1SESv8VWIh8wrxUE7UpLqi8LaW
+	Ghf2M8Pe4ikGdH1XFuDV26WMr+M/uI7WjYbic137fv9OnPF6RScKYLQi+S29SrxNiCVs6i78oDL
+	dOJd2nz
+X-Google-Smtp-Source: AGHT+IHK1D4MTIB3dfb/YWiZqAszHiAgJM47+GNAOx4rWFgMAoZY4wzDnS0uJ1baHeRW1Wc5U0wTJM8fpc7DdUw4Myc=
+X-Received: by 2002:a05:6402:388d:b0:617:4b56:5bb1 with SMTP id
+ 4fb4d7f45d1cf-61d269a717amr2353973a12.11.1756581100911; Sat, 30 Aug 2025
+ 12:11:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1755096883.git.robin.murphy@arm.com> <d6cda4e2999aba5794c8178f043c91068fa8080c.1755096883.git.robin.murphy@arm.com>
- <20250826130329.GX4067720@noisy.programming.kicks-ass.net>
- <6080e45d-032e-48c2-8efc-3d7e5734d705@arm.com> <CAP-5=fXF2x3hW4Sk+A362T-50cBbw6HVd7KY+QEUjFwT+JL37Q@mail.gmail.com>
- <aK6_XrA_OaLnoFkr@J2N7QTR9R3>
-In-Reply-To: <aK6_XrA_OaLnoFkr@J2N7QTR9R3>
-From: Ian Rogers <irogers@google.com>
-Date: Wed, 27 Aug 2025 08:15:29 -0700
-X-Gm-Features: Ac12FXwUZ4TrRSXyzgr8XTQRkesJ87wwMtoKHvx086ZRlV4GbvgOq2WSyedNfZ4
-Message-ID: <CAP-5=fU0-QDMP-VG3O1qBvJ8uzHHYCQ8j1Vrzy9a0YUk=UMvHw@mail.gmail.com>
-Subject: Re: [PATCH 12/19] perf: Ignore event state for group validation
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Peter Zijlstra <peterz@infradead.org>, mingo@redhat.com, 
-	will@kernel.org, acme@kernel.org, namhyung@kernel.org, 
-	alexander.shishkin@linux.intel.com, jolsa@kernel.org, adrian.hunter@intel.com, 
-	kan.liang@linux.intel.com, linux-perf-users@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, 
-	linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
-	imx@lists.linux.dev, linux-csky@vger.kernel.org, loongarch@lists.linux.dev, 
-	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-pm@vger.kernel.org, 
-	linux-rockchip@lists.infradead.org, dmaengine@vger.kernel.org, 
-	linux-fpga@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
-	intel-xe@lists.freedesktop.org, coresight@lists.linaro.org, 
-	iommu@lists.linux.dev, linux-amlogic@lists.infradead.org, 
-	linux-cxl@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	linux-riscv@lists.infradead.org
+References: <20250817231753.633899-1-thorsten.blum@linux.dev>
+In-Reply-To: <20250817231753.633899-1-thorsten.blum@linux.dev>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sat, 30 Aug 2025 21:11:29 +0200
+X-Gm-Features: Ac12FXws0ffiID41jCEYPRV3uWnLZ6Kfr3vkeMthfBN828jI2KAat5HjI_uSoHQ
+Message-ID: <CA+=Fv5QdP-qGjUXQZ4ig1RX=0zx5c11gdrvwT9gqXNqTTqSZvA@mail.gmail.com>
+Subject: Re: [PATCH RESEND] alpha: Replace strcpy() with strscpy() in setup_arch()
+To: Thorsten Blum <thorsten.blum@linux.dev>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
+	linux-hardening@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 27, 2025 at 1:18=E2=80=AFAM Mark Rutland <mark.rutland@arm.com>=
- wrote:
+Hi,
+
+It can be a bit controversial to replace the platform specific string
+manipulation functions with a generic interface. On Alpha, there is nothing
+(at least to my knowledge) that indicates that strcpy is broken or used in
+an unsafe way and hence this patch doesn't really fix anything.
+In my opinion, I think this should be a NAK.
+
+Linus wrote some relevant stuff on this topic
+
+Link:
+https://github.com/torvalds/linux/commit/30c44659f4a3e7e1f9f47e895591b4b40b=
+f62671
+
+like for example:
+
+"Use this in places where it makes sense, but don't do trivial patches
+to fix things that aren't actually known to be broken."
+
+
+Regards
+
+Magnus Lindholm
+
+On Mon, Aug 18, 2025 at 1:23=E2=80=AFAM Thorsten Blum <thorsten.blum@linux.=
+dev> wrote:
 >
-> On Tue, Aug 26, 2025 at 11:48:48AM -0700, Ian Rogers wrote:
-> > On Tue, Aug 26, 2025 at 8:32=E2=80=AFAM Robin Murphy <robin.murphy@arm.=
-com> wrote:
-> > >
-> > > On 2025-08-26 2:03 pm, Peter Zijlstra wrote:
-> > > > On Wed, Aug 13, 2025 at 06:01:04PM +0100, Robin Murphy wrote:
-> > > >> It may have been different long ago, but today it seems wrong for =
-these
-> > > >> drivers to skip counting disabled sibling events in group validati=
-on,
-> > > >> given that perf_event_enable() could make them schedulable again, =
-and
-> > > >> thus increase the effective size of the group later. Conversely, i=
-f a
-> > > >> sibling event is truly dead then it stands to reason that the whol=
-e
-> > > >> group is dead, so it's not worth going to any special effort to tr=
-y to
-> > > >> squeeze in a new event that's never going to run anyway. Thus, we =
-can
-> > > >> simply remove all these checks.
-> > > >
-> > > > So currently you can do sort of a manual event rotation inside an
-> > > > over-sized group and have it work.
-> > > >
-> > > > I'm not sure if anybody actually does this, but its possible.
-> > > >
-> > > > Eg. on a PMU that supports only 4 counters, create a group of 5 and
-> > > > periodically cycle which of the 5 events is off.
-> >
-> > I'm not sure this is true, I thought this would fail in the
-> > perf_event_open when adding the 5th event and there being insufficient
-> > counters for the group.
+> strcpy() is deprecated; use strscpy() instead.
 >
-> We're talking specifically about cases where the logic in a pmu's
-> pmu::event_init() callback doesn't count events in specific states, and
-> hence the 5th even doesn't get rejected when it is initialised.
+> Since the destination buffer 'command_line' has a fixed length,
+> strscpy() automatically determines its size using sizeof() when the size
+> argument is omitted. This makes the explicit size argument for the
+> existing strscpy() call unnecessary - remove it.
 >
-> For example, in arch/x86/events/core.c, validate_group() uses
-> collect_events(), which has:
+> No functional changes intended.
 >
->         for_each_sibling_event(event, leader) {
->                 if (!is_x86_event(event) || event->state <=3D PERF_EVENT_=
-STATE_OFF)
->                         continue;
+> Link: https://github.com/KSPP/linux/issues/88
+> Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
+> ---
+>  arch/alpha/kernel/setup.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 >
->                 if (collect_event(cpuc, event, max_count, n))
->                         return -EINVAL;
+> diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+> index bebdffafaee8..8b51e6ca83d6 100644
+> --- a/arch/alpha/kernel/setup.c
+> +++ b/arch/alpha/kernel/setup.c
+> @@ -468,8 +468,8 @@ setup_arch(char **cmdline_p)
+>         /*
+>          * Locate the command line.
+>          */
+> -       strscpy(command_line, COMMAND_LINE, sizeof(command_line));
+> -       strcpy(boot_command_line, command_line);
+> +       strscpy(command_line, COMMAND_LINE);
+> +       strscpy(boot_command_line, command_line, COMMAND_LINE_SIZE);
+>         *cmdline_p =3D command_line;
 >
->                 n++;
+>         /*
+> @@ -511,7 +511,7 @@ setup_arch(char **cmdline_p)
 >         }
 >
-> ... and so where an event's state is <=3D PERF_EVENT_STATE_OFF at init
-> time, that event is not counted to see if it fits into HW counters.
-
-Hmm.. Thinking out loud. So it looked like perf with weak groups could
-be broken then:
-```
-$ sudo perf stat -vv -e '{instructions,cycles}:W' true
-...
-perf_event_attr:
- type                             0 (PERF_TYPE_HARDWARE)
- size                             136
- config                           0x400000001
-(cpu_core/PERF_COUNT_HW_INSTRUCTIONS/)
- sample_type                      IDENTIFIER
- read_format                      TOTAL_TIME_ENABLED|TOTAL_TIME_RUNNING|ID|=
-GROUP
- disabled                         1
- inherit                          1
- enable_on_exec                   1
-------------------------------------------------------------
-sys_perf_event_open: pid 3337764  cpu -1  group_fd -1  flags 0x8 =3D 5
-------------------------------------------------------------
-perf_event_attr:
- type                             0 (PERF_TYPE_HARDWARE)
- size                             136
- config                           0x400000000
-(cpu_core/PERF_COUNT_HW_CPU_CYCLES/)
- sample_type                      IDENTIFIER
- read_format                      TOTAL_TIME_ENABLED|TOTAL_TIME_RUNNING|ID|=
-GROUP
- inherit                          1
-------------------------------------------------------------
-sys_perf_event_open: pid 3337764  cpu -1  group_fd 5  flags 0x8 =3D 7
-...
-```
-Note, the group leader (instructions) is disabled because of:
-https://web.git.kernel.org/pub/scm/linux/kernel/git/perf/perf-tools-next.gi=
-t/tree/tools/perf/util/stat.c?h=3Dperf-tools-next#n761
-```
-/*
-* Disabling all counters initially, they will be enabled
-* either manually by us or by kernel via enable_on_exec
-* set later.
-*/
-if (evsel__is_group_leader(evsel)) {
-        attr->disabled =3D 1;
-```
-but the checking of being disabled (PERF_EVENT_STATE_OFF) is only done
-on siblings in the code you show above. So yes, you can disable the
-group events to allow the perf_event_open to succeed but not on the
-leader which is always checked (no PERF_EVENT_STATE_OFF check):
-https://web.git.kernel.org/pub/scm/linux/kernel/git/perf/perf-tools-next.gi=
-t/tree/arch/x86/events/core.c?h=3Dperf-tools-next#n1204
-```
-if (is_x86_event(leader)) {
-        if (collect_event(cpuc, leader, max_count, n))
-                return -EINVAL;
-```
-
-Thanks,
-Ian
+>         /* Replace the command line, now that we've killed it with strsep=
+.  */
+> -       strcpy(command_line, boot_command_line);
+> +       strscpy(command_line, boot_command_line);
+>
+>         /* If we want SRM console printk echoing early, do it now. */
+>         if (alpha_using_srm && srmcons_output) {
+> --
+> 2.50.1
+>
+>
