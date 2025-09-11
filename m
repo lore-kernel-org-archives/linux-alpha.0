@@ -1,65 +1,77 @@
-Received: from out-174.mta1.migadu.com (out-174.mta1.migadu.com [95.215.58.174])
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FEA6315766
-	for <linux-alpha@vger.kernel.org>; Wed, 10 Sep 2025 12:20:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1368E4503B;
+	Thu, 11 Sep 2025 01:51:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757506846; cv=none; b=mkUL+0fGItTxn2AL23Dn7dfPSGSp/TX7IpD9nIseJJkcOnmR3OcZYjwRO2ciM4VpvmSO/1yho1G51BVLBEKZrenmDxlQ/6GZbp3msBL/ilQzqePHN/iX236M/TssAD7db58JEF5XOcgchVimOwXr27gXecC5OJ23VtwfcnuMUYo=
+	t=1757555491; cv=none; b=IUzGjb0Uq4H6KU37GtP5WxyjMxZ31jNQCBA2tuTsl3x/FfGwgO+3VUzXMWGvGbmVUPmtaMW7dvB3SOILGUuH+CGSCwxKlFPwbj1snSSL5eS0mp5cUzkXbb97XP8UIvgVkAbNMmPwS9EUyY++PebwafM5tWt2t8jgin7NyJliVHg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757506846; c=relaxed/simple;
-	bh=qHdjBPukcKBf/nO0/XHSuRFIz0++JyR1IknsglQF7Gk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uRlAoG6SUNKXqSsct8tLJg7l8w2moPs1iv3FKGdYlapErQsN8U3tn/a8TwaW8zKQsxB/mW3TfIV+KJ4BqQwBp9bm8sYCz55XDSld1sFVQVc1euvjECXCOBQxEL0zK9VHFBNPwkQi63+ZspNMwxGnghIuoFx+3A/iu+fk3cuZIws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=l9f8V2Gn; arc=none smtp.client-ip=95.215.58.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1757555491; c=relaxed/simple;
+	bh=hWhlaWUSSqXUCCqhZ3YUzwPlcGmQ+BbgKTH2i4Q0ivk=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=qLtWY5eIinyn89KXFpqdqXp3eBNeNQXE1Xg8ptgxJPW5lc1yIp5/dG3w0uCTJygQIgLD4IAwvQ2uXpDUaFe9BxwtN/RoPYo20knCHC0DVCeTETdhohAMkS+N5osSvJQrbHrVK2MFzPAZUjzYd1cEt1VcE+6itrXExEE/xYr+K/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=dzcj/Qjw; arc=none smtp.client-ip=62.89.141.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="l9f8V2Gn"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1757506841;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=XGuMY/GbD4gYyloiK9YujD+XEG3K0ofKYdm5wva+Ww0=;
-	b=l9f8V2GntwGZaLXUOJG+i0YILxreQ9cDHpP/V2kOnxJCR++4pr53ZLeWy+frOcDfQouqGo
-	8dYfFtADjYd070u07S8EEXBjALAo9Ya1U0FOUDQpso/Omg2ebXJiRX4MF67Ohpb7sDvQLa
-	gkt7BI1keci1ijiClJ1w8/qNkn6WR9I=
-From: Thorsten Blum <thorsten.blum@linux.dev>
-To: Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>
-Cc: Thorsten Blum <thorsten.blum@linux.dev>,
+	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="dzcj/Qjw"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=linux.org.uk; s=zeniv-20220401; h=Sender:Content-Type:MIME-Version:
+	Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=LxefAVzYvnx2nYqqbwLtNe6Vs0NvQFLHqWcYv50y1ks=; b=dzcj/Qjw4X9wPbXxRczxzBeghb
+	FKK0QaVMB/f5toJqRXV6r4TahKPHRtS0PEa4UyZeL78OOytyIluy0+WqVExu327UBEKrCyPx0+mZS
+	yGQM/QBanB3vW/AucyNqvNr8P9c3lwLzTa47OzVlbggbmPHevFMKeE0CGD0ay5AM08E37YW5gt+VZ
+	RqrB/INtspyN4cNcMPe21JwKlzPccAv/4EOUA4SocO2DUNt2j3TjTdi6bUwV4lJ7vOBCsjX84lRwx
+	MSFZXGBxcaecyCAmh3GGcKn+DFsMXgvUTxyh5g6Y1CNeKlN5fD7C6cOCoPjHnLejGteu7f3ytGHuN
+	ULX5rwdw==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uwWT6-0000000AvLz-1MSA;
+	Thu, 11 Sep 2025 01:51:24 +0000
+Date: Thu, 11 Sep 2025 02:51:24 +0100
+From: Al Viro <viro@zeniv.linux.org.uk>
+To: linux-arch@vger.kernel.org
+Cc: Arnd Bergmann <arnd@arndb.de>, Guo Ren <guoren@kernel.org>,
 	linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] alpha/boot: Add .gitignore ignoring vmlinux kernel image
-Date: Wed, 10 Sep 2025 14:20:02 +0200
-Message-ID: <20250910122005.912613-2-thorsten.blum@linux.dev>
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Michal Simek <monstr@monstr.eu>, Max Filippov <jcmvbkbc@gmail.com>,
+	Jonas Bonn <jonas@southpole.se>
+Subject: [PATCHES] misc dead code removals in arch/* - mostly asm/pgtable.h
+Message-ID: <20250911015124.GV31600@ZenIV>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Al Viro <viro@ftp.linux.org.uk>
 
-Building the kernel creates the untracked kernel image file 'vmlinux' in
-'arch/alpha/boot/' - ignore it by adding a new local .gitignore file.
+	Several old patches that had been bouncing around in
+my tree for a while.  This stuff sits in
+git://git.kernel.org/pub/scm/linux/kernel/git/viro/vfs.git #work.misc
+if any architecture tree would like to pick some of those - just
+yell, I'll be only glad to get that off my hands.  Anything left
+unclaimed will go to Linus come next window, so if you have objections,
+please say so.
+	Individual patches in followups.
 
-Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
----
- arch/alpha/boot/.gitignore | 2 ++
- 1 file changed, 2 insertions(+)
- create mode 100644 arch/alpha/boot/.gitignore
+Shortlog:
+	csky: remove BS check for FAULT_FLAG_ALLOW_RETRY
+	PAGE_PTR() had been last used outside of arch/* in 1.1.94
+	SET_PAGE_DIR() users had been gone since 2.3.12pre1
+	alpha: get rid of the remnants of BAD_PAGE and friends
+	kill FIRST_USER_PGD_NR
+	alpha: unobfuscate _PAGE_P() definition
 
-diff --git a/arch/alpha/boot/.gitignore b/arch/alpha/boot/.gitignore
-new file mode 100644
-index 000000000000..4abc9c8ab7d3
---- /dev/null
-+++ b/arch/alpha/boot/.gitignore
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+vmlinux
--- 
-2.51.0
-
+Diffstat:
+ arch/alpha/include/asm/pgtable.h      | 25 +------------------------
+ arch/alpha/mm/init.c                  | 27 ---------------------------
+ arch/csky/mm/fault.c                  |  2 +-
+ arch/m68k/include/asm/pgtable_mm.h    | 10 ----------
+ arch/microblaze/include/asm/pgtable.h |  1 -
+ arch/openrisc/include/asm/pgtable.h   | 17 -----------------
+ arch/xtensa/include/asm/pgtable.h     |  1 -
+ 7 files changed, 2 insertions(+), 81 deletions(-)
