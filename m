@@ -1,99 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com [209.85.221.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1EEA221FAC
-	for <linux-alpha@vger.kernel.org>; Thu, 11 Sep 2025 02:55:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C90426C38D
+	for <linux-alpha@vger.kernel.org>; Thu, 11 Sep 2025 07:29:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757559353; cv=none; b=t+RbOVNksa1ujea9wzhydMYTiltjpOoQr9rq9S9sKB9EUbVhvBRMq4h6rUBuYlOC6RDtr1tApxWdnt9FDCEa9hK+kwT5SobK7IVWTeVLzbyOvnVizlGaQkIAHrQDEPIKZ4Z52BwCHnfP5ex9MGZzF3yzMIllA9YPTLudoQmz0e8=
+	t=1757575757; cv=none; b=FP/NKc69NCT/GKZzhO0D6nUlVtrdJKm7ysXXc7XpzKjmxZRPPVzPmRICffCIq3n3gJRyyQAbg817ujspoaOMfmnpzCBpQZPvD+6CPKgRgPP0CyIYb7gDGZv3X9yyZAP39KIMpsIY0q1747VcgD6OIkmh2RMivq3bZliWFfgrqH8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757559353; c=relaxed/simple;
-	bh=DDfAOSyzJhqT3Tf+NF0sXaUg/RYY6cskTzGSaREI0iU=;
+	s=arc-20240116; t=1757575757; c=relaxed/simple;
+	bh=TEIRZT/f9ZFe+n3XMoz5gFPwp4mNtoqn58IEZ/HkxUU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KDc46+L54TyFWVF5Z/fW4dqCLVOo2CBVe1gNOZ5vXyKyKW7pqWXSE+HZALeip3vk+CNcR91YUWryNbulJ61mh9W9qo0IgUyieP67Hod/wpgpZnOSI1ecl/i/j4py+q8L+bzHHngRCyzffIml5Qlsb195kn9/iW1EQ9p3Am7XilQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DdILawbz; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DdILawbz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64724C4AF09
-	for <linux-alpha@vger.kernel.org>; Thu, 11 Sep 2025 02:55:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757559353;
-	bh=DDfAOSyzJhqT3Tf+NF0sXaUg/RYY6cskTzGSaREI0iU=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=DdILawbzsINzu/19D2zlcJqy/sXjiyx6IWbOMspFGMtjcEDSzXi5CiEhr5t31bhLD
-	 Jq6wnN0XY9lKElb6npQirGVK715EQGFoaURMx5jFOryiy81uO3BKx74qRz3ubXTCjQ
-	 YAhcuiy3ebyOAQ4D+ygVdutwI2ypd6c21VjQyAdELuM9z1T+pcGv6JyXITxgPzyG1E
-	 1lhlyCV3HWmQ8br7n+g6wST2fZ388020pcEgFyJHTXXPPgFiAjNUE89xp771aHcf4W
-	 fRNVPa5Dcnfy1yURNsbkyqnKmejt68oDAUnleeK2sWtbab/9VwTZztlyX1Vsk7g12k
-	 y7O33T+YDYqyg==
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-3e4aeaa57b9so225834f8f.1
-        for <linux-alpha@vger.kernel.org>; Wed, 10 Sep 2025 19:55:53 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCU1QcKziXolBh15+OYwaZTi3eyJrXkDmLC4qSySqayBFZV2Wqh3QOJKyKZcrilZ2a6smLHCM1sCExQgfA==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxq37Dge82mXIci0UcV8Qvt+GIaHUxS6RYJ4GjAEYDRgAcjmPcd
-	qxAoRV0Isa6LyKLUEEVs5WhMouss4EkPEiwF6eI+5g9QSLGYwDZj6YtSPEQ5pOmRHQn/jyO++G/
-	7XXMp7PUvvEK5REkJBOxHr16wS0iAu3M=
-X-Google-Smtp-Source: AGHT+IHDMQn7UTuiBgeeLnVGTJDMrJJxqbHYUMdKohCDyJEY8OP1YYmDjGqgKS0f+WWnJ0VgkC2JIZNhLJ8jQEQPM+M=
-X-Received: by 2002:a05:6000:3101:b0:3de:8806:ed08 with SMTP id
- ffacd0b85a97d-3e64c87e270mr14845880f8f.61.1757559351914; Wed, 10 Sep 2025
- 19:55:51 -0700 (PDT)
+	 To:Cc:Content-Type; b=u6DvlMZPgUjqMToDstq2lQN8V7xAc4OQHhEmfXAzg2j4I72lm3TN/nHNdaUd/HL+8pHxfZWhvAry1eWYusiUPgaGxaampaSAQ5PR52Xya11FDbWFuAgYMhwxBodKrvchHXyb50mnjSsVjpQa69rJN2PGnH9ydi5DxfxdnWhX3sU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-544ad727e87so278808e0c.2
+        for <linux-alpha@vger.kernel.org>; Thu, 11 Sep 2025 00:29:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757575755; x=1758180555;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=XaFNAAT+NA6RCTfsICXLhuiGjMghVZ0R7BbTGO2fF0o=;
+        b=fo8OtcQpcXEyIYoscjFBG0cwqb8l9wCA1otC808jkKEw8fO2ISJi0RpqYQfbrdISr7
+         qw2SQh44YH5Gjkpuytqc3dQHZdD3HGRB45Pc3lHmFjcOnzjM4QjoYmQV1nGr7/jo3gkj
+         SHtsFR6dtWkQlOIbYT72jEylAFBGHwZhZ87oxGjAN4b5KcXEc7jdhvffAteLJrGY+m4F
+         bAZnlbNqK5oViWi+s7NvEjbEbDQ43K3+PFI2hxjjivhEEAFnBZwXIPQV+FO6DDg4RAAN
+         +Zogs3IKHwkHBlA3EaFsE3TwECkoYxdRuBIbVxDvLJjC+FCuI8PRseLhcYFzkprI6lCQ
+         lpxw==
+X-Forwarded-Encrypted: i=1; AJvYcCWELS1monIF3311m38AyZTDwYWk29gdADsB4Ad77cNJlUAITP3WQyikwjBqpARE9uJN0cSyVaG27UIVfA==@vger.kernel.org
+X-Gm-Message-State: AOJu0YyZsduPhf/ch4vgpWkmwfuyIXqeBmOAAS4C6AZ4YZySacOjm5iq
+	LAvagbVJizDaZsqSL055fqQkQXYfi+uUK52UX4MHF4mGUjCMI0ocssXrRr9fg/KJ
+X-Gm-Gg: ASbGncscfTQWuEvh9o1a3uvhmtHn7qC4Z3YmnUVHjmnfY6R/YDHIE7ivOcplOwNrBg8
+	WhPhRnii8cQ8Mkav8y737/KGif+CsQYiFr40e3tnl1J+I7AQfPG17tkxS3k8ZNsB5guFITLnp1S
+	6TzgQGbWkU3G0HWPXWtai00tYMO5QMurtK5bxP4jAAJG3pWWStaV4tMbbTfbXivsht/RRY7g4wc
+	7cekIabnNH9XKWV+CsBGrMy6T1BE1k6I7OZuvXKXsn/njGByLKiX5D4GmRqq7dokcUwOeS3QioW
+	ufznCLVJyMJmgPtT05CNc7ZjM92BtiCAlvzwsj3MjoNd74zU8l94F9BtMV1nacHrv3jESop7JSO
+	JxgtHehzSBAJ42nbiq1XCkgZVh+63Q4Y2dIs5gQV8gV6sViwaYPqlUjrHDt2XPf7C/l98XYUM7+
+	HfCMDckA==
+X-Google-Smtp-Source: AGHT+IG+gGJmyGOOxjr3tVaXv40vY97meEjI7hCRgVoYK0YDGeydJy/q8IyxhhbVSgd73gVAAwNgHQ==
+X-Received: by 2002:a05:6122:30a2:b0:544:9313:8387 with SMTP id 71dfb90a1353d-5473d478dccmr6495157e0c.15.1757575755025;
+        Thu, 11 Sep 2025 00:29:15 -0700 (PDT)
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com. [209.85.217.50])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-8ccd4d1a8d5sm132395241.16.2025.09.11.00.29.14
+        for <linux-alpha@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Sep 2025 00:29:14 -0700 (PDT)
+Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-529f4770585so316603137.1
+        for <linux-alpha@vger.kernel.org>; Thu, 11 Sep 2025 00:29:14 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXMXscUS+FXRuyzsPoa8sdyP3mkSZfNA9vboCb4503GSp9QhUkRYSgzU1xZ/Q7rDeXX79Ux4XW5evBSfw==@vger.kernel.org
+X-Received: by 2002:a05:6102:3e04:b0:538:dc93:e3c4 with SMTP id
+ ada2fe7eead31-53d21db6e24mr6555906137.16.1757575754614; Thu, 11 Sep 2025
+ 00:29:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250911015124.GV31600@ZenIV> <20250911015223.GA2604499@ZenIV>
-In-Reply-To: <20250911015223.GA2604499@ZenIV>
-From: Guo Ren <guoren@kernel.org>
-Date: Thu, 11 Sep 2025 10:55:15 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTSrP7OMstQzp3Nj1a-SgoDgSDu-Vp1pQXKAcVzSiLekDQ@mail.gmail.com>
-X-Gm-Features: AS18NWA2mIOP6sbgtwT0itGqg0NHul4T68a_Bg-CwEPLoeBjX1DdHxPf1LtUjSw
-Message-ID: <CAJF2gTSrP7OMstQzp3Nj1a-SgoDgSDu-Vp1pQXKAcVzSiLekDQ@mail.gmail.com>
-Subject: Re: [PATCH 1/6] csky: remove BS check for FAULT_FLAG_ALLOW_RETRY
+References: <20250911015124.GV31600@ZenIV> <20250911015306.GB2604499@ZenIV>
+In-Reply-To: <20250911015306.GB2604499@ZenIV>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 11 Sep 2025 09:29:02 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdU33x6yVYO143cGCnGAcccBSthjNg9G7uyp=0oOXJvi5w@mail.gmail.com>
+X-Gm-Features: AS18NWABAcMzYPBfj9VhQL9kwryCB7SJ28D1zs--UCgO1nL2MCGED90_txRXdwg
+Message-ID: <CAMuHMdU33x6yVYO143cGCnGAcccBSthjNg9G7uyp=0oOXJvi5w@mail.gmail.com>
+Subject: Re: [PATCH 2/6][alpha,m68k,openrisc] PAGE_PTR() had been last used
+ outside of arch/* in 1.1.94
 To: Al Viro <viro@zeniv.linux.org.uk>
-Cc: linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org, 
-	Geert Uytterhoeven <geert@linux-m68k.org>, Michal Simek <monstr@monstr.eu>, 
+Cc: linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Guo Ren <guoren@kernel.org>, 
+	linux-alpha@vger.kernel.org, Michal Simek <monstr@monstr.eu>, 
 	Max Filippov <jcmvbkbc@gmail.com>, Jonas Bonn <jonas@southpole.se>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 11, 2025 at 9:52=E2=80=AFAM Al Viro <viro@zeniv.linux.org.uk> w=
-rote:
->
-> flags are initialized as FAULT_FLAG_DEFAULT, and the only thing done
-> to that afterwards is |=3D; since FAULT_FLAG_DEFAULT already includes
-> FAULT_FLAG_ALLOW_RETRY, it's guaranteed to remain there all along.
+On Thu, 11 Sept 2025 at 03:53, Al Viro <viro@zeniv.linux.org.uk> wrote:
+> .. and in arch/* - circa 2.2.7.
 >
 > Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 > ---
->  arch/csky/mm/fault.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/csky/mm/fault.c b/arch/csky/mm/fault.c
-> index a885518ce1dd..a6ca7dff4215 100644
-> --- a/arch/csky/mm/fault.c
-> +++ b/arch/csky/mm/fault.c
-> @@ -277,7 +277,7 @@ asmlinkage void do_page_fault(struct pt_regs *regs)
->         if (fault & VM_FAULT_COMPLETED)
->                 return;
->
-> -       if (unlikely((fault & VM_FAULT_RETRY) && (flags & FAULT_FLAG_ALLO=
-W_RETRY))) {
-> +       if (unlikely(fault & VM_FAULT_RETRY)) {
-Yes, FAULT_FLAG_ALLOW_RETRY is unnecessary.
+>  arch/alpha/include/asm/pgtable.h    | 13 -------------
+>  arch/m68k/include/asm/pgtable_mm.h  | 10 ----------
+>  arch/openrisc/include/asm/pgtable.h | 14 --------------
 
-LGTM!
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
 
-Reviewed-by: Guo Ren (Alibaba Damo Academy) <guoren@kernel.org>
+(I would have just taken it if it wasn't mixed with non-m68k stuff ;-)
 
->                 flags |=3D FAULT_FLAG_TRIED;
->
->                 /*
-> --
-> 2.47.2
->
+Gr{oetje,eeting}s,
 
+                        Geert
 
---=20
-Best Regards
- Guo Ren
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
