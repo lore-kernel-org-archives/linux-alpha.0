@@ -1,63 +1,63 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F25C4264A7F
-	for <linux-alpha@vger.kernel.org>; Sun, 14 Sep 2025 03:57:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7876826A1CC
+	for <linux-alpha@vger.kernel.org>; Sun, 14 Sep 2025 03:57:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757822232; cv=none; b=kGE88hhlZrRIIKQAmJsyN08DdNV2wuxufSHO7ZaVsYqzp8nwmDrghlGDwmWth00TmCicahH5FAPgizKPUddLITXYhIx76Ozxp/rQLsqw69Y4hZI0LW6CY99rRtupTgJWrvGH9MbcSlBdgOJK1zpNrGWHpnEZ4Sl+VGrnzoj6sBk=
+	t=1757822267; cv=none; b=ZmmPHV+nU2I8oTqi76GHde/YUxeoFcBbSsTZcUum8YVDsOa8/geZjjeTKxi8kPhPGqKhIT0Mqnf173ILyXhuLwcvGtzejsMy0w3HvxB79PDqoTqehgFHSsnJQlztKS3XVLxZ8BnWXX2DC/EGlSP4nFaBb8s4V4OIOP9V/ipL/18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757822232; c=relaxed/simple;
-	bh=6pXJgBOVmgKyryw3LURicaeyD0WS1HvzY8WG0GWatOA=;
+	s=arc-20240116; t=1757822267; c=relaxed/simple;
+	bh=oKU/He6fgnkGxFwiXzfMSQvpywViA2YaDdh3D2HgJ0I=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=bYsftvql4sA5Bv1IdzRCgWAAfiSdb99u+Jkl3dtUDRUU7FVxg6X1LIvz8G/yAItu1FjXLc5wLNcrhwqMt5V1oGCYOsAwV1pq5CRWq2j1DLCXCHGRwMKE5/asG7COMrkG8ctvWO1KqwXzfo1+AVti4A3yrZL2IjKHf9vSdTtp7TI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kRPnFhfi; arc=none smtp.client-ip=209.85.218.54
+	 MIME-Version; b=tsmLprnt+taFIF9WMQMWntErLfyS5dhHm7qLtLsoCy1vaMTjbh8tryXdLLfVvPant+jwe53qlv1Xoo1vnIAswPRa7ZR4NH98kNCsPmKlKnthlmlaVAyLQ+vJ6ByT4ehFdHbBWZx/xo40uccRz4omk8RRSHEWvgGcwDzJz/qWRsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z0pjvupp; arc=none smtp.client-ip=209.85.208.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kRPnFhfi"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-afcb7ae31caso554620266b.3
-        for <linux-alpha@vger.kernel.org>; Sat, 13 Sep 2025 20:57:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z0pjvupp"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-62f1987d547so802990a12.2
+        for <linux-alpha@vger.kernel.org>; Sat, 13 Sep 2025 20:57:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1757822228; x=1758427028; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1757822264; x=1758427064; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Y7psSH4JIkuISYR7xy9RNjBVG2GzEUFc3+zgpdmbt9Y=;
-        b=kRPnFhfit7+R6UzkS4cF3DKL1S7JHip+IAyQf6T2UGYDd+vYI9IC8v9G51KVb5WDAk
-         RN/gPz1lGKSMFe9Oe7MIowDwv3N0e4/KFS91xhYm0G+VoSkSei8WkHktPa2wEMB4pNUj
-         WzAE/ebYcnJlcUWXpTXxg7oBxbqGV3WM9sIv1WyWWMlOmd/DBHQ0UO8HJ8wtmu7F5pSQ
-         pAM88kkn9raeM/jhalMJUOdMS5VqW/+AUemoRwnUmW0/oDdl4OSBi4zM++ZdXBaXmYLj
-         VGYSY1r8rSsi6oTo3enO0OXT4w2WPUK9VtsKTo5k8z5kW918njUd5UMO2sKFBB8AaeWA
-         2SOg==
+        bh=dLgSWRUhBJ+Eb73oE0EhwiwscJ+skfUSjN5GwJ3O/gU=;
+        b=Z0pjvupp9oiKINjNbyeuSobzmzNc3O235l4XZaJq6+xnV8xiQNvmcPRhTjA0wy8g9j
+         1e/VnNr8qqUxIu704AIAXUk3hdIHvQA2i+7JMtdyUSLBNWCch2mJfUrX3kek54B00jIX
+         cpkdx+SF3alQFdxuMwBpZmAMcBz1Fkvbhqc+rqW0oPJBw3vuPYmCSOvsKe8xp+b9RN/V
+         gAdtsX4NIFWKTmhvWP3oEqv1ZMtJ8kBfRF67kPO2/akOjOYC2dMCZGY8BqZAd+ytSz+V
+         h3rnckiFQSpaBVNrFt5iWUY1JpIoQK/ePVg8RRD6OraLlYp4RCO48NNQFUqRkIYcPgQk
+         HyUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757822228; x=1758427028;
+        d=1e100.net; s=20230601; t=1757822264; x=1758427064;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Y7psSH4JIkuISYR7xy9RNjBVG2GzEUFc3+zgpdmbt9Y=;
-        b=bh22a6xRCIkqix581Y0iTAwf1mYdw2cvnEhgM5AEXkPIl3EswsxvSzI6mo00bupYxD
-         hoLPr6FxtfczaAwTOtr1lCqXU++Pp5BzPmZv9+AgjFfQYqexsndKvGMbQi94B3R6LQtj
-         lMo5DiLzQeA323IwFhx4qCAQI0qXBgZVw512rRvrFyvdES53aKtO9xQTTrX0sFVCJJpx
-         MiwRO9pnCfgYVTWizM/Rf8oWr9iDPGHPjvjI4cJwar18TZzhWFcR2sBOEMS9QRqQzYdI
-         CntSqQ3paRNSzYPIn4AS5TtHo5uwXUZHZagxKamqxxrYTYQKGP6kCL9gK8IFkrv7Scfz
-         yoaw==
-X-Forwarded-Encrypted: i=1; AJvYcCWefQQ9YYoa2+rS4O6LLR2cbkOri60t4vGv0RlSLILO480V/JlPELJ6Gg+RFaP0NCcsaGlS7uY575K4SA==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw55ZTtk/HkDKVlxJ6Et3xivlJj2dlcAVgqetEOkf3QNMdhF+Oz
-	o7Eqiz415AgqvcSeFfMdnSTYEfhbLsXTIboLYTc5NNpbo14lVEffBS76
-X-Gm-Gg: ASbGncuuR9si1+KiD3uwllLST8RLxzIMeE+LBq6Vukujd0hYR/MuimevR3kLpdddLGI
-	vN3lUFCpbuBO7Q+YiW4gvynpc70kQvGXYkk6woGj1dEEIMtsgbrwnyg9lGGNoRGMiKxZ7Bar14O
-	HS6onN9cxL4cXTMSH3h+lZI6yypDH/Pz8BEsN5qhbtF+2DEFoD4XIwH0/myk7hbzGVGGV8Iy+Q2
-	9tOx9C3Lz+MnVh/wuPGzWWawPAifwW3H56+s/Fsni+HX3nQ5iQp2ydgpG3XYegE69wZxf63hCVz
-	NsJLXGETHploezeH8FRdjmjbKnikhVre/P7SyDO5LWaQltLhyZRCN77Vwq/OJx7ttLJr9YWAAZN
-	6OZIlNI9s2Hbdgl5uMgR0Vly6W5N85Q==
-X-Google-Smtp-Source: AGHT+IHHnPU+sOVT053l7deT3P8z3LJVFAOiksWjmZKd0Ub2gBIDgZK1/4gCPHfUrNaBqPQVOEAIKA==
-X-Received: by 2002:a17:907:d16:b0:b04:6338:c936 with SMTP id a640c23a62f3a-b07c35b8e53mr876582466b.17.1757822228258;
-        Sat, 13 Sep 2025 20:57:08 -0700 (PDT)
+        bh=dLgSWRUhBJ+Eb73oE0EhwiwscJ+skfUSjN5GwJ3O/gU=;
+        b=VpcDdR+3xoYdAf9Q/EFcKtu4AovBefcNE6nr0pq+SII/+USzgLoCNj54SS4GVjP/wr
+         RLhIHD4nDeLnT97eu6fVkDaRvbhFZFkrSW/YnUGdx9qW3nbstFZuIuL+pwuPyDBOhQ6m
+         13KiE9meWkf9CJrJcB06rGiv0Z0bfadE9QZptD9la8WffUaPxTaCwvPyOJsnIkZwvZYc
+         Din9fZk80YMG4kJ5TAFXwmm9+4ElD3EtSVmsSGG0Xv46ibnaXybrvVTa5gOZS+f/3vD9
+         ezMr7YZd1lCPWx8L4AonXh958R6WVrjfIe8Vj4Ho41NC3X/S5pemgqW+DMRtUy5QZRtT
+         R+pA==
+X-Forwarded-Encrypted: i=1; AJvYcCUwKgahrb5+3FVL2VrDUYckQXNZDRX/DiAe9ZaA5Lez+vJ+HDj9KhzB9rAknhXFUDiHYr3p0MUooIPDsA==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxCoZhp8OVsszX8dkhu2fs272CcMaXsEzaKXIkbm0GzLya8G3cj
+	NLyZpAKy+dg8jrD5glKytAEEt31bQQ5MTbtuzHtwYk3kKsJeF2uJR/mE
+X-Gm-Gg: ASbGncuIfBTPnvXZOA036QtoxEieJNXnFNLuZlSD8X9ugdYPVWk5sXbzKY1791pLQKe
+	ZUsQuT6Rq3BwJ3tDMZRYB6HrbtbnheLlETw7lxio4R+XvWydlfoFE+ehuShDXLNPmOzowqm66ZI
+	JY2pWgofCBoRVb5tKt/BwrHS6SGmBCj9f99WTQkOtN4hH5J4EnLT3Lpn9FLgjDnDSNinYf47ZsO
+	fIr9y1T3OpptnR2LCA9Sj83faSuOjshewyIiwBjf5mGAopiTD1dMpn5xzXr4RXjspxOapfG7OE7
+	pa4DDke9UC3YqKYeWIh1OSGh1gA/bfHZj0kE7Xbjqy/ygYIC+0D+vrnoSdsp5Jo6a5ZHlLxP2IW
+	VxW4BJJVzqmA2Q1JXkRDF+FUTLeLB4g==
+X-Google-Smtp-Source: AGHT+IGOdPvfXOVddm8G6LJhfH2nNJDoTTLKR/3NE7kowNRoQPIuzhxmV+feQvXrrMYzfjsz5Ubcxg==
+X-Received: by 2002:a17:906:a84d:b0:b07:cf04:8a43 with SMTP id a640c23a62f3a-b07cf049441mr520202566b.41.1757822263792;
+        Sat, 13 Sep 2025 20:57:43 -0700 (PDT)
 Received: from localhost ([212.73.77.104])
-        by smtp.gmail.com with UTF8SMTPSA id a640c23a62f3a-b07b32f1e54sm673986866b.75.2025.09.13.20.57.04
+        by smtp.gmail.com with UTF8SMTPSA id a640c23a62f3a-b07b31287cesm676665366b.30.2025.09.13.20.57.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Sep 2025 20:57:07 -0700 (PDT)
+        Sat, 13 Sep 2025 20:57:43 -0700 (PDT)
 From: Askar Safin <safinaskar@gmail.com>
 To: linux-fsdevel@vger.kernel.org,
 	linux-kernel@vger.kernel.org
@@ -113,9 +113,9 @@ Cc: Linus Torvalds <torvalds@linux-foundation.org>,
 	Thorsten Blum <thorsten.blum@linux.dev>,
 	Heiko Carstens <hca@linux.ibm.com>,
 	patches@lists.linux.dev
-Subject: [PATCH RESEND 49/62] init: rename ramdisk_execute_command to initramfs_execute_command
-Date: Sun, 14 Sep 2025 06:57:03 +0300
-Message-ID: <20250914035703.3729713-1-safinaskar@gmail.com>
+Subject: [PATCH RESEND 50/62] init: rename ramdisk_command_access to initramfs_command_access
+Date: Sun, 14 Sep 2025 06:57:38 +0300
+Message-ID: <20250914035738.3741007-1-safinaskar@gmail.com>
 X-Mailer: git-send-email 2.47.2
 In-Reply-To: <20250913003842.41944-1-safinaskar@gmail.com>
 References: <20250913003842.41944-1-safinaskar@gmail.com>
@@ -131,62 +131,29 @@ This is cleanup after initrd removal
 
 Signed-off-by: Askar Safin <safinaskar@gmail.com>
 ---
- init/main.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ init/main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/init/main.c b/init/main.c
-index 5186233c64fd..cbebd64f523c 100644
+index cbebd64f523c..a42f1f0fce84 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -160,7 +160,7 @@ static size_t initargs_offs;
- #endif
- 
- static char *execute_command;
--static char *ramdisk_execute_command = "/init";
-+static char *initramfs_execute_command = "/init";
- 
- /*
-  * Used to generate warnings if static_key manipulation functions are used
-@@ -609,7 +609,7 @@ static int __init rdinit_setup(char *str)
- {
- 	unsigned int i;
- 
--	ramdisk_execute_command = str;
-+	initramfs_execute_command = str;
- 	/* See "auto" comment in init_setup */
- 	for (i = 1; i < MAX_INIT_ARGS; i++)
- 		argv_init[i] = NULL;
-@@ -1491,12 +1491,12 @@ static int __ref kernel_init(void *unused)
- 
- 	do_sysctl_args();
- 
--	if (ramdisk_execute_command) {
--		ret = run_init_process(ramdisk_execute_command);
-+	if (initramfs_execute_command) {
-+		ret = run_init_process(initramfs_execute_command);
- 		if (!ret)
- 			return 0;
- 		pr_err("Failed to execute %s (error %d)\n",
--		       ramdisk_execute_command, ret);
-+		       initramfs_execute_command, ret);
- 	}
- 
- 	/*
-@@ -1588,11 +1588,11 @@ static noinline void __init kernel_init_freeable(void)
+@@ -1587,11 +1587,11 @@ static noinline void __init kernel_init_freeable(void)
+ 	 * check if there is an early userspace init.  If yes, let it do all
  	 * the work
  	 */
- 	int ramdisk_command_access;
--	ramdisk_command_access = init_eaccess(ramdisk_execute_command);
-+	ramdisk_command_access = init_eaccess(initramfs_execute_command);
- 	if (ramdisk_command_access != 0) {
+-	int ramdisk_command_access;
+-	ramdisk_command_access = init_eaccess(initramfs_execute_command);
+-	if (ramdisk_command_access != 0) {
++	int initramfs_command_access;
++	initramfs_command_access = init_eaccess(initramfs_execute_command);
++	if (initramfs_command_access != 0) {
  		pr_warn("check access for rdinit=%s failed: %i, ignoring\n",
--			ramdisk_execute_command, ramdisk_command_access);
--		ramdisk_execute_command = NULL;
-+			initramfs_execute_command, ramdisk_command_access);
-+		initramfs_execute_command = NULL;
+-			initramfs_execute_command, ramdisk_command_access);
++			initramfs_execute_command, initramfs_command_access);
+ 		initramfs_execute_command = NULL;
  		prepare_namespace();
  	}
- 
 -- 
 2.47.2
 
