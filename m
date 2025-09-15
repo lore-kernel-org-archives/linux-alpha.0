@@ -1,102 +1,205 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF2361311AC
-	for <linux-alpha@vger.kernel.org>; Mon, 15 Sep 2025 06:42:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A893C2F39CC
+	for <linux-alpha@vger.kernel.org>; Mon, 15 Sep 2025 09:19:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757918539; cv=none; b=VDvHJbknvC5IdslplKmNIb0lyGc2tNY8G5PwwwiqwHHkMjyufvuemDyZcFYDTOG2aV/8KrCok9K23ieA9tS7HMdICNoqglu9ThvMpMUlATOv5T3okCl4DRcPJaEr/KgBzpT+iymkuzEL2VtYNItI3sipksQzPryOrQXE45RDBoo=
+	t=1757927984; cv=none; b=qYUNiR1BcHvA88WEpput3iTyGHlp7TiMhWpA4mtl+/KjG1zZFXJydUcCnB/WgaAjBy6AIW0tPUsoGtq0VGtx9YI5pQlAsQUM+NzA0D9cq759YI4hFXifIzxZVcTsLVDiXoZh9EEXKKL879OMFi/R/6xDMRUG8IkjnbF1CzZNREA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757918539; c=relaxed/simple;
-	bh=VDrHGtFOrHkGMUyMK7CG8vsgW1x0lP0y6Ux4RfvsjZQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pAsd1OUSiOryAxkFdcxa7leb8TYzBmD0LP2wFt8Xu13u21f91HmiitRcJjwAgByRSizV+c8EZ/FTHonXgtbz/jVdm3xKWkwX9DAIofV/GWeU5Qt7+g/O61FXr69k/TPmDSVqfkSSGZlmwGzKfitRcAthteursrMB/8eZecfFi2k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=monstr.eu; spf=none smtp.mailfrom=monstr.eu; dkim=pass (2048-bit key) header.d=monstr-eu.20230601.gappssmtp.com header.i=@monstr-eu.20230601.gappssmtp.com header.b=tmdrCh1b; arc=none smtp.client-ip=209.85.218.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=monstr.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=monstr.eu
+	s=arc-20240116; t=1757927984; c=relaxed/simple;
+	bh=XA6mXkBIPFgan+x1bf5BLCjXCwYPhLpEO9xTsEBGW0c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jMgUF7e9i+uSLxRuPUWdFbPk3+1LgloQy4/RZPaK/Sfq3xSmZl8Impbd5raSwfOMFbYK28EeXTWcdMlLf67hCmCWSnvLVJx3eus6xuJyyDWuN5GOXnO8+471NrwqOibDXcM0CowYbwHQjqCLDe/hD9R5Z+l3NUUIN9cpsjbEhX4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=y6rhBH2y; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=SJvrSjvI; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=dMec5VwZ; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=NOo6WaFM; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=monstr-eu.20230601.gappssmtp.com header.i=@monstr-eu.20230601.gappssmtp.com header.b="tmdrCh1b"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-b0428b537e5so511469466b.3
-        for <linux-alpha@vger.kernel.org>; Sun, 14 Sep 2025 23:42:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=monstr-eu.20230601.gappssmtp.com; s=20230601; t=1757918533; x=1758523333; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JYpqNcnwO1AiOugXjAT6rZVipdVhaKdoRjjyakgRNKQ=;
-        b=tmdrCh1bxc01Zos3g2onVQwwvTnW8nmYD9jL5RU+4oA87FxFPnbg6tm+V1vA8zBOe3
-         Iz3uvQxrNI+r2W8PfIyg0HWUdrHYO5na5cnhfJO0h4uz2Iu/siWns9OyKQeZkde/g7IU
-         LLNZhim5XgYUfamP/N4RSolXm4Rlnz1n5zvRvVWXQNwFqQEq7BSatqBWDzu5cJKobOOE
-         W9wCPu1mvCbrql3cc1hHEg+CDgmkJkNOxqtehhh1TJeHP9r6IKyjIhw2A1FGu58MSjP0
-         xZP/ocreefUMWJ35T46qyAEvxAwUID6Dld6XltEHkCTu2T0J531lqJQLvb1BxemKVUGa
-         apyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757918533; x=1758523333;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=JYpqNcnwO1AiOugXjAT6rZVipdVhaKdoRjjyakgRNKQ=;
-        b=DGbEd0jB7FQ95bdQ51X4islTXkNDNBgFQ2/jbM7xQBi81glP/v0NllHDpDZY4Q8jy0
-         WEG0xkyVveLR3iBtU5jkYAIrowrc63+Vn9EfDmLq9jXhVV8LGmm+pvE1YIqjuWbKJpoV
-         nQIbd9YA8dP2gmOROeteLweCp7PXaskIc6fd6YVjFWghFLxrQ0TnY+jA/nhJ/c2fZ9Z7
-         ql6LeJOdHw9uMxbKnWgahyLhEFfthBtFoH+wjmFao0nBh+3DDG6VtnkDwnMfFgWqLejm
-         VtmMCxf6c7kZGeG5+ADQdfFDl1xIVFvekXBg5Mo4nuaFHdLtW8HiDlW2QB5PkKJxfhMv
-         LATQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWgtV5CB5OeLgjrU4mgMdribCR3wcHita7j9UnQjJajsIDEyF7kPklQS1Ud3FwSK+ZjcI+FjVNJodvs+g==@vger.kernel.org
-X-Gm-Message-State: AOJu0YyL22fGmPnScZkDZ2cWS93pQ1TwX5eahokyHx1iOjUxCuNJAC5I
-	xzBnX+YXwiZSEcfH2OsS8cOaZ3qheKSD69XhbhesZPhfP/CsFf3EJkZ/3SAzKJE9PQ==
-X-Gm-Gg: ASbGncsV5MWBPIu5mbho7BuhvoRUaOdC7FYIRndUXekyq+tD7gqCpdf5DnIxS9JotbE
-	lxmAV5t7iXEuHHymlqGdOnsmpfLsAMdqGky9E+z8PM8WgXmFsa9nFbc53IZ9LM/U+LoK+yNd6ga
-	EdCAVt+UvdO2cCSOe3f8ioFke+d7Xc/b881ZJMpRxA5CZ3k5/L5K2C06w4ONqBSLkzxt65TuCC1
-	UR/f2s36Km1X1DploG1TqpqG1GMP+rKnLtR48TTvJVOL5qRbg3ggxTR7ENZtXiWQhblhuovgx05
-	8RLy1kBRnOyJmEmRhjE7el9UPyDyf1HmmLK0aNH4eJfTblwJJMHI/JraPeqLiuB08d3t59pNNW8
-	QClMBaMEKkFTlT4fQuzT7gZtJ
-X-Google-Smtp-Source: AGHT+IHmUY+dFRWpugaWotftvE9e1WhXDKJpaHEynboNJZT47ghrfaqdx2cchbgiTQPPUsWBemmXoQ==
-X-Received: by 2002:a17:907:7f22:b0:b04:578f:b3fb with SMTP id a640c23a62f3a-b07c35becafmr1318742766b.17.1757918532129;
-        Sun, 14 Sep 2025 23:42:12 -0700 (PDT)
-Received: from [10.254.183.223] ([149.199.62.131])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b07c337e785sm703515366b.25.2025.09.14.23.42.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 14 Sep 2025 23:42:11 -0700 (PDT)
-Message-ID: <d71106e9-95d1-48ab-844c-ed3fa38762e7@monstr.eu>
-Date: Mon, 15 Sep 2025 08:42:04 +0200
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="y6rhBH2y";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="SJvrSjvI";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="dMec5VwZ";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="NOo6WaFM"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id EA1BB33712;
+	Mon, 15 Sep 2025 09:19:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1757927979; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PhWypHhs76OUhW0wRhEmCSwbci4KHZ6s4gw5WflTcZE=;
+	b=y6rhBH2yIHqcEhWvW3OK/M1MGL07yB+6JMwC6X/CknVE5ua038lWDkVtBxXcMW2YiW0/gB
+	rSMv7hNa/JVKJWM7hARJEEPpYWbHOSmUMRbz8f4sVhqeny14kYvL5lcca9exMU9JyNeq6n
+	Pyq6WFF1sN1B85usXfvLUNO8krTzzDE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1757927979;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PhWypHhs76OUhW0wRhEmCSwbci4KHZ6s4gw5WflTcZE=;
+	b=SJvrSjvI7wBdkhoQj3MZ4ZBU7tX1b1mGqMmsm9Le3rr8bw1HFENqVr83A7BDG7tAfD/H3I
+	rh7jnWIRJSAAW1Cg==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1757927978; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PhWypHhs76OUhW0wRhEmCSwbci4KHZ6s4gw5WflTcZE=;
+	b=dMec5VwZSk27WNcuKLsJWYANLg5lWjboI6lQZXChre5tGBQy9LfQiob4gACGMYnIEyj7wt
+	of5w1OHw8GaX5rzloEDHnRzUEa9We+whyL+vVkIgzkYI4qkYUE0EW8OsHCuSl7kqKZApPI
+	R62vbkO0euBFSVizbuH5OjHtbfjlT3s=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1757927978;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PhWypHhs76OUhW0wRhEmCSwbci4KHZ6s4gw5WflTcZE=;
+	b=NOo6WaFMZo/gSs0Cn6FVxnoIe/rbPumE4+eUSjak33WwfmR1YoYCMva3UzVfmUFBWfq4S4
+	cDjh2ACDImG9O8DA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id D5CE31398D;
+	Mon, 15 Sep 2025 09:19:38 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id FQ3QMyrax2hoeQAAD6G6ig
+	(envelope-from <jack@suse.cz>); Mon, 15 Sep 2025 09:19:38 +0000
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+	id 74FF7A0A2B; Mon, 15 Sep 2025 11:19:38 +0200 (CEST)
+Date: Mon, 15 Sep 2025 11:19:38 +0200
+From: Jan Kara <jack@suse.cz>
+To: Askar Safin <safinaskar@gmail.com>
+Cc: linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Linus Torvalds <torvalds@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Christian Brauner <brauner@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>, 
+	Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>, 
+	Andy Shevchenko <andy.shevchenko@gmail.com>, Aleksa Sarai <cyphar@cyphar.com>, 
+	Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <thomas.weissschuh@linutronix.de>, Julian Stecklina <julian.stecklina@cyberus-technology.de>, 
+	Gao Xiang <hsiangkao@linux.alibaba.com>, Art Nikpal <email2tema@gmail.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Eric Curtin <ecurtin@redhat.com>, 
+	Alexander Graf <graf@amazon.com>, Rob Landley <rob@landley.net>, 
+	Lennart Poettering <mzxreary@0pointer.de>, linux-arch@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, 
+	linux-hexagon@vger.kernel.org, loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, 
+	linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, 
+	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, linux-um@lists.infradead.org, 
+	x86@kernel.org, Ingo Molnar <mingo@redhat.com>, linux-block@vger.kernel.org, 
+	initramfs@vger.kernel.org, linux-api@vger.kernel.org, linux-doc@vger.kernel.org, 
+	linux-efi@vger.kernel.org, linux-ext4@vger.kernel.org, "Theodore Y . Ts'o" <tytso@mit.edu>, 
+	linux-acpi@vger.kernel.org, Michal Simek <monstr@monstr.eu>, devicetree@vger.kernel.org, 
+	Luis Chamberlain <mcgrof@kernel.org>, Kees Cook <kees@kernel.org>, 
+	Thorsten Blum <thorsten.blum@linux.dev>, Heiko Carstens <hca@linux.ibm.com>, patches@lists.linux.dev
+Subject: Re: [PATCH RESEND 13/62] ext2: remove ext2_image_size and associated
+ code
+Message-ID: <5xr5efvf4dhy43fchbvfsxspzgde5bxezhszdgqcya4eqrocgy@lqqkaq5wok6a>
+References: <20250913003842.41944-1-safinaskar@gmail.com>
+ <20250913003842.41944-14-safinaskar@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 5/6][microblaze,xtensa] kill FIRST_USER_PGD_NR
-To: Al Viro <viro@zeniv.linux.org.uk>, linux-arch@vger.kernel.org
-Cc: Arnd Bergmann <arnd@arndb.de>, Guo Ren <guoren@kernel.org>,
- linux-alpha@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
- Max Filippov <jcmvbkbc@gmail.com>, Jonas Bonn <jonas@southpole.se>
-References: <20250911015124.GV31600@ZenIV> <20250911015440.GE2604499@ZenIV>
-Content-Language: en-US
-From: Michal Simek <monstr@monstr.eu>
-In-Reply-To: <20250911015440.GE2604499@ZenIV>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250913003842.41944-14-safinaskar@gmail.com>
+X-Spam-Level: 
+X-Spamd-Result: default: False [-2.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ARC_NA(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	TO_DN_SOME(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	FREEMAIL_TO(0.00)[gmail.com];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	RCVD_COUNT_THREE(0.00)[3];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[vger.kernel.org,linux-foundation.org,linuxfoundation.org,kernel.org,zeniv.linux.org.uk,suse.cz,lst.de,kernel.dk,gmail.com,cyphar.com,linutronix.de,cyberus-technology.de,linux.alibaba.com,redhat.com,amazon.com,landley.net,0pointer.de,lists.infradead.org,lists.linux.dev,lists.linux-m68k.org,lists.ozlabs.org,mit.edu,monstr.eu,linux.dev,linux.ibm.com];
+	R_RATELIMIT(0.00)[to_ip_from(RLbyy5b47ky7xssyr143sji8pp)];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	RCPT_COUNT_GT_50(0.00)[55];
+	RCVD_TLS_LAST(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.cz:email,imap1.dmz-prg2.suse.org:helo]
+X-Spam-Flag: NO
+X-Spam-Score: -2.30
 
-
-
-On 9/11/25 03:54, Al Viro wrote:
-> dead since 2005, time to bury the body...
+On Sat 13-09-25 00:37:52, Askar Safin wrote:
+> It is not used anymore
 > 
-> Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+> Signed-off-by: Askar Safin <safinaskar@gmail.com>
+
+Looks good.
+
+Acked-by: Jan Kara <jack@suse.cz>
+
+								Honza
+
 > ---
->   arch/microblaze/include/asm/pgtable.h | 1 -
-
-Reviewed-by: Michal Simek <michal.simek@amd.com> # microblaze
-
-Thanks
-Michal
+>  fs/ext2/ext2.h          |  9 ---------
+>  include/linux/ext2_fs.h | 13 -------------
+>  2 files changed, 22 deletions(-)
+> 
+> diff --git a/fs/ext2/ext2.h b/fs/ext2/ext2.h
+> index cf97b76e9fd3..d623a14040d9 100644
+> --- a/fs/ext2/ext2.h
+> +++ b/fs/ext2/ext2.h
+> @@ -608,15 +608,6 @@ struct ext2_dir_entry_2 {
+>  					 ~EXT2_DIR_ROUND)
+>  #define EXT2_MAX_REC_LEN		((1<<16)-1)
+>  
+> -static inline void verify_offsets(void)
+> -{
+> -#define A(x,y) BUILD_BUG_ON(x != offsetof(struct ext2_super_block, y));
+> -	A(EXT2_SB_MAGIC_OFFSET, s_magic);
+> -	A(EXT2_SB_BLOCKS_OFFSET, s_blocks_count);
+> -	A(EXT2_SB_BSIZE_OFFSET, s_log_block_size);
+> -#undef A
+> -}
+> -
+>  /*
+>   * ext2 mount options
+>   */
+> diff --git a/include/linux/ext2_fs.h b/include/linux/ext2_fs.h
+> index 1fef88569037..e5ebe6cdf06c 100644
+> --- a/include/linux/ext2_fs.h
+> +++ b/include/linux/ext2_fs.h
+> @@ -27,17 +27,4 @@
+>   */
+>  #define EXT2_LINK_MAX		32000
+>  
+> -#define EXT2_SB_MAGIC_OFFSET	0x38
+> -#define EXT2_SB_BLOCKS_OFFSET	0x04
+> -#define EXT2_SB_BSIZE_OFFSET	0x18
+> -
+> -static inline u64 ext2_image_size(void *ext2_sb)
+> -{
+> -	__u8 *p = ext2_sb;
+> -	if (*(__le16 *)(p + EXT2_SB_MAGIC_OFFSET) != cpu_to_le16(EXT2_SUPER_MAGIC))
+> -		return 0;
+> -	return (u64)le32_to_cpup((__le32 *)(p + EXT2_SB_BLOCKS_OFFSET)) <<
+> -		le32_to_cpup((__le32 *)(p + EXT2_SB_BSIZE_OFFSET));
+> -}
+> -
+>  #endif	/* _LINUX_EXT2_FS_H */
+> -- 
+> 2.47.2
+> 
 -- 
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Xilinx Microblaze
-Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP/Versal ARM64 SoCs
-U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP/Versal/Versal NET SoCs
-TF-A maintainer - Xilinx ZynqMP/Versal/Versal NET SoCs
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
