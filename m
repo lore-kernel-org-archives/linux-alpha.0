@@ -1,69 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D91D2D9494;
-	Thu, 18 Sep 2025 18:46:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EB8F30C0E8
+	for <linux-alpha@vger.kernel.org>; Thu, 18 Sep 2025 19:58:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758221171; cv=none; b=RRO4UmSfwNtdMVnDMSYyeSwPO8M7F2pD1rwZH++X0UOvwgCNBRarBfdDrvMJLrCp0CGHxCOFd3MNCEnUCzNQx5zg2cqQiRu9XHPtLtUc+A0A4BVJ0oIXIKOftgnwUzvMnCW5irp17hl2Z9oYhOHKT2mHONa3A214Tg08ipgGMx0=
+	t=1758225501; cv=none; b=AsoAzM9c0cbn+UzyVsREB0d2SwEio023R8AySjYdgB6n4PotaGfI3Zx7xQQRINyc0Feupm7FwMexZsbahsiMlgx+KmmdqVorle5ZTxeV3TGNaTc3+COKeTRZNSI9TpJkqoOaY0UBKmjRQ4EgSDNp1dBKW/wvC6fzbRYUK6IXa5k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758221171; c=relaxed/simple;
-	bh=uXtCKxAn4lJIk0uyzU0s1tMehbPq4hSpIpuFU2JE2Qo=;
+	s=arc-20240116; t=1758225501; c=relaxed/simple;
+	bh=hrTKVKMuOKbLilzSA+VEl+XSSF0VIocT2KvCzkuRjcw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BjrdRT7dN9FDKOFmQqYcJCPKgOSHKgovMLjku/ki78qdj78ijm4e1lnxBqdy9ALtfXhkydNKWwcR0kW/rMLkQw4JdnpnJpk9N0ssejrAFRU6Tipb6aGYXcR3DA8j/LJlGy7oApD1q9uDv/CtVkSJ3Vv8KcDOJaUWL0oRk+xwD+Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XcDUWoml; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=iOuqnDzSzpuJaC2/tq+y/FVG5rKb8WjzIN7s8k88xlpScA+wM1je5TtdYOY4AuOLC3ckdBwc2YsTrIZzjCCzDtgBCrLnz9bA4sWYvwoCUfPxAVZx+VBynuY8+SXJO83FCAmd7tB8gxpxztlxZvROovMR53HusW/fkMh9wId1MPk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hNlT1dRM; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XcDUWoml"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41BE7C4CEE7;
-	Thu, 18 Sep 2025 18:46:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758221171;
-	bh=uXtCKxAn4lJIk0uyzU0s1tMehbPq4hSpIpuFU2JE2Qo=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=XcDUWomlStMMeFZ3/TJvShNKVI2ne4pT3ymiWQxIQ5cB6pCz+OArBrbwKpELnS63X
-	 AsFRL1spAgwyeCLnIS2Br262lbJnqBbpCVd4ULOZVZtnj2C10kT6CvJ8n+8JUEAfYP
-	 jFqxdtfM+opMXomXA3Ct9jKZuU3nvXXXih1anUIUmeYA2+NA0FUjI4Yl436qNKhCCW
-	 Aa/Vm8u8X4+psfEgiqdpsNqbGjvUEPS8JA0bNbKSpeXk0dd7H1N/gfHZ8mh5pUso/C
-	 fhMyzuZ9ej7kREv+eyKj/qcU15OhLAX2+3kVxzRJlcJjo/s2nJbBu1ygM503fdcjcp
-	 lkA9Tjnlkw/og==
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Leon Romanovsky <leonro@nvidia.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Geoff Levand <geoff@infradead.org>,
-	Helge Deller <deller@gmx.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	iommu@lists.linux.dev,
-	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Juergen Gross <jgross@suse.com>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hNlT1dRM"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-62f0bf564e4so1630223a12.3
+        for <linux-alpha@vger.kernel.org>; Thu, 18 Sep 2025 12:58:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1758225496; x=1758830296; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9McvDjxp1cOQ8m8DQ7zr8KAOkClRv+R613f7KwPZqLk=;
+        b=hNlT1dRMFhV3nNEO8OCPXfEiZjy7HadMXu4vRgp3Ipj8QW/pTjkxFRxYZEa69pe80J
+         R5WZR6uBlmeIbF+VQhBUi3wnRJuDxh3ZSYPm2HtEzHdmYgYFzaLOTkBNZpxqwUsXFCi5
+         xh48TC/I8mOWxP2I4D6qthvi1wAkVJadHw9+Q6aETqCdcS+tzshGNcO1qODnTVXpUxR3
+         DzGuLf7FRf7YNLECrqzb9ayMBLdTqRvBk0ivmzKueGmRkmu1GRq1Uqn5Uc0kg8EqXgPJ
+         5wCj9Urjk2M3jfgX+oYXsBuDx3I+zNM2GW5fMn6rB/kk6qlx/ZV55XBxceRxo80pIEfP
+         n68Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758225496; x=1758830296;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9McvDjxp1cOQ8m8DQ7zr8KAOkClRv+R613f7KwPZqLk=;
+        b=iyWxsPD1HU8VeIXzZ7vY4hHae14q5DUbRvIkIB9oD9itzOHbGH1Tk5Epc1+ydfsQ2D
+         OZ1Le61gQkFw/w6rUKZUEMs7v0V0hEf9Eav84DmJBAPSOFGZd3wT0b15pzs55JyxEJFU
+         N1296XBAb3YR/IUrYGGGL/M8a5bije1A79vxL20xsibQCHYNmTywHLQkl0Y/gaSnJYPM
+         fShpcEWw9sw7wctDxKGqqDVvN1ukoBeZrzERxAZvKWzedW6h8JixiK6pVnemnfIYO0mj
+         kgchL2qA+X37ceBgXwUCOkS5AA8JxFsPMUAn9GjqqLvFX7OB9s67RC9Y38WUgSc3tDEA
+         f7fQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWAveTQ55YeIRzKiHueJbAquBOB47ri9/v6kzUSb84nH9K8sOBJfJCuO/C40YVA5FCExtgd3mZ2Mjk/cg==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxM9btFj04tQa5d1uF2WMLMfanUQYuraAUuB/TQgNTpEiZJybC2
+	nYgS0ObC94UPS31CMCq/N8x4prL5IeDVC8M9C/BjEjZa/ns7936sU6BS
+X-Gm-Gg: ASbGncuI4cA5lc6t8DdqAv0TFUGB/wm+CCb8XSAoHOUwKWhiA8hpXYvn7+sHmCfd0VQ
+	8WBpcgRZzScCc7tHuRT2OcXY3E/sqynhfAVTnkHHG2AL1hUxHGbZLausARUF+ZBfwm1AdqkjNeG
+	EkfCW1gEYyRhNFVCwcZAo10j3/Vw0q45q0Qh40N75qILx613o+/Ooasr0FyBqlnxSaHfJr4IK7S
+	UspgloEe+X5ubNpzIE+2PDq9cAK2TfjsV7Go9sk4vwbNK77TYftMew/LVdGN2XPKovabYYKr+qx
+	99lt7q8SuDqxGilqMe6kYyYFSUA0ybTnubouhLPa40P1kRn1/tQXl8xM/B4B19y7XYWZ8WtKymy
+	0EEMTESBYMwDJtYqMG/HrKWGzqJ+bCeV1AOBqyg==
+X-Google-Smtp-Source: AGHT+IH2NBu6L+bASXNqg9sJUcZ42MFCB2aqzEFiqoDEW6um54A4CtHcJnO37auTgFbi6nwycKDm8A==
+X-Received: by 2002:a17:907:a089:b0:b19:969a:86 with SMTP id a640c23a62f3a-b24f35aa177mr45885966b.37.1758225496090;
+        Thu, 18 Sep 2025 12:58:16 -0700 (PDT)
+Received: from localhost ([212.73.77.104])
+        by smtp.gmail.com with UTF8SMTPSA id a640c23a62f3a-b1fd1101c44sm264530466b.82.2025.09.18.12.58.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Sep 2025 12:58:15 -0700 (PDT)
+From: Askar Safin <safinaskar@gmail.com>
+To: nschichan@freebox.fr
+Cc: akpm@linux-foundation.org,
+	andy.shevchenko@gmail.com,
+	axboe@kernel.dk,
+	brauner@kernel.org,
+	cyphar@cyphar.com,
+	devicetree@vger.kernel.org,
+	ecurtin@redhat.com,
+	email2tema@gmail.com,
+	graf@amazon.com,
+	gregkh@linuxfoundation.org,
+	hca@linux.ibm.com,
+	hch@lst.de,
+	hsiangkao@linux.alibaba.com,
+	initramfs@vger.kernel.org,
+	jack@suse.cz,
+	julian.stecklina@cyberus-technology.de,
+	kees@kernel.org,
+	linux-acpi@vger.kernel.org,
 	linux-alpha@vger.kernel.org,
+	linux-api@vger.kernel.org,
+	linux-arch@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-block@vger.kernel.org,
+	linux-csky@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-efi@vger.kernel.org,
+	linux-ext4@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org,
+	linux-hexagon@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
 	linux-mips@vger.kernel.org,
+	linux-openrisc@vger.kernel.org,
 	linux-parisc@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org,
+	linux-sh@vger.kernel.org,
+	linux-snps-arc@lists.infradead.org,
+	linux-um@lists.infradead.org,
 	linuxppc-dev@lists.ozlabs.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Matt Turner <mattst88@gmail.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
+	loongarch@lists.linux.dev,
+	mcgrof@kernel.org,
+	mingo@redhat.com,
+	monstr@monstr.eu,
+	mzxreary@0pointer.de,
+	patches@lists.linux.dev,
+	rob@landley.net,
+	safinaskar@gmail.com,
 	sparclinux@vger.kernel.org,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	virtualization@lists.linux.dev,
-	x86@kernel.org,
-	xen-devel@lists.xenproject.org
-Subject: [PATCH 8/9] xen: swiotlb: Convert mapping routine to rely  on physical address
-Date: Thu, 18 Sep 2025 21:45:08 +0300
-Message-ID: <bdc496de560c8a62ab934a65ebab4137421c4cb1.1758219787.git.leon@kernel.org>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <cover.1758219786.git.leon@kernel.org>
-References: <cover.1758219786.git.leon@kernel.org>
+	thomas.weissschuh@linutronix.de,
+	thorsten.blum@linux.dev,
+	torvalds@linux-foundation.org,
+	tytso@mit.edu,
+	viro@zeniv.linux.org.uk,
+	x86@kernel.org
+Subject: Re: [PATCH RESEND 00/62] initrd: remove classic initrd support
+Date: Thu, 18 Sep 2025 22:58:06 +0300
+Message-ID: <20250918195806.6337-1-safinaskar@gmail.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20250918152830.438554-1-nschichan@freebox.fr>
+References: <20250918152830.438554-1-nschichan@freebox.fr>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -72,91 +129,18 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Leon Romanovsky <leonro@nvidia.com>
+> When booting with root=/dev/ram0 in the kernel commandline,
+> handle_initrd() where the deprecation message resides is never called,
+> which is rather unfortunate (init/do_mounts_initrd.c):
 
-Switch to .map_phys callback instead of .map_page.
+Yes, this is unfortunate.
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/xen/grant-dma-ops.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+I personally still think that initrd should be removed.
 
-diff --git a/drivers/xen/grant-dma-ops.c b/drivers/xen/grant-dma-ops.c
-index 29257d2639dbf..7f76e516fe24c 100644
---- a/drivers/xen/grant-dma-ops.c
-+++ b/drivers/xen/grant-dma-ops.c
-@@ -163,18 +163,22 @@ static void xen_grant_dma_free_pages(struct device *dev, size_t size,
- 	xen_grant_dma_free(dev, size, page_to_virt(vaddr), dma_handle, 0);
- }
- 
--static dma_addr_t xen_grant_dma_map_page(struct device *dev, struct page *page,
--					 unsigned long offset, size_t size,
-+static dma_addr_t xen_grant_dma_map_phys(struct device *dev, phys_addr_t phys,
-+					 size_t size,
- 					 enum dma_data_direction dir,
- 					 unsigned long attrs)
- {
- 	struct xen_grant_dma_data *data;
-+	unsigned long offset = offset_in_page(phys);
- 	unsigned long dma_offset = xen_offset_in_page(offset),
- 			pfn_offset = XEN_PFN_DOWN(offset);
- 	unsigned int i, n_pages = XEN_PFN_UP(dma_offset + size);
- 	grant_ref_t grant;
- 	dma_addr_t dma_handle;
- 
-+	if (attrs & DMA_ATTR_MMIO)
-+		return DMA_MAPPING_ERROR;
-+
- 	if (WARN_ON(dir == DMA_NONE))
- 		return DMA_MAPPING_ERROR;
- 
-@@ -190,7 +194,7 @@ static dma_addr_t xen_grant_dma_map_page(struct device *dev, struct page *page,
- 
- 	for (i = 0; i < n_pages; i++) {
- 		gnttab_grant_foreign_access_ref(grant + i, data->backend_domid,
--				pfn_to_gfn(page_to_xen_pfn(page) + i + pfn_offset),
-+				pfn_to_gfn(page_to_xen_pfn(phys_to_page(phys)) + i + pfn_offset),
- 				dir == DMA_TO_DEVICE);
- 	}
- 
-@@ -199,7 +203,7 @@ static dma_addr_t xen_grant_dma_map_page(struct device *dev, struct page *page,
- 	return dma_handle;
- }
- 
--static void xen_grant_dma_unmap_page(struct device *dev, dma_addr_t dma_handle,
-+static void xen_grant_dma_unmap_phys(struct device *dev, dma_addr_t dma_handle,
- 				     size_t size, enum dma_data_direction dir,
- 				     unsigned long attrs)
- {
-@@ -242,7 +246,7 @@ static void xen_grant_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
- 		return;
- 
- 	for_each_sg(sg, s, nents, i)
--		xen_grant_dma_unmap_page(dev, s->dma_address, sg_dma_len(s), dir,
-+		xen_grant_dma_unmap_phys(dev, s->dma_address, sg_dma_len(s), dir,
- 				attrs);
- }
- 
-@@ -257,7 +261,7 @@ static int xen_grant_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 		return -EINVAL;
- 
- 	for_each_sg(sg, s, nents, i) {
--		s->dma_address = xen_grant_dma_map_page(dev, sg_page(s), s->offset,
-+		s->dma_address = xen_grant_dma_map_phys(dev, sg_phys(s),
- 				s->length, dir, attrs);
- 		if (s->dma_address == DMA_MAPPING_ERROR)
- 			goto out;
-@@ -286,8 +290,8 @@ static const struct dma_map_ops xen_grant_dma_ops = {
- 	.free_pages = xen_grant_dma_free_pages,
- 	.mmap = dma_common_mmap,
- 	.get_sgtable = dma_common_get_sgtable,
--	.map_page = xen_grant_dma_map_page,
--	.unmap_page = xen_grant_dma_unmap_page,
-+	.map_phys = xen_grant_dma_map_phys,
-+	.unmap_phys = xen_grant_dma_unmap_phys,
- 	.map_sg = xen_grant_dma_map_sg,
- 	.unmap_sg = xen_grant_dma_unmap_sg,
- 	.dma_supported = xen_grant_dma_supported,
+I suggest using workaround I described in cover letter.
+
+Also, for unknown reasons I didn't get your letter in my inbox.
+(Not even in spam folder.) I ocasionally found it on lore.kernel.org .
+
 -- 
-2.51.0
-
+Askar Safin
