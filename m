@@ -1,58 +1,59 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4CE5318133
-	for <linux-alpha@vger.kernel.org>; Fri, 19 Sep 2025 15:25:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7821F221275
+	for <linux-alpha@vger.kernel.org>; Sat, 20 Sep 2025 03:55:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758295505; cv=none; b=o7gfazqWGcOT4iwHrhewDFayVjVce950CIMw4Gz72w9bKhjaOOctkl69GM8MDSQBHImkgCwFYj2QouQf03+W8ph6VtJC9fXvQgOcxzHEWaRY2N6M5gXWCOAHVeI/4t0e8P5QF3whBbnYJcwIA/eY3V6Lr/dROzbxoO/A0gYZe4E=
+	t=1758340538; cv=none; b=LUIUg1bR14xBCtUghNCWiOsQyObIo+HL8UXTTU34CKNL4uqEOxP466zADwh/41VjvsvHgZGcXVTUmSADMLuW/WbsJDWHwz638AlfNdj6LFw/RNaixfT+n/kJ61SLD0ZNC1MUDaEXsR+ib323Q/lWDauaVHor8z6ZkGiZO/bZTlo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758295505; c=relaxed/simple;
-	bh=tIBWHHOOKfm2qL1G0oNEg1lQ/EY8RTTkm2B9w+25Bvk=;
+	s=arc-20240116; t=1758340538; c=relaxed/simple;
+	bh=wLR5A4WVJygISPHG42IIvYb+LPD25B9I3WH7jC2e5xU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XQTZHvCUoLrihlQM/OuyjS6vG6XwCmRBP/PAntNe2cCFb0I7rFtXhS21gy8GlDvp89MRhU8UcIkik2ABRuiIwOCdL+elwZ688fFWNGQVvnKvnKHuES5yeLSFrzFxgkzyQeA8Q+CRY108/sBOI4jAqaBIgR12XMO8WLIHr3HTSTs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=freebox.fr; dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b=xbo3W1UF; arc=none smtp.client-ip=209.85.167.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=freebox.fr
+	 To:Cc:Content-Type; b=R+ztk2LstOWH5b/Sj1xd6h3mVQ0E6e7f6FJs2YsDh/Cw9PBfaXrLglzFI9IZh+Wuga6Cri3LYu4tHwXGDOliVTAizg5hJvf+S4EveyEjun7832PSgfDsU+3Ku2eXBakF/wY5zk/6xeXc25nQle09wfV9AbX4/BIDk64M1+nOqZE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZFPKZ+Oq; arc=none smtp.client-ip=209.85.219.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b="xbo3W1UF"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-57afc648b7dso342233e87.2
-        for <linux-alpha@vger.kernel.org>; Fri, 19 Sep 2025 08:25:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZFPKZ+Oq"
+Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-e931c71a1baso3466779276.0
+        for <linux-alpha@vger.kernel.org>; Fri, 19 Sep 2025 20:55:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=freebox-fr.20230601.gappssmtp.com; s=20230601; t=1758295500; x=1758900300; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=EztjVQ+y07YMfegmHOd0VyK62XkODMWu0LdNE29WAS0=;
-        b=xbo3W1UFpKFkZ1p3cmir9bHExoubmn+zN65uKZIOYM/VNr4k3So7pYfDI6mX/D9Xs7
-         tKrFxrKGsa1OUV4/BaJm81tBW61J4ZGYYxqxZFHL+2WJXFRTEp/mhXDIaLf+cQRcgUXe
-         AYqPNZvLbxLN1AyYo7ig5n8eVxO+iPi1huE+4hW6lV7MZkf7YHIdjHXfXdto2VLmATJZ
-         knqRg3MYiebrHRGL5TV4krfrv3EaVDwqo3YKPYYlEuRSeFOsywbR4G16hcwfzRVUvkmK
-         +8rrea1TuR59LvTS19HlGLqGt+kLHJ+F5+322OVOV6/84SIcgYqHnsi5cc3ulWFd4ja5
-         pnpg==
+        d=gmail.com; s=20230601; t=1758340534; x=1758945334; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wLR5A4WVJygISPHG42IIvYb+LPD25B9I3WH7jC2e5xU=;
+        b=ZFPKZ+OqAAj1VhKugky3kjemp/VIqd75of38HGEmt1IOj91W4b7jLe+Myfu3ent1n8
+         I+OsNztO7baVS7SDNqQDhsKyRcudzp5fPl2dQ3EsKmIi5TGzzTSREF9BOYtdvwLtcCQ9
+         lX8BgfQDKyo0m2JfxIC+zD4CzDFgLzCucCTNnl0sqYXFOybMgodTGPU/RxeED3KpD6Ge
+         7yQG/mA18ZVwa9TAvZspdmtVMoFft3MmApalEp7/PJVnD7pAqdNfemDIdWOkktS1fK7N
+         5MIan1ZBYEJnEUm4lD9oNaRI/NjfTi3RIA4zVC5lAmPgo6eel/h/B86mXEMgdrCKJemE
+         DM2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758295500; x=1758900300;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EztjVQ+y07YMfegmHOd0VyK62XkODMWu0LdNE29WAS0=;
-        b=Xu5+MRD94wyYSn2FNxX9+XLTXgnI10lhaQD1PN6mwAeuS8daHT0teJCCyfR7PZBs+b
-         NEuhtDTzI6/7tsXCVhms6Dj2uDs+XxWDaNFs7tvDGLL7fmcNAQHuDgOpSqHL19OVfco9
-         Wr31lTBggXwbrhxVB9szlnXFnlz+UONLhl6mo1Du2VYsyLzlDnh2eVyecsuXV13hbKWZ
-         +uOP2wX7jRD+B+cUqAdbFv7R+6VrXlWkBkP3DpF8Wo1gkReYX0CtElJgA8KaLmB7e1Dg
-         dUQyNZJIEzziWki4ucewmT1W1tcWqxAR+pgNIc6UB+QkYDGJl7qEqMKgOBeSu8A8NDDV
-         t16A==
-X-Forwarded-Encrypted: i=1; AJvYcCVd3CnrlnRDrunb87j69ih6njRlNvF6GnxuILBIgsFdyjpvjoVovwGgWuGUox7758dbqiab/Bk8uFcchg==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz3i3BDSUjeqmudB+LqpDVSiWODUq3bV1j5cd9hvZnRzYbnogsr
-	PYK12fvNBF6B2T/h0h7oZar35DrtwEcy5/XYoDgLscOecT0F/ckY908XVUZ4H8KPt3LBD4dI1Es
-	0wwxvlCFxhSkMvxXWZTU2e3nBcbDqXBy2EPznSjtXTg==
-X-Gm-Gg: ASbGnctD2s6Lu1+JMerkLUw+RF5/QFzpS5rCa8mr8sfvqwaMJvNjsWTKwnvMOSIMT6S
-	iiC3HX/BcQRzvbSs3p744NoHxqyJXs2+zK1iDGyDGEtWgtyWAQZpDGRXp1TK/Av0+AKADQPoZRD
-	FgafaIjiL+3K2FpjcniOvwkov4bJVceH0XiNnig1L10a372zro4QwIUkqcHA5brJl5cIYRV8k2W
-	+mlfukszw5WcHA=
-X-Google-Smtp-Source: AGHT+IHin4gQus9SrkFEog2pTedfunr2Ers950l0f82oxrEtfjemfexmsAorW/Dsqdjvay/GpFMt6pfW/hwC+qBHF14=
-X-Received: by 2002:a05:6512:2c0b:b0:571:b70b:7dbf with SMTP id
- 2adb3069b0e04-579e2507c81mr1455897e87.17.1758295499599; Fri, 19 Sep 2025
- 08:24:59 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1758340534; x=1758945334;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wLR5A4WVJygISPHG42IIvYb+LPD25B9I3WH7jC2e5xU=;
+        b=AURfC1ggXxEMdPyGJbkEM/pxh9gbFftrpqNMjyZcyBwwajK6a8LOfobgFjCHW+lftb
+         gHORscqimIZZyu/G5bcDfohkxzAVeFX/Jy51c84RiKsRgkltIeCrbxv3st2XkirJDWDx
+         +phUay2pYwQra3pPhNlR4tF/hxq036+w8XcvGG/12+gV3K6YPh51vLws9/g38/vZXvWc
+         h/IIbR4YEcODmvpRV9AbA4MT0qWQ+LhQw+9cimzqHuA90DE0gGPsQkoxUovBWLKb1Hnj
+         5U7yy4YNoEygLv5uAgbzpmqSGO7do5+tPYzAd4zI1rZTb8N0yIP9wzE2L2ypNJU7BX0J
+         4mTg==
+X-Forwarded-Encrypted: i=1; AJvYcCXF5v4PgpDpSdhCiqB+MlXgYrBkNJw+s0SZXJh/ZKoAVb7t1M3PBaaqiDa96EiWa++N8dcAQlpsiVtEzQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz88IE6QD+OUPuHo7c3BLei/BmEB4WS4odmae+t0uE2KqK9aKDx
+	staibH4Qa4QiaGpHb1HN58VLGBVVr51WhQdDid/l7WVbAagnw9DjTAw6IjI7nWCoPLrZcIwb9LQ
+	u8QS83S4udlDBvKkQFKKOJkgu6LvXS/0=
+X-Gm-Gg: ASbGncsieqyFzXb72fDFtZgcumg92BTEKFg629SZWvBbnUF2KXmd+dlTXygNU+aVmQB
+	0PXe8x+L8KTGe869yZ+agec7YMBpvXsNvWzfMHRdJ6hfyhiJfpELXUymgh+bUYAWQXse/g8HEy9
+	t3r9gzRdpHM+NiYtzwQLVifvA1IPGbCtQV/fUHYDCsl0uENye43EDiUHhssTYJgXCfZxLjqxIJ5
+	pjbET8=
+X-Google-Smtp-Source: AGHT+IH7cxRQcDAWrx6iopGK0fgAvvotX/SwRt/T/KElvH4XQULrd96czgOrVv1CSvA0vDpbRNCMKcVlhfdowxEBryU=
+X-Received: by 2002:a53:b3c5:0:b0:622:4818:ce38 with SMTP id
+ 956f58d0204a3-6347f610c7emr3546092d50.37.1758340534336; Fri, 19 Sep 2025
+ 20:55:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -60,13 +61,14 @@ List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20250918152830.438554-1-nschichan@freebox.fr> <20250918195806.6337-1-safinaskar@gmail.com>
-In-Reply-To: <20250918195806.6337-1-safinaskar@gmail.com>
-From: Nicolas Schichan <nschichan@freebox.fr>
-Date: Fri, 19 Sep 2025 17:24:48 +0200
-X-Gm-Features: AS18NWBwMqIXE_dMXDlT0ngUIReSbekPPTszWv5gIfg03bAEg3Id33JL3Yqjedw
-Message-ID: <CAHNNwZAzecVcJXZmycX063-=p-M5jVkfStfgYVKJruOFo7y9zg@mail.gmail.com>
+ <CAHNNwZAzecVcJXZmycX063-=p-M5jVkfStfgYVKJruOFo7y9zg@mail.gmail.com>
+In-Reply-To: <CAHNNwZAzecVcJXZmycX063-=p-M5jVkfStfgYVKJruOFo7y9zg@mail.gmail.com>
+From: Askar Safin <safinaskar@gmail.com>
+Date: Sat, 20 Sep 2025 06:54:58 +0300
+X-Gm-Features: AS18NWCqg0xtU5KiNe17DWjmiPCEbBI_FSj5NCOyDGZFj_7oFaRqSu7O_vUKCrA
+Message-ID: <CAPnZJGDwETQVVURezSRxZB8ZAwBETQ5fwbXyeMpfDLuLW4rVdg@mail.gmail.com>
 Subject: Re: [PATCH RESEND 00/62] initrd: remove classic initrd support
-To: Askar Safin <safinaskar@gmail.com>
+To: Nicolas Schichan <nschichan@freebox.fr>
 Cc: akpm@linux-foundation.org, andy.shevchenko@gmail.com, axboe@kernel.dk, 
 	brauner@kernel.org, cyphar@cyphar.com, devicetree@vger.kernel.org, 
 	ecurtin@redhat.com, email2tema@gmail.com, graf@amazon.com, 
@@ -91,41 +93,27 @@ Cc: akpm@linux-foundation.org, andy.shevchenko@gmail.com, axboe@kernel.dk,
 	torvalds@linux-foundation.org, tytso@mit.edu, viro@zeniv.linux.org.uk, 
 	x86@kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hello,
+On Fri, Sep 19, 2025 at 6:25=E2=80=AFPM Nicolas Schichan <nschichan@freebox=
+.fr> wrote:
+> Considering that the deprecation message didn't get displayed in some
+> configurations, maybe it's a bit early at the very least.
 
-> > When booting with root=/dev/ram0 in the kernel commandline,
-> > handle_initrd() where the deprecation message resides is never called,
-> > which is rather unfortunate (init/do_mounts_initrd.c):
+I changed my opinion.
+Breaking users, who did not see a deprecation message at all,
+is unfair.
+I will send a patchset soon, which will remove initrd codepath,
+which currently contains deprecation notice. And I will put
+deprecation notice to
+other codepath.
 
-> Yes, this is unfortunate.
->
-> I personally still think that initrd should be removed.
+Then in September 2026 I will fully remove initrd.
 
-Considering that the deprecation message didn't get displayed in some
-configurations, maybe it's a bit early at the very least.
+> SMTP server I used wasn't authenticated to google, so all gmail
+> recipients were dropped. Hopefully this work better today.
 
-> I suggest using workaround I described in cover letter.
+Yes, this time I got your email
 
-I'm not too keen on having an initramfs just to loop-mount
-/sys/firmware/initrd, after all current kernels are able to handle the
-use case just fine.
-
-It looks like there is a lot of code calling into specific filesystems
-so that the initrd code can guess the size of the file system before
-copying into /dev/ram0, and I believe this is what causes the main
-gripe against initrd today. What is wrong with just copying
-/initrd.image using its actual size into /dev/ram0 instead of guessing
-it with the help of filesystem specific code ?
-
-> Also, for unknown reasons I didn't get your letter in my inbox.
-> (Not even in spam folder.) I ocasionally found it on lore.kernel.org .
-
-Sorry about that, When I used git-send-email yesterday to reply, the
-SMTP server I used wasn't authenticated to google, so all gmail
-recipients were dropped. Hopefully this work better today.
-
-Regards,
-
--- 
-Nicolas Schichan
+--=20
+Askar Safin
