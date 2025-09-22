@@ -1,149 +1,119 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7B5D213E9F
-	for <linux-alpha@vger.kernel.org>; Mon, 22 Sep 2025 14:29:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F7D8199920
+	for <linux-alpha@vger.kernel.org>; Mon, 22 Sep 2025 21:04:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758551351; cv=none; b=BR/dJ0AZu7NvBhd/srycmke6v8plZooiPyfU8oWRhanbfGvwwvpbz1/z89zF8g8c4cTNyiNmjuXjoPTc0vyWXhmPePfrZKYpJWnZS9Nv0A27Xyc0h1Xx7TjkWEP5pS0Nicme9EvwKPTUStJWO3MdrruygRYaHE0oFav1VtOPQYI=
+	t=1758575061; cv=none; b=hRrketfhdwi7cDhAG4fdLd+wat4ifzcLutb6eeX3PajSIrMkNbg5dDLxAUxc2Rnnlze7IiQhcfox1FvNvpFRV5liCiXPZGeSODdA2Sz0KAVER9tXsmRBR4JofAMvhQBF1nZuaJx4xQHs5XM4CWrqfccYEYi5tG/qEHlN64PJO8w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758551351; c=relaxed/simple;
-	bh=zds9c11i5EPuC+LW5E2qVk5slu7nHVv1cCYASY1uK64=;
+	s=arc-20240116; t=1758575061; c=relaxed/simple;
+	bh=IR27taLTFITOYV4B00ku0qQKC4bEZ+4qpChrvPMvsvk=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KdX7rbLzNZUYZVkNiKvbh7EIMQ2Ae1/+NqHc28lzmTEViFXEGrErJOHzyKMflki4kqkZ/2C/tIdqgUktsmMrSHDXmimI9wN3xFnMBa7zz+9EeSiqr/3HO0b5kReBUcIJM0nzGqI9YKHBTS2frk54CyR59znzGUuJgh+tH5V4eDE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=freebox.fr; dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b=T5tm19TQ; arc=none smtp.client-ip=209.85.167.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=freebox.fr
+	 To:Cc:Content-Type; b=DE9wa3bXQ84mwE+dERTFfAM/aLcHkP+7r4MyhV1qbPeqsQvLm84l7ZmNFNtCDYJTVpuhZCKvvLVOz3qbid2tFigrSm/15oZmJDQbjVax/erS1hKxtbYhqPAT9kbbKUBHkzHP1sTBenAGci6hv/RyWX/jbdkDuXbz/n1gkJdodrY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BRjSels8; arc=none smtp.client-ip=209.85.218.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b="T5tm19TQ"
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-57cfe6656dcso1483997e87.1
-        for <linux-alpha@vger.kernel.org>; Mon, 22 Sep 2025 07:29:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BRjSels8"
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-b07c081660aso881602666b.0
+        for <linux-alpha@vger.kernel.org>; Mon, 22 Sep 2025 14:04:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=freebox-fr.20230601.gappssmtp.com; s=20230601; t=1758551345; x=1759156145; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1758575058; x=1759179858; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=zds9c11i5EPuC+LW5E2qVk5slu7nHVv1cCYASY1uK64=;
-        b=T5tm19TQZikqjHqoMR54+Q7+U/JgAbrwxCDjAEr+j4BV3oKJ1vYACVblsq/0dgQB3O
-         xzcE44eyHkSt3+1/LwS8iG05NDQybwpGXmErJGsX7qf1JoHnxQE/QJKsAyQCq5BZ8yUL
-         fZfsv/oGGtZ7K0RaFe8fFXZtm3jS4C5jkLwGskUTTKy01oseY4elZgmJ1wcia/Nwx29N
-         /akdQTqyJ1yRSFcBAOKV1BSGnn1RLnJEPHIfsiagl3HTh7OEmakPzgo3DZkunVSmL2Xx
-         hH2z75SXfyBjFg0mXpIzvJjI6rXfLJCfOxCsk/r78caU8Q500JO1XsPO5Zy2dD22Jb+z
-         2rDw==
+        bh=uh7Hyul+h5lwAcNtxj/DI9qojjFccIciQ/b88SlaL0g=;
+        b=BRjSels8DOVs7qW6xbfiJMfD/GfyjPcjHOVYe2Rgt+KQAzD3xMEVJXn/vZai3COf86
+         269dksgcmZHtamVFgfH8sYfTPVXXWSuMj9MoViEJ5+4HLu8qwGyL8EUOtmG2hqR5p35V
+         yI+hLu0BNSLw4AGDXrR09NtFb5VtSS8BBpbe5PJujhaqK2PoEpJVh1aX00FoUE8A2jMh
+         S65Fu9Jqc6iQF0ibDHrITbxfN0HoM2BjS0IqXUlVyhwKuWSvIFhUUw5rAt3xLQDHs/5D
+         F1s6d0NCxxk9yD17M7mGb0zy+bcuTCjw3cgLGT8FGCPFRs0GsBG4kg471XqJ3SJQ2cCK
+         lVVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758551345; x=1759156145;
+        d=1e100.net; s=20230601; t=1758575058; x=1759179858;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=zds9c11i5EPuC+LW5E2qVk5slu7nHVv1cCYASY1uK64=;
-        b=iwKoh0gmUBjsWRRqhSH3wLdPZHdZE56LKbfV+8uCcsC8AFKAtZse9LB+RA0CaSIens
-         LuzihNV/BWRpzDaWdjYkbvx3fOHLViwoqaNRXrNu8DjsAo4vl1bTaQqc77xAWlKVvfTt
-         Hx+gDZQfygS0HqSG2pGoh4F2ZY+O+ZSQu2KB74S/02bcRhcxyrzNGb4nWaDG9/omlLMU
-         kTnm9gG0agGeA+45LxssW+unmALztF9dycUQYZOBZevvlDkHQNxhGM8I7bqYkMMyEKR5
-         9wwWlNFlnjGUeRccCp+79iWRYC7wkQfGJaIhbxmr3MDG81Dch68WMGbiPMWKOghLmt/Y
-         ZvUw==
-X-Forwarded-Encrypted: i=1; AJvYcCUEY/7f5u3I7U82M8Yb6ogHd5O24dD0rhdFMZ3nE3ys3GvsKD+P64Vqh/aUlOuboEGyu6ZDqqPFbQolYQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0YyVFY5ApAX+ydVS2/Vu4+xv1l8w7pVijNUWwSgkcGkFK60ZouyB
-	dri+0fhfat4e2Yl6yjsttyk4X6KGArtcJSFlWtFPYrZ1vZ5zoBlq6+9LDR2v4dYKXkgOFK61rIK
-	LYtI9H32Nknx+QopkVxRuMat+bBEcEfWUW3GHmbnkFQ==
-X-Gm-Gg: ASbGncuRp4maq9k6OERJyuNeFwQz44Di24kCVGyxWWh7Lnq6xBX3iSUpJ3YND+FtI1V
-	cZR2Y095KsySuTzk5/0cwGcrX5Mh98EKcLuoJcyq89Lwkct1469TvAEjyA45WsVCXejGiFCqcrA
-	GbGrOnoZfWXP8Ee2X1gAvi0/W4wHyd19izf11Pt+Tiri64VrsBo/7e4vSCDUrVVJXnpEL4azT1V
-	L6m5KWSjzspcRA=
-X-Google-Smtp-Source: AGHT+IF9Kx0YHTgWZximr8IphichwJGTQ/wmiFKfxBKU7xEPIwY53K1eZ5EsUZqb+vcW1xAllqgOcQU2VEEacURTmEE=
-X-Received: by 2002:a05:6512:4389:b0:57b:478b:d8a6 with SMTP id
- 2adb3069b0e04-57b478be162mr3313173e87.35.1758551344116; Mon, 22 Sep 2025
- 07:29:04 -0700 (PDT)
+        bh=uh7Hyul+h5lwAcNtxj/DI9qojjFccIciQ/b88SlaL0g=;
+        b=UqsQ8RUIbmUb7uDP0bTUoC0F1AbQFZaf1sp+5v/8SoL8efb4Tiz9TqW+Y/Madh+9/3
+         3jVYLWIADPKufVj85uKSfY8bUCWjnQYQPn9AZIwzptIr2Fw+30F8aXKmKJgtzFyTsdon
+         AyJ9480pbboI+Ug8cpLwGVEEOETF/ZYTKCFOE9GGSqSMty1LG6ZCgNrBMOU+g8ql6YpP
+         wM/ncFhQkLAvAhtdm7Ambwed9BQJ8jdsJcET6eufkJCHN1WVFRYR5RfJGXyyFsv0+XPB
+         xfG9I7zd9hm68mZW9cXv8HkPjNeWqLeAN0xOZ+0KyfRxc8ZPFkLHZKHJ9wErCT8ilERQ
+         xNjQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW/83Y2AMi1mP6MPAl9Pk1ScIZcd+Q45IY78CSnY0x75Cf+AVKK7lPEk+JdiVuqZSNHd2dFlYcvQs0xUw==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxCwnD7Y7wJ00wp/NrPAqsBGXxbqaRwFgCL8+kr9/FvN5BupJpy
+	h7BCf/B6uxwt1XVR30lMPWd+V23y3jwULze4RRLaZ9D3zPrFJlu2bmcliE4KG+SxV4h/Gbrk+KQ
+	HUjGo+jrv6sIksSb1OqYm72T4jQv9ivo=
+X-Gm-Gg: ASbGncsT9NDhRLVxK1K1Q3Fe4YjoyIPlLs6iqZCPTMmJjoiZEyjaWMl+x3jtykUfm1d
+	V1J9jCrLiLAQ0jInVTVhmigRIetDRApOgHcNOFwooyeVQM44mQemJ1xerF+TRz7Ta6gIM+aRrrk
+	2Qx/1q8vLBtCIj+OMMssFAiyEnNQQtu79TN1xMzHbHnNWLcVpC10ntXfffuvSMdoM7SVhdrSfka
+	RSs7FpIOvI5CHKWpd8=
+X-Google-Smtp-Source: AGHT+IFr06URzpJ6aUp4DpRFc3gqIF/QKzvPatkXOguRNAK+5vyBht27Wi77YYUi7cw/QJFO8eHWzN6Nc8/pR3lh7aU=
+X-Received: by 2002:a17:907:72cb:b0:afe:d590:b6af with SMTP id
+ a640c23a62f3a-b3026c84e0cmr5356866b.20.1758575058272; Mon, 22 Sep 2025
+ 14:04:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250918152830.438554-1-nschichan@freebox.fr> <20250918195806.6337-1-safinaskar@gmail.com>
- <CAHNNwZAzecVcJXZmycX063-=p-M5jVkfStfgYVKJruOFo7y9zg@mail.gmail.com> <CAPnZJGDwETQVVURezSRxZB8ZAwBETQ5fwbXyeMpfDLuLW4rVdg@mail.gmail.com>
-In-Reply-To: <CAPnZJGDwETQVVURezSRxZB8ZAwBETQ5fwbXyeMpfDLuLW4rVdg@mail.gmail.com>
-From: Nicolas Schichan <nschichan@freebox.fr>
-Date: Mon, 22 Sep 2025 16:28:52 +0200
-X-Gm-Features: AS18NWBjmNA3KBj8cPrgwDAVm5OX9a5odWP7LbRlHvhoE96nP3yo2_PGoZ1JbG8
-Message-ID: <CAHNNwZC7gC7zaZGiSBhobSAb4m2O1BuoZ4r=SQBF-tCQyuAPvw@mail.gmail.com>
-Subject: Re: [PATCH RESEND 00/62] initrd: remove classic initrd support
-To: Askar Safin <safinaskar@gmail.com>
-Cc: akpm@linux-foundation.org, andy.shevchenko@gmail.com, axboe@kernel.dk, 
-	brauner@kernel.org, cyphar@cyphar.com, devicetree@vger.kernel.org, 
-	ecurtin@redhat.com, email2tema@gmail.com, graf@amazon.com, 
-	gregkh@linuxfoundation.org, hca@linux.ibm.com, hch@lst.de, 
-	hsiangkao@linux.alibaba.com, initramfs@vger.kernel.org, jack@suse.cz, 
-	julian.stecklina@cyberus-technology.de, kees@kernel.org, 
-	linux-acpi@vger.kernel.org, linux-alpha@vger.kernel.org, 
-	linux-api@vger.kernel.org, linux-arch@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-block@vger.kernel.org, 
-	linux-csky@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-efi@vger.kernel.org, linux-ext4@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-hexagon@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org, 
-	linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, 
-	linux-snps-arc@lists.infradead.org, linux-um@lists.infradead.org, 
-	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, mcgrof@kernel.org, 
-	mingo@redhat.com, monstr@monstr.eu, mzxreary@0pointer.de, 
-	patches@lists.linux.dev, rob@landley.net, sparclinux@vger.kernel.org, 
-	thomas.weissschuh@linutronix.de, thorsten.blum@linux.dev, 
-	torvalds@linux-foundation.org, tytso@mit.edu, viro@zeniv.linux.org.uk, 
-	x86@kernel.org
+References: <cover.1758219786.git.leon@kernel.org> <0c64474985af55b1aa934b857808068a0e609c6e.1758219787.git.leon@kernel.org>
+In-Reply-To: <0c64474985af55b1aa934b857808068a0e609c6e.1758219787.git.leon@kernel.org>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Mon, 22 Sep 2025 23:04:06 +0200
+X-Gm-Features: AS18NWDVFMZZnWEreuo7vPXyYUB8RQkWA0R_TESbZnVi7LcEMvax5dEHcVzVJVI
+Message-ID: <CA+=Fv5Q8dVUFVBh82mAe=fy3mV6mWtQT_0pBPLQwLNBt3f8E1g@mail.gmail.com>
+Subject: Re: [PATCH 1/9] alpha: Convert mapping routine to rely on physical address
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Leon Romanovsky <leonro@nvidia.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, Andreas Larsson <andreas@gaisler.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, "David S. Miller" <davem@davemloft.net>, 
+	Geoff Levand <geoff@infradead.org>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, 
+	iommu@lists.linux.dev, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jason Wang <jasowang@redhat.com>, 
+	Juergen Gross <jgross@suse.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	"Michael S. Tsirkin" <mst@redhat.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	virtualization@lists.linux.dev, x86@kernel.org, 
+	xen-devel@lists.xenproject.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-[resending to the lists and Cc, sorry I initially replied only to Askar]
-
-On Sat, Sep 20, 2025 at 5:55=E2=80=AFAM Askar Safin <safinaskar@gmail.com> =
-wrote:
-> On Fri, Sep 19, 2025 at 6:25=E2=80=AFPM Nicolas Schichan <nschichan@freeb=
-ox.fr> wrote:
-> > Considering that the deprecation message didn't get displayed in some
-> > configurations, maybe it's a bit early at the very least.
+On Thu, Sep 18, 2025 at 8:45=E2=80=AFPM Leon Romanovsky <leon@kernel.org> w=
+rote:
 >
-> I changed my opinion.
-> Breaking users, who did not see a deprecation message at all,
-> is unfair.
-> I will send a patchset soon, which will remove initrd codepath,
-> which currently contains deprecation notice. And I will put
-> deprecation notice to
-> other codepath.
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> Alpha doesn't need struct *page and can perform mapping based on
+> physical addresses. So convert it to implement new .map_phys callback.
 
-Thanks
 
-> Then in September 2026 I will fully remove initrd.
+Hi,
 
-Is there a way to find some kind of middle ground here ?
+SInce this patch affects the Alpha platform I got curious and decided to
+try it out. The patch series requires some preparatory patches. Leon
+provided me with links to his dmabuf-vfio branch, which had the
+patches (and some prerequisite stuff) applied already.
 
-I'm lead to believe that the main issue with the current code is that
-it needs to parse the superblocks of the ramdisk image in order to get
-the amount to data to copy into /dev/ram0.
+Based on the dmabuf-vfio branch,  I've built a kernel and tested it on
+my ES40 Alphaserver, the kernel booted fine but after a while of
+moderate filesystem load I started seeing some ext3/4 related error
+messages in the system logs. Rebooting with my old kernel into
+single user mode, I was able to recover the filesystem using fsck.
+Clearly this set of patches breaks things (at least on Alpha).
 
-It looks like it is partly because of the ramdisk_start=3D kernel
-command line parameter which looks to be a remnant of the time it was
-possible to boot on floppy disk on x86.
+I haven't yet dug any deeper into the root causes of the file system
+corruptions and I've only tested this on Alpha, maybe there has been
+more testing done on other platforms targeted by this set
+of patches?
 
-This kernel command line allows to look for a rootfs image at an
-offset into the initrd data.
+Regards
 
-If we assume now that the rootfs image data starts at the beginning of
-the initrd image and is the only part of the initrd image this would
-indeed remove a lot of complexity.
-
-Maybe it would be possible to remove the identify_ramdisk_image()
-function and just copy the actual size of /initrd.image into
-/dev/ram0. This would allow any file system to be used in an initrd
-image (no just romfs, cramfs, minixfs, ext2fs and squashfs), and this
-would simplify the code in init/do_mounts_rd.c greatly, with just the
-function rd_load_image() and nr_blocks() remaining in this file.
-
-I can send a patch for that but first I need to sort out my SMTP
-issues from the other day.
-
-Regards,
-
---=20
-Nicolas Schichan
+Magnus Lindholm
