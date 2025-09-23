@@ -1,65 +1,100 @@
-Received: from out-178.mta0.migadu.com (out-178.mta0.migadu.com [91.218.175.178])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E0B72773C1
-	for <linux-alpha@vger.kernel.org>; Tue, 23 Sep 2025 17:09:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 961E6BE5E;
+	Tue, 23 Sep 2025 17:18:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758647342; cv=none; b=Dyd+Q/2s2QW+3XUCMPI0kUJuG+unXb+Tw5Ys1D9Vf0Y+61EyVvBbW0oNXIT1kuDwy2jlhf61Wt2CdAwZdjTHuluCpemoxuIPqdaQDfj1O9V0sheKCH7QHflgk8wLJ0JOiRQTJUO+IimVE2uGoz2wp9Lq/Ht/Bq08IkfyQbceoDs=
+	t=1758647903; cv=none; b=GepWLqRIOiy4pfD252FPIfhUZpylCtHadQYQHb0PEEb70Hd+UzpX15O640rC076KURcMxnXIH7bivrPbRxUyX+QrbP5l7bWHkBJPnrtgQivA2Qtd2R0bDBbLNAM4WehG+1YRhstMzcAj6lW14wqJ0lI7oy39nB6sOFMyGXVpdcw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758647342; c=relaxed/simple;
-	bh=qHdjBPukcKBf/nO0/XHSuRFIz0++JyR1IknsglQF7Gk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=dp2PFipH3EIVdt5UVHDDRFP553D2O+7/f1kRnVdtImeY2khaYfjOWvXQRKZrO2NI26hXXQNVJFl0lKXJcTQX1zHPq/UGdxggvc0/0ebWDPbOkw+yfZJhF8WWwReRWkabw9pCmh6EAfLt96zMDmoiFgFERIH/CZV8W6gXyaxWXak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=J7swDqH6; arc=none smtp.client-ip=91.218.175.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1758647903; c=relaxed/simple;
+	bh=1ANX/1Q+c1YQm6ycMdbCkLhJt5M0dGUVsHIE7DPPmR4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qLP4+x3ozS2iaSJimCFmxQilZMCS5nzB3JAO/wePOS5MdtQQeAbjsNPiJ1piQJ32YeUeGIsgPA7STfTYVqbIMXLfD1lS0LzEewjgkfKaUjQuTONs2tSBTmKMmIvGU1ioMR8/jclhBG7e8tzpFY9bR9egzaSqesWPyP+cW60sqVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g5Jqi9yu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="J7swDqH6"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1758647328;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=XGuMY/GbD4gYyloiK9YujD+XEG3K0ofKYdm5wva+Ww0=;
-	b=J7swDqH6sZYcIlCwdfCRvhLKwjvzkrZV52cbzbxEpzTjXnhc4ZiN19ThNOZgYlEExmi0xp
-	U6pXnsTJ2UVbSTYbBr/62NowseAA0WjnDY8FEebcRq2Rzbew49gfvLJ5v5M35NwLi/jWkQ
-	q8hocsNQuyzVYer7hc/9GAmGWVxM7Pg=
-From: Thorsten Blum <thorsten.blum@linux.dev>
-To: Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>
-Cc: Thorsten Blum <thorsten.blum@linux.dev>,
-	linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND] alpha/boot: Add .gitignore ignoring vmlinux kernel image
-Date: Tue, 23 Sep 2025 19:08:34 +0200
-Message-ID: <20250923170837.1846683-1-thorsten.blum@linux.dev>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g5Jqi9yu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76194C4CEF5;
+	Tue, 23 Sep 2025 17:18:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1758647903;
+	bh=1ANX/1Q+c1YQm6ycMdbCkLhJt5M0dGUVsHIE7DPPmR4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=g5Jqi9yueMAnnH73toGC0xOJKxvg0qa4gga/SeRhYNDlfhLJMDwAYoyYF5OeZMllT
+	 4wGYFwIT9tNhvxI7Fwmxeam4DFzzKoOpEvYF6KzT3sugNB9IZN5QFtnFbWNJKdyahQ
+	 njhRkpS4V2fDEMCIbaKPb5Fvro/sH2PrgzN3QArdRquI6/hD8MqkvT+BpL3TaOekdf
+	 ivzyZBCGcNieZxwvItwvCdr8sC9432gSLRdJ+Qt9NVztv9FJs9EoyOLvflbrcT7TLo
+	 fCDKOXnJOo3pz8pFrFpZX02l/lSsNuJ1YSx2nfsXC1cIkAfhePf3pibh9dO8eHGKV8
+	 GZaMzjVv7a/9Q==
+Date: Tue, 23 Sep 2025 20:18:19 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Geoff Levand <geoff@infradead.org>, Helge Deller <deller@gmx.de>,
+	Ingo Molnar <mingo@redhat.com>, iommu@lists.linux.dev,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Jason Wang <jasowang@redhat.com>, Juergen Gross <jgross@suse.com>,
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Matt Turner <mattst88@gmail.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	sparclinux@vger.kernel.org,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	virtualization@lists.linux.dev, x86@kernel.org,
+	xen-devel@lists.xenproject.org
+Subject: Re: [PATCH 1/9] alpha: Convert mapping routine to rely on physical
+ address
+Message-ID: <20250923171819.GM10800@unreal>
+References: <cover.1758219786.git.leon@kernel.org>
+ <0c64474985af55b1aa934b857808068a0e609c6e.1758219787.git.leon@kernel.org>
+ <CA+=Fv5Q8dVUFVBh82mAe=fy3mV6mWtQT_0pBPLQwLNBt3f8E1g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+In-Reply-To: <CA+=Fv5Q8dVUFVBh82mAe=fy3mV6mWtQT_0pBPLQwLNBt3f8E1g@mail.gmail.com>
 
-Building the kernel creates the untracked kernel image file 'vmlinux' in
-'arch/alpha/boot/' - ignore it by adding a new local .gitignore file.
+On Mon, Sep 22, 2025 at 11:04:06PM +0200, Magnus Lindholm wrote:
+> On Thu, Sep 18, 2025 at 8:45 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> >
+> > Alpha doesn't need struct *page and can perform mapping based on
+> > physical addresses. So convert it to implement new .map_phys callback.
+> 
+> 
+> Hi,
+> 
+> SInce this patch affects the Alpha platform I got curious and decided to
+> try it out. The patch series requires some preparatory patches. Leon
+> provided me with links to his dmabuf-vfio branch, which had the
+> patches (and some prerequisite stuff) applied already.
+> 
+> Based on the dmabuf-vfio branch,  I've built a kernel and tested it on
+> my ES40 Alphaserver, the kernel booted fine but after a while of
+> moderate filesystem load I started seeing some ext3/4 related error
+> messages in the system logs. Rebooting with my old kernel into
+> single user mode, I was able to recover the filesystem using fsck.
+> Clearly this set of patches breaks things (at least on Alpha).
 
-Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
----
- arch/alpha/boot/.gitignore | 2 ++
- 1 file changed, 2 insertions(+)
- create mode 100644 arch/alpha/boot/.gitignore
+I will try to setup Alpha architecture in QEMU in following days, but
+would like to ask first. Did you test alpha on clean v6.17-rc5 (without
+my patches) as a reference?
 
-diff --git a/arch/alpha/boot/.gitignore b/arch/alpha/boot/.gitignore
-new file mode 100644
-index 000000000000..4abc9c8ab7d3
---- /dev/null
-+++ b/arch/alpha/boot/.gitignore
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+vmlinux
--- 
-2.51.0
-
+Thanks
