@@ -1,481 +1,126 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26FAD2264B9
-	for <linux-alpha@vger.kernel.org>; Thu, 25 Sep 2025 13:12:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 626A322D4C8
+	for <linux-alpha@vger.kernel.org>; Sat, 27 Sep 2025 19:20:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758805954; cv=none; b=c8wgmUoY3VCHXt552q1TAsLY7KMMz7wnpDXaodu0BWzppR2br5StEACt2+KsQZz1HLdwNJTTBJ/RzyHuUfqzFIsLBgqBpW6hVdeQZmC0NegpEcmTBMX7HXK9zFMOHy4cYDN4aCWsN/usU9FHknWiAmvtmbk/oB82Ru1EWemQykA=
+	t=1759000830; cv=none; b=bxHamInJN9AeUI6CuABavvjUKJ8ozMZK0GQMWQ0qZAy1fXhTHU+DauPw3F/MP0nlKSao+HVO1zR3pVAFZM5MCFoE7/FAhEspeLL2IBqgWP9jvx92AaMdZiQkQ76LkT36kc8friq1+Gn4l9Afl16LzfkC+vMHlJ15XKDf6P7BHU4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758805954; c=relaxed/simple;
-	bh=9AXpZB1bwcU/tOfhENucqnGAndFUojEuOkjiz/Zv4RQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=gEdzbcP6MaKxwR36aMg2vh5L9O3NrrfvUqeEEOyaSUO2fGEaRSe6cEFrqPMboXhl3PRvSgSfwqwSVqeEk+t66En4zO5hU3W5uq1sORsnj8y0U3sEA3YsFimH+hdFp6JCxUVHj8swT/DmoHXBYIr0CCoGcDfUPwiFQl0tmnzMdw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr; spf=pass smtp.mailfrom=freebox.fr; dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b=CRz+5vlS; arc=none smtp.client-ip=209.85.221.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=freebox.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=freebox.fr
+	s=arc-20240116; t=1759000830; c=relaxed/simple;
+	bh=yoeBWfsz0Rxzfbgk6BToAOC/vOnboIpPuqC1fyVrHZ8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jWtWuK690bAWFh8DOIVPUcK8Gqs7Ysdv/Onm+ufl2QAVy+UkFGnQzSgqqWkwkfQ8DNbTxefKHjiShfkMxDmYkMsM3/xuxDM40kA5T+XqfMtt5XOjen0wDsxl2FyaamJb0hUPpDGdiPPtwosZ1SuJGMhFo9ADk+16aF0REhe7WOQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LmXL504U; arc=none smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=freebox-fr.20230601.gappssmtp.com header.i=@freebox-fr.20230601.gappssmtp.com header.b="CRz+5vlS"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-3fc36b99e92so1277642f8f.0
-        for <linux-alpha@vger.kernel.org>; Thu, 25 Sep 2025 06:12:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LmXL504U"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-634cef434beso1579661a12.1
+        for <linux-alpha@vger.kernel.org>; Sat, 27 Sep 2025 12:20:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=freebox-fr.20230601.gappssmtp.com; s=20230601; t=1758805948; x=1759410748; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NfJVwYFcsQ06QJkEnurciWiF3KgCM9rgqn4VVbABEtQ=;
-        b=CRz+5vlS551m+/ibrrRNCR05aMB/XHm006u7vorJTWL8KnZICEOAUANVKfnYA17O6n
-         CNSPshs989BTySJxhVJjDQVgMGaKDdMiH3CECJdyi/M1fe2VRT3raSjIKb/Hlvwh7G6v
-         JeK6qKCSPjuD07vK1RwG2F5a4t5BpVDGoO8/gxEqKiTZfKvqJWXcWT9pTCarqVnQsLHE
-         5ucPrcXT5w4T3QmqA0pfGPahpuB/tMMPUBNHICg7bBcyx9MvrPir/Z3ASpVDEUZRuat+
-         Emr0AO0ruL/nGstrHje868zLQxrrGECkqEwR4Q0rk20LDfrLBaIEK7TCh5xcMBb3bFRm
-         o72A==
+        d=gmail.com; s=20230601; t=1759000827; x=1759605627; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=BpNpqT8E7PV/s4bEDWlZ98/qvJvoxkZccIvsTmWeJBY=;
+        b=LmXL504U0c1QG2jy3KW+WIDtc8+FAs3E23849eS0e2Vkfl6p7fq4KCBQzcNYUmMMIn
+         bO0wPHikSYdv/aQEZohRb1KS8AH0g5iWXW18Pok5gfQIfrLPlXE8xgPLz0wMe6Et9dqY
+         1UF4yCh+HhhIWiJYUyYS+Rt26rLu5/8v+kDBoYFTm3wwiU3GCB42340BcFn7AfOte65Z
+         sSHHLLPoaIcQhBGE0YW7htO5AiI2qeQIqcYmyE67vPfGJi6ZVV23XOcsazphMjXG7MCS
+         HjtXRnd2nZGBgrVo6mX9eSs5xkZiwhHmhjUSkhNFCoZk4zaIwt9nZJcW+BgI1CKJcZzn
+         QWCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758805948; x=1759410748;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NfJVwYFcsQ06QJkEnurciWiF3KgCM9rgqn4VVbABEtQ=;
-        b=FvKrNEKPywmmrUCeftszNzG1nyWjFghqzJR4tHucBlftAI9Q5kCK3QbPrCWgWc1Hom
-         5FynpeJmnFJnMA/jpy0Mb1Gor85TAjTWX3GFJLR1q5IDpeKaxGXS8ltFL++9t7ti4n9S
-         ZyN1n6fAw6Nn1Ns14nUOFpMQWSQUNv26k5NPDRChhOMLQ7BOCaYF/lt8qgRtcSYkacWw
-         ZyADQOS+ZePoDxO8sdfB19MMfOoWwrLC2xvwFD3L2+88H9YgNyJ6QE09De0MeuHK1r8d
-         owTGeMGo8D3/lTgQsmBzfnDRf1Ke6ul/9pUC4ySb3NNCnS9f89x4ZtjVB0o7qjPQ2m+P
-         RtcQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX+AaSP7FWbqH8CnIjS68WbijFNtkhe1Df26AF40Xc49aN8wPs9Lxo7+wrlaNIvYlhtMF8vBuiUee6Zvw==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwN/sXr/DLUrJhtLXLjThz1H1zHK6aAYBeViRmufFNY/HHvNYhP
-	CJhyhTGBSX9Ca1eGgcUrPK5UeJzww89MBC0E1hcD4I1NDgXKhso6xTKxRkov/GLWaZ8=
-X-Gm-Gg: ASbGncsyCkLirRuC0DGNE6vebIUiLSPve58q8c9BbH8T+jiy6H56B2UCW3X0zF5j/Mh
-	UfyPTCQFCNZ8pSHqZ5oyd4pL6C1tMLxiLZfciQkoTcKCu50krRpLDDTuPlPYsyx9erJXQE/bEOx
-	CgZgRN379FdIdImjvn1XMHgSDTRAWIWERxUJKs8QuRvS/l0gA5B6wLqxLLMkKEn96MTnlaylryg
-	IWVIoEa9SNYdowbrNrPT1e95wE08Um3rL7LRDdkf/fAGn6UZtpNujdLimYaqEFLr5zqaStlMZiR
-	eV9iabUn72KPdBfZrps/1kN0LJwBk5ISqCyBaNdsTKbXbuQeBQsyNOpC1HBAXImy1rxO3bb/vao
-	rnkLKEklHdUP9t33uMBuuh62UUDAT0Z977ZqAgIde9Vd7i5hzdA==
-X-Google-Smtp-Source: AGHT+IGfEDsgYy1Y3V7mn/9vw12xwbotyOf9S0qvgxiLF/dTs1GE6jSNXI03j1w/2hgZi5tVGzAx+Q==
-X-Received: by 2002:a05:6000:290e:b0:3fc:cbfc:fbee with SMTP id ffacd0b85a97d-40f65bbb807mr2115268f8f.19.1758805948078;
-        Thu, 25 Sep 2025 06:12:28 -0700 (PDT)
-Received: from daria.iliad.local (freebox.vlq16.iliad.fr. [213.36.7.13])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46e33bef4b4sm32929635e9.20.2025.09.25.06.12.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Sep 2025 06:12:27 -0700 (PDT)
-From: nschichan@freebox.fr
-To: nschichan@freebox.fr
-Cc: akpm@linux-foundation.org,
-	andy.shevchenko@gmail.com,
-	axboe@kernel.dk,
-	brauner@kernel.org,
-	cyphar@cyphar.com,
-	devicetree@vger.kernel.org,
-	ecurtin@redhat.com,
-	email2tema@gmail.com,
-	graf@amazon.com,
-	gregkh@linuxfoundation.org,
-	hca@linux.ibm.com,
-	hch@lst.de,
-	hsiangkao@linux.alibaba.com,
-	initramfs@vger.kernel.org,
-	jack@suse.cz,
-	julian.stecklina@cyberus-technology.de,
-	kees@kernel.org,
-	linux-acpi@vger.kernel.org,
-	linux-alpha@vger.kernel.org,
-	linux-api@vger.kernel.org,
-	linux-arch@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-block@vger.kernel.org,
-	linux-csky@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	linux-efi@vger.kernel.org,
-	linux-ext4@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org,
-	linux-hexagon@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-m68k@lists.linux-m68k.org,
-	linux-mips@vger.kernel.org,
-	linux-openrisc@vger.kernel.org,
-	linux-parisc@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-s390@vger.kernel.org,
-	linux-sh@vger.kernel.org,
-	linux-snps-arc@lists.infradead.org,
-	linux-um@lists.infradead.org,
-	linuxppc-dev@lists.ozlabs.org,
-	loongarch@lists.linux.dev,
-	mcgrof@kernel.org,
-	mingo@redhat.com,
-	monstr@monstr.eu,
-	mzxreary@0pointer.de,
-	patches@lists.linux.dev,
-	rob@landley.net,
-	safinaskar@gmail.com,
-	sparclinux@vger.kernel.org,
-	thomas.weissschuh@linutronix.de,
-	thorsten.blum@linux.dev,
-	torvalds@linux-foundation.org,
-	tytso@mit.edu,
-	viro@zeniv.linux.org.uk,
-	x86@kernel.org
-Subject: [PATCH-RFC] init: simplify initrd code (was Re: [PATCH RESEND 00/62] initrd: remove classic initrd support).
-Date: Thu, 25 Sep 2025 15:10:56 +0200
-Message-Id: <20250925131055.3933381-1-nschichan@freebox.fr>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <CAHNNwZC7gC7zaZGiSBhobSAb4m2O1BuoZ4r=SQBF-tCQyuAPvw@mail.gmail.com>
-References: <CAHNNwZC7gC7zaZGiSBhobSAb4m2O1BuoZ4r=SQBF-tCQyuAPvw@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1759000827; x=1759605627;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=BpNpqT8E7PV/s4bEDWlZ98/qvJvoxkZccIvsTmWeJBY=;
+        b=fVC5kvN2voJdf55x9SdMloVN+fwe/XGivocCpt1g/e0sn25mQdyXPOkmnZlPjXNFN7
+         D5+qZW2tgBiJMIxZZEFXTxGLQPWEoc1oR4oS5DYwYeuEEXoKY/3fl3GeWDUDCGk/Tchp
+         +5IzlesoXueloVyyLfKSTpqp5aaOHotBeRAkBl1i81ffm/OLBKwQl8L3FLkjzJolVZj/
+         yyJ/gPID8pf3P9fd1Ae1FWmgcJvssJQQykGIusWw7wIGobildcS0rOCapeNT3mgBvYnP
+         bXQk39p8rLuy+ZcrvsVUfAZGYQT9CUcpc3kF22oBoc70md4VHTyGSd2v1rtt4WO0wMY9
+         uusA==
+X-Forwarded-Encrypted: i=1; AJvYcCWAcDdEkidE0ipYM+BPirVdwiXD+ePHS912oHONdQ422AxrlLj5RGhCu1kQpsyfiwXWmgwML0iLBHEvVg==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxFkZ2NQxdqzUqNvztOM+B3UTvq5BV/eyiZG+4WN6SS8qANQIVx
+	hsOSA4r9IpoKucmUKeHPTpi8lZ/lDN8ma89MFOYhAuboL6Khv3eh4dCGBOea27Ec338AQzx0L2a
+	jE4XXW9vzsx4dYBPN+lMIxUnIK8+OFNk=
+X-Gm-Gg: ASbGncvz8t6slalL8/oD2fBKjl3+G+NRa87s6uYBJUOq/RhUaXodKfi/rtqwT+LHj3b
+	qGqtgizwlUQllsdSYp6RrDrV/ua//s0ZAe13ooHJUJUAjLvmEx46JjErm/8wZ80ZTdx/Z0Vo1i+
+	bR3cx92kCTapMALOUGlDE/rYSnE0wkhjDFgEocp6JDOfkg6+yQjcZPt6Hio8COUIwekvBHdhc36
+	B7OdN3UvUYev5Ye5dk=
+X-Google-Smtp-Source: AGHT+IE6MMpG/TRiFXxnrxz1Vvo3fuH5ytNgtdVEgpXL0NxXawEVfUDFtb+tMcdRPN344hi95Su67MTI32H6Ub9xTJM=
+X-Received: by 2002:a17:907:7b8b:b0:b3c:5f99:dac7 with SMTP id
+ a640c23a62f3a-b3c5fa9674amr74488566b.21.1759000826450; Sat, 27 Sep 2025
+ 12:20:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1758219786.git.leon@kernel.org> <0c64474985af55b1aa934b857808068a0e609c6e.1758219787.git.leon@kernel.org>
+ <CA+=Fv5Q8dVUFVBh82mAe=fy3mV6mWtQT_0pBPLQwLNBt3f8E1g@mail.gmail.com>
+ <20250923171819.GM10800@unreal> <CA+=Fv5SJcQ5C4UeX2+deV9mPAe5QxrocMG8EJ2eVcYjbLE5U+A@mail.gmail.com>
+ <20250923235318.GD2617119@nvidia.com> <CA+=Fv5Tg7sQACpeG8aMZF6_E6dbRnN5ifg0aiHityXadxiHoPA@mail.gmail.com>
+In-Reply-To: <CA+=Fv5Tg7sQACpeG8aMZF6_E6dbRnN5ifg0aiHityXadxiHoPA@mail.gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sat, 27 Sep 2025 21:20:15 +0200
+X-Gm-Features: AS18NWCUkmopfgQP7FxvlAuimXjc1tmQlQb-89CTajXeb-5Nlye2dR2BnBQqzEg
+Message-ID: <CA+=Fv5Sze_BNmHqzypmCh8p2JO6gytXH4E6hXv3gZdfoSJsMUQ@mail.gmail.com>
+Subject: Re: [PATCH 1/9] alpha: Convert mapping routine to rely on physical address
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Andreas Larsson <andreas@gaisler.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, "David S. Miller" <davem@davemloft.net>, 
+	Geoff Levand <geoff@infradead.org>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, 
+	iommu@lists.linux.dev, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jason Wang <jasowang@redhat.com>, 
+	Juergen Gross <jgross@suse.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	"Michael S. Tsirkin" <mst@redhat.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	virtualization@lists.linux.dev, x86@kernel.org, 
+	xen-devel@lists.xenproject.org
+Content-Type: text/plain; charset="UTF-8"
 
-From: Nicolas Schichan <nschichan@freebox.fr>
+> > Suggest testing the same branch with the alpha patch reverted just to
+> > rule out any issue in the core code. If it reproduces suggest to
+> > bisect Leon's branch.
 
-- drop prompt_ramdisk and ramdisk_start kernel parameters
-- drop compression support
-- drop image autodetection, the whole /initrd.image content is now
-  copied into /dev/ram0
-- remove rd_load_disk() which doesn't seem to be used anywhere.
+Hi again, I've booted up the ES40 again with the kernel build from Leons
+branch, it boots up but message log is full off messages like
+"EXT4-fs error (device sda4): ext4_find_extent:939: inode
+#16257327: comm init: pblk 65114257 bad header/extent:
+invalid magic"
 
-There is now no more limitation on the type of initrd filesystem that
-can be loaded since the code trying to guess the initrd filesystem
-size is gone (the whole /initrd.image file is used).
+The filesystem is broken after just booting with the kernel.
+This time fsck did not fix it, I needed to re-install gentoo stage3.
+So it's for sure reproducible as well as destructive.  It's not possible to
+revert all the commits individually, since this will leave the source tree
+in a state where the kernel doesn't build. I've started off by reverting
+the following commits:
 
-A few global variables in do_mounts_rd.c are now put as local
-variables in rd_load_image() since they do not need to be visible
-outside this function.
----
+e78a9d72517a88faa6f16dab4d1c6f966ed378ae
+(dma-mapping: remove unused map_page callback)
 
-Hello,
+d459e3b80ad1c81bf596d63d2e3347cf8c7bb0d9
+(alpha: Convert mapping routine to rely on physical address)
 
-Hopefully my email config is now better and reaches gmail users
-correctly.
+3cd47242d513050d7a81ac6e7020fd3ef5462ad4
+(block-dma: properly take MMIO path)
 
-The patch below could probably split in a few patches, but I think
-this simplify the code greatly without removing the functionality we
-depend on (and this allows now to use EROFS initrd images).
+7950995bef32aa7e5f74699c7d0fdac41d2dad14
+ (block-dma: migrate to dma_map_phys instead of map_page)
 
-Coupled with keeping the function populate_initrd_image() in
-init/initramfs.c, this will keep what we need from the initrd code.
 
-This removes support of loading bzip/gz/xz/... compressed images as
-well, not sure if many user depend on this feature anymore.
+After reverting the above commits, I'm able to build a working kernel,
+that is, no filesystem corruption occurs. I'll take a closer look at this
+after the weekend.
 
-No signoff because I'm only seeking comments about those changes right
-now.
+Regards
 
- init/do_mounts.h    |   2 -
- init/do_mounts_rd.c | 243 +-------------------------------------------
- 2 files changed, 4 insertions(+), 241 deletions(-)
-
-diff --git a/init/do_mounts.h b/init/do_mounts.h
-index 6069ea3eb80d..c0028ee3cff6 100644
---- a/init/do_mounts.h
-+++ b/init/do_mounts.h
-@@ -24,12 +24,10 @@ static inline __init int create_dev(char *name, dev_t dev)
- 
- #ifdef CONFIG_BLK_DEV_RAM
- 
--int __init rd_load_disk(int n);
- int __init rd_load_image(char *from);
- 
- #else
- 
--static inline int rd_load_disk(int n) { return 0; }
- static inline int rd_load_image(char *from) { return 0; }
- 
- #endif
-diff --git a/init/do_mounts_rd.c b/init/do_mounts_rd.c
-index ac021ae6e6fa..5a69ff43f5ee 100644
---- a/init/do_mounts_rd.c
-+++ b/init/do_mounts_rd.c
-@@ -14,173 +14,9 @@
- 
- #include <linux/decompress/generic.h>
- 
--static struct file *in_file, *out_file;
--static loff_t in_pos, out_pos;
--
--static int __init prompt_ramdisk(char *str)
--{
--	pr_warn("ignoring the deprecated prompt_ramdisk= option\n");
--	return 1;
--}
--__setup("prompt_ramdisk=", prompt_ramdisk);
--
--int __initdata rd_image_start;		/* starting block # of image */
--
--static int __init ramdisk_start_setup(char *str)
--{
--	rd_image_start = simple_strtol(str,NULL,0);
--	return 1;
--}
--__setup("ramdisk_start=", ramdisk_start_setup);
--
--static int __init crd_load(decompress_fn deco);
--
--/*
-- * This routine tries to find a RAM disk image to load, and returns the
-- * number of blocks to read for a non-compressed image, 0 if the image
-- * is a compressed image, and -1 if an image with the right magic
-- * numbers could not be found.
-- *
-- * We currently check for the following magic numbers:
-- *	minix
-- *	ext2
-- *	romfs
-- *	cramfs
-- *	squashfs
-- *	gzip
-- *	bzip2
-- *	lzma
-- *	xz
-- *	lzo
-- *	lz4
-- */
--static int __init
--identify_ramdisk_image(struct file *file, loff_t pos,
--		decompress_fn *decompressor)
--{
--	const int size = 512;
--	struct minix_super_block *minixsb;
--	struct romfs_super_block *romfsb;
--	struct cramfs_super *cramfsb;
--	struct squashfs_super_block *squashfsb;
--	int nblocks = -1;
--	unsigned char *buf;
--	const char *compress_name;
--	unsigned long n;
--	int start_block = rd_image_start;
--
--	buf = kmalloc(size, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
--
--	minixsb = (struct minix_super_block *) buf;
--	romfsb = (struct romfs_super_block *) buf;
--	cramfsb = (struct cramfs_super *) buf;
--	squashfsb = (struct squashfs_super_block *) buf;
--	memset(buf, 0xe5, size);
--
--	/*
--	 * Read block 0 to test for compressed kernel
--	 */
--	pos = start_block * BLOCK_SIZE;
--	kernel_read(file, buf, size, &pos);
--
--	*decompressor = decompress_method(buf, size, &compress_name);
--	if (compress_name) {
--		printk(KERN_NOTICE "RAMDISK: %s image found at block %d\n",
--		       compress_name, start_block);
--		if (!*decompressor)
--			printk(KERN_EMERG
--			       "RAMDISK: %s decompressor not configured!\n",
--			       compress_name);
--		nblocks = 0;
--		goto done;
--	}
--
--	/* romfs is at block zero too */
--	if (romfsb->word0 == ROMSB_WORD0 &&
--	    romfsb->word1 == ROMSB_WORD1) {
--		printk(KERN_NOTICE
--		       "RAMDISK: romfs filesystem found at block %d\n",
--		       start_block);
--		nblocks = (ntohl(romfsb->size)+BLOCK_SIZE-1)>>BLOCK_SIZE_BITS;
--		goto done;
--	}
--
--	if (cramfsb->magic == CRAMFS_MAGIC) {
--		printk(KERN_NOTICE
--		       "RAMDISK: cramfs filesystem found at block %d\n",
--		       start_block);
--		nblocks = (cramfsb->size + BLOCK_SIZE - 1) >> BLOCK_SIZE_BITS;
--		goto done;
--	}
--
--	/* squashfs is at block zero too */
--	if (le32_to_cpu(squashfsb->s_magic) == SQUASHFS_MAGIC) {
--		printk(KERN_NOTICE
--		       "RAMDISK: squashfs filesystem found at block %d\n",
--		       start_block);
--		nblocks = (le64_to_cpu(squashfsb->bytes_used) + BLOCK_SIZE - 1)
--			 >> BLOCK_SIZE_BITS;
--		goto done;
--	}
--
--	/*
--	 * Read 512 bytes further to check if cramfs is padded
--	 */
--	pos = start_block * BLOCK_SIZE + 0x200;
--	kernel_read(file, buf, size, &pos);
--
--	if (cramfsb->magic == CRAMFS_MAGIC) {
--		printk(KERN_NOTICE
--		       "RAMDISK: cramfs filesystem found at block %d\n",
--		       start_block);
--		nblocks = (cramfsb->size + BLOCK_SIZE - 1) >> BLOCK_SIZE_BITS;
--		goto done;
--	}
--
--	/*
--	 * Read block 1 to test for minix and ext2 superblock
--	 */
--	pos = (start_block + 1) * BLOCK_SIZE;
--	kernel_read(file, buf, size, &pos);
--
--	/* Try minix */
--	if (minixsb->s_magic == MINIX_SUPER_MAGIC ||
--	    minixsb->s_magic == MINIX_SUPER_MAGIC2) {
--		printk(KERN_NOTICE
--		       "RAMDISK: Minix filesystem found at block %d\n",
--		       start_block);
--		nblocks = minixsb->s_nzones << minixsb->s_log_zone_size;
--		goto done;
--	}
--
--	/* Try ext2 */
--	n = ext2_image_size(buf);
--	if (n) {
--		printk(KERN_NOTICE
--		       "RAMDISK: ext2 filesystem found at block %d\n",
--		       start_block);
--		nblocks = n;
--		goto done;
--	}
--
--	printk(KERN_NOTICE
--	       "RAMDISK: Couldn't find valid RAM disk image starting at %d.\n",
--	       start_block);
--
--done:
--	kfree(buf);
--	return nblocks;
--}
--
- static unsigned long nr_blocks(struct file *file)
- {
--	struct inode *inode = file->f_mapping->host;
--
--	if (!S_ISBLK(inode->i_mode))
--		return 0;
--	return i_size_read(inode) >> 10;
-+	return i_size_read(file->f_mapping->host) >> 10;
- }
- 
- int __init rd_load_image(char *from)
-@@ -190,10 +26,11 @@ int __init rd_load_image(char *from)
- 	int nblocks, i;
- 	char *buf = NULL;
- 	unsigned short rotate = 0;
--	decompress_fn decompressor = NULL;
- #if !defined(CONFIG_S390)
- 	char rotator[4] = { '|' , '/' , '-' , '\\' };
- #endif
-+	struct file *in_file, *out_file;
-+	loff_t in_pos = 0, out_pos = 0;
- 
- 	out_file = filp_open("/dev/ram", O_RDWR, 0);
- 	if (IS_ERR(out_file))
-@@ -203,17 +40,6 @@ int __init rd_load_image(char *from)
- 	if (IS_ERR(in_file))
- 		goto noclose_input;
- 
--	in_pos = rd_image_start * BLOCK_SIZE;
--	nblocks = identify_ramdisk_image(in_file, in_pos, &decompressor);
--	if (nblocks < 0)
--		goto done;
--
--	if (nblocks == 0) {
--		if (crd_load(decompressor) == 0)
--			goto successful_load;
--		goto done;
--	}
--
- 	/*
- 	 * NOTE NOTE: nblocks is not actually blocks but
- 	 * the number of kibibytes of data to load into a ramdisk.
-@@ -228,10 +54,7 @@ int __init rd_load_image(char *from)
- 	/*
- 	 * OK, time to copy in the data
- 	 */
--	if (strcmp(from, "/initrd.image") == 0)
--		devblocks = nblocks;
--	else
--		devblocks = nr_blocks(in_file);
-+	nblocks = devblocks = nr_blocks(in_file);
- 
- 	if (devblocks == 0) {
- 		printk(KERN_ERR "RAMDISK: could not determine device size\n");
-@@ -264,7 +87,6 @@ int __init rd_load_image(char *from)
- 	}
- 	pr_cont("done.\n");
- 
--successful_load:
- 	res = 1;
- done:
- 	fput(in_file);
-@@ -275,60 +97,3 @@ int __init rd_load_image(char *from)
- 	init_unlink("/dev/ram");
- 	return res;
- }
--
--int __init rd_load_disk(int n)
--{
--	create_dev("/dev/root", ROOT_DEV);
--	create_dev("/dev/ram", MKDEV(RAMDISK_MAJOR, n));
--	return rd_load_image("/dev/root");
--}
--
--static int exit_code;
--static int decompress_error;
--
--static long __init compr_fill(void *buf, unsigned long len)
--{
--	long r = kernel_read(in_file, buf, len, &in_pos);
--	if (r < 0)
--		printk(KERN_ERR "RAMDISK: error while reading compressed data");
--	else if (r == 0)
--		printk(KERN_ERR "RAMDISK: EOF while reading compressed data");
--	return r;
--}
--
--static long __init compr_flush(void *window, unsigned long outcnt)
--{
--	long written = kernel_write(out_file, window, outcnt, &out_pos);
--	if (written != outcnt) {
--		if (decompress_error == 0)
--			printk(KERN_ERR
--			       "RAMDISK: incomplete write (%ld != %ld)\n",
--			       written, outcnt);
--		decompress_error = 1;
--		return -1;
--	}
--	return outcnt;
--}
--
--static void __init error(char *x)
--{
--	printk(KERN_ERR "%s\n", x);
--	exit_code = 1;
--	decompress_error = 1;
--}
--
--static int __init crd_load(decompress_fn deco)
--{
--	int result;
--
--	if (!deco) {
--		pr_emerg("Invalid ramdisk decompression routine.  "
--			 "Select appropriate config option.\n");
--		panic("Could not decompress initial ramdisk image.");
--	}
--
--	result = deco(NULL, 0, compr_fill, compr_flush, NULL, NULL, error);
--	if (decompress_error)
--		result = 1;
--	return result;
--}
--- 
-2.34.1
-
+Magnus
