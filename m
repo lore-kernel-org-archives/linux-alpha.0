@@ -1,85 +1,81 @@
-Received: from vmicros1.altlinux.org (vmicros1.altlinux.org [194.107.17.57])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C93A1B0420;
-	Wed,  1 Oct 2025 10:21:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.107.17.57
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95659335C7;
+	Wed,  1 Oct 2025 19:40:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759314091; cv=none; b=UsJ45I2B3amXcqjyBI1BY8HkG0OHVfGOE8mRbA43mPoLjJHB8td0ZLzb9WJ6WlGWwvAkQkUiU4GZVoSaAxBzF9kKJfNGuIQ3b102s/JKHzp75Y1QFktdM30CMbcRXx5cRWpvsxuzcypLxih3wcPblRnUiYz83cekU8ye1OCr2wo=
+	t=1759347616; cv=none; b=n4aWZ9aolrzDeZm0iquZftD1WJkmlmJdZ6kL5izMNe+TvFFROIYFhkCq/cxyppioa8GEr9bboZyZxrb7ohgP2DYdnjE2iDx1BVhT0NGY1Xzl7AjkbCamzeZ2zcjJsAg+YIEm1OTEkHmCdZNTkqMaIXwDD8DmCdTbcuDbWYYPQWg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759314091; c=relaxed/simple;
-	bh=ODeNv/xSjUtbdZAeBsFlGuryHUWRemRcqjm8xDajy7E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dylHR7wnLcAZvpRQmsJqAtq9FGcz21KK6pkgDWwZDUw5QODIkDNR7tFKFEJIMMF6RTGLJryCqTRCU4Gw9yPf6Dd178KA6K+u21oBRXNpqZ1rAiaoQTvOqZbL4ZKrTsPxE8ZoCJCQdcXAM9Yq4j+OU9YG5w5DKcreL9sCMCXnRoc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=altlinux.org; spf=pass smtp.mailfrom=altlinux.org; arc=none smtp.client-ip=194.107.17.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=altlinux.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=altlinux.org
-Received: from imap.altlinux.org (imap.altlinux.org [194.107.17.38])
-	by vmicros1.altlinux.org (Postfix) with ESMTP id 7418972C8CC;
-	Wed,  1 Oct 2025 13:11:48 +0300 (MSK)
-Received: by imap.altlinux.org (Postfix, from userid 705)
-	id 6C02E36D070F; Wed,  1 Oct 2025 13:11:48 +0300 (MSK)
-Date: Wed, 1 Oct 2025 13:11:48 +0300
-From: Michael Shigorin <mike@altlinux.org>
-To: Michael Shigorin <mike@altlinux.ru>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-	Tor Vic <torvic9@mailbox.org>, Kexy Biscuit <kexybiscuit@aosc.io>,
-	jeffbai@aosc.io, gregkh@linuxfoundation.org, wangyuli@uniontech.com,
-	aospan@netup.ru, conor.dooley@microchip.com,
-	ddrokosov@sberdevices.ru, dmaengine@vger.kernel.org,
-	dushistov@mail.ru, fancer.lancer@gmail.com, geert@linux-m68k.org,
-	hoan@os.amperecomputing.com, ink@jurassic.park.msu.ru,
-	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-ide@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-mips@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-	linux-spi@vger.kernel.org, manivannan.sadhasivam@linaro.org,
-	mattst88@gmail.com, netdev@vger.kernel.org, nikita@trvn.ru,
-	ntb@lists.linux.dev, patches@lists.linux.dev,
-	richard.henderson@linaro.org, s.shtylyov@omp.ru, serjk@netup.ru,
-	shc_work@mail.ru, tsbogend@alpha.franken.de, v.georgiev@metrotek.ru,
-	wsa+renesas@sang-engineering.com, xeb@mail.ru
-Subject: Re: what about CoC? (was: [PATCH] Revert "MAINTAINERS: Remove some
- entries due to various compliance requirements.")
-Message-ID: <20251001101148.GA30625@imap.altlinux.org>
-References: <a08dc31ab773604d8f206ba005dc4c7a@aosc.io>
- <20241023080935.2945-2-kexybiscuit@aosc.io>
- <124c1b03-24c9-4f19-99a9-6eb2241406c2@mailbox.org>
- <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
- <20241024095339.GA32487@imap.altlinux.org>
+	s=arc-20240116; t=1759347616; c=relaxed/simple;
+	bh=J56mz6NnRk7lZ5MgIF9qe7mwYMQfzelsGhhabldQLm4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=quQmJtRlBf8ChhVsefbPT2XLlbiX1KsrQlaNVlgnCDnBKuu3P0c/9jhiJNoavEA+iJwdQycr66p+xPYvjtlku2X1UR2SH3o06sSQoYnJaooG2YD30h+IpEodsD4vl/wuTkUbzOTUUxXQJ8QTAvLsskbsosNQY8fmgBzd3tEpvSQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+Received: from localhost (2.8.3.0.0.0.0.0.0.0.0.0.0.0.0.0.a.5.c.d.c.d.9.1.0.b.8.0.1.0.0.2.ip6.arpa [IPv6:2001:8b0:19dc:dc5a::382])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: sam@gentoo.org)
+	by smtp.gentoo.org (Postfix) with ESMTPSA id E8334340E16;
+	Wed, 01 Oct 2025 19:40:13 +0000 (UTC)
+From: Sam James <sam@gentoo.org>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>
+Cc: Sam James <sam@gentoo.org>,
+	Stian Halseth <stian@itx.no>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 2/3] alpha: don't reference obsolete termio struct for TC* constants
+Date: Wed,  1 Oct 2025 20:39:51 +0100
+Message-ID: <01fd56ffad6a29c92a93938a55f56dc4a6e8371e.1759347592.git.sam@gentoo.org>
+X-Mailer: git-send-email 2.51.0
+In-Reply-To: <d55e5e19c4d30ab1602718b1263d051413edf562.1759347592.git.sam@gentoo.org>
+References: <d55e5e19c4d30ab1602718b1263d051413edf562.1759347592.git.sam@gentoo.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241024095339.GA32487@imap.altlinux.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 
-On Thu, Oct 24, 2024 at 12:53:39PM +0300, I wrote
-> It's not about the patch but rather about the attitude;
-> Documentation/process/code-of-conduct-interpretation.rst:
-> 
-> "regardless of ... ethnicity, ... nationality, ... race"
-> "Focusing on what is best for the community"
-> 
-> "Examples of unacceptable behavior ... insulting/derogatory
-> comments ... Public or private harassment"
-> 
-> Get back to single-standard integrity for yor own's sake.
+Similar in nature to ab107276607af90b13a5994997e19b7b9731e251. glibc-2.42
+drops the legacy termio struct, but the ioctls.h header still defines some
+TC* constants in terms of termio (via sizeof). Hardcode the values instead.
 
-Glad to hear that ESR thinks -- and speaks! -- in a similar vein.
+This fixes building Python for example, which falls over like:
+  ./Modules/termios.c:1119:16: error: invalid application of 'sizeof' to incomplete type 'struct termio'
 
-I believe that Linus -- whose daughter has been basically
-kidnapped mentally[1][2] by the same hypicrites who speak "love"
-but groom real hate -- has his own merits to rise against those.
+Link: https://bugs.gentoo.org/961769
+Link: https://bugs.gentoo.org/962600
+Co-authored-by: Stian Halseth <stian@itx.no>
+Signed-off-by: Sam James <sam@gentoo.org>
+---
+ arch/alpha/include/uapi/asm/ioctls.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-But it does take leadership and guts in a "modern" world.
-
-[1] http://reddit.com/r/linux/comments/9go8cp/linus_torvalds_daughter_has_signed_the/ [del, heh]
-[2] http://unz.com/isteve/and-they-came-for-somebody-who-actually-gets-things-done-linus-torvalds/
-
+diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/uapi/asm/ioctls.h
+index 971311605288f..857e280f95d1e 100644
+--- a/arch/alpha/include/uapi/asm/ioctls.h
++++ b/arch/alpha/include/uapi/asm/ioctls.h
+@@ -23,10 +23,10 @@
+ #define TCSETSW		_IOW('t', 21, struct termios)
+ #define TCSETSF		_IOW('t', 22, struct termios)
+ 
+-#define TCGETA		_IOR('t', 23, struct termio)
+-#define TCSETA		_IOW('t', 24, struct termio)
+-#define TCSETAW		_IOW('t', 25, struct termio)
+-#define TCSETAF		_IOW('t', 28, struct termio)
++#define TCGETA          0x5405
++#define TCSETA          0x5406
++#define TCSETAW         0x5407
++#define TCSETAF         0x5408
+ 
+ #define TCSBRK		_IO('t', 29)
+ #define TCXONC		_IO('t', 30)
 -- 
-Michael Shigorin
-http://t.me/anna_news
+2.51.0
+
