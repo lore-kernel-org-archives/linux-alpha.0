@@ -1,161 +1,85 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9250B2D593C
-	for <linux-alpha@vger.kernel.org>; Mon, 29 Sep 2025 09:50:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
+Received: from vmicros1.altlinux.org (vmicros1.altlinux.org [194.107.17.57])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C93A1B0420;
+	Wed,  1 Oct 2025 10:21:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.107.17.57
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759139410; cv=none; b=Xacqhw6E7qTGE+O/M50mbIhHWx6A4Vhs0CS5l/pWPrQSEG9gwffC5ol+BtIHIKiATHXbGKcfLVys8xbv5gVTgneYwIaVEAqU6jufm7YongnuT4j7K4XY7DuJjfRqQTibJFjLugCu0PSY6CxWFCt7O6To4DcoyQFc0FpmSnrxssM=
+	t=1759314091; cv=none; b=UsJ45I2B3amXcqjyBI1BY8HkG0OHVfGOE8mRbA43mPoLjJHB8td0ZLzb9WJ6WlGWwvAkQkUiU4GZVoSaAxBzF9kKJfNGuIQ3b102s/JKHzp75Y1QFktdM30CMbcRXx5cRWpvsxuzcypLxih3wcPblRnUiYz83cekU8ye1OCr2wo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759139410; c=relaxed/simple;
-	bh=mvicEPuf4r0RGtAkZoJ5xmZW/q0IyX+okVr/uMTxpmY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=uQbKttvJM112i1AZIKMjfsZiPEsdHLeTjqSMibdEs+GQh+owBGSdbwicDkuOJbaOGRg6XJDJF3bRf6HzoJrH+Wou1Y3vRQKzLVwdEIZcDOpk1iUF/WRVPHk6j3UcRoAYxrSJjhYEq+iEXeVQUiW3AwTy16lVYv5IN+X1TG4J4LE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=DJH7zzfb; arc=none smtp.client-ip=209.85.160.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="DJH7zzfb"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-4df4d23fb59so21163301cf.1
-        for <linux-alpha@vger.kernel.org>; Mon, 29 Sep 2025 02:50:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1759139407; x=1759744207; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uBKBF55HXYFQaMFnx3x4Kb2psOZMurlqFtNAu8yb0U4=;
-        b=DJH7zzfba+N+cwr0HNoQh5HNbtWBzHI7eErT++cXh5ZoLz8P09OfdOXGEjqf5UbTP/
-         COcwqSGMhGlYrl5z6C8nMlGlgyhGUYotXFkRNc/0OXWS/1EIo7zNo7YvR/SvnbHOtonm
-         eP7jKRdWSHwnLWnBYak4Tb+2iXIrEfVNCBNJJbNiMJm8UPPEXJjzZhnVORBKPNXvkpwu
-         pL0nFQrzsPpOMSaK4lBRMVXVIQC+PT1mvjmn1RbO9+QzhbMFhxZLEknyFh97we9/IMEe
-         iYRulg8tbFJB1e8hx7jq5zCCDE/1DLIGiIll+LD+0WdXaFhFHp1XqTgaJ0mBV3oBOhtu
-         B4HA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759139407; x=1759744207;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uBKBF55HXYFQaMFnx3x4Kb2psOZMurlqFtNAu8yb0U4=;
-        b=kW8MmSgUGLrQp830lrhAqXZ9GteKBZL2quL/5AOMm4hd5FJEWAVjYfphQpWa0O0/Yn
-         VqQBioq3wjpvWxQC4oaBkMrLYbciXzZqSS+67OUqMFJ53wB+gyRsrv0hnr25Ub3fvl9J
-         zvd40NUuMZDb8cFoS4xkdISRG7n+CXJ0Hpo+fAwO4pNNmvJSxALAfIhZmCsCINKISSmZ
-         iT4LMub6Apb9QtoHde+od5uudp9dakqcpk3rYCPHlv1wgCukm7gRw6ugjd2tkOXfOKCF
-         sYjeJHVDWCiUa7iTio7NqsOHg6+cuurIzIbjp1Ad2yaHBDp9KvrsVfG/EFUHwzJVaxli
-         49yw==
-X-Forwarded-Encrypted: i=1; AJvYcCXljEnp+xK03SCooZnfL47JhZLlzm3xy9LRavkdJUiB2gdZZpXADHeXfRPWAg8NeFKKLldt5RYdusI44Q==@vger.kernel.org
-X-Gm-Message-State: AOJu0YxMVkgqsayk9UhXbfaGhlpOhZydxd0R0jYgnJXrUAXf6Z6UQY+z
-	KokH35Cv+2Qj3mo+Rcsu+fu980YWA6tuCMbavRoppXIq9NKqoO+LETWaBSzfKQq8EQzYYy0BBNa
-	4ivLa1yP2RXuH0uqWO+oQNn8VVDOjwa23Z4kefG0g
-X-Gm-Gg: ASbGnctlqP/bQrZ3VQSVIuOP9gFNFk8tBWSmPasyg2eYSFvJTtmUvihQzdB9SBd0mEM
-	kY/KeVGtmukiswCTf2CbsGoQnN+k4PvDygW3VxkvvjDX3L+PXAlVc77jaVuH9iL0MquJsJTIhtL
-	loOhUzDqOaNq4GgTZ9mUZEwai79DFxg1WvfRnLfj7R2cpAUhgGT1aU9xkpYQ9Yy5Fu7fMTXyOkD
-	ULrQKjd6mHx5r+jJdbU6+H2
-X-Google-Smtp-Source: AGHT+IH+8BTBdjJ/qk0sPVOmAqIlSkDcP3vnsTNce6M/cqgozNtY9rsfNP9O8L2vdibMgh/FIyVwCCmU18hxA9oKtrM=
-X-Received: by 2002:a05:622a:1145:b0:4e0:e2b:1085 with SMTP id
- d75a77b69052e-4e00e2b2259mr60046921cf.26.1759139407142; Mon, 29 Sep 2025
- 02:50:07 -0700 (PDT)
+	s=arc-20240116; t=1759314091; c=relaxed/simple;
+	bh=ODeNv/xSjUtbdZAeBsFlGuryHUWRemRcqjm8xDajy7E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dylHR7wnLcAZvpRQmsJqAtq9FGcz21KK6pkgDWwZDUw5QODIkDNR7tFKFEJIMMF6RTGLJryCqTRCU4Gw9yPf6Dd178KA6K+u21oBRXNpqZ1rAiaoQTvOqZbL4ZKrTsPxE8ZoCJCQdcXAM9Yq4j+OU9YG5w5DKcreL9sCMCXnRoc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=altlinux.org; spf=pass smtp.mailfrom=altlinux.org; arc=none smtp.client-ip=194.107.17.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=altlinux.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=altlinux.org
+Received: from imap.altlinux.org (imap.altlinux.org [194.107.17.38])
+	by vmicros1.altlinux.org (Postfix) with ESMTP id 7418972C8CC;
+	Wed,  1 Oct 2025 13:11:48 +0300 (MSK)
+Received: by imap.altlinux.org (Postfix, from userid 705)
+	id 6C02E36D070F; Wed,  1 Oct 2025 13:11:48 +0300 (MSK)
+Date: Wed, 1 Oct 2025 13:11:48 +0300
+From: Michael Shigorin <mike@altlinux.org>
+To: Michael Shigorin <mike@altlinux.ru>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+	Tor Vic <torvic9@mailbox.org>, Kexy Biscuit <kexybiscuit@aosc.io>,
+	jeffbai@aosc.io, gregkh@linuxfoundation.org, wangyuli@uniontech.com,
+	aospan@netup.ru, conor.dooley@microchip.com,
+	ddrokosov@sberdevices.ru, dmaengine@vger.kernel.org,
+	dushistov@mail.ru, fancer.lancer@gmail.com, geert@linux-m68k.org,
+	hoan@os.amperecomputing.com, ink@jurassic.park.msu.ru,
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-fpga@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-ide@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
+	linux-mips@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+	linux-spi@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+	mattst88@gmail.com, netdev@vger.kernel.org, nikita@trvn.ru,
+	ntb@lists.linux.dev, patches@lists.linux.dev,
+	richard.henderson@linaro.org, s.shtylyov@omp.ru, serjk@netup.ru,
+	shc_work@mail.ru, tsbogend@alpha.franken.de, v.georgiev@metrotek.ru,
+	wsa+renesas@sang-engineering.com, xeb@mail.ru
+Subject: Re: what about CoC? (was: [PATCH] Revert "MAINTAINERS: Remove some
+ entries due to various compliance requirements.")
+Message-ID: <20251001101148.GA30625@imap.altlinux.org>
+References: <a08dc31ab773604d8f206ba005dc4c7a@aosc.io>
+ <20241023080935.2945-2-kexybiscuit@aosc.io>
+ <124c1b03-24c9-4f19-99a9-6eb2241406c2@mailbox.org>
+ <CAHk-=whNGNVnYHHSXUAsWds_MoZ-iEgRMQMxZZ0z-jY4uHT+Gg@mail.gmail.com>
+ <20241024095339.GA32487@imap.altlinux.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <202509291645.fcBIaXMb-lkp@intel.com>
-In-Reply-To: <202509291645.fcBIaXMb-lkp@intel.com>
-From: Eric Dumazet <edumazet@google.com>
-Date: Mon, 29 Sep 2025 02:49:56 -0700
-X-Gm-Features: AS18NWDfCUfaZvpzjNJOJK1mKvgkeD6hO2LgWPXyr1Z7w2ehpEHzsk9zKcK9K9o
-Message-ID: <CANn89i+Bt5Coi3YOj2JjX4KWQN4tJJpyYD3EabS274T8bQwjSw@mail.gmail.com>
-Subject: Re: include/net/sock.h:2098:16: sparse: sparse: cast to non-scalar
-To: kernel test robot <lkp@intel.com>
-Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Jakub Kicinski <kuba@kernel.org>, =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>, 
-	Will Deacon <will@kernel.org>, "Paul E. McKenney" <paulmck@kernel.org>, linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241024095339.GA32487@imap.altlinux.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Mon, Sep 29, 2025 at 1:58=E2=80=AFAM kernel test robot <lkp@intel.com> w=
-rote:
->
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
-t master
-> head:   e5f0a698b34ed76002dc5cff3804a61c80233a7a
-> commit: c51da3f7a161c6822232be832abdffe47eb55b4c net: remove sock_i_uid()
-> date:   3 months ago
-> config: alpha-randconfig-r122-20250929 (https://download.01.org/0day-ci/a=
-rchive/20250929/202509291645.fcBIaXMb-lkp@intel.com/config)
-> compiler: alpha-linux-gcc (GCC) 15.1.0
-> reproduce (this is a W=3D1 build): (https://download.01.org/0day-ci/archi=
-ve/20250929/202509291645.fcBIaXMb-lkp@intel.com/reproduce)
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new vers=
-ion of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202509291645.fcBIaXMb-lkp=
-@intel.com/
->
-> sparse warnings: (new ones prefixed by >>)
->    net/packet/diag.c: note: in included file (through include/linux/sock_=
-diag.h):
-> >> include/net/sock.h:2098:16: sparse: sparse: cast to non-scalar
->    include/net/sock.h:2098:16: sparse: sparse: cast from non-scalar
-> --
->    net/packet/af_packet.c:1099:13: sparse: sparse: context imbalance in '=
-__packet_lookup_frame_in_block' - different lock contexts for basic block
->    net/packet/af_packet.c:2541:17: sparse: sparse: context imbalance in '=
-tpacket_rcv' - unexpected unlock
->    net/packet/af_packet.c: note: in included file (through include/net/in=
-et_sock.h, include/net/ip.h):
-> >> include/net/sock.h:2098:16: sparse: sparse: cast to non-scalar
->    include/net/sock.h:2098:16: sparse: sparse: cast from non-scalar
->
-> vim +2098 include/net/sock.h
->
-> ^1da177e4c3f415 Linus Torvalds 2005-04-16  2094
-> e84a4927a404f36 Eric Dumazet   2025-06-20  2095  static inline kuid_t sk_=
-uid(const struct sock *sk)
-> e84a4927a404f36 Eric Dumazet   2025-06-20  2096  {
-> e84a4927a404f36 Eric Dumazet   2025-06-20  2097         /* Paired with WR=
-ITE_ONCE() in sockfs_setattr() */
-> e84a4927a404f36 Eric Dumazet   2025-06-20 @2098         return READ_ONCE(=
-sk->sk_uid);
-> e84a4927a404f36 Eric Dumazet   2025-06-20  2099  }
-> e84a4927a404f36 Eric Dumazet   2025-06-20  2100
->
-> :::::: The code at line 2098 was first introduced by commit
-> :::::: e84a4927a404f369c842c19de93b216627fcc690 net: annotate races aroun=
-d sk->sk_uid
->
-> :::::: TO: Eric Dumazet <edumazet@google.com>
-> :::::: CC: Jakub Kicinski <kuba@kernel.org>
->
-> --
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
+On Thu, Oct 24, 2024 at 12:53:39PM +0300, I wrote
+> It's not about the patch but rather about the attitude;
+> Documentation/process/code-of-conduct-interpretation.rst:
+> 
+> "regardless of ... ethnicity, ... nationality, ... race"
+> "Focusing on what is best for the community"
+> 
+> "Examples of unacceptable behavior ... insulting/derogatory
+> comments ... Public or private harassment"
+> 
+> Get back to single-standard integrity for yor own's sake.
 
-This seems an Alpha issue to me ?
+Glad to hear that ESR thinks -- and speaks! -- in a similar vein.
 
-I can submit the following fix if there is an agreement.
+I believe that Linus -- whose daughter has been basically
+kidnapped mentally[1][2] by the same hypicrites who speak "love"
+but groom real hate -- has his own merits to rise against those.
 
-diff --git a/arch/alpha/include/asm/rwonce.h b/arch/alpha/include/asm/rwonc=
-e.h
-index 35542bcf92b3a883df353784bcb2d243475ccd91..b6801cd2ace962e11624737ed33=
-4a5aeb30478b7
-100644
---- a/arch/alpha/include/asm/rwonce.h
-+++ b/arch/alpha/include/asm/rwonce.h
-@@ -22,10 +22,10 @@
-  */
- #define __READ_ONCE(x)                                                 \
- ({                                                                     \
--       __unqual_scalar_typeof(x) __x =3D                                 \
--               (*(volatile typeof(__x) *)(&(x)));                      \
-+       __auto_type __x =3D                                               \
-+               (*(const volatile __unqual_scalar_typeof(x) *)&(x));    \
-        mb();                                                           \
--       (typeof(x))__x;                                                 \
-+       __x;                                                            \
- })
+But it does take leadership and guts in a "modern" world.
 
- #endif /* CONFIG_SMP */
+[1] http://reddit.com/r/linux/comments/9go8cp/linus_torvalds_daughter_has_signed_the/ [del, heh]
+[2] http://unz.com/isteve/and-they-came-for-somebody-who-actually-gets-things-done-linus-torvalds/
+
+-- 
+Michael Shigorin
+http://t.me/anna_news
