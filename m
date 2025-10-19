@@ -1,126 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2865178372;
-	Sun, 19 Oct 2025 06:50:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37FB91F1517;
+	Sun, 19 Oct 2025 19:18:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760856631; cv=none; b=K/78XNAKiDzDOooJcNp6Eu7AipUYBG1kPLI8N/p5Cza3u1FLaw2JLMT5Zo8BYIUgv2wrfJXIekPQJ4MKhqrHKYxeHu2n5PKjQi/v1gR9tQPp1p0HCXWMQh93jRWQwhafmjrxGk3HtW7t1K2WNNouBp355Vl+DkRC1mW8enY/ZJE=
+	t=1760901504; cv=none; b=Dww8cns5BC6d0dNxSVbe2FwImqGmg20a1pS+dzaHeT4MKX9cXy2PyhIq0s8xYdOXHaMfn+qskUpx6dLOCYYhJXPQ6Ay13wYl15NL4MTNox6NX7L2xVfQQlgQk8QbyOvMgLwQKRPN+Y+6W8P3suyf9PD5n3JjH2Jw8nXmA4ORUFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760856631; c=relaxed/simple;
-	bh=EdgpjTa5vPTpdpYEzLk3B3e9bf5d6qYFWAfS+EwNqnE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XiUeVLimD7Xq4wSNC3HT1XLtnTbynNPLVCwp5kXj5tnPfO2LiZS7Aq3Hwcs9tAOrM4NxzNwsFxaGc+bDR/nSuaoZCEWPzZS0KK5z/1IrC2OiPCslTQ4AtyUyXJrOlkgO0X0N3i/BwgXUfIqBbW8d97EvWjh0wtDx/lsiuCVDo6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cl0KoSN2; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cl0KoSN2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57F25C4CEE7;
-	Sun, 19 Oct 2025 06:50:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760856630;
-	bh=EdgpjTa5vPTpdpYEzLk3B3e9bf5d6qYFWAfS+EwNqnE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Cl0KoSN24WldfEYSRSfu5lozmGJAVE9xioGE6C+PBBseYSuE/7hgf2KbKvxu1nAfq
-	 +AnxTaK9VaE7xdn62r2Zk9oFnNMs7lSpecdggsfr9Z5mfbyraggVUnrWZwla30ASHd
-	 TTQUKVBXbjDXmyKfOdXMojvKQKorenot/jpefXad8wpoUyJQ/gWBwcSUSTx6MlFUkq
-	 O4BqR0RMnSAfMnvUpkN7wKJhQIsaUmfqwAekVS20NwyN/940rzzKb69Mu6Ni7vQrxn
-	 4PzVEO7y+ixH5H5iambi/6vum/20jOqyGoZB3A2tTRPyBtt8DjbzWrov4g4xwvEbN2
-	 ljhF5KLlm27vA==
-Date: Sun, 19 Oct 2025 02:50:21 -0400
-From: Guo Ren <guoren@kernel.org>
-To: Kees Cook <kees@kernel.org>
-Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-	x86@kernel.org, linux-alpha@vger.kernel.org,
-	linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-	linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-	sparclinux@vger.kernel.org, llvm@lists.linux.dev,
-	linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 03/17] csky: Add __attribute_const__ to ffs()-family
- implementations
-Message-ID: <aPSKLRnWUAVSGQjF@gmail.com>
-References: <20250804163910.work.929-kees@kernel.org>
- <20250804164417.1612371-3-kees@kernel.org>
+	s=arc-20240116; t=1760901504; c=relaxed/simple;
+	bh=P9mKEoh5Li1NdU6vReTugEXGJWFzP5Gs2NLQrMhAWHk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=nCAfRkNwJR/J4i0j8hItaaO9CLz0z4/1rB4rVK5mWwBFCnvv3phyCJu8yU7N4vMyrzmR8AAuvu+AJa8ufCwA8RB+aN+4LjaaewLyZ+ybcZdjAkDTo/UAkT4UysPYAfIN+hdtFd69yKR+wvBRJ7tGmdnWeWQtE9owMty/s1VFICc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+Received: from mop.sam.mop (2.8.3.0.0.0.0.0.0.0.0.0.0.0.0.0.a.5.c.d.c.d.9.1.0.b.8.0.1.0.0.2.ip6.arpa [IPv6:2001:8b0:19dc:dc5a::382])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange secp256r1 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: sam)
+	by smtp.gentoo.org (Postfix) with ESMTPSA id AE112340F14;
+	Sun, 19 Oct 2025 19:18:21 +0000 (UTC)
+From: Sam James <sam@gentoo.org>
+To: Richard Henderson <richard.henderson@linaro.org>
+Cc: Matt Turner <mattst88@gmail.com>,  Stian Halseth <stian@itx.no>,  Magnus
+ Lindholm <linmag7@gmail.com>,  linux-alpha@vger.kernel.org,
+  linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] alpha: don't reference obsolete termio struct for TC*
+ constants
+In-Reply-To: <99f1a93cf8cd4f0ece8611be2860677084663aac.1759359610.git.sam@gentoo.org>
+Organization: Gentoo
+References: <99f1a93cf8cd4f0ece8611be2860677084663aac.1759359610.git.sam@gentoo.org>
+User-Agent: mu4e 1.12.13; emacs 31.0.50
+Date: Sun, 19 Oct 2025 20:18:18 +0100
+Message-ID: <875xcaaef9.fsf@gentoo.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250804164417.1612371-3-kees@kernel.org>
+Content-Type: text/plain
 
-On Mon, Aug 04, 2025 at 09:43:59AM -0700, Kees Cook wrote:
-> While tracking down a problem where constant expressions used by
-> BUILD_BUG_ON() suddenly stopped working[1], we found that an added static
-> initializer was convincing the compiler that it couldn't track the state
-> of the prior statically initialized value. Tracing this down found that
-> ffs() was used in the initializer macro, but since it wasn't marked with
-> __attribute__const__, the compiler had to assume the function might
-> change variable states as a side-effect (which is not true for ffs(),
-> which provides deterministic math results).
-> 
-> Add missing __attribute_const__ annotations to C-SKY's implementations of
-> ffs(), __ffs(), fls(), and __fls() functions. These are pure mathematical
-> functions that always return the same result for the same input with no
-> side effects, making them eligible for compiler optimization.
-LGTM.
+Sam James <sam@gentoo.org> writes:
 
-Acked-by: Guo Ren <guoren@kernel.org>
-
-> 
-> Build tested ARCH=csky defconfig with GCC csky-linux 15.1.0.
-> 
-> Link: https://github.com/KSPP/linux/issues/364 [1]
-> Signed-off-by: Kees Cook <kees@kernel.org>
+> Similar in nature to ab107276607af90b13a5994997e19b7b9731e251. glibc-2.42
+> drops the legacy termio struct, but the ioctls.h header still defines some
+> TC* constants in terms of termio (via sizeof). Hardcode the values instead.
+>
+> This fixes building Python for example, which falls over like:
+>   ./Modules/termios.c:1119:16: error: invalid application of 'sizeof' to incomplete type 'struct termio'
+>
+> Link: https://bugs.gentoo.org/961769
+> Link: https://bugs.gentoo.org/962600
+> Co-authored-by: Stian Halseth <stian@itx.no>
+> Co-authored-by: Magnus Lindholm <linmag7@gmail.com>
+> Signed-off-by: Sam James <sam@gentoo.org>
 > ---
->  arch/csky/include/asm/bitops.h | 8 ++++----
+> v3: Fix constants per Magnus.
+> v2: Fix title.
+
+Ping.
+
+>
+>  arch/alpha/include/uapi/asm/ioctls.h | 8 ++++----
 >  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/csky/include/asm/bitops.h b/arch/csky/include/asm/bitops.h
-> index 72e1b2aa29a0..80d67eee6e86 100644
-> --- a/arch/csky/include/asm/bitops.h
-> +++ b/arch/csky/include/asm/bitops.h
-> @@ -9,7 +9,7 @@
->  /*
->   * asm-generic/bitops/ffs.h
->   */
-> -static inline int ffs(int x)
-> +static inline __attribute_const__ int ffs(int x)
->  {
->  	if (!x)
->  		return 0;
-> @@ -26,7 +26,7 @@ static inline int ffs(int x)
->  /*
->   * asm-generic/bitops/__ffs.h
->   */
-> -static __always_inline unsigned long __ffs(unsigned long x)
-> +static __always_inline __attribute_const__ unsigned long __ffs(unsigned long x)
->  {
->  	asm volatile (
->  		"brev %0\n"
-> @@ -39,7 +39,7 @@ static __always_inline unsigned long __ffs(unsigned long x)
->  /*
->   * asm-generic/bitops/fls.h
->   */
-> -static __always_inline int fls(unsigned int x)
-> +static __always_inline __attribute_const__ int fls(unsigned int x)
->  {
->  	asm volatile(
->  		"ff1 %0\n"
-> @@ -52,7 +52,7 @@ static __always_inline int fls(unsigned int x)
->  /*
->   * asm-generic/bitops/__fls.h
->   */
-> -static __always_inline unsigned long __fls(unsigned long x)
-> +static __always_inline __attribute_const__ unsigned long __fls(unsigned long x)
->  {
->  	return fls(x) - 1;
->  }
-> -- 
-> 2.34.1
-> 
-> 
+>
+> diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/uapi/asm/ioctls.h
+> index 971311605288f..a09d04b49cc65 100644
+> --- a/arch/alpha/include/uapi/asm/ioctls.h
+> +++ b/arch/alpha/include/uapi/asm/ioctls.h
+> @@ -23,10 +23,10 @@
+>  #define TCSETSW		_IOW('t', 21, struct termios)
+>  #define TCSETSF		_IOW('t', 22, struct termios)
+>  
+> -#define TCGETA		_IOR('t', 23, struct termio)
+> -#define TCSETA		_IOW('t', 24, struct termio)
+> -#define TCSETAW		_IOW('t', 25, struct termio)
+> -#define TCSETAF		_IOW('t', 28, struct termio)
+> +#define TCGETA          0x40127417
+> +#define TCSETA          0x80127418
+> +#define TCSETAW         0x80127419
+> +#define TCSETAF         0x8012741c
+>  
+>  #define TCSBRK		_IO('t', 29)
+>  #define TCXONC		_IO('t', 30)
