@@ -1,97 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 044A118DF9D;
-	Sun, 26 Oct 2025 07:38:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86BD92BEC20;
+	Wed, 29 Oct 2025 10:00:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761464314; cv=none; b=CJkObRie3z4ysHH/9PJt5Wf9qNe6r2CWDHECjKCblqvLBZoFUkEFBwH0+7oSiQgnzov+TZnUPKpNxQosyVxJN7uW4Vn4pK/09ndQCsb8tFcGdKejXmebGDNs8zZKdEckfujmQufNbE6zDMcfgZmtCV/CsYNwjsN5wGKJxuPFtvQ=
+	t=1761732050; cv=none; b=Eiw9duHs7IIFOGlkscHRhfn2ovI1RHSXdW0bb507yBocr68jYsn8m9ibiV24m5hc8vqPtWS6VQWV4lzxGn+tVf8vonKPJzAHbu/lKQDNmduNSgP1pmksrsuoWm3qqLjVytCTeJBBcSVEL67jl2l6OszOaYhabRbC7QjKuEVumaU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761464314; c=relaxed/simple;
-	bh=tE6duDWkMhf/izPfcVJAu0QGF5RniuWMZJNurHMPV4k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Pvjo59lmC7L3AhzoknXbtAwzHpgg02LaZ5Bws7X3EvFzR+3dy0wpTEQcxibNokSGx0NoqqRDtjL+SK9+jYrkO2GMhZpKcFnJf5lRNItgfh0UC7CM5Goc+1xPlGkqngL6+SbIrIJQR5bA2+3I7PiEDytX+AEAIuTTC3JyRj4ZSNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m+Fmvy/T; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1761732050; c=relaxed/simple;
+	bh=/ejEbpv3YjlaubY6kroqMVNYHccFsSdgdgs6VeRvqfI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=AjMmu+pbDDM0Wyg9q5UbfZ1fWQ1DswuT63gNsESfQE1v82hIw7iYEoBSIcEuHELqLhPilEDWl6J9mlW7yVFKQnNLkcjEptELfs5QCJhX6Cb8g9qa33x/ZxTP9hAhuINBHUPfcHM+LuyhL3uKJT2eH7QKDTLDBq/vCNEEc70J+qE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Q8nA+g0P; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m+Fmvy/T"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBEC0C4CEE7;
-	Sun, 26 Oct 2025 07:38:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1761464312;
-	bh=tE6duDWkMhf/izPfcVJAu0QGF5RniuWMZJNurHMPV4k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=m+Fmvy/TkbKsHE/ly3nNuV5cMvplX6wPfLQ8hDaDmyX3wLacnUE7JOG/nZvuUxvmv
-	 CczVISfw5M2fl/jL4dxMpQZjR+1heTwgUYiFF7wTs743d7UeCv0GILFXzjGlxgVBC0
-	 oE76qdMbU/6QmYSolZLhh/1ehXnuAH4Wfx1TxENucSoXAohh6TFciSEQZaKMP7NYm1
-	 JNqz8+TYhassoC4ST69Mi5FA0Qr+hRmr+2UhbjR5EKFyOegX19oAs4ZZ/0v57u0VQ0
-	 /l9R6yk8RlGVj+rmA/30TcaUiEVUwLELSxYEgJrK1wn3ZV8WITcnHNlOkzodvgsSHW
-	 uuxeQvWuJFb7A==
-Date: Sun, 26 Oct 2025 09:38:28 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Juergen Gross <jgross@suse.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Geoff Levand <geoff@infradead.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H. Peter Anvin" <hpa@zytor.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	xen-devel@lists.xenproject.org, linux-alpha@vger.kernel.org,
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org,
-	Magnus Lindholm <linmag7@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v5 00/14] Remove DMA map_page/map_resource and their
- unmap callbacks
-Message-ID: <20251026073828.GC12554@unreal>
-References: <CGME20251015091313eucas1p2426ae40b579d7f3b4f29b46e0e788c0d@eucas1p2.samsung.com>
- <20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
- <4a47088d-6542-45f2-917b-c91f7dd1eb1a@samsung.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Q8nA+g0P"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20251029100039euoutp022901308f3eab82458d8910c81b526532~y7fTFrdGq2797727977euoutp027;
+	Wed, 29 Oct 2025 10:00:39 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20251029100039euoutp022901308f3eab82458d8910c81b526532~y7fTFrdGq2797727977euoutp027
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1761732039;
+	bh=Lz0Rir68dfVLNeA+kqLkIpgtVfATL7Zz4GqfoJVdUA8=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=Q8nA+g0P0Lp8yYsVx23P8MkKmaRp5d92Nf+2imBS2NlZqa8/5ThIee3tXBOiLNt99
+	 PjQedQ0JFXgKyV+emfETcayFtfRKIpSeQMZ0pgMqy9Wn3IoNaAw6sZ7VjxwGv7ehjb
+	 3V9ekRK8wOTbOvttHwAsGVylPABrI1wC7ZTCqE2c=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20251029100038eucas1p2fe4a84df0bc07dc1cd96f49b4f740618~y7fRb9PRk1129911299eucas1p2W;
+	Wed, 29 Oct 2025 10:00:38 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20251029100034eusmtip1f745a429892e79db9ec765d9fa07cdc8~y7fOJa_AZ2915029150eusmtip1F;
+	Wed, 29 Oct 2025 10:00:34 +0000 (GMT)
+Message-ID: <5e6eb6f0-fbbb-4359-9c40-075b25231e0d@samsung.com>
+Date: Wed, 29 Oct 2025 11:00:33 +0100
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4a47088d-6542-45f2-917b-c91f7dd1eb1a@samsung.com>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v5 00/14] Remove DMA map_page/map_resource and their
+ unmap callbacks
+To: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Russell King <linux@armlinux.org.uk>, Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>, Oleksandr Tyshchenko
+	<oleksandr_tyshchenko@epam.com>, Richard Henderson
+	<richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, Thomas
+	Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley"
+	<James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman
+	<mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy
+	<christophe.leroy@csgroup.eu>, Geoff Levand <geoff@infradead.org>, "David S.
+ Miller" <davem@davemloft.net>, Andreas Larsson <andreas@gaisler.com>, Thomas
+	Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav
+	Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org,
+	linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org,
+	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	sparclinux@vger.kernel.org, Magnus Lindholm <linmag7@gmail.com>, Jason
+	Gunthorpe <jgg@ziepe.ca>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20251029100038eucas1p2fe4a84df0bc07dc1cd96f49b4f740618
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20251015091313eucas1p2426ae40b579d7f3b4f29b46e0e788c0d
+X-EPHeader: CA
+X-CMS-RootMailID: 20251015091313eucas1p2426ae40b579d7f3b4f29b46e0e788c0d
+References: <CGME20251015091313eucas1p2426ae40b579d7f3b4f29b46e0e788c0d@eucas1p2.samsung.com>
+	<20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
 
-On Mon, Oct 20, 2025 at 06:27:32PM +0200, Marek Szyprowski wrote:
-> Dear All,
-> 
-> On 15.10.2025 11:12, Leon Romanovsky wrote:
-> > This series is a combination of previous two steps [1, 2] to reduce
-> > number of accesses to struct page in the code "below" DMA layer.
-> >
-> > In this series, the DMA .map_page/.map_resource/.unmap_page/.unmap_resource
-> > callbacks are converted to newly introduced .map_phys/.unmap_phys interfaces.
-> 
-> I would like to have some acks from respective arch maintainers before 
-> applying this patchset.
+On 15.10.2025 11:12, Leon Romanovsky wrote:
+> This series is a combination of previous two steps [1, 2] to reduce
+> number of accesses to struct page in the code "below" DMA layer.
+>
+> In this series, the DMA .map_page/.map_resource/.unmap_page/.unmap_resource
+> callbacks are converted to newly introduced .map_phys/.unmap_phys interfaces.
+>
+> Thanks
+>
+> [1] https://lore.kernel.org/all/cover.1758203802.git.leon@kernel.org
+> [2] https://lore.kernel.org/all/cover.1759071169.git.leon@kernel.org
 
-If to judge by git log and lore for some of these arch (didn't check all),
-you won't get any response and will need to make a call by yourself.
+Applied to dma-mapping-for-next branch.
 
-Thanks
 
-> 
-> Best regards
-> -- 
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
-> 
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
