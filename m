@@ -1,81 +1,103 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF962261B78
-	for <linux-alpha@vger.kernel.org>; Tue,  4 Nov 2025 08:51:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A937729C339
+	for <linux-alpha@vger.kernel.org>; Tue,  4 Nov 2025 10:35:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762246320; cv=none; b=Ve5v2dss5cGuY7yDtQ2jcthQIfpRPDe51r3S1Hf/hmlWaTRog90FpVa2Kv2Sp0rbZiSxjbWNAjUALlJK3k5xWi0tOHj/tBouFgtABQmgr4HobO40Ge3Rfy2k+T5iW0eP30FWblRl6MO3InRFiWyu3ZoW39+UoPIDQBUt8lkXcOc=
+	t=1762252537; cv=none; b=TK3WnPOEwuA0WCBHe1T3Hj3llYdkbJK6fwMR9g6HDp2sxM4g8pk0igcyrOBhNciIp8xT7Jr42tbnsDvSu0KF81T2cFAaDcovYkcp3G62S2Clu+UzEZQMltee6g+OJX5ZpGgr0sYYSdskIF5nkgTJw2L8iyInBnQynLOu0NQ8TlM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762246320; c=relaxed/simple;
-	bh=KXSxoWGzf9FiNThpJFkgtS4aFzPKFrUrk/LtR659nb0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pZu3cwh125KrfQgVl0pLRBEP5/35Kw9NR/jJp/UR4Lx+pTXtNiXFe4KdisJODOREVvYphT4A+AFHoBwm5lLjPOO7jDsP3mJFpIEt2Df0PmXz7BvCM6Ai8oy+rq+l90rp+HyfwjGDqOLsn6U/5oAiCLaohKsuRacpI/b8RRELuqw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NL/20NKc; arc=none smtp.client-ip=209.85.208.47
+	s=arc-20240116; t=1762252537; c=relaxed/simple;
+	bh=bbqVmDXrDhnX6ettu/wb1DLbLCvmOaoS8GeEhUZpDzI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=khcNDD1255UMRklirgaJ+I9c5i2cpAgTM0YP6VpncmU2HkYGUq45QYyaMXJJVmV4qNNdo95fVJOy3EdwgOk761xsP2VYfpMEDtORpVs1CTnQ0Ge4PZx2KTRy+Pc6GIcoNE9JuEFE69RxOktUcSnPdRGrYZtcfHUXBJMaXA6oAuk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eDNtMli9; arc=none smtp.client-ip=209.85.167.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NL/20NKc"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-640f627d01dso101313a12.2
-        for <linux-alpha@vger.kernel.org>; Tue, 04 Nov 2025 00:51:58 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eDNtMli9"
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-59390875930so6355096e87.1
+        for <linux-alpha@vger.kernel.org>; Tue, 04 Nov 2025 02:35:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1762246317; x=1762851117; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=KXSxoWGzf9FiNThpJFkgtS4aFzPKFrUrk/LtR659nb0=;
-        b=NL/20NKc03oYGU/KMHiQ6UeeDvFCkdkdW1E61Gu8fpGeta0GZGZEf9G7+OjnZ6O1cf
-         yHs4adZhmFDNv1CxSL0tgeX0q1J8n0Vaz5j8NKaFbxdLoUCmialp1N9Ar5P1Z0XESplV
-         yoxUT+++oRhM31ToqmB34wrHC2iJbv+1FzO5KYrBmbmWfuHyRqdQVv+LLDf8UHOhWasv
-         sF12bUWL8KltOeNqOcvKnyAcLk/HIK595o1BYHLPvX7X20srBhHZKa1ew5OwX2pYZPBu
-         IxV9/6df0AxF/ho54Ac0Me1kCXjpAC7mjrorqIGHBhmyO0NjozKs9ONTTpz/bkRJLbf/
-         L2aQ==
+        d=gmail.com; s=20230601; t=1762252533; x=1762857333; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=tCqV11fTwKqIZc7sHV3bdN9NOfZmBeeP0YyuW6jyL3o=;
+        b=eDNtMli9C7dNVglvD6aIHOf+yUZ1T72ZZAxDQcefOZtNQf4q4isfjtPSFDHulrkCRC
+         cw+fAqIZ3SzPGZnJCnbuxhZIfJkRn+4yBNhD+vkS0zN+H6ZzXtqPXKLfJfTMGZXmMbip
+         gt/BiUWyVDVfG8b1cBKPip7XXF8UEBY5dRyh3j+2CJAkZOayykurD33t+bpfyYMYbOVP
+         80zNBdO4X3nGNOxmh0EI8lHCpeBKbo+kcfSlkE58erL7zdfn9uDYu/I7G3dae81SJvCH
+         WHguDse81U/TnXyMl5CN1S753M+2LIj/VeH5Zv82lZgFW5KfnJ/dmqp5jRjJcMk4WlEi
+         uD4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762246317; x=1762851117;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20230601; t=1762252533; x=1762857333;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=KXSxoWGzf9FiNThpJFkgtS4aFzPKFrUrk/LtR659nb0=;
-        b=W3uEq7RDp2M48Ura09byVcC7zI3bL6RKZjXQClhm4j5f+xZmqF+NdP0E8Vjwm7EwHr
-         EnmqU2N8fyRz5EAmRKA/OmquZZI4fdBk808Jy3rGD3HpzqkMPd0z9YGxdRwC8Z76dtIb
-         8CaUjCLbaHFPgvjE+t+cZRyj/MAA1yaXu62sQh/nlR7AznJ6OHYYa/S9UbeVwPGxllEg
-         HfRoZ2GwiwTbqaOsKTaMYluEh/y2c3Lv4U1OA5Y3vrTAWGhlVRK9t1niKUJbY082iCuv
-         fGQ6bOVmjif1Q48l3pSweVIkySYWqroQEjyYrcQMbuKu1g2lM4dK57VSEuVUj4ZYhbEa
-         Zqig==
-X-Forwarded-Encrypted: i=1; AJvYcCX3L07XTtZ4bsNTTnfR33AP9SojG9k5cLNsjWjJtIkCZ0cXptuoxPHRY3QVqnLfGk7VpKno/6Fs/ntM6w==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwL/1Swj6WKR2BdxD1C1y0/BpwCuZgUIALyFreUEtabR19ugmeH
-	WBKbLyaPfdwbmaPDOFgEd9iQu1Qugas50dWZDq3M5w+FTJoVcCrT/BvSxSQJidWdgg6DYEhgYZL
-	8JBarBNDRdMkEhNJfPvBlmJLgWYj5sKk=
-X-Gm-Gg: ASbGncveusJ8+koQ8bVNP0kpO+eHwL9/ohRCoUC1suDnzxhE89PEQeNadBNtZuHoXtr
-	WskwDMEOyvPf9re5PIHQ7WNxgknh5gI7gyzHr/1azLCVuf0yv0Tx+HmTFpMD1DGQeHpeqdpWyk3
-	zNomWX6+90FRZGLwua7TK1o6l6/+CUV6tgNqsTvxXEjgv0kJ/5Y0NtMqGyFFGeu04oWp98l4iwn
-	vtBTAx+3SQggTPfomnmydJLQfNgBJTAS3Yfh2yL3+J3PKM45cR6dz79UnpMTA==
-X-Google-Smtp-Source: AGHT+IEuqli2bsyC9TZE1Wp+7k+jk5S8Rm/0j0s2XRVfDbAJBgWcOZYiVeocIGE8iJ2maBEZG9erjme0ZgDgEPc0Flg=
-X-Received: by 2002:a05:6402:13c2:b0:63c:276b:1504 with SMTP id
- 4fb4d7f45d1cf-640770bd004mr13656405a12.19.1762246316995; Tue, 04 Nov 2025
- 00:51:56 -0800 (PST)
+        bh=tCqV11fTwKqIZc7sHV3bdN9NOfZmBeeP0YyuW6jyL3o=;
+        b=gwZyQlVK8srjVWLlsGTToMNPCiMxl/y4pNdy9J2RwDhlk3ssKml+KXl4UXXTrGLHVe
+         ht2dNYXeN83rK7y2eCUSeYU6LRgyHMak2rlcK8olsLzVdjdWEW8gZuApH2vscir3fQu4
+         ZsTKdes9EOM2ZqB63fK6YaJeGemRxWHXRK+g2umtnMrl3x0FTwr6rQZIKLL4Bg3Rl9j+
+         6gHJn+9161++dQbS3Exl+W5Puj4hVRYGQtw2WKaGMO/MixwtlXl7v59zoF9r9JZjJPyq
+         vvKKEF3Irnl/0K3//teNJAjuZSTPBdLWNSyUQBHMxTJHauZZov1KhdzW/1X9CNGv3p20
+         Dfqw==
+X-Forwarded-Encrypted: i=1; AJvYcCWYW5JPeVLdHVh3SZIXPX/jhsDqVTQfNaNkICP5DLsGjTqjm8uDE2RHIl4JcY1XlmxLbqi9sWUwMwEKFA==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxFg0GMuglosBnZ9Gx7TJDeM5eQDBv8+vBtAk6Tdaxyl5KC+sas
+	yt0cvf63p5MwAS6uLGVdQdBSSqoFs5reso24elp7cQT3GyfPShNMbain
+X-Gm-Gg: ASbGncu2dPSvZRfUqjTCgDf6uyy14T2jY8kJX2f3rzKKw/w90f+M061eMVWyx6Iijic
+	SX5nENX0pZsdr1jiJWSbXdNwdbL7hfOjLpkl6dDnel76PQFf1UyWbKEJ5Ishpc/CTCufZHvvpJB
+	JHe7xtUUh0ozZeep3vgqBTpFgIAMOw0zF6qq0xNUiV0E2TPvse8HX+MVYQPREqa5c0D0XL+TONv
+	DzlfT63ce99XZbirpC+aMGipcyglq7EVMsO2k4M4YDx9Eb+0wxkcCr3jgOMeg6LjsaaPLCRWU2L
+	laf8Rw48JB1zdJqMLps9m1lz0pCnCVdH/2kDRvrdsoH5ONwrULNAj7mTI0zojtqHxUX2Xz8uQ5l
+	p+TdUjqIIJYznLVfhm/BJfzrY9hvscnJ8CIrEh4NJ16/Dfx6GOeSbngWSEvOUqolAswc0wmBfYs
+	yyWOmmGuvtmnxkShldG3Wp66heXSIm80CISOfMdXaOD2COjmynR5Lu
+X-Google-Smtp-Source: AGHT+IGupWEQJSdIHTXfxGW2ZOZI7jMD+5WKyN4jC9KnhrUC7Pl19L+uPfMiiPVvBDHacKh80RBFrw==
+X-Received: by 2002:a05:6512:3f29:b0:58b:63:81cf with SMTP id 2adb3069b0e04-5941d577dc8mr5490335e87.55.1762252532486;
+        Tue, 04 Nov 2025 02:35:32 -0800 (PST)
+Received: from buildhost.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59434456732sm627685e87.102.2025.11.04.02.35.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 04 Nov 2025 02:35:32 -0800 (PST)
+From: Magnus Lindholm <linmag7@gmail.com>
+To: richard.henderson@linaro.org,
+	mattst88@gmail.com,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: glaubitz@physik.fu-berlin.de,
+	Magnus Lindholm <linmag7@gmail.com>
+Subject: [PATCH v2] Add Magnus Lindholm to MAINTAINERS (Alpha port)
+Date: Tue,  4 Nov 2025 11:33:43 +0100
+Message-ID: <20251104103525.26410-1-linmag7@gmail.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251103213656.25912-1-linmag7@gmail.com> <0ba150517e0fd331f1227e068fd37e6e6ea42228.camel@physik.fu-berlin.de>
- <CA+=Fv5Sdf732mc2c_xGDsJqq2pS-EQU5d0XLBR7v-0GdgFC5EQ@mail.gmail.com> <69590ab694891d84acd2b4a4317c2fa8d1a98344.camel@physik.fu-berlin.de>
-In-Reply-To: <69590ab694891d84acd2b4a4317c2fa8d1a98344.camel@physik.fu-berlin.de>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Tue, 4 Nov 2025 09:51:42 +0100
-X-Gm-Features: AWmQ_blH_3s2dU33LPzAacTZYIaA1MBELBLiqo8cW1mDoEMW-zIKGOiUQdDalQI
-Message-ID: <CA+=Fv5QhoHsS2EC_QR-zANZdXTPeQmOLoP1w4LNmgYNqryKb+g@mail.gmail.com>
-Subject: Re: [PATCH] Alpha: MAINTAINERS
-To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc: richard.henderson@linaro.org, mattst88@gmail.com, 
-	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
->
-> That would be the v2, you already posted the v1 ;-).
->
+Add Magnus Lindholm as maintainer for alpha port
 
-You're right, it's an occupational hassard to always start the count at zero.
+Changes since v1:
+- Rephrase commit message and email subject
 
-/Magnus
+Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 46bd8e033042..49ada25357e7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -915,6 +915,7 @@ F:	drivers/staging/media/sunxi/cedrus/
+ ALPHA PORT
+ M:	Richard Henderson <richard.henderson@linaro.org>
+ M:	Matt Turner <mattst88@gmail.com>
++M:	Magnus Lindholm <linmag7@gmail.com>
+ L:	linux-alpha@vger.kernel.org
+ S:	Odd Fixes
+ F:	arch/alpha/
+-- 
+2.49.0
+
