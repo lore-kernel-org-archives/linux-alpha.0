@@ -1,103 +1,95 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A937729C339
-	for <linux-alpha@vger.kernel.org>; Tue,  4 Nov 2025 10:35:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5609C20C461;
+	Tue,  4 Nov 2025 12:48:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762252537; cv=none; b=TK3WnPOEwuA0WCBHe1T3Hj3llYdkbJK6fwMR9g6HDp2sxM4g8pk0igcyrOBhNciIp8xT7Jr42tbnsDvSu0KF81T2cFAaDcovYkcp3G62S2Clu+UzEZQMltee6g+OJX5ZpGgr0sYYSdskIF5nkgTJw2L8iyInBnQynLOu0NQ8TlM=
+	t=1762260491; cv=none; b=PxmJdVygn90bwY6qa7MNGrK671kFjOfZrx/iGcAwqWFU3/OEDmiqGt31XZiEwG0M7R7hDUtuViPTcSNpRjJfXzrKyhz0zxFUX7Yi/slq7zlucFUCSNM/jZXoh824zzxco7I13JE29ybCsRYGetrzZlZLLG0LLonhT7TrcR9jYiI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762252537; c=relaxed/simple;
-	bh=bbqVmDXrDhnX6ettu/wb1DLbLCvmOaoS8GeEhUZpDzI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=khcNDD1255UMRklirgaJ+I9c5i2cpAgTM0YP6VpncmU2HkYGUq45QYyaMXJJVmV4qNNdo95fVJOy3EdwgOk761xsP2VYfpMEDtORpVs1CTnQ0Ge4PZx2KTRy+Pc6GIcoNE9JuEFE69RxOktUcSnPdRGrYZtcfHUXBJMaXA6oAuk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eDNtMli9; arc=none smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1762260491; c=relaxed/simple;
+	bh=uc/8ejcoZDbUpl2EHW+DLjiUTeMFiOZ/Hs8Q/6/p07E=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=D/rzd5y0VaxthQHk2tyweimoMy/TG6LQNY+rXTT7kTqw8OamoVbmIEISjzeOGOclkz6tJZ0jJeKHMIX1iKQIrIcuOidDm8sHMQIOjEJWmE7AwlQJpLi6KIvk+saf/Q5R5kDKLQsSnr1VsJxpKjwrqucG9rckd9/h0M60rjVN9Ew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=EHj9GJ82; arc=none smtp.client-ip=130.133.4.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eDNtMli9"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-59390875930so6355096e87.1
-        for <linux-alpha@vger.kernel.org>; Tue, 04 Nov 2025 02:35:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1762252533; x=1762857333; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=tCqV11fTwKqIZc7sHV3bdN9NOfZmBeeP0YyuW6jyL3o=;
-        b=eDNtMli9C7dNVglvD6aIHOf+yUZ1T72ZZAxDQcefOZtNQf4q4isfjtPSFDHulrkCRC
-         cw+fAqIZ3SzPGZnJCnbuxhZIfJkRn+4yBNhD+vkS0zN+H6ZzXtqPXKLfJfTMGZXmMbip
-         gt/BiUWyVDVfG8b1cBKPip7XXF8UEBY5dRyh3j+2CJAkZOayykurD33t+bpfyYMYbOVP
-         80zNBdO4X3nGNOxmh0EI8lHCpeBKbo+kcfSlkE58erL7zdfn9uDYu/I7G3dae81SJvCH
-         WHguDse81U/TnXyMl5CN1S753M+2LIj/VeH5Zv82lZgFW5KfnJ/dmqp5jRjJcMk4WlEi
-         uD4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762252533; x=1762857333;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tCqV11fTwKqIZc7sHV3bdN9NOfZmBeeP0YyuW6jyL3o=;
-        b=gwZyQlVK8srjVWLlsGTToMNPCiMxl/y4pNdy9J2RwDhlk3ssKml+KXl4UXXTrGLHVe
-         ht2dNYXeN83rK7y2eCUSeYU6LRgyHMak2rlcK8olsLzVdjdWEW8gZuApH2vscir3fQu4
-         ZsTKdes9EOM2ZqB63fK6YaJeGemRxWHXRK+g2umtnMrl3x0FTwr6rQZIKLL4Bg3Rl9j+
-         6gHJn+9161++dQbS3Exl+W5Puj4hVRYGQtw2WKaGMO/MixwtlXl7v59zoF9r9JZjJPyq
-         vvKKEF3Irnl/0K3//teNJAjuZSTPBdLWNSyUQBHMxTJHauZZov1KhdzW/1X9CNGv3p20
-         Dfqw==
-X-Forwarded-Encrypted: i=1; AJvYcCWYW5JPeVLdHVh3SZIXPX/jhsDqVTQfNaNkICP5DLsGjTqjm8uDE2RHIl4JcY1XlmxLbqi9sWUwMwEKFA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YxFg0GMuglosBnZ9Gx7TJDeM5eQDBv8+vBtAk6Tdaxyl5KC+sas
-	yt0cvf63p5MwAS6uLGVdQdBSSqoFs5reso24elp7cQT3GyfPShNMbain
-X-Gm-Gg: ASbGncu2dPSvZRfUqjTCgDf6uyy14T2jY8kJX2f3rzKKw/w90f+M061eMVWyx6Iijic
-	SX5nENX0pZsdr1jiJWSbXdNwdbL7hfOjLpkl6dDnel76PQFf1UyWbKEJ5Ishpc/CTCufZHvvpJB
-	JHe7xtUUh0ozZeep3vgqBTpFgIAMOw0zF6qq0xNUiV0E2TPvse8HX+MVYQPREqa5c0D0XL+TONv
-	DzlfT63ce99XZbirpC+aMGipcyglq7EVMsO2k4M4YDx9Eb+0wxkcCr3jgOMeg6LjsaaPLCRWU2L
-	laf8Rw48JB1zdJqMLps9m1lz0pCnCVdH/2kDRvrdsoH5ONwrULNAj7mTI0zojtqHxUX2Xz8uQ5l
-	p+TdUjqIIJYznLVfhm/BJfzrY9hvscnJ8CIrEh4NJ16/Dfx6GOeSbngWSEvOUqolAswc0wmBfYs
-	yyWOmmGuvtmnxkShldG3Wp66heXSIm80CISOfMdXaOD2COjmynR5Lu
-X-Google-Smtp-Source: AGHT+IGupWEQJSdIHTXfxGW2ZOZI7jMD+5WKyN4jC9KnhrUC7Pl19L+uPfMiiPVvBDHacKh80RBFrw==
-X-Received: by 2002:a05:6512:3f29:b0:58b:63:81cf with SMTP id 2adb3069b0e04-5941d577dc8mr5490335e87.55.1762252532486;
-        Tue, 04 Nov 2025 02:35:32 -0800 (PST)
-Received: from buildhost.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59434456732sm627685e87.102.2025.11.04.02.35.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Nov 2025 02:35:32 -0800 (PST)
-From: Magnus Lindholm <linmag7@gmail.com>
-To: richard.henderson@linaro.org,
-	mattst88@gmail.com,
-	linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: glaubitz@physik.fu-berlin.de,
-	Magnus Lindholm <linmag7@gmail.com>
-Subject: [PATCH v2] Add Magnus Lindholm to MAINTAINERS (Alpha port)
-Date: Tue,  4 Nov 2025 11:33:43 +0100
-Message-ID: <20251104103525.26410-1-linmag7@gmail.com>
-X-Mailer: git-send-email 2.49.0
+	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="EHj9GJ82"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:From:
+	Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+	Content-Transfer-Encoding:Content-ID:Content-Description:In-Reply-To:
+	References; bh=XroWTFaHaLjzCBD3qe5otExhpbBe+lCTCNNOrDe9uSo=; t=1762260488;
+	x=1762865288; b=EHj9GJ82tvolPNvcmlOvJOVQqLhh0B0fjUrFVSn792lDviEHa5FTIxrlM7f6G
+	MKE6QHKPeCJSxKKfkFOmIVFsWXy7cT+VbygEKnaGGwoi3S0BQVbK9aqMED3l8xmI9kuBmQDMLgWZI
+	uWOW9nyVWW6l4vsKnsGSof9vI2bsAnhUa0RuYdCmG0L4dp1fyQD7fNEE3gAvqxOar+qGDaaHlDkcH
+	rwMobfVBkEx0kIm+wxN3LQ7RUq57Sn7SdEDFfoE7Rp3WL/DZ3wTv83HuATJrk72N6rCKYB9YRgx0W
+	TuCP9F93YuB9mlU26S3UqX2meINW4tz/3BX43q4pwIouJ7wNkA==;
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.98)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1vGGSB-00000002wGc-1zcs; Tue, 04 Nov 2025 13:48:03 +0100
+Received: from p5b13aa34.dip0.t-ipconnect.de ([91.19.170.52] helo=[192.168.178.61])
+          by inpost2.zedat.fu-berlin.de (Exim 4.98)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1vGGSB-00000003jSw-1600; Tue, 04 Nov 2025 13:48:03 +0100
+Message-ID: <431acc7729d58ad3381efc89a877610d33c07e22.camel@physik.fu-berlin.de>
+Subject: Re: [PATCH v2] Add Magnus Lindholm to MAINTAINERS (Alpha port)
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: richard.henderson@linaro.org, mattst88@gmail.com, 
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Tue, 04 Nov 2025 13:48:02 +0100
+In-Reply-To: <20251104103525.26410-1-linmag7@gmail.com>
+References: <20251104103525.26410-1-linmag7@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.1 
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-ZEDAT-Hint: PO
 
-Add Magnus Lindholm as maintainer for alpha port
+On Tue, 2025-11-04 at 11:33 +0100, Magnus Lindholm wrote:
+> Add Magnus Lindholm as maintainer for alpha port
+>=20
+> Changes since v1:
+> - Rephrase commit message and email subject
+>=20
+> Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+> ---
+>  MAINTAINERS | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 46bd8e033042..49ada25357e7 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -915,6 +915,7 @@ F:	drivers/staging/media/sunxi/cedrus/
+>  ALPHA PORT
+>  M:	Richard Henderson <richard.henderson@linaro.org>
+>  M:	Matt Turner <mattst88@gmail.com>
+> +M:	Magnus Lindholm <linmag7@gmail.com>
+>  L:	linux-alpha@vger.kernel.org
+>  S:	Odd Fixes
+>  F:	arch/alpha/
 
-Changes since v1:
-- Rephrase commit message and email subject
+Acked-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
 
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+Adrian
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 46bd8e033042..49ada25357e7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -915,6 +915,7 @@ F:	drivers/staging/media/sunxi/cedrus/
- ALPHA PORT
- M:	Richard Henderson <richard.henderson@linaro.org>
- M:	Matt Turner <mattst88@gmail.com>
-+M:	Magnus Lindholm <linmag7@gmail.com>
- L:	linux-alpha@vger.kernel.org
- S:	Odd Fixes
- F:	arch/alpha/
--- 
-2.49.0
-
+--=20
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
