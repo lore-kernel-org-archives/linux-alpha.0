@@ -1,129 +1,120 @@
-Received: from mail-yx1-f51.google.com (mail-yx1-f51.google.com [74.125.224.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay4.mymailcheap.com (relay4.mymailcheap.com [137.74.80.155])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F8F129ACD7
-	for <linux-alpha@vger.kernel.org>; Wed, 12 Nov 2025 20:11:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EDF228751A;
+	Thu, 13 Nov 2025 01:34:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=137.74.80.155
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762978306; cv=none; b=T7n/UBqqxRxmwL+KQ30OCe8G97LcIzc3o5YxXKFjorD9MRdwaKMHW9xYLMCxVMn9yU1oC9ieV/YPGLoeaT3YcpxqUwdzCXSmnNqGrtmoYEJUBor59wIqiXfpwGrN4MGvNNM6pSXRmNLInizaCWc1gqseqS1lvDOuDLkUY/eSVeM=
+	t=1762997668; cv=none; b=Skce4KL59fjbMp74jDA/j+XY5ZKyU9jZYOajK+Hb0s4wPbU4PefkJT+Mil2Eco490Blfr08iDxtzskeZmmGyKkqITyAuHSU0e/npFR9XGaSt5NChTW0KInzIQotipoPuKxU2eGnkqq05Fw7sfLwwCb4OhNep79MqnrwKA/C/Ck8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762978306; c=relaxed/simple;
-	bh=7m4DvriM37qRnM2FSfuXRop6IHSnMXPsNmSBQ7psrMw=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=R1MVZnPc18uOKEhZ+AUyuJRKZD/9g0nP/YK8l5QYSzTTg5L/tjeCMMMBdOjehZObO9ZPLRQ+8cVTNAu6FbEN7l24s8UyA+8qe2iDIQctPo1sJrrp+aCKtYR+2n69VyrIKdzgPF4fp4WcPt/hf79Q746Vv+zxCcmFrK1BJ+v9FgE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g/MahNBP; arc=none smtp.client-ip=74.125.224.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1762997668; c=relaxed/simple;
+	bh=/C8d2McLRUeNClD+TCW1xxnMF0x3wXTvVg6S8iQDfxk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ozM5S7dNKyN6iBfiWdfZgJU+c69ZnOX+taHArE2fbu7CNCn9YxkyGez2kkwAEJG6/B1yAIN+d7EsREBgMOwzQoq8QUGSbsAV0rfiOpRslhxSogyAIVue7XYBxS6D0L80C7ncpfR/jTiHCsvtODu3aUm/zwTfHXd0qyMbengzmd8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=aosc.io; spf=pass smtp.mailfrom=aosc.io; dkim=pass (1024-bit key) header.d=aosc.io header.i=@aosc.io header.b=yLT5YQJt; arc=none smtp.client-ip=137.74.80.155
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=aosc.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aosc.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g/MahNBP"
-Received: by mail-yx1-f51.google.com with SMTP id 956f58d0204a3-63f97c4eccaso25183d50.2
-        for <linux-alpha@vger.kernel.org>; Wed, 12 Nov 2025 12:11:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1762978304; x=1763583104; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6hGzcOlbbGbyI0TcF5Sp7hYfpwvnrcTw/LD+RYYoy/4=;
-        b=g/MahNBPFEtaLOeijx7bqX1ZdNBVi+DrWo7YM51eCpN52sXCGnzj71E7oLQGUb+L7C
-         dwvvKIIO6zDb1V8lA86WwrYc+7A7shgOpR++cyD1YR0csXwozwbU42Ny7+y/+EtkyiId
-         HqYyxtomjkltGxu0UmlV+pcSD1sEa2Mh+ofaMScy5FccmUmyphfyiNaMEUjbsHC1Tu+4
-         d7N7rQSIeXnT3BuhDkrWR6z6jsc0Aj88xGxz8dyGG6rgE/TKS/flH/2eqv8yCJLEaxz8
-         sjnfHQluMqPwOVdQAlqF1IVcLRneoc+euNXmAHS5Md/MkRlsCJspCiVFIAMV0eSU7227
-         mIBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762978304; x=1763583104;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6hGzcOlbbGbyI0TcF5Sp7hYfpwvnrcTw/LD+RYYoy/4=;
-        b=vFeUuhMrWWKUiPBer1bAbbtn2a8WxijeKfPhdeWkCAS4TJ+GvsoWup2h+xLfF9OeCG
-         lB/WMk2jsoUVvDopWCouUApazXTKzAXDuocGrt4ru4KiBohph90QvXsvwV35hdGr3blI
-         K08cEZVP7Vl1B96muYOweY+2i2r85W5FmwkwZZJDMpdJAnQZD5s7aHKu3TqGpqwr9ygH
-         BdbRqgLpAUqPfGBkJmPqYbIJewjPc5KMrnnWkI2ZTc69QeL4SU6W4Aye54j4K4ihHcvj
-         oskNxHcsocBxMkCnQ6LQWoCijWcl8xAyuM9MZ/YBhfi+UFy/2qcrFGPKrft4m2lXLnV5
-         A0qg==
-X-Gm-Message-State: AOJu0YwIsNh8eSyXva52NM96ffaXiteuPa1kPFAE99mjhXKITbmM0dIF
-	2fblfQr5UKDCPLCc/P1/ggNIFAnlaHWSSJlJnp5cPI/MqIr94uCvMwuy
-X-Gm-Gg: ASbGnct9Et6RS97Wqg4uvH+5FK6URz+D6qq+EhQDYTAISsVcryMcoxbW1h10JbMtIYf
-	rx/mEI57m6kfKWI/kNvIJYUNoTasYZ0o71aR5bXsD8Yq46xv5kRmhB+8F2cNjCj7sIfgIVZhI4W
-	HC7h7jJh8SfDhTZIRRB5CmvYCLSZrmzXFdJxnYFzfLIYlyN7XkyRZ7Lx3m4HxgFR0xGcpoopbg1
-	3yTwtVDKSMBN87kB4YRI1UymyK6tWqDvohNp8Ysd6E+dgcFqSB/KWKYDbdE13NTiPMFDX4lE7BB
-	AMAI/+x7aNaJSnJifDCpSMprzV2j0cxJCwvepV9BL8LOcEsoMAGtDkY7mE+PVHaubf+RyaP7YVK
-	r2HmMS+anTQwVMkvNjDX8q1QEEVu5Mw8PKQ5fSMciKEPHJKla4sSMEWgCywX6yOX7k59S
-X-Google-Smtp-Source: AGHT+IFnMVwZQrQnlyfXiO7Q8cJt+lracFM2MlhYoALs/LETA6AshN8NV/9I3iOkkZsZs4vyL6CHKg==
-X-Received: by 2002:a05:690e:4292:20b0:63f:2b0c:2d55 with SMTP id 956f58d0204a3-64101b3aedcmr3138897d50.51.1762978304068;
-        Wed, 12 Nov 2025 12:11:44 -0800 (PST)
-Received: from localhost ([162.208.5.25])
-        by smtp.gmail.com with UTF8SMTPSA id 956f58d0204a3-641015aece9sm1267616d50.3.2025.11.12.12.11.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Nov 2025 12:11:43 -0800 (PST)
-Date: Wed, 12 Nov 2025 15:11:41 -0500
-From: Matt Turner <mattst88@gmail.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Magnus Lindholm <linmag7@gmail.com>
-Subject: [PULL] alpha.git
-Message-ID: <4qsa6oyacdik7neohp67y3vvqu2wczxcuqr4bulxuxksga7zf6@6obnf7yg4ccy>
+	dkim=pass (1024-bit key) header.d=aosc.io header.i=@aosc.io header.b="yLT5YQJt"
+Received: from nf2.mymailcheap.com (nf2.mymailcheap.com [54.39.180.165])
+	by relay4.mymailcheap.com (Postfix) with ESMTPS id 10044202D9;
+	Thu, 13 Nov 2025 01:34:19 +0000 (UTC)
+Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
+	by nf2.mymailcheap.com (Postfix) with ESMTPSA id 0330740084;
+	Thu, 13 Nov 2025 01:34:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
+	t=1762997656; bh=/C8d2McLRUeNClD+TCW1xxnMF0x3wXTvVg6S8iQDfxk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=yLT5YQJtCOMQ0wAicIwX+bXUcUDiQZcfjoAB81C+dgPsKmHGPZP2RRIm4pX9cHZk3
+	 XZHEDZZU2e8psGhxNKnAZyBHEa17XXn8eZt7bfAOfNe2gp+P7HV+7vMkpwqG7mRgNN
+	 H1Y2HAYvLQiV9g5zzHqZoAQ+GvYJez9o/vTvdQdc=
+Received: from [192.168.0.64] (unknown [223.104.43.17])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail20.mymailcheap.com (Postfix) with ESMTPSA id 25C0042A31;
+	Thu, 13 Nov 2025 01:34:13 +0000 (UTC)
+Message-ID: <a2e3e8ec-bac6-401b-a302-c1a6ddc50e51@aosc.io>
+Date: Thu, 13 Nov 2025 09:34:11 +0800
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="qh24d6ljfp7tlqfb"
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RESEND] alpha/boot: Add .gitignore ignoring vmlinux kernel
+ image
+To: Thorsten Blum <thorsten.blum@linux.dev>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Matt Turner <mattst88@gmail.com>, Nathan Chancellor <nathan@kernel.org>,
+ Nicolas Schier <nicolas@fjasle.eu>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-kbuild@vger.kernel.org
+References: <20251112172248.3927-1-thorsten.blum@linux.dev>
+Content-Language: en-US
+From: WangYuli <wangyuli@aosc.io>
+In-Reply-To: <20251112172248.3927-1-thorsten.blum@linux.dev>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Queue-Id: 0330740084
+X-Rspamd-Server: nf2.mymailcheap.com
+X-Spamd-Result: default: False [-0.10 / 10.00];
+	MIME_GOOD(-0.10)[text/plain];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	FREEMAIL_TO(0.00)[linux.dev,linaro.org,gmail.com,kernel.org,fjasle.eu];
+	ARC_NA(0.00)[];
+	RCVD_COUNT_ONE(0.00)[1];
+	ASN(0.00)[asn:16276, ipnet:51.83.0.0/16, country:FR];
+	RCPT_COUNT_SEVEN(0.00)[8];
+	MID_RHS_MATCH_FROM(0.00)[];
+	SPFBL_URIBL_EMAIL_FAIL(0.00)[thorsten.blum.linux.dev:server fail,wangyl5933.chinaunicom.cn:server fail];
+	FROM_HAS_DN(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	TO_DN_SOME(0.00)[]
+X-Rspamd-Action: no action
+
+[ Cc the kbuild subsystem mailing list and its maintainers. ]
 
 
---qh24d6ljfp7tlqfb
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: [PULL] alpha.git
-MIME-Version: 1.0
+Hi Thorsten Blum,
 
 
-Hi Linus,
+(If the maintainers happen to spot patches like this), Please feel free 
+to add my "Co-developed-by" or "Reviewed-by" tag: WangYuli 
+<wangyl5933@chinaunicom.cn>
 
-Please pull a patch to add Magnus as a maintainer of the alpha port.
+  — I would be very grateful!
 
-Thanks,
-Matt
+Link: 
+https://lore.kernel.org/all/6269AF2792BA8D05+20250704085945.317850-1-wangyuli@uniontech.com/
 
-The following changes since commit 24172e0d79900908cf5ebf366600616d29c9b417:
+Link: 
+https://lore.kernel.org/all/47F75842218B0DDC+20250507060012.1203990-1-wangyuli@uniontech.com/
 
-  Merge tag 'arm64-fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux (2025-11-11 10:31:17 -0800)
+Link: 
+https://lore.kernel.org/all/90A2E6E70A68DD1E+20250415091206.413647-1-wangyuli@uniontech.com/
 
-are available in the Git repository at:
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mattst88/alpha.git tags/alpha-fixes-v6.18-rc5
-
-for you to fetch changes up to d58041d2c63e09a1c9083e0e9f4151e487c4e16a:
-
-  MAINTAINERS: Add Magnus Lindholm as maintainer for alpha port (2025-11-11 20:52:04 -0500)
-
-----------------------------------------------------------------
-alpha: Fixes for v6.18
-
-Add Magnus as a maintainer of the alpha port.
-
-----------------------------------------------------------------
-Magnus Lindholm (1):
-      MAINTAINERS: Add Magnus Lindholm as maintainer for alpha port
-
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
-
---qh24d6ljfp7tlqfb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iNUEABYKAH0WIQReryEEmoa4pUzLG/qs6yl0DJpOlwUCaRTp/V8UgAAAAAAuAChp
-c3N1ZXItZnByQG5vdGF0aW9ucy5vcGVucGdwLmZpZnRoaG9yc2VtYW4ubmV0NUVB
-RjIxMDQ5QTg2QjhBNTRDQ0IxQkZBQUNFQjI5NzQwQzlBNEU5NwAKCRCs6yl0DJpO
-l56MAP9Bw3TlMQV8LR0aUZZNL3+8I9pZoke4en39x5Kp9s1KtgEA8rf3UL8m00Rz
-hU1MgcyBDvnGiSfRSaQUNduq/Jz1SgM=
-=Sq8d
------END PGP SIGNATURE-----
-
---qh24d6ljfp7tlqfb--
+On 2025/11/13 01:22, Thorsten Blum wrote:
+> Building the kernel creates the untracked kernel image file 'vmlinux' in
+> 'arch/alpha/boot/' - ignore it by adding a new local .gitignore file.
+>
+> Signed-off-by: Thorsten Blum <thorsten.blum@linux.dev>
+> ---
+>   arch/alpha/boot/.gitignore | 2 ++
+>   1 file changed, 2 insertions(+)
+>   create mode 100644 arch/alpha/boot/.gitignore
+>
+> diff --git a/arch/alpha/boot/.gitignore b/arch/alpha/boot/.gitignore
+> new file mode 100644
+> index 000000000000..4abc9c8ab7d3
+> --- /dev/null
+> +++ b/arch/alpha/boot/.gitignore
+> @@ -0,0 +1,2 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +vmlinux
