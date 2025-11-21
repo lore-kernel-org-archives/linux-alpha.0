@@ -1,260 +1,196 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5295D358D05;
-	Wed, 19 Nov 2025 12:24:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 195EE30505F
+	for <linux-alpha@vger.kernel.org>; Fri, 21 Nov 2025 10:01:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763555084; cv=none; b=TiHoqT1YHS1540vlSWlknZb31nHDcYqrBh7XwFanD1uoAkVooVhNLVqLB14xeTZwOCrS66+YER5h9Q3m5vFYSpNBCzLHvrJLok62nlWbM7gLhKT00RGFFR+WZKDMv2AFjCMS68T7cJHvilbXOBVgS8nny3YZm3DMke6beWA1x3M=
+	t=1763719270; cv=none; b=RoP76A2rJEiKIXRnB5ypazJQjqu33KdYxp93Ei0oaSa++7VoMAV0dICC6+e0pZNHg17BoFLr+SZXq/OIx8A6BBsurNRCySfo3I1spznnLvt5zu3FIV8rDydDvNyMuJ4SPnZPs5HvNJSdg16z19YYI9zFGIovy0CmpKnvpFdihgY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763555084; c=relaxed/simple;
-	bh=iBiJTRsmPeT8yT7z7CbiOkAhObefLKlCnyqgtKvMuCk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kLLXZHRX1xjKCDM+j6xISVYZYpJJoR95PsTRlAPfz1/sVidBVt7l7KetrRWJdP/M1WcJMOjwqVhXkyEBdQmxe55gkYmpPAmQqyTG/GCz0sKnq8p02Q4bSShvUJv+h6fwVrUfVer4RDq110g8MhbykBUaM7VbQBT2KOIf+kZauKI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OBSgFKD3; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1763719270; c=relaxed/simple;
+	bh=Cka2pXkveMFbrHgxTTmCWcgccG7G3JtklVVdOgKNGMc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=LApr5/nQAnqM52g2tJMVzo3bJpR7qogrbllnarpKSiad2mmD0FsxPXEXLqCQIZolFo3JEtfqrQRorSvTRs88xGfAdwR16yDTitmW+AA0NmhUqBPAzn/5NNkO/0yo6egKKhpCBRe/BBeoqNyqOoLGzM5wgGvHgKwlmxbrPROWIbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=cCNKWJNW; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OBSgFKD3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21EBCC116D0;
-	Wed, 19 Nov 2025 12:24:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1763555083;
-	bh=iBiJTRsmPeT8yT7z7CbiOkAhObefLKlCnyqgtKvMuCk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=OBSgFKD3+2NvaYtuKw/QdLvJ4kd1qTjKiTeRyHWtELBx2sa2VxIWisexyF7jgJgeD
-	 8/7qcHogwMEYULif7/zT0Blo6SdqmJfDDkjOtqvhR34sRQy8h5rR4W7ewalVmRGYey
-	 Jc1bz1eKKmip3Nhp5EEVKNnH4+TcAvXMYIX4DJVlFe1cnT7kWo4T2BMafaaKj6W0QE
-	 tksi9TyyDvEnpbaBkBecgBzphpzgjI0aD0eMgPZ+3ODv+MpVNh0XNg8xSfrSSBC/HP
-	 tX3pn90oDkV+9B6k4FD+XGPRfz+Fs8u7hySZerofnUkosVm2LUZ1/W1me0CAQMB7jS
-	 lCDTRg/6ptIBg==
-Message-ID: <7160b6ec-4da5-4273-be91-1339bd00d009@kernel.org>
-Date: Wed, 19 Nov 2025 13:24:35 +0100
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cCNKWJNW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1763719266;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Xs9hFXjxHYcZUclg4NlpbaDnMsr/N1ltxM2HK/AdDKg=;
+	b=cCNKWJNW6odus6hH10/oUoL0yhWKWcePSgpy4nVwWwmutujkxn3ONC6aATZAH73V3kerGq
+	0dtgsrNoB1gi3WhoQAuiqxmgnBEomlWo+lM+ybYui4HGXvE/EM/pQkEuz3V/4tlWV/eAUy
+	Rhd/RlAIHnf+lajT8nAXA8wdRFJ94oY=
+Received: from mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-115-FZzLDDgsNCOYi9GiTjyANw-1; Fri,
+ 21 Nov 2025 05:01:02 -0500
+X-MC-Unique: FZzLDDgsNCOYi9GiTjyANw-1
+X-Mimecast-MFC-AGG-ID: FZzLDDgsNCOYi9GiTjyANw_1763719261
+Received: from mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.12])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id D859B1954B06;
+	Fri, 21 Nov 2025 10:01:00 +0000 (UTC)
+Received: from thuth-p1g4.redhat.com (unknown [10.44.32.78])
+	by mx-prod-int-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 5758A1955F66;
+	Fri, 21 Nov 2025 10:00:57 +0000 (UTC)
+From: Thomas Huth <thuth@redhat.com>
+To: Arnd Bergmann <arnd@arndb.de>,
+	linux-arch@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org,
+	linux-kbuild@vger.kernel.org,
+	Thomas Huth <thuth@redhat.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	linux-alpha@vger.kernel.org
+Subject: [PATCH v4 1/9] alpha: Replace __ASSEMBLY__ with __ASSEMBLER__ in the alpha headers
+Date: Fri, 21 Nov 2025 11:00:36 +0100
+Message-ID: <20251121100044.282684-2-thuth@redhat.com>
+In-Reply-To: <20251121100044.282684-1-thuth@redhat.com>
+References: <20251121100044.282684-1-thuth@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 7/7] mm: make PT_RECLAIM depend on
- MMU_GATHER_RCU_TABLE_FREE && 64BIT
-To: Qi Zheng <qi.zheng@linux.dev>, will@kernel.org, aneesh.kumar@kernel.org,
- npiggin@gmail.com, peterz@infradead.org, dev.jain@arm.com,
- akpm@linux-foundation.org, ioworker0@gmail.com
-Cc: linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, linux-alpha@vger.kernel.org,
- linux-snps-arc@lists.infradead.org, loongarch@lists.linux.dev,
- linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
- linux-um@lists.infradead.org, Qi Zheng <zhengqi.arch@bytedance.com>
-References: <cover.1763117269.git.zhengqi.arch@bytedance.com>
- <0a4d1e6f0bf299cafd1fc624f965bd1ca542cea8.1763117269.git.zhengqi.arch@bytedance.com>
- <355d3bf3-c6bc-403e-9f19-89259d868611@kernel.org>
- <195baf7c-1f4e-46a4-a4aa-e68e7d00c0f9@linux.dev>
- <9386032c-9840-49da-83f9-74b112f3e752@kernel.org>
- <956c7ca1-bce8-4eed-8a86-bc8adfc708b8@linux.dev>
- <6a22ff95-28c1-4c1d-a1a8-6a391bcc8c86@kernel.org>
- <479b0409-335f-4450-8eb2-5270a5847f5e@linux.dev>
-From: "David Hildenbrand (Red Hat)" <david@kernel.org>
-Content-Language: en-US
-In-Reply-To: <479b0409-335f-4450-8eb2-5270a5847f5e@linux.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.12
 
-On 19.11.25 13:13, Qi Zheng wrote:
-> 
-> 
-> On 11/19/25 7:35 PM, David Hildenbrand (Red Hat) wrote:
->> On 19.11.25 12:02, Qi Zheng wrote:
->>> Hi David,
->>>
->>> On 11/19/25 6:19 PM, David Hildenbrand (Red Hat) wrote:
->>>> On 18.11.25 13:02, Qi Zheng wrote:
->>>>>
->>>>>
->>>>> On 11/18/25 12:57 AM, David Hildenbrand (Red Hat) wrote:
->>>>>> On 14.11.25 12:11, Qi Zheng wrote:
->>>>>>> From: Qi Zheng <zhengqi.arch@bytedance.com>
->>>>>>
->>>>>> Subject: s/&&/&/
->>>>>
->>>>> will do.
->>>>>
->>>>>>
->>>>>>>
->>>>>>> Make PT_RECLAIM depend on MMU_GATHER_RCU_TABLE_FREE so that
->>>>>>> PT_RECLAIM
->>>>>>> can
->>>>>>> be enabled by default on all architectures that support
->>>>>>> MMU_GATHER_RCU_TABLE_FREE.
->>>>>>>
->>>>>>> Considering that a large number of PTE page table pages (such as
->>>>>>> 100GB+)
->>>>>>> can only be caused on a 64-bit system, let PT_RECLAIM also depend on
->>>>>>> 64BIT.
->>>>>>>
->>>>>>> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
->>>>>>> ---
->>>>>>>      arch/x86/Kconfig | 1 -
->>>>>>>      mm/Kconfig       | 6 +-----
->>>>>>>      2 files changed, 1 insertion(+), 6 deletions(-)
->>>>>>>
->>>>>>> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
->>>>>>> index eac2e86056902..96bff81fd4787 100644
->>>>>>> --- a/arch/x86/Kconfig
->>>>>>> +++ b/arch/x86/Kconfig
->>>>>>> @@ -330,7 +330,6 @@ config X86
->>>>>>>          select FUNCTION_ALIGNMENT_4B
->>>>>>>          imply IMA_SECURE_AND_OR_TRUSTED_BOOT    if EFI
->>>>>>>          select HAVE_DYNAMIC_FTRACE_NO_PATCHABLE
->>>>>>> -    select ARCH_SUPPORTS_PT_RECLAIM        if X86_64
->>>>>>>          select ARCH_SUPPORTS_SCHED_SMT        if SMP
->>>>>>>          select SCHED_SMT            if SMP
->>>>>>>          select ARCH_SUPPORTS_SCHED_CLUSTER    if SMP
->>>>>>> diff --git a/mm/Kconfig b/mm/Kconfig
->>>>>>> index a5a90b169435d..e795fbd69e50c 100644
->>>>>>> --- a/mm/Kconfig
->>>>>>> +++ b/mm/Kconfig
->>>>>>> @@ -1440,14 +1440,10 @@ config ARCH_HAS_USER_SHADOW_STACK
->>>>>>>            The architecture has hardware support for userspace shadow
->>>>>>> call
->>>>>>>                stacks (eg, x86 CET, arm64 GCS or RISC-V Zicfiss).
->>>>>>> -config ARCH_SUPPORTS_PT_RECLAIM
->>>>>>> -    def_bool n
->>>>>>> -
->>>>>>>      config PT_RECLAIM
->>>>>>>          bool "reclaim empty user page table pages"
->>>>>>>          default y
->>>>>>> -    depends on ARCH_SUPPORTS_PT_RECLAIM && MMU && SMP
->>>>>>> -    select MMU_GATHER_RCU_TABLE_FREE
->>>>>>> +    depends on MMU_GATHER_RCU_TABLE_FREE && MMU && SMP && 64BIT
->>>>>>
->>>>>> Who would we have MMU_GATHER_RCU_TABLE_FREE without MMU? (can we drop
->>>>>> the MMU part)
->>>>>
->>>>> OK.
->>>>>
->>>>>>
->>>>>> Why do we care about SMP in the first place? (can we frop SMP)
->>>>>
->>>>> OK.
->>>>>
->>>>>>
->>>>>> But I also wonder why we need "MMU_GATHER_RCU_TABLE_FREE && 64BIT":
->>>>>>
->>>>>> Would it be harmful on 32bit (sure, we might not reclaim as much, but
->>>>>> still there is memory to be reclaimed?)?
->>>>>
->>>>> This is also fine on 32bit, but the benefits are not significant, So I
->>>>> chose to enable it only on 64-bit.
->>>>
->>>> Right. Address space is smaller, but also memory is smaller. Not that I
->>>> think we strictly *must* to support 32bit, I merely wonder why we
->>>> wouldn't just enable it here.
->>>>
->>>> OTOH, if there is a good reason we cannot enable it, we can definitely
->>>> just keep it 64bit only.
->>>
->>> The only difficulty is this:
->>>
->>>>
->>>>>
->>>>> I actually tried enabling MMU_GATHER_RCU_TABLE_FREE on all
->>>>> architectures, and apart from sparc32 being a bit troublesome (because
->>>>> it uses mm->page_table_lock for synchronization within
->>>>> __pte_free_tlb()), the modifications were relatively simple.
->>>
->>> in sparc32:
->>>
->>> void pte_free(struct mm_struct *mm, pgtable_t ptep)
->>> {
->>>            struct page *page;
->>>
->>>            page = pfn_to_page(__nocache_pa((unsigned long)ptep) >>
->>> PAGE_SHIFT);
->>>            spin_lock(&mm->page_table_lock);
->>>            if (page_ref_dec_return(page) == 1)
->>>                    pagetable_dtor(page_ptdesc(page));
->>>            spin_unlock(&mm->page_table_lock);
->>>
->>>            srmmu_free_nocache(ptep, SRMMU_PTE_TABLE_SIZE);
->>> }
->>>
->>> #define __pte_free_tlb(tlb, pte, addr)  pte_free((tlb)->mm, pte)
->>>
->>> To enable MMU_GATHER_RCU_TABLE_FREE on sparc32, we need to implement
->>> __tlb_remove_table(), and call the pte_free() above in
->>> __tlb_remove_table().
->>>
->>> However, the __tlb_remove_table() does not have an mm parameter:
->>>
->>> void __tlb_remove_table(void *_table)
->>>
->>> so we need to use another lock instead of mm->page_table_lock.
->>>
->>> I have already sent the v2 [1], and perhaps after that I can enable
->>> PT_RECLAIM on all 32-bit architectures as well.
->>>
->>
->> I guess if we just make it depend on MMU_GATHER_RCU_TABLE_FREE that will
->> be fine.
->>
->>> [1].
->>> https://lore.kernel.org/all/
->>> cover.1763537007.git.zhengqi.arch@bytedance.com/
->>>
->>>>>
->>>>>>
->>>>>> If all 64BIT support MMU_GATHER_RCU_TABLE_FREE (as you previously
->>>>>> state), why can't we only check for 64BIT?
->>>>>
->>>>> OK, will do.
->>>>
->>>> This was also more of a question for discussion:
->>>>
->>>> Would it make sense to have
->>>>
->>>> config PT_RECLAIM
->>>>        def_bool y
->>>>        depends on MMU_GATHER_RCU_TABLE_FREE
->>>
->>> make sense.
->>>
->>>>
->>>> (a) Would we want to make it configurable (why?)
->>>
->>> No, it was just out of caution before.
->>>
->>>> (b) Do we really care about SMP (why?)
->>>
->>> No. Simply because the following situation is impossible to occur:
->>>
->>> pte_offset_map
->>> traversing the PTE page table
->>>
->>> <preemption or hardirq>
->>>
->>> call madvise(MADV_DONTNEED)
->>>
->>> so there's no need to free PTE page via RCU.
->>>
->>>> (c) Do we want to limit to 64bit (why?)
->>>
->>> No, just because the profit is greater at 64-BIT.
->>
->> I was briefly wondering if on 32bit (but maybe also on 64bit with
->> configurable user page table levels?) we could have the scenario that we
->> only have two page table levels.
->>
->> So reclaiming the PMD level (corresponding to the highest level) would
-> 
-> reclaiming the PMD level? The PT_RECLAIM only reclaim PTE pages, not PMD
-> pages, am I misunderstanding something?
+From: Thomas Huth <thuth@redhat.com>
 
-Sorry, I looked too much into PMD table sharing the last days :D
+While the GCC and Clang compilers already define __ASSEMBLER__
+automatically when compiling assembly code, __ASSEMBLY__ is a
+macro that only gets defined by the Makefiles in the kernel.
+This can be very confusing when switching between userspace
+and kernelspace coding, or when dealing with uapi headers that
+rather should use __ASSEMBLER__ instead. So let's standardize now
+on the __ASSEMBLER__ macro that is provided by the compilers.
 
-You're right, it would work in any case even with only 2 levels of apge 
-tables.
+This is a completely mechanical patch (done with a simple "sed -i"
+statement).
 
+Cc: Richard Henderson <richard.henderson@linaro.org>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Signed-off-by: Thomas Huth <thuth@redhat.com>
+---
+ arch/alpha/include/asm/console.h     | 4 ++--
+ arch/alpha/include/asm/page.h        | 4 ++--
+ arch/alpha/include/asm/pal.h         | 4 ++--
+ arch/alpha/include/asm/thread_info.h | 8 ++++----
+ 4 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/arch/alpha/include/asm/console.h b/arch/alpha/include/asm/console.h
+index 088b7b9eb15ae..1cabdb6064bbe 100644
+--- a/arch/alpha/include/asm/console.h
++++ b/arch/alpha/include/asm/console.h
+@@ -4,7 +4,7 @@
+ 
+ #include <uapi/asm/console.h>
+ 
+-#ifndef __ASSEMBLY__
++#ifndef __ASSEMBLER__
+ extern long callback_puts(long unit, const char *s, long length);
+ extern long callback_getc(long unit);
+ extern long callback_open_console(void);
+@@ -26,5 +26,5 @@ struct crb_struct;
+ struct hwrpb_struct;
+ extern int callback_init_done;
+ extern void * callback_init(void *);
+-#endif /* __ASSEMBLY__ */
++#endif /* __ASSEMBLER__ */
+ #endif /* __AXP_CONSOLE_H */
+diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
+index 5ec4c77e432e0..d2c6667d73e9e 100644
+--- a/arch/alpha/include/asm/page.h
++++ b/arch/alpha/include/asm/page.h
+@@ -6,7 +6,7 @@
+ #include <asm/pal.h>
+ #include <vdso/page.h>
+ 
+-#ifndef __ASSEMBLY__
++#ifndef __ASSEMBLER__
+ 
+ #define STRICT_MM_TYPECHECKS
+ 
+@@ -74,7 +74,7 @@ typedef struct page *pgtable_t;
+ #define PAGE_OFFSET		0xfffffc0000000000
+ #endif
+ 
+-#endif /* !__ASSEMBLY__ */
++#endif /* !__ASSEMBLER__ */
+ 
+ #define __pa(x)			((unsigned long) (x) - PAGE_OFFSET)
+ #define __va(x)			((void *)((unsigned long) (x) + PAGE_OFFSET))
+diff --git a/arch/alpha/include/asm/pal.h b/arch/alpha/include/asm/pal.h
+index db2b3b18b34c7..799a64c051984 100644
+--- a/arch/alpha/include/asm/pal.h
++++ b/arch/alpha/include/asm/pal.h
+@@ -4,7 +4,7 @@
+ 
+ #include <uapi/asm/pal.h>
+ 
+-#ifndef __ASSEMBLY__
++#ifndef __ASSEMBLER__
+ 
+ extern void halt(void) __attribute__((noreturn));
+ #define __halt() __asm__ __volatile__ ("call_pal %0 #halt" : : "i" (PAL_halt))
+@@ -183,5 +183,5 @@ qemu_get_vmtime(void)
+ 	return v0;
+ }
+ 
+-#endif /* !__ASSEMBLY__ */
++#endif /* !__ASSEMBLER__ */
+ #endif /* __ALPHA_PAL_H */
+diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
+index 4a4d00b37986e..98ccbca64984c 100644
+--- a/arch/alpha/include/asm/thread_info.h
++++ b/arch/alpha/include/asm/thread_info.h
+@@ -4,14 +4,14 @@
+ 
+ #ifdef __KERNEL__
+ 
+-#ifndef __ASSEMBLY__
++#ifndef __ASSEMBLER__
+ #include <asm/processor.h>
+ #include <asm/types.h>
+ #include <asm/hwrpb.h>
+ #include <asm/sysinfo.h>
+ #endif
+ 
+-#ifndef __ASSEMBLY__
++#ifndef __ASSEMBLER__
+ struct thread_info {
+ 	struct pcb_struct	pcb;		/* palcode state */
+ 
+@@ -44,7 +44,7 @@ register struct thread_info *__current_thread_info __asm__("$8");
+ 
+ register unsigned long *current_stack_pointer __asm__ ("$30");
+ 
+-#endif /* __ASSEMBLY__ */
++#endif /* __ASSEMBLER__ */
+ 
+ /* Thread information allocation.  */
+ #define THREAD_SIZE_ORDER 1
+@@ -110,7 +110,7 @@ register unsigned long *current_stack_pointer __asm__ ("$30");
+ 	put_user(res, (int __user *)(value));				\
+ 	})
+ 
+-#ifndef __ASSEMBLY__
++#ifndef __ASSEMBLER__
+ extern void __save_fpu(void);
+ 
+ static inline void save_fpu(void)
 -- 
-Cheers
+2.51.1
 
-David
