@@ -1,95 +1,85 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 157741D86FF
-	for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 16:55:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2F671E5714
+	for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 17:33:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764435336; cv=none; b=f9pCjWR1huw+K/MsMZ0QE2Nc/ZqJ8drfwPWaJQUThdPjlMjdxjlYib2slPQ96qBhe70HUvnQB7nBwpx2vdlTyZFCINEpenLogVifLPi6j3OCv8AAle3pURTXhn5atNQSffAkZWeyl+hf0uvukOS7rkdZStQMGvZPXHs9B9PsAGg=
+	t=1764437639; cv=none; b=mQvxaPkaGdkFZ2ev0CdvQ6oUZbWN6oAguJebp1CVPU3l7hE1YsICMtqu+HI6Lh49gCYEqUnhGdUBsx4TLSdxKlbUzyvgx/qZ+aC3Pjwud0cerTdiGn+OOyVR5+QY3VBrVO4VLnMDNUlvWioE0eQV6DMMzeg4WAI5bOrhBJyyKPg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764435336; c=relaxed/simple;
-	bh=qlUbWds/wehXTH1HQno5KVUt6k4FYPA1d7KtmAtnXqc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j/lPC6767f4x2GS9BPxg6IPJXD5S3k0hBWmquz3RXiZU4LCbONrfeTDnmPvDAfxvTVPLmX5beRcOO55D/HYcZtxgjAHjnY2Dr/dAY0G3Tbind4YinT/x3DzamqYsJwpllduEJG9XFViqphy2u1ArBB8j2waBU1Gf0j3pJBMP3E8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=veTlEskx; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1764437639; c=relaxed/simple;
+	bh=gb8mPZsI3i+7tr6sMf07hTDcbjPY3ezekuga2imY2F8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=m8tWSDSJreBEBFi+FGLvD1oXGYLsMYieWTxDt6ahQCkPkNlIFrdNuN7KE1qaiyiQCDpiObnpHW+x4f/TNMNuMWt+u+baMxAVru4+wc6zRWV/7ngXTI0ycSGgINxGhJV8LxoFqNi+9D5GSsQLkODLRnTC3ZcWdc8V39M74CULw3I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NPfOtUke; arc=none smtp.client-ip=209.85.208.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="veTlEskx"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4779ce2a624so26151765e9.2
-        for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 08:55:34 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NPfOtUke"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-640c6577120so5142454a12.1
+        for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 09:33:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1764435333; x=1765040133; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=77Gk1YMBqajScxJA+3inM3p8Y+j/nJiajP/u3YbDVk8=;
-        b=veTlEskxKi4ZyKMLm1rgZ37tw3sVZm4FEy3e1J4OL5o7ii8bDq9BmqXthelwSDI4c4
-         4PFxqziezjqQqEFclEHbMBTm+GLVGrPiD8Rc79Cqz28SqQguNK39PEQbpdXn54wPdK0R
-         GP9Ayyq8IsmZvWL5636tgHpt2A5QhfZiiwb9k6ZXC+kcdungDbDxQg+meT2SkRReilxm
-         j43aw9fHczzuXrqRerQYgJdbyDrV7EWPx1B+mzyyddCPa6x+rOVjWaewlBUCknj/MUfr
-         q1K+8tb08V5QkCE6D+10PHOFYdF1il5N67kKgYnbUk8ciaH6JaRq8z94q+kFajryKqM5
-         pkuQ==
+        d=gmail.com; s=20230601; t=1764437636; x=1765042436; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=gb8mPZsI3i+7tr6sMf07hTDcbjPY3ezekuga2imY2F8=;
+        b=NPfOtUke5k7Af6oeX/NKG2oz9fUX0rfOZ7kG8s9y7Bi1+4epsK37Zc5ohUo/cGPkX0
+         +wz21T8lJrx6/JcZV5UVGyHVO6PN8a9zLLYcJFDHt040lSwJ2IoV3X3uqjJfNXSfAMIL
+         1auZJ9VWF0hDTu4U7q25tqtbwuEily2vuJ8t44Bewnlc+OFwxWypYGTRWjIbxrHQm9l+
+         bZxEI8446YxP70Bwxazzo1iErww2kXfV8fJIxroH0FPnd4747hi+uxX0VwQNLP3as6LK
+         i2AgBPsHaSim15VNnMx0gp06pIdoaN/6snYm/kCweJi83mZAM9i79flqiMYkC5nfXSi1
+         ca8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764435333; x=1765040133;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=77Gk1YMBqajScxJA+3inM3p8Y+j/nJiajP/u3YbDVk8=;
-        b=ikHjAZr+Q0tpnUnYjqWDoG3lXdE+MuQhmFehhlfbuVtxAWIJt4lnldVDBHHQwZDnCs
-         aret1mcdNAQwxz7+XioOgXhaTEd2lUKjdsuA1DxcIxlw+NUD5BLVRTymg7z2pskXWTgN
-         c0fM2GU2EIHZLNWzUWtjQS5ermZbQwAnkxr5F4/gIudtVlX8ZsyvU8VdbvlRbsQr06/Q
-         HXfXFYoCduAsSegNurQjqPxmHYzBdNSSpaz0XnN2KgTaKGCwdOPtH+oWlne/FPsqHsU0
-         TKE2l+inZ6RkvTDyGKa7t/+XjrctXBxjZUuDqDaLaGxWMuFJlzbirmOwfdNfrjVr3K0+
-         NdDg==
-X-Forwarded-Encrypted: i=1; AJvYcCVAECPvmjvhKITdQOYPKi9di6o1QrkmwE0PEMchqyLIZ2Lw6vtRolBPG0kYmrb2dU9UYD/GKq3FhYIvmw==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwNcVVAsh6bKFbO5RUZF1H+CrEX3mjpSLpe09PgpJk7P6bAD37a
-	P8F5jI1EA0Fe39GdLRO3O3NXXK5sl8prjd+skvPC3p3Gu5w4ggc/2oYXNDUoD9yU98U=
-X-Gm-Gg: ASbGncs2gNWZ5aLUvDbKw+w2oHGcmxmA4hmUI3LwGSKc+78g7Ri0WYe7TkgHWYcAw5U
-	bDnr2LK2nk5rOtvJGGojqGUAJfeiU/pqDCmKZea6gDdaAvu74v7SzOSdWfi4YAggRJAwvhzzowk
-	7TgE+N5BTtEH7yTnvELJQAr3otkwRmeykpmP/aNU3m2JERHX5jURJodgvHJtCl6OVUs/n/envZI
-	8t8qN1kaSE5JFrvFl4J7dyKdN4sgGIq+pWp/OHiPyJVsc6fipGdbp/XGw7HzbSJbSKoduqEZX5E
-	phMBH2Kyuf5X709ZcIor8CPSRI0Jaubi0buKFQ2g0xk6T4hOwScjkEy8SR/4kQ/YlgK5RfdIb8F
-	xAhzXJXDUMHfblGyDPQwyKuZx0DgV4CKz+P7/FoM99ytE7aDibEQ9ypvCCxU9JZ4OJ5VF2JeXkV
-	XoWzC/ri4SvRFHW4op
-X-Google-Smtp-Source: AGHT+IF+kyF9ZGPW0FxetMzX9dRbRY1L5phPRgBYahW/lukbKDMHN/qoaaW4BOKtk/emiQgKm+1/AA==
-X-Received: by 2002:a05:600c:5252:b0:477:89d5:fdac with SMTP id 5b1f17b1804b1-47904b26093mr233047315e9.31.1764435333466;
-        Sat, 29 Nov 2025 08:55:33 -0800 (PST)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4790b0e21e8sm219871125e9.15.2025.11.29.08.55.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 Nov 2025 08:55:32 -0800 (PST)
-Date: Sat, 29 Nov 2025 19:55:29 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: Markus Elfring <Markus.Elfring@web.de>, linux-alpha@vger.kernel.org,
-	Chen Gang <gang.chen@asianux.com>, Matt Turner <mattst88@gmail.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	kernel-janitors@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>
-Subject: Re: [PATCH] alpha: Use pointers from memcpy() calls for assignments
- in two functions
-Message-ID: <aSslgTu6_HQfhbB2@stanley.mountain>
-References: <1605dd43-5e95-46eb-a0c6-78ff8b4d51b3@web.de>
- <CA+=Fv5RDbA-=WFf1bdekhheZfYScbu8J1Eud-sEgTqUGnk00qg@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1764437636; x=1765042436;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gb8mPZsI3i+7tr6sMf07hTDcbjPY3ezekuga2imY2F8=;
+        b=IywFNKqKKXzg7M7FAiJvNUQ+fAaDqtz5z7bI5B/wZkWsil3rGgUPjkSCc2/svpALS+
+         BuPIiraJYwnVlRe0QJDVH7pQFadz/aa57ual2QhdGDiSr+bWAPrNy33EWtoWmsgezQS8
+         ealMQIokW5vyKjt3ZFBqO++p2qwf3YMZ6wOj/jpGn/BICIDPdyKJPowEHjB9GYXQItDd
+         itMwjHi3t5Uyk4yfuRExfOCVBHVflJJ+67BPLtTM8ugUK+hcRoQw0+KlfJCcYfnGpT0H
+         20f0nHA3kd+8SoSJHsUrL4w5Ay44Z7XBfaLq4yDrA4fAeX1JP/p5lO4haXfbEBoLWreX
+         BRBg==
+X-Gm-Message-State: AOJu0Yz0e3H0h7SHci6r1f2EqwkFCokaeAwRHeK9NU0URXR+BH32l6+X
+	/uV/hBGVQq0LrlyWIpmjA5LTUy+gYLItyPbaOs7FHZ4fkHVCA5L2N5f/W5uZWwfESbhKDytq1g8
+	ypJf44/gkSWizqPpWa62acDWqzynUjUg=
+X-Gm-Gg: ASbGncvhhS6uRWlT7KoTjLtShwhtdGMFrLs10I40AZxFvo0K+9NwvDTbQZYlTBs3bET
+	oo42yo2+P4NS/7o1VpG9q5M/YGF6UgtpU4oVqXDFzJtNskjmj5PV2u4z9RQqm0+swhBqaAj8TCm
+	owK8Nxih2/1KUYDRVbfBBXF1dJskVMdvtb3lZhPWj6Zt2FuH/8EbITby800mksfz5px0Q23NCpV
+	RMw8c90hRhbAG+6h+kxuZ7/broZZeiEqOel2J2YjkBQ20gagMo31u2k/6p7TFb5xv70aBvX
+X-Google-Smtp-Source: AGHT+IF97TVQKqd4QpF5rZw3LC7DwErt4VbnYQU7X+rMmOoGn1BNPQDrloDRnIG6wiIw7nVrZXk8P8V9HT2dcIS4XAs=
+X-Received: by 2002:a05:6402:4404:b0:63c:533f:4b25 with SMTP id
+ 4fb4d7f45d1cf-6455444ac37mr33624439a12.15.1764437635420; Sat, 29 Nov 2025
+ 09:33:55 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+=Fv5RDbA-=WFf1bdekhheZfYScbu8J1Eud-sEgTqUGnk00qg@mail.gmail.com>
+References: <1605dd43-5e95-46eb-a0c6-78ff8b4d51b3@web.de> <CA+=Fv5RDbA-=WFf1bdekhheZfYScbu8J1Eud-sEgTqUGnk00qg@mail.gmail.com>
+ <aSslgTu6_HQfhbB2@stanley.mountain>
+In-Reply-To: <aSslgTu6_HQfhbB2@stanley.mountain>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sat, 29 Nov 2025 18:33:44 +0100
+X-Gm-Features: AWmQ_blXJLKqQt2Z7fhU_XKZ-vP-poW5knLgf4NBLeti_sq9o-Z362H1NN8Ndes
+Message-ID: <CA+=Fv5Qm1g9JFaeVXDjXRgW8BiPCbsvHJod50Do7=KZaBvLssQ@mail.gmail.com>
+Subject: Re: [PATCH] alpha: Use pointers from memcpy() calls for assignments
+ in two functions
+To: Dan Carpenter <dan.carpenter@linaro.org>
+Cc: linux-alpha@vger.kernel.org, Chen Gang <gang.chen@asianux.com>, 
+	Matt Turner <mattst88@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org, 
+	Miaoqian Lin <linmq006@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Sat, Nov 29, 2025 at 02:46:36PM +0100, Magnus Lindholm wrote:
-> Hi Markus,
-> 
-> I noticed that the kernel test bot complained about some build issues,
-> are you planning on putting out a v2 of this patch?
-> 
+>
+> I feel like generally we decided we didn't like the p = memcpy() patches.
+>
 
-I feel like generally we decided we didn't like the p = memcpy() patches.
+Thanks, yes.
 
-regards,
-dan carpenter
+Regards
 
+Magnus
