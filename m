@@ -1,96 +1,83 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07F6830E837
-	for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 12:43:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C93B03090E5
+	for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 13:46:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764420210; cv=none; b=ErF80OfLu0y9IF1TInLrQGvlj7ue4Nv77fe1J2GtACg3PujhXxDHRrTHjh1aQ7Bc4zRD6NasmvoCH78ecgPVKAbLA4wbtJ9/XIC5rkssfDu2AZUj2u0Zw42EY+UseqgD1UjmTlRC1fN8qtEO+pfP52R5o4Z5k9JRlH/GO+MRhkY=
+	t=1764424013; cv=none; b=tJ9moillY93OsxlymnrPB6BB1ARnQgop1qINpgek5NQFZSt6rZEIJ+EBEQAai6EKC545nhUTyhXfLrwA5jAyMqlHtqTpyPTYc60hPpaZ6wL+s5vSRRxOfnTX7tOpfo5pCnauf/I8IeF0FuY0R4VFZ6vqZmKW+igGIzooyW9m9rI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764420210; c=relaxed/simple;
-	bh=gaSbPuhWn2Kn/zZWwlQRDQP1k44vTFfjid4GqAYxCXI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fGgd4sGe4L8Dr3d9nFeJdcWZ5op9mmHXQ7wFFR+w/W1tk6nJGxybuYAVh++wdrPdLm1IxlZ6lH88z/bl+CdazJGJ1Uoh+QvPlB5QQIVT8USgPCEgIspwhD5E/PxAHdwIwKS/oj753lU8IMwxs/sFdrasXklP5R+JjOJdqhtLpxY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=DNtiUBNt; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	s=arc-20240116; t=1764424013; c=relaxed/simple;
+	bh=VSsMkG9UYEpqdmWleMYeETEBraLCrRYnJUjtmcHK1bk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kkgJ/u3h0/Zltz3cygFjXyjMvszKukMPfoN7Fv8fMWyt0n7pXY8BqP/NqR6DTVfb+VXvANQIP6duu7+E/AHCYZ7wRxJyX33nuQELTIpoBQgXsa4NgiljHSiBZssZNomDJnjn/v7FPNqTfONjomUgC7AYBKtHIprgDbTQbxHnEGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DiZMWO0u; arc=none smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="DNtiUBNt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=gaSb
-	PuhWn2Kn/zZWwlQRDQP1k44vTFfjid4GqAYxCXI=; b=DNtiUBNtk2kzPfimXOFC
-	06tn4rIc/50olmSfP7Rjg+94pGw8gmSlWWqCjb1jGUwxSub7wZBhVOTE46q8K83W
-	nLVUlUOhryCRy8wzi/CjHTVcu5WYdxVK85jDyHZpg6OhcAe4ECWKpkKH0HGTCoiH
-	EWN1YvcSDov8Z+GQ1EFLfHASHwLICRDkoVgPFI6t6rzIJAqcrMgB+FPrG87wQphJ
-	goQGR8LL6d2adgIwMC1bgYiS1YaVD0QftxVOWDyI05B1/ZBb0ckSPze7q+BKWf9b
-	1HyopYKIT3MYLk0Et6FIicZzhjRGVggT/DD2zWWTT9kv9AdLhc/krZWfTUBKwBK5
-	Cw==
-Received: (qmail 4020742 invoked from network); 29 Nov 2025 13:36:44 +0100
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 29 Nov 2025 13:36:44 +0100
-X-UD-Smtp-Session: l3s3148p1@zWyL/7pEp/nd+uUy
-Date: Sat, 29 Nov 2025 21:36:41 +0900
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org, andi.shyti@kernel.org
-Subject: Re: [PATCH v2] i2c: i2c-elektor: Allow building on SMP kernels
-Message-ID: <aSro2TbT_RHiM4AS@shikoro>
-References: <20251122141717.28570-1-linmag7@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DiZMWO0u"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-b7636c96b9aso371913666b.2
+        for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 05:46:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1764424008; x=1765028808; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=VSsMkG9UYEpqdmWleMYeETEBraLCrRYnJUjtmcHK1bk=;
+        b=DiZMWO0u1141yLbmIozWA/lB4opMj8YJ3BbKlsaoDhSVSrFnVJ35WCx7U3JjFge4hM
+         vxvuXIdPK9hMv1EJnDdFOQXbPXXqQFWCDnrJwbsDJ/ByQjJZmBenjSxNad9NwMZACthP
+         w6pvEnCl/CrwfkQO7B80+w2WxzqCisjwMuu8Bf+Yqv2woyi/VeYPsn2uln/WPPULeqA4
+         0yhYrbQnFma5mxT2akyDl5j++mZq/sV8tckkiGbCD84nRNmVG/afO5bUqM8zUXCHeikK
+         e1GEyrm9AFagcIr76PGsK2eoXsnBXhMUmpFOMm243D6K2qRFsl/qW3oO44q+I+A4f33Y
+         kX5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764424008; x=1765028808;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VSsMkG9UYEpqdmWleMYeETEBraLCrRYnJUjtmcHK1bk=;
+        b=EPdHF2P3Cv2/SeUtLK7aU6Sw6YG5sctduihkKnWp+vfmOfq4nXNEwUqRJ/02cy0U4d
+         XOKmU2aYKQ38BFs+7B3Q462+fYRwYYOKdBMDYmBGerz2M76jf4cCFRCEabPiy4o+mL8R
+         w+C6/QELXENx0a6cmZrsZPEFzLrMI9PBWLYuO4WI8WnrHfW9u7qLeXYw7YJ15/CUnqx5
+         3qmVb9jvbt7vwAu363LecYOOH/xGPvQ7kpXBtSOzbdryMDWfPoCexqQujVjhI1m/4ont
+         KE6iqhKcmHRO3FdV3Y/fHvpfmkDo51A0wMTQMmD49P2ZFJMSHIQdI9zqzXX8GJoDr3sA
+         Lv7w==
+X-Gm-Message-State: AOJu0Yyuabzf1SoOYXy3g1ZPaTE+ERsaqmtxPe4HL+2OuqMBk9ZHjhCO
+	r59SkqxkLweThoJ8QpYZG5y/MZfa1Xq0cvXjfYs4W89wA/be0JGvMnwxx1istPohIxgeg6rGjKS
+	QV8oqjpNtSsx6se+RX+g2qajmp+qRJfQ=
+X-Gm-Gg: ASbGncu3XmWd92RZWYBBAnsc0pHS7VEQZNZj8/72dC3KlGknCJksEUTSDiaXkcBcwRi
+	S113dhOavYSzNQ2q8GqZ93J8dPjZ6ByxRy+LRc41J7aB4+K9Q4pT3zumnlaAZuj+e3ZHQBJXjTm
+	JREabirMTphOraCiXomamzHVOD1WHREKCuMy5BbKxwhHRbzuIVcqXxpRJ0gnhXGTSlOBrWIqv29
+	GYXgUaeM5ksGEHXdMn82Vtu5268QTEoy1svcCR/0/C/+y1XsHKor2eI6LVQVkP9jPqgr/u1
+X-Google-Smtp-Source: AGHT+IFQzotMKnKF6S5xOQGEVLPx+z06hUAWeouedMM80Lhw1e8Oe0nJp7dPP+ppJ5y1fLzg8zL27RS7ZXjtE7Z5vnU=
+X-Received: by 2002:a17:906:478a:b0:b73:42df:29a with SMTP id
+ a640c23a62f3a-b76719ec80fmr3319982466b.59.1764424008043; Sat, 29 Nov 2025
+ 05:46:48 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="gs+6wHZbcI3P0NCS"
-Content-Disposition: inline
-In-Reply-To: <20251122141717.28570-1-linmag7@gmail.com>
+References: <1605dd43-5e95-46eb-a0c6-78ff8b4d51b3@web.de>
+In-Reply-To: <1605dd43-5e95-46eb-a0c6-78ff8b4d51b3@web.de>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sat, 29 Nov 2025 14:46:36 +0100
+X-Gm-Features: AWmQ_blLVCEqWLZoU6eFtO2PZjCzcgNR2IRrusHQCtc7tE9S42G7VcDZ-VTUPug
+Message-ID: <CA+=Fv5RDbA-=WFf1bdekhheZfYScbu8J1Eud-sEgTqUGnk00qg@mail.gmail.com>
+Subject: Re: [PATCH] alpha: Use pointers from memcpy() calls for assignments
+ in two functions
+To: Markus Elfring <Markus.Elfring@web.de>
+Cc: linux-alpha@vger.kernel.org, Chen Gang <gang.chen@asianux.com>, 
+	Matt Turner <mattst88@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org, 
+	Miaoqian Lin <linmq006@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 
+Hi Markus,
 
---gs+6wHZbcI3P0NCS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I noticed that the kernel test bot complained about some build issues,
+are you planning on putting out a v2 of this patch?
 
-On Sat, Nov 22, 2025 at 02:45:01PM +0100, Magnus Lindholm wrote:
-> In the past, the i2c-elektor driver was broken on SMP. Since then, there
-> appear to have been some fixes and cleanup work (as pointed out by Wolfram
-> Sang) to get rid of cli/sti usage and rely on spinlocks instead. Therefor=
-e,
-> let's allow building the driver on SMP kernels again.
->=20
-> I've tested this driver on an SMP kernel on an Alpha UP2000+ for a few da=
-ys
-> without any problems.
->=20
-> Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
->=20
-> Changes since v1:
-> - Rephrased commit message
+Regards
 
-Applied to for-next, thanks!
-
-
---gs+6wHZbcI3P0NCS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmkq6NkACgkQFA3kzBSg
-KbZvMA/+N2/T/VvsmlKQKoveir7/GSiM7cYFP5RoKQRTzHBLI4OP67ajKFyW64CK
-abivS4CrX+AkbSdKdn+cJnGPi3Dcv0cYKKNI7YHy1FaQF/MEe7lSgFk8V++srwi+
-svASiixXzE8wViLBrF5mZvwB8FNKdzEhmIvr1lMcgQinJ6BRTqaSSUSlvUitRxFj
-jFup8u9iNwcEjoKmiQ2Icv4eCtOvKbm2FqCm5b3AJc7o3chEiDGjLXbdWKGcVJTy
-xC0G+3EAW7HdqgSqJf4+scUYnyDkoJaUfLcIieBEqxDXu30+OafWdzbOX4HGTfpD
-ZN9X9lb9fZLvEkmoZAZ6ZASm2fIefL2XuG9axouuQI8XZ89T6EQ63+EA/PrIkcYi
-QFMl/JfDh5RUxtxJnyEql00qY3zY6p3F9tYgpQjax9L1J9pfsVrXdC2Y4kcXLU5p
-QKzvlrFJ9ukjzsarksv58BVpQvV1N80ifeCQ0GpxbxOGovtVBWa2ht/x9y4iem2t
-6bh3UU53+dgwHDiAXm2CclFuRUbPw5A1DewsOtwpLE5cxmHEkxeDV55ayAa3b5pw
-wVpABo5E5nvjZrGnwUhJf6p88Rwle9xdDQ+1Avj7R+0L2x6aYOEFczbkHdOmV4Sk
-0IHvVhrE1y2VyIaq03wYb9GjaKE/afz1cCgyLV1bfH1hDUME1u4=
-=TLtw
------END PGP SIGNATURE-----
-
---gs+6wHZbcI3P0NCS--
+Magnus
