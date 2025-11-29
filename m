@@ -1,126 +1,219 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 481CE1DE8BF
-	for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 17:59:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B5021F1302
+	for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 23:00:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764439169; cv=none; b=Ph1F50Y1dvyTL8acw3req5wvnPyrZIkbP6WwfHK1G0thnds4DpEHiy0XSt40/CGiZnfeRaExpp1bgf/nXkmi4E121qBf+NBnLBm7HBJQPEfvRhqr4wN4rXIjqFzEwSrBDSIDp7Z63oZIVXxSdjgnbBXoVaiqQFTPnLE/mSH1J0A=
+	t=1764457248; cv=none; b=MnBOb0pTr38M+LXPSk15QuTACKBZNln4Bco76FC+VHSPKbUYteZLRcgDyZzGWmiw2MEonzZXiAzo+vujCMRM9E04+HP0UdS18tw6FzgzfKV4YkKgWqGRSzJJxmlAaWwsHfenp/hDvhkaZxP1ha6qasBpMS+KLMgf1CKjNoEaB9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764439169; c=relaxed/simple;
-	bh=DGlPDfNLAWyspL0UxJGaCFDod9ET7hiJvThKCyQBm8k=;
+	s=arc-20240116; t=1764457248; c=relaxed/simple;
+	bh=ahbrlVHUyjKynsmUn0eg1wukhIGIxV/YCSxXPxWxPkg=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NrmQC6kiZ+FrczqYKLobyRieZxOVc8HOGKQI0he3G15pQTko9jNGmvfvH+mWvwP8u80Jrfee8/zS/XTIX8EjbIxXaR07VOU3z8RvoE8YymNbxPJGil+tyQoub6E9nqjxDelAcxFsuRaFhvNZnwA4nPt4nzd7u4OO1S6nxXMNvcA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UpLwwS48; arc=none smtp.client-ip=209.85.208.53
+	 To:Cc:Content-Type; b=fQ7klfFrUCRcOZeZW+60SrVAemA4socw+XyglLNq2Shg1PPjUb5oWT1ru2DNXWeiFhO4Bo+Rxx9xsDBP5GDgw6uFZKumuyW83MrEVZC9JLJR5JU/DF3WnsLE8YEDhrGLcv7SNIwYkbTT5TwJsbfykJilnkfkEcGEi9/DFuHhXZw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a7ayhB0a; arc=none smtp.client-ip=209.85.208.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UpLwwS48"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-640a3317b89so4346292a12.0
-        for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 09:59:26 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a7ayhB0a"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-645a13e2b17so4692510a12.2
+        for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 15:00:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764439165; x=1765043965; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1764457245; x=1765062045; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=aBRwKDLFgot90BCpwfeuf6lF5eBHC5zOS1aXw8/zxsw=;
-        b=UpLwwS48Jrlbg3eyzK4/Nz7L2PK7HkLKtw5RbiH0J2m1490+HyFD4P8Wo37o+uv1S5
-         vcCUzSFs42wvFPvYg5eYUOkcrZuReovYWtw6uak/5w9opr+yjSrD2Aj6oYPlZyPF2OaM
-         AB9uClV+3uASIYQpnaeZjDixiDNPBUj6/38gHUdDdpa9lpLt2Tp/1NI4xV0tZrdHnVs5
-         m3DRXAT2QWgdg0k6en/6jqcSX/1GCICD6+gMzQwuGiG9poEfBTFxMDiKM7gFi/oBgr4/
-         IyQtM7KB0/EO/7EiQWC1bqUUei8RfhcObgIjMHIQ8XQfiNnuMvvU/CiVPuNhVtS+XhAU
-         0Oew==
+        bh=o7abD6XH4eHcxEiWpbo/4uwSFXjdFhqX7mjZwLL/Fl0=;
+        b=a7ayhB0a8mVesvDqyRPRfbj1qe5w2GyPPN0KTnT0F08k6+kCSI2gBADzePtfn/h//m
+         EbiyixkVPtyiLEjuxSW2SrgTzw1DsjZbsU9Kff0xrpWmR06aaslxioPuT7Gqn9mqgSVE
+         mzE2+ZQCFFUh4/vORTyqyTJ4SpwAG66swkMrIHXbo1U9lCx5oSkvw+7HPscncaVevLvz
+         DNFi6eXZmzLa+2wGh63XhZNuSvGvfg6Ma3eg9uTKZtmZLIloEfUiAYy3Hx3a/stjxfl7
+         VPTYzWDYkFPqKS7iOZm8mV4u9bsxfK/5cq0/LTDdBhDtICz32Ek6NlTMzpCq4qCefmQt
+         shzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764439165; x=1765043965;
+        d=1e100.net; s=20230601; t=1764457245; x=1765062045;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=aBRwKDLFgot90BCpwfeuf6lF5eBHC5zOS1aXw8/zxsw=;
-        b=iwaeNq7gVuBIEI9Qm3/K2zFUwwqnTcajL+7MT2FPdzAPGCf6dmmSKQ5I09tnd9HuMV
-         OqkwDcn3YB/rmKcdRHNw/WxAcsQUTe5rKJV9N+K+HZfLwpPPWG1jZgXwt3jnYHboTEaV
-         Y7heRHQKIXPyYJ4WMksKgH95PbHiaup02nB0vXx4N0/d1Z/E0hastiZN3K3YMRAKuocB
-         A5Aw7N5HyEZXV+8XAkN6oO+Vt3TM2nOp++NFPZtziuW9SBW4yeLacfnB1LTAUdErnR7Y
-         W6RQ/0WirmRGB+AHFu2DP1sBV+504G9KSBtfJn3tFdZXuLtqkdj+X75nrLy6fEJsBg/4
-         ZzsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV1AW0k1uBHwIG5dUjsMLgTcozmH+bMjKPn1zBW9KKUg7n2u2abrlhSaVAY4s47O7A12Nkr+MTP+x/LBQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx4QH/b21xh3gPuAGlErcDka0Qh5BSOPqn3VMAOcIEV+3T+YNj0
-	p0E04NCkmOha3wThrXO3vYu76p4Y9xhltbMK+CKmw8Vz9VamswvYp85SxjrCS2EpdyweCPlcrCI
-	nGM8G4EsN1+b+yLz1W5g4EGee+9S/uV0=
-X-Gm-Gg: ASbGnct1V0zNrFya8zvXSj6UuHwY0jrJlzsgHIJ4uqefikuM6N/cptk+UGX8UsFhGeY
-	HDsrc9h2BjJmxBbGqF6pJSFeXh2Lh6hA/h2jicr4tOtCNFcLYYEo4SEZktBJkKR162B9ssyltJb
-	sC20G/f86udc4aSEM6VIfGQ5NZA6bYeTSbUtYoLxBOQ+ioi7gudRvamHXqRPhLC57sWL0QHfUtp
-	yZ63hMmkNEnMNPNI3Bud7rylzfbA9SIBeq88yUcp2F1hra4Ig5fPjrx5VmYmOk9XUo9rPlT
-X-Google-Smtp-Source: AGHT+IG0VgtlaGTSklyY0vbu4Qq4mH1myxFDbZdM5hSJcMj+hIDd8tP/K+G8vhcbc6WgZnrjqnh8cyGubkBSRuGt/Vc=
-X-Received: by 2002:a05:6402:34d2:b0:643:8301:d107 with SMTP id
- 4fb4d7f45d1cf-645eb799b65mr18151139a12.30.1764439165410; Sat, 29 Nov 2025
- 09:59:25 -0800 (PST)
+        bh=o7abD6XH4eHcxEiWpbo/4uwSFXjdFhqX7mjZwLL/Fl0=;
+        b=sBGxpThmufUDWe2WyGMSLG30+kRR4g8RIJBhpBk64w6fgk3IiAYkqoWZZiWmyro8z6
+         2K2hyEPdyh973WexUrGjdA0+Dbwz0gOQYykwNKGgUoJuaR7ZB4RSfPsOeHyfYXJfPgrd
+         YmUv3xUtK5gzD8mE0mj/cf0qdV50u9PJdL3bw6loD1gnzfDP4wSRk0kbCF43nmoyJWwU
+         2Ya8KWfTn9tLLsMFlB62NWn8I+EIN6zvLRXCp55N/F/Ddh0QZKMmGB6Au3GENNTzv9Rn
+         HakQHFef3vmDtQ9EmmqWd/lsyQK+N9dyu2UPn/AbMRJKN+5zhA50uHHlQ4646CTxD6rF
+         O1gg==
+X-Forwarded-Encrypted: i=1; AJvYcCWrvTmh/Jn1S8Xzzc3P6kQ12TQTTYoAqekA3uwN9ReWTXr/qrQXYOPtKgYK5qb3EZV+UbSnOalBkgv3bg==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwRocLzPscsx4mGkm3E9WdO6VdJGZ/d3LVr8VCPlnQlS1D2YwU5
+	yv2iP1OvQjlDIcry2petzn3gBUr21oIra2IIsKpKiD6eyiYZZID9Go1T4tFKbauKoREpDjg7GN8
+	z/2IjBNROeeOGjLnFL7W6tvHXENv8MNk=
+X-Gm-Gg: ASbGncsu3kfXQJDAYuHkpeGz5tNQZsAmL8RhezsaSRwB/wSQRT9uUDppDsiWr6C/sg4
+	Hx6tZBa7wGNxsg4QCvewJjr1unasN0/5VDBM4NtpBZ+SZPw7Piaeu77sY+eEe8jDwA1UUzgOhgC
+	IhrJWIem8wNfvunIlieY8qAAld9YZPvjYRLsOsoP7014rf5XPwWoKpPjbWyh9oZTxb9kTPcOgZY
+	XXb7VT6BSqagMnFTSyupbHqYwt4GwDWrowFeV2yl47tmAyoaegolt5ahJtkvncOto3X228x
+X-Google-Smtp-Source: AGHT+IFraZxIxArC6ZRLXa5g7OneQiuIwggV1ggNXIteOyfynnk9uYcAtUhHJonNAod2bu5yo5u0XI1eptsrAOVctRM=
+X-Received: by 2002:a05:6402:50d2:b0:633:d0b7:d6d2 with SMTP id
+ 4fb4d7f45d1cf-645eb2a9007mr18043484a12.18.1764457245181; Sat, 29 Nov 2025
+ 15:00:45 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <99f1a93cf8cd4f0ece8611be2860677084663aac.1759359610.git.sam@gentoo.org>
-In-Reply-To: <99f1a93cf8cd4f0ece8611be2860677084663aac.1759359610.git.sam@gentoo.org>
+References: <20251121100044.282684-1-thuth@redhat.com> <20251121100044.282684-2-thuth@redhat.com>
+In-Reply-To: <20251121100044.282684-2-thuth@redhat.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Sat, 29 Nov 2025 18:59:13 +0100
-X-Gm-Features: AWmQ_bkrBmxxqq4OZe51leZUcX5SsifMClMcQ-NL3CRIKUHqXn4Riqh3kSl9BD8
-Message-ID: <CA+=Fv5Qr_QE2ccxiF-yBLWOiFS-bdWA-EP3V_J=-GskKPj8_iw@mail.gmail.com>
-Subject: Re: [PATCH] alpha: don't reference obsolete termio struct for TC* constants
-To: Sam James <sam@gentoo.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
-	Stian Halseth <stian@itx.no>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Sun, 30 Nov 2025 00:00:33 +0100
+X-Gm-Features: AWmQ_bkDTkRArCOJtRA_LXcLs7nIqPHlR48Siu-A5cxKCr76Y6aVmGcQU7u8Tko
+Message-ID: <CA+=Fv5SPuYyZ2ASzz3oVMCRQNP-G+0pbW58o32ryXrm_RBfqSA@mail.gmail.com>
+Subject: Re: [PATCH v4 1/9] alpha: Replace __ASSEMBLY__ with __ASSEMBLER__ in
+ the alpha headers
+To: Thomas Huth <thuth@redhat.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kbuild@vger.kernel.org, 
+	Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
+	linux-alpha@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 2, 2025 at 1:01=E2=80=AFAM Sam James <sam@gentoo.org> wrote:
+On Fri, Nov 21, 2025 at 11:10=E2=80=AFAM Thomas Huth <thuth@redhat.com> wro=
+te:
 >
-> Similar in nature to ab107276607af90b13a5994997e19b7b9731e251. glibc-2.42
-> drops the legacy termio struct, but the ioctls.h header still defines som=
-e
-> TC* constants in terms of termio (via sizeof). Hardcode the values instea=
-d.
+> From: Thomas Huth <thuth@redhat.com>
 >
-> This fixes building Python for example, which falls over like:
->   ./Modules/termios.c:1119:16: error: invalid application of 'sizeof' to =
-incomplete type 'struct termio'
+> While the GCC and Clang compilers already define __ASSEMBLER__
+> automatically when compiling assembly code, __ASSEMBLY__ is a
+> macro that only gets defined by the Makefiles in the kernel.
+> This can be very confusing when switching between userspace
+> and kernelspace coding, or when dealing with uapi headers that
+> rather should use __ASSEMBLER__ instead. So let's standardize now
+> on the __ASSEMBLER__ macro that is provided by the compilers.
 >
-> Link: https://bugs.gentoo.org/961769
-> Link: https://bugs.gentoo.org/962600
-> Co-authored-by: Stian Halseth <stian@itx.no>
-> Co-authored-by: Magnus Lindholm <linmag7@gmail.com>
-> Signed-off-by: Sam James <sam@gentoo.org>
+> This is a completely mechanical patch (done with a simple "sed -i"
+> statement).
+>
+> Cc: Richard Henderson <richard.henderson@linaro.org>
+> Cc: Matt Turner <mattst88@gmail.com>
+> Cc: linux-alpha@vger.kernel.org
+> Signed-off-by: Thomas Huth <thuth@redhat.com>
 > ---
-> v3: Fix constants per Magnus.
-> v2: Fix title.
+>  arch/alpha/include/asm/console.h     | 4 ++--
+>  arch/alpha/include/asm/page.h        | 4 ++--
+>  arch/alpha/include/asm/pal.h         | 4 ++--
+>  arch/alpha/include/asm/thread_info.h | 8 ++++----
+>  4 files changed, 10 insertions(+), 10 deletions(-)
 >
->  arch/alpha/include/uapi/asm/ioctls.h | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+> diff --git a/arch/alpha/include/asm/console.h b/arch/alpha/include/asm/co=
+nsole.h
+> index 088b7b9eb15ae..1cabdb6064bbe 100644
+> --- a/arch/alpha/include/asm/console.h
+> +++ b/arch/alpha/include/asm/console.h
+> @@ -4,7 +4,7 @@
 >
-> diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/ua=
-pi/asm/ioctls.h
-> index 971311605288f..a09d04b49cc65 100644
-> --- a/arch/alpha/include/uapi/asm/ioctls.h
-> +++ b/arch/alpha/include/uapi/asm/ioctls.h
-> @@ -23,10 +23,10 @@
->  #define TCSETSW                _IOW('t', 21, struct termios)
->  #define TCSETSF                _IOW('t', 22, struct termios)
+>  #include <uapi/asm/console.h>
 >
-> -#define TCGETA         _IOR('t', 23, struct termio)
-> -#define TCSETA         _IOW('t', 24, struct termio)
-> -#define TCSETAW                _IOW('t', 25, struct termio)
-> -#define TCSETAF                _IOW('t', 28, struct termio)
-> +#define TCGETA          0x40127417
-> +#define TCSETA          0x80127418
-> +#define TCSETAW         0x80127419
-> +#define TCSETAF         0x8012741c
+> -#ifndef __ASSEMBLY__
+> +#ifndef __ASSEMBLER__
+>  extern long callback_puts(long unit, const char *s, long length);
+>  extern long callback_getc(long unit);
+>  extern long callback_open_console(void);
+> @@ -26,5 +26,5 @@ struct crb_struct;
+>  struct hwrpb_struct;
+>  extern int callback_init_done;
+>  extern void * callback_init(void *);
+> -#endif /* __ASSEMBLY__ */
+> +#endif /* __ASSEMBLER__ */
+>  #endif /* __AXP_CONSOLE_H */
+> diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.=
+h
+> index 5ec4c77e432e0..d2c6667d73e9e 100644
+> --- a/arch/alpha/include/asm/page.h
+> +++ b/arch/alpha/include/asm/page.h
+> @@ -6,7 +6,7 @@
+>  #include <asm/pal.h>
+>  #include <vdso/page.h>
 >
->  #define TCSBRK         _IO('t', 29)
->  #define TCXONC         _IO('t', 30)
+> -#ifndef __ASSEMBLY__
+> +#ifndef __ASSEMBLER__
+>
+>  #define STRICT_MM_TYPECHECKS
+>
+> @@ -74,7 +74,7 @@ typedef struct page *pgtable_t;
+>  #define PAGE_OFFSET            0xfffffc0000000000
+>  #endif
+>
+> -#endif /* !__ASSEMBLY__ */
+> +#endif /* !__ASSEMBLER__ */
+>
+>  #define __pa(x)                        ((unsigned long) (x) - PAGE_OFFSE=
+T)
+>  #define __va(x)                        ((void *)((unsigned long) (x) + P=
+AGE_OFFSET))
+> diff --git a/arch/alpha/include/asm/pal.h b/arch/alpha/include/asm/pal.h
+> index db2b3b18b34c7..799a64c051984 100644
+> --- a/arch/alpha/include/asm/pal.h
+> +++ b/arch/alpha/include/asm/pal.h
+> @@ -4,7 +4,7 @@
+>
+>  #include <uapi/asm/pal.h>
+>
+> -#ifndef __ASSEMBLY__
+> +#ifndef __ASSEMBLER__
+>
+>  extern void halt(void) __attribute__((noreturn));
+>  #define __halt() __asm__ __volatile__ ("call_pal %0 #halt" : : "i" (PAL_=
+halt))
+> @@ -183,5 +183,5 @@ qemu_get_vmtime(void)
+>         return v0;
+>  }
+>
+> -#endif /* !__ASSEMBLY__ */
+> +#endif /* !__ASSEMBLER__ */
+>  #endif /* __ALPHA_PAL_H */
+> diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/as=
+m/thread_info.h
+> index 4a4d00b37986e..98ccbca64984c 100644
+> --- a/arch/alpha/include/asm/thread_info.h
+> +++ b/arch/alpha/include/asm/thread_info.h
+> @@ -4,14 +4,14 @@
+>
+>  #ifdef __KERNEL__
+>
+> -#ifndef __ASSEMBLY__
+> +#ifndef __ASSEMBLER__
+>  #include <asm/processor.h>
+>  #include <asm/types.h>
+>  #include <asm/hwrpb.h>
+>  #include <asm/sysinfo.h>
+>  #endif
+>
+> -#ifndef __ASSEMBLY__
+> +#ifndef __ASSEMBLER__
+>  struct thread_info {
+>         struct pcb_struct       pcb;            /* palcode state */
+>
+> @@ -44,7 +44,7 @@ register struct thread_info *__current_thread_info __as=
+m__("$8");
+>
+>  register unsigned long *current_stack_pointer __asm__ ("$30");
+>
+> -#endif /* __ASSEMBLY__ */
+> +#endif /* __ASSEMBLER__ */
+>
+>  /* Thread information allocation.  */
+>  #define THREAD_SIZE_ORDER 1
+> @@ -110,7 +110,7 @@ register unsigned long *current_stack_pointer __asm__=
+ ("$30");
+>         put_user(res, (int __user *)(value));                           \
+>         })
+>
+> -#ifndef __ASSEMBLY__
+> +#ifndef __ASSEMBLER__
+>  extern void __save_fpu(void);
+>
+>  static inline void save_fpu(void)
 > --
-> 2.51.0
+> 2.51.1
 >
-
-Thanks, looks good to me!
 
 Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
