@@ -1,85 +1,126 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2F671E5714
-	for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 17:33:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 481CE1DE8BF
+	for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 17:59:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764437639; cv=none; b=mQvxaPkaGdkFZ2ev0CdvQ6oUZbWN6oAguJebp1CVPU3l7hE1YsICMtqu+HI6Lh49gCYEqUnhGdUBsx4TLSdxKlbUzyvgx/qZ+aC3Pjwud0cerTdiGn+OOyVR5+QY3VBrVO4VLnMDNUlvWioE0eQV6DMMzeg4WAI5bOrhBJyyKPg=
+	t=1764439169; cv=none; b=Ph1F50Y1dvyTL8acw3req5wvnPyrZIkbP6WwfHK1G0thnds4DpEHiy0XSt40/CGiZnfeRaExpp1bgf/nXkmi4E121qBf+NBnLBm7HBJQPEfvRhqr4wN4rXIjqFzEwSrBDSIDp7Z63oZIVXxSdjgnbBXoVaiqQFTPnLE/mSH1J0A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764437639; c=relaxed/simple;
-	bh=gb8mPZsI3i+7tr6sMf07hTDcbjPY3ezekuga2imY2F8=;
+	s=arc-20240116; t=1764439169; c=relaxed/simple;
+	bh=DGlPDfNLAWyspL0UxJGaCFDod9ET7hiJvThKCyQBm8k=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=m8tWSDSJreBEBFi+FGLvD1oXGYLsMYieWTxDt6ahQCkPkNlIFrdNuN7KE1qaiyiQCDpiObnpHW+x4f/TNMNuMWt+u+baMxAVru4+wc6zRWV/7ngXTI0ycSGgINxGhJV8LxoFqNi+9D5GSsQLkODLRnTC3ZcWdc8V39M74CULw3I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NPfOtUke; arc=none smtp.client-ip=209.85.208.50
+	 To:Cc:Content-Type; b=NrmQC6kiZ+FrczqYKLobyRieZxOVc8HOGKQI0he3G15pQTko9jNGmvfvH+mWvwP8u80Jrfee8/zS/XTIX8EjbIxXaR07VOU3z8RvoE8YymNbxPJGil+tyQoub6E9nqjxDelAcxFsuRaFhvNZnwA4nPt4nzd7u4OO1S6nxXMNvcA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UpLwwS48; arc=none smtp.client-ip=209.85.208.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NPfOtUke"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-640c6577120so5142454a12.1
-        for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 09:33:57 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UpLwwS48"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-640a3317b89so4346292a12.0
+        for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 09:59:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764437636; x=1765042436; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=gb8mPZsI3i+7tr6sMf07hTDcbjPY3ezekuga2imY2F8=;
-        b=NPfOtUke5k7Af6oeX/NKG2oz9fUX0rfOZ7kG8s9y7Bi1+4epsK37Zc5ohUo/cGPkX0
-         +wz21T8lJrx6/JcZV5UVGyHVO6PN8a9zLLYcJFDHt040lSwJ2IoV3X3uqjJfNXSfAMIL
-         1auZJ9VWF0hDTu4U7q25tqtbwuEily2vuJ8t44Bewnlc+OFwxWypYGTRWjIbxrHQm9l+
-         bZxEI8446YxP70Bwxazzo1iErww2kXfV8fJIxroH0FPnd4747hi+uxX0VwQNLP3as6LK
-         i2AgBPsHaSim15VNnMx0gp06pIdoaN/6snYm/kCweJi83mZAM9i79flqiMYkC5nfXSi1
-         ca8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764437636; x=1765042436;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1764439165; x=1765043965; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gb8mPZsI3i+7tr6sMf07hTDcbjPY3ezekuga2imY2F8=;
-        b=IywFNKqKKXzg7M7FAiJvNUQ+fAaDqtz5z7bI5B/wZkWsil3rGgUPjkSCc2/svpALS+
-         BuPIiraJYwnVlRe0QJDVH7pQFadz/aa57ual2QhdGDiSr+bWAPrNy33EWtoWmsgezQS8
-         ealMQIokW5vyKjt3ZFBqO++p2qwf3YMZ6wOj/jpGn/BICIDPdyKJPowEHjB9GYXQItDd
-         itMwjHi3t5Uyk4yfuRExfOCVBHVflJJ+67BPLtTM8ugUK+hcRoQw0+KlfJCcYfnGpT0H
-         20f0nHA3kd+8SoSJHsUrL4w5Ay44Z7XBfaLq4yDrA4fAeX1JP/p5lO4haXfbEBoLWreX
-         BRBg==
-X-Gm-Message-State: AOJu0Yz0e3H0h7SHci6r1f2EqwkFCokaeAwRHeK9NU0URXR+BH32l6+X
-	/uV/hBGVQq0LrlyWIpmjA5LTUy+gYLItyPbaOs7FHZ4fkHVCA5L2N5f/W5uZWwfESbhKDytq1g8
-	ypJf44/gkSWizqPpWa62acDWqzynUjUg=
-X-Gm-Gg: ASbGncvhhS6uRWlT7KoTjLtShwhtdGMFrLs10I40AZxFvo0K+9NwvDTbQZYlTBs3bET
-	oo42yo2+P4NS/7o1VpG9q5M/YGF6UgtpU4oVqXDFzJtNskjmj5PV2u4z9RQqm0+swhBqaAj8TCm
-	owK8Nxih2/1KUYDRVbfBBXF1dJskVMdvtb3lZhPWj6Zt2FuH/8EbITby800mksfz5px0Q23NCpV
-	RMw8c90hRhbAG+6h+kxuZ7/broZZeiEqOel2J2YjkBQ20gagMo31u2k/6p7TFb5xv70aBvX
-X-Google-Smtp-Source: AGHT+IF97TVQKqd4QpF5rZw3LC7DwErt4VbnYQU7X+rMmOoGn1BNPQDrloDRnIG6wiIw7nVrZXk8P8V9HT2dcIS4XAs=
-X-Received: by 2002:a05:6402:4404:b0:63c:533f:4b25 with SMTP id
- 4fb4d7f45d1cf-6455444ac37mr33624439a12.15.1764437635420; Sat, 29 Nov 2025
- 09:33:55 -0800 (PST)
+        bh=aBRwKDLFgot90BCpwfeuf6lF5eBHC5zOS1aXw8/zxsw=;
+        b=UpLwwS48Jrlbg3eyzK4/Nz7L2PK7HkLKtw5RbiH0J2m1490+HyFD4P8Wo37o+uv1S5
+         vcCUzSFs42wvFPvYg5eYUOkcrZuReovYWtw6uak/5w9opr+yjSrD2Aj6oYPlZyPF2OaM
+         AB9uClV+3uASIYQpnaeZjDixiDNPBUj6/38gHUdDdpa9lpLt2Tp/1NI4xV0tZrdHnVs5
+         m3DRXAT2QWgdg0k6en/6jqcSX/1GCICD6+gMzQwuGiG9poEfBTFxMDiKM7gFi/oBgr4/
+         IyQtM7KB0/EO/7EiQWC1bqUUei8RfhcObgIjMHIQ8XQfiNnuMvvU/CiVPuNhVtS+XhAU
+         0Oew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764439165; x=1765043965;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=aBRwKDLFgot90BCpwfeuf6lF5eBHC5zOS1aXw8/zxsw=;
+        b=iwaeNq7gVuBIEI9Qm3/K2zFUwwqnTcajL+7MT2FPdzAPGCf6dmmSKQ5I09tnd9HuMV
+         OqkwDcn3YB/rmKcdRHNw/WxAcsQUTe5rKJV9N+K+HZfLwpPPWG1jZgXwt3jnYHboTEaV
+         Y7heRHQKIXPyYJ4WMksKgH95PbHiaup02nB0vXx4N0/d1Z/E0hastiZN3K3YMRAKuocB
+         A5Aw7N5HyEZXV+8XAkN6oO+Vt3TM2nOp++NFPZtziuW9SBW4yeLacfnB1LTAUdErnR7Y
+         W6RQ/0WirmRGB+AHFu2DP1sBV+504G9KSBtfJn3tFdZXuLtqkdj+X75nrLy6fEJsBg/4
+         ZzsQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV1AW0k1uBHwIG5dUjsMLgTcozmH+bMjKPn1zBW9KKUg7n2u2abrlhSaVAY4s47O7A12Nkr+MTP+x/LBQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx4QH/b21xh3gPuAGlErcDka0Qh5BSOPqn3VMAOcIEV+3T+YNj0
+	p0E04NCkmOha3wThrXO3vYu76p4Y9xhltbMK+CKmw8Vz9VamswvYp85SxjrCS2EpdyweCPlcrCI
+	nGM8G4EsN1+b+yLz1W5g4EGee+9S/uV0=
+X-Gm-Gg: ASbGnct1V0zNrFya8zvXSj6UuHwY0jrJlzsgHIJ4uqefikuM6N/cptk+UGX8UsFhGeY
+	HDsrc9h2BjJmxBbGqF6pJSFeXh2Lh6hA/h2jicr4tOtCNFcLYYEo4SEZktBJkKR162B9ssyltJb
+	sC20G/f86udc4aSEM6VIfGQ5NZA6bYeTSbUtYoLxBOQ+ioi7gudRvamHXqRPhLC57sWL0QHfUtp
+	yZ63hMmkNEnMNPNI3Bud7rylzfbA9SIBeq88yUcp2F1hra4Ig5fPjrx5VmYmOk9XUo9rPlT
+X-Google-Smtp-Source: AGHT+IG0VgtlaGTSklyY0vbu4Qq4mH1myxFDbZdM5hSJcMj+hIDd8tP/K+G8vhcbc6WgZnrjqnh8cyGubkBSRuGt/Vc=
+X-Received: by 2002:a05:6402:34d2:b0:643:8301:d107 with SMTP id
+ 4fb4d7f45d1cf-645eb799b65mr18151139a12.30.1764439165410; Sat, 29 Nov 2025
+ 09:59:25 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <1605dd43-5e95-46eb-a0c6-78ff8b4d51b3@web.de> <CA+=Fv5RDbA-=WFf1bdekhheZfYScbu8J1Eud-sEgTqUGnk00qg@mail.gmail.com>
- <aSslgTu6_HQfhbB2@stanley.mountain>
-In-Reply-To: <aSslgTu6_HQfhbB2@stanley.mountain>
+References: <99f1a93cf8cd4f0ece8611be2860677084663aac.1759359610.git.sam@gentoo.org>
+In-Reply-To: <99f1a93cf8cd4f0ece8611be2860677084663aac.1759359610.git.sam@gentoo.org>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Sat, 29 Nov 2025 18:33:44 +0100
-X-Gm-Features: AWmQ_blXJLKqQt2Z7fhU_XKZ-vP-poW5knLgf4NBLeti_sq9o-Z362H1NN8Ndes
-Message-ID: <CA+=Fv5Qm1g9JFaeVXDjXRgW8BiPCbsvHJod50Do7=KZaBvLssQ@mail.gmail.com>
-Subject: Re: [PATCH] alpha: Use pointers from memcpy() calls for assignments
- in two functions
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: linux-alpha@vger.kernel.org, Chen Gang <gang.chen@asianux.com>, 
-	Matt Turner <mattst88@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, 
-	LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org, 
-	Miaoqian Lin <linmq006@gmail.com>
+Date: Sat, 29 Nov 2025 18:59:13 +0100
+X-Gm-Features: AWmQ_bkrBmxxqq4OZe51leZUcX5SsifMClMcQ-NL3CRIKUHqXn4Riqh3kSl9BD8
+Message-ID: <CA+=Fv5Qr_QE2ccxiF-yBLWOiFS-bdWA-EP3V_J=-GskKPj8_iw@mail.gmail.com>
+Subject: Re: [PATCH] alpha: don't reference obsolete termio struct for TC* constants
+To: Sam James <sam@gentoo.org>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
+	Stian Halseth <stian@itx.no>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Thu, Oct 2, 2025 at 1:01=E2=80=AFAM Sam James <sam@gentoo.org> wrote:
 >
-> I feel like generally we decided we didn't like the p = memcpy() patches.
+> Similar in nature to ab107276607af90b13a5994997e19b7b9731e251. glibc-2.42
+> drops the legacy termio struct, but the ioctls.h header still defines som=
+e
+> TC* constants in terms of termio (via sizeof). Hardcode the values instea=
+d.
+>
+> This fixes building Python for example, which falls over like:
+>   ./Modules/termios.c:1119:16: error: invalid application of 'sizeof' to =
+incomplete type 'struct termio'
+>
+> Link: https://bugs.gentoo.org/961769
+> Link: https://bugs.gentoo.org/962600
+> Co-authored-by: Stian Halseth <stian@itx.no>
+> Co-authored-by: Magnus Lindholm <linmag7@gmail.com>
+> Signed-off-by: Sam James <sam@gentoo.org>
+> ---
+> v3: Fix constants per Magnus.
+> v2: Fix title.
+>
+>  arch/alpha/include/uapi/asm/ioctls.h | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/ua=
+pi/asm/ioctls.h
+> index 971311605288f..a09d04b49cc65 100644
+> --- a/arch/alpha/include/uapi/asm/ioctls.h
+> +++ b/arch/alpha/include/uapi/asm/ioctls.h
+> @@ -23,10 +23,10 @@
+>  #define TCSETSW                _IOW('t', 21, struct termios)
+>  #define TCSETSF                _IOW('t', 22, struct termios)
+>
+> -#define TCGETA         _IOR('t', 23, struct termio)
+> -#define TCSETA         _IOW('t', 24, struct termio)
+> -#define TCSETAW                _IOW('t', 25, struct termio)
+> -#define TCSETAF                _IOW('t', 28, struct termio)
+> +#define TCGETA          0x40127417
+> +#define TCSETA          0x80127418
+> +#define TCSETAW         0x80127419
+> +#define TCSETAF         0x8012741c
+>
+>  #define TCSBRK         _IO('t', 29)
+>  #define TCXONC         _IO('t', 30)
+> --
+> 2.51.0
 >
 
-Thanks, yes.
+Thanks, looks good to me!
 
-Regards
-
-Magnus
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
