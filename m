@@ -1,219 +1,255 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B5021F1302
-	for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 23:00:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D760F36D515;
+	Sun, 30 Nov 2025 03:01:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764457248; cv=none; b=MnBOb0pTr38M+LXPSk15QuTACKBZNln4Bco76FC+VHSPKbUYteZLRcgDyZzGWmiw2MEonzZXiAzo+vujCMRM9E04+HP0UdS18tw6FzgzfKV4YkKgWqGRSzJJxmlAaWwsHfenp/hDvhkaZxP1ha6qasBpMS+KLMgf1CKjNoEaB9s=
+	t=1764471704; cv=none; b=IP1CxA3feNkgS2NJsZVa18wxXlqCdm2bAmxBVoRraG4ZEzzjf5maQNyH6qNt74bI+tR5NLtC+mTjAvKN9YPDXxL4awLE4amb/6JMl311C7IYKON9Sq+mPy+1uCXJySU1l7yiAC+RvfX7fEx2yULCS6uxGB0hLhGMtw6xkpqU8KU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764457248; c=relaxed/simple;
-	bh=ahbrlVHUyjKynsmUn0eg1wukhIGIxV/YCSxXPxWxPkg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fQ7klfFrUCRcOZeZW+60SrVAemA4socw+XyglLNq2Shg1PPjUb5oWT1ru2DNXWeiFhO4Bo+Rxx9xsDBP5GDgw6uFZKumuyW83MrEVZC9JLJR5JU/DF3WnsLE8YEDhrGLcv7SNIwYkbTT5TwJsbfykJilnkfkEcGEi9/DFuHhXZw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a7ayhB0a; arc=none smtp.client-ip=209.85.208.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1764471704; c=relaxed/simple;
+	bh=JEsOzALJdOEUU6cQtF5ZNMFchhRAIuvKCxQUoZFHbKk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YW7T69v5BJq0WAYPrJlFOT4z0kwAM9IRAZNjAMYE0+fRcwoUQ2N4TnyF847UOJOo6xaO3r+mtJ8PLQZzjiyizYdzz5rkdAnh5UhNCuORdIrq0I6tSwzvmC0RoYhkTFbLLuraHdliwMm9QgmGBEyZQcdeWVhcOHjQ24BNWQkl9K8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=HKqaHAdw; arc=none smtp.client-ip=62.89.141.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a7ayhB0a"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-645a13e2b17so4692510a12.2
-        for <linux-alpha@vger.kernel.org>; Sat, 29 Nov 2025 15:00:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764457245; x=1765062045; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=o7abD6XH4eHcxEiWpbo/4uwSFXjdFhqX7mjZwLL/Fl0=;
-        b=a7ayhB0a8mVesvDqyRPRfbj1qe5w2GyPPN0KTnT0F08k6+kCSI2gBADzePtfn/h//m
-         EbiyixkVPtyiLEjuxSW2SrgTzw1DsjZbsU9Kff0xrpWmR06aaslxioPuT7Gqn9mqgSVE
-         mzE2+ZQCFFUh4/vORTyqyTJ4SpwAG66swkMrIHXbo1U9lCx5oSkvw+7HPscncaVevLvz
-         DNFi6eXZmzLa+2wGh63XhZNuSvGvfg6Ma3eg9uTKZtmZLIloEfUiAYy3Hx3a/stjxfl7
-         VPTYzWDYkFPqKS7iOZm8mV4u9bsxfK/5cq0/LTDdBhDtICz32Ek6NlTMzpCq4qCefmQt
-         shzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764457245; x=1765062045;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=o7abD6XH4eHcxEiWpbo/4uwSFXjdFhqX7mjZwLL/Fl0=;
-        b=sBGxpThmufUDWe2WyGMSLG30+kRR4g8RIJBhpBk64w6fgk3IiAYkqoWZZiWmyro8z6
-         2K2hyEPdyh973WexUrGjdA0+Dbwz0gOQYykwNKGgUoJuaR7ZB4RSfPsOeHyfYXJfPgrd
-         YmUv3xUtK5gzD8mE0mj/cf0qdV50u9PJdL3bw6loD1gnzfDP4wSRk0kbCF43nmoyJWwU
-         2Ya8KWfTn9tLLsMFlB62NWn8I+EIN6zvLRXCp55N/F/Ddh0QZKMmGB6Au3GENNTzv9Rn
-         HakQHFef3vmDtQ9EmmqWd/lsyQK+N9dyu2UPn/AbMRJKN+5zhA50uHHlQ4646CTxD6rF
-         O1gg==
-X-Forwarded-Encrypted: i=1; AJvYcCWrvTmh/Jn1S8Xzzc3P6kQ12TQTTYoAqekA3uwN9ReWTXr/qrQXYOPtKgYK5qb3EZV+UbSnOalBkgv3bg==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwRocLzPscsx4mGkm3E9WdO6VdJGZ/d3LVr8VCPlnQlS1D2YwU5
-	yv2iP1OvQjlDIcry2petzn3gBUr21oIra2IIsKpKiD6eyiYZZID9Go1T4tFKbauKoREpDjg7GN8
-	z/2IjBNROeeOGjLnFL7W6tvHXENv8MNk=
-X-Gm-Gg: ASbGncsu3kfXQJDAYuHkpeGz5tNQZsAmL8RhezsaSRwB/wSQRT9uUDppDsiWr6C/sg4
-	Hx6tZBa7wGNxsg4QCvewJjr1unasN0/5VDBM4NtpBZ+SZPw7Piaeu77sY+eEe8jDwA1UUzgOhgC
-	IhrJWIem8wNfvunIlieY8qAAld9YZPvjYRLsOsoP7014rf5XPwWoKpPjbWyh9oZTxb9kTPcOgZY
-	XXb7VT6BSqagMnFTSyupbHqYwt4GwDWrowFeV2yl47tmAyoaegolt5ahJtkvncOto3X228x
-X-Google-Smtp-Source: AGHT+IFraZxIxArC6ZRLXa5g7OneQiuIwggV1ggNXIteOyfynnk9uYcAtUhHJonNAod2bu5yo5u0XI1eptsrAOVctRM=
-X-Received: by 2002:a05:6402:50d2:b0:633:d0b7:d6d2 with SMTP id
- 4fb4d7f45d1cf-645eb2a9007mr18043484a12.18.1764457245181; Sat, 29 Nov 2025
- 15:00:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="HKqaHAdw"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=0TtaLooEQ/SHSgMC/pUOWGMxpepCm5694nPuPzDHEdg=; b=HKqaHAdwMjnBw9TsbmQh894nUI
+	OipQpKHC+/RWe8GpcnFEksC1ndo7hx5Kwu0zRniDNEr5mxnUkJmtHsVY6Z1OAMJ+cMimytbD2yFRk
+	dE5ZBdlVW0FKteHYMIdcUe4xgtM0UJ6WXqwYbgHVh8y4iqTsbDrcO8H4Om7XirN+4wiS1VKJK/QlM
+	rH6BfZb03uT0IQz7pQdM8RZUPTy4SRDRX88s2L3IpOWJTCKwD1YD7SuRZk9PIo2kEkM7i6Mqi5U/E
+	miuzXyWieNj1K2TB0ekO+fAaIxN8Bs1nJ1g4MCj2T0FzDJrVNM5M7G788VbL6RVBL9ceTeQoDftcQ
+	sh81GIiA==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.99 #2 (Red Hat Linux))
+	id 1vPXh4-0000000CPzD-2Cjx;
+	Sun, 30 Nov 2025 03:01:46 +0000
+Date: Sun, 30 Nov 2025 03:01:46 +0000
+From: Al Viro <viro@zeniv.linux.org.uk>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-alpha@vger.kernel.org
+Subject: [RFC][alpha] saner vmalloc handling (was Re: [Bug report]
+ hash_name() may cross page boundary and trigger sleep in RCU context)
+Message-ID: <20251130030146.GN3538@ZenIV>
+References: <20251126090505.3057219-1-wozizhi@huaweicloud.com>
+ <20251126185545.GC3538@ZenIV>
+ <c375dd22-8b46-404b-b0c2-815dbd4c5ec8@huaweicloud.com>
+ <20251129033728.GH3538@ZenIV>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251121100044.282684-1-thuth@redhat.com> <20251121100044.282684-2-thuth@redhat.com>
-In-Reply-To: <20251121100044.282684-2-thuth@redhat.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Sun, 30 Nov 2025 00:00:33 +0100
-X-Gm-Features: AWmQ_bkDTkRArCOJtRA_LXcLs7nIqPHlR48Siu-A5cxKCr76Y6aVmGcQU7u8Tko
-Message-ID: <CA+=Fv5SPuYyZ2ASzz3oVMCRQNP-G+0pbW58o32ryXrm_RBfqSA@mail.gmail.com>
-Subject: Re: [PATCH v4 1/9] alpha: Replace __ASSEMBLY__ with __ASSEMBLER__ in
- the alpha headers
-To: Thomas Huth <thuth@redhat.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kbuild@vger.kernel.org, 
-	Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
-	linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251129033728.GH3538@ZenIV>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 
-On Fri, Nov 21, 2025 at 11:10=E2=80=AFAM Thomas Huth <thuth@redhat.com> wro=
-te:
->
-> From: Thomas Huth <thuth@redhat.com>
->
-> While the GCC and Clang compilers already define __ASSEMBLER__
-> automatically when compiling assembly code, __ASSEMBLY__ is a
-> macro that only gets defined by the Makefiles in the kernel.
-> This can be very confusing when switching between userspace
-> and kernelspace coding, or when dealing with uapi headers that
-> rather should use __ASSEMBLER__ instead. So let's standardize now
-> on the __ASSEMBLER__ macro that is provided by the compilers.
->
-> This is a completely mechanical patch (done with a simple "sed -i"
-> statement).
->
-> Cc: Richard Henderson <richard.henderson@linaro.org>
-> Cc: Matt Turner <mattst88@gmail.com>
-> Cc: linux-alpha@vger.kernel.org
-> Signed-off-by: Thomas Huth <thuth@redhat.com>
-> ---
->  arch/alpha/include/asm/console.h     | 4 ++--
->  arch/alpha/include/asm/page.h        | 4 ++--
->  arch/alpha/include/asm/pal.h         | 4 ++--
->  arch/alpha/include/asm/thread_info.h | 8 ++++----
->  4 files changed, 10 insertions(+), 10 deletions(-)
->
-> diff --git a/arch/alpha/include/asm/console.h b/arch/alpha/include/asm/co=
-nsole.h
-> index 088b7b9eb15ae..1cabdb6064bbe 100644
-> --- a/arch/alpha/include/asm/console.h
-> +++ b/arch/alpha/include/asm/console.h
-> @@ -4,7 +4,7 @@
->
->  #include <uapi/asm/console.h>
->
-> -#ifndef __ASSEMBLY__
-> +#ifndef __ASSEMBLER__
->  extern long callback_puts(long unit, const char *s, long length);
->  extern long callback_getc(long unit);
->  extern long callback_open_console(void);
-> @@ -26,5 +26,5 @@ struct crb_struct;
->  struct hwrpb_struct;
->  extern int callback_init_done;
->  extern void * callback_init(void *);
-> -#endif /* __ASSEMBLY__ */
-> +#endif /* __ASSEMBLER__ */
->  #endif /* __AXP_CONSOLE_H */
-> diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.=
-h
-> index 5ec4c77e432e0..d2c6667d73e9e 100644
-> --- a/arch/alpha/include/asm/page.h
-> +++ b/arch/alpha/include/asm/page.h
-> @@ -6,7 +6,7 @@
->  #include <asm/pal.h>
->  #include <vdso/page.h>
->
-> -#ifndef __ASSEMBLY__
-> +#ifndef __ASSEMBLER__
->
->  #define STRICT_MM_TYPECHECKS
->
-> @@ -74,7 +74,7 @@ typedef struct page *pgtable_t;
->  #define PAGE_OFFSET            0xfffffc0000000000
->  #endif
->
-> -#endif /* !__ASSEMBLY__ */
-> +#endif /* !__ASSEMBLER__ */
->
->  #define __pa(x)                        ((unsigned long) (x) - PAGE_OFFSE=
-T)
->  #define __va(x)                        ((void *)((unsigned long) (x) + P=
-AGE_OFFSET))
-> diff --git a/arch/alpha/include/asm/pal.h b/arch/alpha/include/asm/pal.h
-> index db2b3b18b34c7..799a64c051984 100644
-> --- a/arch/alpha/include/asm/pal.h
-> +++ b/arch/alpha/include/asm/pal.h
-> @@ -4,7 +4,7 @@
->
->  #include <uapi/asm/pal.h>
->
-> -#ifndef __ASSEMBLY__
-> +#ifndef __ASSEMBLER__
->
->  extern void halt(void) __attribute__((noreturn));
->  #define __halt() __asm__ __volatile__ ("call_pal %0 #halt" : : "i" (PAL_=
-halt))
-> @@ -183,5 +183,5 @@ qemu_get_vmtime(void)
->         return v0;
->  }
->
-> -#endif /* !__ASSEMBLY__ */
-> +#endif /* !__ASSEMBLER__ */
->  #endif /* __ALPHA_PAL_H */
-> diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/as=
-m/thread_info.h
-> index 4a4d00b37986e..98ccbca64984c 100644
-> --- a/arch/alpha/include/asm/thread_info.h
-> +++ b/arch/alpha/include/asm/thread_info.h
-> @@ -4,14 +4,14 @@
->
->  #ifdef __KERNEL__
->
-> -#ifndef __ASSEMBLY__
-> +#ifndef __ASSEMBLER__
->  #include <asm/processor.h>
->  #include <asm/types.h>
->  #include <asm/hwrpb.h>
->  #include <asm/sysinfo.h>
->  #endif
->
-> -#ifndef __ASSEMBLY__
-> +#ifndef __ASSEMBLER__
->  struct thread_info {
->         struct pcb_struct       pcb;            /* palcode state */
->
-> @@ -44,7 +44,7 @@ register struct thread_info *__current_thread_info __as=
-m__("$8");
->
->  register unsigned long *current_stack_pointer __asm__ ("$30");
->
-> -#endif /* __ASSEMBLY__ */
-> +#endif /* __ASSEMBLER__ */
->
->  /* Thread information allocation.  */
->  #define THREAD_SIZE_ORDER 1
-> @@ -110,7 +110,7 @@ register unsigned long *current_stack_pointer __asm__=
- ("$30");
->         put_user(res, (int __user *)(value));                           \
->         })
->
-> -#ifndef __ASSEMBLY__
-> +#ifndef __ASSEMBLER__
->  extern void __save_fpu(void);
->
->  static inline void save_fpu(void)
-> --
-> 2.51.1
->
+On Sat, Nov 29, 2025 at 03:37:28AM +0000, Al Viro wrote:
 
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+> AFAICS, 32bit arm is similar to 32bit x86 in that respect; propagation
+> is lazier, though - there arch_sync_kernel_mappings() bumps a counter
+> in init_mm and context switches use that to check if propagation needs
+> to be done.  No idea how well does that work on vfree() side of things -
+> hadn't looked into that rabbit hole...
+
+BTW, speaking of vmalloc space - does anybody object against sorting
+CONFIG_ALPHA_LARGE_VMALLOC out, so that we wouldn't need to mess
+with that in alpha page fault handler?
+
+Basically, do what amd64 does - something along the lines of (untested)
+patch below.  Comments?
+
+[PATCH] alpha: take the LARGE_VMALLOC kludge out
+
+Support of vmalloc space that won't fit into the single L1 slot had
+been a headache for quite a while.
+
+The only things we use seg1 for are virtual mapping of page tables
+(at the last 8G) and vmalloc space (below that).  Normal setup has
+vmalloc space from -16G to -8G, occupying the penultimate L1 slot.
+It is set up (with table sitting just after the kernel image) very
+early, by callback_init().  pgd_alloc() copies that entry when
+setting a new L1 table up, and it's never changed afterwards.
+All page table changes done by vmalloc() are done to tables that
+are shared between all threads, avoiding the need to synchronize
+them.
+
+It would be trivial to extend that - preallocate L2 tables to
+cover the entire vmalloc space (8Kb for each 8Gb of that) and
+set all the L1 slots involved before anything gets forked,
+then copy these slots on pgd_alloc().  Unfortunately, that
+had been done in a different way - only one L2 table is
+preallocated, the rest gets created on demand, which means
+that we need to propagate changes to threads' L1 tables.
+It's kinda-sorta handled in do_page_fault(), but it's racy and
+fixing that up would be a major headache.
+
+Bugger that for the game of soldiers - do what e.g. amd64 does
+and preallocate these in mem_init().  And replace the bool
+ALPHA_LARGE_VMALLOC with int ALPHA_VMALLOC_SIZE (in gigabytes),
+dependent upon EXPERT and defaulting to 8.
+
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+---
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 80367f2cf821..36cbba4e21d9 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -410,20 +410,21 @@ config ALPHA_WTINT
+ 
+ 	  If unsure, say N.
+ 
+-# LARGE_VMALLOC is racy, if you *really* need it then fix it first
+-config ALPHA_LARGE_VMALLOC
+-	bool
++config ALPHA_VMALLOC_SIZE
++	int "vmalloc space (in gigabytes)" if EXPERT
++	default "8"
++	range 8 2040
+ 	help
+-	  Process creation and other aspects of virtual memory management can
+-	  be streamlined if we restrict the kernel to one PGD for all vmalloc
+-	  allocations.  This equates to about 8GB.
++	  We preallocate the second-level page tables to cover the entire
++	  vmalloc area; one 8Kb page for each 8Gb.
+ 
+-	  Under normal circumstances, this is so far and above what is needed
+-	  as to be laughable.  However, there are certain applications (such
+-	  as benchmark-grade in-kernel web serving) that can make use of as
+-	  much vmalloc space as is available.
++	  Default is 8Gb total and under normal circumstances, this is so
++	  far and above what is needed as to be laughable.  However, there are
++	  certain applications (such as benchmark-grade in-kernel web serving)
++	  that can make use of as much vmalloc space as is available.
+ 
+-	  Say N unless you know you need gobs and gobs of vmalloc space.
++	  Leave it at 8 unless you know you need gobs and gobs of
++	  vmalloc space.
+ 
+ config VERBOSE_MCHECK
+ 	bool "Verbose Machine Checks"
+diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
+index 90e7a9539102..0f554d01fe54 100644
+--- a/arch/alpha/include/asm/pgtable.h
++++ b/arch/alpha/include/asm/pgtable.h
+@@ -49,11 +49,8 @@ struct vm_area_struct;
+ /* Number of pointers that fit on a page:  this will go away. */
+ #define PTRS_PER_PAGE	(1UL << (PAGE_SHIFT-3))
+ 
+-#ifdef CONFIG_ALPHA_LARGE_VMALLOC
+-#define VMALLOC_START		0xfffffe0000000000
+-#else
+-#define VMALLOC_START		(-2*PGDIR_SIZE)
+-#endif
++#define VMALLOC_SLOTS		DIV_ROUND_UP(CONFIG_ALPHA_VMALLOC_SIZE, 8)
++#define VMALLOC_START		(-(VMALLOC_SLOTS + 1)*PGDIR_SIZE)
+ #define VMALLOC_END		(-PGDIR_SIZE)
+ 
+ /*
+diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
+index a9816bbc9f34..0bc5fc4d510e 100644
+--- a/arch/alpha/mm/fault.c
++++ b/arch/alpha/mm/fault.c
+@@ -111,10 +111,6 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 	if (!mm || faulthandler_disabled())
+ 		goto no_context;
+ 
+-#ifdef CONFIG_ALPHA_LARGE_VMALLOC
+-	if (address >= TASK_SIZE)
+-		goto vmalloc_fault;
+-#endif
+ 	if (user_mode(regs))
+ 		flags |= FAULT_FLAG_USER;
+ 	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+@@ -225,24 +221,4 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+  do_sigsegv:
+ 	force_sig_fault(SIGSEGV, si_code, (void __user *) address);
+ 	return;
+-
+-#ifdef CONFIG_ALPHA_LARGE_VMALLOC
+- vmalloc_fault:
+-	if (user_mode(regs))
+-		goto do_sigsegv;
+-	else {
+-		/* Synchronize this task's top level page-table
+-		   with the "reference" page table from init.  */
+-		long index = pgd_index(address);
+-		pgd_t *pgd, *pgd_k;
+-
+-		pgd = current->active_mm->pgd + index;
+-		pgd_k = swapper_pg_dir + index;
+-		if (!pgd_present(*pgd) && pgd_present(*pgd_k)) {
+-			pgd_val(*pgd) = pgd_val(*pgd_k);
+-			return;
+-		}
+-		goto no_context;
+-	}
+-#endif
+ }
+diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
+index 4c5ab9cd8a0a..e5eea8b05c7f 100644
+--- a/arch/alpha/mm/init.c
++++ b/arch/alpha/mm/init.c
+@@ -45,13 +45,10 @@ pgd_alloc(struct mm_struct *mm)
+ 	ret = __pgd_alloc(mm, 0);
+ 	init = pgd_offset(&init_mm, 0UL);
+ 	if (ret) {
+-#ifdef CONFIG_ALPHA_LARGE_VMALLOC
+-		memcpy (ret + USER_PTRS_PER_PGD, init + USER_PTRS_PER_PGD,
+-			(PTRS_PER_PGD - USER_PTRS_PER_PGD - 1)*sizeof(pgd_t));
+-#else
+-		pgd_val(ret[PTRS_PER_PGD-2]) = pgd_val(init[PTRS_PER_PGD-2]);
+-#endif
+-
++		for (int i = 0; i < VMALLOC_SLOTS; i++) {
++			pgd_val(ret[PTRS_PER_PGD - VMALLOC_SLOTS - 1 + i]) =
++			pgd_val(init[PTRS_PER_PGD - VMALLOC_SLOTS - 1 + i]);
++		}
+ 		/* The last PGD entry is the VPTB self-map.  */
+ 		pgd_val(ret[PTRS_PER_PGD-1])
+ 		  = pte_val(mk_pte(virt_to_page(ret), PAGE_KERNEL));
+@@ -148,9 +145,10 @@ callback_init(void * kernel_end)
+ 	   On systems with larger consoles, additional pages will be
+ 	   allocated as needed during the mapping process.
+ 
+-	   In the case of not SRM, but not CONFIG_ALPHA_LARGE_VMALLOC,
+-	   we need to allocate the PGD we use for vmalloc before we start
+-	   forking other tasks.  */
++	   In any case we need to allocate a PGD we use for vmalloc
++	   before we start forking other tasks.  If vmalloc wants more
++	   than one PGD slot, allocate the rest later (at mem_init() -
++	   it's still early enough).  */
+ 
+ 	two_pages = (void *)
+ 	  (((unsigned long)kernel_end + ~PAGE_MASK) & PAGE_MASK);
+@@ -246,6 +244,22 @@ srm_paging_stop (void)
+ }
+ #endif
+ 
++void __init mem_init(void)
++{
++	// first slot already filled by callback_init()
++	unsigned long addr = VMALLOC_START + PGDIR_SIZE;
++
++	while (addr < VMALLOC_END) {
++		pgd_t *pgd = pgd_offset_k(addr);
++		p4d_t *p4d = p4d_offset(pgd, addr);
++		pud_t *pud = pud_offset(p4d, addr);
++		pmd_t *pmd = pmd_alloc(&init_mm, pud, addr);
++		if (!pmd)
++			panic("can't preallocate tables for vmalloc");
++		addr += PGDIR_SIZE;
++	}
++}
++
+ static const pgprot_t protection_map[16] = {
+ 	[VM_NONE]					= _PAGE_P(_PAGE_FOE | _PAGE_FOW |
+ 								  _PAGE_FOR),
