@@ -1,94 +1,74 @@
-Received: from mailtransmit04.runbox.com (mailtransmit04.runbox.com [185.226.149.37])
+Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03DC42773D3
-	for <linux-alpha@vger.kernel.org>; Sun, 30 Nov 2025 11:32:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.226.149.37
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB27B27FB1C;
+	Sun, 30 Nov 2025 16:43:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764502355; cv=none; b=ktZFNDXWol4lqTVeYlYVKreqQ4GiOY0AxqxqdhtwKMsrz3KVvBpT7ZG2JSqkRUfae9kxeAQMK449ujateJzs1eF7qvw463oXihbGRUYqH4trEYp08Wuzvvr8iu8B9dKIndMxKWA3xRDSuSD/ddtc8vIMZ3KTuJ0ylX8jw0kiiAY=
+	t=1764521023; cv=none; b=ggGQKyjF7Pnt4pOhXqXMA/DJQwbCT+h4ft9l2sYjCG2+DXynXeR1YU2XlniRj4MMR8yYP2G0vz4SzKeEHuY1kl6Y50D7H6vyJT1tGRf8WOydEkXdeRTve9mvJMkPkDSyWrQevxRNK2LBDorFckrQsp6VS2FZhC/5wl/H38vaeJU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764502355; c=relaxed/simple;
-	bh=HMRbl/ozQsrYY90NlFmA5gVK8UM/03vWffeBhmrICqk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=k1Kts9Jmqe/PJeKZN5TxGksqKAg9euFfE4rSBBsmbsAk5Z+OFLCN+Ojnq8CsQOFqC8L9Af88fRi08WCVhnzF1c5T0EMfNuj+kFxqshgBUtuB5Uto+HzBsFXeyo7Tz2+Ci5dMvFSrOzlgoIo8JmTWQjfeCdAhsar63Prbc4n4hfI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=runbox.com; spf=pass smtp.mailfrom=runbox.com; dkim=pass (2048-bit key) header.d=runbox.com header.i=@runbox.com header.b=Fe+6TaUQ; arc=none smtp.client-ip=185.226.149.37
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=runbox.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=runbox.com
+	s=arc-20240116; t=1764521023; c=relaxed/simple;
+	bh=TEp6uPvGpzvvWaNwiaYamHslIOdjwDSQltKULtldaSY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gBPKuBQJ1SinpgX7U+byiRqY/mezvuptUmGu5uTQqvcpHhTbVFLP1bWvB6nNMnjkNb2hVDH2HcMgpGi4xoN29iAssmSkTs9Iy9NMZNqpCnITo7a/zkeV1HAL/U5Rc/X0UMaZyiyR8V/ALPd2totQpvKdEZuF5+ktWoxFlCvgSbs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=HpNXuYeZ; arc=none smtp.client-ip=62.89.141.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=runbox.com header.i=@runbox.com header.b="Fe+6TaUQ"
-Received: from mailtransmit02.runbox ([10.9.9.162] helo=aibo.runbox.com)
-	by mailtransmit04.runbox.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.93)
-	(envelope-from <david.laight@runbox.com>)
-	id 1vPffG-004aJe-Ks; Sun, 30 Nov 2025 12:32:26 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=runbox.com;
-	 s=selector2; h=Content-Transfer-Encoding:Content-Type:MIME-Version:
-	References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date;
-	bh=AOYHCzYNL4IW5t7SZZIqadgltwGQwxY9WRxQSDt5CGo=; b=Fe+6TaUQl1tgB7LkFOGd/TPUBb
-	48vqLZdA+0z2SvwylZj6S40Jz9eB4MgI4piGqjaN/PaPOjdbaw+A8r1KJoQgf5w5recbeDL3zljbP
-	rXGiao4q4/U2/zkDKODDKo3KqrnYXdF5aiIX7rOQnWJFM4NthXqLtaKpPBye/pql+cIkF7MaWHmno
-	n0zEmVgdbHTA7zDrfI1Xorl3nIKMzbdZ80bLsbxAElzvMdqtfUpeUf3ppIOW1s++SAO4QFvL8WL66
-	UhAGcNxz4CTA+j8BLsFcgia4ZT4di0iEjGb9csrlyu+k3beNl66A5JlDSUhHumDlBsWUh32+dJ5xf
-	K9WUkOgA==;
-Received: from [10.9.9.72] (helo=submission01.runbox)
-	by mailtransmit02.runbox with esmtp (Exim 4.86_2)
-	(envelope-from <david.laight@runbox.com>)
-	id 1vPffF-0000ec-W2; Sun, 30 Nov 2025 12:32:26 +0100
-Received: by submission01.runbox with esmtpsa  [Authenticated ID (1493616)]  (TLS1.2:ECDHE_SECP256R1__RSA_SHA256__AES_256_GCM:256)
-	(Exim 4.93)
-	id 1vPff5-0051X4-CY; Sun, 30 Nov 2025 12:32:15 +0100
-Date: Sun, 30 Nov 2025 11:32:13 +0000
-From: david laight <david.laight@runbox.com>
-To: Al Viro <viro@zeniv.linux.org.uk>
+	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="HpNXuYeZ"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=6TQMOQpqW8krGAHNp9tR8czsOrAsd6ZBsxnO6QRI/Ns=; b=HpNXuYeZo0kYZQOCGgq6FzNrRj
+	JAyLOPcOzLE6pPZPH5OwI0lMoZpoNfRElK9IBD0C8ELiKmjaa8VFl6UQHry+OkV1hh9BD25mPrfs6
+	Mb9B2Lpfwuty8QhaGjWlzAzHMy5YFP3CmRf6oVaR2+ZOVK+P5ssFA1J1sGrnYd1dh1YBPBuU7mRQf
+	AE6ZwC8XWApOmAi+EOWX/jtHT7smdIbxCZYIbJpLji+DD3Ps0p+Us5YAvWQNae1A7w/qO8IJUB5Nd
+	2Io+JAc8nsBDbjVHf4CYH8bbtN70dFeumER2EG8zrmAqTTrIYZWmvx2HjPd3kZEPK1rI65jSmsyqd
+	LXsZDdYQ==;
+Received: from viro by zeniv.linux.org.uk with local (Exim 4.99 #2 (Red Hat Linux))
+	id 1vPkWa-0000000AnW0-12ga;
+	Sun, 30 Nov 2025 16:43:48 +0000
+Date: Sun, 30 Nov 2025 16:43:48 +0000
+From: Al Viro <viro@zeniv.linux.org.uk>
+To: david laight <david.laight@runbox.com>
 Cc: Linus Torvalds <torvalds@linux-foundation.org>,
- akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, linux-alpha@vger.kernel.org
+	akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-alpha@vger.kernel.org
 Subject: Re: [RFC][alpha] saner vmalloc handling (was Re: [Bug report]
  hash_name() may cross page boundary and trigger sleep in RCU context)
-Message-ID: <20251130113213.40c8e7a0@pumpkin>
-In-Reply-To: <20251130030146.GN3538@ZenIV>
+Message-ID: <20251130164348.GV3538@ZenIV>
 References: <20251126090505.3057219-1-wozizhi@huaweicloud.com>
-	<20251126185545.GC3538@ZenIV>
-	<c375dd22-8b46-404b-b0c2-815dbd4c5ec8@huaweicloud.com>
-	<20251129033728.GH3538@ZenIV>
-	<20251130030146.GN3538@ZenIV>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+ <20251126185545.GC3538@ZenIV>
+ <c375dd22-8b46-404b-b0c2-815dbd4c5ec8@huaweicloud.com>
+ <20251129033728.GH3538@ZenIV>
+ <20251130030146.GN3538@ZenIV>
+ <20251130113213.40c8e7a0@pumpkin>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251130113213.40c8e7a0@pumpkin>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 
-On Sun, 30 Nov 2025 03:01:46 +0000
-Al Viro <viro@zeniv.linux.org.uk> wrote:
+On Sun, Nov 30, 2025 at 11:32:13AM +0000, david laight wrote:
 
-> On Sat, Nov 29, 2025 at 03:37:28AM +0000, Al Viro wrote:
+> How difficult would it be to allocate the pte for the next 8GB on demand
+> inside vmalloc(), and then propagate it to the per-task page tables.
+> That is a path than can sleep, so being slow if it needs to synchronise
+> with other cpu shouldn't matter - especially since it won't happen often.
 > 
-> > AFAICS, 32bit arm is similar to 32bit x86 in that respect; propagation
-> > is lazier, though - there arch_sync_kernel_mappings() bumps a counter
-> > in init_mm and context switches use that to check if propagation needs
-> > to be done.  No idea how well does that work on vfree() side of things -
-> > hadn't looked into that rabbit hole...  
-> 
-> BTW, speaking of vmalloc space - does anybody object against sorting
-> CONFIG_ALPHA_LARGE_VMALLOC out, so that we wouldn't need to mess
-> with that in alpha page fault handler?
-> 
-> Basically, do what amd64 does - something along the lines of (untested)
-> patch below.  Comments?
+> That should be moderately generic code and would let the vmalloc limit
+> be 'soft'; perhaps based on physical memory size, and even be raisable
+> from a sysctl.
 
-How difficult would it be to allocate the pte for the next 8GB on demand
-inside vmalloc(), and then propagate it to the per-task page tables.
-That is a path than can sleep, so being slow if it needs to synchronise
-with other cpu shouldn't matter - especially since it won't happen often.
+Considerable headache and pretty pointless, at that.  Note that >8G vmalloc
+space on alpha had been racy all along (and known to be that); it was
+basically "could we squeeze more out of khttpd" kind of fun.
 
-That should be moderately generic code and would let the vmalloc limit
-be 'soft'; perhaps based on physical memory size, and even be raisable
-from a sysctl.
-
-Likely more use for very large x86-64 and arm-64 systems than alpha.
-
-	David
+Do we have realistic vmalloc-crazy loads with high fragmentation of vmalloc
+space and total footprint worth bothering with that?
