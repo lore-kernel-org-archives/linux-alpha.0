@@ -1,124 +1,119 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C037732E755
-	for <linux-alpha@vger.kernel.org>; Fri,  5 Dec 2025 11:52:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 991CF1E5207
+	for <linux-alpha@vger.kernel.org>; Fri,  5 Dec 2025 18:06:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764935538; cv=none; b=t9NwdAPY8W+Zb6AbBxEcmJPuaW1wYKlod0EEo5cGIrpd0PJqBGDvbIcwVwNCWTOau/jY/6reVfsoxFnjxOz6xcha1369Z2YL0ycLRTLuBznmoDhGxzWxdBMsXH22RyDB4+0JZDAHc0/pK/qoIWBz5GjicptKFc4weWRifqrbEGI=
+	t=1764957997; cv=none; b=sj4Fn7ha+LaPIYOiWrX9djSG1pJh6f79IVincHRFRDvFRAr8N3w2MPGFRLDyz3arbD8R3mnCqJLHRpy5ERm7FVA09Gx67QUt+Bh8oJL0CoYU6wJ/dhEfF/dy4vJz8QBm/jtbF4j3qLQNJpqrweSL/+Bi2/NDk4JGO9Ca25XJnEQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764935538; c=relaxed/simple;
-	bh=vDaX7q2bhi9iOHTsXqZmYoYQt47M0BuZ+ooWJPY9D7k=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DAfGkVg0oiOT00CXpmXNhUg/pWGe50Y37V1+CZSwkssa1aHAtQd2aZkCWESaXhzlCepYQfJb/yDBG99nBANAbDZbUboWQXETbbmnb2Z57maQ+a9WmFmLE49nEZRThLtBbnWqfrD6v6nX5HFydOI5EPQzXu2kkbREyPohY+d8aZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lK8g9/+D; arc=none smtp.client-ip=209.85.218.51
+	s=arc-20240116; t=1764957997; c=relaxed/simple;
+	bh=UpW/YoVO9updSKy5RzDiQQX3RzpeXJfu+qsLqjygsVs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=p2uZ/D10fbWcOKMJyTiOdKmZ7lhFm2sDngGK77+PvMMM6GrttTvaebsJm1wJT5dnegGo5hWZKLVYXjgtML5qqjaXw1r7CbrfsxLtytbiL5aZM2M+BmaKraQRCZnxqRiAt7UuLpoJlrRNvW7Hl0S3QPUe1iW9jwmVSGTwPAMpwmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cw+jCiNG; arc=none smtp.client-ip=209.85.210.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lK8g9/+D"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-b734fcbf1e3so443820166b.3
-        for <linux-alpha@vger.kernel.org>; Fri, 05 Dec 2025 03:52:12 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cw+jCiNG"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-7b852bb31d9so2908781b3a.0
+        for <linux-alpha@vger.kernel.org>; Fri, 05 Dec 2025 10:06:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764935530; x=1765540330; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EHQ1VGqtUGbepw6JpzvmO7MS5wbXfYjWpMY2RE5aDrA=;
-        b=lK8g9/+Dgg7c2J6VV2jubA5flLmvOPK37w8ZsML1cUp5TL7XWMRbLH7LIhIVCkJxMj
-         CO5T/5DDt4CMJgj7l9hymf2r0beT48hkWkdjeL4ZUBJDXwEmdXI89D5Y572IDFo1Kngo
-         W2adjEnYsMEEmqZOpQJ/sc3bvd9u1AhkcFkHSDWgXN03mnBPEngtd80UIuddE6iLxCj7
-         lNLBk7omB8cYUn6xggYnK+ZJus9J8YlsMM3V0qkKzuCbx2NLSaKdTNYoDpalqviNL7Gt
-         CQP41jfvsCGYbz6Pu2voSMjPMJsfv2ZOk7W7X98JQSSHp/AltE+A0A/cUxVLdb3Gs9Ag
-         KRpw==
+        d=gmail.com; s=20230601; t=1764957995; x=1765562795; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xM1PN11tJJgSVU1zkmq2gj9Pyh3FbL8kSgvErEzh43c=;
+        b=Cw+jCiNGxtYBrnQxDSVwjSvQ6nwnLjlYMKMl6wRNQwXA2/yAH3KZm9E2M3Z8Rc9l6u
+         xDTWhPkzSyZI3LhJJmKlLHxFu2yPiOC3rLxoXaGl1NrHtyT9k+b+9gu12Z0mgELxVisJ
+         oQv2CN6UKHoCwfQTmid9y+ajUpNp4DHyV6gNBtd7k+H/Tt+mQ9EQE1mOQ7SHAYUtOF0K
+         U054kE3z9J0er8oAxMhCnNpuaBp4jb3IQ1JZIit762ZnWp1S9z1f6NhW//1iJ0aHacc5
+         xkuzgWMPBE1g49lfuESoDArU2QXtFRmqw16vj1M27UQIDUe0sYHtWNxXfV4Qlrh/LTBP
+         dWFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764935530; x=1765540330;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=EHQ1VGqtUGbepw6JpzvmO7MS5wbXfYjWpMY2RE5aDrA=;
-        b=GtN8CgVH+04MBcuXTTl4yf9Y3HfYr9HrGO0G03CP43ZdyTvFMqAiksuw5ZWnS4eprH
-         q7sNN6HM4uG+4XGopq06qpal123F8eOAUULiB+nFC25YpiegReimdN0zuA/gnNarpO5S
-         4buqF8R7qoFYHlWGLLC39zWizGBNRf1T7W5X9fBrW8+jCwjzZ0yN5oCNRjIS6GJYAQUo
-         5A7Ore54314CRcPqMgVYMtTZoojy9B+3Eh1f2ZmgVVqBv8yzdWzKq1qpHO8tGMKX5jp1
-         1VJEaI/YophpeMeapL2u55yAeBKRbDxyv7+qqccf8zccFINg3YI5++6jp3r1QmgX3zW7
-         WGBg==
-X-Forwarded-Encrypted: i=1; AJvYcCU8drU7fWWN62Kwp2vvGrC7eEGwhuBQyWoGxCzX6zS9Ox0iUwx3O6cSDaQQVrQNUhE4fyOljgtiy379yA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YzrZFRnVNUOyaTE6dkoZLK8efKT8aiQz37++EnBMZbC+XA6it8k
-	O+3sh2Qh3b5FntTL1HX7grcR5qnJxtzYrVlAWh6/17O78+AVDBJmUbqr6ysszSt89eZKDHfdAcw
-	QVLrba+fg/KS+wfFtizh2l6WqwW6Dhto=
-X-Gm-Gg: ASbGnctwzOPVYulAzI/on0oXqBAKRgFSBPDz8JCvp90EHSM1bldPcrnOIehNfqdjLgd
-	RtSTOvHYBS4LS6ywSXlIo2tIi6BP8ykFI2insx6zDcVCzQNn+TStk8B5BgviCBHndERFvya8AJl
-	K1KQgASU1v67Q3PUiteXk1XMqt4QUO5hkl6GR6vOd6H9UlBUKUSWLldQ7Qd5xhAeASYTh95CQ7z
-	pl1k8cJDDTu6tJtHgvEXMcyOewSXR/CC5DyxH9+wNNekdCvu+W582fVIcoUj0YJ7wVmoeO5
-X-Google-Smtp-Source: AGHT+IEA3FETbDZ38PonR+gLMc2q1oLvIDjahLuVxCr72jwb85Z+rff3WE0fV8sQYL1w+jXFVpMppnqjyJ5BSpZxAdw=
-X-Received: by 2002:a17:907:1c8e:b0:b6d:6c1a:31ae with SMTP id
- a640c23a62f3a-b79dc734577mr961106066b.49.1764935529855; Fri, 05 Dec 2025
- 03:52:09 -0800 (PST)
+        d=1e100.net; s=20230601; t=1764957995; x=1765562795;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xM1PN11tJJgSVU1zkmq2gj9Pyh3FbL8kSgvErEzh43c=;
+        b=Ml5ugwPDQ1QFilHcpfd04hYYsww66eu4G/yBLzGqjcylyNuwuF4WhNZUjK+FyY8Z80
+         JEVm8mRnLtcuRxORQDY+Rr+J7vWsun1KY/l6IYyBVAMktwEVRFr389ewsAbIXAY7A7Xr
+         GbEs1ntug2wRTwc3FjGCw9xHn9i+p+UP/34k69yzRBcgNrrC6T70h/fvv5keNeM9OIhc
+         I1Is/yNru4zfw9C0EqOGaIWM2+XtkbXhpG3k558gc75staqBddJMtqhkYgfC+xVff6nF
+         KZRmnC2pCjBhNuLJY3eVYJbaXdNHpsfxfbqE4lonU1HtRfAZcqds7ZGO2vwUQMzbtMmL
+         J6Gg==
+X-Forwarded-Encrypted: i=1; AJvYcCWBtWj4Co6POo3mPfdXawjWMXenDUI3NGTYo/DzeBusM1WFLDtYoyvsPVSa622RNMUEJraXHyr8XSvpYg==@vger.kernel.org
+X-Gm-Message-State: AOJu0YybISXg3vB0uoJHhSoOp1n5Cj/iRkEGsGpGrKH2rrwS5YBg1mDS
+	dBL/alsooJK6HWov+dDnfIovRyObJKVZSkjza/15nJfPRt8kMgkeAr6j
+X-Gm-Gg: ASbGnctGnBxO9JRNIIehMqvFMdZvoWQjELfXrFSD8lulp2G2szcbIDPCsk0ORBXp0eY
+	FgK93JWz0wERVJwCT+VcRj0qcHq1nD4NDets/A8zUM4V7YDUa5VJf20P9S5YhlVCOZL3R6mCGHk
+	ZsWaIKn/zwi/b4JhzwnseAF7H4Q5RvVMiS6l/gk6dTUQ2Zp5+6RCg4SIJrlbprkE5ImsTJLjq3L
+	dNb7wbdEMLekInNaCEc2zKJ+VzTFNmdW2A/BJd4IiQnpEcedDvJk3qHJMpLBF2psGitrczomeP/
+	/+VcOPuYeuvRsFnwNmrvcAxGs5RXOQjIICSoZW8u6YHD3RmXKeRFNw82jOIBfA3QOGTUxhCTjgc
+	4ef9Re6g9Bx2djuoqj/DTifvQTJyNB0ujM0Y0JWruUQc4XQxNycn2uZauQbFcjxH/LJizS8y+an
+	D822F3CMU5IzLztjOVdFEQYFRspzaf8ushGXHFRVWSVg==
+X-Google-Smtp-Source: AGHT+IFO4POWyIMHrtWt/yaZ/VOML0pk2EhAc9K5zGtpforZogCJXHsD3WwjzlQpgXO22vRltcJ4bA==
+X-Received: by 2002:a05:6a00:4fc1:b0:7e8:43f5:bd0e with SMTP id d2e1a72fcca58-7e8c3de6bf1mr49530b3a.35.1764957994910;
+        Fri, 05 Dec 2025 10:06:34 -0800 (PST)
+Received: from localhost.localdomain ([2401:4900:8839:f626:f539:b6d1:1913:1426])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7e29f2ed326sm5944166b3a.5.2025.12.05.10.06.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Dec 2025 10:06:34 -0800 (PST)
+Received: (nullmailer pid 621940 invoked by uid 1000);
+	Fri, 05 Dec 2025 18:03:56 -0000
+From: Kathara Sasikumar <katharasasikumar007@gmail.com>
+To: richard.henderson@linaro.org
+Cc: mattst88@gmail.com, linmag7@gmail.com, david.hunter.linux@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, shuah@kernel.org, skhan@linuxfoundation.org, katharasasikumar007@gmail.com
+Subject: [PATCH] alpha/boot: replace strcpy() with strscpy() when copying envval
+Date: Fri,  5 Dec 2025 18:03:54 +0000
+Message-ID: <20251205180354.621925-1-katharasasikumar007@gmail.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <6ebd3451908785cad53b50ca6bc46cfe9d6bc03c.1764922497.git.sam@gentoo.org>
-In-Reply-To: <6ebd3451908785cad53b50ca6bc46cfe9d6bc03c.1764922497.git.sam@gentoo.org>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Fri, 5 Dec 2025 12:51:58 +0100
-X-Gm-Features: AWmQ_bnz6eaQYSEuh-cRbP5Jmm-4WZGGcB9zU7098KGocQQd5AmlNV55q-qB7HA
-Message-ID: <CA+=Fv5T=SgfYyiho6kY8afvrAB77nyUF3yttY14u6F0vwz62gw@mail.gmail.com>
-Subject: Re: [PATCH v4] alpha: don't reference obsolete termio struct for TC* constants
-To: Sam James <sam@gentoo.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
-	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Fri, Dec 5, 2025 at 9:15=E2=80=AFAM Sam James <sam@gentoo.org> wrote:
->
-> Similar in nature to ab107276607af90b13a5994997e19b7b9731e251. glibc-2.42
-> drops the legacy termio struct, but the ioctls.h header still defines som=
-e
-> TC* constants in terms of termio (via sizeof). Hardcode the values instea=
-d.
->
-> This fixes building Python for example, which falls over like:
->   ./Modules/termios.c:1119:16: error: invalid application of 'sizeof' to =
-incomplete type 'struct termio'
->
-> Link: https://bugs.gentoo.org/961769
-> Link: https://bugs.gentoo.org/962600
-> Signed-off-by: Sam James <sam@gentoo.org>
-> ---
-> v4: Fix trailers and actually send the right constants again (rebased wro=
-ng branch, sorry).
->
->  arch/alpha/include/uapi/asm/ioctls.h | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/arch/alpha/include/uapi/asm/ioctls.h b/arch/alpha/include/ua=
-pi/asm/ioctls.h
-> index 971311605288f..a09d04b49cc65 100644
-> --- a/arch/alpha/include/uapi/asm/ioctls.h
-> +++ b/arch/alpha/include/uapi/asm/ioctls.h
-> @@ -23,10 +23,10 @@
->  #define TCSETSW                _IOW('t', 21, struct termios)
->  #define TCSETSF                _IOW('t', 22, struct termios)
->
-> -#define TCGETA         _IOR('t', 23, struct termio)
-> -#define TCSETA         _IOW('t', 24, struct termio)
-> -#define TCSETAW                _IOW('t', 25, struct termio)
-> -#define TCSETAF                _IOW('t', 28, struct termio)
-> +#define TCGETA          0x40127417
-> +#define TCSETA          0x80127418
-> +#define TCSETAW         0x80127419
-> +#define TCSETAF         0x8012741c
->
->  #define TCSBRK         _IO('t', 29)
->  #define TCXONC         _IO('t', 30)
-> --
-> 2.52.0
->
+strcpy() does not check the size of the destination buffer and is
+deprecated in the kernel as documented in
+Documentation/process/deprecated.rst. ZERO_PGE is PAGE_SIZE bytes, so
+using strscpy() with PAGE_SIZE makes the copy safe and avoids any risk
+of overflow.
 
-Yes, this version has the correct constans, thanks!
+No functional change intended.
 
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+Signed-off-by: Kathara Sasikumar <katharasasikumar007@gmail.com>
+---
+ arch/alpha/boot/bootp.c | 2 +-
+ arch/alpha/boot/main.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/alpha/boot/bootp.c b/arch/alpha/boot/bootp.c
+index 842e85776cc0..e0b411ded992 100644
+--- a/arch/alpha/boot/bootp.c
++++ b/arch/alpha/boot/bootp.c
+@@ -204,7 +204,7 @@ start_kernel(void)
+         load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
+ 
+ 	memset((char*)ZERO_PGE, 0, PAGE_SIZE);
+-	strcpy((char*)ZERO_PGE, envval);
++	strscpy((char *)ZERO_PGE, envval, PAGE_SIZE);
+ #ifdef INITRD_IMAGE_SIZE
+ 	((long *)(ZERO_PGE+256))[0] = initrd_start;
+ 	((long *)(ZERO_PGE+256))[1] = INITRD_IMAGE_SIZE;
+diff --git a/arch/alpha/boot/main.c b/arch/alpha/boot/main.c
+index 22a1cb0264af..7ec728c037d8 100644
+--- a/arch/alpha/boot/main.c
++++ b/arch/alpha/boot/main.c
+@@ -180,7 +180,7 @@ void start_kernel(void)
+ 		nbytes = 0;
+ 	}
+ 	envval[nbytes] = '\0';
+-	strcpy((char*)ZERO_PGE, envval);
++	strscpy((char *)ZERO_PGE, envval, PAGE_SIZE);
+ 
+ 	srm_printk(" Ok\nNow booting the kernel\n");
+ 	runkernel();
+-- 
+2.51.0
+
