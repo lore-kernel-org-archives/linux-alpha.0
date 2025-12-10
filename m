@@ -1,120 +1,63 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B87260569
-	for <linux-alpha@vger.kernel.org>; Wed, 10 Dec 2025 22:45:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97A6B23E356;
+	Wed, 10 Dec 2025 23:11:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765406712; cv=none; b=PMSV0rpgNuA7NzGkxpYlaISGMqTBlck1rDaBYazgNY46fKjv6/0CChEseoY70d6lJBB1gi0ParD4CkIgaVtycFf3cfxFAgdKTUV9Holdayoz2wY2yhtH+lQkOv9+7bw5Vx90xtqmDhYZxeiJlN+UwizbSv844iTAAcHpthbKvdw=
+	t=1765408262; cv=none; b=HIAKWBVA1Ivt505KHRV1DfExU1BX4tDVbKH4S22BvmJmCGaUjHJ0yAOw5EH8T2y2cRORco8hfMiaxAjdlopAwqPkBWAMrl+/VNNVzpZYJ21iIXAeWXIkmph9D7rfBjfamibZULgyADPBXbGWsdcSeSU2O6yeBwUal5yY1/ZDRVY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765406712; c=relaxed/simple;
-	bh=UB+NlcpxTBog40T3tp9AjfMrYEjWsCpkKyQiai1HhSI=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=FMimX6GwQVceAkuOlHsffYzJXHYiujUveD2JF6qV4rk5ZUnONafyy/jgr37lmgqH/QT4m8WfuByLoM8iXkKoq6LJPufKmt3OPpTti8x5D0tfsGh5k/6Ni/katL7q8jHsevpsWKtGQP/s31DJaq33FvNz0AigB8nLqhHyaZNJjb4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JCJSE22Q; arc=none smtp.client-ip=209.85.167.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1765408262; c=relaxed/simple;
+	bh=x3W5f4hIc0/Em7EVfkqO4dpF78Aa48KA756A92pHi38=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=cgV1CLDH56ABqnZ7ozP+GRWCTI2dx4+r3wyHOzgzzWnchPUKY4a2y7I9ABQPm9t1KIkZImO7v8+VsaLm9iToIKUeW211BEpzDh41NIbBbOZGCZjgRaO6Hb+Emr2/mi47PfeuIfN4rAjnhnQTrV4Omh6o798gZt7GFg7aqsJhFac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D+C6uEEk; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JCJSE22Q"
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-595910c9178so220408e87.1
-        for <linux-alpha@vger.kernel.org>; Wed, 10 Dec 2025 14:45:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1765406709; x=1766011509; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=90egkc+4zZu0iaeeSyGKnVfxL8qQNO4KVxedAns/Yes=;
-        b=JCJSE22Q5Rz7Z7ge0z3HUBpPBDyfeSATOviDx7Es7hN2HZFAtjmTegDltOlLXERYzY
-         e+27jPODQqZ62YfWu8xsDnXMOKqTNns9Dt3664tXm8hUM6iFyc7zxALIeUge03JSNwBf
-         /u3Mdc3xa5Qc+MxiVpORVTBsK9asvg44H7dtgx1OId6y7Gg9IqLjGWn5NeJX/tcZ3PXz
-         m7clyuCnt57Mhtj/DB2sk+dwtv6CCFO24SVXPKKsYkBj8s14dY/N8DWJWqRECUQ7ElxR
-         wouG1rPAtqyF7vfaswXs6yJ78EOMRRoCSgo+VB7xlLyO7JUisswEORwtEQPiZ61Jilat
-         uHTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765406709; x=1766011509;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=90egkc+4zZu0iaeeSyGKnVfxL8qQNO4KVxedAns/Yes=;
-        b=EPVe9IXMUB6yqoDmnEyk2MgGgQssaSVDib2OfXkyi1fqAgmRv+gO1kcqvMy/1V71tE
-         N0OC+SpSOSUItG/zP9KNVChrKnzVn5sLsNyRVlfVSQy1NVu8Saq6n4j3rnGpxMypBP5j
-         DzxjDt1EdhGdskKss+EMKWtiht/gjYVjlfKn+c34d8E5izugUijCwoLzu9Rcaq2KglQu
-         gwhA7NjEM7BmHE+zlVKFE6S6iXWZwvMfrPowTXbemUpS9VElli3i+F//OkPHNCJXmlJC
-         ssU9/iBxHE2b8R4FlkMcMjnspMovf2VrZqq3RUb//QPNogbbJnfjBlOHN9BjV+klz7fQ
-         tDgw==
-X-Forwarded-Encrypted: i=1; AJvYcCXToqYc+QoUap5CdkTP5YLrBtlOM43fgS+G89VlzEc/dcBgH9Wcnsyt0E+0is3LSjl6kzguKRR0n55+JQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0YxElgMtM5eBG+qiF0EiVAGlLGbdcjr2wUVuQ5B71yDbdjunI0Ma
-	+pntNte3xTjolMjCV9JfLPkHj8R5Tc7dSibifZhzfizaId6JrkSxmQVY
-X-Gm-Gg: AY/fxX5i0IvnOeJzuJ9VyoM5dq5dlDbym4Q3RtjoyPzJRBxeMyi+zn+kfa4UzcS0Lbn
-	PKLoJHu8GWBFfHtZheQ7doLT9vWk5ckOWmkyNuQN6NexweSTol2jaL8+xw/gGb3RvCWd8ZB+EYr
-	LHzwrKrDLo14nuL/CaKpGUgcIVU/9zsLnEwvwY8KjYyFkBfR0zb2tL0bvrbOlQHh0S87vkHFt0a
-	kCdTNvUBSVq0TfrdPs2c3fuMVn8P9PM4nR4+sIwqV/iSHDGEmtg3gVoqjNbp8o/d/qcq252gBQ3
-	On8jPdW9RpPBvFYl5Tvf0lNbq7j6U3VpY1ZUwP0N8NSXT2oPiVT4W8KVUfExClmM2/V6BlMZ4zr
-	iC1KK0bxuUlmuyTh/Fcf1qLKD3l1qFMjFMLLGXQ2qX3mCWt/bMfB4Nmk8HEn0DMJgUtIRQJm84F
-	ZCpqrbIoyiIACiXz1uxe+lCvqz2pp2faP1thDwLq8raW3oPf/2yX5sYO2O4jXDyLwOVDY=
-X-Google-Smtp-Source: AGHT+IErEdc1F5zvGH3nZWe68Ur8eJFSwxlM8nv1fwD0SmNsX6g4+IGlD2UBz0H40qFQlSmoi+FUGg==
-X-Received: by 2002:a05:6512:3ba4:b0:598:f1a1:960a with SMTP id 2adb3069b0e04-598f1a19a01mr868346e87.43.1765406708338;
-        Wed, 10 Dec 2025 14:45:08 -0800 (PST)
-Received: from z440.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-598f2f44d02sm264633e87.38.2025.12.10.14.45.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Dec 2025 14:45:07 -0800 (PST)
-Date: Wed, 10 Dec 2025 23:45:06 +0100
-From: Magnus Lindholm <linmag7@gmail.com>
-To: torvalds@linux-foundation.org, linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: richard.henderson@linaro.org, mattst88@gmail.com, sam@gentoo.org,
-	lindholm@kernel.org
-Subject: [GIT PULL] alpha updates for v6.19
-Message-ID: <aTn38tM2PIn8g3VT@z440.darklands.se>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D+C6uEEk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0193EC4CEF1;
+	Wed, 10 Dec 2025 23:11:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1765408262;
+	bh=x3W5f4hIc0/Em7EVfkqO4dpF78Aa48KA756A92pHi38=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=D+C6uEEkDXKgae0mJGaZ9Ym0JCnsYENaSjMlXO/4PpqMqW+o6YlPzdKB/AH/E8NUe
+	 al7sLPEsurdu4clfbo9n+lr5jZHxaSvh/q+/l17aR91WqUG7sbwsh8TtO1h8TypYgC
+	 EpH0LodX4OOSbqZ8ob6tIoi4JBridesjn9jIzKFcfRSMCUZZyGPCChCDypqgR/bZ9u
+	 sZkDpJ+cbXowMVTeeZ9+Mw1AuLMa/Bn/F8kIrSIp6TUz/Gx9t4XAd3mQoXQP9XaMV+
+	 zxEkvEMZZjgaJAo//35BKYXnjgSpXhGBgDADTDGo+eeFD/ev249SjSUPfNpZykzB/Z
+	 BGfllKAUhwh+Q==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 78A393809A23;
+	Wed, 10 Dec 2025 23:07:57 +0000 (UTC)
+Subject: Re: [GIT PULL] alpha updates for v6.19
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <aTn38tM2PIn8g3VT@z440.darklands.se>
+References: <aTn38tM2PIn8g3VT@z440.darklands.se>
+X-PR-Tracked-List-Id: <linux-alpha.vger.kernel.org>
+X-PR-Tracked-Message-Id: <aTn38tM2PIn8g3VT@z440.darklands.se>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/lindholm/alpha.git tags/alpha-for-v6.19-tag
+X-PR-Tracked-Commit-Id: 9aeed9041929812a10a6d693af050846942a1d16
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 5c179cac051943f673c8baa53214e2566bfe69dc
+Message-Id: <176540807607.755906.10107362199616246461.pr-tracker-bot@kernel.org>
+Date: Wed, 10 Dec 2025 23:07:56 +0000
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: torvalds@linux-foundation.org, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, richard.henderson@linaro.org, mattst88@gmail.com, sam@gentoo.org, lindholm@kernel.org
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-Hi Linus,
+The pull request you sent on Wed, 10 Dec 2025 23:45:06 +0100:
 
-This pull request contains two small uapi fixes. One patch hardcodes TC* ioctl
-values that previously depended on the deprecated termio struct, avoiding build
-issues with newer glibc versions. The other patch switches uapi headers to use
-the compiler-defined __ASSEMBLER__ macro for better consistency between
-kernel and userspace.
+> git://git.kernel.org/pub/scm/linux/kernel/git/lindholm/alpha.git tags/alpha-for-v6.19-tag
 
-The following changes since commit 3a8660878839faadb4f1a6dd72c3179c1df56787:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/5c179cac051943f673c8baa53214e2566bfe69dc
 
-  Linux 6.18-rc1 (2025-10-12 13:42:36 -0700)
+Thank you!
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/lindholm/alpha.git tags/alpha-for-v6.19-tag
-
-for you to fetch changes up to 9aeed9041929812a10a6d693af050846942a1d16:
-
-  alpha: don't reference obsolete termio struct for TC* constants (2025-12-08 23:10:54 +0100)
-
-Thanks!
-
-Magnus
-
-----------------------------------------------------------------
-alpha updates for v6.19
-
-- alpha: don't reference obsolete termio struct for TC* constants
-- alpha: Replace __ASSEMBLY__ with __ASSEMBLER__ in the alpha headers
-
-----------------------------------------------------------------
-Sam James (1):
-      alpha: don't reference obsolete termio struct for TC* constants
-
-Thomas Huth (1):
-      alpha: Replace __ASSEMBLY__ with __ASSEMBLER__ in the alpha headers
-
- arch/alpha/include/asm/console.h     | 4 ++--
- arch/alpha/include/asm/page.h        | 4 ++--
- arch/alpha/include/asm/pal.h         | 4 ++--
- arch/alpha/include/asm/thread_info.h | 8 ++++----
- arch/alpha/include/uapi/asm/ioctls.h | 8 ++++----
- 5 files changed, 14 insertions(+), 14 deletions(-)
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
