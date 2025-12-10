@@ -1,119 +1,120 @@
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 991CF1E5207
-	for <linux-alpha@vger.kernel.org>; Fri,  5 Dec 2025 18:06:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B87260569
+	for <linux-alpha@vger.kernel.org>; Wed, 10 Dec 2025 22:45:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764957997; cv=none; b=sj4Fn7ha+LaPIYOiWrX9djSG1pJh6f79IVincHRFRDvFRAr8N3w2MPGFRLDyz3arbD8R3mnCqJLHRpy5ERm7FVA09Gx67QUt+Bh8oJL0CoYU6wJ/dhEfF/dy4vJz8QBm/jtbF4j3qLQNJpqrweSL/+Bi2/NDk4JGO9Ca25XJnEQ=
+	t=1765406712; cv=none; b=PMSV0rpgNuA7NzGkxpYlaISGMqTBlck1rDaBYazgNY46fKjv6/0CChEseoY70d6lJBB1gi0ParD4CkIgaVtycFf3cfxFAgdKTUV9Holdayoz2wY2yhtH+lQkOv9+7bw5Vx90xtqmDhYZxeiJlN+UwizbSv844iTAAcHpthbKvdw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764957997; c=relaxed/simple;
-	bh=UpW/YoVO9updSKy5RzDiQQX3RzpeXJfu+qsLqjygsVs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=p2uZ/D10fbWcOKMJyTiOdKmZ7lhFm2sDngGK77+PvMMM6GrttTvaebsJm1wJT5dnegGo5hWZKLVYXjgtML5qqjaXw1r7CbrfsxLtytbiL5aZM2M+BmaKraQRCZnxqRiAt7UuLpoJlrRNvW7Hl0S3QPUe1iW9jwmVSGTwPAMpwmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cw+jCiNG; arc=none smtp.client-ip=209.85.210.170
+	s=arc-20240116; t=1765406712; c=relaxed/simple;
+	bh=UB+NlcpxTBog40T3tp9AjfMrYEjWsCpkKyQiai1HhSI=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=FMimX6GwQVceAkuOlHsffYzJXHYiujUveD2JF6qV4rk5ZUnONafyy/jgr37lmgqH/QT4m8WfuByLoM8iXkKoq6LJPufKmt3OPpTti8x5D0tfsGh5k/6Ni/katL7q8jHsevpsWKtGQP/s31DJaq33FvNz0AigB8nLqhHyaZNJjb4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JCJSE22Q; arc=none smtp.client-ip=209.85.167.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cw+jCiNG"
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-7b852bb31d9so2908781b3a.0
-        for <linux-alpha@vger.kernel.org>; Fri, 05 Dec 2025 10:06:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JCJSE22Q"
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-595910c9178so220408e87.1
+        for <linux-alpha@vger.kernel.org>; Wed, 10 Dec 2025 14:45:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764957995; x=1765562795; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=xM1PN11tJJgSVU1zkmq2gj9Pyh3FbL8kSgvErEzh43c=;
-        b=Cw+jCiNGxtYBrnQxDSVwjSvQ6nwnLjlYMKMl6wRNQwXA2/yAH3KZm9E2M3Z8Rc9l6u
-         xDTWhPkzSyZI3LhJJmKlLHxFu2yPiOC3rLxoXaGl1NrHtyT9k+b+9gu12Z0mgELxVisJ
-         oQv2CN6UKHoCwfQTmid9y+ajUpNp4DHyV6gNBtd7k+H/Tt+mQ9EQE1mOQ7SHAYUtOF0K
-         U054kE3z9J0er8oAxMhCnNpuaBp4jb3IQ1JZIit762ZnWp1S9z1f6NhW//1iJ0aHacc5
-         xkuzgWMPBE1g49lfuESoDArU2QXtFRmqw16vj1M27UQIDUe0sYHtWNxXfV4Qlrh/LTBP
-         dWFA==
+        d=gmail.com; s=20230601; t=1765406709; x=1766011509; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=90egkc+4zZu0iaeeSyGKnVfxL8qQNO4KVxedAns/Yes=;
+        b=JCJSE22Q5Rz7Z7ge0z3HUBpPBDyfeSATOviDx7Es7hN2HZFAtjmTegDltOlLXERYzY
+         e+27jPODQqZ62YfWu8xsDnXMOKqTNns9Dt3664tXm8hUM6iFyc7zxALIeUge03JSNwBf
+         /u3Mdc3xa5Qc+MxiVpORVTBsK9asvg44H7dtgx1OId6y7Gg9IqLjGWn5NeJX/tcZ3PXz
+         m7clyuCnt57Mhtj/DB2sk+dwtv6CCFO24SVXPKKsYkBj8s14dY/N8DWJWqRECUQ7ElxR
+         wouG1rPAtqyF7vfaswXs6yJ78EOMRRoCSgo+VB7xlLyO7JUisswEORwtEQPiZ61Jilat
+         uHTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764957995; x=1765562795;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xM1PN11tJJgSVU1zkmq2gj9Pyh3FbL8kSgvErEzh43c=;
-        b=Ml5ugwPDQ1QFilHcpfd04hYYsww66eu4G/yBLzGqjcylyNuwuF4WhNZUjK+FyY8Z80
-         JEVm8mRnLtcuRxORQDY+Rr+J7vWsun1KY/l6IYyBVAMktwEVRFr389ewsAbIXAY7A7Xr
-         GbEs1ntug2wRTwc3FjGCw9xHn9i+p+UP/34k69yzRBcgNrrC6T70h/fvv5keNeM9OIhc
-         I1Is/yNru4zfw9C0EqOGaIWM2+XtkbXhpG3k558gc75staqBddJMtqhkYgfC+xVff6nF
-         KZRmnC2pCjBhNuLJY3eVYJbaXdNHpsfxfbqE4lonU1HtRfAZcqds7ZGO2vwUQMzbtMmL
-         J6Gg==
-X-Forwarded-Encrypted: i=1; AJvYcCWBtWj4Co6POo3mPfdXawjWMXenDUI3NGTYo/DzeBusM1WFLDtYoyvsPVSa622RNMUEJraXHyr8XSvpYg==@vger.kernel.org
-X-Gm-Message-State: AOJu0YybISXg3vB0uoJHhSoOp1n5Cj/iRkEGsGpGrKH2rrwS5YBg1mDS
-	dBL/alsooJK6HWov+dDnfIovRyObJKVZSkjza/15nJfPRt8kMgkeAr6j
-X-Gm-Gg: ASbGnctGnBxO9JRNIIehMqvFMdZvoWQjELfXrFSD8lulp2G2szcbIDPCsk0ORBXp0eY
-	FgK93JWz0wERVJwCT+VcRj0qcHq1nD4NDets/A8zUM4V7YDUa5VJf20P9S5YhlVCOZL3R6mCGHk
-	ZsWaIKn/zwi/b4JhzwnseAF7H4Q5RvVMiS6l/gk6dTUQ2Zp5+6RCg4SIJrlbprkE5ImsTJLjq3L
-	dNb7wbdEMLekInNaCEc2zKJ+VzTFNmdW2A/BJd4IiQnpEcedDvJk3qHJMpLBF2psGitrczomeP/
-	/+VcOPuYeuvRsFnwNmrvcAxGs5RXOQjIICSoZW8u6YHD3RmXKeRFNw82jOIBfA3QOGTUxhCTjgc
-	4ef9Re6g9Bx2djuoqj/DTifvQTJyNB0ujM0Y0JWruUQc4XQxNycn2uZauQbFcjxH/LJizS8y+an
-	D822F3CMU5IzLztjOVdFEQYFRspzaf8ushGXHFRVWSVg==
-X-Google-Smtp-Source: AGHT+IFO4POWyIMHrtWt/yaZ/VOML0pk2EhAc9K5zGtpforZogCJXHsD3WwjzlQpgXO22vRltcJ4bA==
-X-Received: by 2002:a05:6a00:4fc1:b0:7e8:43f5:bd0e with SMTP id d2e1a72fcca58-7e8c3de6bf1mr49530b3a.35.1764957994910;
-        Fri, 05 Dec 2025 10:06:34 -0800 (PST)
-Received: from localhost.localdomain ([2401:4900:8839:f626:f539:b6d1:1913:1426])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7e29f2ed326sm5944166b3a.5.2025.12.05.10.06.29
+        d=1e100.net; s=20230601; t=1765406709; x=1766011509;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=90egkc+4zZu0iaeeSyGKnVfxL8qQNO4KVxedAns/Yes=;
+        b=EPVe9IXMUB6yqoDmnEyk2MgGgQssaSVDib2OfXkyi1fqAgmRv+gO1kcqvMy/1V71tE
+         N0OC+SpSOSUItG/zP9KNVChrKnzVn5sLsNyRVlfVSQy1NVu8Saq6n4j3rnGpxMypBP5j
+         DzxjDt1EdhGdskKss+EMKWtiht/gjYVjlfKn+c34d8E5izugUijCwoLzu9Rcaq2KglQu
+         gwhA7NjEM7BmHE+zlVKFE6S6iXWZwvMfrPowTXbemUpS9VElli3i+F//OkPHNCJXmlJC
+         ssU9/iBxHE2b8R4FlkMcMjnspMovf2VrZqq3RUb//QPNogbbJnfjBlOHN9BjV+klz7fQ
+         tDgw==
+X-Forwarded-Encrypted: i=1; AJvYcCXToqYc+QoUap5CdkTP5YLrBtlOM43fgS+G89VlzEc/dcBgH9Wcnsyt0E+0is3LSjl6kzguKRR0n55+JQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxElgMtM5eBG+qiF0EiVAGlLGbdcjr2wUVuQ5B71yDbdjunI0Ma
+	+pntNte3xTjolMjCV9JfLPkHj8R5Tc7dSibifZhzfizaId6JrkSxmQVY
+X-Gm-Gg: AY/fxX5i0IvnOeJzuJ9VyoM5dq5dlDbym4Q3RtjoyPzJRBxeMyi+zn+kfa4UzcS0Lbn
+	PKLoJHu8GWBFfHtZheQ7doLT9vWk5ckOWmkyNuQN6NexweSTol2jaL8+xw/gGb3RvCWd8ZB+EYr
+	LHzwrKrDLo14nuL/CaKpGUgcIVU/9zsLnEwvwY8KjYyFkBfR0zb2tL0bvrbOlQHh0S87vkHFt0a
+	kCdTNvUBSVq0TfrdPs2c3fuMVn8P9PM4nR4+sIwqV/iSHDGEmtg3gVoqjNbp8o/d/qcq252gBQ3
+	On8jPdW9RpPBvFYl5Tvf0lNbq7j6U3VpY1ZUwP0N8NSXT2oPiVT4W8KVUfExClmM2/V6BlMZ4zr
+	iC1KK0bxuUlmuyTh/Fcf1qLKD3l1qFMjFMLLGXQ2qX3mCWt/bMfB4Nmk8HEn0DMJgUtIRQJm84F
+	ZCpqrbIoyiIACiXz1uxe+lCvqz2pp2faP1thDwLq8raW3oPf/2yX5sYO2O4jXDyLwOVDY=
+X-Google-Smtp-Source: AGHT+IErEdc1F5zvGH3nZWe68Ur8eJFSwxlM8nv1fwD0SmNsX6g4+IGlD2UBz0H40qFQlSmoi+FUGg==
+X-Received: by 2002:a05:6512:3ba4:b0:598:f1a1:960a with SMTP id 2adb3069b0e04-598f1a19a01mr868346e87.43.1765406708338;
+        Wed, 10 Dec 2025 14:45:08 -0800 (PST)
+Received: from z440.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-598f2f44d02sm264633e87.38.2025.12.10.14.45.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Dec 2025 10:06:34 -0800 (PST)
-Received: (nullmailer pid 621940 invoked by uid 1000);
-	Fri, 05 Dec 2025 18:03:56 -0000
-From: Kathara Sasikumar <katharasasikumar007@gmail.com>
-To: richard.henderson@linaro.org
-Cc: mattst88@gmail.com, linmag7@gmail.com, david.hunter.linux@gmail.com, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, shuah@kernel.org, skhan@linuxfoundation.org, katharasasikumar007@gmail.com
-Subject: [PATCH] alpha/boot: replace strcpy() with strscpy() when copying envval
-Date: Fri,  5 Dec 2025 18:03:54 +0000
-Message-ID: <20251205180354.621925-1-katharasasikumar007@gmail.com>
-X-Mailer: git-send-email 2.51.0
+        Wed, 10 Dec 2025 14:45:07 -0800 (PST)
+Date: Wed, 10 Dec 2025 23:45:06 +0100
+From: Magnus Lindholm <linmag7@gmail.com>
+To: torvalds@linux-foundation.org, linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: richard.henderson@linaro.org, mattst88@gmail.com, sam@gentoo.org,
+	lindholm@kernel.org
+Subject: [GIT PULL] alpha updates for v6.19
+Message-ID: <aTn38tM2PIn8g3VT@z440.darklands.se>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-strcpy() does not check the size of the destination buffer and is
-deprecated in the kernel as documented in
-Documentation/process/deprecated.rst. ZERO_PGE is PAGE_SIZE bytes, so
-using strscpy() with PAGE_SIZE makes the copy safe and avoids any risk
-of overflow.
+Hi Linus,
 
-No functional change intended.
+This pull request contains two small uapi fixes. One patch hardcodes TC* ioctl
+values that previously depended on the deprecated termio struct, avoiding build
+issues with newer glibc versions. The other patch switches uapi headers to use
+the compiler-defined __ASSEMBLER__ macro for better consistency between
+kernel and userspace.
 
-Signed-off-by: Kathara Sasikumar <katharasasikumar007@gmail.com>
----
- arch/alpha/boot/bootp.c | 2 +-
- arch/alpha/boot/main.c  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+The following changes since commit 3a8660878839faadb4f1a6dd72c3179c1df56787:
 
-diff --git a/arch/alpha/boot/bootp.c b/arch/alpha/boot/bootp.c
-index 842e85776cc0..e0b411ded992 100644
---- a/arch/alpha/boot/bootp.c
-+++ b/arch/alpha/boot/bootp.c
-@@ -204,7 +204,7 @@ start_kernel(void)
-         load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
- 
- 	memset((char*)ZERO_PGE, 0, PAGE_SIZE);
--	strcpy((char*)ZERO_PGE, envval);
-+	strscpy((char *)ZERO_PGE, envval, PAGE_SIZE);
- #ifdef INITRD_IMAGE_SIZE
- 	((long *)(ZERO_PGE+256))[0] = initrd_start;
- 	((long *)(ZERO_PGE+256))[1] = INITRD_IMAGE_SIZE;
-diff --git a/arch/alpha/boot/main.c b/arch/alpha/boot/main.c
-index 22a1cb0264af..7ec728c037d8 100644
---- a/arch/alpha/boot/main.c
-+++ b/arch/alpha/boot/main.c
-@@ -180,7 +180,7 @@ void start_kernel(void)
- 		nbytes = 0;
- 	}
- 	envval[nbytes] = '\0';
--	strcpy((char*)ZERO_PGE, envval);
-+	strscpy((char *)ZERO_PGE, envval, PAGE_SIZE);
- 
- 	srm_printk(" Ok\nNow booting the kernel\n");
- 	runkernel();
--- 
-2.51.0
+  Linux 6.18-rc1 (2025-10-12 13:42:36 -0700)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/lindholm/alpha.git tags/alpha-for-v6.19-tag
+
+for you to fetch changes up to 9aeed9041929812a10a6d693af050846942a1d16:
+
+  alpha: don't reference obsolete termio struct for TC* constants (2025-12-08 23:10:54 +0100)
+
+Thanks!
+
+Magnus
+
+----------------------------------------------------------------
+alpha updates for v6.19
+
+- alpha: don't reference obsolete termio struct for TC* constants
+- alpha: Replace __ASSEMBLY__ with __ASSEMBLER__ in the alpha headers
+
+----------------------------------------------------------------
+Sam James (1):
+      alpha: don't reference obsolete termio struct for TC* constants
+
+Thomas Huth (1):
+      alpha: Replace __ASSEMBLY__ with __ASSEMBLER__ in the alpha headers
+
+ arch/alpha/include/asm/console.h     | 4 ++--
+ arch/alpha/include/asm/page.h        | 4 ++--
+ arch/alpha/include/asm/pal.h         | 4 ++--
+ arch/alpha/include/asm/thread_info.h | 8 ++++----
+ arch/alpha/include/uapi/asm/ioctls.h | 8 ++++----
+ 5 files changed, 14 insertions(+), 14 deletions(-)
