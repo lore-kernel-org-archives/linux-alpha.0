@@ -1,113 +1,154 @@
-Received: from out-179.mta1.migadu.com (out-179.mta1.migadu.com [95.215.58.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7549D341AB8
-	for <linux-alpha@vger.kernel.org>; Wed, 17 Dec 2025 09:47:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ECA23446DB
+	for <linux-alpha@vger.kernel.org>; Wed, 17 Dec 2025 12:17:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765964853; cv=none; b=kGxXO+stk59zf9EoQsnuQdPAwTfyzew6rh13W6NGdb30LpwWWKEbiOAjHgVR9IuSI5omt3DUwpxJebs4Ak9hgBG7L5BTIw4t7onOp445aoBz8rLoNnkcG4NXO/HHgWUSVvLQOBoZRP0sqg0NZQ97XlAKtOg0Si2kMe2RHHhONgY=
+	t=1765973863; cv=none; b=ElQd6919CPQjwdazUW0mbnoMWsTGHqMnudKRCl5His1qoZfB/kCsVMHBQbnJSVrnNkYKkdZyOTtEIc19B7XmS8OMmSdS+8mdKHjVEP2DbxoeIpxh9HKPfgmN4221ytuH0COPBOKw+sQtOogfOotfaVG8e5ndszSvH58ir9zR9HU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765964853; c=relaxed/simple;
-	bh=9RDc6+mY/BOwjSpoEwGFWhPntxw3uW/Hv6MZvdDJ5eo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IZzhkxk68IFgFTdXkohAbcpjrD2Yy2o8YvuyzDMtdQUblNRQMzFj+anxVlmB6xUmxslQSZChWTQeSNlEf3iE02yMznzdxOjHQyaVJfEPaZWLghAe7A+RQ8miB5QmIbYEfrwav63AjB4qDLsR0k7NbYnH29e7ej5GJQXVzLRc2IM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=Pyc1KpvA; arc=none smtp.client-ip=95.215.58.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1765973863; c=relaxed/simple;
+	bh=Us0yFCBAjwxulhriZ3mYjriGCty2jScVl7WxuOuzAMU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jgZwg4d8AGlvAodGB9ioW33JEc+5w2pLdRmyYXE9NjEyoXgfvhiLb6SREL8X7tUsZMFgDn8W8LrnZIhAJrqb9AthSdK6rX5T7QKUq/cS3xj44laOWg8gALhXhMtXGq3GFAnqrUU/VJqYEE5frj+1lUbBvGIuZJ4/1paEzjEBTBk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KOrJ2PN+; arc=none smtp.client-ip=74.125.82.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="Pyc1KpvA"
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1765964849;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=6yDfSie6tI+R/bkHsg8f30F7brlmJ878+dqsdcToXoQ=;
-	b=Pyc1KpvAxk811HYK04xjZpyTzpEkJYxqqJmPoGGAQiXIyGUCHOz7UnqXrw4Idz7ei3/Hvn
-	nKx4SWPSfqUG4f91J+BuNBSg1KCzxG0cBAC6q78EOJ3y5AH8vsj9RdwGKsDwh1k/3OGPBu
-	+BEuL1tluj818rz3TGgaraPxgsFz7Rk=
-From: Qi Zheng <qi.zheng@linux.dev>
-To: will@kernel.org,
-	aneesh.kumar@kernel.org,
-	npiggin@gmail.com,
-	peterz@infradead.org,
-	dev.jain@arm.com,
-	akpm@linux-foundation.org,
-	david@kernel.org,
-	ioworker0@gmail.com,
-	linmag7@gmail.com
-Cc: linux-arch@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-alpha@vger.kernel.org,
-	loongarch@lists.linux.dev,
-	linux-mips@vger.kernel.org,
-	linux-parisc@vger.kernel.org,
-	linux-um@lists.infradead.org,
-	Qi Zheng <zhengqi.arch@bytedance.com>
-Subject: [PATCH v3 7/7] mm: make PT_RECLAIM depends on MMU_GATHER_RCU_TABLE_FREE
-Date: Wed, 17 Dec 2025 17:45:48 +0800
-Message-ID: <ac2bdb2a66da1edb24f60d1da1099e2a0b734880.1765963770.git.zhengqi.arch@bytedance.com>
-In-Reply-To: <cover.1765963770.git.zhengqi.arch@bytedance.com>
-References: <cover.1765963770.git.zhengqi.arch@bytedance.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KOrJ2PN+"
+Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-11beb0a7bd6so689803c88.1
+        for <linux-alpha@vger.kernel.org>; Wed, 17 Dec 2025 04:17:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1765973861; x=1766578661; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TA4hyyTWjoyEecRU+tFTEv8TY8OLq5jN3IBQEP1dw+M=;
+        b=KOrJ2PN+L6+TbVO7KqCSD2+r7pEofzuJHbxAc+gzotDkkNRcYSGqQmMFOThGciI5CK
+         MkyLyf35dMHDxGr4kmnb8kCFXTSHXE9m6kmfctGOMf/4eKFaujEP4LY8gThUsF/qnr5R
+         IrqEhZU7Ofen7fSR7WxBRcfWqsflOkCGNjynaRGVtMxidG0zLgW/lehgVvW90GJwFdjc
+         lyDA+hgct4lwqEG28OC6hS4prII9m7tWioQa+xUrTubsddQWaZRjUEh/QjYHSpdTd0EB
+         81l8YYCQSTLXnUfdHMteczWSqQBSl9V5ARBEgyrnjwn1j155TGGY3uP5iyx3TepXFdBN
+         3Lvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765973861; x=1766578661;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=TA4hyyTWjoyEecRU+tFTEv8TY8OLq5jN3IBQEP1dw+M=;
+        b=ItrwgDzrpj6JxSffQ0YHSyuy+8vJuQ3/IfKC16/Kbp5mFSTWTu4p5Lr4bgY8ADL56E
+         M8GJTjEHYbrfZPCNEMNoxAO0dCLrDRUEqbhgcWj6zvXJmOmEi/GlZ+XxlH5sDC1TdYIw
+         IMgfmxOyqT8RQVBt+IkG9nkm5AvPBeQiRzv5yfQy/+2x2E/JEOVia5KFog0MwbvX4MK6
+         ZqAS5H1UlQmJwv4ifRKAUg5VBxVB7OBdNExi7TOh3I7ObtGuSIyXK+fUEtlM7zdZ7Gpb
+         +TLT11h7Sj9RAm+9qrhyjLUFwVg4GUQClmLVlMCD+0c9QgUvyqTH5sgCrciL6A6QO4LS
+         jJ4g==
+X-Forwarded-Encrypted: i=1; AJvYcCW4NCVzntYuKZuEgb+Bh/NczOi5C7hb5U9QYVs8FVmwl1dVmAtuDS76AN+iEBXxWGeErnigpAGCBkgIQw==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz0ct19jVk/SEON2vsT0yODDuuVTss1rNhDhlVah8S8eX95bpSL
+	VLA0zXv+T6Z4bTxDM+KvUsnPHJF6U5kB3a/rh4eGVUrDXgO4OKIeQs71
+X-Gm-Gg: AY/fxX7LkjjMKMh2VNy7cccn+QC/TWvNTZKbsRVbPupraYASVz/sDK4ReeZB5FYKmhy
+	XfddlvbogabX8w8Ga7LLsBPziMKaev51Co5eZhKu8CTENSDrDVDk4pu2SQGvZ9is2hWSmr78FmH
+	1SwV5bQz/Fgnp0XH8m9OUr00WYXF3EPvTXbKC5fjxw0HORXEWZoLaeRW7iVLXRseNzPAn+fFfHm
+	9aT5Gqr+m+8mA2rvt7wTR7dXWkJ0k5G+WX6vss7Bm5sUo/5BA7u/V6Ea8LXOG6OhUKs0gRSOBYD
+	I+ux8rB2eZmblqDC0JJyC35b6u2EUnuytMuDfxXqTroKUacozJoYtBVJycykFPUr7z7eXmOfKgp
+	takHFeD8hBSmhQQh65U+hIdS25IFTA5lxOAXcBRNgCpfWRj/+XU9M3KiaAoeYv6BVxhVKCUdgIY
+	tRzZThlyjeq2pgkb18duf4LMyD
+X-Google-Smtp-Source: AGHT+IHtTckxV0BrLKUtwEMMlG/KT0X6JCzQ/eEGNn1nvrPgi11fSB7RRA3IhgmdXndE9lBsM2aS9w==
+X-Received: by 2002:a05:7022:e806:b0:119:e569:f86a with SMTP id a92af1059eb24-11f34c29cefmr11289687c88.7.1765973860378;
+        Wed, 17 Dec 2025 04:17:40 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-11f2e30b799sm60713771c88.17.2025.12.17.04.17.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Dec 2025 04:17:39 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date: Wed, 17 Dec 2025 04:17:38 -0800
+From: Guenter Roeck <linux@roeck-us.net>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Helge Deller <deller@gmx.de>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Geoff Levand <geoff@infradead.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	xen-devel@lists.xenproject.org, linux-alpha@vger.kernel.org,
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, sparclinux@vger.kernel.org,
+	Jason Gunthorpe <jgg@ziepe.ca>, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v5 09/14] parisc: Convert DMA map_page to map_phys
+ interface [qemu test failure]
+Message-ID: <b184f1bf-96dc-4546-8512-9cba5ecb58f7@roeck-us.net>
+References: <20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
+ <20251015-remove-map-page-v5-9-3bbfe3a25cdf@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251015-remove-map-page-v5-9-3bbfe3a25cdf@kernel.org>
 
-From: Qi Zheng <zhengqi.arch@bytedance.com>
+Hi,
 
-The PT_RECLAIM can work on all architectures that support
-MMU_GATHER_RCU_TABLE_FREE, so make PT_RECLAIM depends on
-MMU_GATHER_RCU_TABLE_FREE.
+On Wed, Oct 15, 2025 at 12:12:55PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> Perform mechanical conversion from .map_page to .map_phys callback.
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-BTW, change PT_RECLAIM to be enabled by default, since nobody should want
-to turn it off.
+This patch causes all my 32-bit parisc qemu tests with C3700 machine
+to fail. Network interface tests fail, and all boot attempts from
+any kind of hard drive (scsi, usb) fail with this patch in the tree.
 
-Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+Guenter
+
 ---
- arch/x86/Kconfig | 1 -
- mm/Kconfig       | 9 ++-------
- 2 files changed, 2 insertions(+), 8 deletions(-)
-
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 80527299f859a..0d22da56a71b0 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -331,7 +331,6 @@ config X86
- 	select FUNCTION_ALIGNMENT_4B
- 	imply IMA_SECURE_AND_OR_TRUSTED_BOOT    if EFI
- 	select HAVE_DYNAMIC_FTRACE_NO_PATCHABLE
--	select ARCH_SUPPORTS_PT_RECLAIM		if X86_64
- 	select ARCH_SUPPORTS_SCHED_SMT		if SMP
- 	select SCHED_SMT			if SMP
- 	select ARCH_SUPPORTS_SCHED_CLUSTER	if SMP
-diff --git a/mm/Kconfig b/mm/Kconfig
-index bd0ea5454af82..fc00b429b7129 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -1447,14 +1447,9 @@ config ARCH_HAS_USER_SHADOW_STACK
- 	  The architecture has hardware support for userspace shadow call
-           stacks (eg, x86 CET, arm64 GCS or RISC-V Zicfiss).
- 
--config ARCH_SUPPORTS_PT_RECLAIM
--	def_bool n
--
- config PT_RECLAIM
--	bool "reclaim empty user page table pages"
--	default y
--	depends on ARCH_SUPPORTS_PT_RECLAIM && MMU && SMP
--	select MMU_GATHER_RCU_TABLE_FREE
-+	def_bool y
-+	depends on MMU_GATHER_RCU_TABLE_FREE
- 	help
- 	  Try to reclaim empty user page table pages in paths other than munmap
- 	  and exit_mmap path.
--- 
-2.20.1
-
+# bad: [8f0b4cce4481fb22653697cced8d0d04027cb1e8] Linux 6.19-rc1
+# good: [7d0a66e4bb9081d75c82ec4957c50034cb0ea449] Linux 6.18
+git bisect start 'HEAD' 'v6.18'
+# good: [6dfafbd0299a60bfb5d5e277fdf100037c7ded07] Merge tag 'drm-next-2025-12-03' of https://gitlab.freedesktop.org/drm/kernel
+git bisect good 6dfafbd0299a60bfb5d5e277fdf100037c7ded07
+# good: [09cab48db950b6fb8c114314a20c0fd5a80cf990] Merge tag 'soc-arm-6.19' of git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc
+git bisect good 09cab48db950b6fb8c114314a20c0fd5a80cf990
+# bad: [701d7d782d98242a64cdeed90750f88ff733bc39] Merge tag 'spdx-6.19-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/spdx
+git bisect bad 701d7d782d98242a64cdeed90750f88ff733bc39
+# good: [66a1025f7f0bc00404ec6357af68815c70dadae2] Merge tag 'soc-newsoc-6.19' of git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc
+git bisect good 66a1025f7f0bc00404ec6357af68815c70dadae2
+# good: [c84d574698bad2c02aad506dfe712f83cbe3b771] Merge tag 'modules-6.19-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/modules/linux
+git bisect good c84d574698bad2c02aad506dfe712f83cbe3b771
+# bad: [b0319c4642638bad4b36974055b1c0894b2c7aa9] Merge tag 'nfsd-6.19' of git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
+git bisect bad b0319c4642638bad4b36974055b1c0894b2c7aa9
+# bad: [e637b37a520513a04d00f4add07ec25f357e6c6d] Merge tag 'rproc-v6.19' of git://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux
+git bisect bad e637b37a520513a04d00f4add07ec25f357e6c6d
+# bad: [56a1a04dc9bf252641c622aad525894dadc61a07] Merge tag 'libnvdimm-for-6.19' of git://git.kernel.org/pub/scm/linux/kernel/git/nvdimm/nvdimm
+git bisect bad 56a1a04dc9bf252641c622aad525894dadc61a07
+# good: [d0cf6512bbcf77afb6102f886fcd7fd48b7ae043] rust: bitmap: add BitmapVec::new_inline()
+git bisect good d0cf6512bbcf77afb6102f886fcd7fd48b7ae043
+# bad: [936a9f0cb16b0646143f8e05afab458adc51d0a0] xen: swiotlb: Convert mapping routine to rely on physical address
+git bisect bad 936a9f0cb16b0646143f8e05afab458adc51d0a0
+# good: [14cb413af00c5d3950d1a339dd2b6f01ce313fce] dma-mapping: remove unused mapping resource callbacks
+git bisect good 14cb413af00c5d3950d1a339dd2b6f01ce313fce
+# bad: [96ddf2ef58ec070afa8275f371b619462cd8fb2c] parisc: Convert DMA map_page to map_phys interface
+git bisect bad 96ddf2ef58ec070afa8275f371b619462cd8fb2c
+# good: [e4e3fff66a57a7aee048e0737a16874aeaffe9f4] MIPS/jazzdma: Provide physical address directly
+git bisect good e4e3fff66a57a7aee048e0737a16874aeaffe9f4
+# first bad commit: [96ddf2ef58ec070afa8275f371b619462cd8fb2c] parisc: Convert DMA map_page to map_phys interface
