@@ -1,132 +1,138 @@
-Received: from out-178.mta1.migadu.com (out-178.mta1.migadu.com [95.215.58.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f73.google.com (mail-wr1-f73.google.com [209.85.221.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A21B63164C5
-	for <linux-alpha@vger.kernel.org>; Wed, 31 Dec 2025 09:53:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52090313E2E
+	for <linux-alpha@vger.kernel.org>; Wed, 31 Dec 2025 12:22:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767174801; cv=none; b=iLgV7fb0JFhqaSyIXdwSnBdnqJOmqqKzSPSugOWeCOYx86m27cuiocjSYx8brt+tx2h9bnGpn3FXM030aLVV/R+UA83ZXJLk47+dpv5HyWVoWVXHAzREdlsQrKe7mES6vR+6UXhvCXHxdhJi7NzH7Uxm53IgdlN7DRzjB0swWmA=
+	t=1767183760; cv=none; b=ZlYf1EbBtHdtsn/JX7nEvuwocNzj9WEnQPisSSjFj1gG/3pu6ctNxxn0YFTEdT0+clYPzI071naDJRXYT4PI+Fp5dca8liAOe7F69DrblGUQm+rtPwmjoIXZddoYUSWTIh26G4VCxS2gNc/gMvga0PM3uzoG5GL1Eqm6fg/0ows=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767174801; c=relaxed/simple;
-	bh=bgKG/XkgrbCcQBOUfd1V/7rkB3OG4Wmzv5QaKooC00k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ka1Y7hyAMW1SymOwZufwUf2gJsR065tZ40KTEBNwUWQbDP4IvFQdDwMdjNj1v3sPBGGkc/0wXJISE+qrz5878T7yTFd1dKhO0L/5grPH0jZOTAyMkoVbPmJRpRTdFZYwZO/UpHCqytLYvcrnGgXXTZFxywRMpwQvvMAFS7zXLWw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=kA0qCy5s; arc=none smtp.client-ip=95.215.58.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1767183760; c=relaxed/simple;
+	bh=DgkCDNZwcq8gq47PvBSES/tVZ/480I2oLP6adymLeb4=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=YQsIUKTbvh8VTekchlVQQfqG30VpSG/692MwGNjCn6F3v5+rb6SAYYtJaiLLjejosWuZVzUPuwyciPz1ZKYmEyxEicwAtRir6/Tjru9cIrXVIwcIQrwF3Ju1EiUvVJWpr4MTys38NlfEeUJU6APfZHPIvxI+bwqBtRMbnyDrJX4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=H8Xch63Q; arc=none smtp.client-ip=209.85.221.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="kA0qCy5s"
-Message-ID: <a3a60bbb-70b7-49ed-abc6-937e6c13d681@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1767174787;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Wl7HEoZMUzGsbQepWMVSfO0JV4YjBapS0e5mq4W7b+4=;
-	b=kA0qCy5swxT9/bUHnpErzkaTUIfgXxao85n1AotjzFLMJUomMkCAQjLXpZ4B+KRO9Tbq2L
-	WU+1OAl5FxBAuCo1I3+CkOeCjPhLEPbag/rozOxh+CRn8kHOwBSKIYK4ige8l1o+gK7jtK
-	Vz5BljGIGicYjbCKFeIBggxM5nn/wOQ=
-Date: Wed, 31 Dec 2025 17:52:57 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="H8Xch63Q"
+Received: by mail-wr1-f73.google.com with SMTP id ffacd0b85a97d-43065ad16a8so5598259f8f.1
+        for <linux-alpha@vger.kernel.org>; Wed, 31 Dec 2025 04:22:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1767183757; x=1767788557; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=UQVrUosci++sweVUg2oDGu1yrtQHcLYzZp5maq37Uks=;
+        b=H8Xch63QUmjz00EuKOfAHU2PBlIXcud1d+ScTTcNSaDmBEu9Ei2a7wnzQdjTYm8y7C
+         u3hY9xf+p0jsnDW9kCM/ewzNG6T9pCB8oeMObV+0UwPQNv+3qZLMsDsvs/eCvD8vjJlB
+         Nfi7O2pnBN8ViFIeenSkficV9vOdlutn+sGxVBk2nixx7U6zsH2TpY9BLBiqxL3C5YO1
+         eK/oUAmeuqVZoQCrcWI0x5Z88ONGXrHnE6yVvZuWKpsrHBqiHrdJ3EF76WyyfCsBEJzF
+         OxMh8wWJsRQVqaNvGSfHrLTuMCz1OT0tHwz7IYsQ6gWCXnbhy5IVFwmX8QBfXwI3T0Wj
+         VetQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767183757; x=1767788557;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UQVrUosci++sweVUg2oDGu1yrtQHcLYzZp5maq37Uks=;
+        b=CUoqTNHj+rIq/wt1vczcOWg/0uD0JfNguy9PwpFLwZeoUe9VR157aZDmgdrf0HqlWW
+         Y2BMO1cW7Q2gqcV0hGzc7XsNMclqEtl9xS4K9l23ATTsIhXv5vmSqF9+AFx8ja1ncMjx
+         nn0hsw+miEZSCs1RJM5lDaDmMvla8SscXNq0U6xvzwiR12fqQm3fYgeqJvehH30hiH8v
+         NtZ4d9wXeiaadhYqSK1Nfn93IPal/s6LH+mSqlLXmlFUHXsqmgWU8peH7/9Noe/0pDYq
+         6y9OYZoWoGapxJVKpfK3XAUCmfTszORjIxITChtXr6dXZ6/z6t7Oen2gxNLrbgzDvbd5
+         GReA==
+X-Forwarded-Encrypted: i=1; AJvYcCV+YC9KpqFvDA2kiWeT9L5qd5HfrUpJf8H0DsS3M6hpChrh5esjxYG5l5oxe8SJPLAdNIh16fprvl2LjQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YyJXlEeLsL8h1WsSZgR5MGO5scU4pPKYWf0HtKp3vMMMfFxPKJH
+	EcqYAXTyBrmHTeBFV7YjPAzmhnKRDg7CHnLlyD5SDogxVnw9jZOSJuxTXp2RQF60vaS2glZ7tSI
+	WZpomU0QuqDk8V82Fwg==
+X-Google-Smtp-Source: AGHT+IFGevL4RjPve8xtRgOLaqwe1KRUGekHJd+lI5/ywPU8CYGMrfT3q1rcsX5yZhQNUWvXrJwartEV+7L+OGI=
+X-Received: from wro20.prod.google.com ([2002:a05:6000:41d4:b0:430:c782:27f3])
+ (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6000:609:b0:431:342:ad41 with SMTP id ffacd0b85a97d-4324e6fa1a7mr47643775f8f.61.1767183756634;
+ Wed, 31 Dec 2025 04:22:36 -0800 (PST)
+Date: Wed, 31 Dec 2025 12:22:24 +0000
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Subject: Re: [PATCH v3 7/7] mm: make PT_RECLAIM depends on
- MMU_GATHER_RCU_TABLE_FREE
-To: Wei Yang <richard.weiyang@gmail.com>
-Cc: will@kernel.org, aneesh.kumar@kernel.org, npiggin@gmail.com,
- peterz@infradead.org, dev.jain@arm.com, akpm@linux-foundation.org,
- david@kernel.org, ioworker0@gmail.com, linmag7@gmail.com,
- linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, linux-alpha@vger.kernel.org, loongarch@lists.linux.dev,
- linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
- linux-um@lists.infradead.org, Qi Zheng <zhengqi.arch@bytedance.com>
-References: <cover.1765963770.git.zhengqi.arch@bytedance.com>
- <ac2bdb2a66da1edb24f60d1da1099e2a0b734880.1765963770.git.zhengqi.arch@bytedance.com>
- <20251231094243.zmjs7kgflm7q6k73@master>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Qi Zheng <qi.zheng@linux.dev>
-In-Reply-To: <20251231094243.zmjs7kgflm7q6k73@master>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
+Mime-Version: 1.0
+X-B4-Tracking: v=1; b=H4sIAIAVVWkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDI1NDI2MD3aLy/LzkVF3DVIsUo9RUg6TkNEsloOKCotS0zAqwQdGxtbUAFXT clFgAAAA=
+X-Change-Id: 20251230-rwonce-1e8d2ee0bcf9
+X-Developer-Key: i=aliceryhl@google.com; a=openpgp; fpr=49F6C1FAA74960F43A5B86A1EE7A392FDE96209F
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1686; i=aliceryhl@google.com;
+ h=from:subject:message-id; bh=DgkCDNZwcq8gq47PvBSES/tVZ/480I2oLP6adymLeb4=;
+ b=owEBbQKS/ZANAwAKAQRYvu5YxjlGAcsmYgBpVRWGF5bAiUtejlxi6BOwMVDKnGMRxV0brpJMZ
+ 4N76blF6DqJAjMEAAEKAB0WIQSDkqKUTWQHCvFIvbIEWL7uWMY5RgUCaVUVhgAKCRAEWL7uWMY5
+ Rq6PEACahBDOuqhWNRdS7KKKt5/h9IB0Ae0tEIYhZCaGdynMz9p5ZroHJGY3427iEbwD1Xf1sd3
+ krvr6Thhw3P3Xe/n9H8Zv/X9u1c5luZ3Xf4eCUMRH4chFWH9JwzEvBz7jXADexXhLdQpug7K2mb
+ wcyPQj1ud8v+7Di8+fu4PtJLHimoywoMf6ZFhCGnAxPySJWvVweGV7hUrW8LxDszplrE2HZ8tD9
+ RPAbn1uqanDGL40aeAib7oCMvMY0u3Qwpf7JB+7YpeulCoPXBOoLck6sczMbHd7yzidbpiP+RnS
+ 37uYnZopCUQmCd47pDgFlfMgZD27v6IYXqZ8zIryrOl3Sod72AtB9UoCLEW11pV2LQ1AlYpBJL3
+ rU7Ya3QisvjzdEQ6OOLsnzwTh0b25pX6GjpAOkQxz6xI3oeH9Epbm5H/pviAgf3R1wjJrOvIOxj
+ 0GmRhz2x4wq8lHjcbjoljHHRYDgHFXMm0qSjahun8/DqZkoYlfBxzuxT46T2n5gdefNJ8ejq+Dv
+ Sm69I+Q/czN4RKBQIQDvayvG7VhtPNqrAKgOupQ9wDPuDSMURnwra3sFVkMWxmkk6wr8VB86lin
+ 9RO+10zQWOISHeiZ3OkAmQ5U361UXsQx2g45A72GjESpW/kXTosPejSa7Qj5uclYBBvCaLrP0Uj f+YHVZGzb5+fZ7Q==
+X-Mailer: b4 0.14.2
+Message-ID: <20251231-rwonce-v1-0-702a10b85278@google.com>
+Subject: [PATCH 0/5] Add READ_ONCE and WRITE_ONCE to Rust
+From: Alice Ryhl <aliceryhl@google.com>
+To: Boqun Feng <boqun.feng@gmail.com>, Will Deacon <will@kernel.org>, 
+	Peter Zijlstra <peterz@infradead.org>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
+	Magnus Lindholm <linmag7@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Miguel Ojeda <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>, 
+	"=?utf-8?q?Bj=C3=B6rn_Roy_Baron?=" <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
+	Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
+	Danilo Krummrich <dakr@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
+	FUJITA Tomonori <fujita.tomonori@gmail.com>, Frederic Weisbecker <frederic@kernel.org>, 
+	Lyude Paul <lyude@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	Anna-Maria Behnsen <anna-maria@linutronix.de>, John Stultz <jstultz@google.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, linux-kernel@vger.kernel.org, 
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	rust-for-linux@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+	Alice Ryhl <aliceryhl@google.com>
+Content-Type: text/plain; charset="utf-8"
 
+There are currently a few places in the kernel where we use volatile
+reads when we really should be using `READ_ONCE`. To make it possible to
+replace these with proper `READ_ONCE` calls, introduce a Rust version of
+`READ_ONCE`.
 
+A new config option CONFIG_ARCH_USE_CUSTOM_READ_ONCE is introduced so
+that Rust is able to use conditional compilation to implement READ_ONCE
+in terms of either a volatile read, or by calling into a C helper
+function, depending on the architecture.
 
-On 12/31/25 5:42 PM, Wei Yang wrote:
-> On Wed, Dec 17, 2025 at 05:45:48PM +0800, Qi Zheng wrote:
->> From: Qi Zheng <zhengqi.arch@bytedance.com>
->>
->> The PT_RECLAIM can work on all architectures that support
->> MMU_GATHER_RCU_TABLE_FREE, so make PT_RECLAIM depends on
->> MMU_GATHER_RCU_TABLE_FREE.
->>
->> BTW, change PT_RECLAIM to be enabled by default, since nobody should want
->> to turn it off.
->>
->> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
->> ---
->> arch/x86/Kconfig | 1 -
->> mm/Kconfig       | 9 ++-------
->> 2 files changed, 2 insertions(+), 8 deletions(-)
->>
->> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
->> index 80527299f859a..0d22da56a71b0 100644
->> --- a/arch/x86/Kconfig
->> +++ b/arch/x86/Kconfig
->> @@ -331,7 +331,6 @@ config X86
->> 	select FUNCTION_ALIGNMENT_4B
->> 	imply IMA_SECURE_AND_OR_TRUSTED_BOOT    if EFI
->> 	select HAVE_DYNAMIC_FTRACE_NO_PATCHABLE
->> -	select ARCH_SUPPORTS_PT_RECLAIM		if X86_64
->> 	select ARCH_SUPPORTS_SCHED_SMT		if SMP
->> 	select SCHED_SMT			if SMP
->> 	select ARCH_SUPPORTS_SCHED_CLUSTER	if SMP
->> diff --git a/mm/Kconfig b/mm/Kconfig
->> index bd0ea5454af82..fc00b429b7129 100644
->> --- a/mm/Kconfig
->> +++ b/mm/Kconfig
->> @@ -1447,14 +1447,9 @@ config ARCH_HAS_USER_SHADOW_STACK
->> 	  The architecture has hardware support for userspace shadow call
->>            stacks (eg, x86 CET, arm64 GCS or RISC-V Zicfiss).
->>
->> -config ARCH_SUPPORTS_PT_RECLAIM
->> -	def_bool n
->> -
->> config PT_RECLAIM
->> -	bool "reclaim empty user page table pages"
->> -	default y
->> -	depends on ARCH_SUPPORTS_PT_RECLAIM && MMU && SMP
->> -	select MMU_GATHER_RCU_TABLE_FREE
->> +	def_bool y
->> +	depends on MMU_GATHER_RCU_TABLE_FREE
->> 	help
->> 	  Try to reclaim empty user page table pages in paths other than munmap
->> 	  and exit_mmap path.
-> 
-> Hi, Qi
-> 
-> I am new to PT_RECLAIM, when reading related code I got one question.
-> 
-> Before this patch,  we could have this config combination:
-> 
->      CONFIG_MMU_GATHER_RCU_TABLE_FREE & !CONFIG_PT_RECLAIM
-> 
-> This means tlb_remove_table_free() is rcu version while tlb_remove_table_one()
-> is semi rcu version.
-> 
-> I am curious could we use rcu version tlb_remove_table_one() for this case?
-> Use rcu version tlb_remove_table_one() if CONFIG_MMU_GATHER_RCU_TABLE_FREE. Is
-> there some limitation here?
+This series is intended to be merged through ATOMIC INFRASTRUCTURE.
 
-I think there's no problem. The rcu version can also ensure that the
-fast GUP works well.
+Signed-off-by: Alice Ryhl <aliceryhl@google.com>
+---
+Alice Ryhl (5):
+      arch: add CONFIG_ARCH_USE_CUSTOM_READ_ONCE for arm64/alpha
+      rust: sync: add READ_ONCE and WRITE_ONCE
+      rust: sync: support using bool with READ_ONCE
+      rust: hrtimer: use READ_ONCE instead of read_volatile
+      rust: fs: use READ_ONCE instead of read_volatile
 
-> 
-> Thanks in advance for your explanation.
-> 
-> 
+ MAINTAINERS                     |   2 +
+ arch/Kconfig                    |  11 +++
+ arch/alpha/Kconfig              |   1 +
+ arch/alpha/include/asm/rwonce.h |   4 +-
+ arch/arm64/Kconfig              |   1 +
+ arch/arm64/include/asm/rwonce.h |   4 +-
+ rust/helpers/helpers.c          |   1 +
+ rust/helpers/rwonce.c           |  34 +++++++
+ rust/kernel/fs/file.rs          |   8 +-
+ rust/kernel/sync.rs             |   2 +
+ rust/kernel/sync/rwonce.rs      | 207 ++++++++++++++++++++++++++++++++++++++++
+ rust/kernel/time/hrtimer.rs     |   8 +-
+ 12 files changed, 268 insertions(+), 15 deletions(-)
+---
+base-commit: f8f9c1f4d0c7a64600e2ca312dec824a0bc2f1da
+change-id: 20251230-rwonce-1e8d2ee0bcf9
+
+Best regards,
+-- 
+Alice Ryhl <aliceryhl@google.com>
 
