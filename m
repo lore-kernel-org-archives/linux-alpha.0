@@ -1,176 +1,114 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+Received: from mail-ej1-f73.google.com (mail-ej1-f73.google.com [209.85.218.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6C06261B8F
-	for <linux-alpha@vger.kernel.org>; Wed, 31 Dec 2025 15:49:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C93623D7F4
+	for <linux-alpha@vger.kernel.org>; Thu,  1 Jan 2026 00:53:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767196187; cv=none; b=mBQKDHq3GFt1EgDNsqhB0gJS2Qv8ymJRRFhQbKs8cnq6cxogXUxQ/QX4S0XYXemw/gdEa7Dfajjip0DyslC7zWDcw+ZKkTgQ389CFJptug6OD2714MLKPB26l6hnIIU/xk68rtbxSFbNeI4Rd4aFtV0w72QcEE6Yz2uMYeGO23U=
+	t=1767228827; cv=none; b=Lmn0S+kE0QOsGEBsQ/MtjAtg+jJdnqgesJTOIl+kdReiytAN6ka9Vek7Shqlw944clf5cno8IVaVw6pG8CasUizKa8IOmnLYVYqeRSTE6BGA7XTYKVwIOg1kIHaE2V/irRx/C6YfanYG6XCASnpY5GQUPvMPzmOVXy0tfVwZNgU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767196187; c=relaxed/simple;
-	bh=3O2pKoi3Hwirhh0+J04ChOJnDVUiP3w0hlE8zKMOybs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CkrMlli2FL76Q7PGpGsR4MK8Wn6DfO2Y5wO1KUX38a3N3+NARWC1wHt+Esy899zW/famE2bDlVYxu2e87ljcJuSH6Mk5kWTAUb4O23i4uCj7w8a4iYv4RR9z0ROpImJieWpRZdqzkuTzVbz/0WDLgDWa9PI6yGwOIF+7Pte5Cv4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k2mBtzVR; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1767228827; c=relaxed/simple;
+	bh=FJxmCTvLM25zFfWpcNP5yBD/9nFfmtlGgUOBfBuzQiM=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=lo+mIzhp9DcJP6aDWfyDBMp/aelNyJA5kRrvnbpo0vH6bEoQ7/xHDrSepSfvr/ZK93LHMEO9yG9jJrLu0I8cAcvsnjKou22xyJMzjti/n/0CGdTQbeYrR6pphBhO3fdU2u2Y7JGjbhkiMcLgDtcGzrBdTZ4qN9DlpTGI2JZGC6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iJvmc6iA; arc=none smtp.client-ip=209.85.218.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k2mBtzVR"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-64b81ec3701so17436530a12.1
-        for <linux-alpha@vger.kernel.org>; Wed, 31 Dec 2025 07:49:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iJvmc6iA"
+Received: by mail-ej1-f73.google.com with SMTP id a640c23a62f3a-b7ff8a27466so1281302066b.3
+        for <linux-alpha@vger.kernel.org>; Wed, 31 Dec 2025 16:53:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1767196183; x=1767800983; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=H6r7yw9l553CBnZ0Oq6/Kvj3e3aIbXAlTRdm8Qc8sow=;
-        b=k2mBtzVRSH1v+FGKxeSAlmrpoWJXHRrGk48w1hRSCCe+VJ02bBPiRZANqhLbXR2hOY
-         21EyUlifjsLEM1xVf7OaJZ4iu4dIVgA20ZoP7Cq8CpTWrjZWh1QDQ1BWcQjTafZgZEqG
-         x6ytaO0jlKRb6Mf+R/ITTbD0YqfAkioqr0gj4YHlF4ga4ax0mckcgaZE4aljhudBNybJ
-         KOKmnhZiYOw4i8T9WFUm2qI08zlv1FS9OSrj2KblI4Ym88f7dxhWmAhoUlxE0sjMDeCY
-         8AIReZEkVs2R+Y/ApvqNJsTv5vZot/ZOaI2Hk/ccXAtkHRBXtm9S44o2QsdjPbWS2YRi
-         C5Qw==
+        d=google.com; s=20230601; t=1767228821; x=1767833621; darn=vger.kernel.org;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ALybukQ368MxKZuRBiA6l9FsoHeskqo5LiIi7UTqkwI=;
+        b=iJvmc6iAlq+AGWwQlMfFpUv590zRrBmK9KHqa/L+nel4mOmog6irZk1MSKC7Z2r19y
+         rT8zEbz4u7YdtSJkKJcmltsqALqK+hrSYeB7E48uQM8gugOrXeCxGhousoIe5uyCxnQZ
+         2+YwvXiL1iRtvRt2RBjS3JfLHtn97je52gO5gazY1dQvKNsvphb6H9qD0UKtUnHcGJsQ
+         md1zNznurxGuorqpsB21pNxmyx84nhAiTnDOQcP8TdUkSZN6IZt/RUV2iu0UjrUXB61V
+         DsZYu+AG9Jb4apwuHJa8OznjSivAOVrbOZgEm96FRa1/ptCViI4sdMnn4j9y/3EJyl5o
+         CxRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767196183; x=1767800983;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=H6r7yw9l553CBnZ0Oq6/Kvj3e3aIbXAlTRdm8Qc8sow=;
-        b=IMtc63bZOKXTQfSZc3MKVvQyjtd/+GPdLxpTHyzPGUPu1uT0mzGY2WA2mLnzP4ng+4
-         +HwTeltgqnpHMElK6atD/5X1FeR5/901ZzN5CvffegoMZYedkeWxBb1aAeOp1Z2mgATb
-         MRUAXBLzk81rn/1TfGAfFDfoWjVKNFsbtBr8Onb8nKf9YugftontzTkl3i2PUYmcikjZ
-         /erzYi6KkzwMjtGNO71hgkos8Z+NIORAXh7y/xAjSOuZrBTW1ZJfeEhsIg6C4eDbGp0Q
-         FnFJm3uSkmiwxaSJsNag594Q0Lis+0fjp2dyXqN8E6txhNnJDrMGNK8BjJKnw/9YgV+M
-         qkKQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVGbiap5/ech7WRsNkkluPZbkaNp92gMLqeI/OY03LaLIHX9ySar2X3m7Nn/MFWe7+4T/XQGGCyeprEcg==@vger.kernel.org
-X-Gm-Message-State: AOJu0YzlwuhrG02IRKdKnVZ55P77JR4T92rENMkD9ZlZfw4wxqzoGHg0
-	5c9Z0JgnB58wtk4agi1ENmRiJjovMO0XeHXNjXyVw069o2v6qRRHqUgd6qoFdSOceySbWjsaVnv
-	XyP/6tdYu1mTepw95fhzdyZ6liNzprv8=
-X-Gm-Gg: AY/fxX4oizm/O1ahKtFUeLRJCQxla3jAGWX8D45Jmqg0E9Uknp06xDsfABBAYOEOXoB
-	0/11bgcRUGJIgYRRfz/UjQn6Q3ASVjcgC0IW2g5ZeQEdRW4esbJh3df5FvCCP8DfomPCzQ/V8ca
-	v+V61gLvJQveDNu1g+KwmQMS9e2qn0GUlfg+Xwd71Wp5N5HyZc5luLDM2veHF3OR9iw73ZZEwWF
-	3369tQgPOL2s5uyhWJNcSZz52/OGhhL7N2uxQJqg/aevL7o243cySJV5xDb7sicZZThOMeC
-X-Google-Smtp-Source: AGHT+IFWPXcZKnGq0Krk9SV9S7c2h0pNtpTmEWv1Brc1vDiv5zIRm5JUQPWxix5qBNEZM9fT8eFcchz/mGnlgfTZ7QQ=
-X-Received: by 2002:a05:6402:430d:b0:64d:170:7976 with SMTP id
- 4fb4d7f45d1cf-64d01707bacmr33060451a12.16.1767196183052; Wed, 31 Dec 2025
- 07:49:43 -0800 (PST)
+        d=1e100.net; s=20230601; t=1767228821; x=1767833621;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ALybukQ368MxKZuRBiA6l9FsoHeskqo5LiIi7UTqkwI=;
+        b=mOH0ePzqltXXMsFLhLt7FUEvGeG8w91CKGLeOhn4wayA61y1PphbNlbVjFRE1mJRJH
+         4iEGWVP+cQ9fn7YK6R0V6/igThi4wfImRgVHE2BWtxEL/HF2VY7Ts3+kRrn0dZD51lsX
+         CXN5Ysnyhzu6Wnm+A2mLCRQmKLMzyyJy04rXmpe3HHluTQG5nE4TjxbyUJlNQ5Z//cvF
+         TkCvdyTeWXMGVgtl22ynxmUZw0vOCCselgyGKBC74VseQAZLodZ7xnyt8OFm7gmGuBQz
+         KuIuiTxbDtO3f7KdZ5ty6NbOz5ZR23ib84Xzg/roUlaxL1VJy039vEhZrK+weeCNOdQW
+         YD7A==
+X-Forwarded-Encrypted: i=1; AJvYcCUfESRn757BXH2n0deBRfJ2X0xonwlzNSM+aejF9dt+/w3Si+eQyCshDHIoSxWCZgqCvII0MZWHD+vvlw==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzuuPV7/wxQ1ttfIF2i95363XkRZTmP+JQZ3ZCkm6wqkEmxF4DB
+	g6qGIXBXkhzTTU3RpcCXAzfgsJ+L6kZacYPWhe9nd7pHoOGFtlkLE4XilipfQP+vCJyQAZ6cVWB
+	Cw/kZ9X8ZqGqe752yhQ==
+X-Google-Smtp-Source: AGHT+IEWmy8RAXCgqnhUehDWXxrrCi36bifjxhWe3kp7T+r3sxEL7vClkSWEcaAst8kVOoT68CYG7PpgofIxyHk=
+X-Received: from ejcul5.prod.google.com ([2002:a17:907:ca85:b0:b7f:fed7:3bc2])
+ (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:907:3f23:b0:b76:6020:ed2b with SMTP id a640c23a62f3a-b80371970a2mr3724571266b.45.1767228820647;
+ Wed, 31 Dec 2025 16:53:40 -0800 (PST)
+Date: Thu, 1 Jan 2026 00:53:39 +0000
+In-Reply-To: <20251231151216.23446b64.gary@garyguo.net>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20251228124001.3624742-1-rppt@kernel.org> <20251228124001.3624742-2-rppt@kernel.org>
-In-Reply-To: <20251228124001.3624742-2-rppt@kernel.org>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 31 Dec 2025 16:49:31 +0100
-X-Gm-Features: AQt7F2rayRHt2K_8t_heYN2h4Fxse0t-QPEGBzoKWlAlrWu2fr6sWsAyLE9oYEU
-Message-ID: <CA+=Fv5TDfwnu7Qf2y=PLWWN1EvNpNbr8habnTO7R4_caAySDzw@mail.gmail.com>
-Subject: Re: [PATCH 01/28] alpha: introduce arch_zone_limits_init()
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Alex Shi <alexs@kernel.org>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Andreas Larsson <andreas@gaisler.com>, 
-	Borislav Petkov <bp@alien8.de>, Brian Cain <bcain@kernel.org>, 
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	"David S. Miller" <davem@davemloft.net>, Dave Hansen <dave.hansen@linux.intel.com>, 
-	David Hildenbrand <david@kernel.org>, Dinh Nguyen <dinguyen@kernel.org>, 
-	Geert Uytterhoeven <geert@linux-m68k.org>, Guo Ren <guoren@kernel.org>, 
-	Heiko Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, 
-	Ingo Molnar <mingo@redhat.com>, Johannes Berg <johannes@sipsolutions.net>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Jonathan Corbet <corbet@lwn.net>, 
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, 
-	Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Michal Hocko <mhocko@suse.com>, Michal Simek <monstr@monstr.eu>, 
-	Muchun Song <muchun.song@linux.dev>, Oscar Salvador <osalvador@suse.de>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Pratyush Yadav <pratyush@kernel.org>, 
-	Richard Weinberger <richard@nod.at>, Russell King <linux@armlinux.org.uk>, 
-	Stafford Horne <shorne@gmail.com>, Suren Baghdasaryan <surenb@google.com>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
-	Vasily Gorbik <gor@linux.ibm.com>, Vineet Gupta <vgupta@kernel.org>, Vlastimil Babka <vbabka@suse.cz>, 
-	Will Deacon <will@kernel.org>, x86@kernel.org, linux-alpha@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, 
-	linux-cxl@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, 
-	linux-mm@kvack.org, linux-openrisc@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, 
-	linux-snps-arc@lists.infradead.org, linux-um@lists.infradead.org, 
-	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev, 
-	sparclinux@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+References: <20251231-rwonce-v1-0-702a10b85278@google.com> <20251231151216.23446b64.gary@garyguo.net>
+Message-ID: <aVXFk0L-FegoVJpC@google.com>
+Subject: Re: [PATCH 0/5] Add READ_ONCE and WRITE_ONCE to Rust
+From: Alice Ryhl <aliceryhl@google.com>
+To: Gary Guo <gary@garyguo.net>
+Cc: Boqun Feng <boqun.feng@gmail.com>, Will Deacon <will@kernel.org>, 
+	Peter Zijlstra <peterz@infradead.org>, "Paul E. McKenney" <paulmck@kernel.org>, 
+	Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
+	Magnus Lindholm <linmag7@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Miguel Ojeda <ojeda@kernel.org>, 
+	"=?utf-8?B?QmrDtnJu?= Roy Baron" <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, 
+	Andreas Hindborg <a.hindborg@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
+	Danilo Krummrich <dakr@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
+	FUJITA Tomonori <fujita.tomonori@gmail.com>, Frederic Weisbecker <frederic@kernel.org>, 
+	Lyude Paul <lyude@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	Anna-Maria Behnsen <anna-maria@linutronix.de>, John Stultz <jstultz@google.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, linux-kernel@vger.kernel.org, 
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	rust-for-linux@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
 
-On Sun, Dec 28, 2025 at 1:40=E2=80=AFPM Mike Rapoport <rppt@kernel.org> wro=
-te:
->
-> From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
->
-> Move calculations of zone limits to a dedicated arch_zone_limits_init()
-> function.
->
-> Later MM core will use this function as an architecture specific callback
-> during nodes and zones initialization and thus there won't be a need to
-> call free_area_init() from every architecture.
->
-> Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
-> ---
->  arch/alpha/mm/init.c | 15 ++++++++++-----
->  include/linux/mm.h   |  1 +
->  2 files changed, 11 insertions(+), 5 deletions(-)
->
-> diff --git a/arch/alpha/mm/init.c b/arch/alpha/mm/init.c
-> index 4c5ab9cd8a0a..cd0cb1abde5f 100644
-> --- a/arch/alpha/mm/init.c
-> +++ b/arch/alpha/mm/init.c
-> @@ -208,12 +208,8 @@ callback_init(void * kernel_end)
->         return kernel_end;
->  }
->
-> -/*
-> - * paging_init() sets up the memory map.
-> - */
-> -void __init paging_init(void)
-> +void __init arch_zone_limits_init(unsigned long *max_zone_pfn)
->  {
-> -       unsigned long max_zone_pfn[MAX_NR_ZONES] =3D {0, };
->         unsigned long dma_pfn;
->
->         dma_pfn =3D virt_to_phys((char *)MAX_DMA_ADDRESS) >> PAGE_SHIFT;
-> @@ -221,8 +217,17 @@ void __init paging_init(void)
->
->         max_zone_pfn[ZONE_DMA] =3D dma_pfn;
->         max_zone_pfn[ZONE_NORMAL] =3D max_pfn;
-> +}
-> +
-> +/*
-> + * paging_init() sets up the memory map.
-> + */
-> +void __init paging_init(void)
-> +{
-> +       unsigned long max_zone_pfn[MAX_NR_ZONES] =3D {0, };
->
->         /* Initialize mem_map[].  */
-> +       arch_zone_limits_init(max_zone_pfn);
->         free_area_init(max_zone_pfn);
->
->         /* Initialize the kernel's ZERO_PGE. */
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index 15076261d0c2..628c0e0ac313 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -3552,6 +3552,7 @@ static inline unsigned long get_num_physpages(void)
->   * free_area_init(max_zone_pfns);
->   */
->  void free_area_init(unsigned long *max_zone_pfn);
-> +void arch_zone_limits_init(unsigned long *max_zone_pfn);
->  unsigned long node_map_pfn_alignment(void);
->  extern unsigned long absent_pages_in_range(unsigned long start_pfn,
->                                                 unsigned long end_pfn);
-> --
-> 2.51.0
->
+On Wed, Dec 31, 2025 at 03:12:16PM +0000, Gary Guo wrote:
+> On Wed, 31 Dec 2025 12:22:24 +0000
+> Alice Ryhl <aliceryhl@google.com> wrote:
+> 
+> > There are currently a few places in the kernel where we use volatile
+> > reads when we really should be using `READ_ONCE`. To make it possible to
+> > replace these with proper `READ_ONCE` calls, introduce a Rust version of
+> > `READ_ONCE`.
+> > 
+> > A new config option CONFIG_ARCH_USE_CUSTOM_READ_ONCE is introduced so
+> > that Rust is able to use conditional compilation to implement READ_ONCE
+> > in terms of either a volatile read, or by calling into a C helper
+> > function, depending on the architecture.
+> > 
+> > This series is intended to be merged through ATOMIC INFRASTRUCTURE.
+> 
+> Hi Alice,
+> 
+> I would prefer not to expose the READ_ONCE/WRITE_ONCE functions, at
+> least not with their atomic semantics.
+> 
+> Both callsites that you have converted should be using
+> 
+> 	Atomic::from_ptr().load(Relaxed)
+> 
+> Please refer to the documentation of `Atomic` about this. Fujita has a
+> series that expand the type to u8/u16 if you need narrower accesses.
 
-This looks fine to me from the Alpha side.
+Why? If we say that we're using the LKMM, then it seems confusing to not
+have a READ_ONCE() for cases where we interact with C code, and that C
+code documents that READ_ONCE() should be used.
 
-Acked-by: Magnus Lindholm <linmag7@gmail.com>
+Alice
