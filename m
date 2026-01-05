@@ -1,140 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFB512820A4;
-	Sun,  4 Jan 2026 22:07:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2250313E02
+	for <linux-alpha@vger.kernel.org>; Mon,  5 Jan 2026 10:38:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767564465; cv=none; b=rdVQCrfIebnfhOvwYUnOgEeVlBV45L2zHwbO1xOg9UWPP6OPZ5qXuv9kFxUy5+P30Voxk1bMhAsNdDiQ+0YiDs2qKgClyl7Cfc1+QoSYvAB50huimiWF7Sa3PABLn9/7/a/2KypUf3Iism/Jb4+HGeGVNLMEUgMs5KvcftP6/Gs=
+	t=1767609527; cv=none; b=NylcPXf6mH5ce8xgbWCQpo7GRFH6/3EqlcK/641k2Ls8T0cOfoEqr+7SOLrpkwglPUxiMUUqB8ZI4chWqy4dw2Hof6j57UGgmkV47ILRWrZHbIdo9+762wf8eqx6ZKtNOmQ0b9wx4ezh66Z7F3F2/abhY9Z+64sceUK5UD7aqbo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767564465; c=relaxed/simple;
-	bh=Ee42W97PW2cmqfwn1Sv3QlRj9Q5zCvDbUSuBQxv/Op0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O8HLYx1cMog07vD01vHXdwUj3X2izcGioc9f5SKQh/C8I1Hub+vYP0RJ0dFxRKxIiQPwcG4lr0pSwdOCZiH+lIakQ/j04VG9RclpTr1/z/oGe/AoGWScdG41Mnnq0bI2VErkh4dOsIN+C5PmuAgzqfjOIu65LJ3LgcxrKlDtfrk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gScty2Ff; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1767609527; c=relaxed/simple;
+	bh=KXLosAKj9WTZoqxb3cLCJTfmO0KCMCIscavgasNNB2Q=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Ad5k9Dv2CzplUSJTpb6Dz1EyfB/4bykZaPPOVH5XitUNgc2rfGn7h17vsRyP26XfGjEwoZP1c1j/tYp/Yagbb7MGqXmIKGd3XCR2rWuUBpIgvuXYFPr18rT150zNFe2GN5XO/N5eN/C0tTWwy7C3RIPF/Ok7W1E8tjgiayGzJJA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K4o7QKkF; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gScty2Ff"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E756CC4CEF7;
-	Sun,  4 Jan 2026 22:07:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767564464;
-	bh=Ee42W97PW2cmqfwn1Sv3QlRj9Q5zCvDbUSuBQxv/Op0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=gScty2FfULdESXHMa7hr8G8loXGEUlcQN5S80gDD5UqJ9suJ3KSg5EBnAfBmPbN4t
-	 9i+loVAvbh0AVx5Yk4Koh1k8IXcYongXSPkBU/coQveXqy9HIob5+WjT9N8n85Gjtm
-	 QC1qHBE6xVD7AdKk4C44SLTYTxRO2wXx2AsAtG8JDeEhyiIAC6f2WQDRBjpGsCOR0w
-	 FS8iQ8IYIJkUJd7l21ONO+cGDEowjKvrtTSsbbdAQreKdAJdoXpAyGIgxSjm5iGWsN
-	 P4fDUybYnndFC6q8lAflfYkDiUy/1o2TDN1ho6i4H4kKv0NoHgcQix3vta1Wo/qJz4
-	 ESWpk4nesfdDw==
-Date: Mon, 5 Jan 2026 00:07:22 +0200
-From: Mike Rapoport <rppt@kernel.org>
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc: Klara Modin <klarasmodin@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Alex Shi <alexs@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Borislav Petkov <bp@alien8.de>, Brian Cain <bcain@kernel.org>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	David Hildenbrand <david@kernel.org>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Guo Ren <guoren@kernel.org>, Heiko Carstens <hca@linux.ibm.com>,
-	Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Michal Hocko <mhocko@suse.com>, Michal Simek <monstr@monstr.eu>,
-	Muchun Song <muchun.song@linux.dev>,
-	Oscar Salvador <osalvador@suse.de>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Richard Weinberger <richard@nod.at>,
-	Stafford Horne <shorne@gmail.com>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Vasily Gorbik <gor@linux.ibm.com>, Vineet Gupta <vgupta@kernel.org>,
-	Vlastimil Babka <vbabka@suse.cz>, Will Deacon <will@kernel.org>,
-	x86@kernel.org, linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
-	linux-cxl@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-	linux-mm@kvack.org, linux-openrisc@vger.kernel.org,
-	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
-	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-	linux-snps-arc@lists.infradead.org, linux-um@lists.infradead.org,
-	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev,
-	sparclinux@vger.kernel.org
-Subject: Re: [PATCH 3.5] arm: make initialization of zero page independent of
- the memory map (was Re: [PATCH v2 22/28] arch, mm: consolidate
- initialization of nodes, zones and memory map)
-Message-ID: <aVrkmnzgwM5i1VqX@kernel.org>
-References: <20260102070005.65328-1-rppt@kernel.org>
- <20260102070005.65328-23-rppt@kernel.org>
- <aVhN2NgQEKe0yzva@soda.int.kasm.eu>
- <aVll339wim7dCIaQ@kernel.org>
- <aVlwOyicOLPB9SOa@parmesan.int.kasm.eu>
- <aVpWpLV4Dut5Muo2@kernel.org>
- <aVrUDeSkqqY9ZCtS@shell.armlinux.org.uk>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K4o7QKkF"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6505cbe47d8so433132a12.1
+        for <linux-alpha@vger.kernel.org>; Mon, 05 Jan 2026 02:38:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1767609524; x=1768214324; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rpr1WOrht6j6ORsQatZtyLhRtfXLJi3Q8MSwGacBmmE=;
+        b=K4o7QKkF2n+IltFxHs/Igei/OZdyzJd+RxjP1/ZcwxRRc7ajKfBpIdpSngsqCXnUjG
+         eAhyMnAC83I7fITmmjSdaefI8Q2M6EAY25O+uw4r+ARAAasrxoOKjk/r9gHkSwCG0Tes
+         GyrW4z5Y53O8y7N3DEmazmaBdft7rrvbyASnnTNUXEDtaF3T50gLTveajIgcyqRjO9Y8
+         GcRzkxpf/ZvQ6+s4TXU898V8hUBcv/JDSNCa7dYESRfBvVOCEeiC5K0GoN9VaELnr8Kt
+         8jcx9xTboygibhXs3riIbma4aGpLVUjfz6otTcxRNRigGsaszeOb7pt8zUzjeUJr4BHd
+         xGIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767609524; x=1768214324;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=rpr1WOrht6j6ORsQatZtyLhRtfXLJi3Q8MSwGacBmmE=;
+        b=ZIVkIyQA2OGzJXcrZZH6FA2fUbkXDrwilUhf65QG9luuxQnnsYYE/fgCzqsxgPmgCZ
+         gb5EWY3KP8XkFWy0QbVviNpbnUqhxWVvoVLdV4k8840eoQ/V2uRmtQFQ7jOxytnsSi72
+         +7C/5W6aVe8WGM6cxmKuO8QYRHtAvKtAAZ+o4CS6N8we2oQYmsmHNEzXCr83D2ksKfn1
+         HJ3kVIUuSVWvmZ3jLZYf1us1gLn01FipdZg1q551IX3IuzWZYm32bhPGUp4Q4/cabQ+s
+         lNos8y6k8kvV5LqZMdO+ZRVKphofpg+hBU82grnptbuNE07kTZx1SXeBWymqRc/bcFGN
+         5zCw==
+X-Forwarded-Encrypted: i=1; AJvYcCXcNJqNOnpLokHQBy1gijJRUFquWyGKzGBSFScJRSd3fSinbCymheJC7gLmSpGAA15f/Ake0luzgV2h2g==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzrFdX8enZr6svJ2fdI0QCVPvRPdO2h6wSNqFullot0pQACVrWY
+	1JeLu2cauPU4DM8XL1/tvfbsMgf5UCEZEdv8eP/uR9S4d4M+WKJ7lR5tEAff2Op7ioQ2T4q+rAU
+	+9mDiESj5Ur7Ut6+vieYf6sA1NOxamj4=
+X-Gm-Gg: AY/fxX7hnolvBpaqmHAR10l7cYdA2G310koGWKJrE81y/o9KAJCm7ViUnxm/WJf5j0P
+	Lod/lApJfTdDOnUYKNW5YCPh577G0un3CpErNOKFFGu4yA8XsyWA0Ae6TTz1qwUm4m79afdmjEG
+	gZwMQ3oyPKA/GJZpwbjMQUO323CBDp5k7ocMPsuS2oFpDa+A/RnYp3oajB/8HirdRCkvOVYtIGH
+	b/ty0tAkdzZCpbvIsxt6tI1fgTudPW5apc8IqjiAHquBs38OhWfXa/3PhSgcIEDcRmVpV66
+X-Google-Smtp-Source: AGHT+IHve9mtUuYnBvwRtwl+XG1rrtZF7lTbS5cmb10zuaOisWC6Q5wRw7gN87SXZ2xj5LiVrwPD92wuBLz5gGcL/fA=
+X-Received: by 2002:a05:6402:51c9:b0:649:b200:afe9 with SMTP id
+ 4fb4d7f45d1cf-64b8edd8b54mr44168355a12.27.1767609524051; Mon, 05 Jan 2026
+ 02:38:44 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aVrUDeSkqqY9ZCtS@shell.armlinux.org.uk>
+References: <20251228063440.2623595-1-safinaskar@gmail.com> <20251228063440.2623595-2-safinaskar@gmail.com>
+In-Reply-To: <20251228063440.2623595-2-safinaskar@gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Mon, 5 Jan 2026 11:38:32 +0100
+X-Gm-Features: AQt7F2oW0pJ6x8V2KE_T8rhdE4-ywJ_uvZca_rX5x6NdgmoMtVTx5Rb8XUCp2AM
+Message-ID: <CA+=Fv5Ra7fFTd2wA77iM_6X7NooApfoMJX5z1j60cXex_uxm7w@mail.gmail.com>
+Subject: Re: [PATCH 1/1] alpha: trivial: remove ^L chars
+To: Askar Safin <safinaskar@gmail.com>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
+	linux-alpha@vger.kernel.org, kernel-janitors@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, patches@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 04, 2026 at 08:56:45PM +0000, Russell King (Oracle) wrote:
-> On Sun, Jan 04, 2026 at 02:01:40PM +0200, Mike Rapoport wrote:
-> > From 35d016bbf5da7c08cc5c5547c85558fc50cb63aa Mon Sep 17 00:00:00 2001
-> > From: Klara Modin <klarasmodin@gmail.com>
-> > Date: Sat, 3 Jan 2026 20:40:09 +0200
-> > Subject: [PATCH] arm: make initialization of zero page independent of the
-> >  memory map
-> > 
-> > Unlike most architectures, arm keeps a struct page pointer to the
-> > empty_zero_page and to initialize it requires conversion of a virtual
-> > address to page which makes it necessary to have memory map initialized
-> > before creating the empty_zero_page.
-> > 
-> > Make empty_zero_page a stataic array in BSS to decouple it's
-> > initialization from the initialization of the memory map.
-> 
-> I see you haven't considered _why_ ARM does this.
-> 
-> You are getting rid of the flush_dcache_page() call, which ensures
-> that the zeroed contents of the page are pushed out of the cache
-> into memory. This is necessary.
-> 
-> BSS is very similar. It's memset() during the kernel boot _after_
-> the caches are enabled. Without an explicit flush, nothing
-> guarantees that those writes will be visible to userspace.
+On Sun, Dec 28, 2025 at 7:35=E2=80=AFAM Askar Safin <safinaskar@gmail.com> =
+wrote:
+>
+> Remove ^L (a. k. a. \f a. k. a. form feed a. k. a. \x0c) from arch/alpha.
+> I'm attempting to write my own tool for parsing kernel code.
+> And these characters complicate this without giving any benefits.
+>
+> Signed-off-by: Askar Safin <safinaskar@gmail.com>
+> ---
+>  arch/alpha/kernel/core_cia.c      |  6 ++---
+>  arch/alpha/kernel/core_irongate.c |  2 +-
+>  arch/alpha/kernel/core_marvel.c   | 18 +++++++--------
+>  arch/alpha/kernel/core_mcpcia.c   |  4 ++--
+>  arch/alpha/kernel/core_polaris.c  |  2 +-
+>  arch/alpha/kernel/core_t2.c       |  2 +-
+>  arch/alpha/kernel/core_titan.c    | 10 ++++----
+>  arch/alpha/kernel/core_tsunami.c  |  4 ++--
+>  arch/alpha/kernel/err_common.c    |  4 ++--
+>  arch/alpha/kernel/err_titan.c     |  2 +-
+>  arch/alpha/kernel/pci_iommu.c     |  4 ++--
+>  arch/alpha/kernel/smc37c669.c     | 38 +++++++++++++++----------------
+>  arch/alpha/kernel/sys_marvel.c    |  4 ++--
+>  arch/alpha/kernel/sys_titan.c     |  8 +++----
+>  arch/alpha/kernel/time.c          | 10 ++++----
+>  15 files changed, 59 insertions(+), 59 deletions(-)
+>
 
-There's a call to flush_cache_all() paging_init()->devicemaps_init() that
-will guarantee that those writes are flushed long before userspace starts.
- 
-> To me, this seems like a bad idea, which will cause userspace to
-> break.
-> 
-> We need to call flush_dcache_page(), and _that_ requires a struct
-> page.
+Nice cleanup work.
 
-Right now there's __flush_dcache_folio() that will break anyway when folio
-divorces from struct page.   
+For a v2, please consider adjusting the commit message rationale away from
+personal tooling and towards general readability and editor/tool compatibil=
+ity.
+Otherwise this looks fine to me.
 
--- 
-Sincerely yours,
-Mike.
+Magnus
