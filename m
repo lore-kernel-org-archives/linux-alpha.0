@@ -1,133 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FC6F256D;
-	Tue,  6 Jan 2026 12:37:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E692C5695;
+	Tue,  6 Jan 2026 12:43:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767703071; cv=none; b=c/S5YR99APNzPwhu35tL2u2PiUXcgOW5S4DnlY9BUvgU2f1QlsRpdYQN/C1dIJvv5kItZv35hbIhNcd1dvUZ3FO8IXF/aZ8GH4MX+fwEpjeU/VQbx+BubgudG1T9MEGYL19v2EQ7OrYjVdXQNuqYBl3WoWxuVy/Ojv9q7z8FVXk=
+	t=1767703420; cv=none; b=VctbePU8H/MiFij4ovghLALuxr5PY2CD2p6Yrx0hDIGe5QZEWbSZj7VbGvWQrsza/J1b/7EeVD4e5hGyIs55t9NQvcotFv479kAraIwWL+2KTcwbjzRD1ytteFIayRQ4ktJlRjfYkVKSRriUzUsn/PXz3zYtsBwmQGerTQpmEzQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767703071; c=relaxed/simple;
-	bh=hm9zTszigCDx9gXEHsPwQEmbW0HRLieX7v57e0V8bhU=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=TuymiDMaESpoz7XyVGwEuwqOKblF8a1ivYv0XQFAxEhy2MciKSamctsTM68KnI6l7EH893vqFADYoJxNO8CC88o8Pr4oeYzwkZWSohUa2V+7sbdQbF7OpuvkTw+RvDIDmhOAmiLdLAFONIARuWONJRjyPph7z80/cLGuqHZYSsg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=REzzIMiH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1767703420; c=relaxed/simple;
+	bh=l6XET2g82VU5NPqDA34kNchMz8416gLMHeQDf+qqDuo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fcFGWWwNZSMVxTzCFwiMenUUac/dqE+TSsSK2QqxnxRazgMMEwvHWjGQdJI1b5AZE70wM7EQ6xxZonAvco42EQhSThfCWYhpJURsY4MXlwntgYmhfrcIoX/4Ve2/4OzT78xrFflvz/JeObave3Yc4vinJvefe+LtZ+aSKjdg9iQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=fF8x1imp; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="REzzIMiH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77A41C116C6;
-	Tue,  6 Jan 2026 12:37:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767703070;
-	bh=hm9zTszigCDx9gXEHsPwQEmbW0HRLieX7v57e0V8bhU=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=REzzIMiHLlAJ8/yX7SNtNUN34UI9sPJRaGpdk92DO+zLYJno2Yi7Pd4gD6O6eNRke
-	 7aVNJxQGRk0pFIgebjhJZgYpA/yxeQG7V10i16poDvU0Y0JORkJLC0VHoEQyZYvJbn
-	 Qs62maLF3+GbGq5mvC5TOyQx6hf7IaZtCtDL0GzQPoNYbZqwhl+9y7WGtaka52XZdW
-	 7uMM5+OAhmjqspJ0AJXxpXtN/vjJUFi7K5oKqGB9K4XYM1g7amRHfipjlQAqgZdBi0
-	 akH2hyYQFnXFyOAYlWAnkREJmQ92SKxUHavk2gbwuiX10Wc3Ibm3ymXS+cC8iKU3VZ
-	 RU/xEGefwO3KQ==
-From: Andreas Hindborg <a.hindborg@kernel.org>
-To: FUJITA Tomonori <fujita.tomonori@gmail.com>, fujita.tomonori@gmail.com
-Cc: aliceryhl@google.com, lyude@redhat.com, boqun.feng@gmail.com,
- will@kernel.org, peterz@infradead.org, richard.henderson@linaro.org,
- mattst88@gmail.com, linmag7@gmail.com, catalin.marinas@arm.com,
- ojeda@kernel.org, gary@garyguo.net, bjorn3_gh@protonmail.com,
- lossin@kernel.org, tmgross@umich.edu, dakr@kernel.org,
- mark.rutland@arm.com, frederic@kernel.org, tglx@linutronix.de,
- anna-maria@linutronix.de, jstultz@google.com, sboyd@kernel.org,
- viro@zeniv.linux.org.uk, brauner@kernel.org, jack@suse.cz,
- linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, rust-for-linux@vger.kernel.org,
- linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH 4/5] rust: hrtimer: use READ_ONCE instead of read_volatile
-In-Reply-To: <20260101.130012.2122315449079707392.fujita.tomonori@gmail.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="fF8x1imp"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=oRMkA/Ca563y0+dy1t5I/0e9W9y6rU2HQmmd09ZD4+8=; b=fF8x1implaMTwmDC1WueQdrygX
+	hcp2Jzf/RJx5Vzset7UUh3RO0L/rISk8A28NzSvDhKtM+KuzehXVbdI6XKw1XyKJ9zk99lU9ACzmz
+	ps1tMiWLfwcFAuz1KVztHAKzPhJY77fcfFUiYzYoge4bvvx9pKlRj4h+FfrbuhZMvhsy11PXQNACB
+	e+9UYVgjmYoMI/Gnx+rjnEq2YOn0ecUTgl4m7qpqMsbThPBPAG6n+3vDgQz3LBhrNiALCbrFmxVTu
+	AynL8hzMi0+ECj6C1VSYyxSUJTWMGVt0W/9ccLrJLC90FS97UHXrepDcMzj9P48L3wT/3enG9ZnSs
+	uVWcN5zA==;
+Received: from 2001-1c00-8d85-5700-266e-96ff-fe07-7dcc.cable.dynamic.v6.ziggo.nl ([2001:1c00:8d85:5700:266e:96ff:fe07:7dcc] helo=noisy.programming.kicks-ass.net)
+	by casper.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1vd6PH-0000000BmZ5-1z2W;
+	Tue, 06 Jan 2026 12:43:27 +0000
+Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
+	id 0D77630039E; Tue, 06 Jan 2026 13:43:26 +0100 (CET)
+Date: Tue, 6 Jan 2026 13:43:26 +0100
+From: Peter Zijlstra <peterz@infradead.org>
+To: Alice Ryhl <aliceryhl@google.com>
+Cc: Boqun Feng <boqun.feng@gmail.com>, Will Deacon <will@kernel.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Miguel Ojeda <ojeda@kernel.org>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	FUJITA Tomonori <fujita.tomonori@gmail.com>,
+	Frederic Weisbecker <frederic@kernel.org>,
+	Lyude Paul <lyude@redhat.com>, Thomas Gleixner <tglx@linutronix.de>,
+	Anna-Maria Behnsen <anna-maria@linutronix.de>,
+	John Stultz <jstultz@google.com>, Stephen Boyd <sboyd@kernel.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	rust-for-linux@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH 3/5] rust: sync: support using bool with READ_ONCE
+Message-ID: <20260106124326.GY3707891@noisy.programming.kicks-ass.net>
 References: <20251231-rwonce-v1-0-702a10b85278@google.com>
- <20251231-rwonce-v1-4-702a10b85278@google.com>
- <20260101.111123.1233018024195968460.fujita.tomonori@gmail.com>
- <L2dmGLLYJbusZn9axfRubM0hIOSTuny2cW3uyUhOVGvck7lQxTzDe0Xxf8Hw2cLxICT8kdmNAE74e-LV7YrReg==@protonmail.internalid>
- <20260101.130012.2122315449079707392.fujita.tomonori@gmail.com>
-Date: Tue, 06 Jan 2026 13:37:34 +0100
-Message-ID: <87ikdej4s1.fsf@t14s.mail-host-address-is-not-set>
+ <20251231-rwonce-v1-3-702a10b85278@google.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251231-rwonce-v1-3-702a10b85278@google.com>
 
-"FUJITA Tomonori" <fujita.tomonori@gmail.com> writes:
-
-> On Thu, 01 Jan 2026 11:11:23 +0900 (JST)
-> FUJITA Tomonori <fujita.tomonori@gmail.com> wrote:
->
->> On Wed, 31 Dec 2025 12:22:28 +0000
->> Alice Ryhl <aliceryhl@google.com> wrote:
->>
->>> Using `READ_ONCE` is the correct way to read the `node.expires` field.
->>>
->>> Signed-off-by: Alice Ryhl <aliceryhl@google.com>
->>> ---
->>>  rust/kernel/time/hrtimer.rs | 8 +++-----
->>>  1 file changed, 3 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/rust/kernel/time/hrtimer.rs b/rust/kernel/time/hrtimer.rs
->>> index 856d2d929a00892dc8eaec63cebdf547817953d3..e2b7a26f8aade972356c3eb5f6489bcda3e2e849 100644
->>> --- a/rust/kernel/time/hrtimer.rs
->>> +++ b/rust/kernel/time/hrtimer.rs
->>> @@ -239,11 +239,9 @@ pub fn expires(&self) -> HrTimerInstant<T>
->>>          // - Timers cannot have negative ktime_t values as their expiration time.
->>>          // - There's no actual locking here, a racy read is fine and expected
->>>          unsafe {
->>> -            Instant::from_ktime(
->>> -                // This `read_volatile` is intended to correspond to a READ_ONCE call.
->>> -                // FIXME(read_once): Replace with `read_once` when available on the Rust side.
->>> -                core::ptr::read_volatile(&raw const ((*c_timer_ptr).node.expires)),
->>> -            )
->>> +            Instant::from_ktime(kernel::sync::READ_ONCE(
->>> +                &raw const (*c_timer_ptr).node.expires,
->>> +            ))
->>>          }
->>
->> Do we actually need READ_ONCE() here? I'm not sure but would it be
->> better to call the C-side API?
->>
->> diff --git a/rust/helpers/time.c b/rust/helpers/time.c
->> index 67a36ccc3ec4..73162dea2a29 100644
->> --- a/rust/helpers/time.c
->> +++ b/rust/helpers/time.c
->> @@ -2,6 +2,7 @@
->>
->>  #include <linux/delay.h>
->>  #include <linux/ktime.h>
->> +#include <linux/hrtimer.h>
->>  #include <linux/timekeeping.h>
->>
->>  void rust_helper_fsleep(unsigned long usecs)
->> @@ -38,3 +39,8 @@ void rust_helper_udelay(unsigned long usec)
->>  {
->>  	udelay(usec);
->>  }
->> +
->> +__rust_helper ktime_t rust_helper_hrtimer_get_expires(const struct hrtimer *timer)
->> +{
->> +	return timer->node.expires;
->> +}
->
-> Sorry, of course this should be:
->
-> +__rust_helper ktime_t rust_helper_hrtimer_get_expires(const struct hrtimer *timer)
-> +{
-> +	return hrtimer_get_expires(timer);
+On Wed, Dec 31, 2025 at 12:22:27PM +0000, Alice Ryhl wrote:
+> Normally it is undefined behavior for a bool to take any value other
+> than 0 or 1. However, in the case of READ_ONCE(some_bool) is used, this
+> UB seems dangerous and unnecessary. I can easily imagine some Rust code
+> that looks like this:
+> 
+> 	if READ_ONCE(&raw const (*my_c_struct).my_bool_field) {
+> 	    ...
+> 	}
+> 
+> And by making an analogy to what the equivalent C code is, anyone
+> writing this probably just meant to treat any non-zero value as true.
+> 
+> For WRITE_ONCE no special logic is required.
+> 
+> Signed-off-by: Alice Ryhl <aliceryhl@google.com>
+> ---
+>  rust/kernel/sync/rwonce.rs | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+> 
+> diff --git a/rust/kernel/sync/rwonce.rs b/rust/kernel/sync/rwonce.rs
+> index a1660e43c9ef94011812d1816713cf031a73de1d..73477f53131926996614df573b2d50fff98e624f 100644
+> --- a/rust/kernel/sync/rwonce.rs
+> +++ b/rust/kernel/sync/rwonce.rs
+> @@ -163,6 +163,7 @@ unsafe fn write_once(ptr: *mut Self, val: Self) {
+>  // sizes, so picking the wrong helper should lead to a build error.
+>  
+>  impl_rw_once_type! {
+> +    bool, read_once_bool, write_once_1;
+>      u8,   read_once_1, write_once_1;
+>      i8,   read_once_1, write_once_1;
+>      u16,  read_once_2, write_once_2;
+> @@ -186,3 +187,21 @@ unsafe fn write_once(ptr: *mut Self, val: Self) {
+>      usize, read_once_8, write_once_8;
+>      isize, read_once_8, write_once_8;
+>  }
+> +
+> +/// Read an integer as a boolean once.
+> +///
+> +/// Returns `true` if the value behind the pointer is non-zero. Otherwise returns `false`.
+> +///
+> +/// # Safety
+> +///
+> +/// It must be safe to `READ_ONCE` the `ptr` with type `u8`.
+> +#[inline(always)]
+> +#[track_caller]
+> +unsafe fn read_once_bool(ptr: *const bool) -> bool {
+> +    // Implement `read_once_bool` in terms of `read_once_1`. The arch-specific logic is inside
+> +    // of `read_once_1`.
+> +    //
+> +    // SAFETY: It is safe to `READ_ONCE` the `ptr` with type `u8`.
+> +    let byte = unsafe { read_once_1(ptr.cast::<u8>()) };
+> +    byte != 0u8
 > +}
->
 
-This is a potentially racy read. As far as I recall, we determined that
-using read_once is the proper way to handle the situation.
-
-I do not think it makes a difference that the read is done by C code.
-
-
-Best regards,
-Andreas Hindborg
-
+Does this hardcode that sizeof(_Bool) == 1? There are ABIs where this is
+not the case.
