@@ -1,71 +1,54 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from LO2P265CU024.outbound.protection.outlook.com (mail-uksouthazon11021074.outbound.protection.outlook.com [52.101.95.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 754C33126A3
-	for <linux-alpha@vger.kernel.org>; Tue,  6 Jan 2026 15:11:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767712312; cv=none; b=G0T3YSGgBqBLSqiFyXE08xaYs3HqnGXYxY1SfwcEnjw6Fop1221M87EgMg+dkZYn8nNJzbEuDaGqCGxtAnzcKg4JY+f51ikBP2FOtn24qXrEVeH8BEhoRZMSxeXCABwWeYCM7262o76cBiaYskrijElpBu/gXvmceUyJcGcC71I=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767712312; c=relaxed/simple;
-	bh=25iRmSFuwL+D8roq4uypOGpDklg8NTNbR1SXb2hshR4=;
-	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=nM4nTaeen98PcIYiKy+lpfY5lErNBI1G6TRVkHOCW1ksXCTLyfL5rn/0obo8Q3pn7pTeaIE2CVTV5BGXdT+y34N8fcOt8lnHqU7dvVE/GfPZRNJ4eOni77BUN4ZEPf2b8Tx1JF4DoHwpRKei9m2DNzRRy4MudTxy+Csay+qmLbU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dQWK8dXl; arc=none smtp.client-ip=209.85.167.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6823345CA1;
+	Tue,  6 Jan 2026 15:23:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.95.74
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1767712993; cv=fail; b=avLjWtN617MPzoMNsJJfPuxCCRFxliuueC9H5EyOhon37czkNoqDjaM/mDAJbcKBCrPpdOLij0JceHBGGQMt3P47ovTO0bOwHBAtvyEAN5MlqXfaQXDJZpuPjIzqU1t11S4IDBVGm1tz06kePrhswrvlgJ+7pD8ot61Q9yK61oA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1767712993; c=relaxed/simple;
+	bh=DwAAWrY2ULEWHNpvDEFJ13Cx7exSMLdXGN7Q9gufyKA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=CM4a1KFX57IWfKQ3EOo7ZqNZ4ES2kP/KQT4RDnOvuUeklz9HBBMQzhfDRoJ8cwG80JqutYxpkRNNJfzrbO5ofGHgGBB8NmNCsoEzjxsew0KhgnK7JPoimrOm0ukzhelBRBxfj3QsQIA+HYjd9HjQQ/YI6NvJjFUaVXiOuOSbnKw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net; spf=pass smtp.mailfrom=garyguo.net; dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b=wv2tre5w; arc=fail smtp.client-ip=52.101.95.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=garyguo.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=garyguo.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dQWK8dXl"
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-45391956bfcso821117b6e.3
-        for <linux-alpha@vger.kernel.org>; Tue, 06 Jan 2026 07:11:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1767712309; x=1768317109; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to:from
-         :subject:cc:to:message-id:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hKsffwDmTb+4r5jC/ROuThttSG8MjIGG/prpPNSIElc=;
-        b=dQWK8dXljT7rAgrSZyG5us29SXvO2rsi28yA3vzwwiPxs7OmgpZ7UiVHEcNRhSKRu+
-         mnmiMHjASqWKrttJ96A4DLPAxlxkgWrq4CtT6bbaad4ZKhEpPpOIu9sOQ7+eQ9Ois9BY
-         GSLVS6Zc39qG7amDlpbgDz5RSIaKXZKkbSDQwsB11III1tbu791D1Hn6M0s22q4Fn9yN
-         rIYNu1yx7FYoPzzmZFI/a/5rMvY4ccOph1VVo7IB4hJtFrEObxK57B5khLdKwvoLoULS
-         LtVnGSS+7M1v+Q6ZRPCIWhYPsneXcheaaokbz0Rn0lCEstY9DnHpExcZeC6U7RNeKSjy
-         o6oA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767712309; x=1768317109;
-        h=content-transfer-encoding:mime-version:references:in-reply-to:from
-         :subject:cc:to:message-id:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hKsffwDmTb+4r5jC/ROuThttSG8MjIGG/prpPNSIElc=;
-        b=aQq4OVD+w8kmCzlrlz6ZZu1ZmUIArcf4Ltl9wHQkUVw8DPUbIfXaTKE2ieJRZBztxK
-         ZU8TG/iy3Thk0HBq6SSW49rRxoHqqTGDYfKxIRCrHm5vllxfSPprU/5mxMA+OfTkMvB0
-         RVAdVw2p+M5mmPm11kOO+8iT8vHf1Sw53IgZhpyGMILYZ38SiZS3IcnB2G/RWL4BKnTd
-         r9tdNB8d59i/EmcxQFMWDSyGeMESgRryoYggPAPHJUWIVjsxG3bc1Ar9/BB3CcJJKWFv
-         W1p8nlTN8iC3TcjkIm6ZHCDq4vwahjpCs6cSUg8JMx3RkkyW3VsiBRcCVjhdvlyI+Y5i
-         Mv6Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWd2bkrzMaKTqev3NIP///TKK0SlLBrefsxxLnbfSDg03leInkm+TR4r08O/qHHS7mkzkGJHWtr60OV5Q==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwzqVX33cKNi7lTaVS3LXfr81Wk5KyntpD6yPgWTC/bYuoNRTH5
-	Yfs2Ni+VeNl+WUtYWP+p45oh7CdxkhV/H1VkUcg/YDWY/dlxXduLbcEPoHzaYA==
-X-Gm-Gg: AY/fxX4eh7c5lSNBZXGuQnLdIiFShwMTErY1rBjBtEgOTZj8OD5Z+nG57L+SbdobRi2
-	0mJn8LdUs52pJY/GfgYAz/+/CLkETVIacK+wj06z/nI946b7uTBicLnUhpMYFKdTDTNdZh1r/zU
-	oJWbH0aRMj8i0LAXc8I4oaFJGBO+9XyvbdkZdWjPQnryD2jNStGUN4BNe1wGVRT7+69J2BkSaB1
-	+v6Gr8O+IV7PWQnZ6ez1eIaVO8n6o203yNxpfzIfp92ICdukzp4iRp0B3XcJ3bcvpnVa6sZeKE7
-	AESIqDcNkmo7CBrgNvnNOqiUAt0v/qkewCyUXymoY13gAid48G7W0tAxxfIg3dMboyWkhXI0rYn
-	2Z8Tn1UffER8CQ+zt4Wy4cRmtXgRI911rk+Ga3K0FlMwr1HOSumd+ssLFusjcSX+cLGR2Bo23hG
-	M+Tfcu18T25JhEM/yAQkYBgrtN+yyunIQpynnjtL5eNDtuhfrCMr3nwIhejveYYweKXGo=
-X-Google-Smtp-Source: AGHT+IH/kVjMXJLsPqWXcn8kSZ3ELVQYHHdFG6UtOJC68eA3mthYgJwMef8DW8mEX3Opv7mL8wv7Fw==
-X-Received: by 2002:a17:90a:c888:b0:32e:5d87:8abc with SMTP id 98e67ed59e1d1-34f5f35d5e2mr2098780a91.36.1767706121439;
-        Tue, 06 Jan 2026 05:28:41 -0800 (PST)
-Received: from localhost (p5342157-ipxg23901hodogaya.kanagawa.ocn.ne.jp. [180.39.242.157])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-34f5f7b19ebsm2356135a91.3.2026.01.06.05.28.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jan 2026 05:28:41 -0800 (PST)
-Date: Tue, 06 Jan 2026 22:28:26 +0900 (JST)
-Message-Id: <20260106.222826.2155269977755242640.fujita.tomonori@gmail.com>
-To: a.hindborg@kernel.org
-Cc: fujita.tomonori@gmail.com, aliceryhl@google.com, lyude@redhat.com,
- boqun.feng@gmail.com, will@kernel.org, peterz@infradead.org,
- richard.henderson@linaro.org, mattst88@gmail.com, linmag7@gmail.com,
- catalin.marinas@arm.com, ojeda@kernel.org, gary@garyguo.net,
+	dkim=pass (1024-bit key) header.d=garyguo.net header.i=@garyguo.net header.b="wv2tre5w"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=IRmHAteqFuUlBP+Bjy2Xuf2m6g0kAPdaQz51TPpIYQZmzcqXUTiqw9tyxaMYlPArW/9QxIYyCowCcX4XluUJAfx/zWb+g0yLYAZjP69/NesAZCbnsIPJsDfeQeonxkSrFuR+6VYK+vIDzPqPYidoTDaC25MmustEcKZnPEf53ZFN9tfq5z0E0ONKDLeM4COCxLQrvv2mlSyPtbKS+xvSOc7Efj5hdsM65EpxAvyiHZwNA8iqv+Z6Sa3NEFUXkBr4KtbnOKhtVbdIE2j5xlN5ZKUkU1/RQ5WsLromNEAEF+1VxjtpujiB5gSqV35SBQgZ15ONSNLOTKlHx3j5KSQeow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XziYBfRHkrgsgx+HIVpCW0HWoMIkZLQI18tqvHnGr9A=;
+ b=WSI6xLOL3O2H1+IQztc1NYrlpo6n90OJHmdovixmmiD8Yk/i88n+MQYWbck6Kc/zQsyCirgjlbc/nyb1CezWaar+DpFM/VApTdJPLdc0KJJBsnmQMQEhiVhUQiyX/CWSN52/5i9xrNW1Euvt8+FGubpEloz7ZcionaSLNGl4+aj07AEGdvYlHPDQeB3JwNZVsEvG1JbA27jSdFIVRI91bmEDo6oR5GGAb2IlKI8FDu/GDCjMabnFiELkZkB3Ga10ZrHQs4ejwF7TgAhW5XxX+5HYbkaZ5s/az8ZnZ2hWbnoTWJSEUu7reRhHX5RDPDVr9sVDB6ZJjcjeGXLdpS1URA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=garyguo.net; dmarc=pass action=none header.from=garyguo.net;
+ dkim=pass header.d=garyguo.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garyguo.net;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XziYBfRHkrgsgx+HIVpCW0HWoMIkZLQI18tqvHnGr9A=;
+ b=wv2tre5wYZ6aZKqRg6XvtaDNJyN3sSpyOBEjYwqiJiSLrc8IYywODGmUuplql9K5s8Fr5pHIE9ccxtsQ2L1mKslBMFsZiDS5x2F2MtCFkO/wYqYM7kA6ySgUCq3Eo11WB6kPreUuzWiUljUxPVeixLYWkRqLYlj6N9909h5YW3k=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=garyguo.net;
+Received: from LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:488::16)
+ by LO4P265MB6352.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:2e7::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9478.4; Tue, 6 Jan
+ 2026 15:23:04 +0000
+Received: from LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::ea6a:3ec2:375d:1ce0]) by LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::ea6a:3ec2:375d:1ce0%7]) with mapi id 15.20.9478.005; Tue, 6 Jan 2026
+ 15:23:03 +0000
+Date: Tue, 6 Jan 2026 15:23:00 +0000
+From: Gary Guo <gary@garyguo.net>
+To: Andreas Hindborg <a.hindborg@kernel.org>
+Cc: FUJITA Tomonori <fujita.tomonori@gmail.com>, aliceryhl@google.com,
+ lyude@redhat.com, boqun.feng@gmail.com, will@kernel.org,
+ peterz@infradead.org, richard.henderson@linaro.org, mattst88@gmail.com,
+ linmag7@gmail.com, catalin.marinas@arm.com, ojeda@kernel.org,
  bjorn3_gh@protonmail.com, lossin@kernel.org, tmgross@umich.edu,
  dakr@kernel.org, mark.rutland@arm.com, frederic@kernel.org,
  tglx@linutronix.de, anna-maria@linutronix.de, jstultz@google.com,
@@ -75,96 +58,125 @@ Cc: fujita.tomonori@gmail.com, aliceryhl@google.com, lyude@redhat.com,
  linux-fsdevel@vger.kernel.org
 Subject: Re: [PATCH 4/5] rust: hrtimer: use READ_ONCE instead of
  read_volatile
-From: FUJITA Tomonori <fujita.tomonori@gmail.com>
+Message-ID: <20260106152300.7fec3847.gary@garyguo.net>
 In-Reply-To: <87ikdej4s1.fsf@t14s.mail-host-address-is-not-set>
-References: <L2dmGLLYJbusZn9axfRubM0hIOSTuny2cW3uyUhOVGvck7lQxTzDe0Xxf8Hw2cLxICT8kdmNAE74e-LV7YrReg==@protonmail.internalid>
+References: <20251231-rwonce-v1-0-702a10b85278@google.com>
+	<20251231-rwonce-v1-4-702a10b85278@google.com>
+	<20260101.111123.1233018024195968460.fujita.tomonori@gmail.com>
+	<L2dmGLLYJbusZn9axfRubM0hIOSTuny2cW3uyUhOVGvck7lQxTzDe0Xxf8Hw2cLxICT8kdmNAE74e-LV7YrReg==@protonmail.internalid>
 	<20260101.130012.2122315449079707392.fujita.tomonori@gmail.com>
 	<87ikdej4s1.fsf@t14s.mail-host-address-is-not-set>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0274.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:195::9) To LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:488::16)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LOVP265MB8871:EE_|LO4P265MB6352:EE_
+X-MS-Office365-Filtering-Correlation-Id: cd127f6a-d62e-46a8-0616-08de4d377c61
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|1800799024|366016|10070799003|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?E27G4enlFQzP/DJlAApl4d4BV3odDW8n0RWMRnJQ0+bUDg4WNEE9y8XfkvJI?=
+ =?us-ascii?Q?/CzeqETZDBPTQMTA1dnMbzfj/eHFYPL6ISq/h3zD4gcVXx6q4UbQFhx2wvP2?=
+ =?us-ascii?Q?NzSHetU6gaiRD3WXEpPYlE1ezhm++l5j8nbq/MURzwZK9qjrbTd9xG7Qc+Yo?=
+ =?us-ascii?Q?5+76f4qx/huQFyjT5e/XLz7KAqf1T98ERy1XgZ978PCwK/EHuNcXnTz1UiuR?=
+ =?us-ascii?Q?J5D20qEIHdTL0rcBcZtP6N/ftRqWckmyixuhxrijs5QuVs8ye5vBE4ZkmuuT?=
+ =?us-ascii?Q?QNOrXBpMdrFIu9Er9DNY59BriHtjO8xGCZOHyOwBJKEplc0xZUVo3+TsURm1?=
+ =?us-ascii?Q?G4cC7QxRpyz48urNtao161Qrww7eNk1N/m8zd++n5AMpVyLNpn5toiB0q4gG?=
+ =?us-ascii?Q?q4n89V0BezQJowWjf6oH1GFZjXMwIzd/HlAvKTppWnrpfqNCix6tQzD0mJyB?=
+ =?us-ascii?Q?BkSdX//n2yNWoo+X9K02K7Xux/wthpWC9K+rJrouirNfRO9w1F7CbA5HxVNc?=
+ =?us-ascii?Q?m5nFBz8w2GlDNkTKioieu/56iRtpoMFiDO4arxto7pbzYyEfdKthb62Yi/K+?=
+ =?us-ascii?Q?rtVXrFSx1ow4soL7/91pZfIbvMYuzryP+t90+d2crLtHMgLzHT9rX+WPYW4k?=
+ =?us-ascii?Q?foH7L4qqdG8F/fWQDgWbEFbPy60ZDvgqrWocNhMlhK6t9PaeW1nYiUW+gpfp?=
+ =?us-ascii?Q?F1LK8YjIRJ2pyFn8NZUQP9WTL5oKCfk6zVgI6s3+XbB5it02Ciz5XFhMnTui?=
+ =?us-ascii?Q?0uorI+0VAh8eYpwJ/tHT0qDFtyktsMhOEAjuxT4hfHRClHFjeAfG0JTKSYD1?=
+ =?us-ascii?Q?PjajjlHTvjr7tlDsq+6nNhCeH8ULHRcdK26/EB/SmJEgL0jWlHn8PtEFV2t7?=
+ =?us-ascii?Q?kbSae+yhAlO51dnuuWTZFvvpB8On6dZiocVKLYTbhh6z0ErNMan1rDCTK1Bn?=
+ =?us-ascii?Q?kFLAGmWGbZRjVkDE62kG7r9baR3Bsv0VEEqriTOqz/fUo2i1w1/IT0dR4D2B?=
+ =?us-ascii?Q?yWoNs+nkQLwTP1xhapuq0G8yxxXp4Df43t0SoswDc+WRCraTgAO1bbq1jxBW?=
+ =?us-ascii?Q?s0P/49tSj8yIUxLpT/jW5qLNkWHIH0Cthq2rsbjouJVi+pKtVivPs7NoZzhm?=
+ =?us-ascii?Q?i8UXegp8PSH6IPXR8XyQl+9LaHFmZz+Y3UUNJqYNgsvLxZlMjzG81CPV0nWh?=
+ =?us-ascii?Q?jpd7RgoTubZg7FR3t2rcFmAc6oMlVsy4wxLRmKG31CvwXgzoHc416gcxoewQ?=
+ =?us-ascii?Q?AIi7SDyhuqxJg8MB4yh4L14jWbHp984kyJXs9L7WYheSdqfkMm+Ife21TCPv?=
+ =?us-ascii?Q?Le2/qm7C7QdLuzuWwI/VVuDgDnxTzQMf8ULoTwUDVASWQNwSS19JX34H23/n?=
+ =?us-ascii?Q?jXnnsTanxfY/garRy8HcikgglyWX00Z8o9LNPlMlxoBB3VQdieFaUf2mnMk/?=
+ =?us-ascii?Q?CxT+2BMOCYHA9S3if2RwtTPKFaQS2MWO?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016)(10070799003)(7053199007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Kb1pHrfjtZGh8GyRUr7QCs2xmnWV4M6F9VYvQlp6Oryjl210khHbXAJNqPdT?=
+ =?us-ascii?Q?dZcJteeA6F+1tMsoQeLgsIxtRkljYH26JXxBnb9H80Xhm7b9X2eAyr6MauS2?=
+ =?us-ascii?Q?gpQmV33IkM4t2ms0r5FjMdFTRemIzrYXpBq/CkaSjYNrMnA+rq5etrbLRm2F?=
+ =?us-ascii?Q?8UcAxNNXy2Uhf89qPMr5Xd2ToW945wTYs8Y9R+ISZqE+zcjQJbNEmHfGHhgM?=
+ =?us-ascii?Q?Pz/r1SYUcjY40T0woObF02NiNRqtd/C0hr/s2xm6wCkyrM3pAAPRWoroo4ml?=
+ =?us-ascii?Q?HgBdHQTgscyqLNB6GMXkpKnF0Xb6v/PFz3UX2Bn2qz0/7RQsBZikXFwVxRaS?=
+ =?us-ascii?Q?GVvQRw7vEhGgpOQTV1GH2NXsXAknSyf8dGJ72RgCRX/m66Gda6CtvVxjd/bD?=
+ =?us-ascii?Q?566zb5eaM3fFPe3hxCHcUa3X88+fyG2653uwa8Ebq6QPiJqQKSvVHNvkNyWM?=
+ =?us-ascii?Q?Qqdm8XDCG4My0cB8h35XbEukcv0w27mx0P0gPMIvQqzyHRHkH6j1EO7C2O0H?=
+ =?us-ascii?Q?VVoYWW4X18uimeGk7pKoIhelrPchCtWcyYNkC4E9z7Cqr2iAZhG+vyTUiCEw?=
+ =?us-ascii?Q?hc044n/cJPtH675pwFrNgvQ9bnlWjI0UmhyIjs4f1LJwkDk6WYvZSkXWqrAy?=
+ =?us-ascii?Q?YIIERXVE/vgaNo+b3+BTQmIewbitOpxG9zKbTmIYPC87pkE2Avb4hNCa2lCe?=
+ =?us-ascii?Q?+ftgdnK43J0SBflhR26Djfury/GGz5T0N+j/PWhWjBd2A19vQCJzDaHc0GPi?=
+ =?us-ascii?Q?ZuoA8OZB2OmmYie1wgqCuA7s38RIGyQ0XR1ZcMYqrT+j7kAXthitIT5tAA6+?=
+ =?us-ascii?Q?OfFkDUHECI3DSAx6z8dYnBoNPK+c3dPA6Yv6ntMhYcKLjGTqN+BL08NVuXRI?=
+ =?us-ascii?Q?U2xwr3h+WLJ9eLdLoyA5+CF2AAuJaClPkG3+eDj+37IUwYysmvuWeXE1iGhV?=
+ =?us-ascii?Q?puYoVxqwzflZoVKwiuGb1ShxEwUBl83mijLnGUF9zd3q++x3ZTpANM0xf2Qj?=
+ =?us-ascii?Q?hwuGGK55ySB8X8vF2u1SbzM57UkXGIqtHvJFbM8UHW4ani+DJr9HV2NtIc9S?=
+ =?us-ascii?Q?ADaUPrQMEViYS4S7ixDeLfVtrnssBj9J86RLLo/NNAG7EdehVueFvNdsSeFb?=
+ =?us-ascii?Q?HOcbDP07k29OJ7cVlOl/6BZeFXIKdacYWq/EfzrFg9ySCsXNYoR1lTv5h3MD?=
+ =?us-ascii?Q?MkYMvh357qHhWkFd3wUEeS6qic6QDMJsTvfHlchTPA3WsEvcbyMgddt9JJI/?=
+ =?us-ascii?Q?USegTyb4YR0DxkT6apekplBgHHcQpLgZjnVlxC3tp87dbfwmpscvMhZUlLKV?=
+ =?us-ascii?Q?aTkacLTiBJ3B/N1PEzuL3P8d98gmHc4fxcy/N+DOvwQ8XmQUJzB+XhvJ851e?=
+ =?us-ascii?Q?ESKsPv0QT/yWjTz3/lq2Pbh7RaeWVh02S84rl/BKzf4LhJ3evhofgk22qzUw?=
+ =?us-ascii?Q?m2Ukx1WwcWtwmi/+yMIKKUFdSahM4K6BJY7BZ9gT/Uk+FsnOjr91l4qpfdjl?=
+ =?us-ascii?Q?M4LQqo/zFCmNY2YB3Nr7l7Js1TWgV1R/om3wPi9P7GLqSb8Te5NBO3opU1VW?=
+ =?us-ascii?Q?B8JJZKZwTiVBvmdXyQU86q+d8BmmvQ9tznkA1bt9QrmaCi1YQM/pyxkqcC8c?=
+ =?us-ascii?Q?bXh3Z2QOPnx8CQf1mG0evU5VAiMPASOA+Q1dY8HfLFmkp6RR3YwLX+Gn7GMb?=
+ =?us-ascii?Q?wNgw5qiN+1aCLM6kVIqQY73apWXqwhKM/pZ/Qvco3X1hvx5x+KDRJo8RJUk2?=
+ =?us-ascii?Q?6xnI5uqqag=3D=3D?=
+X-OriginatorOrg: garyguo.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd127f6a-d62e-46a8-0616-08de4d377c61
+X-MS-Exchange-CrossTenant-AuthSource: LOVP265MB8871.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2026 15:23:03.9505
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bbc898ad-b10f-4e10-8552-d9377b823d45
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sjRSI1QcAdE7tVpOrzn1EQdZqJInH/D5iVZDA5vbe9dWObhK1m6QnzrUHut53N8io1DC7p+jc5fC8Osip6tMNQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO4P265MB6352
 
 On Tue, 06 Jan 2026 13:37:34 +0100
 Andreas Hindborg <a.hindborg@kernel.org> wrote:
 
 > "FUJITA Tomonori" <fujita.tomonori@gmail.com> writes:
-> 
->> On Thu, 01 Jan 2026 11:11:23 +0900 (JST)
->> FUJITA Tomonori <fujita.tomonori@gmail.com> wrote:
->>
->>> On Wed, 31 Dec 2025 12:22:28 +0000
->>> Alice Ryhl <aliceryhl@google.com> wrote:
->>>
->>>> Using `READ_ONCE` is the correct way to read the `node.expires` field.
->>>>
->>>> Signed-off-by: Alice Ryhl <aliceryhl@google.com>
->>>> ---
->>>>  rust/kernel/time/hrtimer.rs | 8 +++-----
->>>>  1 file changed, 3 insertions(+), 5 deletions(-)
->>>>
->>>> diff --git a/rust/kernel/time/hrtimer.rs b/rust/kernel/time/hrtimer.rs
->>>> index 856d2d929a00892dc8eaec63cebdf547817953d3..e2b7a26f8aade972356c3eb5f6489bcda3e2e849 100644
->>>> --- a/rust/kernel/time/hrtimer.rs
->>>> +++ b/rust/kernel/time/hrtimer.rs
->>>> @@ -239,11 +239,9 @@ pub fn expires(&self) -> HrTimerInstant<T>
->>>>          // - Timers cannot have negative ktime_t values as their expiration time.
->>>>          // - There's no actual locking here, a racy read is fine and expected
->>>>          unsafe {
->>>> -            Instant::from_ktime(
->>>> -                // This `read_volatile` is intended to correspond to a READ_ONCE call.
->>>> -                // FIXME(read_once): Replace with `read_once` when available on the Rust side.
->>>> -                core::ptr::read_volatile(&raw const ((*c_timer_ptr).node.expires)),
->>>> -            )
->>>> +            Instant::from_ktime(kernel::sync::READ_ONCE(
->>>> +                &raw const (*c_timer_ptr).node.expires,
->>>> +            ))
->>>>          }
->>>
->>> Do we actually need READ_ONCE() here? I'm not sure but would it be
->>> better to call the C-side API?
->>>
->>> diff --git a/rust/helpers/time.c b/rust/helpers/time.c
->>> index 67a36ccc3ec4..73162dea2a29 100644
->>> --- a/rust/helpers/time.c
->>> +++ b/rust/helpers/time.c
->>> @@ -2,6 +2,7 @@
->>>
->>>  #include <linux/delay.h>
->>>  #include <linux/ktime.h>
->>> +#include <linux/hrtimer.h>
->>>  #include <linux/timekeeping.h>
->>>
->>>  void rust_helper_fsleep(unsigned long usecs)
->>> @@ -38,3 +39,8 @@ void rust_helper_udelay(unsigned long usec)
->>>  {
->>>  	udelay(usec);
->>>  }
->>> +
->>> +__rust_helper ktime_t rust_helper_hrtimer_get_expires(const struct hrtimer *timer)
->>> +{
->>> +	return timer->node.expires;
->>> +}
->>
->> Sorry, of course this should be:
->>
->> +__rust_helper ktime_t rust_helper_hrtimer_get_expires(const struct hrtimer *timer)
->> +{
->> +	return hrtimer_get_expires(timer);
->> +}
->>
+> >
+> > Sorry, of course this should be:
+> >
+> > +__rust_helper ktime_t rust_helper_hrtimer_get_expires(const struct hrtimer *timer)
+> > +{
+> > +	return hrtimer_get_expires(timer);
+> > +}
+> >  
 > 
 > This is a potentially racy read. As far as I recall, we determined that
 > using read_once is the proper way to handle the situation.
 > 
 > I do not think it makes a difference that the read is done by C code.
 
-What does "racy read" mean here?
+If that's the case I think the C code should be fixed by inserting the
+READ_ONCE?
 
-The C side doesn't use WRITE_ONCE() or READ_ONCE for node.expires. How
-would using READ_ONCE() on the Rust side make a difference?
-
+Best,
+Gary
