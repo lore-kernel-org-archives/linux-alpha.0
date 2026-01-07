@@ -1,75 +1,94 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18B672C11EE;
-	Wed,  7 Jan 2026 08:43:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 307A7139579;
+	Wed,  7 Jan 2026 09:06:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767775414; cv=none; b=vBE2rwkBdgguTZjLAd/aKD3owuEVcc4h7+rCB8jLsED6ueeG9ec7ChnTp0paZYz1G1132wKkOgvbl2SuZbZI+v9OSqSWto4w3Mc16Km1tn8y63/OA6FvdAoLnpCSIUCdUvkJm9eFA2yqPaCASKo/bFKGfSdK+0MKNJtyjyWC7Ps=
+	t=1767776766; cv=none; b=JKTvE81rp7U7fF002EfkTv7Bvjun+1Vx9Fvv4cP5VPHZFnZreZJKm8bE3kG47wF2ILsVfosPprpqYadWQ74V8/zVLu8Pe3lh5dWwoWRBgyTJ1/oygCgiZiORQjDrpOuzK41GUe7Dm1ZOG+ri32pjTLQB36gpLRlH7VAwCkDHk/U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767775414; c=relaxed/simple;
-	bh=gUFl4vMy7ghUOaKzP1PiSEetw3MPIc2N5A2mLJP19Ao=;
+	s=arc-20240116; t=1767776766; c=relaxed/simple;
+	bh=pMgU+C5FcOLCmP6ptKqgGVGjjrLsI8HbEkAssUEFqo0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aAwu6fS5YEvy8iOgqZqcHmRTHgHjyn0gh8SB9Beax+rgm/uunpXcZ7U0GZ2wUpO3YvmlZelyx6liazPwaKfVwPGuZutDROgSLbE+Y7CESOEtGH9oF2rJQ8XaY2tyjzDEnZAcRdZW5jaHjdkeAGAKFYG0kiOhyiRJzwpt1VKXFWQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=fTZpoVpt; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=aGVZKvknXFNDn7nEo9Va6l6h5K63mCPER8sPd40W63bONmgztZ9UlxkF11EapwWHi9Yuy2z4+RNnOVE7+zsKeeMa6hnrg0r6Lf03ydEdBMfBdTFnJIGlQtASmoDY9IWj0uGw1pnEEBRgcKh8PeTh66HV3Y1cU0SymFNDiueL2hs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gp3clrex; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="fTZpoVpt"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=UybR8h6LJ7X/dgWxJlHGwPKuKCGXzpl1N/omiIktehk=; b=fTZpoVptxZ/3tmwLvBwSdnL2AS
-	U8jHIbhl6dXo7juEQx0yz8jmkvjflFZRAri/iPtz52WmUV4PJh1G5QVK0fwDIa63YmTM2UPDH41wE
-	ie90xZf1RVXoqk1IGR7h81Vh5Ry/LnENCUozWvynA6/m7jt5dyK088VnOJ6YO3WBkxbIGuhgalysk
-	m2yF1vWOvcnLJGKQDrY5lG5b3wh3ljIUFHb7tLd8LhhIImdxRfsiBURiOudgppLnXWWlDB2jIlvV8
-	iLiZaM/4qqHzpWhlp0xxAoPk4VtKuKOrsVO7iu+l49kvMn+tE/GWHD+oF8byJ5pQqVyYo2V+dPEeI
-	oBTcbjmA==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1vdP8V-0000000B0RI-14Mc;
-	Wed, 07 Jan 2026 08:43:23 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 29E43300329; Wed, 07 Jan 2026 09:43:22 +0100 (CET)
-Date: Wed, 7 Jan 2026 09:43:22 +0100
-From: Peter Zijlstra <peterz@infradead.org>
-To: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Boqun Feng <boqun.feng@gmail.com>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Gary Guo <gary@garyguo.net>,
-	Will Deacon <will@kernel.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gp3clrex"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E975C4CEF7;
+	Wed,  7 Jan 2026 09:05:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1767776765;
+	bh=pMgU+C5FcOLCmP6ptKqgGVGjjrLsI8HbEkAssUEFqo0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Gp3clrexlQYTflBjEroGcywSAtzuN1Rwv0/QCEq3+PrJVFxFCVnDuCiuhES9FxML1
+	 +DUJuEGclss/ATJRkynVca+Jnh3h6LZ1jKDlpzlWcRAo6+izc5O03Sz6x9cKrXFMgx
+	 Y9bLrHVqoYADWUH0XXdTVI1WfeT51LlKWgWoIjuvqFNTY1UuAQKsvL4rxcgKYa53RT
+	 HwvCsYN0oC3j7a2aYW9dIrhGAdIXV+DZgKRIozZxrf5fhJ5MEoUdXKbMDnSFYYNvLk
+	 A7qYfjWXWSXUlNaU2pK6XIEQpbQqJGgs3DYcZ5NSns73Gyit+KIQRcRWBuYWEkPzAs
+	 SZx9UZSS/0clA==
+Date: Wed, 7 Jan 2026 11:05:42 +0200
+From: Mike Rapoport <rppt@kernel.org>
+To: alexs@kernel.org
+Cc: Richard Henderson <richard.henderson@linaro.org>,
 	Matt Turner <mattst88@gmail.com>,
 	Magnus Lindholm <linmag7@gmail.com>,
+	Vineet Gupta <vgupta@kernel.org>,
+	Russell King <linux@armlinux.org.uk>, Will Deacon <will@kernel.org>,
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Nick Piggin <npiggin@gmail.com>,
+	Peter Zijlstra <peterz@infradead.org>,
 	Catalin Marinas <catalin.marinas@arm.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	FUJITA Tomonori <fujita.tomonori@gmail.com>,
-	Frederic Weisbecker <frederic@kernel.org>,
-	Lyude Paul <lyude@redhat.com>, Thomas Gleixner <tglx@linutronix.de>,
-	Anna-Maria Behnsen <anna-maria@linutronix.de>,
-	John Stultz <jstultz@google.com>, Stephen Boyd <sboyd@kernel.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	rust-for-linux@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	kasan-dev@googlegroups.com
-Subject: Re: [PATCH 0/5] Add READ_ONCE and WRITE_ONCE to Rust
-Message-ID: <20260107084322.GC272712@noisy.programming.kicks-ass.net>
-References: <20251231-rwonce-v1-0-702a10b85278@google.com>
- <20251231151216.23446b64.gary@garyguo.net>
- <aVXFk0L-FegoVJpC@google.com>
- <OFUIwAYmy6idQxDq-A3A_s2zDlhfKE9JmkSgcK40K8okU1OE_noL1rN6nUZD03AX6ixo4Xgfhi5C4XLl5RJlfA==@protonmail.internalid>
- <aVXKP8vQ6uAxtazT@tardis-2.local>
- <87fr8ij4le.fsf@t14s.mail-host-address-is-not-set>
- <aV0JkZdrZn97-d7d@tardis-2.local>
- <20260106145622.GB3707837@noisy.programming.kicks-ass.net>
- <7fa2c07e-acf9-4f9a-b056-4d4254ea61e5@paulmck-laptop>
+	Guo Ren <guoren@kernel.org>, Brian Cain <bcain@kernel.org>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Michal Simek <monstr@monstr.eu>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Dinh Nguyen <dinguyen@kernel.org>, Jonas Bonn <jonas@southpole.se>,
+	Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+	Stafford Horne <shorne@gmail.com>,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Helge Deller <deller@gmx.de>, Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>,
+	Rich Felker <dalias@libc.org>,
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+	"H. Peter Anvin" <hpa@zytor.com>, Andy Lutomirski <luto@kernel.org>,
+	Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>,
+	Arnd Bergmann <arnd@arndb.de>, David Hildenbrand <david@kernel.org>,
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>,
+	"open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:SYNOPSYS ARC ARCHITECTURE" <linux-snps-arc@lists.infradead.org>,
+	"moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+	"open list:MMU GATHER AND TLB INVALIDATION" <linux-arch@vger.kernel.org>,
+	"open list:MMU GATHER AND TLB INVALIDATION" <linux-mm@kvack.org>,
+	"open list:C-SKY ARCHITECTURE" <linux-csky@vger.kernel.org>,
+	"open list:QUALCOMM HEXAGON ARCHITECTURE" <linux-hexagon@vger.kernel.org>,
+	"open list:LOONGARCH" <loongarch@lists.linux.dev>,
+	"open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
+	"open list:MIPS" <linux-mips@vger.kernel.org>,
+	"open list:OPENRISC ARCHITECTURE" <linux-openrisc@vger.kernel.org>,
+	"open list:PARISC ARCHITECTURE" <linux-parisc@vger.kernel.org>,
+	"open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+	"open list:SUPERH" <linux-sh@vger.kernel.org>,
+	"open list:USER-MODE LINUX (UML)" <linux-um@lists.infradead.org>
+Subject: Re: [PATCH] mm/pgtable: convert pgtable_t to ptdesc pointer
+Message-ID: <aV4h5vQUNXn5cpMY@kernel.org>
+References: <20260107064642.15771-1-alexs@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -78,53 +97,53 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7fa2c07e-acf9-4f9a-b056-4d4254ea61e5@paulmck-laptop>
+In-Reply-To: <20260107064642.15771-1-alexs@kernel.org>
 
-On Tue, Jan 06, 2026 at 10:18:35AM -0800, Paul E. McKenney wrote:
-> On Tue, Jan 06, 2026 at 03:56:22PM +0100, Peter Zijlstra wrote:
-> > On Tue, Jan 06, 2026 at 09:09:37PM +0800, Boqun Feng wrote:
-> > 
-> > > Some C code believes a plain write to a properly aligned location is
-> > > atomic (see KCSAN_ASSUME_PLAIN_WRITES_ATOMIC, and no, this doesn't mean
-> > > it's recommended to assume such), and I guess that's the case for
-> > > hrtimer, if it's not much a trouble you can replace the plain write with
-> > > WRITE_ONCE() on C side ;-)
-> > 
-> > GCC used to provide this guarantee, some of the older code was written
-> > on that. GCC no longer provides that guarantee (there are known cases
-> > where it breaks and all that) and newer code should not rely on this.
-> > 
-> > All such places *SHOULD* be updated to use READ_ONCE/WRITE_ONCE.
+On Wed, Jan 07, 2026 at 02:46:35PM +0800, alexs@kernel.org wrote:
+> From: Alex Shi <alexs@kernel.org>
 > 
-> Agreed!
+> After struct ptdesc introduced, pgtable_t should used it instead of old
+> struct page pointer. The only thing in the way for this change is just
+> pgtable->lru in pgtable_trans_huge_deposit/withdraw.
 > 
-> In that vein, any objections to the patch shown below?
+> Let's convert them into ptdesc and use struct ptdesc* as pgtable_t.
+> Thanks testing support from kernel test robot <lkp@intel.com>
+> 
+> Signed-off-by: Alex Shi <alexs@kernel.org>
+> ---
 
-Not really; although it would of course be nice if that were accompanied
-with a pile of cleanup patches taking out the worst offenders or
-somesuch ;-)
+...
 
-> ------------------------------------------------------------------------
-> 
-> diff --git a/lib/Kconfig.kcsan b/lib/Kconfig.kcsan
-> index 4ce4b0c0109cb..e827e24ab5d42 100644
-> --- a/lib/Kconfig.kcsan
-> +++ b/lib/Kconfig.kcsan
-> @@ -199,7 +199,7 @@ config KCSAN_WEAK_MEMORY
+> diff --git a/arch/arm/include/asm/pgalloc.h b/arch/arm/include/asm/pgalloc.h
+> index a17f01235c29..1a3484c2df4c 100644
+> --- a/arch/arm/include/asm/pgalloc.h
+> +++ b/arch/arm/include/asm/pgalloc.h
+> @@ -96,12 +96,12 @@ pte_alloc_one(struct mm_struct *mm)
+>  {
+>  	struct page *pte;
 >  
->  config KCSAN_REPORT_VALUE_CHANGE_ONLY
->  	bool "Only report races where watcher observed a data value change"
-> -	default y
-> +	default n
->  	depends on !KCSAN_STRICT
->  	help
->  	  If enabled and a conflicting write is observed via a watchpoint, but
-> @@ -208,7 +208,7 @@ config KCSAN_REPORT_VALUE_CHANGE_ONLY
+> -	pte = __pte_alloc_one(mm, GFP_PGTABLE_USER | PGTABLE_HIGHMEM);
+> +	pte = ptdesc_page(__pte_alloc_one(mm, GFP_PGTABLE_USER | PGTABLE_HIGHMEM));
+
+When ptdesc will be separated from struct page, ptdesc_page() would fail if the
+allocation failed. This line should be split into something like
+
+	struct ptdesc *ptdesc = __pte_alloc_one(...);
+	if (!ptesc)
+		return NULL;
+	pte = ptdesc_page(ptdesc);
+
+
+>  	if (!pte)
+>  		return NULL;
+>  	if (!PageHighMem(pte))
+>  		clean_pte_table(page_address(pte));
+> -	return pte;
+> +	return page_ptdesc(pte);
+>  }
 >  
->  config KCSAN_ASSUME_PLAIN_WRITES_ATOMIC
->  	bool "Assume that plain aligned writes up to word size are atomic"
-> -	default y
-> +	default n
->  	depends on !KCSAN_STRICT
->  	help
->  	  Assume that plain aligned writes up to word size are atomic by
+>  static inline void __pmd_populate(pmd_t *pmdp, phys_addr_t pte,
+
+-- 
+Sincerely yours,
+Mike.
