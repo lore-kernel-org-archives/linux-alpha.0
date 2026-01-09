@@ -1,167 +1,209 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C892254AF5;
-	Fri,  9 Jan 2026 02:09:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA805C8F0
+	for <linux-alpha@vger.kernel.org>; Fri,  9 Jan 2026 04:05:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767924577; cv=none; b=mnT8QFxjL/y4SpNtuOPoOcefRldTIegkD0rGAWytBTeKVdE9z8a4rZDfcxmlA6tGuBVdhc46RocY1twBh2py6qdamr10s+5kZnfaWgG/5yrGhwrYDTw6VOi/TnVoeKl+cQmOs/hxL7QcsYKjxVUC1k4FcdHmjFJGF9vmknA+O8M=
+	t=1767931542; cv=none; b=dNgx71YM5CLGA+aEKGFbRxHFqYOyEvu2iSeIkIj54O+0HWx0Eb3Mp340ChIgj1ER470wGfZ/F3VF/rdilYoUy02+HZxBjLrVi42sl/CgpIIwPB7lKmw4aZLQaAEp8YrlVSI31D50iWTlPLOfRKbVW2T0xtE06MUTqhnEsH5Vq+4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767924577; c=relaxed/simple;
-	bh=S1EsGIjlfm3p3j/nKYkRHeLihDC3e818J3qnfAaeTtM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ArcEUWCLPDMtFwGshf7TTMWWd8rZRPzLw43wGbzJtBzRqP4DhdfVizuf4EnZB5XPfMSin/2tP29NM5z8svsmiXu60f/VrEagvs4ajzd69GEWdKr7aUNiBn3c763IJjX6VK8P13cqtvz7owyIdWj2k8odiv6zqmyPB5AMxTF0KdI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ovo2tZCR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1767931542; c=relaxed/simple;
+	bh=4c8s/kx+oV/K2IKZou1YM6lkPttwcBvPrkfVDikA/4U=;
+	h=Date:Message-Id:To:Cc:Subject:From:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=Aest6Yk+yyItKTWpLWIWfquABspLtQb9gEBvCt2a4O/t3mHEMmD2bqtMhaIwOVZp+4wrPDAma/eG7O5aKz6k0hx/o5IahFpZPXCpts5wO3KISShZXs8nvynhtPMpIbODky+vHCPo62id4dUjyQcCfRK3zoVCVPz5sGwvMdMDuAY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XICBKmvm; arc=none smtp.client-ip=209.85.222.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ovo2tZCR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EB2EC116C6;
-	Fri,  9 Jan 2026 02:09:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1767924577;
-	bh=S1EsGIjlfm3p3j/nKYkRHeLihDC3e818J3qnfAaeTtM=;
-	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-	b=Ovo2tZCR8FmJEfGkuXvQeEtYkOwTm/1Q13GyjAfohFh/gMy7vHBC7iGHTwCiV48xN
-	 m0mE1syaEMppjZ01qcMOiCRr8Vify8P45NQoDCmRdTcJtPybMhGEPRS0cOce+YuQRL
-	 L3CJfxn24fpr6DN+8cy5nZVFsFXlCdGs7u98n2ZaEQTxhBYu07sc7JKeBi4a4gpq3p
-	 dQTSn29NTUueYdiuQpJX3QyXEe5/uJkJPDWtqRGMx4OgJoXCq/uVtzwPeIxOycwr8X
-	 NiDEcWuu4uC3pO/AMNyXPYdKaqUKz36KRqyprcY0UUAvGPV30PLYMKF6AazvHMVV+s
-	 1mwJH05YP+jmg==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-	id 9E3ECCE1690; Thu,  8 Jan 2026 18:09:36 -0800 (PST)
-Date: Thu, 8 Jan 2026 18:09:36 -0800
-From: "Paul E. McKenney" <paulmck@kernel.org>
-To: Marco Elver <elver@google.com>
-Cc: Peter Zijlstra <peterz@infradead.org>,
-	Boqun Feng <boqun.feng@gmail.com>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Gary Guo <gary@garyguo.net>,
-	Will Deacon <will@kernel.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	FUJITA Tomonori <fujita.tomonori@gmail.com>,
-	Frederic Weisbecker <frederic@kernel.org>,
-	Lyude Paul <lyude@redhat.com>, Thomas Gleixner <tglx@linutronix.de>,
-	Anna-Maria Behnsen <anna-maria@linutronix.de>,
-	John Stultz <jstultz@google.com>, Stephen Boyd <sboyd@kernel.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	rust-for-linux@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	kasan-dev@googlegroups.com
-Subject: Re: [PATCH 0/5] Add READ_ONCE and WRITE_ONCE to Rust
-Message-ID: <b0f3b2a6-e69c-4718-9f05-607b8c02d745@paulmck-laptop>
-Reply-To: paulmck@kernel.org
-References: <20251231-rwonce-v1-0-702a10b85278@google.com>
- <20251231151216.23446b64.gary@garyguo.net>
- <aVXFk0L-FegoVJpC@google.com>
- <OFUIwAYmy6idQxDq-A3A_s2zDlhfKE9JmkSgcK40K8okU1OE_noL1rN6nUZD03AX6ixo4Xgfhi5C4XLl5RJlfA==@protonmail.internalid>
- <aVXKP8vQ6uAxtazT@tardis-2.local>
- <87fr8ij4le.fsf@t14s.mail-host-address-is-not-set>
- <aV0JkZdrZn97-d7d@tardis-2.local>
- <20260106145622.GB3707837@noisy.programming.kicks-ass.net>
- <7fa2c07e-acf9-4f9a-b056-4d4254ea61e5@paulmck-laptop>
- <CANpmjNPdnuCNTfo=q5VPxAfdvpeAt8DhesQu0jy+9ZpH3DcUnQ@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XICBKmvm"
+Received: by mail-ua1-f43.google.com with SMTP id a1e0cc1a2514c-940c539de8fso2351235241.0
+        for <linux-alpha@vger.kernel.org>; Thu, 08 Jan 2026 20:05:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1767931540; x=1768536340; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to:from
+         :subject:cc:to:message-id:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=p9T2BPf5beEn8hyeDIg1uadDWypr2H9Q3xF9+zmP6OE=;
+        b=XICBKmvm1EDvCkxOBf7oFlJt1OqbiWLbwVNOXnOf8lfzmmMP7FYUtUMkPKVvT0nG8L
+         Rp+yLfCVxLxzLH5MriONVY9yJukeHCXHKSFdlkZA+wJWBxf+INmiPXUDDaLjiErb2u0b
+         6RSMXg5kmpG+rU+LDxyuTKdoAjqjQe/WzVwxKx+GLL4HUt+dckOaBjGp8EwpBlBCFG0k
+         773hs33VV9CBjgg4DlwptyHtn5RXXSa8hwP7bYpkiVWdKtu4shHc3NS/YQwYzGAfuGmA
+         C0OIt6vO5f+2jePx3iT6HzJ9feCCEYjV7Cr8h5CwKHYyRTPZ0X7uBamcjnN7blQH6U0n
+         nyrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767931540; x=1768536340;
+        h=content-transfer-encoding:mime-version:references:in-reply-to:from
+         :subject:cc:to:message-id:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=p9T2BPf5beEn8hyeDIg1uadDWypr2H9Q3xF9+zmP6OE=;
+        b=UXNyWTP9Xg3Y4ZXfmARhcV4MxtssxApy+g+VfH/AsHXqtTzX5QWWwerncb3K7+LusF
+         4LFTI0o/7BiJIk8YHkKdpHdy3fF1XCY8g7yfNV39hGBTtTnln/Dp5fTsgnZPvjKkxKnV
+         puRYA9MFJ8LoeUJ8I9KQ7/8ITHrQF6FNLaQEsT29dElJueMoytwiPGLF0mOUF+ZgETJ5
+         lb6mjqSzE+eSUGeFxgK2EYJgU6+rw1S5rBs9aYfxdLwRvwEMCHJZS90XSwnK4KD33sc6
+         cyl9kLNs/GlVCSj36+NO2wKeNBgmnfjqzlpdykQlTj8JqHuFua2TutfwFKRJwQZDls2y
+         z9Zw==
+X-Forwarded-Encrypted: i=1; AJvYcCUXIDGzPJ07Wr4GrdI5XpJ5vC60IF0AjxmA6/GYltJYqYa1ZRDG6ZUDYJl1yey5vtxiDl/7VIoMD6CuXQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw+n/d0NU1rZKWn6xaVswNor14DgWDrIfPq0Tj6y+w1sM9+uKBd
+	wbclUsxLu61v8FemTsTNLafO4I8ARFcthRwzCCXAkSroGMkEVPngB+rY7kiKAw==
+X-Gm-Gg: AY/fxX6Pjf6nLHKHPNDZluEx2o4zXVdUVsY2h175+4cNri2xMTKvH0feSiILMYZlaml
+	lNxf4MIj5cLi1tneqI81SNVJZYe9/zEOnJZx7pmIa2FJaJIhEALBIjL5jaETVUaHATXRAE3ZFbX
+	4APOewkc4gjlAYDgb2ezXIIEV290lGBHqh3Hz9tB2s72BxhAuE0mXezHEW2i0GKUIQULG2rV30c
+	EfhgyNbelGZzUPrJ2rywfzySKB7JXusmQFEQAkMQBBYadhAXYVBDZorcZMYFj/wYGsElmplLyy8
+	CNeUCF5HDcV3VsyeROk/VzLBktlJas+pz2TTXnss5GR+VMb5UaL3Vf/rmr+SDur6G55InsiGSfK
+	a3kWAKG8biWrdQinrAtkYnThtXqESHOyHjQrFRclN6QvcZmiDKFXgqgHrO8cWhD568gq8wvWTmt
+	hjQqjC1f5MMM+dxAL5Fof+vife+/mlkH9agvialWtOgBZq8Ed1Ng7eA0FrBAXOF/0Ahcg=
+X-Google-Smtp-Source: AGHT+IHt+NS7u00xGrZ+95pdtQ5VgNDPq0qsP5mcbgbJ7rn8y9GOzh3GzuRv2Bv72b17iorfv7DOuQ==
+X-Received: by 2002:a17:902:c406:b0:2a0:9923:6954 with SMTP id d9443c01a7336-2a3ee48fbf3mr72625155ad.27.1767924633614;
+        Thu, 08 Jan 2026 18:10:33 -0800 (PST)
+Received: from localhost (p5342157-ipxg23901hodogaya.kanagawa.ocn.ne.jp. [180.39.242.157])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a3e3c3a4f1sm87799265ad.8.2026.01.08.18.10.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Jan 2026 18:10:33 -0800 (PST)
+Date: Fri, 09 Jan 2026 11:10:25 +0900 (JST)
+Message-Id: <20260109.111025.1944772328156797586.fujita.tomonori@gmail.com>
+To: a.hindborg@kernel.org
+Cc: fujita.tomonori@gmail.com, aliceryhl@google.com, lyude@redhat.com,
+ boqun.feng@gmail.com, will@kernel.org, peterz@infradead.org,
+ richard.henderson@linaro.org, mattst88@gmail.com, linmag7@gmail.com,
+ catalin.marinas@arm.com, ojeda@kernel.org, gary@garyguo.net,
+ bjorn3_gh@protonmail.com, lossin@kernel.org, tmgross@umich.edu,
+ dakr@kernel.org, mark.rutland@arm.com, frederic@kernel.org,
+ tglx@linutronix.de, anna-maria@linutronix.de, jstultz@google.com,
+ sboyd@kernel.org, viro@zeniv.linux.org.uk, brauner@kernel.org,
+ jack@suse.cz, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, rust-for-linux@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH 4/5] rust: hrtimer: use READ_ONCE instead of
+ read_volatile
+From: FUJITA Tomonori <fujita.tomonori@gmail.com>
+In-Reply-To: <87ms2pgu7c.fsf@t14s.mail-host-address-is-not-set>
+References: <WXFPsf9COQPV_obKoZg2bYwPL3k9TT0oBL3uxNppUFaIj5hxEX9UokzS_DJ5Kg5kXDzLrZ9ihALTZcf6ehljGw==@protonmail.internalid>
+	<20260107.202245.559061117523678561.fujita.tomonori@gmail.com>
+	<87ms2pgu7c.fsf@t14s.mail-host-address-is-not-set>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANpmjNPdnuCNTfo=q5VPxAfdvpeAt8DhesQu0jy+9ZpH3DcUnQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jan 06, 2026 at 08:28:41PM +0100, Marco Elver wrote:
-> On Tue, 6 Jan 2026 at 19:18, 'Paul E. McKenney' via kasan-dev
-> <kasan-dev@googlegroups.com> wrote:
-> > On Tue, Jan 06, 2026 at 03:56:22PM +0100, Peter Zijlstra wrote:
-> > > On Tue, Jan 06, 2026 at 09:09:37PM +0800, Boqun Feng wrote:
-> > >
-> > > > Some C code believes a plain write to a properly aligned location is
-> > > > atomic (see KCSAN_ASSUME_PLAIN_WRITES_ATOMIC, and no, this doesn't mean
-> > > > it's recommended to assume such), and I guess that's the case for
-> > > > hrtimer, if it's not much a trouble you can replace the plain write with
-> > > > WRITE_ONCE() on C side ;-)
-> > >
-> > > GCC used to provide this guarantee, some of the older code was written
-> > > on that. GCC no longer provides that guarantee (there are known cases
-> > > where it breaks and all that) and newer code should not rely on this.
-> > >
-> > > All such places *SHOULD* be updated to use READ_ONCE/WRITE_ONCE.
-> >
-> > Agreed!
-> >
-> > In that vein, any objections to the patch shown below?
+On Wed, 07 Jan 2026 19:21:11 +0100
+Andreas Hindborg <a.hindborg@kernel.org> wrote:
+
+> "FUJITA Tomonori" <fujita.tomonori@gmail.com> writes:
 > 
-> I'd be in favor, as that's what we did in the very initial version of
-> KCSAN (we started strict and then loosened things up).
+>> On Wed, 07 Jan 2026 11:11:43 +0100
+>> Andreas Hindborg <a.hindborg@kernel.org> wrote:
+>>
+>>> FUJITA Tomonori <fujita.tomonori@gmail.com> writes:
+>>>
+>>>> On Tue, 06 Jan 2026 13:37:34 +0100
+>>>> Andreas Hindborg <a.hindborg@kernel.org> wrote:
+>>>>
+>>>>> "FUJITA Tomonori" <fujita.tomonori@gmail.com> writes:
+>>>>>
+>>>>>> On Thu, 01 Jan 2026 11:11:23 +0900 (JST)
+>>>>>> FUJITA Tomonori <fujita.tomonori@gmail.com> wrote:
+>>>>>>
+>>>>>>> On Wed, 31 Dec 2025 12:22:28 +0000
+>>>>>>> Alice Ryhl <aliceryhl@google.com> wrote:
+>>>>>>>
+>>>>>>>> Using `READ_ONCE` is the correct way to read the `node.expires` field.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Alice Ryhl <aliceryhl@google.com>
+>>>>>>>> ---
+>>>>>>>>  rust/kernel/time/hrtimer.rs | 8 +++-----
+>>>>>>>>  1 file changed, 3 insertions(+), 5 deletions(-)
+>>>>>>>>
+>>>>>>>> diff --git a/rust/kernel/time/hrtimer.rs b/rust/kernel/time/hrtimer.rs
+>>>>>>>> index 856d2d929a00892dc8eaec63cebdf547817953d3..e2b7a26f8aade972356c3eb5f6489bcda3e2e849 100644
+>>>>>>>> --- a/rust/kernel/time/hrtimer.rs
+>>>>>>>> +++ b/rust/kernel/time/hrtimer.rs
+>>>>>>>> @@ -239,11 +239,9 @@ pub fn expires(&self) -> HrTimerInstant<T>
+>>>>>>>>          // - Timers cannot have negative ktime_t values as their expiration time.
+>>>>>>>>          // - There's no actual locking here, a racy read is fine and expected
+>>>>>>>>          unsafe {
+>>>>>>>> -            Instant::from_ktime(
+>>>>>>>> -                // This `read_volatile` is intended to correspond to a READ_ONCE call.
+>>>>>>>> -                // FIXME(read_once): Replace with `read_once` when available on the Rust side.
+>>>>>>>> -                core::ptr::read_volatile(&raw const ((*c_timer_ptr).node.expires)),
+>>>>>>>> -            )
+>>>>>>>> +            Instant::from_ktime(kernel::sync::READ_ONCE(
+>>>>>>>> +                &raw const (*c_timer_ptr).node.expires,
+>>>>>>>> +            ))
+>>>>>>>>          }
+>>>>>>>
+>>>>>>> Do we actually need READ_ONCE() here? I'm not sure but would it be
+>>>>>>> better to call the C-side API?
+>>>>>>>
+>>>>>>> diff --git a/rust/helpers/time.c b/rust/helpers/time.c
+>>>>>>> index 67a36ccc3ec4..73162dea2a29 100644
+>>>>>>> --- a/rust/helpers/time.c
+>>>>>>> +++ b/rust/helpers/time.c
+>>>>>>> @@ -2,6 +2,7 @@
+>>>>>>>
+>>>>>>>  #include <linux/delay.h>
+>>>>>>>  #include <linux/ktime.h>
+>>>>>>> +#include <linux/hrtimer.h>
+>>>>>>>  #include <linux/timekeeping.h>
+>>>>>>>
+>>>>>>>  void rust_helper_fsleep(unsigned long usecs)
+>>>>>>> @@ -38,3 +39,8 @@ void rust_helper_udelay(unsigned long usec)
+>>>>>>>  {
+>>>>>>>  	udelay(usec);
+>>>>>>>  }
+>>>>>>> +
+>>>>>>> +__rust_helper ktime_t rust_helper_hrtimer_get_expires(const struct hrtimer *timer)
+>>>>>>> +{
+>>>>>>> +	return timer->node.expires;
+>>>>>>> +}
+>>>>>>
+>>>>>> Sorry, of course this should be:
+>>>>>>
+>>>>>> +__rust_helper ktime_t rust_helper_hrtimer_get_expires(const struct hrtimer *timer)
+>>>>>> +{
+>>>>>> +	return hrtimer_get_expires(timer);
+>>>>>> +}
+>>>>>>
+>>>>>
+>>>>> This is a potentially racy read. As far as I recall, we determined that
+>>>>> using read_once is the proper way to handle the situation.
+>>>>>
+>>>>> I do not think it makes a difference that the read is done by C code.
+>>>>
+>>>> What does "racy read" mean here?
+>>>>
+>>>> The C side doesn't use WRITE_ONCE() or READ_ONCE for node.expires. How
+>>>> would using READ_ONCE() on the Rust side make a difference?
+>>>
+>>> Data races like this are UB in Rust. As far as I understand, using this
+>>> READ_ONCE implementation or a relaxed atomic read would make the read
+>>> well defined. I am not aware if this is only the case if all writes to
+>>> the location from C also use atomic operations or WRITE_ONCE. @Boqun?
+>>
+>> The C side updates node.expires without WRITE_ONCE()/atomics so a
+>> Rust-side READ_ONCE() can still observe a torn value; I think that
+>> this is still a data race / UB from Rust's perspective.
+>>
+>> And since expires is 64-bit, WRITE_ONCE() on 32-bit architectures does
+>> not inherently guarantee tear-free stores either.
+>>
+>> I think that the expires() method should follow the same safety
+>> requirements as raw_forward(): it should only be considered safe when
+>> holding exclusive access to hrtimer or within the context of the timer
+>> callback. Under those conditions, it would be fine to call C's
+>> hrtimer_get_expires().
 > 
-> However, the fallout will be even more perceived "noise", despite
-> being legitimate data races. These config knobs were added after much
-> discussion in 2019/2020, somewhere around this discussion (I think
-> that's the one that spawned KCSAN_REPORT_VALUE_CHANGE_ONLY, can't find
-> the source for KCSAN_ASSUME_PLAIN_WRITES_ATOMIC):
-> https://lore.kernel.org/all/CAHk-=wgu-QXU83ai4XBnh7JJUo2NBW41XhLWf=7wrydR4=ZP0g@mail.gmail.com/
-
-Fair point!
-
-> While the situation has gotten better since 2020, we still have latent
-> data races that need some thought (given papering over things blindly
-> with *ONCE is not right either). My recommendation these days is to
-> just set CONFIG_KCSAN_STRICT=y for those who care (although I'd wish
-> everyone cared the same amount :-)).
+> We can make it safe, please see my comment here [1].
 > 
-> Should you feel the below change is appropriate for 2026, feel free to
-> carry it (consider this my Ack).
+> Best regards,
+> Andreas Hindborg
 > 
-> However, I wasn't thinking of tightening the screws until the current
-> set of known data races has gotten to a manageable amount (say below
-> 50)
-> https://syzkaller.appspot.com/upstream?manager=ci2-upstream-kcsan-gce
-> Then again, on syzbot the config can remain unchanged.
+> [1] https://lore.kernel.org/r/87v7hdh9m4.fsf@t14s.mail-host-address-is-not-set
 
-Is there an easy way to map from a report to the SHA-1 that the
-corresponding test ran against?  Probably me being blind, but I am not
-seeing it.  Though I do very much like the symbolic names in those
-stack traces!
+I agree. My point was that expire() can be safe only under the same
+constraints as forward()/forward_now() so the API should require
+Pin<&mut Self> and expose it on HrTimerCallbackContext.
 
-							Thanx, Paul
-
-> Thanks,
-> -- Marco
-> 
-> >                                                         Thanx, Paul
-> >
-> > ------------------------------------------------------------------------
-> >
-> > diff --git a/lib/Kconfig.kcsan b/lib/Kconfig.kcsan
-> > index 4ce4b0c0109cb..e827e24ab5d42 100644
-> > --- a/lib/Kconfig.kcsan
-> > +++ b/lib/Kconfig.kcsan
-> > @@ -199,7 +199,7 @@ config KCSAN_WEAK_MEMORY
-> >
-> >  config KCSAN_REPORT_VALUE_CHANGE_ONLY
-> >         bool "Only report races where watcher observed a data value change"
-> > -       default y
-> > +       default n
-> >         depends on !KCSAN_STRICT
-> >         help
-> >           If enabled and a conflicting write is observed via a watchpoint, but
-> > @@ -208,7 +208,7 @@ config KCSAN_REPORT_VALUE_CHANGE_ONLY
-> >
-> >  config KCSAN_ASSUME_PLAIN_WRITES_ATOMIC
-> >         bool "Assume that plain aligned writes up to word size are atomic"
-> > -       default y
-> > +       default n
-> >         depends on !KCSAN_STRICT
-> >         help
-> >           Assume that plain aligned writes up to word size are atomic by
-> >
