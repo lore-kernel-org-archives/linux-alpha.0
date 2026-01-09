@@ -1,109 +1,167 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D9D72D12F5;
-	Thu,  8 Jan 2026 19:19:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C892254AF5;
+	Fri,  9 Jan 2026 02:09:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767899962; cv=none; b=mjs8T2vDHw0bFs87Ph022gMftAZ4mpsPNBhvUaHy1uvHp06gsXg1J8aqicnTy5104oMJGQmfRVTjFJCsulgLsnb8dnCQzLOAHGAmbVs1d5Kb8pIQrAn8FkfTV/cr6Y33p78/QVg4uXAjn6gUx8mMN2/BvsvKDtL3qttBF793ksM=
+	t=1767924577; cv=none; b=mnT8QFxjL/y4SpNtuOPoOcefRldTIegkD0rGAWytBTeKVdE9z8a4rZDfcxmlA6tGuBVdhc46RocY1twBh2py6qdamr10s+5kZnfaWgG/5yrGhwrYDTw6VOi/TnVoeKl+cQmOs/hxL7QcsYKjxVUC1k4FcdHmjFJGF9vmknA+O8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767899962; c=relaxed/simple;
-	bh=fSg1rFUc7Lj8obCBDIiOBzwmsy2PDWnpS6aiVKuno6E=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=lZKq+/mNe0KkgH7LqfphQ7mITA5boXiSsOZb1fO6dG1msYF0oQY4rHX/q1PT8lXdRRxRYhC7ci9oTqGCRHw86ehlq03pKvT7/2IxDj9+uWjydrrSrrRrVc755AKVyrHS03EGAM5vQq3055who61jnZGEaFF7Pyu9fuP598OKG1w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=CVumgl5u; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1767924577; c=relaxed/simple;
+	bh=S1EsGIjlfm3p3j/nKYkRHeLihDC3e818J3qnfAaeTtM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ArcEUWCLPDMtFwGshf7TTMWWd8rZRPzLw43wGbzJtBzRqP4DhdfVizuf4EnZB5XPfMSin/2tP29NM5z8svsmiXu60f/VrEagvs4ajzd69GEWdKr7aUNiBn3c763IJjX6VK8P13cqtvz7owyIdWj2k8odiv6zqmyPB5AMxTF0KdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ovo2tZCR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="CVumgl5u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEE9CC116C6;
-	Thu,  8 Jan 2026 19:19:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-	s=korg; t=1767899961;
-	bh=fSg1rFUc7Lj8obCBDIiOBzwmsy2PDWnpS6aiVKuno6E=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CVumgl5uYfQfaLqYgweLov8FT7OgO1ch7qHlwuZbONKicqb+bmGFoLIsYAxoWfRsr
-	 6BxVTZH+QFJx2xSpWVk0NUrA2Ddxjwu2/Wcc1JG/gPIWft2fVjXp2CIt9nEHIpeVml
-	 fnOoO4sO6q/7KPmJQudmyHeHcLC9E7nvlzSuO+ys=
-Date: Thu, 8 Jan 2026 11:19:19 -0800
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Klara Modin <klarasmodin@gmail.com>, Alex Shi <alexs@kernel.org>,
- Alexander Gordeev <agordeev@linux.ibm.com>, Andreas Larsson
- <andreas@gaisler.com>, Borislav Petkov <bp@alien8.de>, Brian Cain
- <bcain@kernel.org>, "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- Catalin Marinas <catalin.marinas@arm.com>, "David S. Miller"
- <davem@davemloft.net>, Dave Hansen <dave.hansen@linux.intel.com>, David
- Hildenbrand <david@kernel.org>, Dinh Nguyen <dinguyen@kernel.org>, Geert
- Uytterhoeven <geert@linux-m68k.org>, Guo Ren <guoren@kernel.org>, Heiko
- Carstens <hca@linux.ibm.com>, Helge Deller <deller@gmx.de>, Huacai Chen
- <chenhuacai@kernel.org>, Ingo Molnar <mingo@redhat.com>, Johannes Berg
- <johannes@sipsolutions.net>, John Paul Adrian Glaubitz
- <glaubitz@physik.fu-berlin.de>, Jonathan Corbet <corbet@lwn.net>,
- "Liam R. Howlett" <Liam.Howlett@oracle.com>, Lorenzo Stoakes
- <lorenzo.stoakes@oracle.com>, Magnus Lindholm <linmag7@gmail.com>, Matt
- Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>, Michael
- Ellerman <mpe@ellerman.id.au>, Michal Hocko <mhocko@suse.com>, Michal Simek
- <monstr@monstr.eu>, Muchun Song <muchun.song@linux.dev>, Oscar Salvador
- <osalvador@suse.de>, Palmer Dabbelt <palmer@dabbelt.com>, Pratyush Yadav
- <pratyush@kernel.org>, Richard Weinberger <richard@nod.at>, Russell King
- <linux@armlinux.org.uk>, Stafford Horne <shorne@gmail.com>, Suren
- Baghdasaryan <surenb@google.com>, Thomas Bogendoerfer
- <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, Vasily
- Gorbik <gor@linux.ibm.com>, Vineet Gupta <vgupta@kernel.org>, Vlastimil
- Babka <vbabka@suse.cz>, Will Deacon <will@kernel.org>, x86@kernel.org,
- linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-csky@vger.kernel.org, linux-cxl@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-hexagon@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
- linux-mips@vger.kernel.org, linux-mm@kvack.org,
- linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-sh@vger.kernel.org, linux-snps-arc@lists.infradead.org,
- linux-um@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
- loongarch@lists.linux.dev, sparclinux@vger.kernel.org
-Subject: Re: [PATCH 3.5] arm: make initialization of zero page independent
- of the memory map (was Re: [PATCH v2 22/28] arch, mm: consolidate
- initialization of nodes, zones and memory map)
-Message-Id: <20260108111919.ac5f811132672e760f47fbab@linux-foundation.org>
-In-Reply-To: <aVpWpLV4Dut5Muo2@kernel.org>
-References: <20260102070005.65328-1-rppt@kernel.org>
-	<20260102070005.65328-23-rppt@kernel.org>
-	<aVhN2NgQEKe0yzva@soda.int.kasm.eu>
-	<aVll339wim7dCIaQ@kernel.org>
-	<aVlwOyicOLPB9SOa@parmesan.int.kasm.eu>
-	<aVpWpLV4Dut5Muo2@kernel.org>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ovo2tZCR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EB2EC116C6;
+	Fri,  9 Jan 2026 02:09:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1767924577;
+	bh=S1EsGIjlfm3p3j/nKYkRHeLihDC3e818J3qnfAaeTtM=;
+	h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+	b=Ovo2tZCR8FmJEfGkuXvQeEtYkOwTm/1Q13GyjAfohFh/gMy7vHBC7iGHTwCiV48xN
+	 m0mE1syaEMppjZ01qcMOiCRr8Vify8P45NQoDCmRdTcJtPybMhGEPRS0cOce+YuQRL
+	 L3CJfxn24fpr6DN+8cy5nZVFsFXlCdGs7u98n2ZaEQTxhBYu07sc7JKeBi4a4gpq3p
+	 dQTSn29NTUueYdiuQpJX3QyXEe5/uJkJPDWtqRGMx4OgJoXCq/uVtzwPeIxOycwr8X
+	 NiDEcWuu4uC3pO/AMNyXPYdKaqUKz36KRqyprcY0UUAvGPV30PLYMKF6AazvHMVV+s
+	 1mwJH05YP+jmg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+	id 9E3ECCE1690; Thu,  8 Jan 2026 18:09:36 -0800 (PST)
+Date: Thu, 8 Jan 2026 18:09:36 -0800
+From: "Paul E. McKenney" <paulmck@kernel.org>
+To: Marco Elver <elver@google.com>
+Cc: Peter Zijlstra <peterz@infradead.org>,
+	Boqun Feng <boqun.feng@gmail.com>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Gary Guo <gary@garyguo.net>,
+	Will Deacon <will@kernel.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	FUJITA Tomonori <fujita.tomonori@gmail.com>,
+	Frederic Weisbecker <frederic@kernel.org>,
+	Lyude Paul <lyude@redhat.com>, Thomas Gleixner <tglx@linutronix.de>,
+	Anna-Maria Behnsen <anna-maria@linutronix.de>,
+	John Stultz <jstultz@google.com>, Stephen Boyd <sboyd@kernel.org>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	rust-for-linux@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	kasan-dev@googlegroups.com
+Subject: Re: [PATCH 0/5] Add READ_ONCE and WRITE_ONCE to Rust
+Message-ID: <b0f3b2a6-e69c-4718-9f05-607b8c02d745@paulmck-laptop>
+Reply-To: paulmck@kernel.org
+References: <20251231-rwonce-v1-0-702a10b85278@google.com>
+ <20251231151216.23446b64.gary@garyguo.net>
+ <aVXFk0L-FegoVJpC@google.com>
+ <OFUIwAYmy6idQxDq-A3A_s2zDlhfKE9JmkSgcK40K8okU1OE_noL1rN6nUZD03AX6ixo4Xgfhi5C4XLl5RJlfA==@protonmail.internalid>
+ <aVXKP8vQ6uAxtazT@tardis-2.local>
+ <87fr8ij4le.fsf@t14s.mail-host-address-is-not-set>
+ <aV0JkZdrZn97-d7d@tardis-2.local>
+ <20260106145622.GB3707837@noisy.programming.kicks-ass.net>
+ <7fa2c07e-acf9-4f9a-b056-4d4254ea61e5@paulmck-laptop>
+ <CANpmjNPdnuCNTfo=q5VPxAfdvpeAt8DhesQu0jy+9ZpH3DcUnQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANpmjNPdnuCNTfo=q5VPxAfdvpeAt8DhesQu0jy+9ZpH3DcUnQ@mail.gmail.com>
 
-On Sun, 4 Jan 2026 14:01:40 +0200 Mike Rapoport <rppt@kernel.org> wrote:
-
-> Can you please stick this between patch 3 (arm: introduce
-> arch_zone_limits_init()) and patch 4 (arm64: introduce
-> arch_zone_limits_init())?
-
-Did, thanks.  I made this a standalone patch rather than  a
-squashable -fix.
-
-> >From 35d016bbf5da7c08cc5c5547c85558fc50cb63aa Mon Sep 17 00:00:00 2001
-> From: Klara Modin <klarasmodin@gmail.com>
-> Date: Sat, 3 Jan 2026 20:40:09 +0200
-> Subject: [PATCH] arm: make initialization of zero page independent of the
->  memory map
+On Tue, Jan 06, 2026 at 08:28:41PM +0100, Marco Elver wrote:
+> On Tue, 6 Jan 2026 at 19:18, 'Paul E. McKenney' via kasan-dev
+> <kasan-dev@googlegroups.com> wrote:
+> > On Tue, Jan 06, 2026 at 03:56:22PM +0100, Peter Zijlstra wrote:
+> > > On Tue, Jan 06, 2026 at 09:09:37PM +0800, Boqun Feng wrote:
+> > >
+> > > > Some C code believes a plain write to a properly aligned location is
+> > > > atomic (see KCSAN_ASSUME_PLAIN_WRITES_ATOMIC, and no, this doesn't mean
+> > > > it's recommended to assume such), and I guess that's the case for
+> > > > hrtimer, if it's not much a trouble you can replace the plain write with
+> > > > WRITE_ONCE() on C side ;-)
+> > >
+> > > GCC used to provide this guarantee, some of the older code was written
+> > > on that. GCC no longer provides that guarantee (there are known cases
+> > > where it breaks and all that) and newer code should not rely on this.
+> > >
+> > > All such places *SHOULD* be updated to use READ_ONCE/WRITE_ONCE.
+> >
+> > Agreed!
+> >
+> > In that vein, any objections to the patch shown below?
 > 
-> Unlike most architectures, arm keeps a struct page pointer to the
-> empty_zero_page and to initialize it requires conversion of a virtual
-> address to page which makes it necessary to have memory map initialized
-> before creating the empty_zero_page.
+> I'd be in favor, as that's what we did in the very initial version of
+> KCSAN (we started strict and then loosened things up).
 > 
-> Make empty_zero_page a stataic array in BSS to decouple it's
-> initialization from the initialization of the memory map.
-> 
-> This also aligns arm with vast majorty of architectures.
+> However, the fallout will be even more perceived "noise", despite
+> being legitimate data races. These config knobs were added after much
+> discussion in 2019/2020, somewhere around this discussion (I think
+> that's the one that spawned KCSAN_REPORT_VALUE_CHANGE_ONLY, can't find
+> the source for KCSAN_ASSUME_PLAIN_WRITES_ATOMIC):
+> https://lore.kernel.org/all/CAHk-=wgu-QXU83ai4XBnh7JJUo2NBW41XhLWf=7wrydR4=ZP0g@mail.gmail.com/
 
-Russell, can you please update us on your concerns with this change?
+Fair point!
+
+> While the situation has gotten better since 2020, we still have latent
+> data races that need some thought (given papering over things blindly
+> with *ONCE is not right either). My recommendation these days is to
+> just set CONFIG_KCSAN_STRICT=y for those who care (although I'd wish
+> everyone cared the same amount :-)).
+> 
+> Should you feel the below change is appropriate for 2026, feel free to
+> carry it (consider this my Ack).
+> 
+> However, I wasn't thinking of tightening the screws until the current
+> set of known data races has gotten to a manageable amount (say below
+> 50)
+> https://syzkaller.appspot.com/upstream?manager=ci2-upstream-kcsan-gce
+> Then again, on syzbot the config can remain unchanged.
+
+Is there an easy way to map from a report to the SHA-1 that the
+corresponding test ran against?  Probably me being blind, but I am not
+seeing it.  Though I do very much like the symbolic names in those
+stack traces!
+
+							Thanx, Paul
+
+> Thanks,
+> -- Marco
+> 
+> >                                                         Thanx, Paul
+> >
+> > ------------------------------------------------------------------------
+> >
+> > diff --git a/lib/Kconfig.kcsan b/lib/Kconfig.kcsan
+> > index 4ce4b0c0109cb..e827e24ab5d42 100644
+> > --- a/lib/Kconfig.kcsan
+> > +++ b/lib/Kconfig.kcsan
+> > @@ -199,7 +199,7 @@ config KCSAN_WEAK_MEMORY
+> >
+> >  config KCSAN_REPORT_VALUE_CHANGE_ONLY
+> >         bool "Only report races where watcher observed a data value change"
+> > -       default y
+> > +       default n
+> >         depends on !KCSAN_STRICT
+> >         help
+> >           If enabled and a conflicting write is observed via a watchpoint, but
+> > @@ -208,7 +208,7 @@ config KCSAN_REPORT_VALUE_CHANGE_ONLY
+> >
+> >  config KCSAN_ASSUME_PLAIN_WRITES_ATOMIC
+> >         bool "Assume that plain aligned writes up to word size are atomic"
+> > -       default y
+> > +       default n
+> >         depends on !KCSAN_STRICT
+> >         help
+> >           Assume that plain aligned writes up to word size are atomic by
+> >
