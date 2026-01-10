@@ -1,151 +1,313 @@
-Received: from mail-dl1-f52.google.com (mail-dl1-f52.google.com [74.125.82.52])
+Received: from matoro.tk (matoro.tk [104.188.251.153])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 973E5359FBA
-	for <linux-alpha@vger.kernel.org>; Fri,  9 Jan 2026 12:00:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 858F44A32;
+	Sun, 11 Jan 2026 00:06:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=104.188.251.153
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767960059; cv=none; b=pd4gICtTQ2CXnR7BhbNQXZkJGKNFzt7TV8E4PercDSTpSWrU77kdhqmMPVejYRcJQc1jcAoxnMm8mZuocKTf0K4TebRJfTyqhfZG5S2Nn5IznkmylFoTmmQmTPqJ4+cQjb23Yh1wp1KA7lniHY2ypOlztJdf4yydig2K8nOsWcA=
+	t=1768089997; cv=none; b=ppZECM7Ejf4r4OSs4AStW3818gcmpJ5dVxp2EkhkWg5DdsfdnaEcFFDKLn+o1mlKyp7DTI9iFm3zWr68PVGEcwR/WvU3wC2MNaBuC7MjUhu97mbyF+sSSOoDdX8hIx204Xr5pDJP8vR5jNhVXK4iDAilePMzEXaii9vEMNi3GiA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767960059; c=relaxed/simple;
-	bh=UznriGhvPdMXopWmxqdYE06e8kOqyoTAoTC4x2EkwLM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=mMxVLluIq+/7/GmdedEXBQus5EMAzp6dM0w4Y7myWs01gUA6DrMB/1RlLvGL3+GuLDM+RMWulOnboYtNN9IM1HHjWZTQGKW4P+7BBU7zpQQSjACylG/1zEUlFu7Qbwq0Gf6EIMummFV6zjNvLB8KuLZCzTHbJ+Flzfe/vpUgqNM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XZBZs4jd; arc=none smtp.client-ip=74.125.82.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1768089997; c=relaxed/simple;
+	bh=Ick2ncAtujaIMNRz7Kw3PwXsWqqUSA/Yg9DXQQGAIQo=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=uAAahvezZ8c84pJ0Iye5KuQZluG1YpqJhm/K8JpC72GzVcWZwELA7wD6R0zW3RyEtd6tIeHf+RX8Moj8u6wKZ+b9BenlMMLmmBuj/WZ1TgkZxbBHYn5UmerJJMyAah5iXWbGCGl4db9ObQms/JZVvWcUW/4ZFuhrH9cIg8DEnkU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=matoro.tk; spf=pass smtp.mailfrom=matoro.tk; dkim=pass (4096-bit key) header.d=matoro.tk header.i=@matoro.tk header.b=ea3mi0UD; arc=none smtp.client-ip=104.188.251.153
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=matoro.tk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=matoro.tk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XZBZs4jd"
-Received: by mail-dl1-f52.google.com with SMTP id a92af1059eb24-11f42e97340so346836c88.0
-        for <linux-alpha@vger.kernel.org>; Fri, 09 Jan 2026 04:00:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1767960056; x=1768564856; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=8T/N0YjJdMPLkCw5fXXL5pxg8eGLGcQ3fujG7tmwcHw=;
-        b=XZBZs4jd/NZb/iqRwFPkNZUUJFiE1DnErHneL1RAwWUm/Qj4BHH+PDBwkbMFERlxSp
-         LyqZ4Xh+/xk4172pColrwodzXAn0zOR/UvTJXJ/z+ZH2s1Ny2/RprCmZYaiD8G4jUzEr
-         0kkcQ98VxSB/vLAKgDWcH16L0E/TlcVHRlFp0AAr8fD61swyopfLe7vx4D8agKnI6udj
-         gQoKBPwUTy3oD6mZ3MR0lA6eSjsA+jdjvCsQEj5O/deQlqKBLcL6fy8aL3awWtqjjaJy
-         +vPeFd1DPL+8zAgit/JkTi1NdDKsSvxVFj8t9VBngfKjAy9B8kR3JGfdt2LoOB6ezQDy
-         nm9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767960056; x=1768564856;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8T/N0YjJdMPLkCw5fXXL5pxg8eGLGcQ3fujG7tmwcHw=;
-        b=InrLB0o4X4npyveEw4pFb0bJR2r18HAq8uK+Z29yRXE5icE6svBkdyBCdWUzggmg1z
-         Ypdf0xQt6t+6EafxAkezrkOs1Tq5zzrWr9+2MCVTgwxrmSObNtqONJ0rLtGALNJW0n+C
-         +kDHrvpx+mTeo/SCNFkn6CPqHWliHYBmVo/XZFs5DitgGOAxuJ/ThYl3CZPfOyVjB0T6
-         zcSpJAkdXc2drReYc2WQYLBTCHAoiCh9cQv8dVe7EK1OGeEWwa77y+HgqpuNlNgppkEZ
-         8z5o4v7Kt4uf/gIjtNOv6seo0V1HhPHhtvB9Z6UnNMCbnBPMjxViVw6xTgJg/Vqx7oAU
-         dHxg==
-X-Forwarded-Encrypted: i=1; AJvYcCXKAqFPuW9Vs/HbPWUhLY6A1BVP5m5J1EllURBsnEjzej8pCj18bnXvkSo44rpjC6P0sc293UwDhCWxBw==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy5nSPj+a1TNLyaYOY+bMfm2dBxtwYjwcYw9WoY4caRPIwnIw9y
-	uow67TAJiqQa7TmJn4u9CoNLTgykYH5WjKHkO6Evk7rniJfOcszBd1Fbgok32vHq74v5jXNEEGr
-	R6R0s2kQglVAEvc1voEWxVsV8PP9mUTPPNA76GDsa
-X-Gm-Gg: AY/fxX54aLsgXDaDPFndAh0xz5hI90SWRj1nT5ZpxRPeiBmc1RDAlaTjKs3qUtUqU+a
-	DXXCxX904DKaPo1vB00T7nLRSgpqhXvO/2m3gbdauA44gTq8NOiwfDTTberMbdTXdmAVknLmG5x
-	cUJwMoile6cav4Vbl6xlZmOl8bN2eQiguo9oCY8AmFiINa2cNtvv73OmnjjijnjSlmHPNTu5/Cd
-	jfMQB6EodiCQ5uRscl/YzA46p8rOSyTpfYKAjZhwJ/mZlaNhfuqvVewNDiQ7RyyfLxLuaIWNLA0
-	dIWCgAUQ7FYTjU1w3avr3sHXl38=
-X-Google-Smtp-Source: AGHT+IHkqsIfmF0FluQuDu53MIRkzwgbeeQdzuawZsTGXquSsN/434sV7j/4310j+FEbQ9rNU7DnJdRzHaNlwPlcWDM=
-X-Received: by 2002:a05:7022:4199:b0:11b:ca88:c4f7 with SMTP id
- a92af1059eb24-121f8b67cc0mr8303949c88.40.1767960054556; Fri, 09 Jan 2026
- 04:00:54 -0800 (PST)
+	dkim=pass (4096-bit key) header.d=matoro.tk header.i=@matoro.tk header.b="ea3mi0UD"
+DKIM-Signature: a=rsa-sha256; bh=DewHl7M8K9DNmyLWEveKnM3mziISu5bhTWcGnCFUFBw=;
+ c=relaxed/relaxed; d=matoro.tk;
+ h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
+ i=@matoro.tk; s=20251215; t=1768089055; v=1; x=1768521055;
+ b=ea3mi0UDrmh0nTOD9CIJYiRzx2cEBkAsx00d8XivhYcLHm5a2oj4Lj1yqYNEq7SIu24WjLKN
+ 2EwZAipORD++WpdPp4/CqE0THQYmfYvMdcmYY56+MiDNRQbDWEn13CY4Pq/THX7wp0QEDBmFby/
+ oSBYKqd2qPjBcNACZXTCdx+Wp+CRpR9vTnY1uzKpeFJnXSjnQDQ6fba56QRFs5TqgCTOQpIeqnm
+ /AAFHNkX2WtF3KFG1v0epC+RIPNgvfv/1Z1fvcZPDOVuczTSHJlyqqZSG0iVImTnyJTCfNl3gi+
+ 8cAb/GSi5XZvF3H15vQUSwaIRRqQ1jadA7PVI60jTPfzkqJ9MN+bRiPskF9d3kG08hRjcZegIjm
+ yqLU+3A6FfEV0B8wKOab/T3HWGnIIR4Ydz2hzmeAH9H8a8UPswv6rsDgQry8/bmi9AdrpSGn/2z
+ NfpdTgA+v10E9O6F9LYBofkmf0BbyMIAietBLJVY9lAw0wu9IsgfYM0EUq+k6rO33Ftva7pfKdl
+ f1zhlmcH/odzcznaFv8XGdwhuXZ5PfufvmbMWYYXHFfKKdLSLOYkusyU6BEQokjUR4U4W7JsQa4
+ eYaEup+qLFLEzDMpOJ9H1s/5w06GRG67h1HLyQmJJcpp2Xgi3mWTRjGsWB0jtSrFrlZ/5BknQLV
+ DRmY3UzF9/I=
+Received: by matoro.tk (envelope-sender
+ <matoro_mailinglist_kernel@matoro.tk>) with ESMTPS id 261d46dc; Sat, 10 Jan
+ 2026 18:50:55 -0500
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251231-rwonce-v1-0-702a10b85278@google.com> <20251231151216.23446b64.gary@garyguo.net>
- <aVXFk0L-FegoVJpC@google.com> <OFUIwAYmy6idQxDq-A3A_s2zDlhfKE9JmkSgcK40K8okU1OE_noL1rN6nUZD03AX6ixo4Xgfhi5C4XLl5RJlfA==@protonmail.internalid>
- <aVXKP8vQ6uAxtazT@tardis-2.local> <87fr8ij4le.fsf@t14s.mail-host-address-is-not-set>
- <aV0JkZdrZn97-d7d@tardis-2.local> <20260106145622.GB3707837@noisy.programming.kicks-ass.net>
- <7fa2c07e-acf9-4f9a-b056-4d4254ea61e5@paulmck-laptop> <CANpmjNPdnuCNTfo=q5VPxAfdvpeAt8DhesQu0jy+9ZpH3DcUnQ@mail.gmail.com>
- <b0f3b2a6-e69c-4718-9f05-607b8c02d745@paulmck-laptop>
-In-Reply-To: <b0f3b2a6-e69c-4718-9f05-607b8c02d745@paulmck-laptop>
-From: Marco Elver <elver@google.com>
-Date: Fri, 9 Jan 2026 13:00:00 +0100
-X-Gm-Features: AQt7F2pBr33IaeEZzEbVtkwEGkq72MjCI-S9aarJ4oQjqFT6bTaIuZHUMWVHI0k
-Message-ID: <CANpmjNNSCNm+A=nKdeSDAkcgiKXMEdcQUeMb4PZxWoP2t-z=3A@mail.gmail.com>
-Subject: Re: [PATCH 0/5] Add READ_ONCE and WRITE_ONCE to Rust
-To: paulmck@kernel.org
-Cc: Peter Zijlstra <peterz@infradead.org>, Boqun Feng <boqun.feng@gmail.com>, 
-	Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>, 
-	Gary Guo <gary@garyguo.net>, Will Deacon <will@kernel.org>, 
-	Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
-	Magnus Lindholm <linmag7@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Miguel Ojeda <ojeda@kernel.org>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <lossin@kernel.org>, Trevor Gross <tmgross@umich.edu>, 
-	Danilo Krummrich <dakr@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
-	FUJITA Tomonori <fujita.tomonori@gmail.com>, Frederic Weisbecker <frederic@kernel.org>, 
-	Lyude Paul <lyude@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, 
-	Anna-Maria Behnsen <anna-maria@linutronix.de>, John Stultz <jstultz@google.com>, 
-	Stephen Boyd <sboyd@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	rust-for-linux@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	kasan-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Date: Sat, 10 Jan 2026 18:50:55 -0500
+From: matoro <matoro_mailinglist_kernel@matoro.tk>
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+ hch@infradead.org, macro@orcam.me.uk, glaubitz@physik.fu-berlin.de,
+ mattst88@gmail.com, richard.henderson@linaro.org, ink@unseen.parts
+Subject: Re: [PATCH 1/1] alpha: fix user-space corruption during memory
+ compaction
+In-Reply-To: <20260102173603.18247-2-linmag7@gmail.com>
+References: <20260102173603.18247-1-linmag7@gmail.com>
+ <20260102173603.18247-2-linmag7@gmail.com>
+Message-ID: <f44dfc2337c4c63208c2ca570046ad21@matoro.tk>
+X-Sender: matoro_mailinglist_kernel@matoro.tk
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, 9 Jan 2026 at 03:09, Paul E. McKenney <paulmck@kernel.org> wrote:
->
-> On Tue, Jan 06, 2026 at 08:28:41PM +0100, Marco Elver wrote:
-> > On Tue, 6 Jan 2026 at 19:18, 'Paul E. McKenney' via kasan-dev
-> > <kasan-dev@googlegroups.com> wrote:
-> > > On Tue, Jan 06, 2026 at 03:56:22PM +0100, Peter Zijlstra wrote:
-> > > > On Tue, Jan 06, 2026 at 09:09:37PM +0800, Boqun Feng wrote:
-> > > >
-> > > > > Some C code believes a plain write to a properly aligned location is
-> > > > > atomic (see KCSAN_ASSUME_PLAIN_WRITES_ATOMIC, and no, this doesn't mean
-> > > > > it's recommended to assume such), and I guess that's the case for
-> > > > > hrtimer, if it's not much a trouble you can replace the plain write with
-> > > > > WRITE_ONCE() on C side ;-)
-> > > >
-> > > > GCC used to provide this guarantee, some of the older code was written
-> > > > on that. GCC no longer provides that guarantee (there are known cases
-> > > > where it breaks and all that) and newer code should not rely on this.
-> > > >
-> > > > All such places *SHOULD* be updated to use READ_ONCE/WRITE_ONCE.
-> > >
-> > > Agreed!
-> > >
-> > > In that vein, any objections to the patch shown below?
-> >
-> > I'd be in favor, as that's what we did in the very initial version of
-> > KCSAN (we started strict and then loosened things up).
-> >
-> > However, the fallout will be even more perceived "noise", despite
-> > being legitimate data races. These config knobs were added after much
-> > discussion in 2019/2020, somewhere around this discussion (I think
-> > that's the one that spawned KCSAN_REPORT_VALUE_CHANGE_ONLY, can't find
-> > the source for KCSAN_ASSUME_PLAIN_WRITES_ATOMIC):
-> > https://lore.kernel.org/all/CAHk-=wgu-QXU83ai4XBnh7JJUo2NBW41XhLWf=7wrydR4=ZP0g@mail.gmail.com/
->
-> Fair point!
->
-> > While the situation has gotten better since 2020, we still have latent
-> > data races that need some thought (given papering over things blindly
-> > with *ONCE is not right either). My recommendation these days is to
-> > just set CONFIG_KCSAN_STRICT=y for those who care (although I'd wish
-> > everyone cared the same amount :-)).
-> >
-> > Should you feel the below change is appropriate for 2026, feel free to
-> > carry it (consider this my Ack).
-> >
-> > However, I wasn't thinking of tightening the screws until the current
-> > set of known data races has gotten to a manageable amount (say below
-> > 50)
-> > https://syzkaller.appspot.com/upstream?manager=ci2-upstream-kcsan-gce
-> > Then again, on syzbot the config can remain unchanged.
->
-> Is there an easy way to map from a report to the SHA-1 that the
-> corresponding test ran against?  Probably me being blind, but I am not
-> seeing it.  Though I do very much like the symbolic names in those
-> stack traces!
+On 2026-01-02 12:30, Magnus Lindholm wrote:
+> Alpha systems can suffer sporadic user-space crashes and heap
+> corruption when memory compaction is enabled.
+> 
+> Symptoms include SIGSEGV, glibc allocator failures (e.g. "unaligned
+> tcache chunk"), and compiler internal errors. The failures disappear
+> when compaction is disabled or when using global TLB invalidation.
+> 
+> The root cause is insufficient TLB shootdown during page migration.
+> Alpha relies on ASN-based MM context rollover for instruction cache
+> coherency, but this alone is not sufficient to prevent stale data or
+> instruction translations from surviving migration.
+> 
+> Fix this by introducing a migration-specific helper that combines:
+>   - MM context invalidation (ASN rollover),
+>   - immediate per-CPU TLB invalidation (TBI),
+>   - synchronous cross-CPU shootdown when required.
+> 
+> The helper is used only by migration/compaction paths to avoid changing
+> global TLB semantics.
+> 
+> Additionally, update flush_tlb_other(), pte_clear(), to use
+> READ_ONCE()/WRITE_ONCE() for correct SMP memory ordering.
+> 
+> This fixes observed crashes on both UP and SMP Alpha systems.
+> 
+> Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+> ---
+>  arch/alpha/include/asm/pgtable.h  |  33 ++++++++-
+>  arch/alpha/include/asm/tlbflush.h |   4 +-
+>  arch/alpha/mm/Makefile            |   2 +-
+>  arch/alpha/mm/tlbflush.c          | 112 ++++++++++++++++++++++++++++++
+>  4 files changed, 148 insertions(+), 3 deletions(-)
+>  create mode 100644 arch/alpha/mm/tlbflush.c
+> 
+> diff --git a/arch/alpha/include/asm/pgtable.h 
+> b/arch/alpha/include/asm/pgtable.h
+> index 90e7a9539102..c9508ec37efc 100644
+> --- a/arch/alpha/include/asm/pgtable.h
+> +++ b/arch/alpha/include/asm/pgtable.h
+> @@ -17,6 +17,7 @@
+>  #include <asm/processor.h>	/* For TASK_SIZE */
+>  #include <asm/machvec.h>
+>  #include <asm/setup.h>
+> +#include <linux/page_table_check.h>
+> 
+>  struct mm_struct;
+>  struct vm_area_struct;
+> @@ -183,6 +184,9 @@ extern inline void pud_set(pud_t * pudp, pmd_t * pmdp)
+>  { pud_val(*pudp) = _PAGE_TABLE | ((((unsigned long) pmdp) - PAGE_OFFSET) << 
+> (32-PAGE_SHIFT)); }
+> 
+> 
+> +extern void migrate_flush_tlb_page(struct vm_area_struct *vma,
+> +					unsigned long addr);
+> +
+>  extern inline unsigned long
+>  pmd_page_vaddr(pmd_t pmd)
+>  {
+> @@ -202,7 +206,7 @@ extern inline int pte_none(pte_t pte)		{ return 
+> !pte_val(pte); }
+>  extern inline int pte_present(pte_t pte)	{ return pte_val(pte) & 
+> _PAGE_VALID; }
+>  extern inline void pte_clear(struct mm_struct *mm, unsigned long addr, 
+> pte_t *ptep)
+>  {
+> -	pte_val(*ptep) = 0;
+> +	WRITE_ONCE(pte_val(*ptep), 0);
+>  }
+> 
+>  extern inline int pmd_none(pmd_t pmd)		{ return !pmd_val(pmd); }
+> @@ -264,6 +268,33 @@ extern inline pte_t * pte_offset_kernel(pmd_t * dir, 
+> unsigned long address)
+> 
+>  extern pgd_t swapper_pg_dir[1024];
+> 
+> +#ifdef CONFIG_COMPACTION
+> +#define __HAVE_ARCH_PTEP_GET_AND_CLEAR
+> +
+> +static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
+> +					unsigned long address,
+> +					pte_t *ptep)
+> +{
+> +	pte_t pte = READ_ONCE(*ptep);
+> +
+> +	pte_clear(mm, address, ptep);
+> +	return pte;
+> +}
+> +
+> +#define __HAVE_ARCH_PTEP_CLEAR_FLUSH
+> +
+> +static inline pte_t ptep_clear_flush(struct vm_area_struct *vma,
+> +				unsigned long addr, pte_t *ptep)
+> +{
+> +	struct mm_struct *mm = vma->vm_mm;
+> +	pte_t pte = ptep_get_and_clear(mm, addr, ptep);
+> +
+> +	page_table_check_pte_clear(mm, pte);
+> +	migrate_flush_tlb_page(vma, addr);
+> +	return pte;
+> +}
+> +
+> +#endif
+>  /*
+>   * The Alpha doesn't have any external MMU info:  the kernel page
+>   * tables contain all the necessary information.
+> diff --git a/arch/alpha/include/asm/tlbflush.h 
+> b/arch/alpha/include/asm/tlbflush.h
+> index ba4b359d6c39..0c8529997f54 100644
+> --- a/arch/alpha/include/asm/tlbflush.h
+> +++ b/arch/alpha/include/asm/tlbflush.h
+> @@ -58,7 +58,9 @@ flush_tlb_other(struct mm_struct *mm)
+>  	unsigned long *mmc = &mm->context[smp_processor_id()];
+>  	/* Check it's not zero first to avoid cacheline ping pong
+>  	   when possible.  */
+> -	if (*mmc) *mmc = 0;
+> +
+> +	if (READ_ONCE(*mmc))
+> +		WRITE_ONCE(*mmc, 0);
+>  }
+> 
+>  #ifndef CONFIG_SMP
+> diff --git a/arch/alpha/mm/Makefile b/arch/alpha/mm/Makefile
+> index 101dbd06b4ce..2d05664058f6 100644
+> --- a/arch/alpha/mm/Makefile
+> +++ b/arch/alpha/mm/Makefile
+> @@ -3,4 +3,4 @@
+>  # Makefile for the linux alpha-specific parts of the memory manager.
+>  #
+> 
+> -obj-y	:= init.o fault.o
+> +obj-y	:= init.o fault.o tlbflush.o
+> diff --git a/arch/alpha/mm/tlbflush.c b/arch/alpha/mm/tlbflush.c
+> new file mode 100644
+> index 000000000000..ccbc317b9a34
+> --- /dev/null
+> +++ b/arch/alpha/mm/tlbflush.c
+> @@ -0,0 +1,112 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Alpha TLB shootdown helpers
+> + *
+> + * Copyright (C) 2025 Magnus Lindholm <linmag7@gmail.com>
+> + *
+> + * Alpha-specific TLB flush helpers that cannot be expressed purely
+> + * as inline functions.
+> + *
+> + * These helpers provide combined MM context handling (ASN rollover)
+> + * and immediate TLB invalidation for page migration and memory
+> + * compaction paths, where lazy shootdowns are insufficient.
+> + */
+> +
+> +#include <linux/mm.h>
+> +#include <linux/smp.h>
+> +#include <linux/sched.h>
+> +#include <asm/tlbflush.h>
+> +#include <asm/pal.h>
+> +#include <asm/mmu_context.h>
+> +
+> +#define asn_locked() (cpu_data[smp_processor_id()].asn_lock)
+> +
+> +/*
+> + * Migration/compaction helper: combine mm context (ASN) handling with an
+> + * immediate per-page TLB invalidate and (for exec) an instruction barrier.
+> + *
+> + * This mirrors the SMP combined IPI handler semantics, but runs locally on 
+> UP.
+> + */
+> +#ifndef CONFIG_SMP
+> +void migrate_flush_tlb_page(struct vm_area_struct *vma,
+> +					   unsigned long addr)
+> +{
+> +	struct mm_struct *mm = vma->vm_mm;
+> +	int tbi_type = (vma->vm_flags & VM_EXEC) ? 3 : 2;
+> +
+> +	/*
+> +	 * First do the mm-context side:
+> +	 * If we're currently running this mm, reload a fresh context ASN.
+> +	 * Otherwise, mark context invalid.
+> +	 *
+> +	 * On UP, this is mostly about matching the SMP semantics and ensuring
+> +	 * exec/i-cache tagging assumptions hold when compaction migrates pages.
+> +	 */
+> +	if (mm == current->active_mm)
+> +		flush_tlb_current(mm);
+> +	else
+> +		flush_tlb_other(mm);
+> +
+> +	/*
+> +	 * Then do the immediate translation kill for this VA.
+> +	 * For exec mappings, order instruction fetch after invalidation.
+> +	 */
+> +	tbi(tbi_type, addr);
+> +}
+> +
+> +#else
+> +struct tlb_mm_and_addr {
+> +	struct mm_struct *mm;
+> +	unsigned long addr;
+> +	int tbi_type;	/* 2 = DTB, 3 = ITB+DTB */
+> +};
+> +
+> +static void ipi_flush_mm_and_page(void *x)
+> +{
+> +	struct tlb_mm_and_addr *d = x;
+> +
+> +	/* Part 1: mm context side (Alpha uses ASN/context as a key mechanism). */
+> +	if (d->mm == current->active_mm && !asn_locked())
+> +		__load_new_mm_context(d->mm);
+> +	else
+> +		flush_tlb_other(d->mm);
+> +
+> +	/* Part 2: immediate per-VA invalidation on this CPU. */
+> +	tbi(d->tbi_type, d->addr);
+> +}
+> +
+> +void migrate_flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
+> +{
+> +	struct mm_struct *mm = vma->vm_mm;
+> +	struct tlb_mm_and_addr d = {
+> +		.mm = mm,
+> +		.addr = addr,
+> +		.tbi_type = (vma->vm_flags & VM_EXEC) ? 3 : 2,
+> +	};
+> +
+> +	/*
+> +	 * One synchronous rendezvous: every CPU runs ipi_flush_mm_and_page().
+> +	 * This is the "combined" version of flush_tlb_mm + per-page invalidate.
+> +	 */
+> +	preempt_disable();
+> +	on_each_cpu(ipi_flush_mm_and_page, &d, 1);
+> +
+> +	/*
+> +	 * mimic flush_tlb_mm()'s mm_users<=1 optimization.
+> +	 */
+> +	if (atomic_read(&mm->mm_users) <= 1) {
+> +
+> +		int cpu, this_cpu;
+> +		this_cpu = smp_processor_id();
+> +
+> +		for (cpu = 0; cpu < NR_CPUS; cpu++) {
+> +			if (!cpu_online(cpu) || cpu == this_cpu)
+> +				continue;
+> +			if (READ_ONCE(mm->context[cpu]))
+> +				WRITE_ONCE(mm->context[cpu], 0);
+> +		}
+> +	}
+> +	preempt_enable();
+> +}
+> +
+> +#endif
 
-When viewing a report page, at the bottom in the "Crashes" table it's
-in the "Commit" column.
+Tested-by: Matoro Mahri <matoro_mailinglist_kernel@matoro.tk>
+
+I tested this on a DS15 non-SMP kernel and confirmed it resolved the problem.
