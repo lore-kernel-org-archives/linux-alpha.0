@@ -1,79 +1,75 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB4BD337B9A
-	for <linux-alpha@vger.kernel.org>; Sun, 11 Jan 2026 11:36:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62D8B23B615
+	for <linux-alpha@vger.kernel.org>; Sun, 11 Jan 2026 11:40:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768131384; cv=none; b=N5zqfdTDgeRsRLlFjAhZFqD/xsoJn8pBMg6vSNArcoURn/Q0BGqT1neJ18L0VFx/UiszfRltXxUz4s4znyI1L2qh6d8BzI+eL9SoD3Yr+6Kw4/v313cZQnIsGVfcksOLeB46xy2XOkdvgwJoPOpBcC0yIVicxIhWlh+URp2CkV0=
+	t=1768131623; cv=none; b=SyPSb1XHlrYO2oYs5oAwH9qDoyaF9U0Y8CGk+B5s9W9+iBXvv3ouecRBtlFe16pPlvKZQbl864Zqdr3cim86VyuyBm5fsGPOtTbbNmSWNBMekn70e9DOKWIMoOacqY9KQrq6+fH8d3ODuUstWxfKAu6UWp3DbAhAUJeGIWV4Vao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768131384; c=relaxed/simple;
-	bh=WA2+qR7GJIrlDkE/8m2agQnhKKxdGQn++j4tKhGUs6k=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=XQL7LlPm/HZZbOvnCoKmgvTX3/FzVF3n5IEuXyvmKMKDR8vXQSov0RuySTj1csGu+N5G/fUojd0z48j+k2qbiDuhkS27hI+iBxU1n21pAORckqi1tQiJU3MOTXgArURbISKpghzJpxr0nqk+ptdEhAJ+HTD0stCmFSo9aE1LqTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Kb/1a/1L; arc=none smtp.client-ip=209.85.128.45
+	s=arc-20240116; t=1768131623; c=relaxed/simple;
+	bh=Kriie/6edt/7mMffISeRAPE2MA8cV+NLr39NlAigjHA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JhzBSYPyafd1Znf6OS1Ciw69owKM2ipcUMYBwlecnVilmfBQsJITyENk1jB190HDwn3UUDEtM0uEkIPc+1defAVSJ4bgAGSiGB1YkmTd6fYsYtGMhW4adbGlYE5LDIW9ltuYosJJdP+cxdGKGVjd1ZHEsFa91UhKFUzyP0K5iDk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Wj8WzTR0; arc=none smtp.client-ip=209.85.221.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Kb/1a/1L"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-477632b0621so34434335e9.2
-        for <linux-alpha@vger.kernel.org>; Sun, 11 Jan 2026 03:36:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Wj8WzTR0"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-431048c4068so2592126f8f.1
+        for <linux-alpha@vger.kernel.org>; Sun, 11 Jan 2026 03:40:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1768131381; x=1768736181; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SZI3ApSSp9u/jOiH3pWaGfMUo9z/yXLRfpgRERhRlFg=;
-        b=Kb/1a/1LzI/qfxHuvCxYhsVr7yNpbkAfquqaGQlTnh+ZoIoD/51+M0yOcAgFuLNryR
-         GAHajp4DHcwtHktMyoHPqyaVIBe8Kl6hZrVMgpgiVLMZ3LWQuOrbwuf7al80TrED9RNy
-         dSX4BJ50Uf7hXJkz8uMMarjsSTt6qNdi18e7qebv8WT9uuUpxLqO6UhZ/9sbBWSdTkwm
-         UCLLWrGUsb6f+oRFrKsu6brUOhLs3wndQTuIojwgtCZc+isR4RwxM1G5OqanvhGOyIzo
-         yFkZDz/E1XShcvQalOodjqr91wOIT//4S+2FLC8I6OqJ8vndD85PA/60AcQMRuHV0bNu
-         WwWQ==
+        d=gmail.com; s=20230601; t=1768131621; x=1768736421; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=sRWWv+edKn1RAkq0Hog4MX2cR+uiFgVxQ3Wo8SvjN3w=;
+        b=Wj8WzTR0TBb1DrIxH8Coy6eI6co2gr02ueMS0XbjwQUrP3lampp3EQV3kEoXczy1Lp
+         sIYkldGriPHGqwC7R8UkRz2zyueI1PcKJg+aYvSyhyssDBTFe6EufzdC/Q3lBveKsAbd
+         O8H7u/3cNvF2vgNewY0NC2Q46/JXolTvX/wcjmNKJhUxtNfrM8FVdwVKeWa9/zwD4RnL
+         ODyDKfEMKb7qFZtxPPlv4v6M08t4aTi6v8bMBv9cX2wJ2OTQzcmNSO5T4IuclAsLuq5S
+         T+RDlcUgBFTF84midLzPTLaMrP85wDckh0SRPW4LcGZkKhwQYtBPeFH8V6eZyGJXOpHY
+         jetg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768131381; x=1768736181;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=SZI3ApSSp9u/jOiH3pWaGfMUo9z/yXLRfpgRERhRlFg=;
-        b=NSWjCsFETNYBjvlwkNak0Q7wwJR/iZLNo2vyoRcA6NvhXMi5rd7gFgtqnNZbApH63D
-         0bDXp0GpR3HEI5JfDtt9sVvR9EBUNtSsUWH5atn6TPDLrXpSU91i4cpYx26FinPtgXlY
-         3H1eBDZrYAqd3n+y1YzD2ETpcGYfoed3hmld52gdSsme+yKYDoWkx8skP9LOg/hUs7Fy
-         DiCBVlk0q6FXFUj7Z7215OkCMveO8hvV1laGH3UUX8ik/QzjkuWZwpCof/5TScWV2/yt
-         4Mmy8ej7Y5FVWgAkTazAvO8bD0gcfs5uwofLJVWhUcjSLy813w/k//XZbimMPx59bTMm
-         rbiQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXnv4KM3RFTo8T4Rq3njDs9AH0Aix3GFcnATtgIKJt71X/zOvolf5yCaMNAySVE0r9SFS+dckX26Re+hQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzloixa0T/PczJE3jTslQczmT6LeVtwGYp7we8PzZ/Esp16CW/n
-	4r2l5zFU5m3BdBJbLcScmKKz9bFFSslrMN2pf5iFpn9Omi/n3oJuCejU
-X-Gm-Gg: AY/fxX5nL24mK0bFYNzYJmVuHruKwyrrZ5KzgnO0Zv6dd46e0tK33dMTXUHgvjW3nQG
-	15HyRv0MvwCoX60vCSXKbTntFaAc8JXKVb2rX6QX8zmvFblZ1mxINoss1RpQZDm8aEl6y1KZrLA
-	I0MHR3qA2ooXzdVTSDzqgLQWIXmbGIPlOHnbRkFhI20cBjGP5Lpvc5Q3pJUfKFagxce68SXo1b1
-	i59VnjE+olR92yNLwZFmJBNbJnFRk7ZNQnvah9v/SflNvT90pb4BKAO3pA9xPM49gdt8W33lX/5
-	rHiJ6FRBFATwOyrYYikdhVwVrTWPADTTLUIf0kNnuK685zhnLqhacX7qwimSmVbACVJp5b/O+x4
-	CPcxXX1PeUoqU4VPspH5JTfFFRE+D3xzouRVh02kKxl6L9vsEW5ygsGZngZdy+Kkz9OSd/U8PYo
-	bgyswAAlg=
-X-Google-Smtp-Source: AGHT+IFSg1iNVQHqnhtkbEsO4YlvooAwoO0jT3KKmSnsT9EAf57O0ht0v/OFdFfQ+b23tsFmCK60EQ==
-X-Received: by 2002:a05:600c:1e24:b0:477:5cc6:7e44 with SMTP id 5b1f17b1804b1-47d84b18ccfmr169969785e9.11.1768131380879;
-        Sun, 11 Jan 2026 03:36:20 -0800 (PST)
+        d=1e100.net; s=20230601; t=1768131621; x=1768736421;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sRWWv+edKn1RAkq0Hog4MX2cR+uiFgVxQ3Wo8SvjN3w=;
+        b=Q2dm/0tXqMeM4QXuCqTE1EiaWhJ91JNLyig7LMdiYXOIMBAkM5wrcoJ+4gOOCUQlZU
+         nJk+YWdL1LGHIt+7G9UFbDhdQ5iD+tgpZ1O7E3JOsDC6zX36trlPGcoAg3yFePuMqb/L
+         qWTsEZjHNH/dBPthLulqjuVLWRssGXoLj1kRahnhdqBAiOkDXhQlPapAmguW9SHfKlhH
+         Jw8Sx+UuRnxLutzwCXPwX9hICCm/JZsP3a2GDfQWQRgJfFC9PzVVoR8gcw2pEwA4lvEc
+         1FY98Y+xOH9OD0SLRhBbdUvB3e6vcRbASY4tymt96fILhSkVWomg+1ZBsTkKPRTL5NBY
+         zWeA==
+X-Forwarded-Encrypted: i=1; AJvYcCUTJRHpa1TvOtdeNOg2q8DJGWK7zrjv+9te7AlxaWUfuuhRfLSvbV90eAOmjncgZaPCj9iRNJeNT5wqWQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzIEiX8/vih1cctoIUgMUsYZsrwdEpvAGUXrHDTlxh2URb9u7wO
+	6SrJaFDFfyv4gev4SBkln4Fw24KUYYOdLo+eMUjPi9Z0mygSsWVXL2d3
+X-Gm-Gg: AY/fxX4X6xc8yL/fYWpTBpPNj5+Du9OM2SygX9EKwnNfV/tAiwESYrpHq3LB32sQMUZ
+	pnV4CJWznBPUZR+fRVD9qQ5LhIiwjcncfRDkEObwRHJn0BRbi/dbC6mjy6VlG7SkX2kxRsf77D/
+	wAzcBzCtP1uook/us/2w32QbPOWUwlPVcoASpcl+uRuEzSSkSp4Wqz6fOwv8EN+VJScD47UHw+E
+	E3OvNKAGMsenU/JSZGEYJ4m3VTnWUy8EwlsoU4YpS09tiNq0lEsw1p1yrjylTnPL/aFUZwuYEJi
+	RYAimaF6GvoTHaYvwaNqdkypDkuOx6rkWPg8eih/YpWiYkKcHmLEcHh/kKAZgvO3zUlI2uce4t7
+	RxQDMNvdpPA1L+hlzHh0GVM2IDnFLlkQZFFITUXzepOFBHLEH4+KXT3Da62dUd7+cNp5xY8WcR1
+	P+HV/9bq8=
+X-Google-Smtp-Source: AGHT+IFIQWniWCR0b7UwIF2liKWWRST+AkRUHhrE04ivSpJiR1aQuBYGg13Oid8yI/q/HQk1uOYN9A==
+X-Received: by 2002:a05:6000:2c11:b0:42f:b6ea:5e4 with SMTP id ffacd0b85a97d-432bcfe4a7dmr24434176f8f.28.1768131620552;
+        Sun, 11 Jan 2026 03:40:20 -0800 (PST)
 Received: from localhost ([212.73.77.104])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-432bd0daa84sm32553508f8f.2.2026.01.11.03.36.19
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-432bd0860f5sm32471694f8f.0.2026.01.11.03.40.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 11 Jan 2026 03:36:20 -0800 (PST)
+        Sun, 11 Jan 2026 03:40:20 -0800 (PST)
 From: Askar Safin <safinaskar@gmail.com>
-To: macro@orcam.me.uk
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	linux-alpha@vger.kernel.org
 Cc: kernel-janitors@vger.kernel.org,
-	linmag7@gmail.com,
-	linux-alpha@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	mattst88@gmail.com,
-	patches@lists.linux.dev,
-	richard.henderson@linaro.org
-Subject: Re: [PATCH 1/1] alpha: trivial: remove ^L chars
-Date: Sun, 11 Jan 2026 14:35:05 +0300
-Message-ID: <20260111113505.2146705-1-safinaskar@gmail.com>
+	"Maciej W. Rozycki" <macro@orcam.me.uk>,
+	patches@lists.linux.dev
+Subject: [PATCH v2 0/1] alpha: trivial: remove ^L chars
+Date: Sun, 11 Jan 2026 11:22:16 +0000
+Message-ID: <20260111112217.2126872-1-safinaskar@gmail.com>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <alpine.DEB.2.21.2601061310110.45251@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2601061310110.45251@angie.orcam.me.uk>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -82,16 +78,36 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-"Maciej W. Rozycki" <macro@orcam.me.uk>:
->  As a matter of interest, why would the presence of ^L characters cause 
-> any issues?  That is just another instance of white space and it has been 
+Remove ^L (a. k. a. \f a. k. a. form feed a. k. a. \x0c) from arch/alpha.
+These characters hurt general readability and editor compatibility
+without giving any benefits.
 
-I have shell script, which allows me to remove given config (for example,
-CONFIG_NET) from whole Linux source tree. To do this, this script parses
-.c files, Kconfig files and makefiles. So, I want them to be as predictable
-and easy-to-parse as possible.
+v1: https://lore.kernel.org/linux-alpha/20251228063440.2623595-1-safinaskar@gmail.com/
 
-P. S. I don't see your emails in my gmail inbox (not even in spam folder).
+v1 -> v2: changed commit message
 
+Askar Safin (1):
+  alpha: trivial: remove ^L chars
+
+ arch/alpha/kernel/core_cia.c      |  6 ++---
+ arch/alpha/kernel/core_irongate.c |  2 +-
+ arch/alpha/kernel/core_marvel.c   | 18 +++++++--------
+ arch/alpha/kernel/core_mcpcia.c   |  4 ++--
+ arch/alpha/kernel/core_polaris.c  |  2 +-
+ arch/alpha/kernel/core_t2.c       |  2 +-
+ arch/alpha/kernel/core_titan.c    | 10 ++++----
+ arch/alpha/kernel/core_tsunami.c  |  4 ++--
+ arch/alpha/kernel/err_common.c    |  4 ++--
+ arch/alpha/kernel/err_titan.c     |  2 +-
+ arch/alpha/kernel/pci_iommu.c     |  4 ++--
+ arch/alpha/kernel/smc37c669.c     | 38 +++++++++++++++----------------
+ arch/alpha/kernel/sys_marvel.c    |  4 ++--
+ arch/alpha/kernel/sys_titan.c     |  8 +++----
+ arch/alpha/kernel/time.c          | 10 ++++----
+ 15 files changed, 59 insertions(+), 59 deletions(-)
+
+
+base-commit: 9448598b22c50c8a5bb77a9103e2d49f134c9578 (6.19-rc2)
 -- 
-Askar Safin
+2.47.3
+
