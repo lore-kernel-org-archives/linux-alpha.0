@@ -1,105 +1,79 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D88CA24A07C;
-	Sun, 11 Jan 2026 08:28:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB4BD337B9A
+	for <linux-alpha@vger.kernel.org>; Sun, 11 Jan 2026 11:36:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768120122; cv=none; b=JaNsuf1Xmfg5UlhXp5h/NKWRydPymbnU54ZVNjOss8qeOuQjXb41OuRPSxRfjkW5+xTRvkqrUPaD+jQ645CqhTiK93ETFWtAc8YDGWPGhJUjRsDSxKg/VoMhRo+Q4fOjhje9B8GZh2izatrGvYRTjeSSiASuGX2sYyrO6B4FwHM=
+	t=1768131384; cv=none; b=N5zqfdTDgeRsRLlFjAhZFqD/xsoJn8pBMg6vSNArcoURn/Q0BGqT1neJ18L0VFx/UiszfRltXxUz4s4znyI1L2qh6d8BzI+eL9SoD3Yr+6Kw4/v313cZQnIsGVfcksOLeB46xy2XOkdvgwJoPOpBcC0yIVicxIhWlh+URp2CkV0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768120122; c=relaxed/simple;
-	bh=HRLMNbJfcIyzccjy/sfTD1k/8iARayV6dPdQfJTMnWo=;
+	s=arc-20240116; t=1768131384; c=relaxed/simple;
+	bh=WA2+qR7GJIrlDkE/8m2agQnhKKxdGQn++j4tKhGUs6k=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=RZ7c4p0xb6u3pt424oVoQbraGkR6Dl4j3CubewkohlApuDbU/fe7c36Ay+pZaTj/0LQCJAUE3w8MIl5kkyywYhnxl3oLvUiEEOYn/5/sMNaO8JwtQO5pTsCIWIQa6j4SYi2lwtaYy7Yxobr0AbBzxGubfAuFrnW3r5ReW2RlnF4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ec2bGwWO; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=XQL7LlPm/HZZbOvnCoKmgvTX3/FzVF3n5IEuXyvmKMKDR8vXQSov0RuySTj1csGu+N5G/fUojd0z48j+k2qbiDuhkS27hI+iBxU1n21pAORckqi1tQiJU3MOTXgArURbISKpghzJpxr0nqk+ptdEhAJ+HTD0stCmFSo9aE1LqTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Kb/1a/1L; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ec2bGwWO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 274D1C16AAE;
-	Sun, 11 Jan 2026 08:28:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768120122;
-	bh=HRLMNbJfcIyzccjy/sfTD1k/8iARayV6dPdQfJTMnWo=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Ec2bGwWOeOjXW+ySUXXKPm6eayFRFkSmbxQ0Yi2N08exR6X1pcnRzRL1jFrEN60gu
-	 EjR2EbdukWQDt0gz83zhTod3BcTK9hToNe52kcKWqr9xEFUT69+VRURPQ8b21IwNRd
-	 rp3gC/u2WEVHsJheESwI5qHhh9E4BZZ1xav9luUXT439xB/CPrZE8H4fLmmGL8QILy
-	 9Yfb6Y/uPZ+yYjsvo1Q90O2WW22H/avuDFr8cB76tUKXJ5Wsc0cale2xr++cTaYOu9
-	 eji+2hoq7YT65edlzcRMhkEPeXUV9Ua93DTgqCtd5AaZJXvzgL4tJVCdJGBVI9moFu
-	 uPmsuMV4ggZaw==
-From: Mike Rapoport <rppt@kernel.org>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Alex Shi <alexs@kernel.org>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Andreas Larsson <andreas@gaisler.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Brian Cain <bcain@kernel.org>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	David Hildenbrand <david@kernel.org>,
-	Dinh Nguyen <dinguyen@kernel.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Guo Ren <guoren@kernel.org>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Helge Deller <deller@gmx.de>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Klara Modin <klarasmodin@gmail.com>,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Matt Turner <mattst88@gmail.com>,
-	Max Filippov <jcmvbkbc@gmail.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Michal Hocko <mhocko@suse.com>,
-	Michal Simek <monstr@monstr.eu>,
-	Mike Rapoport <rppt@kernel.org>,
-	Muchun Song <muchun.song@linux.dev>,
-	Oscar Salvador <osalvador@suse.de>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Richard Weinberger <richard@nod.at>,
-	Ritesh Harjani <ritesh.list@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Stafford Horne <shorne@gmail.com>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Vineet Gupta <vgupta@kernel.org>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Will Deacon <will@kernel.org>,
-	x86@kernel.org,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Kb/1a/1L"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-477632b0621so34434335e9.2
+        for <linux-alpha@vger.kernel.org>; Sun, 11 Jan 2026 03:36:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1768131381; x=1768736181; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SZI3ApSSp9u/jOiH3pWaGfMUo9z/yXLRfpgRERhRlFg=;
+        b=Kb/1a/1LzI/qfxHuvCxYhsVr7yNpbkAfquqaGQlTnh+ZoIoD/51+M0yOcAgFuLNryR
+         GAHajp4DHcwtHktMyoHPqyaVIBe8Kl6hZrVMgpgiVLMZ3LWQuOrbwuf7al80TrED9RNy
+         dSX4BJ50Uf7hXJkz8uMMarjsSTt6qNdi18e7qebv8WT9uuUpxLqO6UhZ/9sbBWSdTkwm
+         UCLLWrGUsb6f+oRFrKsu6brUOhLs3wndQTuIojwgtCZc+isR4RwxM1G5OqanvhGOyIzo
+         yFkZDz/E1XShcvQalOodjqr91wOIT//4S+2FLC8I6OqJ8vndD85PA/60AcQMRuHV0bNu
+         WwWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768131381; x=1768736181;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=SZI3ApSSp9u/jOiH3pWaGfMUo9z/yXLRfpgRERhRlFg=;
+        b=NSWjCsFETNYBjvlwkNak0Q7wwJR/iZLNo2vyoRcA6NvhXMi5rd7gFgtqnNZbApH63D
+         0bDXp0GpR3HEI5JfDtt9sVvR9EBUNtSsUWH5atn6TPDLrXpSU91i4cpYx26FinPtgXlY
+         3H1eBDZrYAqd3n+y1YzD2ETpcGYfoed3hmld52gdSsme+yKYDoWkx8skP9LOg/hUs7Fy
+         DiCBVlk0q6FXFUj7Z7215OkCMveO8hvV1laGH3UUX8ik/QzjkuWZwpCof/5TScWV2/yt
+         4Mmy8ej7Y5FVWgAkTazAvO8bD0gcfs5uwofLJVWhUcjSLy813w/k//XZbimMPx59bTMm
+         rbiQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXnv4KM3RFTo8T4Rq3njDs9AH0Aix3GFcnATtgIKJt71X/zOvolf5yCaMNAySVE0r9SFS+dckX26Re+hQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzloixa0T/PczJE3jTslQczmT6LeVtwGYp7we8PzZ/Esp16CW/n
+	4r2l5zFU5m3BdBJbLcScmKKz9bFFSslrMN2pf5iFpn9Omi/n3oJuCejU
+X-Gm-Gg: AY/fxX5nL24mK0bFYNzYJmVuHruKwyrrZ5KzgnO0Zv6dd46e0tK33dMTXUHgvjW3nQG
+	15HyRv0MvwCoX60vCSXKbTntFaAc8JXKVb2rX6QX8zmvFblZ1mxINoss1RpQZDm8aEl6y1KZrLA
+	I0MHR3qA2ooXzdVTSDzqgLQWIXmbGIPlOHnbRkFhI20cBjGP5Lpvc5Q3pJUfKFagxce68SXo1b1
+	i59VnjE+olR92yNLwZFmJBNbJnFRk7ZNQnvah9v/SflNvT90pb4BKAO3pA9xPM49gdt8W33lX/5
+	rHiJ6FRBFATwOyrYYikdhVwVrTWPADTTLUIf0kNnuK685zhnLqhacX7qwimSmVbACVJp5b/O+x4
+	CPcxXX1PeUoqU4VPspH5JTfFFRE+D3xzouRVh02kKxl6L9vsEW5ygsGZngZdy+Kkz9OSd/U8PYo
+	bgyswAAlg=
+X-Google-Smtp-Source: AGHT+IFSg1iNVQHqnhtkbEsO4YlvooAwoO0jT3KKmSnsT9EAf57O0ht0v/OFdFfQ+b23tsFmCK60EQ==
+X-Received: by 2002:a05:600c:1e24:b0:477:5cc6:7e44 with SMTP id 5b1f17b1804b1-47d84b18ccfmr169969785e9.11.1768131380879;
+        Sun, 11 Jan 2026 03:36:20 -0800 (PST)
+Received: from localhost ([212.73.77.104])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-432bd0daa84sm32553508f8f.2.2026.01.11.03.36.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 11 Jan 2026 03:36:20 -0800 (PST)
+From: Askar Safin <safinaskar@gmail.com>
+To: macro@orcam.me.uk
+Cc: kernel-janitors@vger.kernel.org,
+	linmag7@gmail.com,
 	linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-csky@vger.kernel.org,
-	linux-cxl@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	linux-hexagon@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	linux-m68k@lists.linux-m68k.org,
-	linux-mips@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-openrisc@vger.kernel.org,
-	linux-parisc@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-s390@vger.kernel.org,
-	linux-sh@vger.kernel.org,
-	linux-snps-arc@lists.infradead.org,
-	linux-um@lists.infradead.org,
-	linuxppc-dev@lists.ozlabs.org,
-	loongarch@lists.linux.dev,
-	sparclinux@vger.kernel.org
-Subject: [PATCH v3 29/29] Revert "mm/hugetlb: deal with multiple calls to hugetlb_bootmem_alloc"
-Date: Sun, 11 Jan 2026 10:21:03 +0200
-Message-ID: <20260111082105.290734-30-rppt@kernel.org>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20260111082105.290734-1-rppt@kernel.org>
-References: <20260111082105.290734-1-rppt@kernel.org>
+	mattst88@gmail.com,
+	patches@lists.linux.dev,
+	richard.henderson@linaro.org
+Subject: Re: [PATCH 1/1] alpha: trivial: remove ^L chars
+Date: Sun, 11 Jan 2026 14:35:05 +0300
+Message-ID: <20260111113505.2146705-1-safinaskar@gmail.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <alpine.DEB.2.21.2601061310110.45251@angie.orcam.me.uk>
+References: <alpine.DEB.2.21.2601061310110.45251@angie.orcam.me.uk>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -108,114 +82,16 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
+"Maciej W. Rozycki" <macro@orcam.me.uk>:
+>  As a matter of interest, why would the presence of ^L characters cause 
+> any issues?  That is just another instance of white space and it has been 
 
-This reverts commit d58b2498200724e4f8c12d71a5953da03c8c8bdf.
+I have shell script, which allows me to remove given config (for example,
+CONFIG_NET) from whole Linux source tree. To do this, this script parses
+.c files, Kconfig files and makefiles. So, I want them to be as predictable
+and easy-to-parse as possible.
 
-hugetlb_bootmem_alloc() is called only once, no need to check if it was
-called already at its entry.
+P. S. I don't see your emails in my gmail inbox (not even in spam folder).
 
-Other checks performed during HVO initialization are also no longer
-necessary because sparse_init() that calls hugetlb_vmemmap_init_early()
-and hugetlb_vmemmap_init_late() is always called after
-hugetlb_bootmem_alloc().
-
-Signed-off-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
-Acked-by: Muchun Song <muchun.song@linux.dev>
----
- include/linux/hugetlb.h |  6 ------
- mm/hugetlb.c            | 12 ------------
- mm/hugetlb_vmemmap.c    | 11 -----------
- 3 files changed, 29 deletions(-)
-
-diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-index 08fc332e88a7..c8b1a6dd2d46 100644
---- a/include/linux/hugetlb.h
-+++ b/include/linux/hugetlb.h
-@@ -175,7 +175,6 @@ extern int sysctl_hugetlb_shm_group __read_mostly;
- extern struct list_head huge_boot_pages[MAX_NUMNODES];
- 
- void hugetlb_bootmem_alloc(void);
--bool hugetlb_bootmem_allocated(void);
- extern nodemask_t hugetlb_bootmem_nodes;
- void hugetlb_bootmem_set_nodes(void);
- 
-@@ -1300,11 +1299,6 @@ static inline bool hugetlbfs_pagecache_present(
- static inline void hugetlb_bootmem_alloc(void)
- {
- }
--
--static inline bool hugetlb_bootmem_allocated(void)
--{
--	return false;
--}
- #endif	/* CONFIG_HUGETLB_PAGE */
- 
- static inline spinlock_t *huge_pte_lock(struct hstate *h,
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 82b322ae3fdc..e5a350c83d75 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -4470,21 +4470,11 @@ void __init hugetlb_bootmem_set_nodes(void)
- 	}
- }
- 
--static bool __hugetlb_bootmem_allocated __initdata;
--
--bool __init hugetlb_bootmem_allocated(void)
--{
--	return __hugetlb_bootmem_allocated;
--}
--
- void __init hugetlb_bootmem_alloc(void)
- {
- 	struct hstate *h;
- 	int i;
- 
--	if (__hugetlb_bootmem_allocated)
--		return;
--
- 	hugetlb_bootmem_set_nodes();
- 
- 	for (i = 0; i < MAX_NUMNODES; i++)
-@@ -4498,8 +4488,6 @@ void __init hugetlb_bootmem_alloc(void)
- 		if (hstate_is_gigantic(h))
- 			hugetlb_hstate_alloc_pages(h);
- 	}
--
--	__hugetlb_bootmem_allocated = true;
- }
- 
- /*
-diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-index 9d01f883fd71..a9280259e12a 100644
---- a/mm/hugetlb_vmemmap.c
-+++ b/mm/hugetlb_vmemmap.c
-@@ -794,14 +794,6 @@ void __init hugetlb_vmemmap_init_early(int nid)
- 	struct huge_bootmem_page *m = NULL;
- 	void *map;
- 
--	/*
--	 * Noting to do if bootmem pages were not allocated
--	 * early in boot, or if HVO wasn't enabled in the
--	 * first place.
--	 */
--	if (!hugetlb_bootmem_allocated())
--		return;
--
- 	if (!READ_ONCE(vmemmap_optimize_enabled))
- 		return;
- 
-@@ -847,9 +839,6 @@ void __init hugetlb_vmemmap_init_late(int nid)
- 	struct hstate *h;
- 	void *map;
- 
--	if (!hugetlb_bootmem_allocated())
--		return;
--
- 	if (!READ_ONCE(vmemmap_optimize_enabled))
- 		return;
- 
 -- 
-2.51.0
-
+Askar Safin
