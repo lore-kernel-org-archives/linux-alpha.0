@@ -1,313 +1,264 @@
-Received: from matoro.tk (matoro.tk [104.188.251.153])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 858F44A32;
-	Sun, 11 Jan 2026 00:06:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=104.188.251.153
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 356951E1A3D;
+	Sun, 11 Jan 2026 08:21:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768089997; cv=none; b=ppZECM7Ejf4r4OSs4AStW3818gcmpJ5dVxp2EkhkWg5DdsfdnaEcFFDKLn+o1mlKyp7DTI9iFm3zWr68PVGEcwR/WvU3wC2MNaBuC7MjUhu97mbyF+sSSOoDdX8hIx204Xr5pDJP8vR5jNhVXK4iDAilePMzEXaii9vEMNi3GiA=
+	t=1768119684; cv=none; b=GBDS1UvKtSgPpzuw9GWIA8S1UvpYHAqjgSxtul93PpyltG2naZr4uJq9y5nzxJNCp5Ru2GG9uPYnFJvoStYD4iq2E34rmbzhtN9EnUvqJaxJprfGQ8xQMECZTdK22vFTmZ/vb6kRfESmj+H7FF/G2vKumyluyRbWVCo0LKtZDsI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768089997; c=relaxed/simple;
-	bh=Ick2ncAtujaIMNRz7Kw3PwXsWqqUSA/Yg9DXQQGAIQo=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=uAAahvezZ8c84pJ0Iye5KuQZluG1YpqJhm/K8JpC72GzVcWZwELA7wD6R0zW3RyEtd6tIeHf+RX8Moj8u6wKZ+b9BenlMMLmmBuj/WZ1TgkZxbBHYn5UmerJJMyAah5iXWbGCGl4db9ObQms/JZVvWcUW/4ZFuhrH9cIg8DEnkU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=matoro.tk; spf=pass smtp.mailfrom=matoro.tk; dkim=pass (4096-bit key) header.d=matoro.tk header.i=@matoro.tk header.b=ea3mi0UD; arc=none smtp.client-ip=104.188.251.153
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=matoro.tk
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=matoro.tk
+	s=arc-20240116; t=1768119684; c=relaxed/simple;
+	bh=15VB+6hE09IpORerfJ9cs3QzayYtdIP5ByWTlGt3qZ0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nJn1wCM04C+lFftk2jBUI8D40CMGaxXqnjA3FdYuqM8bVYGtPI8Y/fIZGpb5FhpZ91nQffsbbzFGiTZKBNw6UPPPk7UXenHrCtB2HLLzee2InAdDtWftUH1zC/0PL4C+gS4Bc50myA+UJJbpj31CVK29SQCjGvXg7FwZOtaRwEA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fqKHBj52; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=matoro.tk header.i=@matoro.tk header.b="ea3mi0UD"
-DKIM-Signature: a=rsa-sha256; bh=DewHl7M8K9DNmyLWEveKnM3mziISu5bhTWcGnCFUFBw=;
- c=relaxed/relaxed; d=matoro.tk;
- h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
- i=@matoro.tk; s=20251215; t=1768089055; v=1; x=1768521055;
- b=ea3mi0UDrmh0nTOD9CIJYiRzx2cEBkAsx00d8XivhYcLHm5a2oj4Lj1yqYNEq7SIu24WjLKN
- 2EwZAipORD++WpdPp4/CqE0THQYmfYvMdcmYY56+MiDNRQbDWEn13CY4Pq/THX7wp0QEDBmFby/
- oSBYKqd2qPjBcNACZXTCdx+Wp+CRpR9vTnY1uzKpeFJnXSjnQDQ6fba56QRFs5TqgCTOQpIeqnm
- /AAFHNkX2WtF3KFG1v0epC+RIPNgvfv/1Z1fvcZPDOVuczTSHJlyqqZSG0iVImTnyJTCfNl3gi+
- 8cAb/GSi5XZvF3H15vQUSwaIRRqQ1jadA7PVI60jTPfzkqJ9MN+bRiPskF9d3kG08hRjcZegIjm
- yqLU+3A6FfEV0B8wKOab/T3HWGnIIR4Ydz2hzmeAH9H8a8UPswv6rsDgQry8/bmi9AdrpSGn/2z
- NfpdTgA+v10E9O6F9LYBofkmf0BbyMIAietBLJVY9lAw0wu9IsgfYM0EUq+k6rO33Ftva7pfKdl
- f1zhlmcH/odzcznaFv8XGdwhuXZ5PfufvmbMWYYXHFfKKdLSLOYkusyU6BEQokjUR4U4W7JsQa4
- eYaEup+qLFLEzDMpOJ9H1s/5w06GRG67h1HLyQmJJcpp2Xgi3mWTRjGsWB0jtSrFrlZ/5BknQLV
- DRmY3UzF9/I=
-Received: by matoro.tk (envelope-sender
- <matoro_mailinglist_kernel@matoro.tk>) with ESMTPS id 261d46dc; Sat, 10 Jan
- 2026 18:50:55 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fqKHBj52"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1837CC4CEF7;
+	Sun, 11 Jan 2026 08:21:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768119683;
+	bh=15VB+6hE09IpORerfJ9cs3QzayYtdIP5ByWTlGt3qZ0=;
+	h=From:To:Cc:Subject:Date:From;
+	b=fqKHBj520f2MDgk71DmE5pqtB/pBMemGe6ljrad1JZT4TjuKzKTHs3xUpJ0K4Tlv7
+	 kS7/A7Qj7f6FHcIqZOCnTKWbxC4liAYLtpcFU2lTPOu6nAiYlDoYoUkFsbagYk4hjx
+	 /oeAeIyD4g/6QlmHRXuiPhGuV0z/TfFiVYiZjEtj2+8KVb2ZpA5QnWSqMsk5vvuf9z
+	 2zZGEX+f1wmTWFlirbnVw4Z57ZhFPuOpza3yBonfV6hLgXOimHNXs2/zTsLzh0SIA+
+	 XoqGttk/l45ZEV1dW3wg6KCyo98ksi4A7G6uUd+LsrXwkQfZV/ycd0xkOa/n8lvRu2
+	 u3qAfKtz7b0cw==
+From: Mike Rapoport <rppt@kernel.org>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Alex Shi <alexs@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Brian Cain <bcain@kernel.org>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	David Hildenbrand <david@kernel.org>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Guo Ren <guoren@kernel.org>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Helge Deller <deller@gmx.de>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Klara Modin <klarasmodin@gmail.com>,
+	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Matt Turner <mattst88@gmail.com>,
+	Max Filippov <jcmvbkbc@gmail.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Michal Hocko <mhocko@suse.com>,
+	Michal Simek <monstr@monstr.eu>,
+	Mike Rapoport <rppt@kernel.org>,
+	Muchun Song <muchun.song@linux.dev>,
+	Oscar Salvador <osalvador@suse.de>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Richard Weinberger <richard@nod.at>,
+	Ritesh Harjani <ritesh.list@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Stafford Horne <shorne@gmail.com>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Vineet Gupta <vgupta@kernel.org>,
+	Vlastimil Babka <vbabka@suse.cz>,
+	Will Deacon <will@kernel.org>,
+	x86@kernel.org,
+	linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-csky@vger.kernel.org,
+	linux-cxl@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-hexagon@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-mips@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-openrisc@vger.kernel.org,
+	linux-parisc@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org,
+	linux-sh@vger.kernel.org,
+	linux-snps-arc@lists.infradead.org,
+	linux-um@lists.infradead.org,
+	linuxppc-dev@lists.ozlabs.org,
+	loongarch@lists.linux.dev,
+	sparclinux@vger.kernel.org
+Subject: [PATCH v3 00/29] arch, mm: consolidate hugetlb early reservation
+Date: Sun, 11 Jan 2026 10:20:34 +0200
+Message-ID: <20260111082105.290734-1-rppt@kernel.org>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Sat, 10 Jan 2026 18:50:55 -0500
-From: matoro <matoro_mailinglist_kernel@matoro.tk>
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
- hch@infradead.org, macro@orcam.me.uk, glaubitz@physik.fu-berlin.de,
- mattst88@gmail.com, richard.henderson@linaro.org, ink@unseen.parts
-Subject: Re: [PATCH 1/1] alpha: fix user-space corruption during memory
- compaction
-In-Reply-To: <20260102173603.18247-2-linmag7@gmail.com>
-References: <20260102173603.18247-1-linmag7@gmail.com>
- <20260102173603.18247-2-linmag7@gmail.com>
-Message-ID: <f44dfc2337c4c63208c2ca570046ad21@matoro.tk>
-X-Sender: matoro_mailinglist_kernel@matoro.tk
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2026-01-02 12:30, Magnus Lindholm wrote:
-> Alpha systems can suffer sporadic user-space crashes and heap
-> corruption when memory compaction is enabled.
-> 
-> Symptoms include SIGSEGV, glibc allocator failures (e.g. "unaligned
-> tcache chunk"), and compiler internal errors. The failures disappear
-> when compaction is disabled or when using global TLB invalidation.
-> 
-> The root cause is insufficient TLB shootdown during page migration.
-> Alpha relies on ASN-based MM context rollover for instruction cache
-> coherency, but this alone is not sufficient to prevent stale data or
-> instruction translations from surviving migration.
-> 
-> Fix this by introducing a migration-specific helper that combines:
->   - MM context invalidation (ASN rollover),
->   - immediate per-CPU TLB invalidation (TBI),
->   - synchronous cross-CPU shootdown when required.
-> 
-> The helper is used only by migration/compaction paths to avoid changing
-> global TLB semantics.
-> 
-> Additionally, update flush_tlb_other(), pte_clear(), to use
-> READ_ONCE()/WRITE_ONCE() for correct SMP memory ordering.
-> 
-> This fixes observed crashes on both UP and SMP Alpha systems.
-> 
-> Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
-> ---
->  arch/alpha/include/asm/pgtable.h  |  33 ++++++++-
->  arch/alpha/include/asm/tlbflush.h |   4 +-
->  arch/alpha/mm/Makefile            |   2 +-
->  arch/alpha/mm/tlbflush.c          | 112 ++++++++++++++++++++++++++++++
->  4 files changed, 148 insertions(+), 3 deletions(-)
->  create mode 100644 arch/alpha/mm/tlbflush.c
-> 
-> diff --git a/arch/alpha/include/asm/pgtable.h 
-> b/arch/alpha/include/asm/pgtable.h
-> index 90e7a9539102..c9508ec37efc 100644
-> --- a/arch/alpha/include/asm/pgtable.h
-> +++ b/arch/alpha/include/asm/pgtable.h
-> @@ -17,6 +17,7 @@
->  #include <asm/processor.h>	/* For TASK_SIZE */
->  #include <asm/machvec.h>
->  #include <asm/setup.h>
-> +#include <linux/page_table_check.h>
-> 
->  struct mm_struct;
->  struct vm_area_struct;
-> @@ -183,6 +184,9 @@ extern inline void pud_set(pud_t * pudp, pmd_t * pmdp)
->  { pud_val(*pudp) = _PAGE_TABLE | ((((unsigned long) pmdp) - PAGE_OFFSET) << 
-> (32-PAGE_SHIFT)); }
-> 
-> 
-> +extern void migrate_flush_tlb_page(struct vm_area_struct *vma,
-> +					unsigned long addr);
-> +
->  extern inline unsigned long
->  pmd_page_vaddr(pmd_t pmd)
->  {
-> @@ -202,7 +206,7 @@ extern inline int pte_none(pte_t pte)		{ return 
-> !pte_val(pte); }
->  extern inline int pte_present(pte_t pte)	{ return pte_val(pte) & 
-> _PAGE_VALID; }
->  extern inline void pte_clear(struct mm_struct *mm, unsigned long addr, 
-> pte_t *ptep)
->  {
-> -	pte_val(*ptep) = 0;
-> +	WRITE_ONCE(pte_val(*ptep), 0);
->  }
-> 
->  extern inline int pmd_none(pmd_t pmd)		{ return !pmd_val(pmd); }
-> @@ -264,6 +268,33 @@ extern inline pte_t * pte_offset_kernel(pmd_t * dir, 
-> unsigned long address)
-> 
->  extern pgd_t swapper_pg_dir[1024];
-> 
-> +#ifdef CONFIG_COMPACTION
-> +#define __HAVE_ARCH_PTEP_GET_AND_CLEAR
-> +
-> +static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
-> +					unsigned long address,
-> +					pte_t *ptep)
-> +{
-> +	pte_t pte = READ_ONCE(*ptep);
-> +
-> +	pte_clear(mm, address, ptep);
-> +	return pte;
-> +}
-> +
-> +#define __HAVE_ARCH_PTEP_CLEAR_FLUSH
-> +
-> +static inline pte_t ptep_clear_flush(struct vm_area_struct *vma,
-> +				unsigned long addr, pte_t *ptep)
-> +{
-> +	struct mm_struct *mm = vma->vm_mm;
-> +	pte_t pte = ptep_get_and_clear(mm, addr, ptep);
-> +
-> +	page_table_check_pte_clear(mm, pte);
-> +	migrate_flush_tlb_page(vma, addr);
-> +	return pte;
-> +}
-> +
-> +#endif
->  /*
->   * The Alpha doesn't have any external MMU info:  the kernel page
->   * tables contain all the necessary information.
-> diff --git a/arch/alpha/include/asm/tlbflush.h 
-> b/arch/alpha/include/asm/tlbflush.h
-> index ba4b359d6c39..0c8529997f54 100644
-> --- a/arch/alpha/include/asm/tlbflush.h
-> +++ b/arch/alpha/include/asm/tlbflush.h
-> @@ -58,7 +58,9 @@ flush_tlb_other(struct mm_struct *mm)
->  	unsigned long *mmc = &mm->context[smp_processor_id()];
->  	/* Check it's not zero first to avoid cacheline ping pong
->  	   when possible.  */
-> -	if (*mmc) *mmc = 0;
-> +
-> +	if (READ_ONCE(*mmc))
-> +		WRITE_ONCE(*mmc, 0);
->  }
-> 
->  #ifndef CONFIG_SMP
-> diff --git a/arch/alpha/mm/Makefile b/arch/alpha/mm/Makefile
-> index 101dbd06b4ce..2d05664058f6 100644
-> --- a/arch/alpha/mm/Makefile
-> +++ b/arch/alpha/mm/Makefile
-> @@ -3,4 +3,4 @@
->  # Makefile for the linux alpha-specific parts of the memory manager.
->  #
-> 
-> -obj-y	:= init.o fault.o
-> +obj-y	:= init.o fault.o tlbflush.o
-> diff --git a/arch/alpha/mm/tlbflush.c b/arch/alpha/mm/tlbflush.c
-> new file mode 100644
-> index 000000000000..ccbc317b9a34
-> --- /dev/null
-> +++ b/arch/alpha/mm/tlbflush.c
-> @@ -0,0 +1,112 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Alpha TLB shootdown helpers
-> + *
-> + * Copyright (C) 2025 Magnus Lindholm <linmag7@gmail.com>
-> + *
-> + * Alpha-specific TLB flush helpers that cannot be expressed purely
-> + * as inline functions.
-> + *
-> + * These helpers provide combined MM context handling (ASN rollover)
-> + * and immediate TLB invalidation for page migration and memory
-> + * compaction paths, where lazy shootdowns are insufficient.
-> + */
-> +
-> +#include <linux/mm.h>
-> +#include <linux/smp.h>
-> +#include <linux/sched.h>
-> +#include <asm/tlbflush.h>
-> +#include <asm/pal.h>
-> +#include <asm/mmu_context.h>
-> +
-> +#define asn_locked() (cpu_data[smp_processor_id()].asn_lock)
-> +
-> +/*
-> + * Migration/compaction helper: combine mm context (ASN) handling with an
-> + * immediate per-page TLB invalidate and (for exec) an instruction barrier.
-> + *
-> + * This mirrors the SMP combined IPI handler semantics, but runs locally on 
-> UP.
-> + */
-> +#ifndef CONFIG_SMP
-> +void migrate_flush_tlb_page(struct vm_area_struct *vma,
-> +					   unsigned long addr)
-> +{
-> +	struct mm_struct *mm = vma->vm_mm;
-> +	int tbi_type = (vma->vm_flags & VM_EXEC) ? 3 : 2;
-> +
-> +	/*
-> +	 * First do the mm-context side:
-> +	 * If we're currently running this mm, reload a fresh context ASN.
-> +	 * Otherwise, mark context invalid.
-> +	 *
-> +	 * On UP, this is mostly about matching the SMP semantics and ensuring
-> +	 * exec/i-cache tagging assumptions hold when compaction migrates pages.
-> +	 */
-> +	if (mm == current->active_mm)
-> +		flush_tlb_current(mm);
-> +	else
-> +		flush_tlb_other(mm);
-> +
-> +	/*
-> +	 * Then do the immediate translation kill for this VA.
-> +	 * For exec mappings, order instruction fetch after invalidation.
-> +	 */
-> +	tbi(tbi_type, addr);
-> +}
-> +
-> +#else
-> +struct tlb_mm_and_addr {
-> +	struct mm_struct *mm;
-> +	unsigned long addr;
-> +	int tbi_type;	/* 2 = DTB, 3 = ITB+DTB */
-> +};
-> +
-> +static void ipi_flush_mm_and_page(void *x)
-> +{
-> +	struct tlb_mm_and_addr *d = x;
-> +
-> +	/* Part 1: mm context side (Alpha uses ASN/context as a key mechanism). */
-> +	if (d->mm == current->active_mm && !asn_locked())
-> +		__load_new_mm_context(d->mm);
-> +	else
-> +		flush_tlb_other(d->mm);
-> +
-> +	/* Part 2: immediate per-VA invalidation on this CPU. */
-> +	tbi(d->tbi_type, d->addr);
-> +}
-> +
-> +void migrate_flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
-> +{
-> +	struct mm_struct *mm = vma->vm_mm;
-> +	struct tlb_mm_and_addr d = {
-> +		.mm = mm,
-> +		.addr = addr,
-> +		.tbi_type = (vma->vm_flags & VM_EXEC) ? 3 : 2,
-> +	};
-> +
-> +	/*
-> +	 * One synchronous rendezvous: every CPU runs ipi_flush_mm_and_page().
-> +	 * This is the "combined" version of flush_tlb_mm + per-page invalidate.
-> +	 */
-> +	preempt_disable();
-> +	on_each_cpu(ipi_flush_mm_and_page, &d, 1);
-> +
-> +	/*
-> +	 * mimic flush_tlb_mm()'s mm_users<=1 optimization.
-> +	 */
-> +	if (atomic_read(&mm->mm_users) <= 1) {
-> +
-> +		int cpu, this_cpu;
-> +		this_cpu = smp_processor_id();
-> +
-> +		for (cpu = 0; cpu < NR_CPUS; cpu++) {
-> +			if (!cpu_online(cpu) || cpu == this_cpu)
-> +				continue;
-> +			if (READ_ONCE(mm->context[cpu]))
-> +				WRITE_ONCE(mm->context[cpu], 0);
-> +		}
-> +	}
-> +	preempt_enable();
-> +}
-> +
-> +#endif
+From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
 
-Tested-by: Matoro Mahri <matoro_mailinglist_kernel@matoro.tk>
+Hi,
 
-I tested this on a DS15 non-SMP kernel and confirmed it resolved the problem.
+Order in which early memory reservation for hugetlb happens depends on
+architecture, on configuration options and on command line parameters.
+
+Some architectures rely on the core MM to call hugetlb_bootmem_alloc()
+while others call it very early to allow pre-allocation of HVO-style
+vmemmap.
+
+When hugetlb_cma is supported by an architecture it is initialized during
+setup_arch() and then later hugetlb_init code needs to understand did it
+happen or not.
+
+To make everything consistent and unified, both reservation of hugetlb
+memory from bootmem and creation of CMA areas for hugetlb must be called
+from core MM initialization and it would have been a simple change.
+However, HVO-style pre-initialization ordering requirements slightly
+complicate things and for HVO pre-init to work sparse and memory map should
+be initialized after hugetlb reservations.
+
+This required pulling out the call to free_area_init() out of setup_arch()
+path and moving it MM initialization and this is what the first 23 patches
+do.
+
+These changes are deliberately split into per-arch patches that change how
+the zone limits are calculated for each architecture and the patches 22 and
+23 just remove the calls to free_area_init() and sprase_init() from arch/*.
+
+Patch 24 is a simple cleanup for MIPS.
+
+Patches 25 and 26 actually consolidate hugetlb reservations and patches 27
+and 28 perform some aftermath cleanups.
+
+I tried to trim the distribution list and although it's still quite long
+if you feel that someone was wrongly excluded please add them back.
+
+The changes also available in git:
+https://git.kernel.org/pub/scm/linux/kernel/git/rppt/linux.git/log/?h=hugetlb-init/v3
+
+v3 changes:
+* fix empty_zero_page initialization on arm
+* fix ZONE_DMA limit calculation on powerpc
+* add Acks
+
+v2: https://lore.kernel.org/all/20260102070005.65328-1-rppt@kernel.org
+* move the hugetlb and memory map initializaion to mm_core_init_early()
+* add Acks
+
+v1: https://lore.kernel.org/all/20251228124001.3624742-1-rppt@kernel.org
+
+
+Klara Modin (1):
+  arm: make initialization of zero page independent of the memory map
+
+Mike Rapoport (Microsoft) (28):
+  alpha: introduce arch_zone_limits_init()
+  arc: introduce arch_zone_limits_init()
+  arm: introduce arch_zone_limits_init()
+  arm64: introduce arch_zone_limits_init()
+  csky: introduce arch_zone_limits_init()
+  hexagon: introduce arch_zone_limits_init()
+  loongarch: introduce arch_zone_limits_init()
+  m68k: introduce arch_zone_limits_init()
+  microblaze: introduce arch_zone_limits_init()
+  mips: introduce arch_zone_limits_init()
+  nios2: introduce arch_zone_limits_init()
+  openrisc: introduce arch_zone_limits_init()
+  parisc: introduce arch_zone_limits_init()
+  powerpc: introduce arch_zone_limits_init()
+  riscv: introduce arch_zone_limits_init()
+  s390: introduce arch_zone_limits_init()
+  sh: introduce arch_zone_limits_init()
+  sparc: introduce arch_zone_limits_init()
+  um: introduce arch_zone_limits_init()
+  x86: introduce arch_zone_limits_init()
+  xtensa: introduce arch_zone_limits_init()
+  arch, mm: consolidate initialization of nodes, zones and memory map
+  arch, mm: consolidate initialization of SPARSE memory model
+  mips: drop paging_init()
+  x86: don't reserve hugetlb memory in setup_arch()
+  mm, arch: consolidate hugetlb CMA reservation
+  mm/hugetlb: drop hugetlb_cma_check()
+  Revert "mm/hugetlb: deal with multiple calls to hugetlb_bootmem_alloc"
+
+ .../driver-api/cxl/linux/early-boot.rst       |  2 +-
+ Documentation/mm/memory-model.rst             |  3 --
+ .../translations/zh_CN/mm/memory-model.rst    |  2 -
+ arch/alpha/kernel/setup.c                     |  1 -
+ arch/alpha/mm/init.c                          | 16 ++++----
+ arch/arc/mm/init.c                            | 37 +++++++++---------
+ arch/arm/include/asm/pgtable.h                |  4 +-
+ arch/arm/mm/init.c                            | 25 ++----------
+ arch/arm/mm/mmu.c                             | 10 +----
+ arch/arm/mm/nommu.c                           | 10 +----
+ arch/arm64/include/asm/hugetlb.h              |  2 -
+ arch/arm64/mm/hugetlbpage.c                   | 10 ++---
+ arch/arm64/mm/init.c                          | 39 ++++++++-----------
+ arch/csky/kernel/setup.c                      | 16 ++++----
+ arch/hexagon/mm/init.c                        | 19 +++------
+ arch/loongarch/include/asm/pgtable.h          |  2 -
+ arch/loongarch/kernel/setup.c                 | 10 -----
+ arch/loongarch/mm/init.c                      |  6 +--
+ arch/m68k/mm/init.c                           |  8 ++--
+ arch/m68k/mm/mcfmmu.c                         |  3 --
+ arch/m68k/mm/motorola.c                       |  6 +--
+ arch/m68k/mm/sun3mmu.c                        |  9 -----
+ arch/microblaze/mm/init.c                     | 22 +++++------
+ arch/mips/include/asm/pgalloc.h               |  2 -
+ arch/mips/include/asm/pgtable.h               |  2 +-
+ arch/mips/kernel/setup.c                      | 15 +------
+ arch/mips/loongson64/numa.c                   | 10 ++---
+ arch/mips/mm/init.c                           |  8 +---
+ arch/mips/sgi-ip27/ip27-memory.c              |  8 +---
+ arch/nios2/mm/init.c                          | 12 +++---
+ arch/openrisc/mm/init.c                       | 10 +----
+ arch/parisc/mm/init.c                         | 11 +-----
+ arch/powerpc/include/asm/hugetlb.h            |  5 ---
+ arch/powerpc/include/asm/setup.h              |  4 ++
+ arch/powerpc/kernel/setup-common.c            |  1 -
+ arch/powerpc/mm/hugetlbpage.c                 | 11 ++----
+ arch/powerpc/mm/mem.c                         | 27 +++++--------
+ arch/powerpc/mm/numa.c                        |  2 -
+ arch/riscv/mm/hugetlbpage.c                   |  8 ++++
+ arch/riscv/mm/init.c                          | 10 +----
+ arch/s390/kernel/setup.c                      |  2 -
+ arch/s390/mm/hugetlbpage.c                    |  8 ++++
+ arch/s390/mm/init.c                           | 13 +++----
+ arch/sh/mm/init.c                             | 12 +++---
+ arch/sparc/mm/init_64.c                       | 17 +++-----
+ arch/sparc/mm/srmmu.c                         | 17 ++++----
+ arch/um/kernel/mem.c                          | 10 ++---
+ arch/x86/kernel/setup.c                       |  5 ---
+ arch/x86/mm/hugetlbpage.c                     |  8 ++++
+ arch/x86/mm/init.c                            |  8 +---
+ arch/x86/mm/init_32.c                         |  2 -
+ arch/x86/mm/init_64.c                         |  4 --
+ arch/x86/mm/mm_internal.h                     |  1 -
+ arch/xtensa/mm/init.c                         | 14 +++----
+ include/linux/hugetlb.h                       | 12 ++----
+ include/linux/mm.h                            |  5 ++-
+ include/linux/mmzone.h                        |  2 -
+ init/main.c                                   |  1 +
+ mm/hugetlb.c                                  | 13 -------
+ mm/hugetlb_cma.c                              | 33 ++++++++--------
+ mm/hugetlb_cma.h                              |  5 ---
+ mm/hugetlb_vmemmap.c                          | 11 ------
+ mm/internal.h                                 |  6 +++
+ mm/mm_init.c                                  | 20 ++++++----
+ 64 files changed, 223 insertions(+), 414 deletions(-)
+
+
+base-commit: 8f0b4cce4481fb22653697cced8d0d04027cb1e8
+-- 
+2.51.0
+
