@@ -1,159 +1,149 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85221285418
-	for <linux-alpha@vger.kernel.org>; Sun,  1 Feb 2026 22:01:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769983305; cv=pass; b=DxxgVrvPLr7V+Nwiw6aJAJRgV2lbsTnQ/ZapfYG7GSXHLSRjdA++rceCNFWUaeDfXQADjyG28dtr/6wFRYKJBnGu7jUPnBlLxRf3dBPahxsGkGFoNlL8UwXcc30wIliXvqLFExqqEK67KoJXNA+d2CD3SvhzSUWD6Ss7le96W3c=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769983305; c=relaxed/simple;
-	bh=wl7Jk6JsU5yKG4duQoEsXxxYC+OIwiJhzlKIg8HfxyQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MsMc6oZA8MqTkv/AdA8BOEGynhKoLzgs5jNt1dE//ORQajjBo2Jzd9QzZmn5hxBYWuQFy3ubTB8+XFyqQeUaxiWhK8FQJdjhzJs64Vv//3NFKUxW+9fhzo1UqDHwD4oMtOlCiocntf2wgMqoZoMt2x91EPrLD8HCBC+WyPL9vqY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YUP16xwB; arc=pass smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 499E336D51B
+	for <linux-alpha@vger.kernel.org>; Tue,  3 Feb 2026 06:34:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770100500; cv=none; b=VdPo11AZqjL7zhVmCeIqvc7syfUzxySdufYi9aIENGyc796eiNzTvAr228x7R31t8nH6SBnh2yYvQrrknw+47eukDf8SD13jQ7vhXkYl66g87AcOKBnb1Ap4/F0cHJEIKke2aM4MelNcKMzP9E6Jx2V9z0jVtaCBoFU8Jko5KeA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770100500; c=relaxed/simple;
+	bh=+jfAbJmK5NygcciGKp6EEwMSd5OUC57idgZm/cik9Ls=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qTg7e4g+fZwLUAC1B2MSOP3iFnQ/q6uF8A8sg6HigkiyKNBKiUka9GYfdm10c/TLOBGV7Z0kmfa5IOTJVAOa6BZ+8UNdGR0zmRBQbKZllFJiGeRcWU1U5CjwE0JTR8ILyiiNrPLArkQz5TKYz5z9zae4ksX0Zo1rSTkVuZMOTj0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Uecs1NQ0; arc=none smtp.client-ip=209.85.167.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YUP16xwB"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-6580dbdb41eso5832182a12.0
-        for <linux-alpha@vger.kernel.org>; Sun, 01 Feb 2026 14:01:43 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1769983302; cv=none;
-        d=google.com; s=arc-20240605;
-        b=GA/VfyL5UNy19GiKI5Emph25NDjCrIGF1Qn25uoF3QcuOC9Vpvlv36yCJwQ115SaPT
-         TJOZNDKPnEv3//9PUPseZt72E+Wg9pxEBJui1ioq1NbfudFMk0BWBYQbij7DSuy2P6DG
-         DqVTsnHitF6FqofCvo4hNFW3ZVOxbI5nZ+nbXRMtMXQWcGaqjRXO+sNtGY1HZTUK3j9C
-         b3MIdcVKQ90itFQoEks991ILG9ge+Rt4x8q745oxQ1ZQe9t1YO4dPxgjw5v/qodvQ+ga
-         UqhB9CdxrKgowk3uWVWhvB5ZAOd0NddWR7S5QaqYQlRJV6n9WBTYHMOl9BqWgb015ozi
-         h/2g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=nxxXeMZ2Mj2NhEcakAGevZjWJ8Zk/OwUaMBA61xjWow=;
-        fh=9VDmDoiMlHlDZVob0Wac4AFkZPILGgqKTjqqt97+4TU=;
-        b=ZXW683tb62taw0n4rwb5sqRLdBkyhxT+rdDKha/fEDclXDQfh3YW1LWjgK74XOxrIW
-         vaz4YB822rQRqAu2CJsA9sMOxJbJZNVhHLObQRtI8RlNvSHVJuqd932YmHTrvUVvsnxL
-         Wk+DpQb60CAoFAHXFk7FqNMaIkNZNWKFDlmpttYjBjIwKBK2TfCOu1I0lTLyz+h3/vrB
-         23ixSJoA6Sw6guQxVr69dUvT5I2423Mb6J3bwPiI/4EV6LWRbGre7QfEAIwC3KLxdj+V
-         s7knGVk26/mA2DCJ3RV8AxxEbkDjpzKHekqGPywWWUsNuVfx9VVShO8X5sKKKS5hpGcE
-         PeLQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Uecs1NQ0"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-59dcdf60427so6119606e87.3
+        for <linux-alpha@vger.kernel.org>; Mon, 02 Feb 2026 22:34:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769983302; x=1770588102; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nxxXeMZ2Mj2NhEcakAGevZjWJ8Zk/OwUaMBA61xjWow=;
-        b=YUP16xwBByuCeANUpL+tqGPZtwW0ekBJQXjxvYHrQ+BVuJhzXlLPUbdngsjT9o0vf6
-         uYUmzrEUKPWDyYwqImODBU03rkq/5q2r1ZRse77/5jbzZ2ZbdPfRWoEgDFXi7tvZQDib
-         KKiwOMyTyPNTlE6DbDFUXbRkge9P5LbCelPWFufvSIQsld51sSM4Eb+aQDvPUDu+HqZ5
-         c/EuzGYP26bua1tM6AhlMjxuishxSbB0C/tRmJtMEllP01kG1m4La3rFduj7FChnHhy9
-         DMXci+K0JH5BarH9OsbnSb+egVIt1mbKSHqf6Rg3thvWSqfOWPIJWg6A+uJuZWSkOoYT
-         3FYg==
+        d=gmail.com; s=20230601; t=1770100497; x=1770705297; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Q7veAzn+ssv4gTO6PNq9GiaBpAmIsYoQzI7tl2meJ/s=;
+        b=Uecs1NQ0hQC+B0VmmpsdWHrtqMj/OivpTHDg5UYHhVRGBz73HmI9+/ZU7GqdIN48iU
+         gPoSOKPUTF00wK4DvkpaXTt1qezSA7BOroWM/WmIWnnuSttJA9obgDM8rz2oz2zK4Gbq
+         2fnQSZYk9yq8WWzkK8a+BG991DWqAZy5GXBmxkNI0bcG5XAOipbMh6+mJ33GhDXZHI6O
+         KYGMg0rILO40d2OGMEE+Mej3bXEhcKG104aqkEjs2p0T0REW4X4m52AhciWl77Ipt/B6
+         VOV2s2MWFb3nWvuz7Ulmncp5r2i63XK5q6JpimhIGJ61jgL2zY8zahU4m9Q//S4hCvm/
+         rSbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769983302; x=1770588102;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=nxxXeMZ2Mj2NhEcakAGevZjWJ8Zk/OwUaMBA61xjWow=;
-        b=CXAhDV6cMgL2LDc3HmI9OyFKgDecr/KmLXWdqcWVjhdBnujeSbHlQ9Oe+s45aVQADA
-         hEDuwjYRsYMz9+AC5FqlykdZqg2OvBm+gDGvOd9g8NPxrAHFFhEd70CJMuid/Ylz2Bt9
-         wDMxKYw9xPxtb4SykxUwH0W/1/Ns/2B3fMq9GCZBLU3CVrmJFGqAzz1Piee0m0bL9Lyl
-         KIyFDHSy2mL1YnEww8Usgy2AifWL+0YIMVcNs3yrpXsBZTJjMpQ8jSWyRutVkQy3TIUK
-         /L4dWbLZQl0BI9CK8ubeNqvqwLvF0/mtPBE8BxBdr/l5QTbwuAZxWIPs9RGh4otny/2D
-         1kqA==
-X-Forwarded-Encrypted: i=1; AJvYcCUf5HMmdpH89TbXBh9cxAQMeFp3lZihEIRujSeoDIdR7ShvIOS1dZuaSyKvoglRsNGCsVQkAHZ7BITRxw==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwbuOReRxCMSpCdIYHsu0wfR2pbOVIta9lJ/i/Jc8clZKTpW5dG
-	7+Nh5jLJq+zVAD6ujWzO6SbP+uJhCnuoDo5nj6qTK+jcDYy1uIckPKHToHNvmgemvc20HXZy48Q
-	JUDISMgz95keSfyppuE2SvVQa98DQebU=
-X-Gm-Gg: AZuq6aJh9JuxOtS/7t8GrA4jp2F57jyXHvHQyWLleWjoicf5pNV2OJ8npTrQ5nacnUA
-	2ZcVmjWx/3HuXHbsx2Ab2mCb/iNGTlWbULb1SFFLdKA94UkStEFooz2gxNbvx3wHvfy39YF9Oaw
-	bNwfNLagWVM8CjwDuoKlTWnbFSebkhPhEODszVqcYA/a7JoP4RfGB54qBhqf9hByiXL1MoZBOBR
-	duWFIGUDFaJbjz2KLjmApzfwIjZdI7lJpay3e38BvP9o/EGAnxb5+eANzVuwIW37HAp0uzysxSD
-	zPtGuuhQa0hmvS2dp3DBm7imI0Xb
-X-Received: by 2002:a05:6402:90b:b0:64c:9e19:9858 with SMTP id
- 4fb4d7f45d1cf-658de58d61fmr5598076a12.22.1769983301701; Sun, 01 Feb 2026
- 14:01:41 -0800 (PST)
+        d=1e100.net; s=20230601; t=1770100497; x=1770705297;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Q7veAzn+ssv4gTO6PNq9GiaBpAmIsYoQzI7tl2meJ/s=;
+        b=oA/HAq4Svk6Zev8jkRiSHB0C+fohzSubH55FHDtFtrdSeptiFTaxkQv4C4dCS5TXDZ
+         9xih02YUpYitPhP5pm0zXhYIlfv9gktFs619KH6/AKW7DuuolhMQwwFv1lrtALmhhFGb
+         vNvBOAD+bJDBqWBhssCMIQjJhTc1aHbAds7my744oqNvKkQxDe93ePQznmawcksKqTgY
+         NQcnP4k73qMksX21N8guCKpHmwRqitBuLLHHm51icdjNHnHTp8ueigBL5FygAyz3UcDq
+         4ByEB9OxCqgnzAbHZVOsuu+dvXP8RcgLCfTAdKalIvsycAteJhrqcE1geur3D4pklpGa
+         GjZg==
+X-Forwarded-Encrypted: i=1; AJvYcCWxKFKtEQ1EwL1cGfoLLlfUyKc/vQw+8IeV2zKsHnpsEwh6s27cuErdlFnM1TZpbmWHUYdzdjZMGYhNjw==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyps2V7oa97U6pY4C+jQGgcrWQCMJxWgJXooCyWwAeOyhYUeiDl
+	Q2CEU6Ssa6YISUbA8ZUOCrNVRiCcvoU9za+CnRfdDdTxqgK9R/tQROCy
+X-Gm-Gg: AZuq6aLD6xNLoQpAyNrFimmPmaW1+xKrWjBkqEJDsz5dhVP6PaI1eSo5bH7d/fYLm6R
+	q5aUOcX01kquqm1DAksDXD5BdUVFwT/0icLNZX4dbvqEyB2To/KY8I7vkSy9nU1tTclPLJdeBxB
+	r6oAOtQDkSExSUX5bpfdJmroQHQiEtItmXGc66GxZvRcK0ncKVCSoNtoFQVBeWCpMqZFayndEZs
+	5C6T6aDWMewC7VYfacndcQ3ETeWV+G2uapohBPRBZsyLzGygm2AOh0g3EIy0dsP8y62wif1qmat
+	1GzlL7u3dA33bCg+2CSvIoz/rgUnHY7AjRSr87K0OUhEFMS2SgH/ZMjwHGQt7dGBQ6kw36k8dIW
+	7yavhLjt3j/LHnLasmvzYAiMIHKzGFZSuasXxKJmBP+mb/dS8b5zd71KYRhmpUf12p7BXGBlAhi
+	BVHFAHmwbtKqBYCHLgIS1LAwwYAnYeGHtoskJHFrTIVa0nBJmIy7Oss7JvOPuG9ZHX8grF5xgp/
+	+ZWdfGET2uPRz3BsCpwjwc=
+X-Received: by 2002:a05:6512:238f:b0:59e:9b4:96a7 with SMTP id 2adb3069b0e04-59e164420cfmr4144034e87.37.1770100497341;
+        Mon, 02 Feb 2026 22:34:57 -0800 (PST)
+Received: from buildhost.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59e074889a7sm3993935e87.31.2026.02.02.22.34.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Feb 2026 22:34:56 -0800 (PST)
+From: Magnus Lindholm <linmag7@gmail.com>
+To: kees@kernel.org,
+	luto@amacapital.net,
+	wad@chromium.org,
+	shuah@kernel.org,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org,
+	glaubitz@physik.fu-berlin.de
+Cc: Magnus Lindholm <linmag7@gmail.com>
+Subject: [PATCH] selftests/seccomp: add Alpha support to seccomp_bpf
+Date: Tue,  3 Feb 2026 07:33:26 +0100
+Message-ID: <20260203063357.14320-1-linmag7@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1769515122.git.zhengqi.arch@bytedance.com> <3380f40a89b73c488202c85f9a8abf99fb08543b.1769515122.git.zhengqi.arch@bytedance.com>
-In-Reply-To: <3380f40a89b73c488202c85f9a8abf99fb08543b.1769515122.git.zhengqi.arch@bytedance.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Sun, 1 Feb 2026 23:01:30 +0100
-X-Gm-Features: AZwV_Qj9VNkT5OuGD6ka3IvGbnZ780_iMCZkDjCZeudKZ-RrGhxplhYBmunMjcY
-Message-ID: <CA+=Fv5RhxvyxKr2t+pHd1tbGrK57P-+b3pGe1nVaK_OLiFt2wg@mail.gmail.com>
-Subject: Re: [PATCH v4 2/8] alpha: mm: enable MMU_GATHER_RCU_TABLE_FREE
-To: Qi Zheng <qi.zheng@linux.dev>
-Cc: david@kernel.org, andreas@gaisler.com, richard.weiyang@gmail.com, 
-	will@kernel.org, peterz@infradead.org, aneesh.kumar@kernel.org, 
-	npiggin@gmail.com, dev.jain@arm.com, ioworker0@gmail.com, 
-	akpm@linux-foundation.org, linux-arch@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, linux-alpha@vger.kernel.org, 
-	loongarch@lists.linux.dev, linux-mips@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linux-um@lists.infradead.org, 
-	sparclinux@vger.kernel.org, Qi Zheng <zhengqi.arch@bytedance.com>, 
-	Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jan 27, 2026 at 1:16=E2=80=AFPM Qi Zheng <qi.zheng@linux.dev> wrote=
-:
->
-> From: Qi Zheng <zhengqi.arch@bytedance.com>
->
-> On a 64-bit system, madvise(MADV_DONTNEED) may cause a large number of
-> empty PTE page table pages (such as 100GB+). To resolve this problem,
-> first enable MMU_GATHER_RCU_TABLE_FREE to prepare for enabling the
-> PT_RECLAIM feature, which resolves this problem.
->
-> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
-> Cc: Richard Henderson <richard.henderson@linaro.org>
-> Cc: Matt Turner <mattst88@gmail.com>
-> ---
->  arch/alpha/Kconfig           | 1 +
->  arch/alpha/include/asm/tlb.h | 6 +++---
->  2 files changed, 4 insertions(+), 3 deletions(-)
->
-> diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-> index 80367f2cf821c..6c7dbf0adad62 100644
-> --- a/arch/alpha/Kconfig
-> +++ b/arch/alpha/Kconfig
-> @@ -38,6 +38,7 @@ config ALPHA
->         select OLD_SIGSUSPEND
->         select CPU_NO_EFFICIENT_FFS if !ALPHA_EV67
->         select MMU_GATHER_NO_RANGE
-> +       select MMU_GATHER_RCU_TABLE_FREE
->         select SPARSEMEM_EXTREME if SPARSEMEM
->         select ZONE_DMA
->         help
-> diff --git a/arch/alpha/include/asm/tlb.h b/arch/alpha/include/asm/tlb.h
-> index 4f79e331af5ea..ad586b898fd6b 100644
-> --- a/arch/alpha/include/asm/tlb.h
-> +++ b/arch/alpha/include/asm/tlb.h
-> @@ -4,7 +4,7 @@
->
->  #include <asm-generic/tlb.h>
->
-> -#define __pte_free_tlb(tlb, pte, address)              pte_free((tlb)->m=
-m, pte)
-> -#define __pmd_free_tlb(tlb, pmd, address)              pmd_free((tlb)->m=
-m, pmd)
-> -
-> +#define __pte_free_tlb(tlb, pte, address)      tlb_remove_ptdesc((tlb), =
-page_ptdesc(pte))
-> +#define __pmd_free_tlb(tlb, pmd, address)      tlb_remove_ptdesc((tlb), =
-virt_to_ptdesc(pmd))
-> +
->  #endif
-> --
-> 2.20.1
->
+Enable seccomp_bpf selftests on the Alpha architecture by providing
+Alpha-specific register definitions and syscall accessors.
 
-Looks good from an Alpha perspective.
+This allows the seccomp-bpf test suite to exercise syscall tracing,
+seccomp filters, and user notification on Alpha.
 
-Acked-by: Magnus Lindholm <linmag7@gmail.com>
+Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+---
+ tools/testing/selftests/seccomp/seccomp_bpf.c | 29 +++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
+index 32e2d4df397b..db2c81bb89b6 100644
+--- a/tools/testing/selftests/seccomp/seccomp_bpf.c
++++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+@@ -136,6 +136,8 @@ struct seccomp_data {
+ #  define __NR_seccomp 354
+ # elif defined(__x86_64__)
+ #  define __NR_seccomp 317
++# elif defined(__alpha__)
++#  define __NR_seccomp 514
+ # elif defined(__arm__)
+ #  define __NR_seccomp 383
+ # elif defined(__aarch64__)
+@@ -1748,6 +1750,29 @@ TEST_F(TRACE_poke, getpid_runs_normally)
+ # define ARCH_REGS		struct user_regs_struct
+ # define SYSCALL_NUM(_regs)	(_regs).orig_eax
+ # define SYSCALL_RET(_regs)	(_regs).eax
++#elif defined(__alpha__)
++#define ARCH_REGS struct pt_regs
++#define SYSCALL_NUM(_regs) ((_regs).r1)
++#define SYSCALL_NR_SET(_regs, _nr) \
++	((_regs).r1 = (unsigned long)(_nr))
++#define SYSCALL_RET(_regs)     ((_regs).r0)
++/*
++ * Alpha syscall ABI:
++ *  - r0 holds return value (or positive errno on failure)
++ *  - r19 (a3) is 0 on success, 1 on failure
++ */
++#define SYSCALL_RET_SET(_regs, _val)				\
++	do {							\
++		long __v = (long)(_val);			\
++		if (__v < 0) {					\
++			(_regs).r0  = (unsigned long)(-__v);	\
++			(_regs).r19 = 1;			\
++		} else {					\
++			(_regs).r0  = (unsigned long)__v;	\
++			(_regs).r19 = 0;			\
++		}						\
++	} while (0)
++
+ #elif defined(__arm__)
+ # define ARCH_REGS		struct pt_regs
+ # define SYSCALL_NUM(_regs)	(_regs).ARM_r7
+@@ -4643,6 +4668,10 @@ TEST(user_notification_wait_killable_pre_notification)
+ 	pid_t pid;
+ 	long ret;
+ 	char c;
++
++	#if defined(__alpha__)
++		SKIP(return, "/proc/<pid>/syscall not available on Alpha");
++	#endif
+ 	/* 100 ms */
+ 	struct timespec delay = { .tv_nsec = 100000000 };
+ 
+-- 
+2.52.0
+
