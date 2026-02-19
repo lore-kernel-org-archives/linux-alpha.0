@@ -1,207 +1,122 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D34036AB78;
-	Tue, 17 Feb 2026 13:57:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1945534A3AC
+	for <linux-alpha@vger.kernel.org>; Thu, 19 Feb 2026 17:00:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771336676; cv=none; b=J1okqCgs27gy8JkbFkYujNumzveUHz7Su5G+x3Q2RlxksjcS3M0cjR9h9pUktSXc0TAHSd5kIxG+R4vhZ7uiiZnOjVHvAD46h6w7GR0R6k0dQzlJur4pC+Zfu+szcMWXNRUjuRE7MIRxePAardeJlo4hY0TCcg2sT/z5mMWnAxM=
+	t=1771520435; cv=none; b=Yhrs4fwmPRNmqYNIRmWvI8UqwQCl3SOCXQjn1P+i8Hhq/4+WXxGSRtd0jITOkbGHEdP9UBAms24WoASfrRUNnrlE80E5lu6ttSobSU9MfmjdrhiKIj9b+Lual3zcx5yXZQEV5aWnslgVq6TFrqyzHbfw72jL5PZhwC+IIRbyV4U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771336676; c=relaxed/simple;
-	bh=5LruJY3oSjUgfcRiWmTyG6iHQqDu7l3isBQvk22Zx2w=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=mIYl1OIFa1obmE1sRPsDDsvyHPLvyygzW/Mj01hRqn+zTTmoHhhyq3sKkrls6Svc32/pNQhHl7W9BlviY2JjQ7E+y2mdzgGBlldq8AOG81pfArNlKJG/vekRdw3UexWS9J3+nPVXjOXCaT6Z5T1vUJNpcNdXn9TtElSCaSQKLTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=FTKmIMGX; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	s=arc-20240116; t=1771520435; c=relaxed/simple;
+	bh=rdaKtry86/IM4QZB2HtJKQKabxX9u5xLmrTh8hZHOWg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cYNshLNdlCXYaTcVxEw4p/b0TLkqaLbm82gOqAWJDbLmv+RzezWw/IDKdzW/lEiQHlH5ioWeCQjYqF/r+ysxTVv6QAF1l1vuGGWFIJOXEf5T8fViXIToUzqqVitadpsNjwGnpePVA7bEDuG0bnYKkJisrS1W7oBA3PY/Rhy/slI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hTB+s/3y; arc=none smtp.client-ip=209.85.167.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="FTKmIMGX"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:From:
-	Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-	Content-Transfer-Encoding:Content-ID:Content-Description:In-Reply-To:
-	References; bh=Pwz8t6PMdZ7Eyt0zG9XbbpQPro+70AXMQDf5xeeq3xY=; t=1771336674;
-	x=1771941474; b=FTKmIMGXf5p0snLAJUs7sT2XFtPBDoHKxTkRECjxD/UcdhugVoAgZzkjxCoEV
-	vJ34N82ycK4ErC6GhGSS5M7mLXpBWxQOH/IxPzDVpjeI9X0BbRPXk8xx7ScneU8qGlUb+VYtzSaBb
-	my+KcQY74fBFgvHhSrtYg1+fagyETzai+eS0pg11STZltA4jY/YSVVTFrRXhnXQbAfyEVvdlqj9bR
-	lNYoYPI9mwlmwMYP1iVXidzwApC+OTyKf84E45nFk97bmIZ+XjjPXKZWMdcOcfMOFHlinTeLoeH3h
-	Y116AgWvYJzGxHX/6jNpJkJ6hoOKduDOfhQQ7GTr5t9tQKVMZg==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.99)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1vsLa1-00000003Yoo-11bO; Tue, 17 Feb 2026 14:57:33 +0100
-Received: from p5dc55f29.dip0.t-ipconnect.de ([93.197.95.41] helo=[192.168.178.61])
-          by inpost2.zedat.fu-berlin.de (Exim 4.99)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1vsLa0-00000002m9f-3s0R; Tue, 17 Feb 2026 14:57:33 +0100
-Message-ID: <8317613a286ab637ac29740433ff51286ebbbaca.camel@physik.fu-berlin.de>
-Subject: Re: [PATCH v5 11/14] sparc: Use physical address DMA mapping
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Leon Romanovsky	
- <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Russell King	
- <linux@armlinux.org.uk>, Juergen Gross <jgross@suse.com>, Stefano
- Stabellini	 <sstabellini@kernel.org>, Oleksandr Tyshchenko
- <oleksandr_tyshchenko@epam.com>,  Richard Henderson
- <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, Thomas
- Bogendoerfer	 <tsbogend@alpha.franken.de>, "James E.J. Bottomley"	
- <James.Bottomley@HansenPartnership.com>, Helge Deller <deller@gmx.de>, 
- Madhavan Srinivasan	 <maddy@linux.ibm.com>, Michael Ellerman
- <mpe@ellerman.id.au>, Nicholas Piggin	 <npiggin@gmail.com>, Christophe
- Leroy <christophe.leroy@csgroup.eu>, Geoff Levand <geoff@infradead.org>,
- "David S. Miller" <davem@davemloft.net>, Andreas Larsson	
- <andreas@gaisler.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar	
- <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen	
- <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin"
- <hpa@zytor.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, 
-	linux-alpha@vger.kernel.org, linux-mips@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, sparclinux
-	 <sparclinux@vger.kernel.org>
-Date: Tue, 17 Feb 2026 14:57:31 +0100
-In-Reply-To: <7131d609-b083-4264-818a-21de38c1c3ed@samsung.com>
-References: <20251015-remove-map-page-v5-0-3bbfe3a25cdf@kernel.org>
-		<20251015-remove-map-page-v5-11-3bbfe3a25cdf@kernel.org>
-		<CGME20260217123216eucas1p2d74189a3cdf08e9301bebf1840491364@eucas1p2.samsung.com>
-		<e294484787a5032c531dcd40071b22362bddcad4.camel@physik.fu-berlin.de>
-	 <7131d609-b083-4264-818a-21de38c1c3ed@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hTB+s/3y"
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-59b672f8ec4so1193655e87.1
+        for <linux-alpha@vger.kernel.org>; Thu, 19 Feb 2026 09:00:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771520432; x=1772125232; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ax6hxysPDCJIFDsFMfjVQIik4hdtHQIW1zEvdhWDvys=;
+        b=hTB+s/3yq6jNQkbmzMl4HVvGpcUVdUzE+pFWeqrSHd24fU9PW32x+ZxTGVKbVgS5df
+         OoMBx9G4cqWuYQ4IIqCtRLXNKck61FJFl1nMEVaoZ4Qfrj1OOMcJXefAwmPDJkWwK6bf
+         GipyXqAyCcwlGYruJV0QXk3ibHmOOcL6gmNPVb7SiQG06nEwstIu0OcaJJ32MqaO/6k1
+         SvKneSkK1lTexY8bV4HBGAORORECT9R6N5J3G0+075YYfqAtO6ssjwNgkBE4mm4zwhZL
+         mRrEs9KBA9PbBBmqhV9985/hgcz2IIgx3144u/ijTjIwe0pnkSSYVGpRypLSeclziq4O
+         OX2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771520432; x=1772125232;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ax6hxysPDCJIFDsFMfjVQIik4hdtHQIW1zEvdhWDvys=;
+        b=w90i/Ig1NklrYJH0j8DT54awLBkluVm5hrOCnBVW45oSl8WmWGojrUucLO4XYAzxn0
+         BogClqWU/5RV69vUuqPvJFhrpoTyMhNHFyiYMRcbPSuTdP8oQ5hzk+pxIbjDkaNTobJb
+         uSueBzNJH6EUp+KpNXY0W/UgIr30/8ucUF954UFH0AfvZWt1IL/GgQVQYuEG8LL25j6P
+         ug1Ou9/FBNeeCHQEOD3thZUY9q9JPVCme8CozRcP8OqvkBrL2RilfJZHulGkEzHagkT9
+         4i2TIssKNElRTaWYt7f4RGBZWW60H6Mox4MSUq9tjVq7x9RFoaQS+Gym6pRsxdY8PdwI
+         Ba8A==
+X-Forwarded-Encrypted: i=1; AJvYcCXuA+/2SJ+8a2yeC7np/s9lUMuA4jXPBqEeNFX7NplxSt1NF0vYEVID71tVEZZMtpUjZ+/ccedOlWXGTw==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwwkzCE20qjtXsYf8E08WkINP0xXB+4qD2w+EErluV8ZaTZcaML
+	FMrbJYZzAkGRbOaPSuEYOvJfZl47nwwEoWZWWqhKGe2EDJP6AstkSdQK
+X-Gm-Gg: AZuq6aIddjfdkR6geEgHH2K+LOW4UZGGBhztd1T1DBA8mIwinTGEXQe6gpj/ypaWdg0
+	d5NVkLrEe3GpqW6aveshRruWlO771ROLuhzjufK5sU/xJKWr9y7wa5UfoIFq3wpa5C/F6gcM+LP
+	iZ21jjqdrxgf2MwjYWwtjEx4KiKIzfk+HkBXyceRgKYQeauXq1/3ZSMlhWGgcWtB6aU8+OWcspf
+	H/HMgVWgDiEssqfynR5KTB5PYfb4RBXL/MDuRaD9/NNTv27DS9p9rbGIeXpGMz8OqyC1xqbyBRS
+	B/rjNrtT3R+M94/693hR66+B4onve4oydXlnUfQDxiTmAZfu1hxbWfD9nA4F4QY3P905QKyLIfC
+	dLo9PEAb4AoyaVrCdzUSeUh32tyo7ChO5KgG/jTcfbLFn4EiCLYC+pL3BrRQ7N5t2TnBauRxFND
+	yVDfAUyt5fX/Nozt3L0LSJPJxN/dlRjpWhCz2wHJoh7NFEJd5gn75SztOTRsmx/ub5q6j7NGsZK
+	zdoD62KpROnrOw287+YP6VP5OhKZndyjXw=
+X-Received: by 2002:a05:6512:1150:b0:59e:6c24:3f91 with SMTP id 2adb3069b0e04-59f83bbcd19mr2094188e87.34.1771520431799;
+        Thu, 19 Feb 2026 09:00:31 -0800 (PST)
+Received: from buildhost.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59e5f5b222esm5435943e87.80.2026.02.19.09.00.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Feb 2026 09:00:31 -0800 (PST)
+From: Magnus Lindholm <linmag7@gmail.com>
+To: richard.henderson@linaro.org,
+	mattst88@gmail.com,
+	glaubitz@physik.fu-berlin.de,
+	macro@orcam.me.uk,
+	macro@redhat.com,
+	mcree@orcon.net.nz,
+	ink@unseen.parts,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org
+Cc: Magnus Lindholm <linmag7@gmail.com>
+Subject: [PATCH 0/1] Add support for HAVE_ARCH_JUMP_LABEL
+Date: Thu, 19 Feb 2026 17:58:31 +0100
+Message-ID: <20260219170013.15884-1-linmag7@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+Content-Transfer-Encoding: 8bit
 
-Hi Marek,
+This patch adds jump label (static key) support for Alpha.
+Testing and verification were performed on an UP2000+ system.
 
-On Tue, 2026-02-17 at 13:55 +0100, Marek Szyprowski wrote:
-> On 17.02.2026 13:27, John Paul Adrian Glaubitz wrote:
-> > On Wed, 2025-10-15 at 12:12 +0300, Leon Romanovsky wrote:
-> > > From: Leon Romanovsky <leonro@nvidia.com>
-> > >=20
-> > > Convert sparc architecture DMA code to use .map_phys callback.
-> > >=20
-> > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > ---
-> > >   arch/sparc/kernel/iommu.c     | 30 +++++++++++++++++-----------
-> > >   arch/sparc/kernel/pci_sun4v.c | 31 ++++++++++++++++++-----------
-> > >   arch/sparc/mm/io-unit.c       | 38 ++++++++++++++++++--------------=
----
-> > >   arch/sparc/mm/iommu.c         | 46 ++++++++++++++++++++++----------=
------------
-> > >   4 files changed, 82 insertions(+), 63 deletions(-)
-> > >=20
-> > > diff --git a/arch/sparc/kernel/iommu.c b/arch/sparc/kernel/iommu.c
-> > > index da0363692528..46ef88bc9c26 100644
-> > > --- a/arch/sparc/kernel/iommu.c
-> > > +++ b/arch/sparc/kernel/iommu.c
-> > > @@ -260,26 +260,35 @@ static void dma_4u_free_coherent(struct device =
-*dev, size_t size,
-> > >   		free_pages((unsigned long)cpu, order);
-> > >   }
-> > >  =20
-> > > -static dma_addr_t dma_4u_map_page(struct device *dev, struct page *p=
-age,
-> > > -				  unsigned long offset, size_t sz,
-> > > -				  enum dma_data_direction direction,
-> > > +static dma_addr_t dma_4u_map_phys(struct device *dev, phys_addr_t ph=
-ys,
-> > > +				  size_t sz, enum dma_data_direction direction,
-> > >   				  unsigned long attrs)
-> > >   {
-> > >   	struct iommu *iommu;
-> > >   	struct strbuf *strbuf;
-> > >   	iopte_t *base;
-> > >   	unsigned long flags, npages, oaddr;
-> > > -	unsigned long i, base_paddr, ctx;
-> > > +	unsigned long i, ctx;
-> > >   	u32 bus_addr, ret;
-> > >   	unsigned long iopte_protection;
-> > >  =20
-> > > +	if (unlikely(attrs & DMA_ATTR_MMIO))
-> > > +		/*
-> > > +		 * This check is included because older versions of the code
-> > > +		 * lacked MMIO path support, and my ability to test this path
-> > > +		 * is limited. However, from a software technical standpoint,
-> > > +		 * there is no restriction, as the following code operates
-> > > +		 * solely on physical addresses.
-> > > +		 */
-> > > +		goto bad_no_ctx;
-> > > +
-> > >   	iommu =3D dev->archdata.iommu;
-> > >   	strbuf =3D dev->archdata.stc;
-> > >  =20
-> > >   	if (unlikely(direction =3D=3D DMA_NONE))
-> > >   		goto bad_no_ctx;
-> > >  =20
-> > > -	oaddr =3D (unsigned long)(page_address(page) + offset);
-> > > +	oaddr =3D (unsigned long)(phys_to_virt(phys));
-> > >   	npages =3D IO_PAGE_ALIGN(oaddr + sz) - (oaddr & IO_PAGE_MASK);
-> > >   	npages >>=3D IO_PAGE_SHIFT;
-> > >  =20
-> > > @@ -296,7 +305,6 @@ static dma_addr_t dma_4u_map_page(struct device *=
-dev, struct page *page,
-> > >   	bus_addr =3D (iommu->tbl.table_map_base +
-> > >   		    ((base - iommu->page_table) << IO_PAGE_SHIFT));
-> > >   	ret =3D bus_addr | (oaddr & ~IO_PAGE_MASK);
-> > > -	base_paddr =3D __pa(oaddr & IO_PAGE_MASK);
-> > >   	if (strbuf->strbuf_enabled)
-> > >   		iopte_protection =3D IOPTE_STREAMING(ctx);
-> > >   	else
-> > > @@ -304,8 +312,8 @@ static dma_addr_t dma_4u_map_page(struct device *=
-dev, struct page *page,
-> > >   	if (direction !=3D DMA_TO_DEVICE)
-> > >   		iopte_protection |=3D IOPTE_WRITE;
-> > >  =20
-> > > -	for (i =3D 0; i < npages; i++, base++, base_paddr +=3D IO_PAGE_SIZE=
-)
-> > > -		iopte_val(*base) =3D iopte_protection | base_paddr;
-> > > +	for (i =3D 0; i < npages; i++, base++, phys +=3D IO_PAGE_SIZE)
-> > > +		iopte_val(*base) =3D iopte_protection | phys;
->=20
-> 'base_paddr' was aligned to start of a page before this patch, while=20
-> 'phys'=C2=A0includes the offset within a page.
->=20
->=20
-> Could You check if the following change fixes the issue?
->=20
-> diff --git a/arch/sparc/kernel/iommu.c b/arch/sparc/kernel/iommu.c
-> index 46ef88bc9c26..edb0ffb21e2f 100644
-> --- a/arch/sparc/kernel/iommu.c
-> +++ b/arch/sparc/kernel/iommu.c
-> @@ -312,6 +312,7 @@ static dma_addr_t dma_4u_map_phys(struct device=20
-> *dev, phys_addr_t phys,
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (direction !=3D DMA_TO_DEV=
-ICE)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 iopte_protection |=3D IOPTE_WRITE;
->=20
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 phys -=3D offset_in_page(phys);
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 for (i =3D 0; i < npages; i++=
-, base++, phys +=3D IO_PAGE_SIZE)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 iopte_val(*base) =3D iopte_protection | phys;
+Verification steps:
 
-Thanks, I have forwarded your patch and asked the user to answer here if po=
-ssible [1].
+  - Confirmed __jump_table section is present at runtime via
+    /proc/kallsyms and contains a non-zero number of entries.
 
-Adrian
+  - Instrumented arch_jump_label_transform() to log patch
+    operations and verified instruction sites toggle between:
 
-> [1] https://github.com/sparclinux/issues/issues/75#issuecomment-391479186=
-2
+        NOP (bis $31,$31,$31, 0x47ff041f)
+        BR  (br $31,target)
 
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+  - Added temporary instrumentation in
+    arch_jump_label_transform() to log old/new instruction
+    values at each patch site, and used a Python script to
+    validate correct NOP/BR transitions and branch encoding,
+    confirming functional runtime patching.
+
+Instruction stream synchronization uses imb()/smp_imb() via
+flush_icache_range(), and runtime behavior confirms correct
+I-cache coherency.
+
+The system remained stable throughout all testing.
+
+Magnus Lindholm (1):
+  alpha: Add support for HAVE_ARCH_JUMP_LABEL
+
+ arch/alpha/Kconfig                  |  1 +
+ arch/alpha/include/asm/jump_label.h | 66 +++++++++++++++++++++++
+ arch/alpha/kernel/Makefile          |  1 +
+ arch/alpha/kernel/jump_label.c      | 81 +++++++++++++++++++++++++++++
+ 4 files changed, 149 insertions(+)
+ create mode 100644 arch/alpha/include/asm/jump_label.h
+ create mode 100644 arch/alpha/kernel/jump_label.c
+
+-- 
+2.52.0
+
