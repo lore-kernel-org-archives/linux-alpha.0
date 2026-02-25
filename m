@@ -1,310 +1,211 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE803393DCF
-	for <linux-alpha@vger.kernel.org>; Wed, 25 Feb 2026 11:06:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E28443B961D;
+	Wed, 25 Feb 2026 16:25:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772017584; cv=none; b=apX2I4XuIjmLh2e57H0O7HEGShfg7q5ByH2rfiwtGg0Azsv5Bjju43XlXyiFF3dW9diFET7n/wA2bj2DxHSkEYJUEJoN9/O40RWutIwFKkKT5CYVeKTkdooQVNdMjxhziDLCUTKt19mWs/KTTZG/kUPPnzTwu18ORnMWzAcsDMM=
+	t=1772036746; cv=none; b=YynkNkDVHV/naB7Gs1pmDe0jMkB8xgZIyczg3SKik5g6ecs9p/tgxJlIe+QLOE03Wjwrs3kTOu0ub+3K9rDRDwTE7m+JNi2ZX4DtHgaQ/KkDbfmrlh17lCl43pOhnRWcuu6zgOWHfBYegh88jQ4ZOMLHZcixeGjz+g8w3R4n+S4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772017584; c=relaxed/simple;
-	bh=KZGk8jShgJ+UVPPD4bygf8HYr4zzyZJVBv3mjU3pj3g=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ixGValg53dl79854I9KV1LIHjdfymXRUwPar0dSrcVZXttaexntdRx86R3WG5wC5UBDBDsmriFNBE4zoojJVPsp7ytlq5+KX5gzRz/gqFUwGJ1CTXB+liPtZBKwxi+KZ8ItdTE6jXhjNWIy1kY+NcU/ehmhFGqGssX3HmGpzcBQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mEmOAEXh; arc=none smtp.client-ip=209.85.208.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772036746; c=relaxed/simple;
+	bh=guCbsIDgg8ayG9mMMymVvi9nZm4Jxc5WYXcp2FwHotE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Izqzrc7MnA8MwjhVb6uJm7nNY9g5oRGySLnzXsXWMDKw/tMdL4N1K3Kn4tQrVSDvSF+cXbD75SgkxQqJLvwfydnmzgysr3dvo+S5XEfI8KlluHr+KUQFPW2CLCPY3KMgcLb6CfngFshbyta0UoQfJ/wOXd2jWf79rfDscW5kBpE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cULZ5qEP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mEmOAEXh"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3870c7479c0so60870221fa.3
-        for <linux-alpha@vger.kernel.org>; Wed, 25 Feb 2026 03:06:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772017581; x=1772622381; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6bvNM7nuV1kvyZuXbd57dM/KygANB/KeHuFkkf7XGSk=;
-        b=mEmOAEXhz3v07o7JITRyYucMrWSUtgQiGFAVZOtKX6aedSKDR5mtjMsiTalMQY9gSV
-         XQtkKXtZaVJonIPrZR+XSrRYc5VXjRc646Exx38NcXpZrbex+326wcrRrvH+ErA3dr79
-         VICMK5K0OvNRgLpiSQZzsMGAIE/Mul7OZExm/Iqsulm8ARFMh74uKf+tP9zFhEcVqmUK
-         +N0wc2DlgVatdV9Do4esgXRHda5gMcd3XE096HUJ9p+61dtuxLXgCM44S7dwmQlKC2/3
-         kk0sMTeeLs0Z9xpUz4cAhULeZmQeHd2Xx/dQQYbt/AxcvXOHcaf2MqWgYAbx/67NTqa5
-         IAPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772017581; x=1772622381;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=6bvNM7nuV1kvyZuXbd57dM/KygANB/KeHuFkkf7XGSk=;
-        b=VkdTJ1P4ivUlWsoXi71XACVnRcY1N1hZLpxlGYstls++sp1VWknu2Wh3PvkD/PxQq+
-         PsUXUPiJ/PQImxrQPqk+oP0mxklJAML3Tmxfj+Q5QIc03T9RMkYhltbPUr4lw7jfBvYz
-         jG6Dzon5hPL/RF2l1bmhI/sJDxqEMkSZfG1QWkItis28BetAVVoq/11h7/JK56hfO1Mm
-         VVlOqyApv4mxZgDU6ByT2XEZxqcyIGvn61cqKqShTkXZ99WspoFu6ZesNFMiupiaPUlE
-         KtZ2T/8ppv30N579LIu8RrG0b8IlSkt8SjrzVP1RvYPJmGGbZ8KUx5aoWI02exOsYlk3
-         4XsQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUUZWEx45Yuf8f+X2rtrI8jiJYZhAirEuSwg0mEN9iqDeA4wIuODDT6vonyFGzSlE8VIEt9q7SGSdkKEg==@vger.kernel.org
-X-Gm-Message-State: AOJu0YyInjjX0L86Yos77kshBirCrxSEAfWeukLOHz8LxtG1EQ/WV0TS
-	vaxURZ46/itXWSTVJKXobLj6ZuM/xlCSz9D4npH+5R+87nd0OeugEBuS
-X-Gm-Gg: ATEYQzw3RnS9oY+kopfaDYP4SzgUTjnOFolizS/5bPzXxVumexRs82Q8SUpZXM9d6wn
-	7gH5j54fGaY/OgkWnFajAWg2D3Lp7qldxQcX/0hqazhr/l97BnV0YTpe434CFzMieHE0MK4vGjP
-	GFwWiUDyv9N+NFMtCUtKvCZVisi+Gu8HWi+5Iks3+6kOJNlbZTe/Rys1+lo6Gra2+7mKf2zoSwp
-	wv4tOjmiuVqcgaQcm9DlaGjLDnT7M9wWFni2lwQbdBeVJbH1lmzILUjmxN+7id8m6QbA1vtbz0V
-	y6GhKDJ1KEWLs/vbgT+Jy4E7vJC0YbqCJCviwGmLVZQ84ChBSjw58Knsecl8LbLFcyXge7GyTub
-	Rv8LKYjZdJYvlGqoFebBDY7ec+NKzosbWBPDAmvMO94KNmmeTT0jdp+Twkgkf6ElCXSAB4Px8cD
-	UIpFj1dgAf/6SDIUrVAEPb0ZBM8ZM652IPg0wkYAlEw4DuceBb0ljB4sXmauPPjzV87fkIV29Fp
-	THi/woJSbwttK2FLQ4tQb5j46KFS/o5/rTUeXU5sIdJQw==
-X-Received: by 2002:a05:651c:1ca:b0:386:fdcd:b2c4 with SMTP id 38308e7fff4ca-389a5e6d6f7mr43765891fa.35.1772017580727;
-        Wed, 25 Feb 2026 03:06:20 -0800 (PST)
-Received: from buildhost.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-389a78d2326sm29347181fa.15.2026.02.25.03.06.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Feb 2026 03:06:20 -0800 (PST)
-From: Magnus Lindholm <linmag7@gmail.com>
-To: richard.henderson@linaro.org,
-	mattst88@gmail.com,
-	linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org,
-	skhan@linuxfoundation.org,
-	chenmiao.ku@gmail.com,
-	shorne@gmail.com,
-	corbet@lwn.net
-Cc: glaubitz@physik.fu-berlin.de,
-	macro@orcam.me.uk,
-	macro@redhat.com,
-	mcree@orcon.net.nz,
-	ink@unseen.parts,
-	Magnus Lindholm <linmag7@gmail.com>
-Subject: [PATCH v2 1/1] alpha: Add support for HAVE_ARCH_JUMP_LABEL
-Date: Wed, 25 Feb 2026 12:02:46 +0100
-Message-ID: <20260225110548.31431-2-linmag7@gmail.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260225110548.31431-1-linmag7@gmail.com>
-References: <20260225110548.31431-1-linmag7@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cULZ5qEP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3776DC116D0;
+	Wed, 25 Feb 2026 16:25:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772036745;
+	bh=guCbsIDgg8ayG9mMMymVvi9nZm4Jxc5WYXcp2FwHotE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=cULZ5qEPz3eS7I+Fsxr6miX8AP+0kVboSS3w9recg6hIWBQu8d492aJMKFAtePr5C
+	 Yxw6zeIYl0NzkVTqOY+rZ3drD+EwjqMadIeU3+bhyJFoPCMVo0RZaVEqrkGtGCEwa4
+	 bcriv7DhH2j0T9uGVeVdL+y8N8zL0iY2hVFSWAbADuMDI7VU71xE8IuqKkYJ+gZCsQ
+	 xR3OY+ov4QmLACxJ9gpX2X8RBJq46iAC34jhNq6rOPIAXeo23p3YGZbABHQNK9QxkC
+	 B70PkGx9oFgxrBgyJwJJ0C90f4GZTWG9hD7VkXOtmEBOVrFFkcSQg/ezo7Ywq0Uean
+	 YvcAIzi1k5CAg==
+Date: Wed, 25 Feb 2026 18:25:24 +0200
+From: Mike Rapoport <rppt@kernel.org>
+To: Ritesh Harjani <ritesh.list@gmail.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, Alex Shi <alexs@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Borislav Petkov <bp@alien8.de>, Brian Cain <bcain@kernel.org>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	David Hildenbrand <david@kernel.org>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Guo Ren <guoren@kernel.org>, Heiko Carstens <hca@linux.ibm.com>,
+	Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Klara Modin <klarasmodin@gmail.com>,
+	"Liam R. Howlett" <Liam.Howlett@oracle.com>,
+	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Matt Turner <mattst88@gmail.com>, Max Filippov <jcmvbkbc@gmail.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Michal Hocko <mhocko@suse.com>, Michal Simek <monstr@monstr.eu>,
+	Muchun Song <muchun.song@linux.dev>,
+	Oscar Salvador <osalvador@suse.de>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Richard Weinberger <richard@nod.at>,
+	Russell King <linux@armlinux.org.uk>,
+	Stafford Horne <shorne@gmail.com>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Vasily Gorbik <gor@linux.ibm.com>, Vineet Gupta <vgupta@kernel.org>,
+	Vlastimil Babka <vbabka@suse.cz>, Will Deacon <will@kernel.org>,
+	x86@kernel.org, linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
+	linux-cxl@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-hexagon@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+	linux-mm@kvack.org, linux-openrisc@vger.kernel.org,
+	linux-parisc@vger.kernel.org, linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+	linux-snps-arc@lists.infradead.org, linux-um@lists.infradead.org,
+	linuxppc-dev@lists.ozlabs.org, loongarch@lists.linux.dev,
+	sparclinux@vger.kernel.org
+Subject: Re: [PATCH v3 24/29] arch, mm: consolidate initialization of SPARSE
+ memory model
+Message-ID: <aZ8idANginXzhf0_@kernel.org>
+References: <20260111082105.290734-1-rppt@kernel.org>
+ <20260111082105.290734-25-rppt@kernel.org>
+ <87tsv5h544.ritesh.list@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87tsv5h544.ritesh.list@gmail.com>
 
-Implement static key (jump label) support for Alpha.
+Hello Ritesh,
 
-Provide arch_static_branch() helpers and implement
-arch_jump_label_transform() to patch a single instruction site
-between NOP and BR, with appropriate I-cache synchronization.
+On Wed, Feb 25, 2026 at 09:00:35AM +0530, Ritesh Harjani wrote:
+> Mike Rapoport <rppt@kernel.org> writes:
+> 
+> > From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
+> >
+> > Every architecture calls sparse_init() during setup_arch() although the
+> > data structures created by sparse_init() are not used until the
+> > initialization of the core MM.
+> >
+> > Beside the code duplication, calling sparse_init() from architecture
+> > specific code causes ordering differences of vmemmap and HVO initialization
+> > on different architectures.
+> >
+> > Move the call to sparse_init() from architecture specific code to
+> > free_area_init() to ensure that vmemmap and HVO initialization order is
+> > always the same.
+> >
+> 
+> Hello Mike,
+> 
+> [    0.000000][    T0] ------------[ cut here ]------------
+> [    0.000000][    T0] WARNING: arch/powerpc/include/asm/io.h:879 at virt_to_phys+0x44/0x1b8, CPU#0: swapper/0
+> [    0.000000][    T0] Modules linked in:
+> [    0.000000][    T0] CPU: 0 UID: 0 PID: 0 Comm: swapper Not tainted 6.19.0-12139-gc57b1c00145a #31 PREEMPT
+> [    0.000000][    T0] Hardware name: IBM pSeries (emulated by qemu) POWER10 (architected) 0x801200 0xf000006 of:SLOF,git-ee03ae pSeries
+> [    0.000000][    T0] NIP:  c000000000601584 LR: c000000004075de4 CTR: c000000000601548
+> [    0.000000][    T0] REGS: c000000004d1f870 TRAP: 0700   Not tainted  (6.19.0-12139-gc57b1c00145a)
+> [    0.000000][    T0] MSR:  8000000000021033 <SF,ME,IR,DR,RI,LE>  CR: 48022448  XER: 20040000
+> [    0.000000][    T0] CFAR: c0000000006016c4 IRQMASK: 1
+> [    0.000000][    T0] GPR00: c000000004075dd4 c000000004d1fb10 c00000000304bb00 c000000180000000
+> [    0.000000][    T0] GPR04: 0000000000000009 0000000000000009 c000000004ec94a0 0000000000000000
+> [    0.000000][    T0] GPR08: 0000000000018000 0000000000000001 c000000004921280 0000000048022448
+> [    0.000000][    T0] GPR12: c000000000601548 c000000004fe0000 0000000000000004 0000000000000004
+> [    0.000000][    T0] GPR16: 000000000287fb08 0000000000000060 0000000000000002 0000000002831750
+> [    0.000000][    T0] GPR20: 0000000002831778 fffffffffffffffd c000000004d78050 00000000051cbb00
+> [    0.000000][    T0] GPR24: 0000000005a40008 c000000000000000 c000000000400000 0000000000000100
+> [    0.000000][    T0] GPR28: c000000004d78050 0000000000000000 c000000004ecd4a8 0000000000000001
+> [    0.000000][    T0] NIP [c000000000601584] virt_to_phys+0x44/0x1b8
+> [    0.000000][    T0] LR [c000000004075de4] alloc_bootmem+0x144/0x1a8
+> [    0.000000][    T0] Call Trace:
+> [    0.000000][    T0] [c000000004d1fb50] [c000000004075dd4] alloc_bootmem+0x134/0x1a8
+> [    0.000000][    T0] [c000000004d1fba0] [c000000004075fac] __alloc_bootmem_huge_page+0x164/0x230
+> [    0.000000][    T0] [c000000004d1fbe0] [c000000004030bc4] alloc_bootmem_huge_page+0x44/0x138
+> [    0.000000][    T0] [c000000004d1fc10] [c000000004076e48] hugetlb_hstate_alloc_pages+0x350/0x5ac
+> [    0.000000][    T0] [c000000004d1fd30] [c0000000040782f0] hugetlb_bootmem_alloc+0x15c/0x19c
+> [    0.000000][    T0] [c000000004d1fd70] [c00000000406d7b4] mm_core_init_early+0x7c/0xdf4
+> [    0.000000][    T0] [c000000004d1ff30] [c000000004011d84] start_kernel+0xac/0xc58
+> [    0.000000][    T0] [c000000004d1ffe0] [c00000000000e99c] start_here_common+0x1c/0x20
+> [    0.000000][    T0] Code: 6129ffff 792907c6 6529ffff 6129ffff 7c234840 40810018 3d2201e8 3929a7a8 e9290000 7c291840 41810044 3be00001 <0b1f0000> 3d20bfff 6129ffff 792907c6
+> 
+> 
+> I think this is happening because, now in mm_core_early_init(), the
+> order of initialization between hugetlb_bootmem_alloc() and
+> free_area_init() is reversed. Since free_area_init() -> sparse_init()
+> is responsible for setting SECTIONS and vmemmap area. 
+> 
+> Then in alloc_bootmem() (from hugetlb_bootmem_alloc() path), it uses virt_to_phys(m)...
+> 
+> 			/*
+> 			 * For pre-HVO to work correctly, pages need to be on
+> 			 * the list for the node they were actually allocated
+> 			 * from. That node may be different in the case of
+> 			 * fallback by memblock_alloc_try_nid_raw. So,
+> 			 * extract the actual node first.
+> 			 */
+> 			if (m)
+> 				listnode = early_pfn_to_nid(PHYS_PFN(virt_to_phys(m)));
+> 
+> 
+> ... virt_to_phys on powerpc uses:
+> 
+> static inline unsigned long virt_to_phys(const volatile void * address)
+> {
+> 	WARN_ON(IS_ENABLED(CONFIG_DEBUG_VIRTUAL) && !virt_addr_valid(address));
+> 
+> 	return __pa((unsigned long)address);
+> }
+> 
+> #define virt_addr_valid(vaddr)	({					\
+> 	unsigned long _addr = (unsigned long)vaddr;			\
+> 	_addr >= PAGE_OFFSET && _addr < (unsigned long)high_memory &&	\
+> 	pfn_valid(virt_to_pfn((void *)_addr));				\
+> })
+> 
+> 
+> I think the above warning in dmesg gets printed from above WARN_ON, i.e.
+> because pfn_valid() is false, since we haven't done sparse_init() yet.
 
-Tested on Alpha UP2000+ SMP. Static key sites toggle correctly
-under tracepoint enable/disable and repeated stress testing
-without faults.
-
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
----
- .../core/jump-labels/arch-support.txt         |  2 +-
- arch/alpha/Kconfig                            |  1 +
- arch/alpha/include/asm/jump_label.h           | 66 +++++++++++++++
- arch/alpha/kernel/Makefile                    |  1 +
- arch/alpha/kernel/jump_label.c                | 81 +++++++++++++++++++
- 5 files changed, 150 insertions(+), 1 deletion(-)
- create mode 100644 arch/alpha/include/asm/jump_label.h
- create mode 100644 arch/alpha/kernel/jump_label.c
-
-diff --git a/Documentation/features/core/jump-labels/arch-support.txt b/Documentation/features/core/jump-labels/arch-support.txt
-index 683de7c15058..119c71b7cec0 100644
---- a/Documentation/features/core/jump-labels/arch-support.txt
-+++ b/Documentation/features/core/jump-labels/arch-support.txt
-@@ -6,7 +6,7 @@
-     -----------------------
-     |         arch |status|
-     -----------------------
--    |       alpha: | TODO |
-+    |       alpha: |  ok  |
-     |         arc: |  ok  |
-     |         arm: |  ok  |
-     |       arm64: |  ok  |
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 6c7dbf0adad6..71db2cc7b3c4 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -41,6 +41,7 @@ config ALPHA
- 	select MMU_GATHER_RCU_TABLE_FREE
- 	select SPARSEMEM_EXTREME if SPARSEMEM
- 	select ZONE_DMA
-+	select HAVE_ARCH_JUMP_LABEL
- 	help
- 	  The Alpha is a 64-bit general-purpose processor designed and
- 	  marketed by the Digital Equipment Corporation of blessed memory,
-diff --git a/arch/alpha/include/asm/jump_label.h b/arch/alpha/include/asm/jump_label.h
-new file mode 100644
-index 000000000000..b570a7cef4c9
---- /dev/null
-+++ b/arch/alpha/include/asm/jump_label.h
-@@ -0,0 +1,66 @@
-+/* SPDX-License-Identifier: GPL-2.0
-+ *
-+ * Alpha architecture jump label (static key) definitions
-+ *
-+ * Defines patch site emission and jump table layout for
-+ * Alpha static key support.
-+ *
-+ * Copyright (C) 2026 Magnus Lindholm <linmag7@gmail.com>
-+ */
-+
-+
-+#ifndef _ASM_ALPHA_JUMP_LABEL_H
-+#define _ASM_ALPHA_JUMP_LABEL_H
-+
-+#ifndef __ASSEMBLER__
-+
-+#include <linux/types.h>
-+
-+#define JUMP_LABEL_NOP_SIZE 4
-+
-+typedef u64 jump_label_t;
-+
-+struct jump_entry {
-+	jump_label_t code;
-+	jump_label_t target;
-+	jump_label_t key;
-+};
-+
-+static __always_inline bool arch_static_branch(struct static_key *key, bool branch)
-+{
-+	asm goto("1:\n\t"
-+		 "nop\n\t"
-+		 ".pushsection __jump_table, \"aw\"\n\t"
-+		 ".align 3\n\t"
-+		 ".quad 1b, %l[l_yes], %0\n\t"
-+		 ".popsection\n\t"
-+		 :
-+		 : "i"(&((char *)key)[branch])
-+		 :
-+		 : l_yes);
-+
-+	return false;
-+l_yes:
-+	return true;
-+}
-+
-+static __always_inline bool arch_static_branch_jump(struct static_key *key, bool branch)
-+{
-+	asm goto("1:\n\t"
-+		 "br $31, %l[l_yes]\n\t"
-+		 ".pushsection __jump_table, \"aw\"\n\t"
-+		 ".align 3\n\t"
-+		 ".quad 1b, %l[l_yes], %0\n\t"
-+		 ".popsection\n\t"
-+		 :
-+		 : "i"(&((char *)key)[branch])
-+		 :
-+		 : l_yes);
-+
-+	return false;
-+l_yes:
-+	return true;
-+}
-+
-+#endif /* __ASSEMBLER__ */
-+#endif /* _ASM_ALPHA_JUMP_LABEL_H */
-diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
-index 187cd8df2faf..8a357b78eab1 100644
---- a/arch/alpha/kernel/Makefile
-+++ b/arch/alpha/kernel/Makefile
-@@ -19,6 +19,7 @@ obj-$(CONFIG_MODULES)	+= module.o
- obj-$(CONFIG_PERF_EVENTS) += perf_event.o
- obj-$(CONFIG_RTC_DRV_ALPHA) += rtc.o
- obj-$(CONFIG_AUDIT)	+= audit.o
-+obj-$(CONFIG_JUMP_LABEL) += jump_label.o
+Yes, I agree.
  
- ifdef CONFIG_ALPHA_GENERIC
+> So, what I wanted to check was - do you think instead of virt_to_phys(), we
+> could directly use __pa() here() in mm/hugetlb.c, since these are
+> memblock alloc addresses? i.e.: 
+> 
+> // alloc_bootmem():
+> -   listnode = early_pfn_to_nid(PHYS_PFN(virt_to_phys(m)));
+> +   listnode = early_pfn_to_nid(PHYS_PFN(__pa(m)));
+> 
+> // __alloc_bootmem_huge_page():
+> -   memblock_reserved_mark_noinit(virt_to_phys((void *)m + PAGE_SIZE),
+> +   memblock_reserved_mark_noinit(__pa((void *)m + PAGE_SIZE),
+
+It surely will work for powerpc :)
+I checked the definitions of __pa() on other architectures and it seems the
+safest and the easiest way to fix this.
  
-diff --git a/arch/alpha/kernel/jump_label.c b/arch/alpha/kernel/jump_label.c
-new file mode 100644
-index 000000000000..ff061a09d813
---- /dev/null
-+++ b/arch/alpha/kernel/jump_label.c
-@@ -0,0 +1,81 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Alpha architecture jump label (static key) support
-+ *
-+ * Implements runtime patching of static key sites by replacing
-+ * a NOP instruction with an unconditional branch and vice versa.
-+ *
-+ * Copyright (C) 2026 Magnus Lindholm <linmag7@gmail.com>
-+ */
-+
-+#include <linux/jump_label.h>
-+#include <linux/kernel.h>
-+#include <linux/mutex.h>
-+#include <asm/cacheflush.h>
-+
-+/*
-+ * Alpha instruction encoding helpers.
-+ *
-+ * Branch format:
-+ *   [31:26] opcode
-+ *   [25:21] Ra
-+ *   [20:0 ] disp (signed, in instructions; hardware multiplies by 4)
-+ *
-+ * Unconditional branch:
-+ *   BR opcode is 0x30.  We use Ra=r31 so no link register is written.
-+ *
-+ * Updated PC semantics:
-+ *   Target = (pc + 4) + (disp << 2)
-+ * so disp = (target - (pc + 4)) >> 2.
-+ */
-+#define ALPHA_OP_BR	0x30
-+#define ALPHA_RA_R31	31
-+#define ALPHA_BR_DISP_MASK	((1u << 21) - 1)
-+
-+#define ALPHA_INSN_NOP	0x47FF041Fu /* BIS r31,r31,r31 */ /* common Alpha NOP */
-+
-+static inline u32 alpha_br_insn(unsigned long pc, unsigned long target)
-+{
-+	long off_bytes = (long)target - (long)(pc + 4);
-+	long disp = off_bytes >> 2;
-+
-+	/*
-+	 * 21-bit signed displacement: range is [-2^20, 2^20-1] instructions.
-+	 * If this trips, the site/target are too far apart for a BR.
-+	 */
-+	if (disp < -(1L << 20) || disp > ((1L << 20) - 1)) {
-+		/*
-+		 * Most arches WARN and fall back to something else (or BUG),
-+		 * but jump-label sites are expected to be in range.
-+		 */
-+		WARN_ON_ONCE(1);
-+		disp = 0;
-+	}
-+
-+	return (ALPHA_OP_BR << 26) |
-+	       (ALPHA_RA_R31 << 21) |
-+	       ((u32)disp & ALPHA_BR_DISP_MASK);
-+}
-+
-+static inline void alpha_patch_text(u32 *site, u32 insn)
-+{
-+	WRITE_ONCE(*site, insn);
-+	/*
-+	 * Alpha needs an I-cache sync after patching executable text.
-+	 */
-+	flush_icache_range((unsigned long)site, (unsigned long)site + sizeof(*site));
-+}
-+
-+void arch_jump_label_transform(struct jump_entry *entry,
-+			       enum jump_label_type type)
-+{
-+	u32 *site = (u32 *)jump_entry_code(entry);
-+	u32 insn;
-+
-+	if (type == JUMP_LABEL_JMP)
-+		insn = alpha_br_insn((unsigned long)site, jump_entry_target(entry));
-+	else
-+		insn = ALPHA_INSN_NOP;
-+
-+	alpha_patch_text(site, insn);
-+}
+Would you send a formal patch?
+
+> Thoughts?
+> 
+> -ritesh
+
 -- 
-2.52.0
-
+Sincerely yours,
+Mike.
