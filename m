@@ -1,122 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8B6737EFF2;
-	Tue,  3 Mar 2026 22:07:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E259625B30D;
+	Wed,  4 Mar 2026 14:51:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772575626; cv=none; b=BVfKLQwRcWX4p/9Z4MHuo5t4Eeq8MzSEj7+XiTppmlrjQlc0dBUbH98Lfs3Am/Z47wdY7Bf1A4J2GSxQDml74Td8xIgKYecFHJoytDzUuYB6Jhg7qiE4a8S4Kt2gT+ouqYQeRlt5j39mHft5hid+RV/mDNyOV7uvoZQtS5cl5KM=
+	t=1772635911; cv=none; b=BRsaSvMfHOJ+MneRCvIAmEczl63TIm5XbrzR+HD7vb+Y5p3raq5tLTf5nM0mWN8hQblqJg42ekm0jGEtPSSGGMzNsor5du6dNwnCUkjK17EY/6gWzzU0zFIaGegBafKocMoyT7OEb840aqSNWQfcHdH7PU9bbrj8Vl12XmoB3Fo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772575626; c=relaxed/simple;
-	bh=qCzSp2epLYyteuG5sCCNa/E9vbu3LEoYBaZX4os+Gfk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=R9SxWrpX7+f2cjy0tkxcRQXxPeuQgr01NBJJRGU0kaUTM99bthAw6XmrHgdD79wOer7DR/LIoTV2D6soLWvO7vhIBxvz6f2YMiMDAW0ZuFrMQmGSIrUgr8rN6ss+FdfWdwS0ab4ib6jnd28rLKkab9ghoXq9fkRDxsn3a5cEtPE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fCUmC6Su; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fCUmC6Su"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 84FABC116C6;
-	Tue,  3 Mar 2026 22:07:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772575625;
-	bh=qCzSp2epLYyteuG5sCCNa/E9vbu3LEoYBaZX4os+Gfk=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=fCUmC6Su3/0N/aIRqRPfvDinHpJ3KT6U3WNXXUqJRcSVHPNwZCXg8TXR6QjCuRpaJ
-	 4tRWNDAvE/86oJNjW47QIsHSto/7UaifR+UiwB/+nRdCfR0SPzd4Rxx+qwP4+8o7He
-	 bTJHsRp2DKgfFDgT6CgjcJR7br3UJ1MqAqicZN+s84hdIw2Da4yXzCoIpLE97pR0js
-	 T20jCdfewUox973Xh2JibSmpVp+qO5qlrbyuJsjsCeQpvX6sTaKFkYsRre//fIP4t4
-	 erzQkQlSe1gcYSJ1/X1ibb8jFcGrys3oDP4Ad220McsicvPm5+L37YN33PWASWR13s
-	 h8S+fRuq1M8Jw==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73C16EDEBF5;
-	Tue,  3 Mar 2026 22:07:05 +0000 (UTC)
-From: Maximilian Pezzullo via B4 Relay <devnull+maximilianpezzullo.gmail.com@kernel.org>
-Date: Tue, 03 Mar 2026 23:06:17 +0100
-Subject: [PATCH] alpha: objstrip: fix partial write() buffer pointer not
- advancing
+	s=arc-20240116; t=1772635911; c=relaxed/simple;
+	bh=2E+COVdk95EvvOhcxzJIojbkXopuFHW8IBxu52ORtHY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SvRvGHA/atn+PlQp6LBs78yCPrbszjKDuHqI9hvAAOW4pD7PImdxo5rkIQ8psi85u8PTNJzWdKcTN9/lOcA62e4X/oob/1m8c77+UzFk/XBtIdtGSCXHrECctX5EVGgg2yAoLF+egZudCVAbT8kPJ2HWuQYwAmaOZjIPptt2N4Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 23B5068AFE; Wed,  4 Mar 2026 15:51:35 +0100 (CET)
+Date: Wed, 4 Mar 2026 15:51:34 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Eric Biggers <ebiggers@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Peter Zijlstra <peterz@infradead.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Dan Williams <dan.j.williams@intel.com>, Chris Mason <clm@fb.com>,
+	David Sterba <dsterba@suse.com>, Arnd Bergmann <arnd@arndb.de>,
+	Song Liu <song@kernel.org>, Yu Kuai <yukuai@fnnas.com>,
+	Li Nan <linan122@huawei.com>, linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	loongarch@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
+	linux-crypto@vger.kernel.org, linux-btrfs@vger.kernel.org,
+	linux-arch@vger.kernel.org, linux-raid@vger.kernel.org
+Subject: Re: [PATCH 01/25] xor: assert that xor_blocks is not called from
+ interrupt context
+Message-ID: <20260304145134.GA21983@lst.de>
+References: <20260226151106.144735-1-hch@lst.de> <20260226151106.144735-2-hch@lst.de> <20260227142455.GG1282955@noisy.programming.kicks-ass.net> <20260303160050.GB7021@lst.de> <20260303195517.GC2846@sol>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260303-alpha-fix-v1-1-89abede2a585@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzMDYwNj3cScgoxE3bTMCt3kVNM0c4PUVAsDwxQloPqColSgMNis6NjaWgA
- gLHmgWwAAAA==
-X-Change-ID: 20260303-alpha-fix-ce5f70ee801d
-To: Richard Henderson <richard.henderson@linaro.org>, 
- Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Maximilian Pezzullo <maximilianpezzullo@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1772575624; l=1584;
- i=maximilianpezzullo@gmail.com; s=20260303; h=from:subject:message-id;
- bh=z1sLA8h3NypD4m7zDxw+jdCekD1EutaTlomZvuEG0dg=;
- b=TIhTx582nsVwRLtQQmuoneiiCFs/q6M5CdVhFb8BhTlny9UnZ5yZgoIiVVbMF7qEnXPl+7Dc0
- iBqr4hE4EXZBMbUa2eJBhXFPfoNMpfdjCN2u0GIVJWAXPqm8FAK3Z9+
-X-Developer-Key: i=maximilianpezzullo@gmail.com; a=ed25519;
- pk=TRTR4c2Vb1IfluQvv5OUDPg7EE+pIzdPBND85UU559w=
-X-Endpoint-Received: by B4 Relay for maximilianpezzullo@gmail.com/20260303
- with auth_id=658
-X-Original-From: Maximilian Pezzullo <maximilianpezzullo@gmail.com>
-Reply-To: maximilianpezzullo@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260303195517.GC2846@sol>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-From: Maximilian Pezzullo <maximilianpezzullo@gmail.com>
+On Tue, Mar 03, 2026 at 11:55:17AM -0800, Eric Biggers wrote:
+> may_use_simd() is the "generic" way to check "can the FPU/vector/SIMD
+> registers be used".  However, what it does varies by architecture, and
+> it's kind of a questionable abstraction in the first place.  It's used
+> mostly by architecture-specific code.
 
-In the main copy loop, on a partial write() the inner do-while
-retried write(ofd, buf, n) always from the start of buf, while
-only n was decremented.  This caused already-written data to be
-re-written, corrupting the output file on systems where write()
-returns less than the requested byte count.
+Yeah, I don't think that is quite right here.
 
-Fix by introducing a pointer 'p' that tracks the current write
-position within buf and advances it by nwritten on each iteration.
+> How about "WARN_ON_ONCE(!preemptible())"?  I think that covers the union
+> of the context restrictions correctly.  (Compared to in_task(), it
+> handles the cases where hardirqs or softirqs are disabled.)
 
-Closes: https://bugzilla.kernel.org/show_bug.cgi?id=221159
-Signed-off-by: Maximilian Pezzullo <maximilianpezzullo@gmail.com>
----
- arch/alpha/boot/tools/objstrip.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
-
-diff --git a/arch/alpha/boot/tools/objstrip.c b/arch/alpha/boot/tools/objstrip.c
-index 7cf92d172dc..8da25c2584f 100644
---- a/arch/alpha/boot/tools/objstrip.c
-+++ b/arch/alpha/boot/tools/objstrip.c
-@@ -246,14 +246,18 @@ main (int argc, char *argv[])
- 	    perror("read");
- 	    exit(1);
- 	}
--	do {
--	    nwritten = write(ofd, buf, n);
--	    if ((ssize_t) nwritten == -1) {
--		perror("write");
--		exit(1);
--	    }
--	    n -= nwritten;
--	} while (n > 0);
-+	{
-+	    char *p = buf;
-+	    do {
-+		nwritten = write(ofd, p, n);
-+		if ((ssize_t) nwritten == -1) {
-+		    perror("write");
-+		    exit(1);
-+		}
-+		p += nwritten;
-+		n -= nwritten;
-+	    } while (n > 0);
-+	}
-     }
- 
-     if (pad) {
-
----
-base-commit: af4e9ef3d78420feb8fe58cd9a1ab80c501b3c08
-change-id: 20260303-alpha-fix-ce5f70ee801d
-
-Best regards,
--- 
-Maximilian Pezzullo <maximilianpezzullo@gmail.com>
-
+Good enough I guess.  Peter?
 
