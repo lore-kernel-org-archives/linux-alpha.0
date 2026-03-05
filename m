@@ -1,62 +1,62 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C7623BED57
-	for <linux-alpha@vger.kernel.org>; Thu,  5 Mar 2026 16:25:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55B8726B77D
+	for <linux-alpha@vger.kernel.org>; Thu,  5 Mar 2026 16:40:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772727938; cv=none; b=O+PVVaUa1swC+/Z1dAaIEzJSlo1pFLg/lXlqoR928fKFu5n/3oYMGTDwxZ1zMmHwY65KPNe4MhCqvi3Gd/VQj5q084mzp6ItTBb5gLnUd84Bx0xb1TvoIhl29UftOocF/FY6Rh6PvC6rShdAazki40YOS4+GWMeOT+cVd8fJytk=
+	t=1772728802; cv=none; b=jLvIJOgnj76t6rpr/1laQ9eg8hi+XaAAZoq4N/ZHkBVglRSExKLy3SPoaEbEL0/sGFVncCQx628hPJLdqlXmbrimyaQ2WtWEiVQxd/kE2hI3T64ktkDDI+nOMVEHED0/4uwWNnc541jAW09SI7iojd8djYJ+aAVguxW8P1XPayQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772727938; c=relaxed/simple;
-	bh=TeNn2R7UyF+w7y8niYRyWhzvo7dlXiwmzyPZEUJn1Y4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=t95VHNXW3ssPfNLSG8CT0trtTFRxvfOpXJVqZTPQo8ZoBEdS5VsdJ8lSv1DArk6yfkpP2TF8hrgUkBZXZXHjcnxjCD5/htWU6DNUpvRltzgSZWFycPY3friHeMAd7wQqxAB969XETlOtvgAxtOeekrz1343w9BMNGR2f9A/S+2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mh5TKMIt; arc=none smtp.client-ip=209.85.210.169
+	s=arc-20240116; t=1772728802; c=relaxed/simple;
+	bh=etwZ4c/zm504SMVX6n/RnDlMSgHUMPj/DoZ5/OMf+PA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lQI6OVN+kIPGozGlLEeVNPNqJnfrkem9/y28o7bBvzpYaBoQdDqRh6EmjQzpdy1ROeMmy+vp7vJTt6iMpeWO4o4f6SjzXWuryZ85x5FyA7i8MW49hd2ypLDQg82gXq33wOKCloatjKQALM1sYXGslG9W8hKxharmyEeou6MMPgw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=adNJ/Gcx; arc=none smtp.client-ip=209.85.210.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mh5TKMIt"
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-824a829f9bbso3968087b3a.0
-        for <linux-alpha@vger.kernel.org>; Thu, 05 Mar 2026 08:25:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="adNJ/Gcx"
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-827546f228aso6120502b3a.0
+        for <linux-alpha@vger.kernel.org>; Thu, 05 Mar 2026 08:40:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772727937; x=1773332737; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1772728801; x=1773333601; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ED83NkOXKNsgC5V5u/WdaRC+40/NQE/eVFt6QL5GBUA=;
-        b=mh5TKMItmkSkLGwFbisw3UdRHb37cjhxKgbzIJ0QSIiLcMIr/spPdoyXi2YtD6C236
-         m4oDaOFjCz+tF5F0FMdkOidkohKWJllvOzO8fK0t3985qWbM20FKj1pdNfJK0Nu2I5Ra
-         SWqTTXUlIHXpQh7bPidaKSsrnhp6D9s3SlKI67RMSO2Tj8XHV+QEtV4XWBYrvOlCZV25
-         1MWdsS0rWGTGBv5I8aXphQBw9SrkQF4IDzaGHsW/157b2sKnZ5CLr6YfLqX3CIsHmmBz
-         MgRvhiniB+NK/ClpsMZADXupTOd35C0u9Lj6RiGVHMsL0yv1n/AyKO+o3SKgI4S9C7fY
-         fW2w==
+        bh=swCRXdxYMVxCv1pH6y2vhuOZ0LBWAP7/qp6XNEsBc8Y=;
+        b=adNJ/GcxPFVKUrvbQpnxaYsTg2iijV1tGqxXK0OCUKz4skVJoA9Mz2ydkuTwYN+yzp
+         8RNO32WMw/zhxtRsW42QsP1i1mNcFLr7z79baeIWPsBXZN8lNj8Zh/n6sz7wnqPIe0Px
+         dDOf79Sw/npQ4gRpSdGSMlz0EWiMrC4zwXY5wzXtmt2Nk4Osw68Aadko7XpSs2N+fxXt
+         jrvA+E91cNxuYnH2rEajeggZ5nkG8UhxV987egz/QMS9lh5HlMcyE7hRN4Ydks62V+0h
+         rXayrZZiXBrlAofj4S0vBKXD0hinx4EyQzSX+Tn9LwLJsXBWanLMFI+oIE40fxwY98Tb
+         3mYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772727937; x=1773332737;
+        d=1e100.net; s=20230601; t=1772728801; x=1773333601;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ED83NkOXKNsgC5V5u/WdaRC+40/NQE/eVFt6QL5GBUA=;
-        b=WSL6r21OAxT/p7IY+OYHk8W7fhHtxCacVNBl/jLHGpdhllVzgs6plA2xxQciq9/3iJ
-         4lnP4AzFL7Ahkn9XvNvCq0qPyF1xrWbCaCADFD0+/ciGXbCPezNdAIs46B/+COQ4jP+4
-         pKz4s7hziU+KuyTkv3Oh5Ab6ztZzR9tWR/YAugOPXOd8w2c2EOH+mAwz6weYmFV/D9ig
-         cLyBbfNVz4IVA7TGrFVrLgwCi6l//t0dnKLeYqK6Xhc3ynYbMGnL1T7zOdmuSYWMXJuy
-         iaV2OzuCE3FtM8N1kdruEh/v/TRsOQtemZSGrvukg84f9s+3/hy4VGPQ7JRbaajc9qbD
-         SHhg==
-X-Forwarded-Encrypted: i=1; AJvYcCUZMEXqig+9SU0dBRewGtAxs5+lrzmFPLyOoNj1nWbaR5C4InYMP1GYau521n1eXEN94jeVV2Rxl7AriQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0YzuRof7Y/yY0wKddbaw8BVqr30UB3aykIt5IUxFSSMwpK8EiJx+
-	xAfobhEPEKFMrru9Heys1arhz68M8Cp3QMjk2uyJhjlQbXmFQzl+AauS
-X-Gm-Gg: ATEYQzzsDDOYl4vUnrv8GhPMRWId8TQWDsnvSccsIowqSwT8DCcacTusgDfe6cCYZ1q
-	tHIfhEdU7Jeuh620bLQlVCUN47SNSDnlyklJG4pstv3OrSS7xom7tRdRpLQxDIL7JiYyAz1G9qy
-	3mV6YmlWHt0TvOsWqu8d06MHiva3ciEybT28GHacS02+1QelNjYie7nQgSV4p5m6nCjKV4Qm8l+
-	Bprs4I2T6uh6yB7cr3qSxvaEBFrHyTjdQmHnwPISzymIWipe1wr2WYGRFvKXVxDXh0y3mcKWYaI
-	Qy+qELDdNy/dRzzDjISkpk9f1Iw5K/uF8CFxg0I4H+IUG9HcXWuYAmyPzwoxNJ8xZHupf6qzsXt
-	Jv5lIQR2gGEH5Gl1aSUQ8tP8bXPGAKTJYW0MfinqvqcDXJHu7BspVaYjQ5dhTO0fLS7BXiwOWMh
-	xI/Z2aIum78sfUTXGWZexmcMQ/geEATSy17fWMENkkX9ocWfKrP0M+pQ48lXgug3io3v4WVJjWF
-	c9mldlx6goVzePWYNOhAq0hoE2e
-X-Received: by 2002:a05:6a21:6e95:b0:38b:e944:3e98 with SMTP id adf61e73a8af0-3982dd66799mr5909569637.5.1772727936889;
-        Thu, 05 Mar 2026 08:25:36 -0800 (PST)
+        bh=swCRXdxYMVxCv1pH6y2vhuOZ0LBWAP7/qp6XNEsBc8Y=;
+        b=kbRcQV+SQcVEZAWAZ87LLFuOH4Q87NEHjPsCQFIZPElgjSiIDrEhxQ7cXMz+fmHmjU
+         Gj1IBlmmyAvFE9svF6K5MXNGhooP7fN5ykg7RrhiZUXxxtoUf7eAFKDBNmmZ/CuWOWWK
+         Ds830HqEhUjKw4t6K1TPSnoOUy3T5b0AJe/IhPkdeCoBduemFDg9vz+7C4dz0coWs3CH
+         7bOVhorcF4DhoU/Yb0UCl+q2EVvWX49trmNq+ffGxL+9oF3wb5rD2iySrCwdWUTeNcki
+         YRDJHZ7cfBUih2GTodtTKfdeD7cPl2s5wLwuxp99STsZo9ZPVO5Zg9+x6ikfmPeDNmJs
+         Vj7A==
+X-Forwarded-Encrypted: i=1; AJvYcCVW8azdqwpb5VukRAYim3Nhpmy2YcKgtwurxQKGd3SoNQSbZ7DqoZ0jxqf2NTwTMlJBqS0o9brFbvMasg==@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywvg87hYYtwixve1WIb3ZnMVlMH+0qB+VA7AD3Up0P7ToG9nt+J
+	8khImvDVhWr6GUx1yxBgUMqtgAPbf7gHOFQ4ALYO2EytF3o2OcRGlRJj
+X-Gm-Gg: ATEYQzx04HbmZuPdb9LwMc1BaksS/GPyo8OO+/R+GyRHZ8fIK2eIP+aneuXB4dpl/Q4
+	XZvVJEfdyT6cLXkBqTF/YNsevomCI/W3jX4TWLurOtkEn6hXoeNb48kw8r1VAlQkr2Y/Cug5v5F
+	kH9S8W9wsXAuQcm5UtDqIhW8p3FZexretz8dbb7ao1RhgXrDKh4ZHE/AM0K+MSVgmHkXngDZ2cz
+	Kp9r5s8CvtwlhUnjVWovBgrkcXQWg7Y2rV7R6whceaes5sAS96WVuzhpNvvo65YszN8yMqg7/nU
+	BYsnghPNsSKdR9a4GkcADAwqG4plNzZ1BHyZ1cLgrHbpXExjGv9zdHOdilyAKiV5nw//MpPhAkl
+	pZD465gWFafc7xCfJG9TBcp954Q+0L57OlHUt8HH0U/JCR0aDoBzVzL0QNIhRP0U1+t8HUostTa
+	vu8pL3BE2e3208CHHPzIAQgW13b5mObuCFzMFx0oCMZCw8KgYsdTisSL46LLKMQn5W0W9KkRd/O
+	FOrnWaQQMC56laNtQ==
+X-Received: by 2002:a05:6a21:7a4a:b0:366:2447:6778 with SMTP id adf61e73a8af0-39854aba334mr156714637.53.1772728800502;
+        Thu, 05 Mar 2026 08:40:00 -0800 (PST)
 Received: from arjav-inspiron153520.bbrouter ([103.46.201.219])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c70fa61fcdesm18151110a12.11.2026.03.05.08.25.33
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c73818d9502sm3952017a12.21.2026.03.05.08.39.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2026 08:25:36 -0800 (PST)
+        Thu, 05 Mar 2026 08:39:59 -0800 (PST)
 From: Arjav Jain <arjavjain.jain1942@gmail.com>
 To: richard.henderson@linaro.org
 Cc: mattst88@gmail.com,
@@ -64,9 +64,9 @@ Cc: mattst88@gmail.com,
 	linux-alpha@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Arjav Jain <arjavjain.jain1942@gmail.com>
-Subject: [PATCH] alpha/boot: fix pointer declaration spacing in bootp.c and bootpz.c
-Date: Thu,  5 Mar 2026 21:55:28 +0530
-Message-ID: <20260305162528.75926-1-arjavjain.jain1942@gmail.com>
+Subject: [PATCH] alpha/boot: clean up formatting in bootp.c
+Date: Thu,  5 Mar 2026 22:09:53 +0530
+Message-ID: <20260305163953.76962-1-arjavjain.jain1942@gmail.com>
 X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
@@ -76,61 +76,142 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Adjust pointer declaration spacing to follow the Linux kernel
-coding style by placing '*' next to the variable name instead
-of the type.
+Apply small formatting improvements to bootp.c:
+
+- group and reorder include headers
+- convert multi-line function signatures to single-line
+- improve arithmetic operator spacing
+- normalize pointer and cast spacing
+- fix indentation inconsistencies
 
 No functional changes intended.
 
 Signed-off-by: Arjav Jain <arjavjain.jain1942@gmail.com>
 ---
- arch/alpha/boot/bootp.c  | 4 ++--
- arch/alpha/boot/bootpz.c | 8 ++++----
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ arch/alpha/boot/bootp.c | 46 +++++++++++++++++------------------------
+ 1 file changed, 19 insertions(+), 27 deletions(-)
 
 diff --git a/arch/alpha/boot/bootp.c b/arch/alpha/boot/bootp.c
-index 842e85776cc0..a6209b4fe18c 100644
+index a6209b4fe18c..cdf979a02bcd 100644
 --- a/arch/alpha/boot/bootp.c
 +++ b/arch/alpha/boot/bootp.c
-@@ -68,8 +68,8 @@ void
- pal_init(void)
- {
- 	unsigned long i, rev;
--	struct percpu_struct * percpu;
--	struct pcb_struct * pcb_pa;
-+	struct percpu_struct *percpu;
-+	struct pcb_struct *pcb_pa;
+@@ -9,23 +9,21 @@
+  * based significantly on the arch/alpha/boot/main.c of Linus Torvalds
+  */
+ #include <linux/kernel.h>
++#include <linux/mm.h>
+ #include <linux/slab.h>
++#include <linux/stdarg.h>
+ #include <linux/string.h>
+ #include <generated/utsrelease.h>
+-#include <linux/mm.h>
  
- 	/* Create the dummy PCB.  */
- 	pcb_va->ksp = 0;
-diff --git a/arch/alpha/boot/bootpz.c b/arch/alpha/boot/bootpz.c
-index c6079308eab3..f6cd4c45ed20 100644
---- a/arch/alpha/boot/bootpz.c
-+++ b/arch/alpha/boot/bootpz.c
-@@ -42,10 +42,10 @@
- #undef DEBUG_LAST_STEPS
+ #include <asm/console.h>
+ #include <asm/hwrpb.h>
+ #include <asm/io.h>
+ 
+-#include <linux/stdarg.h>
+-
+ #include "ksize.h"
  
  extern unsigned long switch_to_osf_pal(unsigned long nr,
--	struct pcb_struct * pcb_va, struct pcb_struct * pcb_pa,
-+	struct pcb_struct *pcb_va, struct pcb_struct *pcb_pa,
+ 	struct pcb_struct *pcb_va, struct pcb_struct *pcb_pa,
  	unsigned long *vptb);
- 
--extern int decompress_kernel(void* destination, void *source,
-+extern int decompress_kernel(void *destination, void *source,
- 			     size_t ksize, size_t kzsize);
- 
+-
  extern void move_stack(unsigned long new_stack);
-@@ -116,8 +116,8 @@ void
- pal_init(void)
+ 
+ struct hwrpb_struct *hwrpb = INIT_HWRPB;
+@@ -37,17 +35,16 @@ static struct pcb_struct pcb_va[1];
+  * This is easy using the virtual page table address.
+  */
+ 
+-static inline void *
+-find_pa(unsigned long *vptb, void *ptr)
++static inline void *find_pa(unsigned long *vptb, void *ptr)
+ {
+-	unsigned long address = (unsigned long) ptr;
++	unsigned long address = (unsigned long)ptr;
+ 	unsigned long result;
+ 
+ 	result = vptb[address >> 13];
+ 	result >>= 32;
+ 	result <<= 13;
+-	result |= address & 0x1fff;
+-	return (void *) result;
++	result |= (address & 0x1fff);
++	return (void *)result;
+ }	
+ 
+ /*
+@@ -64,8 +61,7 @@ find_pa(unsigned long *vptb, void *ptr)
+ #define VPTB	((unsigned long *) 0x200000000)
+ #define L1	((unsigned long *) 0x200802000)
+ 
+-void
+-pal_init(void)
++void pal_init(void)
  {
  	unsigned long i, rev;
--	struct percpu_struct * percpu;
--	struct pcb_struct * pcb_pa;
-+	struct percpu_struct *percpu;
-+	struct pcb_struct *pcb_pa;
+ 	struct percpu_struct *percpu;
+@@ -107,17 +103,15 @@ pal_init(void)
+ 	tbia(); /* do it directly in case we are SMP */
+ }
  
- 	/* Create the dummy PCB.  */
- 	pcb_va->ksp = 0;
+-static inline void
+-load(unsigned long dst, unsigned long src, unsigned long count)
++static inline void load(unsigned long dst, unsigned long src, unsigned long count)
+ {
+-	memcpy((void *)dst, (void *)src, count);
++	memcpy((void *)dst, (const void *)src, count);
+ }
+ 
+ /*
+  * Start the kernel.
+  */
+-static inline void
+-runkernel(void)
++static inline void runkernel(void)
+ {
+ 	__asm__ __volatile__(
+ 		"bis %0,%0,$27\n\t"
+@@ -127,11 +121,9 @@ runkernel(void)
+ }
+ 
+ extern char _end;
+-#define KERNEL_ORIGIN \
+-	((((unsigned long)&_end) + 511) & ~511)
++#define KERNEL_ORIGIN ((((unsigned long)&_end) + 511) & ~511)
+ 
+-void
+-start_kernel(void)
++void start_kernel(void)
+ {
+ 	/*
+ 	 * Note that this crufty stuff with static and envval
+@@ -198,16 +190,16 @@ start_kernel(void)
+ 	 * Sigh...  */
+ 
+ #ifdef INITRD_IMAGE_SIZE
+-	load(initrd_start, KERNEL_ORIGIN+KERNEL_SIZE, INITRD_IMAGE_SIZE);
++	load(initrd_start, KERNEL_ORIGIN + KERNEL_SIZE, INITRD_IMAGE_SIZE);
+ #endif
+-        load(START_ADDR+(4*KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
+-        load(START_ADDR, START_ADDR+(4*KERNEL_SIZE), KERNEL_SIZE);
++	load(START_ADDR + (4 * KERNEL_SIZE), KERNEL_ORIGIN, KERNEL_SIZE);
++	load(START_ADDR, START_ADDR + (4 * KERNEL_SIZE), KERNEL_SIZE);
+ 
+-	memset((char*)ZERO_PGE, 0, PAGE_SIZE);
+-	strcpy((char*)ZERO_PGE, envval);
++	memset((char *)ZERO_PGE, 0, PAGE_SIZE);
++	strcpy((char *)ZERO_PGE, envval);
+ #ifdef INITRD_IMAGE_SIZE
+-	((long *)(ZERO_PGE+256))[0] = initrd_start;
+-	((long *)(ZERO_PGE+256))[1] = INITRD_IMAGE_SIZE;
++	((long *)(ZERO_PGE + 256))[0] = initrd_start;
++	((long *)(ZERO_PGE + 256))[1] = INITRD_IMAGE_SIZE;
+ #endif
+ 
+ 	runkernel();
 -- 
 2.53.0
 
