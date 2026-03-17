@@ -1,154 +1,311 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DABE369224
-	for <linux-alpha@vger.kernel.org>; Mon, 16 Mar 2026 22:12:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773699175; cv=pass; b=ZKlPy4T/FuHllcha+0abtr0e0T+vfiQZdPEBkLdhI1v1x2sKQD+kKWZYBFmR65jQ/dkPmR4wSuPRW2CK/f9L2AVF5HvqPNVzMsrrMX/jw9k5JZw5KRO85fk+ealoyxHSXZgTMdZJZTx5M8G/KYojQuxohSVoL7macdyxzaJBECk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773699175; c=relaxed/simple;
-	bh=rsp7Ihi8TSAj7hc2vakkxGqqL2oEkNH6XMA5zjqI1qA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VjIQRX6zwnaaPjKPTGcMi0eiX984D4r104AXT5pZ+XC+AKdlWeCloGvHbSvedEvBE5SK/SwDX8lwwigxqO8euraPtnNpq6Xn2zKruaXBh2D6pwnbRa2TjQQ7o8yNHI9rHrxOIQf7wu4X+UDCMssFvTFCMXhPG7uKR0Sj66t26hs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nXFirVf+; arc=pass smtp.client-ip=209.85.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A355634EF15;
+	Tue, 17 Mar 2026 09:15:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773738916; cv=none; b=f36ZJ9aj1HsqhMolci/y12iyjlXDmDQvPxe8s7kFswCIJo7HSTW/dMGE4BZWOkvXr7S+Og9ea5062Ox9tLUKgFRhgPf3dTm8TMb58sN6SH4jtEkGCycoch5spBlsiuZjfTUg2j9z3uhscVU6HlZ09B950eLruWuNo2ur18ohhV0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773738916; c=relaxed/simple;
+	bh=QU6cedlzf40aFEFMHAi3oFEJtwf/R3OvK72FIzwtc/c=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Lx2GxE/IDBl+fpvhZauRfxkGC1U4RI41XJ7mt0ni7DBk5HwWupdCBh6qXsIO7uFNeN8G9NnP88sDs/LepIwted9MYl+JwtLwueeUl75Ql7AUHtsX5seh23kqU0kXE+VV/3akvz1T/MTZT8jkfaIT0qgNgd1Sxc3R8ou7ixgBR5g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VQ4BnuZz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nXFirVf+"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-662b5bf4b10so9129250a12.1
-        for <linux-alpha@vger.kernel.org>; Mon, 16 Mar 2026 15:12:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773699172; cv=none;
-        d=google.com; s=arc-20240605;
-        b=XWCfg5IfjNYKDHWazHiK4jrG0u4bcVGymK4S9E3cNaurH4leLxgTP+S3q+mQXVWZB2
-         KHVGwS9d4sPW1SZoD7o1FFu37o1ixfZsh73GqmHNoCpJ2xZEhW1E2eKDeQ4frA6m7Rro
-         aiPgAFg7ZVV9xNnMowiJcSaGHMWTVM0PvUAkmcWbFiBBFUnrr8xm83Wo9Rppv0DSfo3M
-         EYf6YR2Ize1FD4EyztNgDe17n0L+LG4hZIPuoqHyDVbR1uvRCcpes8awnF97QlU6IBGr
-         dtPcR5/KMaQLLHsv5s53QpX1R2/1YjiiltHdf/x/n2N2pyKe5ETEie3Td2dQSsA+VNPf
-         suRw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=pAPcwDRyDaYRxv6m5ec0p6vencyIfyK+pU3obaup7wA=;
-        fh=/Hxp6UlJ3V3V9BLg9aO9VHzTD4rj3zSSVmXdoz8wQOc=;
-        b=VlZhZeKu7wRlggtJOzswTbb5GzICg5j6KTALyQN4z9U4u0OsDlOCSWH3cTaUTCfEyG
-         kM6AhO5dNQPhtN9wGl+gvQgDmihvXvdSdZ63mGQdHpumpLgMj4fMp3+x8RzvhX+KKBFV
-         qFdNK+TQtu8SbgQd4NMBNhxwSvUEFo2dmUfT7/6r3zxO/Tctno9/9swJDp9qRn5Mam8q
-         DmzDbDHkZAdxJwRdp22hJUM7ci6x/oLhg4UVncAhi4YF62v2djRu98BMH+dVTsRYlop5
-         EXjbi6Jv94V31qPs66xoD2IFHRbR1sICv3R4yvhOQYHqqDFb+072QdsKKj1BwRCW/NP5
-         dTJA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773699172; x=1774303972; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pAPcwDRyDaYRxv6m5ec0p6vencyIfyK+pU3obaup7wA=;
-        b=nXFirVf+3TZ7nayCWf+YAe8f5IxUtczrfP1EXNbBIrmwKiqwYyLnNpAauLND8FQtug
-         qyiFy+esPMVr68OOOX82lIQLtv4g9BlFNZaBwo4KsXwCVqnfA/cnHzxN3Su9BCI72YRq
-         auyRj61mHF94yEemJmjWC/U+E7H+3VcjkmPSPrWbYeT/sNINXe1KOC5DtsQxJjPZdVBP
-         hNMRzTNBiyInnITmm9ONHtYXDRin1mMnPr1z331IK2KJiXXPmzS1yp1rdXfeMlAWA2Ci
-         qg4RD1I8Hp+NegL76P7aa4Y8Cgz6Ykhx1YR2At11/HUaYDUKWkEbjQlI4WP+iffGCmKo
-         wGjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773699172; x=1774303972;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=pAPcwDRyDaYRxv6m5ec0p6vencyIfyK+pU3obaup7wA=;
-        b=QhlcGOrpnJvgaopRYnf323Ly9YQmJnvb9itcZlgHMKuxOtApB1r9mYCLHha8LvTCnE
-         uQAJa7As+I6vvwUdj8vHXwT8kRbV2zmKzmXqN613eAmzjqaVXZc8RYR2Erb5Gxm+qHKh
-         48Iw5N4Ef9jMn+xFhME/2h+gKuQPRSaFCzJkJdZzJvYrIuOWrILpfvm2ir612A2HWoPa
-         r6R/yPZJayGoyjEwQ84n61SZlW+kngF5lReWXVqd6jgMJmw9eS3irqTsxD8rSCVrgJVr
-         y56tPT3UQaq7qi4ukHJh3No2da47MxF/B3mEJvrB5gnGdUwyeWKX6YXM55Cb0dXQWvXn
-         86mA==
-X-Forwarded-Encrypted: i=1; AJvYcCXJgaAYtLhWNrG3ZCClP8rW7dolMTd/OlfR9V/H55TBMqYjkb3iqHKk7cTn9ScWZ9GpMrEYj7gLW5YloA==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx8nTKEKJLMuZXK3gz2exo7S6WvhgRg50RE2gUuGo+wB2uiXGCn
-	lp91hMs1iPTjhGU8P92w3a3liHYlAXJaIqZ+N83jRuQ4RNwEk/3wZidyVA/F4TxY78qtcPxN+q1
-	l2P/ZEYMs2Y8Ylx5N3DqCO/q+WhZOpw0=
-X-Gm-Gg: ATEYQzxkRuD4BPRlk+A+ptxlYxeIRyedqNkqF3PW+ubgYZrSpc2ahtT+OL5KXdlmxnt
-	vK7CRN2qs31deffvkBp/9/NL8XsXpFe51IErK8Cs9VOzlpmSJus19WZqXYlxbZgRkO2ugffT+S0
-	4lfEkZ9zXV/qwbfW0DSFBiaeK1PpTJZbSg+rMbCiJwWox5am0+IlUxCiKxVFHBUo2AhbOGOAh5k
-	jV9TYWEI/sXdJqaL9xM4Zd9Jhg2YVwJrd6My9HRclFXalYAg8Iy0B/1n9N1OsJyy4QQZ/TG/lWZ
-	PVFJyJcbF+OaDagvZpz3fRfTddlw5ECBFahQp2qz
-X-Received: by 2002:a17:907:1c0b:b0:b97:b515:31e with SMTP id
- a640c23a62f3a-b97b51509acmr346111966b.50.1773699172087; Mon, 16 Mar 2026
- 15:12:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VQ4BnuZz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19933C19425;
+	Tue, 17 Mar 2026 09:14:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773738916;
+	bh=QU6cedlzf40aFEFMHAi3oFEJtwf/R3OvK72FIzwtc/c=;
+	h=From:Subject:Date:To:Cc:From;
+	b=VQ4BnuZzjGlyHuYCbl/mEKd7zh11jNZHM6YOmeZHshjwK7wAidut5bW59fUtAEXsF
+	 LPrDV/0BkMPGm+OJixWV70wz76CjI7ChsKDFhgNC2W34z47FQe0lHP3u0iv7QCx6TM
+	 h+pw5pDiAHiX9uP7B2DDiXpzrT6KYsbPR7UCv0w1HuTX65DzWGjkfmOONp++HBzeoI
+	 W35XeW99LW6pqjsde/3KUhI6qN9+5JT/76M2rqzs0qozQfuchLSotd/EnU+b43RHXh
+	 QYMfZORHioe+ZjSW10OOkakkBEnXg9s7kH9nnBEvUCCjLwnJvrcNHqItv+HuXbE3Da
+	 wb4xOWrkkkXlg==
+From: "Vincent Mailhol (Arm)" <mailhol@kernel.org>
+Subject: [PATCH 0/9] configs: cleanup obsolete or incorrect assignments
+Date: Tue, 17 Mar 2026 10:13:36 +0100
+Message-Id: <20260317-arm_defconf_cleanup-v1-0-8eecb7fdd24d@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260311070416.972667-1-hch@lst.de> <20260311070416.972667-11-hch@lst.de>
-In-Reply-To: <20260311070416.972667-11-hch@lst.de>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Mon, 16 Mar 2026 23:12:39 +0100
-X-Gm-Features: AaiRm53MOL-S4iIRiZrnVZNNZCm-cfe6kMQGe2L4WL9TC_xpq_akeJ994p2lXMA
-Message-ID: <CA+=Fv5QkJm8+ysx8W=ypr84oSR=rrikfk-iMMU6_xrtS1PsWvg@mail.gmail.com>
-Subject: Re: [PATCH 10/27] alpha: move the XOR code to lib/raid/
-To: Christoph Hellwig <hch@lst.de>
-Cc: Andrew Morton <akpm@linux-foundation.org>, 
-	Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
-	Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, 
-	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
-	Nicholas Piggin <npiggin@gmail.com>, "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, Paul Walmsley <pjw@kernel.org>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	Alexandre Ghiti <alex@ghiti.fr>, Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
-	Sven Schnelle <svens@linux.ibm.com>, "David S. Miller" <davem@davemloft.net>, 
-	Andreas Larsson <andreas@gaisler.com>, Richard Weinberger <richard@nod.at>, 
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes Berg <johannes@sipsolutions.net>, 
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	"H. Peter Anvin" <hpa@zytor.com>, Herbert Xu <herbert@gondor.apana.org.au>, 
-	Dan Williams <dan.j.williams@intel.com>, Chris Mason <clm@fb.com>, David Sterba <dsterba@suse.com>, 
-	Arnd Bergmann <arnd@arndb.de>, Song Liu <song@kernel.org>, Yu Kuai <yukuai@fnnas.com>, 
-	Li Nan <linan122@huawei.com>, "Theodore Ts'o" <tytso@mit.edu>, 
-	"Jason A. Donenfeld" <Jason@zx2c4.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev, 
-	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linux-um@lists.infradead.org, linux-crypto@vger.kernel.org, 
-	linux-btrfs@vger.kernel.org, linux-arch@vger.kernel.org, 
-	linux-raid@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAEAbuWkC/x3MTQqAIBBA4avErBPUor+rRIjpWANloRSBdPek5
+ bd4L0HEQBhhKBIEvCnS4TNEWYBZtV+Qkc0GyWXDKyGZDruy6MzhnTIban+dzFjRunrWfddbyOU
+ Z0NHzX8fpfT8esQDDZQAAAA==
+To: Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nsc@kernel.org>, 
+ Mikko Rapeli <mikko.rapeli@linaro.org>, 
+ Richard Henderson <richard.henderson@linaro.org>, 
+ Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>, 
+ Russell King <linux@armlinux.org.uk>, Aaro Koskinen <aaro.koskinen@iki.fi>, 
+ Andreas Kemnade <andreas@kemnade.info>, Kevin Hilman <khilman@baylibre.com>, 
+ Roger Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>, 
+ Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, 
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+ Madhavan Srinivasan <maddy@linux.ibm.com>, 
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+ "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, 
+ Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
+ Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, 
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+ Alexander Gordeev <agordeev@linux.ibm.com>, 
+ Christian Borntraeger <borntraeger@linux.ibm.com>, 
+ Sven Schnelle <svens@linux.ibm.com>, 
+ Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, 
+ John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+ Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, 
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, 
+ x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, 
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
+ Clark Williams <clrkwllms@kernel.org>, Steven Rostedt <rostedt@goodmis.org>, 
+ Pablo Neira Ayuso <pablo@netfilter.org>, 
+ Krzysztof Kozlowski <krzk@kernel.org>, 
+ Alim Akhtar <alim.akhtar@samsung.com>, Frank Li <Frank.Li@nxp.com>, 
+ Sascha Hauer <s.hauer@pengutronix.de>, 
+ Pengutronix Kernel Team <kernel@pengutronix.de>, 
+ Fabio Estevam <festevam@gmail.com>, Vladimir Zapolskiy <vz@mleia.com>, 
+ Piotr Wojtaszczyk <piotr.wojtaszczyk@timesys.com>, 
+ Liviu Dudau <liviu.dudau@arm.com>, Sudeep Holla <sudeep.holla@kernel.org>, 
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+ Geert Uytterhoeven <geert+renesas@glider.be>, 
+ Magnus Damm <magnus.damm@gmail.com>, 
+ Vladimir Kondratiev <vladimir.kondratiev@mobileye.com>, 
+ Gregory CLEMENT <gregory.clement@bootlin.com>, 
+ =?utf-8?q?Th=C3=A9o_Lebrun?= <theo.lebrun@bootlin.com>, 
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
+ Helge Deller <deller@gmx.de>, Janusz Krzysztofik <jmkrzyszt@gmail.com>, 
+ =?utf-8?q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>, 
+ Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, 
+ Thomas Zimmermann <tzimmermann@suse.de>, Arnd Bergmann <arnd@arndb.de>, 
+ Heiko Stuebner <heiko@sntech.de>, 
+ Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>, 
+ Mark Brown <broonie@kernel.org>, Eric Biggers <ebiggers@kernel.org>, 
+ Ard Biesheuvel <ardb@kernel.org>, 
+ Sricharan Ramabadhran <quic_srichara@quicinc.com>, 
+ Bjorn Andersson <andersson@kernel.org>, Michael Walle <mwalle@kernel.org>, 
+ Guenter Roeck <linux@roeck-us.net>, 
+ Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>, 
+ "Rob Herring (Arm)" <robh@kernel.org>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Anna Schumaker <anna.schumaker@oracle.com>
+Cc: Alexandre Gonzalo <alexandre.gonzalo@arm.com>, 
+ linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-omap@vger.kernel.org, loongarch@lists.linux.dev, 
+ linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+ linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, 
+ linux-sh@vger.kernel.org, linux-rt-devel@lists.linux.dev, 
+ linux-samsung-soc@vger.kernel.org, imx@lists.linux.dev, 
+ linux-renesas-soc@vger.kernel.org, linux-parisc@vger.kernel.org, 
+ openbmc@lists.ozlabs.org, "Vincent Mailhol (Arm)" <mailhol@kernel.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=8431; i=mailhol@kernel.org;
+ h=from:subject:message-id; bh=QU6cedlzf40aFEFMHAi3oFEJtwf/R3OvK72FIzwtc/c=;
+ b=owGbwMvMwCV2McXO4Xp97WbG02pJDJk7pVvaF++b0PNYl09G4rhpZ5/F95IzPF8ENlalen5lX
+ tdxvoyno5SFQYyLQVZMkWVZOSe3Qkehd9ihv5Ywc1iZQIYwcHEKwEQOCDMyvJL+9Nvo+385B4nm
+ Cy6lJuYqus3+jtGCa5OqhZc35J5iZGToaOwWd/8w895elfePn0w9IhU3K2dRZcenlrOWTzyUps3
+ jAQA=
+X-Developer-Key: i=mailhol@kernel.org; a=openpgp;
+ fpr=ED8F700574E67F20E574E8E2AB5FEB886DBB99C2
 
-On Wed, Mar 11, 2026 at 8:06=E2=80=AFAM Christoph Hellwig <hch@lst.de> wrot=
-e:
->
-> Move the optimized XOR code out of line into lib/raid.
->
-> Note that the giant inline assembly block might be better off as a
-> separate assembly source file now, but I'll leave that to the alpha
-> maintainers.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/alpha/include/asm/xor.h | 853 +----------------------------------
->  lib/raid/xor/Makefile        |   2 +
->  lib/raid/xor/alpha/xor.c     | 849 ++++++++++++++++++++++++++++++++++
->  3 files changed, 855 insertions(+), 849 deletions(-)
->  create mode 100644 lib/raid/xor/alpha/xor.c
->
+The arm64 defconfig contains several inconsistencies, as shown by the
+following merge_config warnings:
 
-Hi,
+  $ ARCH=arm64 ./scripts/kconfig/merge_config.sh arch/arm64/configs/defconfig
+  Using arch/arm64/configs/defconfig as base
+  #
+  # configuration written to .config
+  #
+  WARNING: Value requested for CONFIG_NETFILTER_XT_TARGET_CHECKSUM not in final .config
+  Requested value: CONFIG_NETFILTER_XT_TARGET_CHECKSUM=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IP_NF_FILTER not in final .config
+  Requested value: CONFIG_IP_NF_FILTER=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IP_NF_TARGET_REJECT not in final .config
+  Requested value: CONFIG_IP_NF_TARGET_REJECT=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IP_NF_NAT not in final .config
+  Requested value: CONFIG_IP_NF_NAT=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IP_NF_TARGET_MASQUERADE not in final .config
+  Requested value: CONFIG_IP_NF_TARGET_MASQUERADE=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IP_NF_MANGLE not in final .config
+  Requested value: CONFIG_IP_NF_MANGLE=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IP6_NF_FILTER not in final .config
+  Requested value: CONFIG_IP6_NF_FILTER=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IP6_NF_TARGET_REJECT not in final .config
+  Requested value: CONFIG_IP6_NF_TARGET_REJECT=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IP6_NF_MANGLE not in final .config
+  Requested value: CONFIG_IP6_NF_MANGLE=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IP6_NF_NAT not in final .config
+  Requested value: CONFIG_IP6_NF_NAT=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IP6_NF_TARGET_MASQUERADE not in final .config
+  Requested value: CONFIG_IP6_NF_TARGET_MASQUERADE=m
+  Actual value:
+  WARNING: Value requested for CONFIG_SENSORS_SA67MCU not in final .config
+  Requested value: CONFIG_SENSORS_SA67MCU=m
+  Actual value:
+  WARNING: Value requested for CONFIG_FB_MODE_HELPERS not in final .config
+  Requested value: CONFIG_FB_MODE_HELPERS=y
+  Actual value:
+  WARNING: Value requested for CONFIG_SND_SOC_ROCKCHIP not in final .config
+  Requested value: CONFIG_SND_SOC_ROCKCHIP=m
+  Actual value:
+  WARNING: Value requested for CONFIG_IPQ_APSS_5018 not in final .config
+  Requested value: CONFIG_IPQ_APSS_5018=y
+  Actual value:
+  WARNING: Value requested for CONFIG_SLIM_QCOM_CTRL not in final .config
+  Requested value: CONFIG_SLIM_QCOM_CTRL=m
+  Actual value:
+  WARNING: Value requested for CONFIG_NFS_V4_1 not in final .config
+  Requested value: CONFIG_NFS_V4_1=y
+  Actual value:
+  WARNING: CONFIG_CRYPTO_SHA3 differs:
+  Requested value: CONFIG_CRYPTO_SHA3=m
+  Actual value:    CONFIG_CRYPTO_SHA3=y
+  ./scripts/kconfig/merge_config.sh: 384: [: false: unexpected operator
 
-I applied this patch and ran it on my UP2000+
+The issues fall into several categories:
 
-The kernel builds and boots, and I verified the new lib/raid/xor/alpha
-implementation using the XOR KUnit test, the test passed, see below:
+  - assignments to removed or renamed configuration symbols.
 
-[   25.705064]     KTAP version 1
-[   25.705064]     # Subtest: xor
-[   25.705064]     # module: xor_kunit
-[   25.705064]     1..1
-[   28.957992]     # xor_test: Test should be marked slow (runtime:
-3.253413330s)
-[   28.958969]     ok 1 xor_test
+  - assignments to symbols that became hidden or internal.
 
-Acked-by: Magnus Lindholm <linmag7@gmail.com>
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
+  - assignments that are requested as module (=m) but which have a
+    built-in parent dependency (=y).
+
+This series cleans up all those issues. While the focus is the arm64
+defconfig, fixes that apply more broadly are extended treewide.
+
+After applying this series, merge_config.sh runs without warnings on
+the arm64 defconfig. Below script was used to confirm that no symbols
+got inadvertently removed:
+
+  #!/bin/sh
+
+  DIR=$(mktemp -d)
+
+  # Generate conf before this series
+  git checkout $(git merge-base HEAD @{upstream})
+  for arch in arch/*/; do
+      for conf in "$arch"configs/*defconfig; do
+        ARCH=$(basename $arch) \
+        KCONFIG_CONFIG="$DIR/$(basename $arch)_$(basename $conf)_before" \
+            ./scripts/kconfig/merge_config.sh $conf
+      done
+  done
+
+  # Generate conf after this series
+  git checkout -
+  for arch in arch/*/; do
+      for conf in "$arch"configs/*defconfig; do
+        ARCH=$(basename $arch) \
+        KCONFIG_CONFIG="$DIR/$(basename $arch)_$(basename $conf)_after" \
+            ./scripts/kconfig/merge_config.sh $conf
+      done
+  done
+
+  # Compare
+  for arch in arch/*/; do
+      for conf in "$arch"configs/*defconfig; do
+        if diff --unified \
+                "$DIR/$(basename $arch)_$(basename $conf)_before" \
+                "$DIR/$(basename $arch)_$(basename $conf)_after"; then
+            echo "$conf: OK"
+        else
+            echo "$conf: configuration changed"
+        fi
+      done
+  done
+
+Signed-off-by: Vincent Mailhol (Arm) <mailhol@kernel.org>
+---
+Vincent Mailhol (Arm) (9):
+      scripts: kconfig: merge_config.sh: use POSIX '=' in test
+      configs: remove orphan dependencies of NETFILTER_XTABLES_LEGACY
+      configs: remove obsolete assignments to CONFIG_NFS_V4_1
+      configs: remove implicit assignments to FB_MODE_HELPERS
+      arm: configs: remove obsolete assignments to SND_SOC_ROCKCHIP
+      arm64: defconfig: remove implicit assignment to CRYPTO_SHA3
+      arm64: defconfig: remove incorrect assignment to IPQ_APSS_5018
+      arm64: defconfig: remove obsolete assignment to SENSORS_SA67MCU
+      arm64: defconfig: remove obsolete assignment to SLIM_QCOM_CTRL
+
+ arch/alpha/configs/defconfig                |  1 -
+ arch/arm/configs/am200epdkit_defconfig      |  1 -
+ arch/arm/configs/collie_defconfig           |  1 -
+ arch/arm/configs/ep93xx_defconfig           |  1 -
+ arch/arm/configs/exynos_defconfig           |  1 -
+ arch/arm/configs/imx_v6_v7_defconfig        |  2 --
+ arch/arm/configs/ixp4xx_defconfig           |  3 ---
+ arch/arm/configs/keystone_defconfig         |  3 ---
+ arch/arm/configs/lpc18xx_defconfig          |  1 -
+ arch/arm/configs/lpc32xx_defconfig          |  2 --
+ arch/arm/configs/mps2_defconfig             |  1 -
+ arch/arm/configs/multi_v7_defconfig         |  2 --
+ arch/arm/configs/mxs_defconfig              |  1 -
+ arch/arm/configs/omap1_defconfig            |  1 -
+ arch/arm/configs/omap2plus_defconfig        |  1 -
+ arch/arm/configs/shmobile_defconfig         |  1 -
+ arch/arm/configs/spitz_defconfig            |  4 ----
+ arch/arm/configs/wpcm450_defconfig          |  1 -
+ arch/arm64/configs/defconfig                | 18 ------------------
+ arch/loongarch/configs/loongson32_defconfig |  1 -
+ arch/loongarch/configs/loongson64_defconfig |  1 -
+ arch/mips/configs/bmips_stb_defconfig       |  2 --
+ arch/mips/configs/cavium_octeon_defconfig   |  1 -
+ arch/mips/configs/db1xxx_defconfig          |  1 -
+ arch/mips/configs/eyeq5_defconfig           |  1 -
+ arch/mips/configs/eyeq6_defconfig           |  1 -
+ arch/mips/configs/fuloong2e_defconfig       |  3 ---
+ arch/mips/configs/generic_defconfig         |  1 -
+ arch/mips/configs/gpr_defconfig             |  3 ---
+ arch/mips/configs/ip22_defconfig            |  6 ------
+ arch/mips/configs/lemote2f_defconfig        |  1 -
+ arch/mips/configs/loongson2k_defconfig      |  3 ---
+ arch/mips/configs/loongson3_defconfig       | 11 -----------
+ arch/mips/configs/malta_defconfig           |  6 ------
+ arch/mips/configs/malta_kvm_defconfig       |  6 ------
+ arch/mips/configs/maltaup_xpa_defconfig     |  6 ------
+ arch/mips/configs/mtx1_defconfig            |  6 ------
+ arch/mips/configs/rb532_defconfig           |  3 ---
+ arch/mips/configs/rm200_defconfig           |  6 ------
+ arch/mips/configs/rt305x_defconfig          |  3 ---
+ arch/mips/configs/xway_defconfig            |  3 ---
+ arch/parisc/configs/generic-64bit_defconfig |  1 -
+ arch/powerpc/configs/85xx/stx_gp3_defconfig |  1 -
+ arch/powerpc/configs/cell_defconfig         |  3 ---
+ arch/powerpc/configs/linkstation_defconfig  |  3 ---
+ arch/powerpc/configs/mvme5100_defconfig     |  3 ---
+ arch/powerpc/configs/pmac32_defconfig       |  3 ---
+ arch/powerpc/configs/ppc6xx_defconfig       |  6 ------
+ arch/riscv/configs/defconfig                |  9 ---------
+ arch/sh/configs/titan_defconfig             |  6 ------
+ arch/x86/configs/i386_defconfig             |  7 -------
+ arch/x86/configs/x86_64_defconfig           |  7 -------
+ arch/xtensa/configs/virt_defconfig          |  1 -
+ scripts/kconfig/merge_config.sh             |  2 +-
+ 54 files changed, 1 insertion(+), 172 deletions(-)
+---
+base-commit: f338e77383789c0cae23ca3d48adcc5e9e137e3c
+change-id: 20260312-arm_defconf_cleanup-cd17f4ba989d
+
+Best regards,
+-- 
+Vincent Mailhol (Arm) <mailhol@kernel.org>
+
