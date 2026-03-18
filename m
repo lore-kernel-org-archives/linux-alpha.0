@@ -1,120 +1,127 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2514364031
-	for <linux-alpha@vger.kernel.org>; Wed, 18 Mar 2026 06:16:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773814601; cv=pass; b=t94fbvAmHBC+2TEtWn5IOUpXtlyB+mfbxoPf5OvS1EqXqmEEPj3OeMA/vTOf7IcSd6ENnNClYdhUqZ6VrHID5B+YlpsE/RlhDbDMkjYZy4i5Ir3TejEL/y7ms7PZ8kk60CKhlEYzO4D0QWAHT83LGleRtPD7xvmMHAHqQkk5ups=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773814601; c=relaxed/simple;
-	bh=LyvuvQqufknbMfPTy2o7n/T+OqohBBDpzWX+jX0Ni6Q=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=iYQlt6B3tQVCTEjGziBmH/WelTxG+Mj0Qv8LvyHY4DlYahr1r3ewkKY90ZNpKBbInuzNBn5AQlXXvM5SygxS95BqgW7UGVcItheTphgprs44P8ViblKujQyPUVwNz+LVkIwHdA6zavj0YP9DXseDz4Zc4ImDK2pYoBa3bP6+Mk4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=czA+VIq9; arc=pass smtp.client-ip=209.85.218.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCC323A451C;
+	Wed, 18 Mar 2026 16:22:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773850948; cv=none; b=WaxkUCM8rX+o8T3aEhCimbUBXrp+ZYxkmfSdt8jugZBDgc/ecW/Y7sGau/1W0m7LAxzWsJGas0nL+CupSU/MU3KbgdG+EsD50ymjezmZRTlUULBl8KVqQ74nNfz8CwywB/avSrHpdsc7e55eOPkKluk3CpvWJZWFcYH/8koTMGY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773850948; c=relaxed/simple;
+	bh=FGNSu4DlIfiUMZa5ZkmaJp/QIn2lggE4u2Ndygv6FBY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=E4XoJgBvGk8omxqUHeKagTRikK27RSZd7Ir73QUJ4hDq0GWJkuKj7gI0EyOijKNpwmSGSiNbZhDQ4qDTfckutjc2zJm92VlA6qzqdqRn8PIZArJqbsgkJBOqosQ6VLoYhH8o/apWUXzkegYN5bhVHLMzZN4TK3od8IqG2VYPJsA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XpeluXyx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="czA+VIq9"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b97a06d7629so541523866b.0
-        for <linux-alpha@vger.kernel.org>; Tue, 17 Mar 2026 23:16:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773814598; cv=none;
-        d=google.com; s=arc-20240605;
-        b=iGJmIuq1rnb+2D7nhpI21a+684jrTl/1Dn35EzemHC5vfS4lipyt1CRGK1prLWjAvr
-         +tFsIr0DqOQH8pUy0OXQd2xMPqCTSP8D3DqhvabVt2s1yzWVXKAVJWd7dVzGh84vdscy
-         9UEenyfhPyek6Buez5BG1B2sma3DWCfnBbZzjAUYjZzOjfuN5sAPkUkqw86sC5fuj4xQ
-         L2scVU/nRH5YQbbt4+uIvUlzfopPxCtIfLXlU90AC3ZM+JtcW2aRGnb6IKPLL6290ItS
-         7QoAUsof258MDGAVXEjt6tbFqSI8FOJ/GUfAl4GV9Hy9sj+vV1RQ9sg5HcAuWZYDk1UJ
-         fvxg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=hNXx5fLw5itcSqfItrsW3d6my1DlKfO6NqzxE5+AiMo=;
-        fh=f/czFAIQeYtKnp1IEzRlWnrRU+CnOJZuttK3CfjrBAk=;
-        b=MMZpY5PIY5lBWOnkqriJcAqxgFQ0Wdm9aivJ5Rx2X0EYRzs8S0kAuMPKvaIQIde4w/
-         AVprRabVRLdyZqPLfJoY8ugQKbv93mHdHpN3swTm8p0dFQUSrhbqNAaYiw2sLcxSCG7B
-         v/U1bz/pscpZotvykJTlFXgDSX0bIsT9MAnq6WnJtUtAV022H2z/7ec1GTsZpqsaX96g
-         jZply8S1ojrH1iRSBvII88ib7flpL8UF9DfJRmFlq5U82yY/VUmUpeyB5pEeYrhWSILb
-         wSKpppgNlgoduZxEs544fR+TN2rOX3ZaDudVBKPL0Si6+X8u4+5Lq1BTsvEWOvsiS3qu
-         SAyQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773814598; x=1774419398; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hNXx5fLw5itcSqfItrsW3d6my1DlKfO6NqzxE5+AiMo=;
-        b=czA+VIq9QGWQxIWviOuOrte+AkszdW/h15AxwnnBl8PgQdCUSJeFt/rkA58JF8bw1z
-         MYdnPYGFr5y46Y9Ze6hH0uQbYgBxWhk4ISCFrpb1oCRqUKW8TesUGp2nfyk/tjdH6ZzI
-         DwOCFfQmjthVedmcIE7z/9904oV0s5pfRk6WMlT+ADyKZllzFK45VHyMvAMFKoo37U/j
-         J1nqKAueMk09QeZKqRnb2BbN9+d1iclFRFK4eWers79RzlXUT6c5NL6yIGsvvdDwBLkL
-         mIaXTaJyIolZxl+55rCZtIapNWvPnqXYQeH5Kjuv+rgtZgAO2r5C3jf4lHbFErXbdAiD
-         Zyfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773814598; x=1774419398;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=hNXx5fLw5itcSqfItrsW3d6my1DlKfO6NqzxE5+AiMo=;
-        b=m8aWvr0u8cPL6sM3N4uVIkWf4K9KUfdEb1hfMCdz/yDY537MmegGuufvKNdnJeGk+g
-         FHUBT6GKiqK5tKT3LLT/Oevqp/CENsS3qLFRKr1rkFyqHchmtMWGv0n8Qkrbfd2bULJu
-         I2jq9/+AYwslydna01MrrEKFAOWTUCz4UnAP9GI5VX3mV3yyZbx/euTe2Ym9Wu69OAzi
-         ZpD4zeT5/7S/GyV30JvucYWFj/iS47bJkDaWtN8KwoTVAGmTTr5+hEMxwWjNiK4De97M
-         rXwwZAQoc0pjcQpMhi7FKvXemc8C8d+bzSoKOEfOxc8eN1ZWZf93Xt1ValBq3VgJMSXm
-         mk9A==
-X-Forwarded-Encrypted: i=1; AJvYcCUei6YzbU7rPndBMYDpBGVbE+o3/O1w1gQnKbeKqcE9rvZv9s5OBLKeRHKRdsFSaYAFG4z0jrC5akziSA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YyfDy1I6sI4v6H+Y5AXAfOVG4HhuZKsaV0i+g/oqO8htOD4dgOT
-	/F1z2fln2ITEgm68QeWepOhpCHXAV/7R3qwlo5yTqdo2tNHLuKLcfO7ujiCNb4XuW8+RsveO2Wy
-	PCrQq9VrrbMOxXpEQu3Mx34OI/oQbZaM=
-X-Gm-Gg: ATEYQzwzB9mcP1KLUCIQ5EEfcAxoHpzg83z8XfNoXYKf6+yNBDDRK1yX/JYOHhaCuOk
-	EhJVDacm5thhAF4j/hSm8ildn0vDYuaxWEUxfW7CmEvWMe1g81yUEZYeEJfgZGBdVJF60MMr1b+
-	/Ww6QjankG++r7a6SZw8Nn1cHYrnKqCHVpEFvaEGFKq2QXbkY6J4pLkZ93uaRYDz1tNYX04kHba
-	m5Fw5r9GyAlglvnf2jbJH+7a1uVrr7ChuuODuUqHIxGESpvgpLcnj8OZ/Nmz1Asjg+AJofXyxUp
-	jtyFBPX3/mtUer5adZh4XQgfB93qzgFfzWY1CV32FvJ7Y77o9B4=
-X-Received: by 2002:a17:907:7b93:b0:b97:cc05:61b9 with SMTP id
- a640c23a62f3a-b97f4801ab5mr133040366b.15.1773814597747; Tue, 17 Mar 2026
- 23:16:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XpeluXyx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AC48C19421;
+	Wed, 18 Mar 2026 16:22:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773850947;
+	bh=FGNSu4DlIfiUMZa5ZkmaJp/QIn2lggE4u2Ndygv6FBY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XpeluXyxDsZzF3NAmckdqJwpVkaAqttUopjBMOigcEjrW9PG4hOk9bFNjIu2+1hu1
+	 IcsDTmGhCVATBRixcmNQQhBpayz2AxBxUoh+MbYsjRcLuorNTLiwBf6/k0JgHJn6Wz
+	 raA3nLiznqIL8OBq0mPUTLKCPd5eb3Bv2V64KLPcxM+MrRFRw5yx4UwmNfiJttbMZO
+	 J7HUEZM+SLsx9D5/aRBj0upZmqFXxEgFHzFGt2zHtfm6J4HCe4vfApVE0dgUg61GmQ
+	 0lp53wfP1tgknNDPDCf1MumSabgXnKYpdnqZftaDNWH4frl/QojAulg09IVXxCoww0
+	 l5WkFd3jbD+kg==
+Date: Wed, 18 Mar 2026 09:22:26 -0700
+From: Kees Cook <kees@kernel.org>
+To: Thomas =?iso-8859-1?Q?Wei=DFschuh?= <thomas.weissschuh@linutronix.de>
+Cc: Arnd Bergmann <arnd@arndb.de>, linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-riscv@lists.infradead.org, loongarch@lists.linux.dev,
+	linux-s390@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-mips@vger.kernel.org, sparclinux@vger.kernel.org,
+	linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org
+Subject: Re: [PATCH 00/15] exec: Remove AT_VECTOR_SIZE_ARCH from UAPI
+Message-ID: <202603180921.1B52D626@keescook>
+References: <20260302-at-vector-size-arch-v1-0-a11f03ba2ca8@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260302-at-vector-size-arch-v1-0-a11f03ba2ca8@linutronix.de> <20260302-at-vector-size-arch-v1-14-a11f03ba2ca8@linutronix.de>
-In-Reply-To: <20260302-at-vector-size-arch-v1-14-a11f03ba2ca8@linutronix.de>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 18 Mar 2026 07:16:26 +0100
-X-Gm-Features: AaiRm51Xx89jeaivgNYAhMk2LxpIu3kD6j5N4SuQDZ84WCnP1EAzJIW2dMNKGiE
-Message-ID: <CA+=Fv5RLtUPp9BhXfFEUk3roE3Gah0iUamDEZ-MXCNM_xKm3PA@mail.gmail.com>
-Subject: Re: [PATCH 14/15] alpha: remove AT_VECTOR_SIZE_ARCH from UAPI
-To: =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <thomas.weissschuh@linutronix.de>
-Cc: Kees Cook <kees@kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-riscv@lists.infradead.org, 
-	loongarch@lists.linux.dev, linux-s390@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-mips@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-sh@vger.kernel.org, 
-	linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260302-at-vector-size-arch-v1-0-a11f03ba2ca8@linutronix.de>
 
-On Mon, Mar 2, 2026 at 1:32=E2=80=AFPM Thomas Wei=C3=9Fschuh
-<thomas.weissschuh@linutronix.de> wrote:
->
+On Mon, Mar 02, 2026 at 01:25:24PM +0100, Thomas Weiﬂschuh wrote:
 > There is nothing userspace can do with this value. In the kernel is
 > always combined with AT_VECTOR_SIZE_BASE, which is not exposed to
 > userspace and also changes from time to time.
->
-> Move the symbol to a kernel-internal header.
->
-> Signed-off-by: Thomas Wei=C3=9Fschuh <thomas.weissschuh@linutronix.de>
+> 
+> Move the symbol to kernel-internal headers.
+> 
+> Meant to be applied through the asm-generic tree.
+> The default recipient list was huge. I trimmed it to only the
+> architecture lists.
+
+I don't see anything in Debian Code Search that actually uses this
+symbol, so that seems fine. Userspace already parses auxvec looking for
+AT_NULL, so length isn't useful.
+
+Reviewed-by: Kees Cook <kees@kernel.org>
+
+> 
+> Signed-off-by: Thomas Weiﬂschuh <thomas.weissschuh@linutronix.de>
 > ---
->  arch/alpha/include/asm/auxvec.h      | 7 +++++++
->  arch/alpha/include/uapi/asm/auxvec.h | 8 +++-----
->  2 files changed, 10 insertions(+), 5 deletions(-)
->
+> Thomas Weiﬂschuh (15):
+>       MAINTAINERS: exec: Add more auxvec.h variants
+>       auxvec.h: Move AT_VECTOR_SIZE definitions to linux/auxvec.h
+>       asm-generic: add an in-kernel auxvec.h header
+>       ARM: drop custom asm/auxvec.h
+>       x86: Remove AT_VECTOR_SIZE_ARCH from UAPI
+>       arm64: Remove AT_VECTOR_SIZE_ARCH from UAPI
+>       RISC-V: Remove AT_VECTOR_SIZE_ARCH from UAPI
+>       LoongArch: Remove AT_VECTOR_SIZE_ARCH from UAPI
+>       s390: Remove AT_VECTOR_SIZE_ARCH from UAPI
+>       powerpc: Remove AT_VECTOR_SIZE_ARCH from UAPI
+>       MIPS: Remove AT_VECTOR_SIZE_ARCH from UAPI
+>       sparc: Remove AT_VECTOR_SIZE_ARCH from UAPI
+>       sh: Remove AT_VECTOR_SIZE_ARCH from UAPI
+>       alpha: remove AT_VECTOR_SIZE_ARCH from UAPI
+>       auxvec.h: Drop fallback AT_VECTOR_SIZE_ARCH
+> 
+>  MAINTAINERS                              |  5 +++++
+>  arch/alpha/include/asm/auxvec.h          |  7 +++++++
+>  arch/alpha/include/uapi/asm/auxvec.h     |  8 +++-----
+>  arch/arm/include/asm/auxvec.h            |  1 -
+>  arch/arm64/include/asm/auxvec.h          |  7 +++++++
+>  arch/arm64/include/uapi/asm/auxvec.h     |  6 ++----
+>  arch/loongarch/include/asm/auxvec.h      | 14 ++++++++++++++
+>  arch/loongarch/include/uapi/asm/auxvec.h |  8 +++-----
+>  arch/mips/include/asm/auxvec.h           | 17 +++++++++++++++++
+>  arch/mips/include/uapi/asm/auxvec.h      |  8 +++-----
+>  arch/powerpc/include/asm/auxvec.h        |  7 +++++++
+>  arch/powerpc/include/uapi/asm/auxvec.h   |  6 ++----
+>  arch/riscv/include/asm/auxvec.h          | 13 +++++++++++++
+>  arch/riscv/include/uapi/asm/auxvec.h     |  2 --
+>  arch/s390/include/asm/auxvec.h           |  7 +++++++
+>  arch/s390/include/uapi/asm/auxvec.h      |  6 ++----
+>  arch/sh/include/asm/auxvec.h             |  7 +++++++
+>  arch/sh/include/uapi/asm/auxvec.h        |  8 +++-----
+>  arch/sparc/include/asm/auxvec.h          |  6 ++++++
+>  arch/sparc/include/uapi/asm/auxvec.h     |  8 +++-----
+>  arch/x86/include/asm/auxvec.h            | 12 ++++++++++++
+>  arch/x86/include/uapi/asm/auxvec.h       | 13 +++----------
+>  include/asm-generic/Kbuild               |  1 +
+>  include/asm-generic/auxvec.h             |  7 +++++++
+>  include/linux/auxvec.h                   |  5 +++++
+>  include/linux/mm_types.h                 |  6 ------
+>  26 files changed, 139 insertions(+), 56 deletions(-)
+> ---
+> base-commit: f6b3b0a4c85882ad75bce3b093173203e3f39f28
+> change-id: 20260109-at-vector-size-arch-6e0f2e9ff8b6
+> 
+> Best regards,
+> -- 
+> Thomas Weiﬂschuh <thomas.weissschuh@linutronix.de>
+> 
 
-Build-tested on alpha, no issues here.
-
-Acked-by: Magnus Lindholm <linmag7@gmail.com>
+-- 
+Kees Cook
