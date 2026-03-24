@@ -1,162 +1,233 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E28F4362124
-	for <linux-alpha@vger.kernel.org>; Thu, 19 Mar 2026 14:28:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.49
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773930484; cv=pass; b=nRTAtDwOdqfh9b3ZufTCNmKX6IhI4nY7hdWXr/y8KEASp2cJyLQ28+vEVMsL01esyr2Sdtb0Pfz/SHzM2rNrta/b/QZk7rPFjHNrzyvVft/5BEddEaiKjitzz5kH9+GgCU/I0Qer6HQ91zIJm8C/mOBFfXhcJ4wR7/VW7TLs/08=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773930484; c=relaxed/simple;
-	bh=x6wZk7AvpBRTPYt5th9R3ycT2p5XdAgtnR98fAb1EOE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=EXna/wBdy4eBxFf1JLy4UFyJtgEtLV6abAxXicPEixGUZBavhqcd6R9jMhNXFvoB5uW9sxYrdAQGpcI2avEbuQyPooz/cWHZtu9MRz69+ICzSzGUCCPWCO2dirVkTof2I0JKhg1u1ZdeyvGaUABCdvkZTuFSDc1wEITD8RgB4sc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kcCKrhoY; arc=pass smtp.client-ip=209.85.208.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DC703B27EF;
+	Tue, 24 Mar 2026 06:22:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774333384; cv=none; b=hnpLnicD5XRH6ESyfLDbmoemI7nWnKoOlQ54bLHMk1qqujwUkGmpSOO0wHs9sxytM4vyPpJBoWZ4CWu4MXB1aen/EOTAmpcMLN/F8EoCl4EI6PVBbjg3vuRtonCgWVpsDzWO+E1wH4tQIGff9qmS8c59Iqpl60GkbhYQUO1AjGs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774333384; c=relaxed/simple;
+	bh=nGZJLjOe5iO4iOeruhTpM3hRiw+N7ndt3b9PtwZc2ko=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bR05x8olluLJzuMb2e1F0F8J4Kcl9mz2lzggyNMQkB0Jwnuq6QMVuSNV3OSB/Q1d81kQmeOw1tC4xs4uvJCL8e3d2FKmFTu7lgiOTcoxfHnZYW7GwzlkN1KPEIWIhz6hCw975wFw4KvCirNVOp8PRAkQiKv0WbRoICA4bEUCMvU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=lst.de; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=c65a7z7Q; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kcCKrhoY"
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-66132b22182so1466273a12.2
-        for <linux-alpha@vger.kernel.org>; Thu, 19 Mar 2026 07:28:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773930479; cv=none;
-        d=google.com; s=arc-20240605;
-        b=g+usLTFK3coXlVGWrepFBBTmG94+KeN60dqkY0+XURX/a9J1c2vbBNrEXqZ8wnnXMt
-         c4/h/zhwgiZhhmY/13NuXQgJoUZhm+N7K915LAD4XUWxe3xmPPnVQUJahsIHHsKUyxNy
-         jfSoyJmvbx0j4ctOltTzeYdxV6IIAATCDOfMask+beMSpKS4ykfx48ibul60fCSpjw4R
-         gidDGPplyzPfxWfXENHOTjnKTJJgN5L+mJlHybCdaIBPVH30vBxexG0TLch+/f2LeCob
-         eq/svV3/1soQuIixCx+qi6lBMhHy/XsK7DW8QhumUTeKSNA7E4EW8201L0CaXCDEYT0B
-         EKqw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=wEYdsi/UQnV1ulkUEVFM3uerucLpRLXH0M0xgNStZdI=;
-        fh=k+936JPVHwMcPycr6YL2SpvVNruiKOY6zEXj3kxvBHI=;
-        b=EaamN4VYSvTkaIfMFD8FzZhx/h88geFd171DT5nBo50vdthFYB2hNgv/xJg3Sj+Cst
-         DaAesJgo6HuklX4eHn1bb5VHi9u/Qub97+nO4v/YcF/NHJFB4fU9hXsYzehTP/94ICOS
-         kLhfhcrwQo/TUEdmPQd2HKWYbyruYlx5xqKDDf46pegfEbSc5V8EtzCi59rKlkikRkEr
-         RK+yzfbxFWxdi6fhAmk9ljAAtiOuqHDETX+MNYBJPRpDI4o67L0Fio2QqHDGCYZ8peMY
-         hVOlEhfkoHJg7VZS4xshY5+i3h+nVoVzUZ5gxSFlxA+Nj4p0m9B9oQk+6aqghS3SlsH4
-         FCxg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773930479; x=1774535279; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wEYdsi/UQnV1ulkUEVFM3uerucLpRLXH0M0xgNStZdI=;
-        b=kcCKrhoYX+8CZszcDQbuZD6T4DnxTVx1KFlZ0Jph2pEsT7DV9Mnj1YT1bYrXCuAa+S
-         hpDAfQ1xXxUjFpI++GUXCzaWS1y6BSStTwjGD+OnOBciNoZ7Xp1VqamSGoaSAqSZ1u5R
-         945g+zKdeorBhg1AKG/Bb90H6R2LtDirpwrPvj5Oh9WzuAiCQSN2EnknkZHTKsbab/zB
-         fnD79VSfUGwENxCYTTrjL7dnOT3K9jltAF8JDxfu2vpVHutMN4ta0fP0qdP80PoqOA/o
-         HPeL/1Ukubwi4cdQoCwu31uFJ5Bte1R3lZPg/JzllRmeny1zCPKEmeQumCaUrIAZcRJw
-         +4tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773930479; x=1774535279;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=wEYdsi/UQnV1ulkUEVFM3uerucLpRLXH0M0xgNStZdI=;
-        b=hfeHnLCHV7wmlKb5uSmapFe4W2/286yOehqKVnteNWOuwgeoGa8lsDGuUz1513Ej2d
-         vTCpp+EUx0T1Fh1rHDTbqCHeJ3OHM1UMcSHZB3MTBl0PzHYXYevnxIU6v4HWvZj9vmZ4
-         ONV7VCkHp1p3VkQaqpfPjc1oCKTCr+qYAnOT0Ee3RLkqw56LoRE5dj2TrbIXVyRmKgpZ
-         T2bkoNZR1WFfcxwryfvDD1MWQlkKZ4UlYUv3ZtBEyt5OxaKa4UI4mc3IylJh7INSlI3t
-         M3mByNRbfZog5Z5Y8t+5LzK4q0DQm/0E0FYXbf6JmAn5cioNyA/wEThbEWFjgfJS0anv
-         9beQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW0N634tREHXfHHDBHdxOz4fGDRZ5GtbFUUHo3DhDcdESnXebB0B84sWlh/o7VeCHXEsnW+EHiYlS/uFw==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwQNdEqyfqnSalOK8PG2RLOMxdJhs3l9bqTbtCO4RlEaJpcuu3b
-	hw7cLOA6u+VA2sRZH03e48NMiT2VMxSNzbP5AGxa0itpS5T6voXHxJxUutLhudIpWCH2OlrK3HF
-	zLA3HTJKmXjbW62L2RBsSufF80SIApH4=
-X-Gm-Gg: ATEYQzy63BosvzMf06JuO99RRUXs1xFa4m/6ugROuRDsAg9PC54PTEcGusCWEsbPXcz
-	CUlbf4WGISaMPnL2QtW0OguRn7/i6S+gCHM++ejQfaS7x8EviAxROPfAQVBdBhNVf3fWinEyB7P
-	I4/Y8eQFhr8DSidmtx9899xsd9Pljv5srHIPZ3Y2z8GHoc4RGqYHVRun8mioqvzhqoW3HzqMYjm
-	BsARScT9qZMLDO5TVyrCuzZiHAUmIIGpFNSzyLcU5MAMNp0xfpH9KOuX6uErmCjX0PZqI7eakrD
-	BKZq05hKcA==
-X-Received: by 2002:a17:906:ee83:b0:b96:db93:5d0e with SMTP id
- a640c23a62f3a-b97f4ab7799mr545864466b.41.1773930478856; Thu, 19 Mar 2026
- 07:27:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="c65a7z7Q"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=llZo5AuQgKfnTDSRj0qABwj+a0z1LvEOtH9cegApi48=; b=c65a7z7QGulg3ZLt9fovvHDcTw
+	ZbNOrHtwwGpRemcCz9CWHiJ3Ei2dTofnWWPUL3uUXteeZ8o4CHqd3da+QlqLH8NFQL7+6DxGYY7x/
+	ISh83YpgQoFnaMoWYlk1wLHj1Op7kAZwuQikkXrMfcuGzOKD62v6gHZ+2Uxzk4wjwUmL55wqdwWGr
+	IUkEuJt/x9DI3icLegpslpm2STLooEogQ9Js9TWsnJBxhBFyaFyZMs/6zvfKcL4tEJRvDHxUd8kBd
+	vu03BtS4rMfzdxhHi3ti00AmlupX42OVlGsUDyVcj2JfI7viG3M60ZNS78+dMo3Z7I2Ah04DFsGUu
+	c5dVM7YA==;
+Received: from 2a02-8389-2341-5b80-d601-7564-c2e0-491c.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:d601:7564:c2e0:491c] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1w4v9l-00000000ggz-358i;
+	Tue, 24 Mar 2026 06:22:26 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Alexandre Ghiti <alex@ghiti.fr>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Chris Mason <clm@fb.com>,
+	David Sterba <dsterba@suse.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Song Liu <song@kernel.org>,
+	Yu Kuai <yukuai@fnnas.com>,
+	Li Nan <linan122@huawei.com>,
+	"Theodore Ts'o" <tytso@mit.edu>,
+	"Jason A. Donenfeld" <Jason@zx2c4.com>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	loongarch@lists.linux.dev,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org,
+	sparclinux@vger.kernel.org,
+	linux-um@lists.infradead.org,
+	linux-crypto@vger.kernel.org,
+	linux-btrfs@vger.kernel.org,
+	linux-arch@vger.kernel.org,
+	linux-raid@vger.kernel.org
+Subject: cleanup the RAID5 XOR library v3
+Date: Tue, 24 Mar 2026 07:21:36 +0100
+Message-ID: <20260324062211.3216301-1-hch@lst.de>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260302-at-vector-size-arch-v1-0-a11f03ba2ca8@linutronix.de> <20260302-at-vector-size-arch-v1-7-a11f03ba2ca8@linutronix.de>
-In-Reply-To: <20260302-at-vector-size-arch-v1-7-a11f03ba2ca8@linutronix.de>
-From: Andy Chiu <andybnac@gmail.com>
-Date: Thu, 19 Mar 2026 09:27:47 -0500
-X-Gm-Features: AaiRm52wQD6uRKulnt1Y_ioaRFL-b1bqEKDLHZMA0LYwV13CAWHAV79Bf5laR-o
-Message-ID: <CAFTtA3O74BTJz8d87CJFQpa8Sub_ouKyyAB8cTXUxd=BnUzS7Q@mail.gmail.com>
-Subject: Re: [PATCH 07/15] RISC-V: Remove AT_VECTOR_SIZE_ARCH from UAPI
-To: =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <thomas.weissschuh@linutronix.de>
-Cc: Kees Cook <kees@kernel.org>, Arnd Bergmann <arnd@arndb.de>, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-riscv@lists.infradead.org, 
-	loongarch@lists.linux.dev, linux-s390@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-mips@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-sh@vger.kernel.org, 
-	linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Mon, Mar 2, 2026 at 6:27=E2=80=AFAM Thomas Wei=C3=9Fschuh
-<thomas.weissschuh@linutronix.de> wrote:
->
-> There is nothing userspace can do with this value. In the kernel is
-> always combined with AT_VECTOR_SIZE_BASE, which is not exposed to
-> userspace and also changes from time to time.
->
-> Move the symbol to a kernel-internal header.
->
-> Signed-off-by: Thomas Wei=C3=9Fschuh <thomas.weissschuh@linutronix.de>
+Hi all,
 
-Reviewed-by: Andy Chiu <andybnac@gmail.com>
+the XOR library used for the RAID5 parity is a bit of a mess right now.
+The main file sits in crypto/ despite not being cryptography and not
+using the crypto API, with the generic implementations sitting in
+include/asm-generic and the arch implementations sitting in an asm/
+header in theory.  The latter doesn't work for many cases, so
+architectures often build the code directly into the core kernel, or
+create another module for the architecture code.
 
-> ---
->  arch/riscv/include/asm/auxvec.h      | 13 +++++++++++++
->  arch/riscv/include/uapi/asm/auxvec.h |  2 --
->  2 files changed, 13 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/riscv/include/asm/auxvec.h b/arch/riscv/include/asm/aux=
-vec.h
-> new file mode 100644
-> index 000000000000..fb4233445276
-> --- /dev/null
-> +++ b/arch/riscv/include/asm/auxvec.h
-> @@ -0,0 +1,13 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (C) 2012 ARM Ltd.
-> + * Copyright (C) 2015 Regents of the University of California
-> + */
-> +
-> +#ifndef _ASM_RISCV_AUXVEC_H
-> +#define _ASM_RISCV_AUXVEC_H
-> +
-> +/* entries in ARCH_DLINFO */
-> +#define AT_VECTOR_SIZE_ARCH    10
-> +
-> +#endif /* _UAPI_ASM_RISCV_AUXVEC_H */
-> diff --git a/arch/riscv/include/uapi/asm/auxvec.h b/arch/riscv/include/ua=
-pi/asm/auxvec.h
-> index 95050ebe9ad0..0a725f2aa2e7 100644
-> --- a/arch/riscv/include/uapi/asm/auxvec.h
-> +++ b/arch/riscv/include/uapi/asm/auxvec.h
-> @@ -33,8 +33,6 @@
->  #define AT_L3_CACHESIZE                46
->  #define AT_L3_CACHEGEOMETRY    47
->
-> -/* entries in ARCH_DLINFO */
-> -#define AT_VECTOR_SIZE_ARCH    10
->  #define AT_MINSIGSTKSZ         51
->
->  #endif /* _UAPI_ASM_RISCV_AUXVEC_H */
->
-> --
-> 2.53.0
->
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+Changes this to a single module in lib/ that also contains the
+architecture optimizations, similar to the library work Eric Biggers
+has done for the CRC and crypto libraries later.  After that it changes
+to better calling conventions that allow for smarter architecture
+implementations (although none is contained here yet), and uses
+static_call to avoid indirection function call overhead.
+
+A git tree is also available here:
+
+    git://git.infradead.org/users/hch/misc.git xor-improvements
+
+Gitweb:
+
+    https://git.infradead.org/?p=users/hch/misc.git;a=shortlog;h=refs/heads/xor-improvements
+
+Changes since v2:
+ - drop use of CONFIG_KERNEL_MODE_NEON for arm64
+ - drop the new __limit_random_u32_below for the unit test
+ - require 64-bit alignment because sparc64 requires it
+ - use DEFINE_STATIC_CALL_NULL to avoid exposing a specific xor_gen
+   routine
+ - keep CONFIG_XOR_BLOCKS_ARCH self-contained in lib/raid/
+ - don't select library option from kunit test and add a .kunitconfig
+   instead
+ - fix the module description for the kunit test
+ - add a case where buffers are at the end of the allocation in the kunit test
+ - use separate src/dst alignment in the kunit test
+ - fix and improve the kunit assert message
+
+Changes since v1:
+ - use lockdep_assert_preemption_enabled()
+ - improve the commit message for the initial um xor.h cleanup
+ - further clean up the um arch specific header
+ - add SPDX identifier to the new build system files
+ - use bool for xor_forced
+ - fix an incorrect printk level conversion from warn to info
+ - include xor_impl.h in xor-neon.c
+ - remove unused exports for riscv
+ - simply move the sparc code instead of splititng it
+ - simplify the makefile for the x86-specific implementations
+ - remove stray references to xor_blocks in crypto/async_tx
+ - rework __DO_XOR_BLOCKS to avoid (theoretical) out of bounds references
+ - improve the kerneldoc API documentration for xor_gen()
+ - spell the name of the srcs argument to xor_gen correctly in xor.h
+ - add a kunit test, and a new random helper for it.
+
+Diffstat:
+ arch/arm64/include/asm/xor.h              |   73 --
+ arch/loongarch/include/asm/xor.h          |   68 --
+ arch/loongarch/include/asm/xor_simd.h     |   34 -
+ arch/loongarch/lib/xor_simd_glue.c        |   72 --
+ arch/powerpc/include/asm/xor.h            |   47 -
+ arch/powerpc/include/asm/xor_altivec.h    |   22 
+ arch/powerpc/lib/xor_vmx.h                |   22 
+ arch/powerpc/lib/xor_vmx_glue.c           |   63 --
+ arch/riscv/include/asm/xor.h              |   68 --
+ arch/s390/include/asm/xor.h               |   21 
+ arch/sparc/include/asm/xor.h              |    9 
+ arch/um/include/asm/xor.h                 |   24 
+ arch/x86/include/asm/xor_64.h             |   28 -
+ b/arch/arm/lib/Makefile                   |    5 
+ b/arch/arm64/lib/Makefile                 |    6 
+ b/arch/loongarch/lib/Makefile             |    2 
+ b/arch/powerpc/lib/Makefile               |    5 
+ b/arch/riscv/lib/Makefile                 |    1 
+ b/arch/s390/lib/Makefile                  |    2 
+ b/arch/sparc/include/asm/asm-prototypes.h |    1 
+ b/arch/sparc/lib/Makefile                 |    2 
+ b/crypto/Kconfig                          |    2 
+ b/crypto/Makefile                         |    1 
+ b/crypto/async_tx/async_xor.c             |   34 -
+ b/fs/btrfs/raid56.c                       |   27 -
+ b/include/asm-generic/Kbuild              |    1 
+ b/include/linux/raid/xor.h                |   27 -
+ b/lib/Kconfig                             |    1 
+ b/lib/Makefile                            |    2 
+ b/lib/raid/.kunitconfig                   |    3 
+ b/lib/raid/Kconfig                        |   30 +
+ b/lib/raid/Makefile                       |    3 
+ b/lib/raid/xor/Makefile                   |   42 +
+ b/lib/raid/xor/alpha/xor.c                |   46 -
+ b/lib/raid/xor/alpha/xor_arch.h           |   22 
+ b/lib/raid/xor/arm/xor-neon-glue.c        |   19 
+ b/lib/raid/xor/arm/xor-neon.c             |   22 
+ b/lib/raid/xor/arm/xor.c                  |  105 ----
+ b/lib/raid/xor/arm/xor_arch.h             |   22 
+ b/lib/raid/xor/arm64/xor-neon-glue.c      |   26 +
+ b/lib/raid/xor/arm64/xor-neon.c           |   94 +--
+ b/lib/raid/xor/arm64/xor-neon.h           |    6 
+ b/lib/raid/xor/arm64/xor_arch.h           |   21 
+ b/lib/raid/xor/loongarch/xor_arch.h       |   33 +
+ b/lib/raid/xor/loongarch/xor_simd_glue.c  |   37 +
+ b/lib/raid/xor/powerpc/xor_arch.h         |   22 
+ b/lib/raid/xor/powerpc/xor_vmx.c          |   40 -
+ b/lib/raid/xor/powerpc/xor_vmx.h          |   10 
+ b/lib/raid/xor/powerpc/xor_vmx_glue.c     |   28 +
+ b/lib/raid/xor/riscv/xor-glue.c           |   25 +
+ b/lib/raid/xor/riscv/xor.S                |    4 
+ b/lib/raid/xor/riscv/xor_arch.h           |   17 
+ b/lib/raid/xor/s390/xor.c                 |   15 
+ b/lib/raid/xor/s390/xor_arch.h            |   13 
+ b/lib/raid/xor/sparc/xor-sparc32.c        |   32 -
+ b/lib/raid/xor/sparc/xor-sparc64-glue.c   |   48 -
+ b/lib/raid/xor/sparc/xor-sparc64.S        |   10 
+ b/lib/raid/xor/sparc/xor_arch.h           |   35 +
+ b/lib/raid/xor/tests/Makefile             |    3 
+ b/lib/raid/xor/tests/xor_kunit.c          |  187 +++++++
+ b/lib/raid/xor/um/xor_arch.h              |    2 
+ b/lib/raid/xor/x86/xor-avx.c              |   52 --
+ b/lib/raid/xor/x86/xor-mmx.c              |  120 +---
+ b/lib/raid/xor/x86/xor-sse.c              |  105 +---
+ b/lib/raid/xor/x86/xor_arch.h             |   36 +
+ b/lib/raid/xor/xor-32regs-prefetch.c      |  267 ++++++++++
+ b/lib/raid/xor/xor-32regs.c               |  217 ++++++++
+ b/lib/raid/xor/xor-8regs-prefetch.c       |  146 +++++
+ b/lib/raid/xor/xor-8regs.c                |  103 ++++
+ b/lib/raid/xor/xor-core.c                 |  192 +++++++
+ b/lib/raid/xor/xor_impl.h                 |   56 ++
+ crypto/xor.c                              |  174 -------
+ include/asm-generic/xor.h                 |  738 ------------------------------
+ 73 files changed, 1831 insertions(+), 2067 deletions(-)
