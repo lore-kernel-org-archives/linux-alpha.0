@@ -1,134 +1,99 @@
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+Received: from out162-62-58-211.mail.qq.com (out162-62-58-211.mail.qq.com [162.62.58.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1DE03502B8;
-	Tue, 24 Mar 2026 18:36:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CE19310652;
+	Wed, 25 Mar 2026 08:30:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.58.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774377400; cv=none; b=OTtULeil9IspmJ8+Za1S6TgYjDju88XLPCxpBB6VpI6G777C30FxMrBgowZHEN5NPUqGuOjVCIEqV65H1uXTaSLcCgK3wLapL4GI86xVWmA/nCq2wNQu8NEynCoqi2QSvBeM1ATvt/+FhfQ2/GmVN426ZCBqU1KU65ibjao84Ak=
+	t=1774427415; cv=none; b=oYQovTrw8p41EAYKflLJ2henXnxUsw8jeYD/DlQ88bzdDo2L6cI36JZU3gmnpeziEe0UFbbHH3P4xWTNOgwAo4lO9c3gkyt55Uo2F1IW/xH5dB/vQjQSE53pUo30o1d+Iv+oAw0+QYaZMRKWxCrv9J8cmI/iyPUE86+bXLo+a6E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774377400; c=relaxed/simple;
-	bh=CR5/H6jk/spqZtGbl3vbbrLXD63pd8iURB3okeroTcY=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=TGST2GRVCyCuUT6OeCmbcsVmHH/9/E8099P22QPIhmHYmZh/U3M3rKhfuN0kFDBm+fMYHZjNHetV4hi/oWYaV67a9FXIhneNoJq8O31G1pFNzgqpC+vyLwTPBzoXaxnVsZTt2fbiJjNDANwu2GQyqPefcwyO11QmNBPr6xArBWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=ROAR34qq; arc=none smtp.client-ip=130.133.4.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	s=arc-20240116; t=1774427415; c=relaxed/simple;
+	bh=nL0Uunu/xWEA2FsnOOzPD7DVy3hhVG7mxXg9yRjMiGs=;
+	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=XZL11I1gdjSGGwia3ikYT+uQRs12gwgppdKCIQpK9p5I/zPrZc4xmyYhKoXSNR3PNyl8yo6VgVCDkDYYcHUCByl9wedxcew6aYp48RQG7eWrcxzJFp4mb5ymipBMqXVZIIfcDheU478NfYdZJGlNEXbCA1y9lrhMT4z3cebpHkg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=vdBluggp; arc=none smtp.client-ip=162.62.58.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="ROAR34qq"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:From:
-	Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-	Content-Transfer-Encoding:Content-ID:Content-Description:In-Reply-To:
-	References; bh=TMacGYMUcDU/ZfxMzZ5qB4lAQfMCgWI9xYNANb/3NJE=; t=1774377398;
-	x=1774982198; b=ROAR34qq8LtotAQ+z4eU9DUiOLRXMu1qt6BEJUtvAGwBMkEua9GWWTE8Nq5o1
-	DQDO8gj44BlzhvHxqcy4Fe9Qd7jEPAM+JDU70D9BbWuGLXDbviVa8lb3VBc2aG8Hu4Jd7ZS85o1RL
-	3vfS+JSQbjGL3IHDDFj0aSeoBe/qBt/lroiAaKfTUeug6ULI9EX3O146goonePpahvPga5SASG6kY
-	eF3cOFQvyHiND9/QgwhG/QOJzIYDiRFC539PiJWx/m7F65i2JlBQAlBXLn6kfyEDffe8rvX2AL78p
-	MiO0St9DBDptfiY+hHmBZdImb1jjrOvCQbqPST5EUo6SCXrjHw==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.99)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1w56c9-00000000BcZ-2HRb; Tue, 24 Mar 2026 19:36:29 +0100
-Received: from p5dc55f29.dip0.t-ipconnect.de ([93.197.95.41] helo=suse-laptop.fritz.box)
-          by inpost2.zedat.fu-berlin.de (Exim 4.99)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1w56c9-00000001y8z-0w0E; Tue, 24 Mar 2026 19:36:29 +0100
-Message-ID: <de9bf8fef8e311f37335507f0e715d113cd91bc5.camel@physik.fu-berlin.de>
-Subject: Re: [PATCH 05/10] am68k/PCI: Remove unnecessary second application
- of align
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: Ilpo =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Guenter
- Roeck <linux@roeck-us.net>, linux-alpha@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, 	linux-m68k@lists.linux-m68k.org,
- linux-mips@vger.kernel.org, 	linux-parisc@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, 	linux-s390@vger.kernel.org,
- linux-sh@vger.kernel.org, Russell King	 <linux@armlinux.org.uk>, Geert
- Uytterhoeven <geert@linux-m68k.org>, Thomas Bogendoerfer
- <tsbogend@alpha.franken.de>, "James E.J. Bottomley"
- <James.Bottomley@HansenPartnership.com>,  Helge Deller	 <deller@gmx.de>,
- Michael Ellerman <mpe@ellerman.id.au>, Thomas Gleixner	 <tglx@kernel.org>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,  Dave
- Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
- Chris Zankel <chris@zankel.net>,  Max Filippov <jcmvbkbc@gmail.com>,
- Madhavan Srinivasan <maddy@linux.ibm.com>, Yoshinori Sato	
- <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, LKML	
- <linux-kernel@vger.kernel.org>
-Date: Tue, 24 Mar 2026 19:36:27 +0100
-In-Reply-To: <1c08efcd-25e8-6436-52ab-ac3d50dcf58f@linux.intel.com>
-References: <20260324165633.4583-1-ilpo.jarvinen@linux.intel.com>
-	  <20260324165633.4583-6-ilpo.jarvinen@linux.intel.com>
-	 <5de97ed9556bfcc3b1f26bd71e09fa4016ae3ff8.camel@physik.fu-berlin.de>
-	 <1c08efcd-25e8-6436-52ab-ac3d50dcf58f@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="vdBluggp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+	s=s201512; t=1774427404;
+	bh=5u4gdaRzYh+ccG0RhSkVy9XVl57pnd6DPeBuGpj2u94=;
+	h=From:To:Cc:Subject:Date;
+	b=vdBluggp1K78TDbwXn4rAFwio/oehkMlHMECLf656pyRIlnbjYqIp1dveodAGSrpK
+	 NfbxugLFYYrAFV/J1TscZWzMPMRKXXfDNhlSocUjXYuIrES+F5zWlJh8xQX7BcECSL
+	 MlhWk2WMHzBXRbuavO1HArXqOyLVfXoE4zLV5Dhk=
+Received: from localhost ([111.48.134.140])
+	by newxmesmtplogicsvrszc50-0.qq.com (NewEsmtp) with SMTP
+	id 7830C2DE; Wed, 25 Mar 2026 16:30:03 +0800
+X-QQ-mid: xmsmtpt1774427403t47gage38
+Message-ID: <tencent_B3042D8C32E0E060EA44E56E27767078AC0A@qq.com>
+X-QQ-XMAILINFO: MDbayGdXPuoeOv4PLdNyuUgcv7vUjnt6dcOIwEQTtiG94SEyBU5EGQxKQOgffD
+	 /jlGzYIXyiKGV9DKIal1VKUt3VP/fw2Fo5yK0AewJNNEQbAdCgW7U3klUMxlanmuKvGmIbyas4QD
+	 4G91XqAGWmNw36JGoq2SL3+rnSkyW4sbWh0AOv4WukgeGVqj+IOOf3lJ94KEI0A0Wvy6rZjeQ6uT
+	 7skVPQLgfoqLZa/TqLtB8tzOMu+riBkIPB8+y5h/G39gbVU7eZ0NlHm64Mo/IUjZg2yJiD1hPHEn
+	 u1H6XtXy2ien7KrJmcttSBP/P2+r/kX1KM1k3mcUsRLiZkYP1pmutMNh7eg05NqR74KoNtfEH45c
+	 iGFXxE5dbok4rk2QdCPy96y8HhE75pMnj1x76RvtLL8A5ak9qWCknt0yA3+Kg5gHDDuFsfJmZFxg
+	 tEA62+xbI8/XD3h6HDlzvSeplw5agealHEBhiyxXvXD4Jk2GLZP4SJqnHc785onWFStldOmw1vu1
+	 dFaA413oKUzHB6PUtOBBNMOTlxph8ywSfoQHZKGUlCEOS7b8jF89noJi36rVNEJYC96UFnZ25/3k
+	 Zhcs3B6fdAHsmoLiVPyWi04Nt8WIs+AFIWZoJiJFdWZJzlIJdTrcMoWoC14ZzLblzI3RVBc4FuKv
+	 ethSbS4FoJgMBE/fyPiY97r/GROvfXP8beoAo6mf7sMn4gfCfnPIpWYcxtdJ4TjNyxK335sUZQEA
+	 9c6FSqTV1msy/61rk1UuyygOtyz3JcBZWfU5XeeogHoe2WDX8Ny9Uo9K8TV9dUBfmsv0j+CpN4mw
+	 fhVH0pg06fwIX+Om/oQkWtdB7dOf6x3xv4kaO+6DYt0/1XrJZDnslGf1CYD8369cFbkliyCoMpLD
+	 JoADLTt9fPhXp8fT9WBw44eAf5Ame6WCPIrOBnjxufv8EZH+KC26cZEFCxkVOknQAihPuRaTdNzV
+	 X9e/6PLhw/sqwcawBgvL/UcP7n47bq/11gdmbTtSauxvy21lQ+c0ElExr0kqQS9hy+mI7CW5Vlzs
+	 7DHB1o+ScHDoh6VULaUnqB3YmL7vuhpkUmPcxYPSjOms5U8MCtDW58r49VvIPTsSn0LxnwR2uU6Z
+	 +dZRk0vvNux98OcsMPk8Mu2ZxMoA==
+X-QQ-XMRINFO: Mp0Kj//9VHAxzExpfF+O8yhSrljjwrznVg==
+Sender: ziyu.shao@foxmail.com
+From: Ziyu Shao <Ziyu.Shao@foxmail.com>
+To: linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Ziyu Shao <Ziyu_Shao@outlook.com>
+Subject: [PATCH] alpha/boot: fix spelling mistakes in comments
+Date: Wed, 25 Mar 2026 16:30:01 +0800
+X-OQ-MSGID: <20260325083001.1017110-1-Ziyu.Shao@foxmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+Content-Transfer-Encoding: 8bit
 
-On Tue, 2026-03-24 at 19:55 +0200, Ilpo J=C3=A4rvinen wrote:
-> On Tue, 24 Mar 2026, John Paul Adrian Glaubitz wrote:
->=20
-> > Hi Ilpo,
-> >=20
-> > On Tue, 2026-03-24 at 18:56 +0200, Ilpo J=C3=A4rvinen wrote:
-> > > Aligning res->start by align inside pcibios_align_resource() is
-> > > unnecessary because caller of pcibios_align_resource() is
-> > > __find_resource_space() that aligns res->start with align before
-> > > calling pcibios_align_resource().
-> > >=20
-> > > Aligning by align in case of IORESOURCE_IO && start & 0x300 cannot ev=
-er
-> > > result in changing start either because 0x300 bits would have not
-> > > survived the earlier alignment if align was large enough to have an
-> > > impact.
-> > >=20
-> > > Thus, remove the duplicated aligning from pcibios_align_resource().
-> > >=20
-> > > Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> > > ---
-> > >  arch/m68k/kernel/pcibios.c | 2 --
-> > >  1 file changed, 2 deletions(-)
-> > >=20
-> > > diff --git a/arch/m68k/kernel/pcibios.c b/arch/m68k/kernel/pcibios.c
-> > > index 1415f6e4e5ce..7e286ee1976b 100644
-> > > --- a/arch/m68k/kernel/pcibios.c
-> > > +++ b/arch/m68k/kernel/pcibios.c
-> > > @@ -36,8 +36,6 @@ resource_size_t pcibios_align_resource(void *data, =
-const struct resource *res,
-> > >  	if ((res->flags & IORESOURCE_IO) && (start & 0x300))
-> > >  		start =3D (start + 0x3ff) & ~0x3ff;
-> > > =20
-> > > -	start =3D (start + align - 1) & ~(align - 1);
-> > > -
-> > >  	return start;
-> > >  }
-> > >=20
-> >=20
-> > Sorry if it's a stupid question, but what does "am68k" in the subject r=
-efer to?
->=20
-> The extra "a" is a typo. I'm sorry about that.
+From: Ziyu Shao <Ziyu_Shao@outlook.com>
 
-No worries, I just thought I missed something obvious and felt stupid to as=
-k ;-).
+Fix two spelling errors in comments:
+- "cdecompress" -> "decompress"
+- "paramenters" -> "parameters"
 
-Adrian
+Signed-off-by: Ziyu Shao <Ziyu_Shao@outlook.com>
+---
+ arch/alpha/boot/bootpz.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+diff --git a/arch/alpha/boot/bootpz.c b/arch/alpha/boot/bootpz.c
+index c6079308eab3..64680c10db79 100644
+--- a/arch/alpha/boot/bootpz.c
++++ b/arch/alpha/boot/bootpz.c
+@@ -326,7 +326,7 @@ start_kernel(void)
+ 	 * 0x20000000, we have to ensure that the physical memory
+ 	 * pages occupied by that image do NOT overlap the physical
+ 	 * address range where the kernel wants to be run.  This
+-	 * causes real problems when attempting to cdecompress the
++	 * causes real problems when attempting to decompress the
+ 	 * former into the latter... :-(
+ 	 *
+ 	 * So, we may have to decompress/move the kernel/INITRD image
+@@ -456,7 +456,7 @@ start_kernel(void)
+ #ifdef DEBUG_LAST_STEPS
+ 	srm_printk("Preparing INITRD info...\n");
+ #endif
+-	/* Finally, set the INITRD paramenters for the kernel. */
++	/* Finally, set the INITRD parameters for the kernel. */
+ 	((long *)(ZERO_PGE+256))[0] = initrd_image_start;
+ 	((long *)(ZERO_PGE+256))[1] = INITRD_IMAGE_SIZE;
+ 
+-- 
+2.53.0
+
