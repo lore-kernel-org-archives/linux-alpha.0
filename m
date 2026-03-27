@@ -1,137 +1,168 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C294E3D5679;
-	Fri, 27 Mar 2026 08:25:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52A443AA1B2;
+	Fri, 27 Mar 2026 10:29:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774599945; cv=none; b=UyYDVKVNF14D5NJe3YtGBSwBdpO7fS4rlzIeyi2DjXjThnw8JGlCrcD3XDMgYEgMz2vmm9b5FBiSEvQ/fX7k24Om0resbtUoEpCh8+oWfUsgmRz7cjdBuHy6XAe5V/pyCa9NcZvOgQdxHfUEdHBEKxMBuWEt0BEkLKAVYBYbgXk=
+	t=1774607354; cv=none; b=keG8S0eKOtsDy0M2UMRN9cCH5OcCbjOkusojCHtgdeKcW9FhoH+u0IPEBCsJqhHaAv7amQ9xRm2zpXgk/+9+fSyfA4TzzY/NuPwhj+n/DSykYbUyTunllF5QF5vzAQYZQjuRoVllfnAwPsr+yX6KVyp6JdEV1ZixPBetu9pYYeY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774599945; c=relaxed/simple;
-	bh=oGcTlThlcrf/a6X6Pba0yaQBbOhK2gU5HD6vMRqLYbw=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=IsqpKkyZvpr6+4JsNjEYRr2MtEzPXN58z4MImpmKH9HW98/oeXoQTySGqe37RQy98tsO5cJkFSoi+2I4UV9zcWdN7zHa1JJpVHwBIMp6ub4VYLNfweUTNM1SRotdtG516KSUB+jHabfbsI9vRc+uViODIEEBOOfiNRRWNzQF7qA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=njQORTNY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774607354; c=relaxed/simple;
+	bh=AQrZsYS87uRLSAUzR2yt6e8HOvPMEsktxMC+0rqw0oY=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=nVuYhg6gY5IMwE6tnlqy3yOoA4E2e+6tsyvnzitFBWc03tx1m2so0L45gAxs8Zxl1htN/84Xhr/YxkkpcsfiaD8d361Cf0Y3qlcWJ8tyr7BV1N+GDH5FpD7d1TrGotUtEoLjDsijTUnJx6ZXbBSUx3FxUSGSvKEnY6dvn/TuKW8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SX0nzWlZ; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="njQORTNY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D9BEC4AF0C;
-	Fri, 27 Mar 2026 08:25:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774599945;
-	bh=oGcTlThlcrf/a6X6Pba0yaQBbOhK2gU5HD6vMRqLYbw=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=njQORTNYseBfNIOCfwhdeA9ppWJ7maUSfI1m29FCLMsOAc3VLwzoUH5yF8yKr6mea
-	 bx+1V7DTQAZd4ojLaeGJ0Cf3haex4YnlcYGkJc6gqWpYVE6NyhljsbVP0BA8rn4ocl
-	 th3E+L/MxnnFaA65UP+0OZlA+Vah5cD2+QCQtpMoLgNIFhCA8eqtKOZpCOxJlAkmXg
-	 mk+TUk0Rtz4vIo7JSvIUgAmQeWqKyPfMFemVWMOZXJJwErSg1qzGGRRVp3lXzBSaJ8
-	 C68setmayjda5hFti2rXgLBBjXsEJfs82WxkzWojyXlsFObrjk5392Uz/bQO/irUHV
-	 e65UQpbwEdk/A==
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 6F5B9F4006E;
-	Fri, 27 Mar 2026 04:25:43 -0400 (EDT)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-01.internal (MEProxy); Fri, 27 Mar 2026 04:25:43 -0400
-X-ME-Sender: <xms:Bz_GaeV3zNaSpHJHySYxTNOI14Bf1EmJgTqGji8Tx6XrdR-ly4fPVA>
-    <xme:Bz_GaVaecSFZVaUx_LS_q-dDchW3x2ph_U-FNZZvjkVa-2Cbgvi2qQJJQEWm1pEen
-    o2Nmsvazvbril7mJ2bFLAHoL0kR_6ydzStl4XH8vMJ4O7DQEb3zgw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdefvdelkedtucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddtnecuhfhrohhmpedftehrugcu
-    uehivghshhgvuhhvvghlfdcuoegrrhgusgeskhgvrhhnvghlrdhorhhgqeenucggtffrrg
-    htthgvrhhnpedvueehiedtvedtleekuddutefgffdtleetfeetveejveejieehfefhjeei
-    jeefudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    grrhguodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduieejtdehtddtjeel
-    qdeffedvudeigeduhedqrghruggspeepkhgvrhhnvghlrdhorhhgseifohhrkhhofhgrrh
-    gurdgtohhmpdhnsggprhgtphhtthhopeehtddpmhhouggvpehsmhhtphhouhhtpdhrtghp
-    thhtohepsghpsegrlhhivghnkedruggvpdhrtghpthhtoheptggrthgrlhhinhdrmhgrrh
-    hinhgrshesrghrmhdrtghomhdprhgtphhtthhopehlihhnuhigsegrrhhmlhhinhhugidr
-    ohhrghdruhhkpdhrtghpthhtoheprghrnhgusegrrhhnuggsrdguvgdprhgtphhtthhope
-    grnhhtohhnrdhivhgrnhhovhestggrmhgsrhhiughgvghgrhgvhihsrdgtohhmpdhrtghp
-    thhtohepphgrlhhmvghrsegurggssggvlhhtrdgtohhmpdhrtghpthhtohepuggrvhgvmh
-    esuggrvhgvmhhlohhfthdrnhgvthdprhgtphhtthhopegrohhusegvvggtshdrsggvrhhk
-    vghlvgihrdgvughupdhrtghpthhtohepmhhpvgesvghllhgvrhhmrghnrdhiugdrrghu
-X-ME-Proxy: <xmx:Bz_GadcJkX20GupXEUp-1Bp1i56g4LWcqwmuAAUTXMfU5fJkgo7Tdw>
-    <xmx:Bz_Gae4Ua-AeB83mS_pFrGVbAUqLQoAnmgxrDbHOol1S2B-duVR5XQ>
-    <xmx:Bz_GaRnLH2iPqmlmio84hLTWA0CS_wnMOI2-h11M3d92fo7SmGfrqA>
-    <xmx:Bz_GaUbPhoo7c5hIYcd0gM0CfIgT0rg3SwoJSuxv9v4EumISMkIDVQ>
-    <xmx:Bz_GafNBX4aAxc6vxqjfi2htd4zy-WLnaQnlHHZvUG3bWFOqd9K8W1h7>
-Feedback-ID: ice86485a:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 3B247700065; Fri, 27 Mar 2026 04:25:43 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SX0nzWlZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774607353; x=1806143353;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=AQrZsYS87uRLSAUzR2yt6e8HOvPMEsktxMC+0rqw0oY=;
+  b=SX0nzWlZIY0Lg4fyXJy1hem2uUevSvI1nbx91bp0jZYYqRr93GaLksaE
+   L6XLJWuLACGbs/Obo0LLfiusLKSxmX5HOfj2BR/OfzI5RUmPnAEbJxWGx
+   H8arvWKQ7iOn+koxe3/GEJt4fFT8S6HWH9xg10wBXdgqPJanVKkEt1Qyx
+   /7B2xb2jl7faADXEGMBpdI28tH79/++kh/ol8X0TPBLWYG1sA2mCqBcZa
+   QJQsSA1iMaFdyaMsTkz2wpp39pZGfRPODNn6QqAM5cXjkgXj8CJ1e7gn9
+   0Li0W7WV2EDfk6lWNjEzVO4kFjsRIUYdrV6xXvg6gkCesf5RAzv+5UkW8
+   Q==;
+X-CSE-ConnectionGUID: +KbLwjXESSqMmEPH1Yg2iA==
+X-CSE-MsgGUID: k3BStIGXSgiyo9+iueWvgA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11741"; a="93259306"
+X-IronPort-AV: E=Sophos;i="6.23,144,1770624000"; 
+   d="scan'208";a="93259306"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2026 03:29:11 -0700
+X-CSE-ConnectionGUID: tBARr7F7SaCXrVZYlacT+g==
+X-CSE-MsgGUID: 6iZuzsYWQBOngO/GpRvA3A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,144,1770624000"; 
+   d="scan'208";a="263218208"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.186])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2026 03:29:01 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Fri, 27 Mar 2026 12:28:56 +0200 (EET)
+To: Bjorn Helgaas <helgaas@kernel.org>
+cc: linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, 
+    Guenter Roeck <linux@roeck-us.net>, linux-alpha@vger.kernel.org, 
+    linux-arm-kernel@lists.infradead.org, linux-m68k@lists.linux-m68k.org, 
+    linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+    linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, 
+    linux-sh@vger.kernel.org, Russell King <linux@armlinux.org.uk>, 
+    Geert Uytterhoeven <geert@linux-m68k.org>, 
+    Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+    "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
+    Helge Deller <deller@gmx.de>, Michael Ellerman <mpe@ellerman.id.au>, 
+    Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, 
+    Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, 
+    "H. Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>, 
+    Max Filippov <jcmvbkbc@gmail.com>, 
+    Madhavan Srinivasan <maddy@linux.ibm.com>, 
+    Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, 
+    John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+    LKML <linux-kernel@vger.kernel.org>, Xifer <xiferdev@gmail.com>
+Subject: Re: [PATCH 00/10] PCI: Improve head free space usage
+In-Reply-To: <20260326192520.GA1337681@bhelgaas>
+Message-ID: <7207cde7-d47e-f79c-afe9-9b1daa79140c@linux.intel.com>
+References: <20260326192520.GA1337681@bhelgaas>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: ALG_cRBuf6HF
-Date: Fri, 27 Mar 2026 09:25:22 +0100
-From: "Ard Biesheuvel" <ardb@kernel.org>
-To: "Christoph Hellwig" <hch@lst.de>,
- "Andrew Morton" <akpm@linux-foundation.org>
-Cc: "Richard Henderson" <richard.henderson@linaro.org>,
- "Matt Turner" <mattst88@gmail.com>,
- "Magnus Lindholm" <linmag7@gmail.com>,
- "Russell King" <linux@armlinux.org.uk>,
- "Catalin Marinas" <catalin.marinas@arm.com>,
- "Will Deacon" <will@kernel.org>, "Huacai Chen" <chenhuacai@kernel.org>,
- "WANG Xuerui" <kernel@xen0n.name>,
- "Madhavan Srinivasan" <maddy@linux.ibm.com>,
- "Michael Ellerman" <mpe@ellerman.id.au>,
- "Nicholas Piggin" <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- "Paul Walmsley" <pjw@kernel.org>, "Palmer Dabbelt" <palmer@dabbelt.com>,
- "Albert Ou" <aou@eecs.berkeley.edu>, "Alexandre Ghiti" <alex@ghiti.fr>,
- "Heiko Carstens" <hca@linux.ibm.com>,
- "Vasily Gorbik" <gor@linux.ibm.com>,
- "Alexander Gordeev" <agordeev@linux.ibm.com>,
- "Christian Borntraeger" <borntraeger@linux.ibm.com>,
- "Sven Schnelle" <svens@linux.ibm.com>,
- "David S. Miller" <davem@davemloft.net>,
- "Andreas Larsson" <andreas@gaisler.com>,
- "Richard Weinberger" <richard@nod.at>,
- "Anton Ivanov" <anton.ivanov@cambridgegreys.com>,
- "Johannes Berg" <johannes@sipsolutions.net>,
- "Thomas Gleixner" <tglx@kernel.org>, "Ingo Molnar" <mingo@redhat.com>,
- "Borislav Petkov" <bp@alien8.de>,
- "Dave Hansen" <dave.hansen@linux.intel.com>, x86@kernel.org,
- "H . Peter Anvin" <hpa@zytor.com>,
- "Herbert Xu" <herbert@gondor.apana.org.au>,
- "Dan Williams" <dan.j.williams@intel.com>, "Chris Mason" <clm@fb.com>,
- "David Sterba" <dsterba@suse.com>, "Arnd Bergmann" <arnd@arndb.de>,
- "Song Liu" <song@kernel.org>, "Yu Kuai" <yukuai@fnnas.com>,
- "Li Nan" <linan122@huawei.com>, "Theodore Ts'o" <tytso@mit.edu>,
- "Jason A . Donenfeld" <Jason@zx2c4.com>, linux-alpha@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- loongarch@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
- linux-crypto@vger.kernel.org, linux-btrfs@vger.kernel.org,
- linux-arch@vger.kernel.org, linux-raid@vger.kernel.org
-Message-Id: <e7979928-b33a-4132-b08b-d95b91b14295@app.fastmail.com>
-In-Reply-To: <20260327061704.3707577-4-hch@lst.de>
-References: <20260327061704.3707577-1-hch@lst.de>
- <20260327061704.3707577-4-hch@lst.de>
-Subject: Re: [PATCH 03/28] arm64/xor: fix conflicting attributes for xor_block_template
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="8323328-307680389-1774607336=:1037"
 
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-On Fri, 27 Mar 2026, at 07:16, Christoph Hellwig wrote:
-> Commit 2c54b423cf85 ("arm64/xor: use EOR3 instructions when available")
-> changes the definition to __ro_after_init instead of const, but failed to
-> update the external declaration in xor.h.  This was not found because
-> xor-neon.c doesn't include <asm/xor.h>, and can't easily do that due to
-> current architecture of the XOR code.
->
+--8323328-307680389-1774607336=:1037
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-Even if it did, it wouldn't matter - __ro_after_init has no effect on declarations, only on definitions - it only controls the placement of the object in the .data..ro_after_init section (and declarations don't generate any code)
+On Thu, 26 Mar 2026, Bjorn Helgaas wrote:
 
-> Fixes: 2c54b423cf85 ("arm64/xor: use EOR3 instructions when available")
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/arm64/include/asm/xor.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
+> [+cc Xifer; thanks very much for reporting and testing!]
+>=20
+> On Tue, Mar 24, 2026 at 06:56:23PM +0200, Ilpo J=C3=A4rvinen wrote:
+> > Hi all,
+> >=20
+> > This series attempts to take advantage of free head space (the free
+> > space before the aligned start address) in order to generally produce a
+> > tighter packing of the resources/bridge windows.
+> >=20
+> > The recent changes to the resource fitting algorithm caused resource
+> > allocation failures in some cases where a bridge window that is sized
+> > to be gapless could no longer be assigned. The previous algorithm left
+> > a huge gaps which allowed it to place the remainder (non-aligning part
+> > of the size) before the start address of used for the gapless fit,
+> > whereas the new gapless approach always had to place the remainder
+> > after the aligning part of the resources. There is not always space
+> > for the remainder triggering those failures (e.g., when the aligning
+> > part must be placed at the top of the window).
+> >=20
+> > This series attempts to allow placing the remainder once again before
+> > the aligning part, but now without leaving huge gaps to retain the
+> > benefits of the gapless bridge windows. The approach is somewhat hacky
+> > but should work thanks to PCI resources fundamentally consisting only
+> > power-of-two atoms.
+> >=20
+> > There maybe cases where architecture would not want to do such
+> > relocation. This series adds the relocation to arch
+> > pcibios_align_resource() functions to allow all of them taking
+> > advantage of the better resource packing but if somebody objects doing
+> > this relocation for a particular arch, I can remove it, please just let
+> > me know (this relocation doesn't seem critical unless there are
+> > regressions).
+> >=20
+> > Ilpo J=C3=A4rvinen (10):
+> >   resource: Add __resource_contains_unbound() for internal contains
+> >     checks
+> >   resource: Pass full extent of empty space to resource_alignf CB
+> >   resource: Rename 'tmp' variable to 'full_avail'
+> >   ARM/PCI: Remove unnecessary second application of align
+> >   am68k/PCI: Remove unnecessary second application of align
+> >   MIPS: PCI: Remove unnecessary second application of align
+> >   parisc/PCI: Cleanup align handling
+> >   PCI: Rename window_alignment() to pci_min_window_alignment()
+> >   PCI: Align head space better
+> >   PCI: Fix alignment calculation for resource size larger than align
+> >=20
+> >  arch/alpha/kernel/pci.c          |  1 +
+> >  arch/arm/kernel/bios32.c         |  9 ++++---
+> >  arch/m68k/kernel/pcibios.c       |  8 +++++--
+> >  arch/mips/pci/pci-generic.c      |  8 ++++---
+> >  arch/mips/pci/pci-legacy.c       |  3 +++
+> >  arch/parisc/kernel/pci.c         | 17 ++++++++------
+> >  arch/powerpc/kernel/pci-common.c |  6 ++++-
+> >  arch/s390/pci/pci.c              |  1 +
+> >  arch/sh/drivers/pci/pci.c        |  6 ++++-
+> >  arch/x86/pci/i386.c              |  5 +++-
+> >  arch/xtensa/kernel/pci.c         |  3 +++
+> >  drivers/pci/pci.h                |  3 +++
+> >  drivers/pci/setup-bus.c          | 15 ++++++++----
+> >  drivers/pci/setup-res.c          | 40 +++++++++++++++++++++++++++++++-
+> >  drivers/pcmcia/rsrc_nonstatic.c  |  3 ++-
+> >  include/linux/ioport.h           | 22 +++++++++++++++---
+> >  include/linux/pci.h              | 12 +++++++---
+> >  kernel/resource.c                | 33 +++++++++++++-------------
+> >  18 files changed, 149 insertions(+), 46 deletions(-)
+>=20
+> I added Xifer's tested-by, fixed the "am68k" and missing "if"
+> typos, and applied these to pci/resource for v7.1.
+>=20
+> Ilpo, if you post a v2 with more changes, I'll update to it.  I
+> applied the series now to get a head start on 0-day building and into
+> next.
+
+Thanks.
+
+I don't have anything in addition to those.
+
+--=20
+ i.
+
+--8323328-307680389-1774607336=:1037--
