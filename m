@@ -1,68 +1,68 @@
-Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com [74.125.224.46])
+Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com [74.125.224.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 268141DE894
-	for <linux-alpha@vger.kernel.org>; Fri,  3 Apr 2026 15:02:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47BEB3C8722
+	for <linux-alpha@vger.kernel.org>; Fri,  3 Apr 2026 15:03:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775228572; cv=none; b=rzuJDmgBgwKzS3Ezi+l6Nked4Rnde9nZYS1ve/8wmI+6XEYa1lB0JDmYlv7qs7ORfOX662mfUAFzCC+PG/dO3d/wX7eSJimpLpMpIkV9sESHjw/pe+x9WLQyt2igBC/rsXPl6S0+vyNNCTAN0BtD/i7fMQ5eKibADg6D5rmnO2U=
+	t=1775228591; cv=none; b=iMha8izedYSqIyBmV8YETDE5iW8kEcafaKeZwXPeCRM/FuiN8+2H4SwYxrLc6XIsA9RIsTkyy6cFKUbyeNDK03gWaJqYWKVK95ReMUX/leUwZJAPXWYVvbuFMgmzkUoD+Qtbi6Rh1B0SL/1NKMnIX5rPyx+OAEp/6oUnR88rcT4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775228572; c=relaxed/simple;
-	bh=uIVxaZkcS+x1jv3y83ijcVxh0CkjFrOi2K1uekCwzIM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SclPlEIfhVPsQlQbyYBcV2e6esYkw2BRkKG2S8AObffulwS+Cu21IGlnEZGYAoudSoiQhC/UXsKKYqwhbx33gQXZTnCPYF6aZpVana2R1R01hXuyQ0VdmGzu9K5GEvgMvRkpqiRVv/XtvOzTenQRg0xbKF/Pym7Duat3HihCaYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ChD2L13H; arc=none smtp.client-ip=74.125.224.46
+	s=arc-20240116; t=1775228591; c=relaxed/simple;
+	bh=lT7Q9AKU0YksR8P3u0Hl8ckPI2kw2qZTOZZEUhZ9SnI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WMfnxjFhB1WpJQJmXhdyhvqGW88u9ZiXZa9q7dVDR8xSArGOv8oShRU+Y6RnzSKwfd9a/Cl5GqCfkVmwDng2w4JYQmbjAy9gOKhuA9pvvBCpvni4Cy2F9KkM9P9oEXvWTo83Mpy4TG+H3SmLkFfD2A2nAe/GBkztnufUGmuOvlE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y4siv3R/; arc=none smtp.client-ip=74.125.224.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ChD2L13H"
-Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-64937edbc9eso1844739d50.2
-        for <linux-alpha@vger.kernel.org>; Fri, 03 Apr 2026 08:02:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y4siv3R/"
+Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-6501418152cso1973421d50.0
+        for <linux-alpha@vger.kernel.org>; Fri, 03 Apr 2026 08:03:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775228570; x=1775833370; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1775228588; x=1775833388; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=o1KtGLXtsez2Y/z8fTfKXHa9LhbWJgLBIOq/YQ+Y9OQ=;
-        b=ChD2L13HW4lxUZaT3VkncyAMqWPiE6hzcMhlhkurByq6wV06WvqLDqJ1oXqymHuK2g
-         c7vXqb/f43lbd9hrfvVFRv0otrp16fXloH2D5+2bgaBA/i/iWU8z3r0zVvQPwREHx4vk
-         24Hi2AwPAA2qIP73OoRVKKzkiQzI7ZVJoUx+dgKk24wonQUd/1KP4Bcaq1Ck49t992xT
-         Xgumw9QS5cSxBbNDW0UUmj6+iTe3DxGGjHlvke6mwEtM2Tve+WGeA470KVDgodaKIdop
-         CDOZ/1uhra/75eDO37MYu67NtHkaooilDDSr3BkyELa487CrN7zqN41glcZF0rwLDXbE
-         nNRA==
+        bh=ZONuljCFXzlQguSjIaUcivQnI+ZVq0hotudKD5Kl3Wc=;
+        b=Y4siv3R/APGbEQD6113VFjnS/CPEZQX81CzK9i87SW6iCXGqSXB1UVWxshiUc2aD1b
+         CPhydhLyqE9ozWIaFDy8z4LytR63ZR+e1dFnY2TQTfH5urJ3ofxcg+ap+8sqQT2flUX6
+         2y7EN0NjUupjq02JN4QfEMVYz7Mf140U6hp7c9/mi34rBEf9TpI/f6/XvxZ9uweyfATq
+         1GYheaEydDtpny93Gmt8n7PqqKfZLJ4FsyuT7rJfq63wvRmaiuqZwP+feKKvfqmCTgRl
+         sRtl/d0VH//q3AafTsp199U1w5Dbs3+CS7dtP+GL0cgmMeufA0BevWmksDowAS8xJsw8
+         iPGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775228570; x=1775833370;
+        d=1e100.net; s=20251104; t=1775228588; x=1775833388;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=o1KtGLXtsez2Y/z8fTfKXHa9LhbWJgLBIOq/YQ+Y9OQ=;
-        b=oBKfPbPzENyqjtg9J2YF7sMGplAd70O69fCqkHuWIcZ1CFF7r+/XSGHithCFKHys5F
-         1qgAvj/Z5Lf5BUnffzfKQnJdKQA4zO1hlZnF801O0miDouHe9jSmpkY4lfNjF0UFVwzV
-         gt4hxb/6oFVEAWGvJ1zKnjKuuyXp6wD6VAV2lwtrq9pssMsjRHglbI3Vm0T65WyFIEdm
-         PD6IlQ65jU3DCFNmT+0o8nTgnMI63yccU+AnA8pJ+9ZSJ1CNgJD/L3Vd6tyh32gUJjAf
-         3PIhaBhR+lWX55F6VU0bjWdSWmrnHajyWY54AsE7iHKG8OXaV69imQtmSl+Zg3KR0ZRl
-         ElyA==
-X-Gm-Message-State: AOJu0YxTZM8ZGDAe3VrNRnBejooy7UqmNEXlhbAAbPFcFP04XI97ntXi
-	fMKM8RfTp6GyQ6oJ1944YZpVtSpke0ScEJxB/4deHoel+xqwC6PWy5r5ueSSTQ==
-X-Gm-Gg: AeBDieuqEPastlWw4s0h+pgnd52cOe6gZiSZ0O7e9SORYdL3t4pd0ADUc20+M2Z9yT+
-	B/lh4djXQFk/xFEZRbzS0Z1O8fRNk6ws+AX9JMf4ZFDd021hdvntbOmOPBSjbOAKNl++YmGuyP4
-	Djf4oAICi4L7k/EUL/FeS+GCL5vdHX+5pSFUgZEAZycGB3OebEFJGPA0Pzi/t8Ggc8f3zPNf4h+
-	6NhhvDxVT2Fjln0SJlnib7uvod0tn69Scc42HiAB25jQzoBzY7dgw0rY6jd6B+MBXr5rxMyHPeb
-	RZonxl4b5b8LNytQqLHftD9kNYP5uVP9CVmhCQPB/giUCMcB884ZUO+1y18duWBZpnhCvUWDlcV
-	BK0SxYyeWr14k+QdEtRE2AWOih3/FuNiGJiHgwBFDZE7i91Goqidtfjcngh+yYJrSAWhnvxr5ka
-	hKHvQYjdU2H8BDT7ym1R8=
-X-Received: by 2002:a05:690c:c4e9:b0:79a:46eb:d1a2 with SMTP id 00721157ae682-7a4d31e75bbmr35732267b3.11.1775228570109;
-        Fri, 03 Apr 2026 08:02:50 -0700 (PDT)
+        bh=ZONuljCFXzlQguSjIaUcivQnI+ZVq0hotudKD5Kl3Wc=;
+        b=H89076p10eAS6sKHImFXnTmvN46nHBbOnHGU3Jw2/Kq5xPptmzQmCvVPfzbKqywqNJ
+         +5Oc0i4Ao//9tTGJveFt/u6wId+YAUtiqrruQmhPtE8AROWt1A7IiZCQLTN6b/wEu0lb
+         iorcBz7+M2ZyAJVi9NKUbOUQVaucOg5sfWDJqFAWlVUaM3FQcaF6xq2/q3D3aQWVqrE1
+         bK+feVUZwuk+sGmuPHfK7xISUJQMMNVw6hPY7qFSFyCQxZvUFPUXHX9OmcEvgN3NKi5J
+         7J7t47gNvzNndfZ54YPkgkQI3EoILnZ0Y9nzlOJKoBHWswNA3Xw3bjUfV8IZSSVymY4O
+         1dgw==
+X-Gm-Message-State: AOJu0YwIdFxOfvYJWzYCJxUCDPRC0hvk/PSaIe/e20iNsZx3+SSYNHTu
+	QJBUCnv6JmklVFOM8nHHtSgQX208ZLNjIzEfsd766c1f9J06oFJzyW6o
+X-Gm-Gg: AeBDieuiXRx913XW3utlUUKyrM5h5zrkAPAt6DV23TYocOJu6ZWSU8Vts5Yjqa7Jy4C
+	4cvwx0eLvHDugVXltV23gdcFDhARhZe4FPWDvB5P0mYHPEVdYVJH6xp4Wsxvbjmpybu3mM05vNk
+	e6zPCUuqFxDpIQHVZsPMqkGGkCbie1AOuPYnEZSJVQKYzlB0TOz3lYTJ+cMpI7l5vnX5HmyptoG
+	avO20zasc/tWVLfdPlUXp+4cZx0/T3VA4YQQmZAG6DhJXd9Gvc8Gzq6vGBD7jjgjCTRkj9tIKRn
+	kHRRKawmXODV2UP5Ir6qSNF2gYL2aQUvgCIi+x/6dwITSjr/bsGV8z1EMTQeVTcdrgSn6XdMnHQ
+	afAkOY77T6agil8HSxv4iFoCStrFFgP7vGvNcxZCdhfHAcKUtNpjpJEv+DwQpjxJnAzDVdOQsrt
+	rGjaZeIKYywncqAVnwTYE=
+X-Received: by 2002:a05:690e:138a:b0:650:2ff9:d656 with SMTP id 956f58d0204a3-6504879b8ddmr2902375d50.29.1775228587764;
+        Fri, 03 Apr 2026 08:03:07 -0700 (PDT)
 Received: from localhost ([76.195.202.134])
-        by smtp.gmail.com with UTF8SMTPSA id 00721157ae682-7a370905056sm22532857b3.31.2026.04.03.08.02.49
+        by smtp.gmail.com with UTF8SMTPSA id 956f58d0204a3-6503a9b6285sm2472521d50.17.2026.04.03.08.03.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Apr 2026 08:02:49 -0700 (PDT)
+        Fri, 03 Apr 2026 08:03:07 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
 To: Magnus Lindholm <linmag7@gmail.com>
 Cc: linux-alpha@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Matt Turner <mattst88@gmail.com>
-Subject: [PATCH] alpha: Select ARCH_WANT_FRAME_POINTERS
-Date: Fri,  3 Apr 2026 11:02:45 -0400
-Message-ID: <20260403150247.488921-1-mattst88@gmail.com>
+Subject: [PATCH] alpha: Select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+Date: Fri,  3 Apr 2026 11:03:03 -0400
+Message-ID: <20260403150304.489061-1-mattst88@gmail.com>
 X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
@@ -72,9 +72,14 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-GCC supports -fno-omit-frame-pointer on Alpha, using $15 (fp) as
-the frame pointer per the ABI. This enables the FRAME_POINTER config
-option, improving stack traces for debugging and profiling.
+Alpha has a clean split between user and kernel address spaces: user
+space occupies 0x0000000000000000-0x000003ffffffffff (TASK_SIZE), while
+kernel space uses KSEG and vmalloc regions near the top of the 64-bit
+address space. These are strictly non-overlapping.
+
+This enables optimizations in BPF and tracing that can skip address
+range checks when user and kernel pointers are distinguishable by
+address alone.
 
 Assisted-by: Claude:claude-opus-4-6
 Signed-off-by: Matt Turner <mattst88@gmail.com>
@@ -83,17 +88,17 @@ Signed-off-by: Matt Turner <mattst88@gmail.com>
  1 file changed, 1 insertion(+)
 
 diff --git ./arch/alpha/Kconfig ./arch/alpha/Kconfig
-index 394e49328cb6..85b3a2295a2f 100644
+index d870529fa251..394e49328cb6 100644
 --- ./arch/alpha/Kconfig
 +++ ./arch/alpha/Kconfig
-@@ -32,6 +32,7 @@ config ALPHA
- 	select GENERIC_PCI_IOMAP
- 	select AUTO_IRQ_AFFINITY if SMP
- 	select GENERIC_IRQ_SHOW
-+	select ARCH_WANT_FRAME_POINTERS
- 	select ARCH_WANT_IPC_PARSE_VERSION
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
- 	select AUDIT_ARCH
+@@ -5,6 +5,7 @@ config ALPHA
+ 	select ARCH_32BIT_USTAT_F_TINODE
+ 	select ARCH_HAS_CURRENT_STACK_POINTER
+ 	select ARCH_HAS_DMA_OPS if PCI
++	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+ 	select ARCH_MIGHT_HAVE_PC_SERIO
+ 	select ARCH_MODULE_NEEDS_WEAK_PER_CPU if SMP
 -- 
 2.52.0
 
