@@ -1,159 +1,238 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6208C2F3C19;
-	Fri, 10 Apr 2026 03:19:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4531D30BF5C;
+	Fri, 10 Apr 2026 05:50:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775791191; cv=none; b=ZhdP/ahQccFp6cEXo28A4/5sic6/Q5rIRiakN03DY3aUyHhoa1AZ9aBt9VCokLJ9SLYF0wmAM0LyulPYQYaCtIdX9zP2ssuNJbtD6fCZqc8oGFLOfKDhZY56f/Etz3o6kGkdOTaHl8hojWmEdqpjxPke0kYTQ4kcpsnVNHfUZrU=
+	t=1775800245; cv=none; b=XOKr1dSzw25J/Fs7QuyS2zpR6ldtb0ia9Iir2SM9PRXD4gaDJrUjVm+H1DOKjptjrufvkJ4W3xwehy4Czt4nUze0odzxSVehbqPuddLeCFXR//6zeiRcBqvsnfamrVMGJfPsiFfQ9MQyfEfOGFPXTPScq+QBIpLHLjD4y7OQ2VQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775791191; c=relaxed/simple;
-	bh=++Koq39UWrgs6Y9/teNpfuGX4Prd7yZehxjZlfBpaLk=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
-	 Mime-Version:Content-Type; b=Ak0nrvXkPexITmWLxBs7XylQK+RYfnICDTD60Y6sA7K0Q038mPcgp661khz47fXka2ISiV0cLqgihMmp2a54s/XZ/yzHzuhNZJ4HuYOqQ8DwcdvuH7Ru0kBuG0gaxSkPimHXhKlfFDSM7IKq3zUl4elUACKjw28WExZx3WDqx1I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mdYIM+3n; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775800245; c=relaxed/simple;
+	bh=heNFs70N3BP1J7/YAXV0i5l1cHEi6uhW1IDN/z9Cms0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Z2mrTYjAxgyr/xUhTLXcyemYTDAFjYWWNaOLXAo/n4kIPn6VuZSJ10S3VzZXOjhVkIN9PwTFU08wx2Ry5LjL/MJUI/karuLiT1qY2dq5PiDkgYJ2C8HhB6POouPKQlCtJb2q3yJg9uyV//PgaeTRLU/4laYKmmnO2iOGWsJBLIg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TdZG2f9t; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mdYIM+3n"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7843C4AF09;
-	Fri, 10 Apr 2026 03:19:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TdZG2f9t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B723BC19421;
+	Fri, 10 Apr 2026 05:50:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775791191;
-	bh=++Koq39UWrgs6Y9/teNpfuGX4Prd7yZehxjZlfBpaLk=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=mdYIM+3nOOfJk2sQndWIVe1crpn+qIFglFUaJi6YUZ8om+pF74JbkoMG1pCSpEb9w
-	 XY42HnmovukKhj85guOzmyhoPciXUmwPx7036BzxDj+GBwDX7w8ZX/kQj6Kf75C9nQ
-	 yMJOxpzFMvk+DFq2q3tbouAiWajtfDS+AXyxjQFI3HFmtdEmAwU/TRZgmOQyhKh0dz
-	 oTEcDPh4RcJYLV/DB6MyHh1cNOYj4HnTWHBSTgpco77/7Mk4f7CQSMgdwxNaeolZeG
-	 11Id3MhuCNF2BddA3SZqi8zEZAyyZSbKwJdKtgyQMtKdIjBxiedoSXRHs0s+vuBPie
-	 fHhNTH/TVHimw==
-Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
-	by mailfauth.phl.internal (Postfix) with ESMTP id BEAFCF4007B;
-	Thu,  9 Apr 2026 23:19:48 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-05.internal (MEProxy); Thu, 09 Apr 2026 23:19:48 -0400
-X-ME-Sender: <xms:VGzYaRzc9F2SaA_dXGONVlZncUeqwfeC1knsfsUGLqCLtL9x7AJ9oQ>
-    <xme:VGzYaXbKB70COhi6wU5zcJDCn3jfZcRswNA20Sizt_IZgoixIWdWvIaDWTE9UJGaO
-    0gyCPv6TWv531UsombbNhRf0U-TJegFRbhlgcIH7rcKGm2a1YHwez-u>
-X-ME-Received: <xmr:VGzYaeCIWm-xaXNHRiAOee5n1VgDRaIYH8ii2WphVWSDkg5IlPqKJ2tQQw7rWGta-3eIj1g2bSuh8bC3JY4Fe1PIIjMC3ZQPqnM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefhedrtddtgddvkedvlecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpeffhffvvefkjghfufggtgfgsehtjeertddttdejnecuhfhrohhmpeffrghnucghihhl
-    lhhirghmshcuoegujhgsfieskhgvrhhnvghlrdhorhhgqeenucggtffrrghtthgvrhhnpe
-    elhfeiudfgvdeijedtleeltdduueekffejjedvjefhgeevjeefueejledtleetjeenucev
-    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegujhgsfidomh
-    gvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqudejjedvfedtgeehhedqfeeffeel
-    gedtgeejqdgujhgsfieppehkvghrnhgvlhdrohhrghesfhgrshhtmhgrihhlrdgtohhmpd
-    hnsggprhgtphhtthhopeehjedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohephhgt
-    hheslhhsthdruggvpdhrtghpthhtoheprhhitghhrghrugdrhhgvnhguvghrshhonheslh
-    hinhgrrhhordhorhhgpdhrtghpthhtohepmhgrthhtshhtkeeksehgmhgrihhlrdgtohhm
-    pdhrtghpthhtoheplhhinhhmrghgjeesghhmrghilhdrtghomhdprhgtphhtthhopehlih
-    hnuhigsegrrhhmlhhinhhugidrohhrghdruhhkpdhrtghpthhtoheptggrthgrlhhinhdr
-    mhgrrhhinhgrshesrghrmhdrtghomhdprhgtphhtthhopeifihhllheskhgvrhhnvghlrd
-    horhhgpdhrtghpthhtoheprghruggssehkvghrnhgvlhdrohhrghdprhgtphhtthhopegt
-    hhgvnhhhuhgrtggriheskhgvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:VGzYaRWWYH9YS5_KZb8QZgCAsWZfUiB9ORAbpTx2OwSeNwf8aS1oTQ>
-    <xmx:VGzYaYKyeSQq62O7WlXYf1xoalWcpZEhKySYJd9-cJQMpEvayfPE0g>
-    <xmx:VGzYaaJiDRoNy9BMYAaTC41fiA_6sbPjbfWZ4OvQdt7iOTvnCgAc1A>
-    <xmx:VGzYac91Cyql-IFbLq_KalJjxN3efCc9QroVK6-eoTOUQqKKiQULjQ>
-    <xmx:VGzYaQXpDuEx9ex4m7qF5l0GU1hi1krNMW-ZgN0aa1e6laSCn6NuISRa>
-Feedback-ID: i67ae4b3e:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 9 Apr 2026 23:19:47 -0400 (EDT)
-Date: Thu, 09 Apr 2026 20:19:47 -0700
-From: Dan Williams <djbw@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Richard Henderson <richard.henderson@linaro.org>,
-  Matt Turner <mattst88@gmail.com>,  Magnus Lindholm <linmag7@gmail.com>,
-  Russell King <linux@armlinux.org.uk>,
-  Catalin Marinas <catalin.marinas@arm.com>,
-  Will Deacon <will@kernel.org>,  Ard Biesheuvel <ardb@kernel.org>,
-  Huacai Chen <chenhuacai@kernel.org>,  WANG Xuerui <kernel@xen0n.name>,
-  Madhavan Srinivasan <maddy@linux.ibm.com>,
-  Michael Ellerman <mpe@ellerman.id.au>,
-  Nicholas Piggin <npiggin@gmail.com>,
-  "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-  Paul Walmsley <pjw@kernel.org>,  Palmer Dabbelt <palmer@dabbelt.com>,
-  Albert Ou <aou@eecs.berkeley.edu>,  Alexandre Ghiti <alex@ghiti.fr>,
-  Heiko Carstens <hca@linux.ibm.com>,  Vasily Gorbik <gor@linux.ibm.com>,
-  Alexander Gordeev <agordeev@linux.ibm.com>,
-  Christian Borntraeger <borntraeger@linux.ibm.com>,
-  Sven Schnelle <svens@linux.ibm.com>,
-  "David S. Miller" <davem@davemloft.net>,
-  Andreas Larsson <andreas@gaisler.com>,
-  Richard Weinberger <richard@nod.at>,
-  Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-  Johannes Berg <johannes@sipsolutions.net>,
-  Thomas Gleixner <tglx@kernel.org>,  Ingo Molnar <mingo@redhat.com>,
-  Borislav Petkov <bp@alien8.de>,
-  Dave Hansen <dave.hansen@linux.intel.com>,  x86@kernel.org,
-  "H. Peter Anvin" <hpa@zytor.com>,
-  Herbert Xu <herbert@gondor.apana.org.au>,
-  Dan Williams <dan.j.williams@intel.com>,  Chris Mason <clm@fb.com>,
-  David Sterba <dsterba@suse.com>,  Arnd Bergmann <arnd@arndb.de>,
-  Song Liu <song@kernel.org>,  Yu Kuai <yukuai@fnnas.com>,
-  Li Nan <linan122@huawei.com>,  Theodore Ts'o <tytso@mit.edu>,
-  "Jason A. Donenfeld" <Jason@zx2c4.com>,  linux-alpha@vger.kernel.org,
-  linux-kernel@vger.kernel.org,  linux-arm-kernel@lists.infradead.org,
-  loongarch@lists.linux.dev,  linuxppc-dev@lists.ozlabs.org,
-  linux-riscv@lists.infradead.org,  linux-s390@vger.kernel.org,
-  sparclinux@vger.kernel.org,  linux-um@lists.infradead.org,
-  linux-crypto@vger.kernel.org,  linux-btrfs@vger.kernel.org,
-  linux-arch@vger.kernel.org,  linux-raid@vger.kernel.org
-Message-ID: <69d86c53cfc4_2b31100e7@djbw-dev.notmuch>
-In-Reply-To: <20260327061704.3707577-25-hch@lst.de>
-References: <20260327061704.3707577-1-hch@lst.de>
- <20260327061704.3707577-25-hch@lst.de>
-Subject: Re: [PATCH 24/28] async_xor: use xor_gen
+	s=k20201202; t=1775800244;
+	bh=heNFs70N3BP1J7/YAXV0i5l1cHEi6uhW1IDN/z9Cms0=;
+	h=From:To:Cc:Subject:Date:From;
+	b=TdZG2f9txWpdj7lY67wEZFVQXWBe+rLFAMovErKrjBn6+8wWffZgTOjB0EUSFV8bU
+	 xvP+MIZPndc6dlAsTGQVncui+vuuY8GzJUI/p7K1ZLLrXIhyObLCt8VjBHYI13lFj8
+	 seKMHcHg2hsuKm586Myz1bqU0SjwxlqGO6OXshoYBUa7n04PTJkoKo/BAXAFeVEhyB
+	 ojCBMdpG5+V/psVi7tdM+uv2iK8yoXCpoJQi1JkhhH09Z8iQB/HkmkeI7lfEJUau57
+	 wjD5UBH1KQgjs526NJql8iCUdJboPZw4qw3Q34UPLMm5sBIAjAGviCn1T4rBiS2rP1
+	 s1LT9RZ6z3+DA==
+From: =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Bjorn Helgaas <helgaas@kernel.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Matt Turner <mattst88@gmail.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	=?UTF-8?q?Krzysztof=20Ha=C5=82asa?= <khalasa@piap.pl>,
+	Lukas Wunner <lukas@wunner.de>,
+	"Oliver O'Halloran" <oohall@gmail.com>,
+	Saurabh Singh Sengar <ssengar@microsoft.com>,
+	Shuan He <heshuan@bytedance.com>,
+	Srivatsa Bhat <srivatsabhat@microsoft.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-pci@vger.kernel.org,
+	linux-alpha@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 00/20] PCI: Convert all dynamic sysfs attributes to static
+Date: Fri, 10 Apr 2026 05:50:20 +0000
+Message-ID: <20260410055040.39233-1-kwilczynski@kernel.org>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Christoph Hellwig wrote:
-> Replace use of the loop around xor_blocks with the easier to use xor_gen
-> API.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  crypto/async_tx/async_xor.c | 34 ++++++++++------------------------
->  1 file changed, 10 insertions(+), 24 deletions(-)
-[..]
-> @@ -168,11 +156,10 @@ dma_xor_aligned_offsets(struct dma_device *device, unsigned int offset,
->   *
->   * honored flags: ASYNC_TX_ACK, ASYNC_TX_XOR_ZERO_DST, ASYNC_TX_XOR_DROP_DST
->   *
-> - * xor_blocks always uses the dest as a source so the
-> - * ASYNC_TX_XOR_ZERO_DST flag must be set to not include dest data in
-> - * the calculation.  The assumption with dma engines is that they only
-> - * use the destination buffer as a source when it is explicitly specified
-> - * in the source list.
-> + * xor_gen always uses the dest as a source so the ASYNC_TX_XOR_ZERO_DST flag
-> + * must be set to not include dest data in the calculation.  The assumption with
-> + * dma engines is that they only use the destination buffer as a source when it
-> + * is explicitly specified in the source list.
->   *
->   * src_list note: if the dest is also a source it must be at index zero.
->   * The contents of this array will be overwritten if a scribble region
-> @@ -259,11 +246,10 @@ EXPORT_SYMBOL_GPL(async_xor_offs);
->   *
->   * honored flags: ASYNC_TX_ACK, ASYNC_TX_XOR_ZERO_DST, ASYNC_TX_XOR_DROP_DST
->   *
-> - * xor_blocks always uses the dest as a source so the
-> - * ASYNC_TX_XOR_ZERO_DST flag must be set to not include dest data in
-> - * the calculation.  The assumption with dma engines is that they only
-> - * use the destination buffer as a source when it is explicitly specified
-> - * in the source list.
-> + * xor_gen always uses the dest as a source so the ASYNC_TX_XOR_ZERO_DST flag
-> + * must be set to not include dest data in the calculation.  The assumption with
-> + * dma engines is that they only use the destination buffer as a source when it
-> + * is explicitly specified in the source list.
+Hello,
 
-In retrospect, no need to duplicate this help, but as is:
+This series converts every dynamically allocated PCI sysfs attribute to
+a static const definition.  After the full series, pci_sysfs_init() and
+sysfs_initialized are gone, and every sysfs file is created by the
+driver model at device_add() time.
 
-Reviewed-by: Dan Williams <djbw@kernel.org>
+Currently, the PCI resource files (resourceN, resourceN_wc) and the
+legacy bus files (legacy_io, legacy_mem) are created dynamically
+from two unsynchronised paths:
+
+Path A: late_initcall
+
+  pci_sysfs_init                        (late_initcall)
+    sysfs_initialized = 1
+    for_each_pci_dev
+      pci_create_sysfs_dev_files
+        sysfs_create_bin_file           (resourceN, resourceN_wc)
+    pci_find_next_bus
+      pci_create_legacy_files
+        sysfs_create_bin_file           (legacy_io, legacy_mem)
+
+Path B: device registration / hotplug
+
+  pci_bus_add_devices
+    pci_bus_add_device
+      pci_create_sysfs_dev_files
+        if (!sysfs_initialized) return  <- only guard
+        sysfs_create_bin_file           (resourceN, resourceN_wc)
+
+On most ACPI systems this does not race because PCI enumeration
+completes at subsys_initcall time, before pci_sysfs_init() runs:
+
+  subsys_initcall (level 4):
+    acpi_pci_root_add
+      pci_bus_add_device
+        pci_create_sysfs_dev_files
+          if (!sysfs_initialized)          <- not yet set
+            return -EACCES
+
+  late_initcall (level 7):
+    pci_sysfs_init
+      sysfs_initialized = 1
+      for_each_pci_dev
+        pci_create_sysfs_dev_files         <- creates the files, no race
+
+On Devicetree platforms the host controller is a platform driver that
+probes via the driver model, often on a workqueue, and overlaps with the
+late_initcall:
+
+  CPU 0 (late_initcall)                CPU 1 (driver probe)
+  ---------------------------          ----------------------------
+  pci_sysfs_init()
+    sysfs_initialized = 1
+    for_each_pci_dev(pdev)             pci_bus_add_device(pdev)
+      pci_create_sysfs_dev_files()       pci_create_sysfs_dev_files()
+        sysfs_create_bin_file()            sysfs_create_bin_file()
+                                             -> "duplicate filename"
+
+The same happens on ACPI when probing is asynchronous (hv_pci on
+Azure, RISC-V with ACPI).
+
+The duplicate causes sysfs_create_bin_file() to fail with -EEXIST.
+pci_create_resource_files() then calls pci_remove_resource_files() in
+its error unwind, tearing down files the other thread created and
+still references through pdev->res_attr[].  This has caused kernel
+panics on i.MX6 and boot failures on other platforms.
+
+Several different fixes have been proposed over the years: reordering
+the sysfs_initialized assignment, adding locks, checking
+pci_dev_is_added(), setting pdev->res_attr[] to NULL after kfree
+(which only prevents a double-free on the teardown path, not the
+error unwind removing the other thread's files).  None would address the
+root cause.
+
+This has been reported a few times:
+
+  - https://lore.kernel.org/linux-pci/20250702155112.40124-1-heshuan@bytedance.com/
+  - https://lore.kernel.org/linux-pci/b51519d6-ce45-4b6d-8135-c70169bd110e@h-partners.com/
+  - https://lore.kernel.org/linux-pci/1702093576-30405-1-git-send-email-ssengar@linux.microsoft.com/
+  - https://lore.kernel.org/linux-pci/SY0P300MB04687548090B73E40AF97D8897B82@SY0P300MB0468.AUSP300.PROD.OUTLOOK.COM/
+  - https://lore.kernel.org/linux-pci/20230105174736.GA1154719@bhelgaas/
+  - https://lore.kernel.org/linux-pci/m3eebg9puj.fsf@t19.piap.pl/
+  - https://lore.kernel.org/linux-pci/20200716110423.xtfyb3n6tn5ixedh@pali/
+  - https://lore.kernel.org/linux-pci/1366196798-15929-1-git-send-email-artem.savkov@gmail.com/
+  - https://bugzilla.kernel.org/show_bug.cgi?id=215515
+  - https://bugzilla.kernel.org/show_bug.cgi?id=216888
+
+With static attributes the driver model creates sysfs entries once per
+device at device_add() time, under the device lock, eliminating the
+late_initcall iteration and the race along with it.
+
+	Krzysztof
+
+---
+Changes in v3:
+  https://lore.kernel.org/linux-pci/20210910202623.2293708-1-kw@linux.com/
+
+  - Updated for modern kernel releases and expanded scope.  The
+    v2 only covered the generic resource files.  This version
+    also converts Alpha's sparse/dense resource files and the
+    legacy bus attributes, removing pci_sysfs_init() entirely.
+  - Split the single macro definition into three distinct ones
+    (per I/O, UC, and WC), to make sure that each carries only
+    the callbacks its resource type needs.
+  - Updated to use the new .bin_size callback, as the attributes
+    are const, to replace using a->size directly, which was not
+    ideal.  This required changes to pci_llseek_resource(), to
+    ensure that it would work for device and bus-level attributes.
+  - Updated the __resource_resize_store() to include CAP_SYS_ADMIN
+    capabilities check.
+  - Added the security_locked_down() check to Alpha's
+    pci_mmap_resource(), to align with other architectures.
+
+Changes in v2:
+  https://lore.kernel.org/linux-pci/20210825212255.878043-1-kw@linux.com/
+
+  - Refactored code so that the macros, helpers and internal
+    functions can be used to correctly leverage the read(),
+    write() and mmap() callbacks rather than to use the
+    .is_bin_visible() callback to set up sysfs objects
+    internals as this is not supported.
+  - Refactored some if-statements to check for a resource
+    flag first, and then call either arch_can_pci_mmap_io()
+    or arch_can_pci_mmap_wc(), plus store result of testing
+    for IORESOURCE_MEM and IORESOURCE_PREFETCH flags into
+    a boolean variable, as per Bjorn Helgaas' suggestion.
+  - Renamed pci_read_resource_io() and pci_write_resource_io()
+    callbacks so that these are not specifically tied to I/O
+    BARs read() and write() operations also as per Bjorn
+    Helgaas' suggestion.
+  - Updated style for code handling bitwise operations to
+    match the style that is preferred as per Bjorn Helgaas'
+    suggestion.
+  - Updated commit messages adding more details about the
+    implementation as requested by Bjorn Helgaas.
+
+Krzysztof Wilczyński (20):
+  PCI/sysfs: Use PCI resource accessor macros
+  PCI/sysfs: Only allow supported resource types in I/O and MMIO helpers
+  PCI/sysfs: Use BAR length in pci_llseek_resource() when attr->size is
+    zero
+  PCI/sysfs: Add CAP_SYS_ADMIN check to __resource_resize_store()
+  PCI/sysfs: Add static PCI resource attribute macros
+  PCI/sysfs: Convert PCI resource files to static attributes
+  PCI/sysfs: Convert __resource_resize_store() to use static attributes
+  PCI/sysfs: Add stubs for pci_{create,remove}_sysfs_dev_files()
+  PCI/sysfs: Limit pci_sysfs_init() late_initcall compile scope
+  alpha/PCI: Add security_locked_down() check to pci_mmap_resource()
+  alpha/PCI: Use BAR index in sysfs attr->private instead of resource
+    pointer
+  alpha/PCI: Use PCI resource accessor macros
+  alpha/PCI: Clean up __pci_mmap_fits()
+  alpha/PCI: Add static PCI resource attribute macros
+  alpha/PCI: Convert resource files to static attributes
+  PCI/sysfs: Remove pci_{create,remove}_sysfs_dev_files()
+  alpha/PCI: Compute legacy size in pci_mmap_legacy_page_range()
+  PCI/sysfs: Add __weak pci_legacy_has_sparse() helper
+  PCI/sysfs: Convert legacy I/O and memory attributes to static
+    definitions
+  PCI/sysfs: Remove pci_create_legacy_files() and pci_sysfs_init()
+
+ arch/alpha/include/asm/pci.h   |  13 +-
+ arch/alpha/kernel/pci-sysfs.c  | 369 +++++++++++----------
+ arch/powerpc/include/asm/pci.h |   2 -
+ drivers/pci/bus.c              |   1 -
+ drivers/pci/pci-sysfs.c        | 575 +++++++++++++++++++--------------
+ drivers/pci/pci.h              |  16 +-
+ drivers/pci/probe.c            |   6 -
+ drivers/pci/remove.c           |   3 -
+ include/linux/pci.h            |   9 -
+ 9 files changed, 545 insertions(+), 449 deletions(-)
+
+--
+2.53.0
