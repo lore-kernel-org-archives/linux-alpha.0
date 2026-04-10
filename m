@@ -1,208 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9BB6332634;
-	Fri, 10 Apr 2026 05:51:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9BCF2E63C;
+	Fri, 10 Apr 2026 10:18:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775800318; cv=none; b=tO8bevQLPqwDEPtLELJcNpKl8gZLhFrgi0wDtTSbrigIAQhk7iRMCPnxFh64zsvAn4gOESau4ghc5Id+azxb0A7Hou5NI4/ynAOUZ0IIQfOoLPYLODWDPuxcnOUYZhA9cv30wFRUrrzgLYoOJHQlSrsL1jUg8o1ulsuQgZ2Wp/A=
+	t=1775816341; cv=none; b=Rk/AeHBeXsV+73vhZpa7SayrFa+TK6HaG3BL3QbF4BFz9YY3tQOsSd5fifJGiM6oe5zh+3NStQuAutty+dtFc6y1kTEuI68eMY98ypq184LACu7snp7orZfaHP9bRREyHSw7HwrCT8nN+feRJLgFA9nwCzYdu1RQrzJRGZwjdtk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775800318; c=relaxed/simple;
-	bh=/IpJWCBhMhJdU8pXWsPZ3Sw6vKiOKGEePNM6vsVCf/g=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CCqTrt3Ii9WHbOKii5UFnMMJEgWJhAcXGTqWrIRy/guveCrRzElKuuSezocZmuWqconq1clDbatmcn/mexgwSkBS5SRQeYUrCiSDYgl51Zie/+e8DXlepUD1p6f/7eAmRg5PrdMf9aMQQvpAjaNnMdB8P/cU/RTMkgSyUKnM/eA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JzEyOtxT; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1775816341; c=relaxed/simple;
+	bh=sJjahAyArFT38iar0FyVHZtbbpGo+U5iy6pPkK42kPc=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=Kw+hw4DYIK/0xhnUnN7TG6TzTUoSQWBL8wmDMtPdKS3NtxhXdLpE0M7LWCAg7tECfUXQh106i8z4e4G4+GuMxG+DWkkRGU/JgDZnZGF7LT7n1uGUkKrfiBmEkkj3X1P/IqXHhCi4CsNItnvL6oPlsLEwMRpYsgiM69Ne5ouVQZU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e9qftu5R; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JzEyOtxT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DEB4C2BC9E;
-	Fri, 10 Apr 2026 05:51:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775800318;
-	bh=/IpJWCBhMhJdU8pXWsPZ3Sw6vKiOKGEePNM6vsVCf/g=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=JzEyOtxTrvkK74a9ZHKH5WHsmnqPAjQtqa4Tn7FqUsSZk8Xzh9w5EFLce4Kyck6lO
-	 JvvmD6vjPRt5Z+lB/CugxHSKswjo5yByl7DtICw3gQ0KUkZEzWSKsjiPuW/9q9CS6D
-	 5VwYAhr7+DEB5B11bqMAls6REMmBeI2Nue0rxag8crqWOolWWmXSj6PnstSrl+dPcN
-	 a+YTv68diVewwRdB2GN6iVNfwNSzlIbGswJ63e76g2H/0wW+1L0kLq3LQuGNaL5djH
-	 ZS9mrQ5WYWj05xkyv8fnQLHwRhwub1BdrTZTXCXhKcm6dKNP7hXLl4wzjIj+Jw0+Bo
-	 AggwhS3/CrnzA==
-From: =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Matt Turner <mattst88@gmail.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Dexuan Cui <decui@microsoft.com>,
-	=?UTF-8?q?Krzysztof=20Ha=C5=82asa?= <khalasa@piap.pl>,
-	Lukas Wunner <lukas@wunner.de>,
-	"Oliver O'Halloran" <oohall@gmail.com>,
-	Saurabh Singh Sengar <ssengar@microsoft.com>,
-	Shuan He <heshuan@bytedance.com>,
-	Srivatsa Bhat <srivatsabhat@microsoft.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-pci@vger.kernel.org,
-	linux-alpha@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 20/20] PCI/sysfs: Remove pci_create_legacy_files() and pci_sysfs_init()
-Date: Fri, 10 Apr 2026 05:50:40 +0000
-Message-ID: <20260410055040.39233-21-kwilczynski@kernel.org>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260410055040.39233-1-kwilczynski@kernel.org>
-References: <20260410055040.39233-1-kwilczynski@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e9qftu5R"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1775816340; x=1807352340;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=sJjahAyArFT38iar0FyVHZtbbpGo+U5iy6pPkK42kPc=;
+  b=e9qftu5RIehFO20cuwVplezN6PCakuRMJlCiAGIwz+lBVpgN7Wm4JNdK
+   cuNP1J7JPWB2KgCOmrKNk5QfSAnF/yQLtHplh0StcFwRfHS2wVLzZapmC
+   TM3fBsSbVbzIqPs8D0Ai1Rsawz/fb7uAHjeNjUGx7HSJe2OXyOz93UW6I
+   G7afNe3sjdQr0bxijUrn/qBLymA2SBw2/2Y9qO6OMJxZd1/0NQo7lDsUa
+   Zxrtsg0GUr8T1Y8ZxKWzc2OJqEJg9DMWJnFkGmB9zbH7h0eJBFcKVubba
+   oOPMXx1+6xjWjJX6QmOLpsRyYNRkgKR3uhTw55YEfF2NV53GX3VAuBoJM
+   Q==;
+X-CSE-ConnectionGUID: aN7lLnGfQyq4MptTwkv8mw==
+X-CSE-MsgGUID: +UAc0gqOS9C/K9Af3RKEug==
+X-IronPort-AV: E=McAfee;i="6800,10657,11754"; a="80723099"
+X-IronPort-AV: E=Sophos;i="6.23,171,1770624000"; 
+   d="scan'208";a="80723099"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2026 03:18:59 -0700
+X-CSE-ConnectionGUID: 0SVrldBuSXepU1rqThYmYw==
+X-CSE-MsgGUID: ei3zn7N0QJCCee3wDOarkg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,171,1770624000"; 
+   d="scan'208";a="222559193"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.118])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2026 03:18:51 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Fri, 10 Apr 2026 13:18:43 +0300 (EEST)
+To: =?ISO-8859-2?Q?Krzysztof_Wilczy=F1ski?= <kwilczynski@kernel.org>
+cc: Bjorn Helgaas <bhelgaas@google.com>, Bjorn Helgaas <helgaas@kernel.org>, 
+    Manivannan Sadhasivam <mani@kernel.org>, 
+    Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+    Magnus Lindholm <linmag7@gmail.com>, Matt Turner <mattst88@gmail.com>, 
+    Richard Henderson <richard.henderson@linaro.org>, 
+    Christophe Leroy <chleroy@kernel.org>, 
+    Madhavan Srinivasan <maddy@linux.ibm.com>, 
+    Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+    Dexuan Cui <decui@microsoft.com>, 
+    =?ISO-8859-2?Q?Krzysztof_Ha=B3asa?= <khalasa@piap.pl>, 
+    Lukas Wunner <lukas@wunner.de>, Oliver O'Halloran <oohall@gmail.com>, 
+    Saurabh Singh Sengar <ssengar@microsoft.com>, 
+    Shuan He <heshuan@bytedance.com>, 
+    Srivatsa Bhat <srivatsabhat@microsoft.com>, linux-pci@vger.kernel.org, 
+    linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH 04/20] PCI/sysfs: Add CAP_SYS_ADMIN check to
+ __resource_resize_store()
+In-Reply-To: <20260410055040.39233-5-kwilczynski@kernel.org>
+Message-ID: <37f2e32a-804d-7c59-d3d0-7148ef2cd95a@linux.intel.com>
+References: <20260410055040.39233-1-kwilczynski@kernel.org> <20260410055040.39233-5-kwilczynski@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323328-297789617-1775816323=:1195"
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323328-297789617-1775816323=:1195
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-Currently, pci_create_legacy_files() and pci_remove_legacy_files() are
-no-op stubs.  With legacy attributes now handled by static groups
-registered via pcibus_groups[], no call site needs them.
+On Fri, 10 Apr 2026, Krzysztof Wilczy=C5=84ski wrote:
 
-Remove both functions, their declarations, and the call sites in
-pci_register_host_bridge(), pci_alloc_child_bus(), and pci_remove_bus().
+> Currently, the __resource_resize_store() allows writing to the
+> resourceN_resize sysfs attribute to change a BAR's size without
+> checking for capabilities, currently relying only on the file
+> access check.
+>=20
+> Resizing a BAR modifies PCI device configuration and can disrupt
+> active drivers.  After the upcoming conversion to static attributes,
+> it will also trigger resource file updates via sysfs_update_groups().
+>=20
+> Thus, add a CAP_SYS_ADMIN check to prevent unprivileged users from
+> performing BAR resize operations.
+>=20
+> Signed-off-by: Krzysztof Wilczy=C5=84ski <kwilczynski@kernel.org>
+> ---
+>  drivers/pci/pci-sysfs.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>=20
+> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+> index ac4e7c516e78..6b8c8e62f68a 100644
+> --- a/drivers/pci/pci-sysfs.c
+> +++ b/drivers/pci/pci-sysfs.c
+> @@ -1619,6 +1619,9 @@ static ssize_t __resource_resize_store(struct devic=
+e *dev, int n,
+>  =09int ret;
+>  =09u16 cmd;
+> =20
+> +=09if (!capable(CAP_SYS_ADMIN))
+> +=09=09return -EPERM;
+> +
+>  =09if (kstrtoul(buf, 0, &size) < 0)
+>  =09=09return -EINVAL;
+> =20
+>=20
 
-Remove the pci_sysfs_init() late_initcall and sysfs_initialized.  The
-late_initcall originally existed to create all the dynamic PCI sysfs
-files, but with both resource and legacy attributes now handled by
-static groups, it is no longer needed.
+Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 
-Remove the legacy_io and legacy_mem fields from struct pci_bus which
-were used to track the dynamically allocated legacy attributes.
+--=20
+ i.
 
-Signed-off-by: Krzysztof Wilczyński <kwilczynski@kernel.org>
----
- drivers/pci/pci-sysfs.c | 21 ---------------------
- drivers/pci/pci.h       |  8 --------
- drivers/pci/probe.c     |  6 ------
- drivers/pci/remove.c    |  2 --
- include/linux/pci.h     |  2 --
- 5 files changed, 39 deletions(-)
-
-diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-index dc0bb0488317..3275698a5d5d 100644
---- a/drivers/pci/pci-sysfs.c
-+++ b/drivers/pci/pci-sysfs.c
-@@ -37,10 +37,6 @@
- #define ARCH_PCI_DEV_GROUPS
- #endif
- 
--#ifdef HAVE_PCI_LEGACY
--static int sysfs_initialized;	/* = 0 */
--#endif
--
- /* show configuration fields */
- #define pci_config_attr(field, format_string)				\
- static ssize_t								\
-@@ -1135,8 +1131,6 @@ static const struct attribute_group pci_legacy_mem_sparse_group = {
- 	.is_bin_visible = pci_legacy_mem_sparse_is_visible,
- };
- 
--void pci_create_legacy_files(struct pci_bus *b) { }
--void pci_remove_legacy_files(struct pci_bus *b) { }
- #endif /* HAVE_PCI_LEGACY */
- 
- const struct attribute_group *pcibus_groups[] = {
-@@ -1809,21 +1803,6 @@ static const struct attribute_group pci_dev_resource_resize_attr_group = {
- };
- #endif
- 
--#ifdef HAVE_PCI_LEGACY
--static int __init pci_sysfs_init(void)
--{
--	struct pci_bus *pbus = NULL;
--
--	sysfs_initialized = 1;
--
--	while ((pbus = pci_find_next_bus(pbus)))
--		pci_create_legacy_files(pbus);
--
--	return 0;
--}
--late_initcall(pci_sysfs_init);
--#endif
--
- static struct attribute *pci_dev_dev_attrs[] = {
- 	&dev_attr_boot_vga.attr,
- 	&dev_attr_serial_number.attr,
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index f52caf7e4d13..63f249d4833a 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -356,14 +356,6 @@ static inline int pci_proc_detach_bus(struct pci_bus *bus) { return 0; }
- int pci_hp_add_bridge(struct pci_dev *dev);
- bool pci_hp_spurious_link_change(struct pci_dev *pdev);
- 
--#if defined(CONFIG_SYSFS) && defined(HAVE_PCI_LEGACY)
--void pci_create_legacy_files(struct pci_bus *bus);
--void pci_remove_legacy_files(struct pci_bus *bus);
--#else
--static inline void pci_create_legacy_files(struct pci_bus *bus) { }
--static inline void pci_remove_legacy_files(struct pci_bus *bus) { }
--#endif
--
- /* Lock for read/write access to pci device and bus lists */
- extern struct rw_semaphore pci_bus_sem;
- extern struct mutex pci_slot_mutex;
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index bccc7a4bdd79..94c52bf3a65c 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1068,9 +1068,6 @@ static int pci_register_host_bridge(struct pci_host_bridge *bridge)
- 			dev_err(&bus->dev, "failed to add bus: %d\n", err);
- 	}
- 
--	/* Create legacy_io and legacy_mem files for this bus */
--	pci_create_legacy_files(bus);
--
- 	if (parent)
- 		dev_info(parent, "PCI host bridge to bus %s\n", name);
- 	else
-@@ -1276,9 +1273,6 @@ static struct pci_bus *pci_alloc_child_bus(struct pci_bus *parent,
- 			dev_err(&child->dev, "failed to add bus: %d\n", ret);
- 	}
- 
--	/* Create legacy_io and legacy_mem files for this bus */
--	pci_create_legacy_files(child);
--
- 	return child;
- }
- 
-diff --git a/drivers/pci/remove.c b/drivers/pci/remove.c
-index 6e796dbc5b29..d8bffa21498a 100644
---- a/drivers/pci/remove.c
-+++ b/drivers/pci/remove.c
-@@ -65,8 +65,6 @@ void pci_remove_bus(struct pci_bus *bus)
- 	list_del(&bus->node);
- 	pci_bus_release_busn_res(bus);
- 	up_write(&pci_bus_sem);
--	pci_remove_legacy_files(bus);
--
- 	if (bus->ops->remove_bus)
- 		bus->ops->remove_bus(bus);
- 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 5a418fbe5a5f..c0828b96eb66 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -723,8 +723,6 @@ struct pci_bus {
- 	pci_bus_flags_t bus_flags;	/* Inherited by child buses */
- 	struct device		*bridge;
- 	struct device		dev;
--	struct bin_attribute	*legacy_io;	/* Legacy I/O for this bus */
--	struct bin_attribute	*legacy_mem;	/* Legacy mem */
- 	unsigned int		is_added:1;
- 	unsigned int		unsafe_warn:1;	/* warned about RW1C config write */
- 	unsigned int		flit_mode:1;	/* Link in Flit mode */
--- 
-2.53.0
-
+--8323328-297789617-1775816323=:1195--
