@@ -1,208 +1,349 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20A5D13D8B1;
-	Sat, 11 Apr 2026 08:03:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775894599; cv=none; b=Ri9F8ZCinMpS0YKAnfesMEuGUUtRRXaVmN4Eaeb6KA0lr+N2fIPtMpRyW/TxgiRhA9dnJhKYwits7a0XsCEYOPjDEdSr/tbTHyWjUUJzrjNSDDSN6+fWUxq1CVUzX/8nlnsWaDQiOXUUYkuTQrL+I06HXXktftKlatWnId5k2Z0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775894599; c=relaxed/simple;
-	bh=w2L/1BbQlnupAA1chm17jtpCQ2vcnErH2JeEEFYOqZw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SWGUBXMRVQObQtRA+O7fcBu5DTGfV7jhTHw+/tQMQesPnnsxVaGs52Z3cgNZxpvnPzQHkXRtejT40XZR7RbZBoFiLTkST2kLKy89EU/zZpKHAfHpHB9sSocdl35ZRpb3O1RAx6hgnxe+Bk1QrHIX0ly8kWFvT0vObaUrH0/slgI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eOUti3ws; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E4CA2E4257
+	for <linux-alpha@vger.kernel.org>; Sat, 11 Apr 2026 10:40:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775904045; cv=pass; b=au2RoTSo7FfUP/pVSm5xBA2xgKKpOyssVBRqstE5MWmwMUmBDZIPyJMqiIXSCJPWf3gX2PRQVm//cU+NS/tVrMRC02azsMxeAeFsbETVxY53Fqrc4NquLLnZtJt0Jii4ZJsNXODKoyG1Ka+86pFpVKhEwM2eiIDU/zPxEPojX5I=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775904045; c=relaxed/simple;
+	bh=oyynzTd3CHvuKUMUYUqZYFbKfdT+kOE3lzJVtCfiyUU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hCFa2f1CTztFrXnHKfBVbFXBgEHhxE0DXboonb3j5X53AvDfgvIOGkUnXSNojVWuXegUx7lGTpDhlIjCzOqY8eIqybQYM8flrQVOM3ohQEaIknv2CYQNmppSyRh72eZoXF2U51t1LvTqzrUAjEx9UWYXkZim26CQAdwSt1Ixl1s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a5n9eL0g; arc=pass smtp.client-ip=209.85.218.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eOUti3ws"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDE3EC4CEF7;
-	Sat, 11 Apr 2026 08:03:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775894599;
-	bh=w2L/1BbQlnupAA1chm17jtpCQ2vcnErH2JeEEFYOqZw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=eOUti3ws6XQyO4qxxTQSd70C0O+9aNNEhAJ3iPlguueXQzeS4SvcxdEMq6HDCNcbG
-	 9QWIixkVRa22na32iR6ejGg0YwIzW8gKzHdgg7inykF4OUQg4Jb+MSn1g5oYBJ7nok
-	 jWwoRzfvo5Q549AAXKzRZQ0Ekh5QtJ6FZU1h2+wiyEuUSWQStN3/beNRt63qWWwFi8
-	 sIjCUUT6NxcXYm2oq7KIiqa9mlZQ8zP+qXGhTWefMRjMtcTs9Wq3cfSH3W8W+OcnNG
-	 w64CH6cEewJvXYnKvcOBkX0GaZFbfuhKP+dSAS8cl+PXxzvaTrQkwsit9x6hu+PyI8
-	 VCReKmUedenKA==
-From: =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Matt Turner <mattst88@gmail.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Dexuan Cui <decui@microsoft.com>,
-	=?UTF-8?q?Krzysztof=20Ha=C5=82asa?= <khalasa@piap.pl>,
-	Lukas Wunner <lukas@wunner.de>,
-	"Oliver O'Halloran" <oohall@gmail.com>,
-	Saurabh Singh Sengar <ssengar@microsoft.com>,
-	Shuan He <heshuan@bytedance.com>,
-	Srivatsa Bhat <srivatsabhat@microsoft.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-pci@vger.kernel.org,
-	linux-alpha@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v4 24/24] PCI/sysfs: Remove pci_create_legacy_files() and pci_sysfs_init()
-Date: Sat, 11 Apr 2026 08:01:48 +0000
-Message-ID: <20260411080148.471335-25-kwilczynski@kernel.org>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260411080148.471335-1-kwilczynski@kernel.org>
-References: <20260411080148.471335-1-kwilczynski@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a5n9eL0g"
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-b97f9587e6eso380574766b.3
+        for <linux-alpha@vger.kernel.org>; Sat, 11 Apr 2026 03:40:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775904042; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Z9epIAbprqrCNwsxfdFkbzyt+L4j7XwwZX7tPwvVpZq5F8UPpvAEqEFlRKRN0wqD7l
+         fmVOu5jTTyG9nV9oTH3AhX+EP4zNWFePvq2oryJ6KR4SFUa2feXSpKQ9IfVWDgrP1Tjw
+         Fka50e7lFxwtKOsISVLiMg99Gp1GvM3qR0cOIy/wA2h2ntTBt6s17lm3XBC/bN6v0j7u
+         xl5E+ESCoKxHkgc55nYliVYA2scT0UOwBOZDAkH2itbrtbR+YqfWOEymOUlCm3VbJGQC
+         +/3PY4ETPZ7djB8Hg3exl6gXqU6ZC9FJb37GUUqC6REqbf/IfcC2pqtPVVfNLizbnklx
+         Aa1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=CsqzNkDnXitYu6WtxNz/ljnO1ZLIoc3+9EuFkHTOA9o=;
+        fh=Y6M3RD50ix2SmuSz2yJ+49wwaZXzcueH01nVMEQmmR0=;
+        b=Zinartxk8eYT+AZhCflGHHPr+yTnTAoAhVuwpplhukqWJweBBYk6296thHpbMBVX9w
+         b0S9Jm/VkYAftEqpD7VrxN160hjLSw6qsSn0xbHq8J/+nBBnf9RerMUNmNKztld5ZRrR
+         2ybwyU2qUilFJMbQjZw/3R8SR4bwqguc9Rfv33H9BAJVZNC/EFobeDV12xPvSXJAzcaq
+         Mr56tqwoIYTU7yUKlZwa45XYj6cPqXVjtIKfMTp39WP391XEdXlQOVf0SAeqEmrnzCl1
+         d1gBvFdG6+teYxlIm1thySnXVByOP9d40Xo+PbKik+4rKKqKpBMRt3ZiM/oRq+eQGSRl
+         DzKA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775904042; x=1776508842; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CsqzNkDnXitYu6WtxNz/ljnO1ZLIoc3+9EuFkHTOA9o=;
+        b=a5n9eL0gCaid/pKg5If553uHP6a3rtzd7ezPe5ES6U3tLqLnY7s1cdwM8g71V97jXw
+         +1NNUeJ/x5YM+mjTQhO1f9PXuq1LcEBQJgKmq4RZdP758pzCCkM1y3ZcUSY9YDWdg+9T
+         bHV1CwQXXvK9E1ELEbM7IjwWcUJtuFhvA9zARztsXJG8jp2TGQeyx0ed/QMkxK46Fl3i
+         Sgyhxwc/K0zIPp6ISKhCL9cygzweZIv2iGxRQ6bKqOTZejpSfhttmi0A5Agjsy8nVyy8
+         2oQUpG/dTaj4lUZQ0GCEOpAevXMWVjsYEcGIJgi9k3GEORAuEWXLXBqGUcDgi9OUIDHb
+         AooA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775904042; x=1776508842;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=CsqzNkDnXitYu6WtxNz/ljnO1ZLIoc3+9EuFkHTOA9o=;
+        b=ToN/wUKMbPizFAQbfCvkFl7IBAec+64EBRoMl5zoG++NPhjgR0crKeyqFx0//p/6EH
+         09viW6vDEa3yvWWIRXavtuOEnxFq4OxxRka3QbKKFogsaQk4NiKFNOg6JphcoW2oUPPB
+         Q9hBJblXQ4vx5AiqPoQHYbfwrVxGXp/LUjOGwX3cxL64Ebb2AS/DwJDuFWNkmYfohLyL
+         vqjApzxJ8xQitNnWLIvVZgiDHe+KN8e73RtjLJVVUUpV3FCIz1HTgo0lriaRjhJX+P2o
+         RKrmMn4vaM+j2g5LaQYEGhtCrDZSszNA+xN1O03kYvsnkBUeJppXX7Ae+VGPlcgPZKDV
+         FbEg==
+X-Forwarded-Encrypted: i=1; AJvYcCVVqup1HoSY0ywQYBQv2mKfHGXhvpsKTCUTLv4ZA+3n9JAQkB6s3YQN7PbGQ3jBwPXmHVZ3IF7QyC7B3A==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzQcRf1lbnQ+dkOdH3+nZL6hZNxs1E2n9m5N4avymQCQLtvaLdX
+	IeZRpcfdwAZjkOLlUOATQgeEZsdiU6mJ8gTW8Dv0Nm5oAXy/EpBLhM2b/AM1RwVsMGtD+wnntvx
+	yxGbyWYmiToytuj7rFOT+qHxoy8sl3/I=
+X-Gm-Gg: AeBDietOezwEx5OCYJMSCEevP00CZyYOSLIwEXO4RXx+eEzefNFQw4GSjgX0x1Q3gS1
+	lc1fm/qO6QAcxBXGwFFVq4wuToMogxBMcodrjw3yaUJHKZCUBs4mwK0XA4tgFzGWTQm/OGVX28j
+	Yi/DWTTQ87jNkQGtWD5vKMyZHhjmJBjQjH9JLTLk6G0DaoeaBwIWE3IWR7lVCdzB5Gr1Qd4RE8Q
+	TuStRqeSsCWr2jEZKYM5gzAwuSY5Os8iAIlYgg1TEwkN8fQG+CVPEu+A5J0NStPEqTPx+dxXnjw
+	qSVuvWQSj8tuodfCDzduPjaw/p2FecRn32B1LeKS3I0wDp0oKQ==
+X-Received: by 2002:a17:907:1b1b:b0:b9d:3c22:b2c8 with SMTP id
+ a640c23a62f3a-b9d724f0c56mr414074566b.1.1775904041152; Sat, 11 Apr 2026
+ 03:40:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20260411080148.471335-1-kwilczynski@kernel.org>
+In-Reply-To: <20260411080148.471335-1-kwilczynski@kernel.org>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sat, 11 Apr 2026 12:40:29 +0200
+X-Gm-Features: AQROBzBL0ISJ1oDzmS1WdKnfmR7mJ-8b5qly2wKGmSLW0OsznpAbrTTOYjF1FCI
+Message-ID: <CA+=Fv5Q1tZQwnanw99NbvzT-QenfYz7vUdY02_TuPqHX32ZAiA@mail.gmail.com>
+Subject: Re: [PATCH v4 00/24] PCI: Convert all dynamic sysfs attributes to static
+To: =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Bjorn Helgaas <helgaas@kernel.org>, 
+	Manivannan Sadhasivam <mani@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	Matt Turner <mattst88@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	Christophe Leroy <chleroy@kernel.org>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Dexuan Cui <decui@microsoft.com>, 
+	=?UTF-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>, 
+	Lukas Wunner <lukas@wunner.de>, "Oliver O'Halloran" <oohall@gmail.com>, 
+	Saurabh Singh Sengar <ssengar@microsoft.com>, Shuan He <heshuan@bytedance.com>, 
+	Srivatsa Bhat <srivatsabhat@microsoft.com>, 
+	=?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+	linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Currently, pci_create_legacy_files() and pci_remove_legacy_files() are
-no-op stubs.  With legacy attributes now handled by static groups
-registered via pcibus_groups[], no call site needs them.
+On Sat, Apr 11, 2026 at 10:01=E2=80=AFAM Krzysztof Wilczy=C5=84ski
+<kwilczynski@kernel.org> wrote:
+>
+> Hello,
+>
+> This series converts every dynamically allocated PCI sysfs attribute to
+> a static const definition.  After the full series, pci_sysfs_init() and
+> sysfs_initialized are gone, and every sysfs file is created by the
+> driver model at device_add() time.
+>
+> Currently, the PCI resource files (resourceN, resourceN_wc) and the
+> legacy bus files (legacy_io, legacy_mem) are created dynamically
+> from two unsynchronised paths:
+>
+> Path A: late_initcall
+>
+>   pci_sysfs_init                        (late_initcall)
+>     sysfs_initialized =3D 1
+>     for_each_pci_dev
+>       pci_create_sysfs_dev_files
+>         sysfs_create_bin_file           (resourceN, resourceN_wc)
+>     pci_find_next_bus
+>       pci_create_legacy_files
+>         sysfs_create_bin_file           (legacy_io, legacy_mem)
+>
+> Path B: device registration / hotplug
+>
+>   pci_bus_add_devices
+>     pci_bus_add_device
+>       pci_create_sysfs_dev_files
+>         if (!sysfs_initialized) return  <- only guard
+>         sysfs_create_bin_file           (resourceN, resourceN_wc)
+>
+> On most ACPI systems this does not race because PCI enumeration
+> completes at subsys_initcall time, before pci_sysfs_init() runs:
+>
+>   subsys_initcall (level 4):
+>     acpi_pci_root_add
+>       pci_bus_add_device
+>         pci_create_sysfs_dev_files
+>           if (!sysfs_initialized)          <- not yet set
+>             return -EACCES
+>
+>   late_initcall (level 7):
+>     pci_sysfs_init
+>       sysfs_initialized =3D 1
+>       for_each_pci_dev
+>         pci_create_sysfs_dev_files         <- creates the files, no race
+>
+> On Devicetree platforms the host controller is a platform driver that
+> probes via the driver model, often on a workqueue, and overlaps with the
+> late_initcall:
+>
+>   CPU 0 (late_initcall)                CPU 1 (driver probe)
+>   ---------------------------          ----------------------------
+>   pci_sysfs_init()
+>     sysfs_initialized =3D 1
+>     for_each_pci_dev(pdev)             pci_bus_add_device(pdev)
+>       pci_create_sysfs_dev_files()       pci_create_sysfs_dev_files()
+>         sysfs_create_bin_file()            sysfs_create_bin_file()
+>                                              -> "duplicate filename"
+>
+> The same happens on ACPI when probing is asynchronous (hv_pci on
+> Azure, RISC-V with ACPI).
+>
+> The duplicate causes sysfs_create_bin_file() to fail with -EEXIST.
+> pci_create_resource_files() then calls pci_remove_resource_files() in
+> its error unwind, tearing down files the other thread created and
+> still references through pdev->res_attr[].  This has caused kernel
+> panics on i.MX6 and boot failures on other platforms.
+>
+> Several different fixes have been proposed over the years: reordering
+> the sysfs_initialized assignment, adding locks, checking
+> pci_dev_is_added(), setting pdev->res_attr[] to NULL after kfree
+> (which only prevents a double-free on the teardown path, not the
+> error unwind removing the other thread's files).  None would address the
+> root cause.
+>
+> This has been reported a few times:
+>
+>   - https://lore.kernel.org/linux-pci/20250702155112.40124-1-heshuan@byte=
+dance.com/
+>   - https://lore.kernel.org/linux-pci/b51519d6-ce45-4b6d-8135-c70169bd110=
+e@h-partners.com/
+>   - https://lore.kernel.org/linux-pci/1702093576-30405-1-git-send-email-s=
+sengar@linux.microsoft.com/
+>   - https://lore.kernel.org/linux-pci/SY0P300MB04687548090B73E40AF97D8897=
+B82@SY0P300MB0468.AUSP300.PROD.OUTLOOK.COM/
+>   - https://lore.kernel.org/linux-pci/20230105174736.GA1154719@bhelgaas/
+>   - https://lore.kernel.org/linux-pci/m3eebg9puj.fsf@t19.piap.pl/
+>   - https://lore.kernel.org/linux-pci/20200716110423.xtfyb3n6tn5ixedh@pal=
+i/
+>   - https://lore.kernel.org/linux-pci/1366196798-15929-1-git-send-email-a=
+rtem.savkov@gmail.com/
+>   - https://bugzilla.kernel.org/show_bug.cgi?id=3D215515
+>   - https://bugzilla.kernel.org/show_bug.cgi?id=3D216888
+>
+> With static attributes the driver model creates sysfs entries once per
+> device at device_add() time, under the device lock, eliminating the
+> late_initcall iteration and the race along with it.
+>
+>         Krzysztof
+>
+> ---
+> Changes in v4:
+>   https://lore.kernel.org/linux-pci/20260410055040.39233-1-kwilczynski@ke=
+rnel.org/
+>
+>    - Added new Reviewed-by tags.
+>    - Added pci_resource_is_io() and pci_resource_is_mem() helpers
+>      for resource type checks, replacing the open-coded bitwise
+>      flag tests in pci_mmap_resource(), pci_resource_io(), and
+>      Alpha's pci_mmap_resource(), as per Ilpo J=C3=A4rvinen's
+>      suggestion.
+>    - Split the __pci_mmap_fits() cleanup into two patches.  An
+>      overflow fix for zero-length BARs, which now includes a
+>      Fixes: tag referencing the original Alpha PCI sysfs commit,
+>      and the WARN macro removal is a separate cleanup as per Ilpo
+>      J=C3=A4rvinen's suggestion.
+>    - Added a missing Fixes: tag to the Alpha lockdown check,
+>      referencing the commit that added the check to the generic
+>      path but missed Alpha's implementation.
+>    - Added PCI_LEGACY_IO_SIZE and PCI_LEGACY_MEM_SIZE macros to
+>      replace the raw literals used for legacy address space sizes.
+>      These are used in both Alpha's pci_mmap_legacy_page_range()
+>      and the static legacy attribute definitions, as per Ilpo
+>      J=C3=A4rvinen's suggestion.
+>    - Replaced sysfs_update_groups() in the BAR resize path with
+>      sysfs_remove_groups() before the resize and sysfs_create_groups()
+>      after, restoring the original teardown before BAR resize
+>      ordering.  This was reported by Sashiko, see:
+>      https://sashiko.dev/#/patchset/20260410055040.39233-1-kwilczynski%40=
+kernel.org?part=3D7
+>    - Defined pci_dev_resource_attr_groups as a NULL macro when
+>      HAVE_PCI_MMAP and ARCH_GENERIC_PCI_MMAP_RESOURCE are both
+>      absent, so the resize path compiles unconditionally without
+>      #ifdef guards in the function body.  This was reported by
+>      Sashiko, see:
+>      https://sashiko.dev/#/patchset/20260410055040.39233-1-kwilczynski%40=
+kernel.org?part=3D7
+>    - Moved the pci_legacy_has_sparse() prototype into the patch
+>      that introduces the function, alongside the existing
+>      pci_adjust_legacy_attr() declaration, to fix a bisection
+>      issue where Alpha would warn on -Wmissing-prototypes.
+>      This was reported by Sashiko, see:
+>      https://sashiko.dev/#/patchset/20260410055040.39233-1-kwilczynski%40=
+kernel.org?part=3D18
+>
+> Changes in v3:
+>   https://lore.kernel.org/linux-pci/20210910202623.2293708-1-kw@linux.com=
+/
+>
+>   - Updated for modern kernel releases and expanded scope.  The
+>     v2 only covered the generic resource files.  This version
+>     also converts Alpha's sparse/dense resource files and the
+>     legacy bus attributes, removing pci_sysfs_init() entirely.
+>   - Split the single macro definition into three distinct ones
+>     (per I/O, UC, and WC), to make sure that each carries only
+>     the callbacks its resource type needs.
+>   - Updated to use the new .bin_size callback, as the attributes
+>     are const, to replace using a->size directly, which was not
+>     ideal.  This required changes to pci_llseek_resource(), to
+>     ensure that it would work for device and bus-level attributes.
+>   - Updated the __resource_resize_store() to include CAP_SYS_ADMIN
+>     capabilities check.
+>   - Added the security_locked_down() check to Alpha's
+>     pci_mmap_resource(), to align with other architectures.
+>
+> Changes in v2:
+>   https://lore.kernel.org/linux-pci/20210825212255.878043-1-kw@linux.com/
+>
+>   - Refactored code so that the macros, helpers and internal
+>     functions can be used to correctly leverage the read(),
+>     write() and mmap() callbacks rather than to use the
+>     .is_bin_visible() callback to set up sysfs objects
+>     internals as this is not supported.
+>   - Refactored some if-statements to check for a resource
+>     flag first, and then call either arch_can_pci_mmap_io()
+>     or arch_can_pci_mmap_wc(), plus store result of testing
+>     for IORESOURCE_MEM and IORESOURCE_PREFETCH flags into
+>     a boolean variable, as per Bjorn Helgaas' suggestion.
+>   - Renamed pci_read_resource_io() and pci_write_resource_io()
+>     callbacks so that these are not specifically tied to I/O
+>     BARs read() and write() operations also as per Bjorn
+>     Helgaas' suggestion.
+>   - Updated style for code handling bitwise operations to
+>     match the style that is preferred as per Bjorn Helgaas'
+>     suggestion.
+>   - Updated commit messages adding more details about the
+>     implementation as requested by Bjorn Helgaas.
+>
+> Krzysztof Wilczy=C5=84ski (24):
+>   PCI/sysfs: Use PCI resource accessor macros
+>   PCI: Add pci_resource_is_io() and pci_resource_is_mem() helpers
+>   PCI/sysfs: Only allow supported resource types in I/O and MMIO helpers
+>   PCI/sysfs: Use BAR length in pci_llseek_resource() when attr->size is
+>     zero
+>   PCI/sysfs: Add CAP_SYS_ADMIN check to __resource_resize_store()
+>   PCI/sysfs: Add static PCI resource attribute macros
+>   PCI/sysfs: Convert PCI resource files to static attributes
+>   PCI/sysfs: Convert __resource_resize_store() to use static attributes
+>   PCI/sysfs: Add stubs for pci_{create,remove}_sysfs_dev_files()
+>   PCI/sysfs: Limit pci_sysfs_init() late_initcall compile scope
+>   alpha/PCI: Add security_locked_down() check to pci_mmap_resource()
+>   alpha/PCI: Use BAR index in sysfs attr->private instead of resource
+>     pointer
+>   alpha/PCI: Use PCI resource accessor macros
+>   alpha/PCI: Clean up pci_mmap_resource()
+>   alpha/PCI: Fix __pci_mmap_fits() overflow for zero-length BARs
+>   alpha/PCI: Remove WARN from __pci_mmap_fits()
+>   alpha/PCI: Add static PCI resource attribute macros
+>   alpha/PCI: Convert resource files to static attributes
+>   PCI/sysfs: Remove pci_{create,remove}_sysfs_dev_files()
+>   PCI: Add macros for legacy I/O and memory address space sizes
+>   alpha/PCI: Compute legacy size in pci_mmap_legacy_page_range()
+>   PCI/sysfs: Add __weak pci_legacy_has_sparse() helper
+>   PCI/sysfs: Convert legacy I/O and memory attributes to static
+>     definitions
+>   PCI/sysfs: Remove pci_create_legacy_files() and pci_sysfs_init()
+>
+>  arch/alpha/include/asm/pci.h   |  13 +-
+>  arch/alpha/kernel/pci-sysfs.c  | 373 +++++++++++----------
+>  arch/powerpc/include/asm/pci.h |   2 -
+>  drivers/pci/bus.c              |   1 -
+>  drivers/pci/pci-sysfs.c        | 575 +++++++++++++++++++--------------
+>  drivers/pci/pci.h              |  16 +-
+>  drivers/pci/probe.c            |   6 -
+>  drivers/pci/remove.c           |   3 -
+>  include/linux/pci.h            |  39 ++-
+>  9 files changed, 578 insertions(+), 450 deletions(-)
+>
 
-Remove both functions, their declarations, and the call sites in
-pci_register_host_bridge(), pci_alloc_child_bus(), and pci_remove_bus().
+Hi ,
 
-Remove the pci_sysfs_init() late_initcall and sysfs_initialized.  The
-late_initcall originally existed to create all the dynamic PCI sysfs
-files, but with both resource and legacy attributes now handled by
-static groups, it is no longer needed.
+Applied the series on an Alpha UP2000+, built and booted
+successfully. PCI enumeration and device initialization looked
+normal, I saw no relevant sysfs/PCI warnings in dmesg, and PCI
+sysfs resource files for tested devices looked sane.
 
-Remove the legacy_io and legacy_mem fields from struct pci_bus which
-were used to track the dynamically allocated legacy attributes.
+From the Alpha side, this looks good to me.
 
-Signed-off-by: Krzysztof Wilczyński <kwilczynski@kernel.org>
----
- drivers/pci/pci-sysfs.c | 21 ---------------------
- drivers/pci/pci.h       |  8 --------
- drivers/pci/probe.c     |  6 ------
- drivers/pci/remove.c    |  2 --
- include/linux/pci.h     |  2 --
- 5 files changed, 39 deletions(-)
-
-diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-index c81d3964cfa4..b167e32d55ac 100644
---- a/drivers/pci/pci-sysfs.c
-+++ b/drivers/pci/pci-sysfs.c
-@@ -37,10 +37,6 @@
- #define ARCH_PCI_DEV_GROUPS
- #endif
- 
--#ifdef HAVE_PCI_LEGACY
--static int sysfs_initialized;	/* = 0 */
--#endif
--
- /* show configuration fields */
- #define pci_config_attr(field, format_string)				\
- static ssize_t								\
-@@ -1135,8 +1131,6 @@ static const struct attribute_group pci_legacy_mem_sparse_group = {
- 	.is_bin_visible = pci_legacy_mem_sparse_is_visible,
- };
- 
--void pci_create_legacy_files(struct pci_bus *b) { }
--void pci_remove_legacy_files(struct pci_bus *b) { }
- #endif /* HAVE_PCI_LEGACY */
- 
- const struct attribute_group *pcibus_groups[] = {
-@@ -1811,21 +1805,6 @@ static const struct attribute_group pci_dev_resource_resize_attr_group = {
- 	.is_visible = resource_resize_attr_is_visible,
- };
- 
--#ifdef HAVE_PCI_LEGACY
--static int __init pci_sysfs_init(void)
--{
--	struct pci_bus *pbus = NULL;
--
--	sysfs_initialized = 1;
--
--	while ((pbus = pci_find_next_bus(pbus)))
--		pci_create_legacy_files(pbus);
--
--	return 0;
--}
--late_initcall(pci_sysfs_init);
--#endif
--
- static struct attribute *pci_dev_dev_attrs[] = {
- 	&dev_attr_boot_vga.attr,
- 	&dev_attr_serial_number.attr,
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index f52caf7e4d13..63f249d4833a 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -356,14 +356,6 @@ static inline int pci_proc_detach_bus(struct pci_bus *bus) { return 0; }
- int pci_hp_add_bridge(struct pci_dev *dev);
- bool pci_hp_spurious_link_change(struct pci_dev *pdev);
- 
--#if defined(CONFIG_SYSFS) && defined(HAVE_PCI_LEGACY)
--void pci_create_legacy_files(struct pci_bus *bus);
--void pci_remove_legacy_files(struct pci_bus *bus);
--#else
--static inline void pci_create_legacy_files(struct pci_bus *bus) { }
--static inline void pci_remove_legacy_files(struct pci_bus *bus) { }
--#endif
--
- /* Lock for read/write access to pci device and bus lists */
- extern struct rw_semaphore pci_bus_sem;
- extern struct mutex pci_slot_mutex;
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index bccc7a4bdd79..94c52bf3a65c 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1068,9 +1068,6 @@ static int pci_register_host_bridge(struct pci_host_bridge *bridge)
- 			dev_err(&bus->dev, "failed to add bus: %d\n", err);
- 	}
- 
--	/* Create legacy_io and legacy_mem files for this bus */
--	pci_create_legacy_files(bus);
--
- 	if (parent)
- 		dev_info(parent, "PCI host bridge to bus %s\n", name);
- 	else
-@@ -1276,9 +1273,6 @@ static struct pci_bus *pci_alloc_child_bus(struct pci_bus *parent,
- 			dev_err(&child->dev, "failed to add bus: %d\n", ret);
- 	}
- 
--	/* Create legacy_io and legacy_mem files for this bus */
--	pci_create_legacy_files(child);
--
- 	return child;
- }
- 
-diff --git a/drivers/pci/remove.c b/drivers/pci/remove.c
-index 6e796dbc5b29..d8bffa21498a 100644
---- a/drivers/pci/remove.c
-+++ b/drivers/pci/remove.c
-@@ -65,8 +65,6 @@ void pci_remove_bus(struct pci_bus *bus)
- 	list_del(&bus->node);
- 	pci_bus_release_busn_res(bus);
- 	up_write(&pci_bus_sem);
--	pci_remove_legacy_files(bus);
--
- 	if (bus->ops->remove_bus)
- 		bus->ops->remove_bus(bus);
- 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 6b630bac8c08..1859c0bf4e35 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -724,8 +724,6 @@ struct pci_bus {
- 	pci_bus_flags_t bus_flags;	/* Inherited by child buses */
- 	struct device		*bridge;
- 	struct device		dev;
--	struct bin_attribute	*legacy_io;	/* Legacy I/O for this bus */
--	struct bin_attribute	*legacy_mem;	/* Legacy mem */
- 	unsigned int		is_added:1;
- 	unsigned int		unsafe_warn:1;	/* warned about RW1C config write */
- 	unsigned int		flit_mode:1;	/* Link in Flit mode */
--- 
-2.53.0
-
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
+Acked-by: Magnus Lindholm <linmag7@gmail.com>
