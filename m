@@ -1,88 +1,148 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13B472BEC2B;
-	Sun, 12 Apr 2026 06:39:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775975970; cv=none; b=hkUIhVJF5Td4l5juz62ZXWqTPCWLusqMSxJHZp1cRj7S1hARaogrGVpz3jbIQ/EV2yRws0skpQlrSYlWr70yPeH0dk7A8YIR8PrBs1OZvLqF70+zt6s+qpddX79SNpn0G4YToBXkjM9bFzvvFTgc/THrqvq2AlosApf59HxnoL8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775975970; c=relaxed/simple;
-	bh=6Gfvk1vJ2dWhGGDn2YFpAnYsydfbb+BI5a9oo2uq30E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HUJA+jHV2uh70lVxqXNGso5h9xXevKLXcnLKsz9os4lJ/Dc7IYlP5PqFX8lQ8NjI9zq8s2MKu673PhgGGEBd3pGARwEsZ+wjs5VA1rFjRNCN++2/EV1CVfh2dJninKLWExZ4tF1xR9OYwGw9OmkekuU0hD2Wk2IG/IdAYfhQOik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fzDgUNaO; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 090CD1D5151
+	for <linux-alpha@vger.kernel.org>; Sun, 12 Apr 2026 08:13:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775981612; cv=pass; b=TIJ+iYsZMZ/gOzBq4U3q3E/l0DbAwMaHeKlpcNPcrujSwaR6Uo+3k59LA18wgeCPhUWFtEvebj/odGn/f0iC/DGWA+qY1h9NMJfXBsy8nxDMSzO88a3rF4bxtKzc4JQ7uitFejiz5RsWDZUNIQue9GgVTp4iCX6wgKcUWZkJIqM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775981612; c=relaxed/simple;
+	bh=xGalZPCURCPopeCzkacbKnGGyF6ssu9qfdi/2Xtz8TM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=RzuB7Mh+MKP71DgwgZsTYq91ZjoNvz7mNFox1eqMqCixY/nNzSbODK1hp0TOiSsCAe+t0WrQDaU8eBvSSfFrKGx394wr2556vsb/ZpKrfsTsnCCHpFok6mm0PUf5VyPwt1Z3UugAWtRG9AqfuGpGn+kcBAV862K9yjZLnI6a25E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pl0b/sGD; arc=pass smtp.client-ip=209.85.208.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fzDgUNaO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D572C19424;
-	Sun, 12 Apr 2026 06:39:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1775975969;
-	bh=6Gfvk1vJ2dWhGGDn2YFpAnYsydfbb+BI5a9oo2uq30E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fzDgUNaOpqjoITWmDRNxW4jtZPGtgJ7WfRkMr5BJ41p7XiNmc8SOh0oCq4J2j7rTo
-	 NLoLDHRbHh0ni4t2ntideLvnua/072uDENzgIqhbS0RaxWVW55BtBmzAFmIzCUU3mn
-	 IEPrzVC/2RLvIq8EEBIOw/UwRuls+qzyw9rP21KECkimIYAzCXeGf/29CFFOqIfk1q
-	 toob/klVXFfK/YjkeEBJmZrGOZt05PUE1NRMqFqJoYl2gDzwZpzLhJgxzIBkZhe5H5
-	 B6RiLd2mV6WsFlTWMuctrbIuLo4s3TxoPbGl0M1VhYnzWpa11NuiBKcFEjUq5504Ff
-	 xDQ5Ux/em3l4w==
-Date: Sun, 12 Apr 2026 15:39:27 +0900
-From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Bjorn Helgaas <helgaas@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Dexuan Cui <decui@microsoft.com>,
-	Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>,
-	Lukas Wunner <lukas@wunner.de>,
-	Oliver O'Halloran <oohall@gmail.com>,
-	Saurabh Singh Sengar <ssengar@microsoft.com>,
-	Shuan He <heshuan@bytedance.com>,
-	Srivatsa Bhat <srivatsabhat@microsoft.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v4 00/24] PCI: Convert all dynamic sysfs attributes to
- static
-Message-ID: <20260412063927.GB2085076@rocinante>
-References: <20260411080148.471335-1-kwilczynski@kernel.org>
- <CA+=Fv5Q1tZQwnanw99NbvzT-QenfYz7vUdY02_TuPqHX32ZAiA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pl0b/sGD"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-6715594a4c2so172738a12.1
+        for <linux-alpha@vger.kernel.org>; Sun, 12 Apr 2026 01:13:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775981609; cv=none;
+        d=google.com; s=arc-20240605;
+        b=EKUtC9YLrQ6xABq8BMB7/Yo579dN4b5M0yMY8tx4dfAd0gxhZSJ8vv98WG1rw325UL
+         qsKUFInJHbbiMTxuRfWNAGHBfTpPUe29xL12AQtcDZERRGTzoKmKbbWig0APp+7q7OnJ
+         G3XYCO1P372wE6cPkp+/dd1rM4rjtj0APO4k4/r9bR7hPXR/bEdLDtyzJK0L1IHiT5V3
+         oKQw+0XlUsUUTzw3p2k82GcJQmh+1Se58C9O2iwUZzJvEmwdXm2z2G37j167QuA5l7Pq
+         t8cpdUNo61UxzzbAo2Eo7I0159P+NBcMERkdimgT6tZUwY4fNWthzIdcdesIgp2n83gZ
+         NnAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=UL8V2RTxV4jklZpHaNMtWLWnJNihQ/PtAI6J27r5wDQ=;
+        fh=ViAatGiZ05dh3a394EUid4cQpUnAI/U35CAucij+cuk=;
+        b=AZ4XUt7uCsrXqrC1r2JPUIsyj8baiYb/2DRo81Asbf/Jp/X8d/U0Yd/3QNjWn5iU6W
+         S9chbqxti/mno4hD8hwjgOqakz+BXt3F4rQ/l4Wa2IkNO/ZAH03LyPdVHj1QTsR4g8S+
+         eNwmBuG8whSx0pRpxPSISWCFXfu5Ma4IQn4iyQKw7wvG4jGis3H8/G/UkJo1O9NoPv/X
+         YGw4jKVd8+lX2VMpmJou5BxBE446+1AGHasL5F7lJsJ3TN4tfj0H1JKcKwJ6bMc8OOLF
+         scM9HydSHJAh3MfYr/zzDKx1N+ONuYJT7aRaLQi0HOJjOKo6C6qkyBnGrDXXHy+mj7Hi
+         Jt0g==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1775981609; x=1776586409; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UL8V2RTxV4jklZpHaNMtWLWnJNihQ/PtAI6J27r5wDQ=;
+        b=Pl0b/sGDQ0w1p5ZeDoktMlIIuHGZDQ4ZXtiHhXcnYvvVixQ8sazFPATf8fj/UV7xYR
+         FO11/UDq94c/Boh0xGgaQibmcqRPRAsOi634OlNMMKPufDfK05wGRsk2aaxGVCzjloM/
+         RvLNiDIHcACC0xoQHWidfOt8moPSHiyqmR4+NMDu9SWUbOQzXBhXVTJ2TaGW05t2a2nr
+         pFwv0ZvgPFEs2bYx1EF5BsWS8Z11MSPjHcXibINL/45ULV6BFwqBbizb/kCGXkUHH6q+
+         l8UF5UUA7t5Q4PeOuwjH2ZhysL2nG7FuA4cXn0zcqI3+Pr7xOV6wGKDVXSpdzBYV4pmD
+         yEKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1775981609; x=1776586409;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=UL8V2RTxV4jklZpHaNMtWLWnJNihQ/PtAI6J27r5wDQ=;
+        b=iszFfTqKY/t5wIHGfOPedXOa8qELQ9n665RwP/nmrbAcoaHmIqhQIvrTRkdzsWdqiS
+         EtkTtixXlnPEdx38eCK2cQMAQ5eK/gNcBZkK1QkgoIq7yoYh6LQjzT/PeVMXJKwHJOsE
+         sXikaC9zFt9gjUv0ceNXVJg4romJ41Uwkg92Imu/7dNbUoSwk+xkqGi9XN1cincyhkrE
+         DVVUDnS6FwE4+PsiNdW1syZ7YOBqq7Wsy/kALuAljkmv1u1XyvD+He4HIvf/8AFM9xZ1
+         lonxiBRkGeQkfgWOgbGFqG/utXCdTa3oEgzLtZxYMYt0Abn1esK7wREotH2fuYeIEmmr
+         miqw==
+X-Gm-Message-State: AOJu0YyF2vNRR57R/lyxyHHSz0tKk+QipEbDi/QXiMdOKSPLF2pm58wp
+	1/3EH2u6RHs8rlnspA256gNVJNu6a0lKCid9RMLdk+/fWS48XN+JIANrbxcb4m0GvUCZ/ec3han
+	u0XVWjnJAjew2HN23c0GjsjxyJSaZBO+2uZhN
+X-Gm-Gg: AeBDies79hrFPT2Tbh6UNtfmZb5RnWBJq0er/IJKKMXAumvMafVNxaIQA9aT7qVbMhY
+	XczqeybhYNdhqsOKzernUIP3+P44Y+IVqz5xHQNuN7Lx45vx7ltXXwn7xn1Xjvd2RGOMeMPs6fb
+	Lu7t7ZpWbCBgBkrmreD4Kbl0nRXMVtQ+K5gZxdRlTOTAXCNv7B1kdWrvkHFQN1JTpbGMvX77h0v
+	wYR6o05QmRT9RBSlIqCuXxh0IfBM+mN30/QWHvMu3KUZqZYeRGEmvMoBJ+m4N7wOfzgcn55aDUQ
+	4gX57+4tyuafG2CAy9QftSUEA/G2kFvAaMVhsgNt
+X-Received: by 2002:a17:907:94d3:b0:b9d:6483:6711 with SMTP id
+ a640c23a62f3a-b9d7281491cmr530457266b.46.1775981609026; Sun, 12 Apr 2026
+ 01:13:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+=Fv5Q1tZQwnanw99NbvzT-QenfYz7vUdY02_TuPqHX32ZAiA@mail.gmail.com>
+References: <20260403150340.489381-1-mattst88@gmail.com>
+In-Reply-To: <20260403150340.489381-1-mattst88@gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sun, 12 Apr 2026 10:13:17 +0200
+X-Gm-Features: AQROBzA9PKMlLXj0y-S0loWdoYKDKnN3ftSSIGLKMairjQrPLSmLHk7cqoBiAuc
+Message-ID: <CA+=Fv5RkXJrAx7SoORyM2Gh-28VOcvrsHSYjraeMXYzRkZkAYg@mail.gmail.com>
+Subject: Re: [PATCH] alpha: Select ARCH_SUPPORTS_ATOMIC_RMW
+To: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hello,
+On Fri, Apr 3, 2026 at 5:03=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
+te:
+>
+> Alpha has native LL/SC instructions (LDL_L/STL_C, LDQ_L/STQ_C) that
+> provide atomic read-modify-write capability, and already selects
+> ARCH_HAVE_NMI_SAFE_CMPXCHG.
+>
+> Selecting ARCH_SUPPORTS_ATOMIC_RMW enables MUTEX_SPIN_ON_OWNER and
+> RWSEM_SPIN_ON_OWNER on SMP, allowing optimistic spinning on contended
+> locks rather than immediately sleeping.
+>
+> Assisted-by: Claude:claude-opus-4-6
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
+> ---
+>  arch/alpha/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git ./arch/alpha/Kconfig ./arch/alpha/Kconfig
+> index 4329743757e3..57c91ed67b71 100644
+> --- ./arch/alpha/Kconfig
+> +++ ./arch/alpha/Kconfig
+> @@ -10,6 +10,7 @@ config ALPHA
+>         select ARCH_MODULE_NEEDS_WEAK_PER_CPU if SMP
+>         select ARCH_NO_PREEMPT
+>         select ARCH_NO_SG_CHAIN
+> +       select ARCH_SUPPORTS_ATOMIC_RMW
+>         select ARCH_SUPPORTS_PAGE_TABLE_CHECK
+>         select ARCH_USE_CMPXCHG_LOCKREF
+>         select FORCE_PCI
+> --
 
-> > This series converts every dynamically allocated PCI sysfs attribute to
-> > a static const definition.  After the full series, pci_sysfs_init() and
-> > sysfs_initialized are gone, and every sysfs file is created by the
-> > driver model at device_add() time.
+Hi Matt,
 
-[...]
-> Applied the series on an Alpha UP2000+, built and booted
-> successfully. PCI enumeration and device initialization looked
-> normal, I saw no relevant sysfs/PCI warnings in dmesg, and PCI
-> sysfs resource files for tested devices looked sane.
-> 
-> >From the Alpha side, this looks good to me.
-> 
-> Tested-by: Magnus Lindholm <linmag7@gmail.com>
-> Acked-by: Magnus Lindholm <linmag7@gmail.com>
+Support for pre-BWX CPUs has been removed from the kernel for quite
+some time, so all supported Alpha systems now have full byte/word
+instruction support along with the existing LL/SC primitives
+(LDL_L/STL_C, LDQ_L/STQ_C). Given that, selecting
+ARCH_SUPPORTS_ATOMIC_RMW at the architecture level
+accurately reflects the capabilities of the CPUs we actually support today.
 
-I appreciate you taking the time to test this.
+That said, there have also been efforts (by Maciej Rozycki) to reintroduce
+support for non-BWX Alpha systems. If that happens, we may need to
+revisit the rationale here, since the "all supported systems have BWX"
+argument would no longer apply as stated?
 
-Thank you!
+The patch itself fails to apply cleanly on top of v7.0-rc1, I guess
+there are entries in your arch/alpha/Kconfig that do not match
+what is in v7.0-rc1?
 
-	Krzysztof
+Regards
+
+
+
+Magnus
