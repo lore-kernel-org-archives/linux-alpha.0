@@ -1,145 +1,141 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CB6C37C911
-	for <linux-alpha@vger.kernel.org>; Sun, 12 Apr 2026 13:23:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D16932EAD1B
+	for <linux-alpha@vger.kernel.org>; Sun, 12 Apr 2026 14:37:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.54
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776000187; cv=pass; b=eweIzGqxd8hj0kW4aEe0HDCl+lSGwHFPqtydTjrXV3fvAFNWhgDuHcErERfdDaFH8l+P8bJzUTLLTTDMuBtnP6ku9HqiRGYCnKvpvuJ0CN8dKLWYPHCGNLARebD9aTFLcY3oGNCG/MGhYp/SWXVwDjx6RS1nniMukZl1cJGxEs4=
+	t=1776004678; cv=pass; b=bTJIT5QNO282vmu9sDQkBZXbNr8udX+wdbnfCB+em6G/h0n8mI1+bWL3DUGOhUjgiVV545AkJrSL3JfLhjhoT6txV6DWL/27CVxiO8U7fXoKZTkXxzbRZb85Rc2h5ii6sz8TbmxacGpGRk2mVoMvByk5dye4zD7zyQoUyzXxh0M=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776000187; c=relaxed/simple;
-	bh=1p6x7PvyQL+5PGqdAnx23TY8v0cVXdqCOnUZdmPD2Po=;
+	s=arc-20240116; t=1776004678; c=relaxed/simple;
+	bh=MemBCQgBcit+9wsPWOddOdHHlWCrezd4gb5EHNw6nHw=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ng4tRDlopiGY1SIQhRNq8Jkv6BFMVVBNBzASKGygQFn8R8CGigqwaJ6q8OV/scKIoOReyrPtejx1XzeJ2cCw2cwpm5Xdzpm8ZodtxA6j97SpvxKAExfdXJ0vLx4yE8oE21TItu+yVX7+bOUjrjU6xVLwxRkY4XZjvswAkJNwfCg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dccArJm9; arc=pass smtp.client-ip=209.85.218.49
+	 To:Content-Type; b=Ha4ne2CJN4SE+1Wt0ZuBgq7T0jPitUkDfUKUAf6fb6WCBYnqPqLpXpX7zuj0lzdlCutdKdJrq0xqesitjXEA88zf5911hKbLQQjpUxxpgEeeMYxkg9/BtpEuu85l2KkvMwUJZpIFvwF5EGVaPji8lI0Polf7jtLjWNLbeYZutwU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C0Hme09j; arc=pass smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dccArJm9"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-b9c3e2cf3c0so546931366b.1
-        for <linux-alpha@vger.kernel.org>; Sun, 12 Apr 2026 06:23:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776000183; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C0Hme09j"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b932fe2e1a7so485477466b.1
+        for <linux-alpha@vger.kernel.org>; Sun, 12 Apr 2026 07:37:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776004675; cv=none;
         d=google.com; s=arc-20240605;
-        b=efEowLvx4cgJ+HkzhdhhpgFntobcqX7tm/7oXmINnakR7q54z97ifwiVZ/o0SECUrP
-         ffkdw9mwgpEvMCkPp2uMRXy48WhvCa2ej1Yq0/4Jgn5IlQMScKk6RqbsB7lN49RLjgZg
-         MTpN2H8H4ZfGMddtySH6EXX8dqZjzuwDA0VDJ1wziW6KpdaXbE/WcxoE8xvs5YOEIp0s
-         /s9YDxKZcZDaRxkT8cdH/9wGy7ER0ZhN/BMl+UYhFlRssWCzCHbZ1GC82KGLdoCf9XSX
-         AER9GvbbqOdZpSIyV799rvAxmmNlY0b9NCBXrpWW3+IkuGb4UCJV7N9KLbUF92Jbuglk
-         a/DQ==
+        b=CPuDE6Md01dEPWPdbnLaAK4vqHzBkpkUXJ0NFBnt+NRTC1Zb046TaqySseiZlKA6jJ
+         DAfC9N7CPzlkLNtng53zlEK6Gq1PTHmhSs/nRUR9igEKRIemZYOrnZf0Pl2nePs2tmtT
+         zWQDAOkrrMevMxwOJ8V2RvjMVJSIhcL9QQDCpjO2/PpyEPnzyUEN4+7Nt51BTgr0pk1T
+         7Qf/C855IxldCMeXqCfZnw6HxpfD0+/Ab1zTZ6E5dHUcFy3tvt+0jAehc03+k2rjUwI+
+         J4Qb21x18pCSkz+ZhcxlIEISo2GuLmh8HKEgiq84pzozF8KyrTQ54psCV2NOQJJLPFZJ
+         aEDg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+        h=content-transfer-encoding:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=gDdA9vu4Fz00bgurrj0mXlyC2hJ8rRfiuCUxuR8xwe8=;
-        fh=tJyQUKtY1tNEMz4UmIYo1zSNudj1GZLkxLitEOxwvhc=;
-        b=jg7T2yS8O7rTiNZ2PnrotsEED+FQXT4SUKTPHjW8e0n0BmIx53azJAnZ8NFT011oYU
-         aBR4scZYchaulR/n3OrrDlZMG8VhEw9zcFbFjf7T2ZbhjkjiO0bqwQU5f+iAZAqMuTXY
-         BdeNnLNLhsA+IFrTXfwvVaaYy0G4XgCBBDjbMSE2tkFl1Y0d5Y/Q/CTWF4nFACWGY829
-         S82yBkcfOvm4XxEHCgbKBsvre5FSorg33RCOs4pXTn6tv8fkFd4+T8sdixt1xqV+DTwW
-         2FGVEzFyG7xS8x/7t+2UtZOB8o/BQK+QgiDzBIEQkjhIYfV079fblOjFDYYItGiuFRJa
-         MTiQ==;
+        bh=MemBCQgBcit+9wsPWOddOdHHlWCrezd4gb5EHNw6nHw=;
+        fh=8W+lXoG6z5CSYawdfWWbB6bdOlOxU6zL7OhjJvD/m6E=;
+        b=hjdeGIfFH1IBgDPF40cQfrxCoFUaBKsoEf5Uo6cRtVqFkOqz7r50uoTU9VwmO3DP3y
+         A069+uIRStjw7IuhIpYwNe3mP74h361uVqq2ElfG5x0AdfmSDb0Ao1+enRrQ7xCsIdnV
+         +N81pfrdvmQg8hKEwJALyIJp4jLqi6YoOwheYOukUn735JcrXOWSsyocp9m2/rMyFMHW
+         79KOhRn795RWVTOgHd9/Z7IXzqSkW4zVQm2wJFZB/gz9pIa+7L5CHbEXuhJHJQMlTY0B
+         4OS5ojsKvKGd87P2ms7ROYvD5EY3lQGkauAqX8zRxnGDyYgSuMqYrqur28XGgoh7DEII
+         D4fw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776000183; x=1776604983; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+        d=gmail.com; s=20251104; t=1776004675; x=1776609475; darn=vger.kernel.org;
+        h=content-transfer-encoding:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gDdA9vu4Fz00bgurrj0mXlyC2hJ8rRfiuCUxuR8xwe8=;
-        b=dccArJm9v6h9Fdk8lDGNWZnQG14AQ9ZokHDnv7DAL1GW0R6BDoMR0waR0wHnO++sNY
-         YJPJSDf/Eo4Jqw4GQ8Gz/T/rsLkNap5uTZ+EpwANfeQ1dFGXyG88+fN/49+h4JvC9C7c
-         2+asFn0yzVsL4n2hJqrH+GINWtCINsNrMCDz6yHqeLWKks0EsNy7ssNes4vhdFLCd+tg
-         k2Ys2/EuxonOOeyCkSNs/L20e6zSdmHhXIY25hzHxXat+VjZowRiCo0VNk9bdjlPvxYt
-         DV9owUMCQ8VWv/4Ldm8HtUCj9QQlhYJyZr8JnJBv87EbzYIfO7KpnQu2sRPezsHrfV9J
-         1U2Q==
+        bh=MemBCQgBcit+9wsPWOddOdHHlWCrezd4gb5EHNw6nHw=;
+        b=C0Hme09jEDHqC08QwyudzVdmoYZOq+KTEnqAsxIBPVpGZS+elrgZKJYroJHHEXVsqp
+         h+GiflBbUZpltjtEIie+upbBzFlZZFLABrLGmJkUu7B1h58Ml2d2EFM8upERVQI9VHxZ
+         T3rZl5LhzmcfTRLzmzg/EdPK6J3o/PFWa5RCALfQFFAI48H9zAYN+uMVPUX6jX0zLsiH
+         RpKKrvmLjn9Zjf2kxqTOM0pHDmaTqaD/a+fErlv+xaxpOUHQS07w0DNZ8bUNUBiAQ6xA
+         yFgHIbz/+d2aUk7pRSccstHy9L8YJIX+wcXJt4vTprp3x54EfJEIx6keYtDLDESSUZVl
+         GkIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776000183; x=1776604983;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+        d=1e100.net; s=20251104; t=1776004675; x=1776609475;
+        h=content-transfer-encoding:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=gDdA9vu4Fz00bgurrj0mXlyC2hJ8rRfiuCUxuR8xwe8=;
-        b=c3ggNzjwZifoUlkA9Dav2ZRGy39YhWJiGyEVSot+IkpUACA+QVHD66vQUOGhR9hCcq
-         nonMyl5jFTEQOkdOiuSo2u7SLsAyYaqeh/KJKKqyzkP1zMZJfNRERB7eXE/wfYCTFJv7
-         Opydolzykic6BXh7DPoBiDJ+QIsN+EjZD9DloPO9SkYgLDHlJ4GTZSRVpbT36m+1H3ew
-         3tTJ3Hgw09oBX3WKp1jQogMUnNafbxC5WD+h+l4U78w8NXClF5uQhz2S/CkV4o56s7ym
-         UvUQncsKpicXETyT1zqMydIHlH7+W0DcTNA2m8+wyCtE+Rw3mYXk4wTvUU7d4Mu/ci17
-         iENQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUnavGGIz1uqYtC5gd7g/jW2PsXvvCsXTUtHe7QzsjOUb+je+zqOQAVlcJVyiC1D2GuXawsCLCtrOsqRQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwSJaMFvbhrKPaJjpsdPhZDQUGydh4JoGO6/OkOrjq4EKfTK8hw
-	yYjbwNhtKgfIyLEExGDhqM8Z3FcdgrSAEqg1E30if6cZS1U2yO6eYv5dMe/FULsLihkE920XoCl
-	NWRzGQP/rZMQkDBU60Mr69XiX46j24H4=
-X-Gm-Gg: AeBDieuZwEOJVDhIS1EJBvDj2vd83A6980XVYSeCzIZOfqQOjgrgO5hjdEeMVVYS8Bx
-	cNdIPqmRiELZtHRtK9x7Ohm79J2ZOCNP/4LzytI/mLIXSuaBRifz6g0KIFQB7iGu45STODRvWDh
-	ds/PpB9lwzfjPV1WhzEoyKXSYSuc0q43lPAR/XvC96xgyvASH1BrnBej6RAoB8MIu3mZss5O/fn
-	Xc+SfZ2z0TQqB25U3GtiwdFIPhbuhjNuZqBzdp/LcjVQirulJGUfJIyxqpB9OhkyPIOI5UB7Q9b
-	JcxNTdxXoI9KKzhASTMjx5mE+ZrOlr4HPyDXjeZx
-X-Received: by 2002:a17:907:e113:b0:b9c:6ef1:ed18 with SMTP id
- a640c23a62f3a-b9d727aa4fdmr352963766b.25.1776000183133; Sun, 12 Apr 2026
- 06:23:03 -0700 (PDT)
+        bh=MemBCQgBcit+9wsPWOddOdHHlWCrezd4gb5EHNw6nHw=;
+        b=o/sJeI376kK+FDe3GXQZ09rbAjj4pJkC4H+hqAcL8oD5+6vgDgclSwLewQG/40iXB9
+         XFVAb2fJILaZqbYNoZ1QCtoh1qPPDbe8vwAjlUtU9f1UAO7QoCSJvZ9UX5/3tSyCqKHR
+         NRZ4AvpHdREOBO8LqgcLyJ6vVTRvjs4Vqegtdzq4E3MTac0ACKBJI5uvfShthptOedbX
+         UmT8gSKEwaI/l37LPgBArN6zCdzR+S4cy0yVV/MFs0Da3tTbdoTCzOc5eqKq3Lrzmanr
+         S4/b4kUgHr0wYKm2bk8Nr1SL3gxOiaoxmpLDyxsVLx2bHUSRBlXFG0jIWWxa5z+bAp/d
+         GEeA==
+X-Forwarded-Encrypted: i=1; AFNElJ+4+v4aC3gMVCMw3iqB7A1PQUsWxNVNP03pcoKieA4ei1u2CLFQDBKQJ/txgKnijM5vOd2t4Pv4ky6NNQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwYGW0Ys/L+3ADFk5gwl5VVlZTSb+puCjEXVXkMuMi5MB21Q9mM
+	OtE/8zLlWoaVTdB6QQX6pLG2T+Kf4oeEB4fLFg++Gb1AH/hEyhCpUlQ8zAfteTadGRsOi8m1lwc
+	V3bqEmp/BcnGcHh7/74R1LbWRc8trVXw=
+X-Gm-Gg: AeBDietBf9EdpyR/nCM2VpgY5YiXz9pHe+Jx0myI8Gda8Aqkf60Qi6aDdHRQabxQJjy
+	PtNd6tlwZ2D5IilmG3DenRYfWFlXSLljx+YZs+xRJuGL5YlTxnQnhRIxowIT/E82XiPu3zHJAkD
+	SOXgNWR74gBaomNnTeZcGsPIjijd9FHj4VCAcqzwatqJ//NpyJUUpffn1q4b21/stkgpwoVOwyg
+	AilRFyp+86k0h4sOWRkRz1CE9/Ode70GlZcj9pDWOcNk68m3P0lpFHXdszKHZCqi+gXQG8hkyGF
+	5Q8ssz8qWFbNaA2HLKLu1QpRqqtCS5fbmoYrXgj4
+X-Received: by 2002:a17:906:6a03:b0:b98:48b1:b129 with SMTP id
+ a640c23a62f3a-b9d727969e8mr589234766b.47.1776004674999; Sun, 12 Apr 2026
+ 07:37:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260410120044.031381086@kernel.org> <20260410120319.131582521@kernel.org>
-In-Reply-To: <20260410120319.131582521@kernel.org>
+References: <20260403150048.488266-1-mattst88@gmail.com> <adBrDoaNR8O8_hbG@creeky>
+In-Reply-To: <adBrDoaNR8O8_hbG@creeky>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Sun, 12 Apr 2026 15:22:51 +0200
-X-Gm-Features: AQROBzAeMsaeSVePCJ__tEd4f2rWAY6MixXzp_fii2b8vyUpLt4xjSbtYzENFaw
-Message-ID: <CA+=Fv5S68wZQapeaYTspOfsuGk=nBj60sx-ojHBSqrxV59Q+ZA@mail.gmail.com>
-Subject: Re: [patch 23/38] alpha: Select ARCH_HAS_RANDOM_ENTROPY
-To: Thomas Gleixner <tglx@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, 
-	Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
-	Arnd Bergmann <arnd@arndb.de>, x86@kernel.org, Lu Baolu <baolu.lu@linux.intel.com>, 
-	iommu@lists.linux.dev, Michael Grzeschik <m.grzeschik@pengutronix.de>, netdev@vger.kernel.org, 
-	linux-wireless@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>, 
-	linux-crypto@vger.kernel.org, Vlastimil Babka <vbabka@kernel.org>, linux-mm@kvack.org, 
-	David Woodhouse <dwmw2@infradead.org>, Bernie Thompson <bernie@plugable.com>, linux-fbdev@vger.kernel.org, 
-	Theodore Tso <tytso@mit.edu>, linux-ext4@vger.kernel.org, 
-	Andrew Morton <akpm@linux-foundation.org>, Uladzislau Rezki <urezki@gmail.com>, 
-	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com, 
-	Andrey Ryabinin <ryabinin.a.a@gmail.com>, Thomas Sailer <t.sailer@alumni.ethz.ch>, 
-	linux-hams@vger.kernel.org, "Jason A. Donenfeld" <Jason@zx2c4.com>, 
-	Russell King <linux@armlinux.org.uk>, linux-arm-kernel@lists.infradead.org, 
-	Catalin Marinas <catalin.marinas@arm.com>, Huacai Chen <chenhuacai@kernel.org>, 
-	loongarch@lists.linux.dev, Geert Uytterhoeven <geert@linux-m68k.org>, 
-	linux-m68k@lists.linux-m68k.org, Dinh Nguyen <dinguyen@kernel.org>, 
-	Jonas Bonn <jonas@southpole.se>, linux-openrisc@vger.kernel.org, 
-	Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, 
-	Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org, 
-	Paul Walmsley <pjw@kernel.org>, linux-riscv@lists.infradead.org, 
-	Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org, 
-	"David S. Miller" <davem@davemloft.net>, sparclinux@vger.kernel.org
+Date: Sun, 12 Apr 2026 16:37:43 +0200
+X-Gm-Features: AQROBzAi32G5fIWKlgb2hFtbMGmKNfGCf-mmZLcR0rTAL4hN_O30rt34Q9BW5Ws
+Message-ID: <CA+=Fv5RrsEqQ=nZbnKuUUvAWE9hJyhJMi-hHSL=WEWX--_Vt8w@mail.gmail.com>
+Subject: Re: [PATCH] alpha: Add ARCH_HAS_PTE_SPECIAL support
+To: Michael Cree <mcree@orcon.net.nz>, Matt Turner <mattst88@gmail.com>, 
+	Magnus Lindholm <linmag7@gmail.com>, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 10, 2026 at 2:36=E2=80=AFPM Thomas Gleixner <tglx@kernel.org> w=
-rote:
+On Sat, Apr 4, 2026 at 3:36=E2=80=AFAM Michael Cree <mcree@orcon.net.nz> wr=
+ote:
 >
-> The only remaining usage of get_cycles() is to provide
-> random_get_entropy().
+> Hi Matt,
 >
-> Switch alpha over to the new scheme of selecting ARCH_HAS_RANDOM_ENTROPY
-> and providing random_get_entropy() in asm/random.h.
->
-> Remove asm/timex.h as it has no functionality anymore.
->
-> Signed-off-by: Thomas Gleixner <tglx@kernel.org>
-> Cc: Richard Henderson <richard.henderson@linaro.org>
-> Cc: linux-alpha@vger.kernel.org
-> ---
->  arch/alpha/Kconfig              |    1 +
->  arch/alpha/include/asm/random.h |   14 ++++++++++++++
->  arch/alpha/include/asm/timex.h  |   26 --------------------------
->  3 files changed, 15 insertions(+), 26 deletions(-)
+> On Fri, Apr 03, 2026 at 11:00:48AM -0400, Matt Turner wrote:
+> > Add _PAGE_SPECIAL using bit 19 (0x80000), which is unused in the Alpha
+> > PTE layout. This enables pte_special()/pte_mkspecial() for marking PTEs
+> > that are not backed by struct page (VDSO mappings, zero page,
+> > io_remap_pfn_range, etc.).
+> >
+> > Include _PAGE_SPECIAL in _PAGE_CHG_MASK so it is preserved across
+> > pte_modify() calls.
+> >
+> > Assisted-by: Claude:claude-opus-4-6
+> > Signed-off-by: Matt Turner <mattst88@gmail.com>
 
-Hi,
+Hi Matt,
 
-The Alpha side looks fine to me.
+These don=E2=80=99t apply cleanly to the current alpha tree here (v7.0-rc1-=
+based).
+As Michael also noted, the Kconfig context doesn=E2=80=99t match upstream, =
+and
+the index lines suggest the patches weren=E2=80=99t all generated from the =
+same
+snapshot, so the intended base/order isn=E2=80=99t entirely clear.
 
-I've applied this patch on top of v7.0-rc7, built a kernel successfully,
-boot-tested it on an Alpha UP2000+ (SMP) without issues.
+For a quick check, from the different patches that you submitted, I folded
+in the following locally on top of current arch/alpha/Kconfig:
 
-Acked-by: Magnus Lindholm <linmag7@gmail.com>
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
+- ARCH_SUPPORTS_ATOMIC_RMW
+- HAVE_ARCH_COMPILER_H
+- ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+- ARCH_WANT_FRAME_POINTERS
+- ARCH_WANT_IRQS_OFF_ACTIVATE_MM
+- ARCH_HAS_PTE_SPECIAL
+
+Built and booted fine on a UP2000+ (SMP), so the overall direction
+looks good from basic testing.
+
+Might be worth respinning from a consistent base, perhaps as a
+series if that matches your intent?
+
+Thanks,
+Magnus
