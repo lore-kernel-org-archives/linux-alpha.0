@@ -1,192 +1,206 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 488193093CB
-	for <linux-alpha@vger.kernel.org>; Sun, 12 Apr 2026 08:56:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775984200; cv=none; b=ciXuwdjfQ1djiGjTxh1WIcPA/2aDd8Mjlx5LbwfTsfp3/NkNXkmxy4cs7Jcp5y7my48vw+xrC42PWuJd3Johplmwd9830pHn1tOXKQyQGeM49Rv74CXnfSe+HwjmshVX3muRRcpkg3BwvPtqwetZIVu2dEL5TklnJVIw0JhHcLY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775984200; c=relaxed/simple;
-	bh=XZtsBYJ+xUzK/w66hhh7L4ep5/Nv3d9zyXSTiNiHtzQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QqOKKrdxXX8+ondkBAecm7WpaeiDAkILRpWWTr6Z4rb/47qDP6dMhc15J5HFkungSp7YDEIsyE4JLJkIUesp8Fk9qjQ91sU9TTklDmcYngVMXIHY6vvKvilhLZbYyI7Wn/CLsCS+DbdMmjqjQP1ot+lXjLXt+7J9S1Oc8NHfdO4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rmk25eS0; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51BAD33E37C
+	for <linux-alpha@vger.kernel.org>; Sun, 12 Apr 2026 12:14:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1775996100; cv=pass; b=DOQAmnMunyyhucD//bQO/iwU+8ZokXqkSyf6l4kB69YHytq7YfuGbqj4lvNQThiMCh8MvLfLveoeJJEpj9aUFlUpputy4yUi6qgpk0TljSvHL+KI9xlDa0NQeQvCtETmqrckT5Mb7EuFSVojG0p6apgjegBl/uyc/IGDXmyByus=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1775996100; c=relaxed/simple;
+	bh=s69nXrbwvVThczNXzcdY6QcO/CeWOPjkbeDyYMqRSlU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=YNfZIwQUk1C2iFajuIAk0vaQpwDkuVasOkyB9tozDUia5HMqRy6nvoIf2UYeP/WdB24nd2/6lHcXnMY107G0L0F1MQXzC4qrrfoBvE1rbiE0hI/2s3wSEUAePRhhNIKegrdINUQ29e5fo4uAzeM0X1WzQuH3JgU3KVCKZeAOFUU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f5Kw4Fj8; arc=pass smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rmk25eS0"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-43d70c30767so265752f8f.0
-        for <linux-alpha@vger.kernel.org>; Sun, 12 Apr 2026 01:56:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f5Kw4Fj8"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b9c755b2cdeso546155066b.2
+        for <linux-alpha@vger.kernel.org>; Sun, 12 Apr 2026 05:14:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775996098; cv=none;
+        d=google.com; s=arc-20240605;
+        b=F0iNnITvx8wXOUdUEtvhJwpbwNA3tTQXG6Vkdn0bGMVO2FePgiPiuj+Gy7JC+WiHfr
+         SkScfjWmxVBHTY2Ba6rHOYOkXnZDmTeXvLbM0lm50RXwujIgE3+UaB6MkkaEgrv87lXn
+         xS8jCZztuMeJe3XTJp+f5x2cnTHtM2xMWY4BHmXXbB2JYdZhYS3Ng2QqUfdOao0SYLl9
+         dOmROATDRXBzTyv9997IoXPCxsIRnJEn+LGb2mo5OL1XdaJQXhqrHKqjLVUBlrNbyM9k
+         NU2rslhTBv5VkgrnExC9Lpbh5nie47IwkR9sYKa5I2cBPyhs/fABChroy5un8lWq0Gnt
+         fdcg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=n8iQpCJ/FfGE5FcvJpReMEpmvPRCcp/ylO54INw8XPk=;
+        fh=ViAatGiZ05dh3a394EUid4cQpUnAI/U35CAucij+cuk=;
+        b=CvISOAO/Q9FpGuaaLM5+adDSZbNh07JYz1kxaHPAa929fFEbGKqhwNUDtHygAK+/zG
+         kwjgvyfFrj8tFTFfiTcmsJYLovBcWgXB/l3HyoEJ6ujI0i/Xp7vAWSN3yEpkwTSJyO0R
+         BW/5wwvAXXJvf0PvySNKQLUjSwXM0RuvXFEcSm7GB1XIASpAFwV8jCZ6dSrwBbBRBQBi
+         /uzt8muJbJBdth1Eo8CQwIUqa01b9X6qlEm69YOvOs9/vbU9U1lOBgb7wHJst0wJnF83
+         ReuyF4PaUdXysp90Yg058Dw1d0S8LjuH9SG3KIl9AGE9Nlm0ilh3vS4JYCHmXdqMXcbE
+         j98w==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775984196; x=1776588996; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=EbDgrbrkQIZIzHMqS4zyFwb8jbE/7QCDRz8zhtNheE4=;
-        b=rmk25eS0pD3r1W6fBjCHCIGG+xosVecWiNg/3nfNyAKaxOqHC0aIxIp+bwKvPu9+1j
-         fAU2vugkDHatrG3Fzq7V9jewKzPcvw41odvofwZkis7b1Y4DeW1IWegwg5QbXQj7kCio
-         L+ztGdtDUlhH+iJPC48SIdv4mbiVxmA7Be8JQhGglK1VOqWIq1YR4dry10OotSVrXztE
-         o4/62vmfM6KQrUkxwd24yP/lrxDf8HyZquUshVzt2ycEVPZUv3y2nMTj7GvueTw7R7E/
-         WKG3HtUgcwPCHxCI4T+H5u0NML0HalT4/vA4x/F5vuumDuC+b3YDtjggzfClJhOrbI7r
-         R2bg==
+        d=gmail.com; s=20251104; t=1775996098; x=1776600898; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=n8iQpCJ/FfGE5FcvJpReMEpmvPRCcp/ylO54INw8XPk=;
+        b=f5Kw4Fj8HtZv5872s19ovJD5W3OWWSBdwzevMy06/FQcvenMWukSs3YohcqaDjGSTz
+         KZxLiSwevUxIrDVt01MZiltCPPRkIBCjXZt5QzOFnd7BKNiR0aBsIZRzeJ1Stue4UB7S
+         im+oylixYE8qrXVD/nYKmyukrDvx7/fZu3Xjvi4bZjNDRDkmOuJlDxWeKY9kQT+MleT4
+         wzRmMVCwFSOtYcgefbHSPWQLTHhqiuEyILLQNnP5EVw0T999bqMZTRKT+5KswHKsdnBO
+         JvN3Ry2kbg6e5/U7nFb1QypHK/p8GLlLIPyiwbCGMJQOp/1myEDXkUIE/EkQhhQDHjnm
+         02/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775984196; x=1776588996;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=EbDgrbrkQIZIzHMqS4zyFwb8jbE/7QCDRz8zhtNheE4=;
-        b=R151ecpTiyp47REnaLdKcNU3WJjXA3LfwHY6SLV1O4tZETKay+fwNtCcxatT+RGAHT
-         iYemy+ocG9PrHCsSY1rnHqYlcAMiLy1bFgY+/0it3ESpDlFP17ukcvUmE/hWTwrbTn3j
-         SIjwml7FBQ2Ay54d+IbCXVVtZhnC5gt/dqboIF7QGdN7DaDuAHwe6k8GCx59WzgHoxm2
-         w5KVGys2vU16CC+rF7RDky8WHvO1qV1eZCjXsPjIgwdKc2KTtOYGKfqVlk0vw+HyOEBe
-         rTGywYVLk/6fi5Rqup0RAjCw44uIeoilHyukmz4XUlpkC2hR2XX49ZU9zKZmL1+e20qG
-         aHig==
-X-Forwarded-Encrypted: i=1; AJvYcCVoYuo8ee1C1xUmesA0g8l7ncLBrAPLvP//I1vzx70WuuqsOzdMjM9nSpxPimT0nT1LBHldZZEnLTfweQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0YxB9JZ41iScGocAOmuYVyGE5k41ts3iWIt2S5dvqxzsVYX77jPW
-	LB5lNOi3soJ9y95nYVlzTZzU0a8DdSoAOX1hWjVqRXE1NUOJ363WgSEj
-X-Gm-Gg: AeBDievC9SJI1Zi9bQnc3YDqv4wR9ojgbLhHcVgxkDpcmG5AaTGmn0Ep72GfU5RlgBQ
-	encxmgowtvsYX2GIILLLizlT4PeIKG/DDSnjm07D3XbHo+qyqFR4W03kyWmwJTW4r0Uxid/5sjk
-	5T+QJkkH5zs9pJ8WEK6A5kLElwNg2fCOsvE6XDmahUn8cRyXU8j9pe63aoCwWQ72GhS0EggodQF
-	PNOYA51NB6XFvTy1jhYdPIA2Tv/WGZBfyQ4NEjTvQlGTQy5KrKb7lrZjX50H70PmDynAFwKdZFr
-	RtlXx8b1/WVTURyn7jJTpjULEse3xWY8/THWJfNFY8KoCL9moBQO+hWtBhbL1LvhMFmenCGsH0c
-	vKMiw8+8vy/HQbaXGefVR9tZirt/8VxfFAbrX3hwAU+q18lr+aHoqVqyR4GBQ7fZjm82NEqBauZ
-	Qf0Hgqfv2WVwVds44GqUVZg4UaDB2ZZ1qYT/XcC+RCvBpbhYgg8/v2K3pPkE9binhjkWJ/NKOw6
-	SrLuw==
-X-Received: by 2002:a05:600c:698d:b0:487:22ad:403e with SMTP id 5b1f17b1804b1-488d6ac9ce5mr126951995e9.14.1775984195334;
-        Sun, 12 Apr 2026 01:56:35 -0700 (PDT)
-Received: from localhost (brnt-04-b2-v4wan-170138-cust2432.vm7.cable.virginm.net. [94.175.9.129])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488d532ed4dsm197923925e9.4.2026.04.12.01.56.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Apr 2026 01:56:34 -0700 (PDT)
-Date: Sun, 12 Apr 2026 09:56:33 +0100
-From: Stafford Horne <shorne@gmail.com>
-To: Thomas Gleixner <tglx@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, Jonas Bonn <jonas@southpole.se>,
-	linux-openrisc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-	x86@kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
-	iommu@lists.linux.dev,
-	Michael Grzeschik <m.grzeschik@pengutronix.de>,
-	netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	linux-crypto@vger.kernel.org, Vlastimil Babka <vbabka@kernel.org>,
-	linux-mm@kvack.org, David Woodhouse <dwmw2@infradead.org>,
-	Bernie Thompson <bernie@plugable.com>, linux-fbdev@vger.kernel.org,
-	Theodore Tso <tytso@mit.edu>, linux-ext4@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Uladzislau Rezki <urezki@gmail.com>, Marco Elver <elver@google.com>,
-	Dmitry Vyukov <dvyukov@google.com>, kasan-dev@googlegroups.com,
-	Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-	Thomas Sailer <t.sailer@alumni.ethz.ch>, linux-hams@vger.kernel.org,
-	"Jason A. Donenfeld" <Jason@zx2c4.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	linux-alpha@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-	linux-arm-kernel@lists.infradead.org,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Huacai Chen <chenhuacai@kernel.org>, loongarch@lists.linux.dev,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	linux-m68k@lists.linux-m68k.org, Dinh Nguyen <dinguyen@kernel.org>,
-	Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	linuxppc-dev@lists.ozlabs.org, Paul Walmsley <pjw@kernel.org>,
-	linux-riscv@lists.infradead.org, Heiko Carstens <hca@linux.ibm.com>,
-	linux-s390@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-	sparclinux@vger.kernel.org
-Subject: Re: [patch 30/38] openrisc: Select ARCH_HAS_RANDOM_ENTROPY
-Message-ID: <adteQSw8c65MtX5l@antec>
-References: <20260410120044.031381086@kernel.org>
- <20260410120319.593798781@kernel.org>
+        d=1e100.net; s=20251104; t=1775996098; x=1776600898;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=n8iQpCJ/FfGE5FcvJpReMEpmvPRCcp/ylO54INw8XPk=;
+        b=OLpiXDxZ9SJHX5H2RHH9+wAQTg3V4Th2ax5qmxYg+vkzpFO3qEcDf+HynqhCVoMMYo
+         A/ziRW03FMqCA5OZJJ/kWU9/B3V5xCnEsJcHXMPSjQT9Q5ZrHczacqWQsxzqCrQEAIwg
+         PHIMYyntIA1zeAwS/H4uALNy21MqVstRGxkN0JSbCDoR5IGu4uOI2NUqUQ8xXt+4HLnE
+         Dy/FQi5njxWoaHIOfSSWHZyQB6vHvLnCttus4cDIyMmv+HuAgYB1DoYUbmQg0Ijki4jg
+         bRqqWaZr4lyUgkfTOIRZpmLrFBE8LeGcndzSKJQPkIv2XHpLnE2lh1QnO0kIyUvKEJH2
+         CnuA==
+X-Gm-Message-State: AOJu0YyFpvtj+zMGd+s8WoqORnwuypb5Qt4VQYRts1l8QO3mGuBYqgmb
+	o8W074mZH1alOAUlvP3xBx3gLoJR1HE5sc/eqnK+Z2Mbjsmnk+fRI0OZckXhDKn63nFA1mKC6A0
+	mL5k5DQzscn12BgJPO5Alc2y4TFHN6PvOyYE8
+X-Gm-Gg: AeBDieuUxlWVCw59hPlHqi9MAQB3PmjrqKrGhf4UYUP+/VGn+xt3azfywHmJZNEp3kG
+	i6xEudFxl0uSRWIOOSdiStIWDM5GCqsSdK1Z9wSYBSoc9HDrNu7uEKgDfayrmhIAxNxyXgZ7/Hb
+	z1foTsK/+N52/9cUZC1cMJwMP9ZSpkylwFEAetys7UQ3bBBn5kJlnDvy5WnsJYOPpinEELw62on
+	SLgFWB9Re6NDX+FMQ+e3ybmSPugTjyuKP+6cMhSTLzyKL7aw1cYlxHmUYM9ow+QlZrWwmNKtyM0
+	P0r6VCG5lqxtIhZevqRN/lwp4HSfgmlJ+/lnrtxI
+X-Received: by 2002:a17:907:6d08:b0:b9c:c855:d93e with SMTP id
+ a640c23a62f3a-b9d72657330mr472292666b.29.1775996097349; Sun, 12 Apr 2026
+ 05:14:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260410120319.593798781@kernel.org>
+References: <20260403150730.490272-1-mattst88@gmail.com>
+In-Reply-To: <20260403150730.490272-1-mattst88@gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sun, 12 Apr 2026 14:14:45 +0200
+X-Gm-Features: AQROBzA-x3tl_SXukoviaWV-WiWElTGZfNaxtqkp8Xz-QGNirtg4JF1p8dDs6so
+Message-ID: <CA+=Fv5TYDKQRo8mBd0XhFE2PwHqMHFG1qD=RxSLYZ7qUEbs4Aw@mail.gmail.com>
+Subject: Re: [PATCH] alpha: Add PTRACE_GETREGSET/PTRACE_SETREGSET support
+To: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 10, 2026 at 02:20:55PM +0200, Thomas Gleixner wrote:
-> The only remaining non-architecture usage of get_cycles() is to provide
-> random_get_entropy().
-> 
-> Switch openrisc over to the new scheme of selecting ARCH_HAS_RANDOM_ENTROPY
-> and providing random_get_entropy() in asm/random.h.
-> 
-> Add 'asm/timex.h' includes to the relevant files, so the global include can
-> be removed once all architectures are converted over.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@kernel.org>
-> Cc: Jonas Bonn <jonas@southpole.se>
-> Cc: linux-openrisc@vger.kernel.org
-
-This looks good to me.
-
-Acked-by: Stafford Horne <shorne@gmail.com>
-
+On Fri, Apr 3, 2026 at 5:07=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
+te:
+>
+> Enable HAVE_ARCH_TRACEHOOK and implement task_user_regset_view() to
+> provide regset-based register access on Alpha. This adds support for
+> PTRACE_GETREGSET and PTRACE_SETREGSET, which are handled by the
+> generic ptrace_request() path.
+>
+> Two regsets are defined:
+>   - REGSET_GENERAL (NT_PRSTATUS): 33 registers (32 GPRs + unique),
+>     matching the existing elf_gregset_t layout used by dump_elf_thread()
+>   - REGSET_FPU (NT_PRFPREG): 32 floating-point registers from
+>     thread_info->fp[]
+>
+> Also implement the full set of syscall accessor functions in
+> asm/syscall.h and user_stack_pointer() in asm/ptrace.h, which are
+> required by the generic PTRACE_GET_SYSCALL_INFO code that
+> HAVE_ARCH_TRACEHOOK enables.
+>
+> Assisted-by: Claude:claude-opus-4-6
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
 > ---
->  arch/openrisc/Kconfig              |    1 +
->  arch/openrisc/include/asm/random.h |   12 ++++++++++++
->  arch/openrisc/include/asm/timex.h  |    5 -----
->  arch/openrisc/lib/delay.c          |    1 +
->  4 files changed, 14 insertions(+), 5 deletions(-)
-> 
-> --- a/arch/openrisc/Kconfig
-> +++ b/arch/openrisc/Kconfig
-> @@ -10,6 +10,7 @@ config OPENRISC
->  	select ARCH_HAS_DELAY_TIMER
->  	select ARCH_HAS_DMA_SET_UNCACHED
->  	select ARCH_HAS_DMA_CLEAR_UNCACHED
-> +	select ARCH_HAS_RANDOM_ENTROPY
->  	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
->  	select GENERIC_BUILTIN_DTB
->  	select COMMON_CLK
-> --- /dev/null
-> +++ b/arch/openrisc/include/asm/random.h
-> @@ -0,0 +1,12 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +#ifndef __ASM_OPENRISC_RANDOM_H
-> +#define __ASM_OPENRISC_RANDOM_H
-> +
-> +#include <asm/timex.h>
-> +
-> +static inline unsigned long random_get_entropy(void)
-> +{
-> +	return get_cycles();
-> +}
-> +
-> +#endif
-> --- a/arch/openrisc/include/asm/timex.h
-> +++ b/arch/openrisc/include/asm/timex.h
-> @@ -9,13 +9,9 @@
->   * OpenRISC implementation:
->   * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
->   */
-> -
->  #ifndef __ASM_OPENRISC_TIMEX_H
->  #define __ASM_OPENRISC_TIMEX_H
->  
-> -#define get_cycles get_cycles
-> -
-> -#include <asm-generic/timex.h>
->  #include <asm/spr.h>
->  #include <asm/spr_defs.h>
->  
-> @@ -23,6 +19,5 @@ static inline cycles_t get_cycles(void)
->  {
->  	return mfspr(SPR_TTCR);
->  }
-> -#define get_cycles get_cycles
->  
->  #endif
-> --- a/arch/openrisc/lib/delay.c
-> +++ b/arch/openrisc/lib/delay.c
-> @@ -18,6 +18,7 @@
->  #include <linux/init.h>
->  
->  #include <asm/param.h>
-> +#include <asm/timex.h>
->  #include <asm/processor.h>
->  
->  bool delay_read_timer(unsigned long *timer_value)
-> 
-> 
+> This is an implementation of PTRACE_{G,S}ETREGSET using the standard
+> infrastructure.
+>
+>  arch/alpha/Kconfig               |   1 +
+>  arch/alpha/include/asm/ptrace.h  |  12 +++
+>  arch/alpha/include/asm/syscall.h |  67 ++++++++++++++-
+>  arch/alpha/kernel/ptrace.c       | 137 +++++++++++++++++++++++++++++++
+>  4 files changed, 215 insertions(+), 2 deletions(-)
+>
+
+Thanks for working on this, this is a really useful step
+towards getting Alpha onto the generic ptrace/regset
+infrastructure.
+
+I=E2=80=99ve been comparing this with parallel patch series:
+
+- alpha: enable regset-based ptrace and core dumps:
+https://git.kernel.org/pub/scm/linux/kernel/git/lindholm/alpha.git/log/?h=
+=3Dentry
+
+- SECCOMPv3:
+https://lore.kernel.org/linux-alpha/20260409171439.8759-2-linmag7@gmail.com=
+/
+
+
+Especially what I=E2=80=99ve been referring to as the SECCOMPv3
+patch, and I think the cleanest way forward upstream
+would be to stage this a bit differently.
+
+In particular, I would suggest:
+
+  1. First let the SECCOMPv3 patch land upstream.
+
+     That patch establishes the new syscall register model
+     (r1 =3D current nr, r2 =3D original nr, r0 =3D return value,
+     r19 =3D error flag) and provides the syscall accessors
+     expected by generic code.
+
+  2. Then rework this patch on top of that new baseline.
+
+     As it stands, this patch assumes the old Alpha syscall
+     conventions (e.g. syscall nr in r0, no rollback state,
+     etc.), which will conflict semantically once the
+     SECCOMPv3 changes are merged.
+
+     In particular, the asm/syscall.h additions here should
+     be aligned with (or dropped in favour of) the
+     SECCOMPv3 definitions, so that:
+
+       - syscall_get_nr() uses r1
+       - syscall_set_nr() updates r1
+       - syscall_rollback() restores r1 from r2
+       - return/error handling matches the r0/r19 contract
+
+     My suggestion would be to avoid duplicating that logic
+     here entirely and instead rely on the SECCOMPv3 version,
+     only adding anything that is still missing for
+     PTRACE_GET_SYSCALL_INFO.
+
+  3. Keep this patch focused on ptrace/regset enablement.
+
+     The regset pieces (task_user_regset_view(), GPR/FPR
+     sets, etc.) look like a good fit for the generic
+     ptrace_request() path once HAVE_ARCH_TRACEHOOK is
+     enabled.
+
+     For now, we would leave out the ELF core dump changes
+     from the other series and handle those as a follow-up
+     once the ptrace side is settled.
+
+  4. One open point is how we want to handle the user stack
+     pointer (USP).
+
+     This patch derives USP from thread_info/PCB, while the
+     other series snapshots it into pt_regs. It would be
+     good to settle on one model before merging regset
+     support, as it affects user_stack_pointer() and the
+     GPR regset layout. Either approach is workable
+     as long as it is consistent.
+
+I think structuring it this way gives a clear
+upstream story:
+
+  - SECCOMPv3: establish new syscall state
+  - this patch (reworked): enable regset-based ptrace
+  - later: possibly switch ELF core dumps to regsets
+
+Any thought on this approach?
+
+Magnus Lindholm
