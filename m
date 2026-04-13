@@ -1,128 +1,206 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A59E72D3A69;
-	Mon, 13 Apr 2026 11:59:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 517933CA4A6;
+	Mon, 13 Apr 2026 13:03:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=160.30.148.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776081573; cv=none; b=g9ES0EKhMKkIUvTvNmU+hgjjSAkLVXOV1AS/MzT5+5BqudyW/ZYd6kKQg9Vk7uoisblYtsDAu7PFltGMnTPH9jpaBOpQqO+GAR/ZU958L4iL5nnp0C5TTblnvYC6SPth0AexTch5Zmw7A2Uh/w3NbzkQ+z4TbVUhXvr2kr9z8uE=
+	t=1776085383; cv=none; b=bwTHW/tkxY99tCwHUoJHgwpZjOo9A4zphWbzXQFy0xtA7LtE2/PHO1efJ1LD+FjrcqUYN4wmN8mwVemBWTxUOwUARtUUPAfmUc2U5/3KXlt4tN8Ag06OSFV/i1ujLw2Ka7S8QY8lALOq/meKjp99DeWScs8GUZysYV9QMRgJy4w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776081573; c=relaxed/simple;
-	bh=XjCiDo9y+OHrVQDJKUrYSIpvMP1U6UUn5n4372Stk5c=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=tGLdyYwRyECKjsEvlLS5LRAWAJP8h3aKxyO+l0IT0dwxepEmXf3J/eSi4jCuYEpzlunGt8Tm8UP44ubEXG28jUAe7++ewfilfOVKxgVhs7wxKHSP0BOeyiTSsDZrfpYDx5Q9dR8207fuZE+bP+Oy9rtqkpiMyA4VDWXJTRSn6Y8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=F+7FwymM; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F+7FwymM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1776081573; x=1807617573;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=XjCiDo9y+OHrVQDJKUrYSIpvMP1U6UUn5n4372Stk5c=;
-  b=F+7FwymMvCsIaEKXr/DA8heqhpka18pCpxDdg60fZFjw+u/hANFEy+aQ
-   nm4DZkpa4bX+1XXXuefDQ2a6oepQlFNhhhS26iBdKbMik9uTbTVP3vO+K
-   TryXJ0hergcGsI4qbuuM7D37Pe3nXuR2CugugG8DlaOHWYUtYI3EEJ74t
-   IieL1mROPhUq199A5XfHGHAIkNEmVL9QssaWsg9g622+2V7CVxuBPhA/G
-   xIuma8x414O/8Am2Pch0oplg73c4457A86RF9tbjXYZwEgoTetBqJ+N9C
-   5j50TdfGm+KC0UhYOYP2ZZe4Y/LhGnITVrZxDvZJbd2WuqByPc2ylxnL7
-   Q==;
-X-CSE-ConnectionGUID: NEsLwy3zSc2MWdXv4HNfyQ==
-X-CSE-MsgGUID: jz0r2Gi/Q6ar4Y2tzuvqOA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11757"; a="88088835"
-X-IronPort-AV: E=Sophos;i="6.23,177,1770624000"; 
-   d="scan'208";a="88088835"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2026 04:59:32 -0700
-X-CSE-ConnectionGUID: AWmqfKN+SAKDaoql7UTAbw==
-X-CSE-MsgGUID: 0dDCkOLFShWVnJktOyq7nQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,177,1770624000"; 
-   d="scan'208";a="226597919"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.63])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Apr 2026 04:59:23 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 13 Apr 2026 14:59:19 +0300 (EEST)
-To: =?ISO-8859-2?Q?Krzysztof_Wilczy=F1ski?= <kwilczynski@kernel.org>
-cc: Bjorn Helgaas <bhelgaas@google.com>, Bjorn Helgaas <helgaas@kernel.org>, 
-    Manivannan Sadhasivam <mani@kernel.org>, 
-    Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-    Magnus Lindholm <linmag7@gmail.com>, Matt Turner <mattst88@gmail.com>, 
-    Richard Henderson <richard.henderson@linaro.org>, 
-    Christophe Leroy <chleroy@kernel.org>, 
-    Madhavan Srinivasan <maddy@linux.ibm.com>, 
-    Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-    Dexuan Cui <decui@microsoft.com>, 
-    =?ISO-8859-2?Q?Krzysztof_Ha=B3asa?= <khalasa@piap.pl>, 
-    Lukas Wunner <lukas@wunner.de>, Oliver O'Halloran <oohall@gmail.com>, 
-    Saurabh Singh Sengar <ssengar@microsoft.com>, 
-    Shuan He <heshuan@bytedance.com>, 
-    Srivatsa Bhat <srivatsabhat@microsoft.com>, linux-pci@vger.kernel.org, 
-    linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v4 20/24] PCI: Add macros for legacy I/O and memory
- address space sizes
-In-Reply-To: <20260411080148.471335-21-kwilczynski@kernel.org>
-Message-ID: <a73af6f4-9f9a-cff8-e00e-042dcf934708@linux.intel.com>
-References: <20260411080148.471335-1-kwilczynski@kernel.org> <20260411080148.471335-21-kwilczynski@kernel.org>
+	s=arc-20240116; t=1776085383; c=relaxed/simple;
+	bh=EaqCVYb3mYfVBkGOFXvjwb/3rY9FtA9tCj0m3HXl1VM=;
+	h=Message-ID:In-Reply-To:References:Date:Mime-Version:From:To:Cc:
+	 Subject:Content-Type; b=E2FS0Mr44aeB66UkFZZ48HBwLHb5fdRBLmTQBxQVz5NXFeYCHKayBV+YvqzRMyLWWMZotdcE8UVuOqgnJWdgvSquHcamJwPcAlejOKjwDI3H3z1zYaykGK886Psv5TPOdGgdFb8ePR7Cxzxv0mzvy+YwqZTUZXgT6Hqx4CVxngs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn; spf=pass smtp.mailfrom=zte.com.cn; arc=none smtp.client-ip=160.30.148.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zte.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zte.com.cn
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4fvSJ26Vzyz8Xs70;
+	Mon, 13 Apr 2026 21:02:58 +0800 (CST)
+Received: from xaxapp05.zte.com.cn ([10.99.98.109])
+	by mse-fl2.zte.com.cn with SMTP id 63DD2n3P010875;
+	Mon, 13 Apr 2026 21:02:49 +0800 (+08)
+	(envelope-from hu.shengming@zte.com.cn)
+Received: from mapi (xaxapp01[null])
+	by mapi (Zmail) with MAPI id mid32;
+	Mon, 13 Apr 2026 21:02:52 +0800 (CST)
+X-Zmail-TransId: 2af969dce97c49e-2c715
+X-Mailer: Zmail v1.0
+Message-ID: <20260413210252672ZfdcegJLJtyvlYdFAUBlr@zte.com.cn>
+In-Reply-To: <adyyNeVTkXQlnh_2@hyeyoo>
+References: 20260410120044.031381086@kernel.org,20260410120318.525653921@kernel.org,adyyNeVTkXQlnh_2@hyeyoo
+Date: Mon, 13 Apr 2026 21:02:52 +0800 (CST)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323328-972594317-1776081516=:962"
-Content-ID: <ad975c4c-2f7e-f46a-75e8-090fb701efc6@linux.intel.com>
+Mime-Version: 1.0
+From: <hu.shengming@zte.com.cn>
+To: <harry@kernel.org>
+Cc: <tglx@kernel.org>, <linux-kernel@vger.kernel.org>, <vbabka@kernel.org>,
+        <linux-mm@kvack.org>, <arnd@arndb.de>, <x86@kernel.org>,
+        <baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>,
+        <m.grzeschik@pengutronix.de>, <netdev@vger.kernel.org>,
+        <linux-wireless@vger.kernel.org>, <herbert@gondor.apana.org.au>,
+        <linux-crypto@vger.kernel.org>, <dwmw2@infradead.org>,
+        <bernie@plugable.com>, <linux-fbdev@vger.kernel.org>, <tytso@mit.edu>,
+        <linux-ext4@vger.kernel.org>, <akpm@linux-foundation.org>,
+        <urezki@gmail.com>, <elver@google.com>, <dvyukov@google.com>,
+        <kasan-dev@googlegroups.com>, <ryabinin.a.a@gmail.com>,
+        <t.sailer@alumni.ethz.ch>, <linux-hams@vger.kernel.org>,
+        <Jason@zx2c4.com>, <richard.henderson@linaro.org>,
+        <linux-alpha@vger.kernel.org>, <linux@armlinux.org.uk>,
+        <linux-arm-kernel@lists.infradead.org>, <catalin.marinas@arm.com>,
+        <chenhuacai@kernel.org>, <loongarch@lists.linux.dev>,
+        <geert@linux-m68k.org>, <linux-m68k@lists.linux-m68k.org>,
+        <dinguyen@kernel.org>, <jonas@southpole.se>,
+        <linux-openrisc@vger.kernel.org>, <deller@gmx.de>,
+        <linux-parisc@vger.kernel.org>, <mpe@ellerman.id.au>,
+        <linuxppc-dev@lists.ozlabs.org>, <pjw@kernel.org>,
+        <linux-riscv@lists.infradead.org>, <hca@linux.ibm.com>,
+        <linux-s390@vger.kernel.org>, <davem@davemloft.net>,
+        <sparclinux@vger.kernel.org>, <hao.li@linux.dev>, <cl@gentwo.org>,
+        <rientjes@google.com>, <roman.gushchin@linux.dev>
+Subject: =?UTF-8?B?UmU6IFtwYXRjaCAxNC8zOF0gc2x1YjogVXNlIHByYW5kb20gaW5zdGVhZCBvZiBnZXRfY3ljbGVzKCk=?=
+Content-Type: text/plain;
+	charset="UTF-8"
+X-MAIL:mse-fl2.zte.com.cn 63DD2n3P010875
+X-TLS: YES
+X-SPF-DOMAIN: zte.com.cn
+X-ENVELOPE-SENDER: hu.shengming@zte.com.cn
+X-SPF: None
+X-SOURCE-IP: 10.5.228.133 unknown Mon, 13 Apr 2026 21:02:58 +0800
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 69DCE982.001/4fvSJ26Vzyz8Xs70
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Harry wrote:
+> [Resending after fixing broken email headers]
+> 
+> On Fri, Apr 10, 2026 at 02:19:37PM +0200, Thomas Gleixner wrote:
+> > The decision whether to scan remote nodes is based on a 'random' number
+> > retrieved via get_cycles(). get_cycles() is about to be removed.
+> > 
+> > There is already prandom state in the code, so use that instead.
+> > 
+> > Signed-off-by: Thomas Gleixner <tglx@kernel.org>
+> > Cc: Vlastimil Babka <vbabka@kernel.org>
+> > Cc: linux-mm@kvack.org
+> > ---
+> 
+> Acked-by: Harry Yoo (Oracle) <harry@kernel.org>
+> 
+> Is this for this merge window?
+> 
+> This may conflict with upcoming changes on freelist shuffling [1]
+> (not queued for slab/for-next yet though), but it should be easy to
+> resolve.
+> 
 
---8323328-972594317-1776081516=:962
-Content-Type: text/plain; CHARSET=ISO-8859-2
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Content-ID: <061d9599-649d-f8aa-2b31-8fe5344029e1@linux.intel.com>
+Hi Harry,
 
-On Sat, 11 Apr 2026, Krzysztof Wilczy=F1ski wrote:
+Would you like me to wait for this patch to land linux-next and then
+rebase and send v6 on top?
 
-> Add defines for the standard PCI legacy address space sizes,
-> replacing the raw literals used by the legacy sysfs attributes.
->=20
-> Suggested-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-> Signed-off-by: Krzysztof Wilczy=F1ski <kwilczynski@kernel.org>
-> ---
->  include/linux/pci.h | 5 +++++
->  1 file changed, 5 insertions(+)
->=20
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index f6f55005f82d..6b630bac8c08 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -27,6 +27,7 @@
->  #include <linux/mod_devicetable.h>
-> =20
->  #include <linux/types.h>
-> +#include <linux/sizes.h>
->  #include <linux/init.h>
->  #include <linux/ioport.h>
->  #include <linux/list.h>
-> @@ -1167,6 +1168,10 @@ enum {
->  /* These external functions are only available when PCI support is enabl=
-ed */
->  #ifdef CONFIG_PCI
-> =20
-> +/* PCI legacy I/O port and memory address space sizes. */
-> +#define PCI_LEGACY_IO_SIZE=09(SZ_64K - 1)
-> +#define PCI_LEGACY_MEM_SIZE=09SZ_1M
-> +
->  extern unsigned int pci_flags;
-> =20
->  static inline void pci_set_flags(int flags) { pci_flags =3D flags; }
->=20
+Thanks,
 
-Shouldn't this also convert the use in pci-sysfs.c (which you now mixed=20
-into the static attrs conversion patch)?
+--
+With Best Regards,
+Shengming
 
---=20
- i.
---8323328-972594317-1776081516=:962--
+> [Cc'ing Shengming and SLAB ALLOCATOR folks]
+> [1] https://lore.kernel.org/linux-mm/20260409204352095kKWVYKtZImN59ybO6iRNj@zte.com.cn
+> 
+> -- 
+> Cheers,
+> Harry / Hyeonggon
+> 
+> >  mm/slub.c |   37 +++++++++++++++++++++++--------------
+> >  1 file changed, 23 insertions(+), 14 deletions(-)
+> > 
+> > --- a/mm/slub.c
+> > +++ b/mm/slub.c
+> > @@ -3302,6 +3302,25 @@ static inline struct slab *alloc_slab_pa
+> >      return slab;
+> >  }
+> >  
+> > +#if defined(CONFIG_SLAB_FREELIST_RANDOM) || defined(CONFIG_NUMA)
+> > +static DEFINE_PER_CPU(struct rnd_state, slab_rnd_state);
+> > +
+> > +static unsigned int slab_get_prandom_state(unsigned int limit)
+> > +{
+> > +    struct rnd_state *state;
+> > +    unsigned int res;
+> > +
+> > +    /*
+> > +     * An interrupt or NMI handler might interrupt and change
+> > +     * the state in the middle, but that's safe.
+> > +     */
+> > +    state = &get_cpu_var(slab_rnd_state);
+> > +    res = prandom_u32_state(state) % limit;
+> > +    put_cpu_var(slab_rnd_state);
+> > +    return res;
+> > +}
+> > +#endif
+> > +
+> >  #ifdef CONFIG_SLAB_FREELIST_RANDOM
+> >  /* Pre-initialize the random sequence cache */
+> >  static int init_cache_random_seq(struct kmem_cache *s)
+> > @@ -3365,8 +3384,6 @@ static void *next_freelist_entry(struct
+> >      return (char *)start + idx;
+> >  }
+> >  
+> > -static DEFINE_PER_CPU(struct rnd_state, slab_rnd_state);
+> > -
+> >  /* Shuffle the single linked freelist based on a random pre-computed sequence */
+> >  static bool shuffle_freelist(struct kmem_cache *s, struct slab *slab,
+> >                   bool allow_spin)
+> > @@ -3383,15 +3400,7 @@ static bool shuffle_freelist(struct kmem
+> >      if (allow_spin) {
+> >          pos = get_random_u32_below(freelist_count);
+> >      } else {
+> > -        struct rnd_state *state;
+> > -
+> > -        /*
+> > -         * An interrupt or NMI handler might interrupt and change
+> > -         * the state in the middle, but that's safe.
+> > -         */
+> > -        state = &get_cpu_var(slab_rnd_state);
+> > -        pos = prandom_u32_state(state) % freelist_count;
+> > -        put_cpu_var(slab_rnd_state);
+> > +        pos = slab_get_prandom_state(freelist_count);
+> >      }
+> >  
+> >      page_limit = slab->objects * s->size;
+> > @@ -3882,7 +3891,7 @@ static void *get_from_any_partial(struct
+> >       * with available objects.
+> >       */
+> >      if (!s->remote_node_defrag_ratio ||
+> > -            get_cycles() % 1024 > s->remote_node_defrag_ratio)
+> > +        slab_get_prandom_state(1024) > s->remote_node_defrag_ratio)
+> >          return NULL;
+> >  
+> >      do {
+> > @@ -7102,7 +7111,7 @@ static unsigned int
+> >  
+> >      /* see get_from_any_partial() for the defrag ratio description */
+> >      if (!s->remote_node_defrag_ratio ||
+> > -            get_cycles() % 1024 > s->remote_node_defrag_ratio)
+> > +        slab_get_prandom_state(1024) > s->remote_node_defrag_ratio)
+> >          return 0;
+> >  
+> >      do {
+> > @@ -8421,7 +8430,7 @@ void __init kmem_cache_init_late(void)
+> >      flushwq = alloc_workqueue("slub_flushwq", WQ_MEM_RECLAIM | WQ_PERCPU,
+> >                    0);
+> >      WARN_ON(!flushwq);
+> > -#ifdef CONFIG_SLAB_FREELIST_RANDOM
+> > +#if defined(CONFIG_SLAB_FREELIST_RANDOM) || defined(CONFIG_NUMA)
+> >      prandom_init_once(&slab_rnd_state);
+> >  #endif
+> >  }
+> > 
+> >
