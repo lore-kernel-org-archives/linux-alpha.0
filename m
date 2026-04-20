@@ -1,106 +1,165 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74A2E2C326C
-	for <linux-alpha@vger.kernel.org>; Mon, 20 Apr 2026 05:13:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776662004; cv=pass; b=dlqsd5wFtpp5oy88Dnb6zuHatq+HkdXUa/p+Yn4BBlPvRwpWRgWposQKVOGLGpHrYJw+Y55mERKzP2hulIK2qASKSrU6Cqw/wGpa6M3EzyjotZXXDRhAkLEiHoBmljyYfDJyamOcCrWf04tCbEOMr9JPxhB3zOiV4rdI8LcrkpQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776662004; c=relaxed/simple;
-	bh=lfk5vO9NllLo/pVyxpp8Fa5VLC89H3d8HvkuOkLm2t4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GRkkOcRdhwqN2f7NqfXFQ8qGPuD5aaqqxc64fhUP9/DPwYUEpzdetNVhaR5GwSNBdDwR1c2nYmxl8Pcm1pysK89usfLOrSyT6EL0JHjvXc7pi5d2R3NGenuX3A9B2jGWY3+XtmWNUyl0SKCN5qq/ze8WkLbrPz4guFSXY3VVOaU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HXeOOphF; arc=pass smtp.client-ip=209.85.218.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79B1E38F938;
+	Mon, 20 Apr 2026 09:47:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776678440; cv=none; b=VfGshn/FHpTyHHcA7EgjvAjImh0oBhC7I0Y5M+AVJgqhKWmYUEYQptblrQCWEpeRxmkTn5DeUWFCuw7A9qceAyS4dPQZsf8+DS/vryDcDTFCel5pT2dYZrJfKfu0ziV8l2078cb8o0jalG/hWiAu/gNmtpDrWEAqBwYols5VUlo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776678440; c=relaxed/simple;
+	bh=JFSro+t5cfTihkk1XTLSii/7TZW36jeEtaup6yNEuCs=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=iy786GrkyOj4AJM2oMlniky3ceMBk5mbP4qWy0cWpEHnjH6E76ucq1LNQeqXplzBFBe/j/jvqNkZHUFyvCk1OsKw5EOKCp58VpKB9RiWm+Tr5kZjl+bEhi1IX3oxnbUCCiqOZfh58Rc/k4YpYd+mRkROwN/XaePd0Ql2OYEDvVk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IeTpZsJK; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HXeOOphF"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b9d6c8871c7so508300166b.1
-        for <linux-alpha@vger.kernel.org>; Sun, 19 Apr 2026 22:13:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1776662002; cv=none;
-        d=google.com; s=arc-20240605;
-        b=DX0hVvn9bACTHfPULx20UG4un7/QQjIg/IA9xRO7rIdUFS82KFc/QtqV0QXsQnG6N0
-         Tjnwmp1o2vcRzlD00QItdsrkO56QprP1ya6DAaYw7vGOgzKbfVfltbHyL/ZzlComQmVb
-         01mIOUpUGBL1mCvLG3QfXneanJheBWZUt1Qia4sX6AVAZvTZz1lty+MfG1NxxhR6of/k
-         BaZ8Wxzw5XsIe++6JZYzl2whnz2P6u9tCzntCx9jKecLsByWmXlV+eAKzn35jGnCdbwa
-         4DQ6mubcthXFNIZV4sVNVzecH0cHLNnz5xYOuBq2ijYw1sqO4BvvbjyrFUB8fgMsPb7r
-         my/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=lfk5vO9NllLo/pVyxpp8Fa5VLC89H3d8HvkuOkLm2t4=;
-        fh=veQJccMlDptzM+OBUu1qOGxouoKYkfhiI0+T2cP+OGo=;
-        b=dtl7RbmdZpSz3aeCPPZyFTTw0W/kya6GQBQTZMcWFi5gp/Rq7lTw3com0Qirka1/DL
-         XPUiO1V/SsdXVamYBzZ6SwTl8t73TyAbwqadZi6IadIHl3M5Jm0b45vjxArjPMdD58pM
-         97G72d6UXq7Ns7/c36HUG6gBDuDohp26vcPz/QAqqjG2coXcr8F/cxcMG4qGiMOv//Oy
-         AGiIzyKylEqMMvIBSVYhnpXrcrKlnGklm15AlHZeXDamCQLaxbHIf6k3gx0N5DvetBec
-         VtkeZOyNkADZr7KIKjLdtGb1AOTxWIEuN8CPT+1lmai0RW+/DSkQ1BeIjjK23pAzsSPf
-         HYoQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1776662002; x=1777266802; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=lfk5vO9NllLo/pVyxpp8Fa5VLC89H3d8HvkuOkLm2t4=;
-        b=HXeOOphFynL5Onzgd2GXTVKzZ2s9SIG5DipcQ4+3xoAXGVh3Kzu4IR0UWnqOoQMzLz
-         OX2i1ysz9SW8vwpt0yIi4F1GfIwLh3SiJiBYHgr3/ZOs4OfA65o0rtdN5KE9lURtmbLP
-         tYNk5eSiI74+Xw7bsEZVqASRmvpCaOT+qO3hYHbhf3MtfmFOSWXAPDjwptq4lEOSRw7z
-         sGEakri5KGueJ8Oj1wuTvxTpcu/CF2T7dvd+VlegHpoxGdiqNOVpKaLiS3lSFkDRK1i7
-         jHWpRMAPaKmIUPzhevRJm6DYoCaXAP6gOY4fav7rm8328OKQ+d7yTIVV+EaiM/VAV6cZ
-         tzlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1776662002; x=1777266802;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lfk5vO9NllLo/pVyxpp8Fa5VLC89H3d8HvkuOkLm2t4=;
-        b=oMp1Zgs0EEkUvDk6N2xXWF2AQuLGCSWjLGdWmsOowhLw3o+5pn+hSJafFayQTb5+vL
-         bkibsD+/WczJEWtwjz1F7SOzy0coPG4kZeFhH09pJGsX8p6fKtt1Q4vK8ITOj8m/DP6X
-         S7ee6FcHTl6cjfIhuK8tlwwNbU5vlGXpiHxbBgDtoZL7m1IgtF+vfHDh/GTBdl1AsDsw
-         5A6PBVeDmfiQkJbDj9PuQvj3GZgVPLvuM6cAkLnefPMDy5zgIn7fI3TKkP9Wgd+CPZJg
-         SjeGzTxRuqw+DKYfaFEYTyetOpuioHAGQIVlg0Wsqe1LIAvMwL5RGpEYkeFNudCEcqaH
-         bcwg==
-X-Forwarded-Encrypted: i=1; AFNElJ9GLj4Vc7AdH4rl/GDqGeXxoUsy1pTP2ITv8C4mrB5Wd32MJbKQM7GuIojgO84IkKgI909+4+NrF/84LA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YzALEq3+PV/hRN6t2yFvTe9VhzzNZZkFMpUI8OyyBvlA7c8FQx5
-	xlrhm5nYr00zBAM0mxVMOhAynzgHUfxg/AXqov3mrFhkIeRKxr2KZ61mUXgYKhmERhpCOKKS0bP
-	v6eTu74M4zJe0RX1MdC1Qq6Di2my15mc=
-X-Gm-Gg: AeBDiestUdabbCgIFcnvFXYM1DHEBmoboRh3rzBgKWKcmFxRSA6UsOp4JqZAktow1p7
-	m6DsX4oNfED35yCk1RcUdc9/34ALhdHGS7ILtx/fCQXVNXoCipvdDvw4v36EQq10YFVeG0SR6jN
-	MbgCK3QsZXOfLxo7KYahvRqDizwSiljPLj1aXLYuZqW6qljsLj5eCnIlD13RGUudayk1cMIyK7z
-	MIUr4V+Gf0Z+WiOqWK054r8sj+sJ/beknmT/AOfZmNxYgPPuWETQvbzE3S/+44979Q1bC3l4HnT
-	Hk3FqR6hsJ1xNY2Itxh5mYMqLF6Swtp7r31F33nUckzR3B7g3Ao=
-X-Received: by 2002:a17:907:7f9f:b0:b96:db80:ea59 with SMTP id
- a640c23a62f3a-ba41a91e004mr579706666b.28.1776662001437; Sun, 19 Apr 2026
- 22:13:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IeTpZsJK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1776678438; x=1808214438;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=JFSro+t5cfTihkk1XTLSii/7TZW36jeEtaup6yNEuCs=;
+  b=IeTpZsJKCW7gi8p6i/x7aMc+UGgnx37I2kKkCdAukGpGiJcq+kgIl4nX
+   GjGc55d4qjR5x5MUlRifk3+XdjCzk7Rel3rsXFATyd/ka8/BOhBISs44+
+   vpWbeBtptgOl17ZkSP4US42e1soe5Ut1XoOZAEKCBy7mpA0nHBz8y5CWj
+   E6+WvPimyRhJyzhzJ5J+cMewIkj8ReXs5PW6pn92cz6gxU7j0Ij5Iyx3c
+   6dsEU7L7Ec8YS9LFAB4Bcoais7e7uvrazVmsmShvqceNwuvWEBTJeXGaH
+   6l2cmS2Xp1xiPOxOtVUaD21UVinl9zlyTX/iQa7NvWFBkXoWYVGl9YjPn
+   g==;
+X-CSE-ConnectionGUID: lAckB8XuQ/CNgZ09Vr86Vw==
+X-CSE-MsgGUID: R43JPxmETXKq574wT1f1cg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11762"; a="94991940"
+X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
+   d="scan'208";a="94991940"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 02:47:17 -0700
+X-CSE-ConnectionGUID: Cq4LhFZUQ5GSWTu6mUchiA==
+X-CSE-MsgGUID: Dh4SzLQpS522PYXnc5DLtQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,189,1770624000"; 
+   d="scan'208";a="231547815"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.150])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2026 02:47:10 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Mon, 20 Apr 2026 12:47:06 +0300 (EEST)
+To: =?ISO-8859-2?Q?Krzysztof_Wilczy=F1ski?= <kwilczynski@kernel.org>
+cc: Bjorn Helgaas <bhelgaas@google.com>, Bjorn Helgaas <helgaas@kernel.org>, 
+    Manivannan Sadhasivam <mani@kernel.org>, 
+    Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+    Magnus Lindholm <linmag7@gmail.com>, Matt Turner <mattst88@gmail.com>, 
+    Richard Henderson <richard.henderson@linaro.org>, 
+    Christophe Leroy <chleroy@kernel.org>, 
+    Madhavan Srinivasan <maddy@linux.ibm.com>, 
+    Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+    Dexuan Cui <decui@microsoft.com>, 
+    =?ISO-8859-2?Q?Krzysztof_Ha=B3asa?= <khalasa@piap.pl>, 
+    Lukas Wunner <lukas@wunner.de>, Oliver O'Halloran <oohall@gmail.com>, 
+    Saurabh Singh Sengar <ssengar@microsoft.com>, 
+    Shuan He <heshuan@bytedance.com>, 
+    Srivatsa Bhat <srivatsabhat@microsoft.com>, linux-pci@vger.kernel.org, 
+    linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v4 07/24] PCI/sysfs: Convert PCI resource files to static
+ attributes
+In-Reply-To: <20260417114912.GD1625998@rocinante>
+Message-ID: <4083baf4-c1f3-e3a7-12f9-f1936b6fc803@linux.intel.com>
+References: <20260411080148.471335-1-kwilczynski@kernel.org> <20260411080148.471335-8-kwilczynski@kernel.org> <eca4c119-65a8-ac84-3869-4064aa1f0829@linux.intel.com> <20260417114912.GD1625998@rocinante>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260203063357.14320-1-linmag7@gmail.com> <202602041817.3967F048D@keescook>
- <CA+=Fv5S=XxDyNFdqhR3p_wEPwGEpjfE+Rqk1h1JJhactWFib_Q@mail.gmail.com>
-In-Reply-To: <CA+=Fv5S=XxDyNFdqhR3p_wEPwGEpjfE+Rqk1h1JJhactWFib_Q@mail.gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Mon, 20 Apr 2026 07:13:09 +0200
-X-Gm-Features: AQROBzBeXCArrE6jx0ALcUOGLkKhbjvGqyfUr2n94u-mLQvH1UXdJXQ9JFoCbsA
-Message-ID: <CA+=Fv5SZK0eaT5Y_a-eTdZacFEcp36rF1YE=tyooDuVpZW=uOw@mail.gmail.com>
-Subject: Re: [PATCH] selftests/seccomp: add Alpha support to seccomp_bpf
-To: Kees Cook <kees@kernel.org>
-Cc: luto@amacapital.net, wad@chromium.org, shuah@kernel.org, 
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, glaubitz@physik.fu-berlin.de
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="8323328-1542172744-1776678426=:961"
 
-Hi,
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Alpha support for SECCOMP and SECCOMP_FILTER was just merged into Linus' tree.
+--8323328-1542172744-1776678426=:961
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
-See: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/arch/alpha?id=55b22075f7840ef48254886758976531fe146609
+On Fri, 17 Apr 2026, Krzysztof Wilczy=F1ski wrote:
 
+> Hello,
+>=20
+> > > -=09/* Expose the PCI resources from this device as files */
+> > > -=09for (i =3D 0; i < PCI_STD_NUM_BARS; i++) {
+> > > +=09if (!pci_resource_len(pdev, bar))
+> > > +=09=09return 0;
+> [...]
+> > Did you accidently forget to address some of the comments as I thought =
+you=20
+> > were agreeing to changing this to resource_assigned() but I found no=20
+> > resource_assigned() from entire series?
+>=20
+> I have not.  Sorry for late reply here.
+>=20
+> When testing resource_assigned() as replacement for pci_resource_len(),
+> none of the resource files would be made visible.
+>=20
+> The resource_assigned() checks res->parent, but the static .is_bin_visibl=
+e
+> callback runs at device_add() time, called from pci_device_add() during b=
+us
+> enumeration, so before pci_assign_unassigned_bus_resources() runs and ins=
+erts
+> resources into the resource tree via pci_claim_resource(), etc.
+>=20
+> The call sequence in pci_host_probe() is:
+>=20
+>   pci_scan_root_bus_bridge()
+>     pci_scan_child_bus()
+>       pci_scan_slot()
+>         pci_scan_single_device()
+>           pci_scan_device()
+>             pci_setup_device()
+>               pci_read_bases()        <- res->start/end set from BARs
+>           pci_device_add()
+>             device_add()              <- is_bin_visible() runs here
+>                                          res->parent still NULL
+>=20
+>   pci_assign_unassigned_root_bus_resources()
+>     pci_claim_resource()
+>       request_resource_conflict()
+>         __request_resource()          <- res->parent set here
+>=20
+> At that point, the pci_resource_len() would return a non-zero value as
+> res->start and res->end would already be set, but the res->parent is
+> still NULL (not yet assigned to tree).
+>=20
+> The old dynamic code ran from pci_sysfs_init() as a late_initcall (after
+> assignment), where resource_assigned() would have worked.
+>=20
+> As such, we can't really use resource_assigned() together with static
+> sysfs attributes, at least not without solving the resources evaluation
+> order here.
+>=20
+> Thank you!
 
-Regards
+Okay, understood (I already saw you coverletter as well).
 
-Magnus
+This however implies there's no guarantee the resource space range is even=
+=20
+available for the BAR if the check is not based on ->parent. (Hit a=20
+problem like this kind of highlights how using pci_resource_len() is=20
+definitely hacky.)
+
+I suppose it would be more proper to always recalculate the sysfs
+visibilities after resources have been rearranged (released or assigned).
+But as with the BAR resize, there's the race window when releasing BARs
+so solving it may be non-trivial to get the ordering right (without mass
+removing sysfs files prior to running the resource fitting and assignment
+algorithm which doesn't seem wise either).
+
+So to conclude, IMO, this series is a major improvement to state of
+things as is and solving this pci_resource_len() vs resource_assigned()=20
+within the context of this series doesn't seem worth the extra delay and=20
+complexity. Thus, I'm fine with using pci_resource_len() for now.
+
+--=20
+ i.
+
+--8323328-1542172744-1776678426=:961--
