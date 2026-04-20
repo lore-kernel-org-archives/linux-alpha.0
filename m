@@ -1,356 +1,106 @@
-Received: from mail-108-mta113.mxroute.com (mail-108-mta113.mxroute.com [136.175.108.113])
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA38326056A
-	for <linux-alpha@vger.kernel.org>; Sun, 19 Apr 2026 23:44:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.175.108.113
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776642250; cv=none; b=W0O5DN0gTEJ12k2uZwA6i0ymE2fYgKsCr6hBJIC0GZJB3yGQWzUVKYxHgp9pEgkywdsfUCRHebTJhKhTr4509K3EW+JUoeIvmCWbftGlcnJcTXiDfXZw2IJs4S5/eRmDMzEFOnQOa1eS78HQuNXwUqD3l4LAWAHL1JRiiDRlg+8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776642250; c=relaxed/simple;
-	bh=Q6dBB8N8ZerbL7K8Az5qwO6E3qn8aBFDTSVuR6FcZVA=;
-	h=From:Content-Type:Mime-Version:Subject:Message-Id:Date:To; b=jLM3+Y8xMuUWVGHw0wPcj89lVaVeNfSnOwTwjmMp+/hYj0+Q9HN7/om4oSmNxBfI0Br8kfQtiJqDRKtiyDav/eAvKafI7d9eduQLCv4RnBSXblJjfpo9fyPvncJ9HZCGStCwqLe0ULFyhHTIyVIs9tjBPa/wyY9HD7ls3CDOk+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=flyingpenguins.org; spf=pass smtp.mailfrom=flyingpenguins.org; dkim=pass (2048-bit key) header.d=flyingpenguins.org header.i=@flyingpenguins.org header.b=wS7wAwPV; arc=none smtp.client-ip=136.175.108.113
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=flyingpenguins.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flyingpenguins.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74A2E2C326C
+	for <linux-alpha@vger.kernel.org>; Mon, 20 Apr 2026 05:13:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1776662004; cv=pass; b=dlqsd5wFtpp5oy88Dnb6zuHatq+HkdXUa/p+Yn4BBlPvRwpWRgWposQKVOGLGpHrYJw+Y55mERKzP2hulIK2qASKSrU6Cqw/wGpa6M3EzyjotZXXDRhAkLEiHoBmljyYfDJyamOcCrWf04tCbEOMr9JPxhB3zOiV4rdI8LcrkpQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1776662004; c=relaxed/simple;
+	bh=lfk5vO9NllLo/pVyxpp8Fa5VLC89H3d8HvkuOkLm2t4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GRkkOcRdhwqN2f7NqfXFQ8qGPuD5aaqqxc64fhUP9/DPwYUEpzdetNVhaR5GwSNBdDwR1c2nYmxl8Pcm1pysK89usfLOrSyT6EL0JHjvXc7pi5d2R3NGenuX3A9B2jGWY3+XtmWNUyl0SKCN5qq/ze8WkLbrPz4guFSXY3VVOaU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HXeOOphF; arc=pass smtp.client-ip=209.85.218.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=flyingpenguins.org header.i=@flyingpenguins.org header.b="wS7wAwPV"
-Received: from filter006.mxroute.com ([136.175.111.3] filter006.mxroute.com)
- (Authenticated sender: mN4UYu2MZsgR)
- by mail-108-mta113.mxroute.com (ZoneMTA) with ESMTPSA id 19da81c910f00032bf.001
- for <linux-alpha@vger.kernel.org>
- (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
- Sun, 19 Apr 2026 23:38:57 +0000
-X-Zone-Loop: 9675acd0bbd2a63327e674b82d97d62a9577697cf8a3
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=flyingpenguins.org; s=x; h=To:Date:Message-Id:Subject:Mime-Version:
-	Content-Transfer-Encoding:Content-Type:From:Sender:Reply-To:Cc:Content-ID:
-	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=R4WpV1qolOpYxXGkPr5KGhIsxLNMkgl6pMlNPzvwGjw=; b=wS7wAwPV+tDjDRtfx3tU7P1key
-	mWy1q9QC5XYAZU7o4KxcfZH9WTH/pozMd4TP8PvR71mj6hOSqCRyAPaidVb4whkm/2jUPPInypQlZ
-	hWR6uvkwrKwP969/QEG9jKBGRyABYwGagEVy7c8WYJIexXEodECNCrHbeFDvjhtNin5Vq+SOYKuY3
-	8lqwjSeCGUig/X00RM/h+JlcjgH8lETYugfAMnvE1hYgBsjFH5zhAEWgi0gzW3pn1N+W+7MA7qiew
-	dRQUoquEuzG/KbNdiHDDUKqnT+xCXKv+io4gp6o2TQZh8/xn0+VcKUruJ/vlQ7EPkELf4EhP6UQcC
-	Bnu0FSpA==;
-From: Mike Hlavac <mike@flyingpenguins.org>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HXeOOphF"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b9d6c8871c7so508300166b.1
+        for <linux-alpha@vger.kernel.org>; Sun, 19 Apr 2026 22:13:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1776662002; cv=none;
+        d=google.com; s=arc-20240605;
+        b=DX0hVvn9bACTHfPULx20UG4un7/QQjIg/IA9xRO7rIdUFS82KFc/QtqV0QXsQnG6N0
+         Tjnwmp1o2vcRzlD00QItdsrkO56QprP1ya6DAaYw7vGOgzKbfVfltbHyL/ZzlComQmVb
+         01mIOUpUGBL1mCvLG3QfXneanJheBWZUt1Qia4sX6AVAZvTZz1lty+MfG1NxxhR6of/k
+         BaZ8Wxzw5XsIe++6JZYzl2whnz2P6u9tCzntCx9jKecLsByWmXlV+eAKzn35jGnCdbwa
+         4DQ6mubcthXFNIZV4sVNVzecH0cHLNnz5xYOuBq2ijYw1sqO4BvvbjyrFUB8fgMsPb7r
+         my/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=lfk5vO9NllLo/pVyxpp8Fa5VLC89H3d8HvkuOkLm2t4=;
+        fh=veQJccMlDptzM+OBUu1qOGxouoKYkfhiI0+T2cP+OGo=;
+        b=dtl7RbmdZpSz3aeCPPZyFTTw0W/kya6GQBQTZMcWFi5gp/Rq7lTw3com0Qirka1/DL
+         XPUiO1V/SsdXVamYBzZ6SwTl8t73TyAbwqadZi6IadIHl3M5Jm0b45vjxArjPMdD58pM
+         97G72d6UXq7Ns7/c36HUG6gBDuDohp26vcPz/QAqqjG2coXcr8F/cxcMG4qGiMOv//Oy
+         AGiIzyKylEqMMvIBSVYhnpXrcrKlnGklm15AlHZeXDamCQLaxbHIf6k3gx0N5DvetBec
+         VtkeZOyNkADZr7KIKjLdtGb1AOTxWIEuN8CPT+1lmai0RW+/DSkQ1BeIjjK23pAzsSPf
+         HYoQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1776662002; x=1777266802; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=lfk5vO9NllLo/pVyxpp8Fa5VLC89H3d8HvkuOkLm2t4=;
+        b=HXeOOphFynL5Onzgd2GXTVKzZ2s9SIG5DipcQ4+3xoAXGVh3Kzu4IR0UWnqOoQMzLz
+         OX2i1ysz9SW8vwpt0yIi4F1GfIwLh3SiJiBYHgr3/ZOs4OfA65o0rtdN5KE9lURtmbLP
+         tYNk5eSiI74+Xw7bsEZVqASRmvpCaOT+qO3hYHbhf3MtfmFOSWXAPDjwptq4lEOSRw7z
+         sGEakri5KGueJ8Oj1wuTvxTpcu/CF2T7dvd+VlegHpoxGdiqNOVpKaLiS3lSFkDRK1i7
+         jHWpRMAPaKmIUPzhevRJm6DYoCaXAP6gOY4fav7rm8328OKQ+d7yTIVV+EaiM/VAV6cZ
+         tzlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776662002; x=1777266802;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lfk5vO9NllLo/pVyxpp8Fa5VLC89H3d8HvkuOkLm2t4=;
+        b=oMp1Zgs0EEkUvDk6N2xXWF2AQuLGCSWjLGdWmsOowhLw3o+5pn+hSJafFayQTb5+vL
+         bkibsD+/WczJEWtwjz1F7SOzy0coPG4kZeFhH09pJGsX8p6fKtt1Q4vK8ITOj8m/DP6X
+         S7ee6FcHTl6cjfIhuK8tlwwNbU5vlGXpiHxbBgDtoZL7m1IgtF+vfHDh/GTBdl1AsDsw
+         5A6PBVeDmfiQkJbDj9PuQvj3GZgVPLvuM6cAkLnefPMDy5zgIn7fI3TKkP9Wgd+CPZJg
+         SjeGzTxRuqw+DKYfaFEYTyetOpuioHAGQIVlg0Wsqe1LIAvMwL5RGpEYkeFNudCEcqaH
+         bcwg==
+X-Forwarded-Encrypted: i=1; AFNElJ9GLj4Vc7AdH4rl/GDqGeXxoUsy1pTP2ITv8C4mrB5Wd32MJbKQM7GuIojgO84IkKgI909+4+NrF/84LA==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzALEq3+PV/hRN6t2yFvTe9VhzzNZZkFMpUI8OyyBvlA7c8FQx5
+	xlrhm5nYr00zBAM0mxVMOhAynzgHUfxg/AXqov3mrFhkIeRKxr2KZ61mUXgYKhmERhpCOKKS0bP
+	v6eTu74M4zJe0RX1MdC1Qq6Di2my15mc=
+X-Gm-Gg: AeBDiestUdabbCgIFcnvFXYM1DHEBmoboRh3rzBgKWKcmFxRSA6UsOp4JqZAktow1p7
+	m6DsX4oNfED35yCk1RcUdc9/34ALhdHGS7ILtx/fCQXVNXoCipvdDvw4v36EQq10YFVeG0SR6jN
+	MbgCK3QsZXOfLxo7KYahvRqDizwSiljPLj1aXLYuZqW6qljsLj5eCnIlD13RGUudayk1cMIyK7z
+	MIUr4V+Gf0Z+WiOqWK054r8sj+sJ/beknmT/AOfZmNxYgPPuWETQvbzE3S/+44979Q1bC3l4HnT
+	Hk3FqR6hsJ1xNY2Itxh5mYMqLF6Swtp7r31F33nUckzR3B7g3Ao=
+X-Received: by 2002:a17:907:7f9f:b0:b96:db80:ea59 with SMTP id
+ a640c23a62f3a-ba41a91e004mr579706666b.28.1776662001437; Sun, 19 Apr 2026
+ 22:13:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.10\))
-Subject: [RFC] alpha: optimize ip_fast_csum for BWX-capable CPUs
-Message-Id: <E005E33F-8F2B-4885-89E7-CEAEA04F914A@flyingpenguins.org>
-Date: Sun, 19 Apr 2026 19:38:55 -0400
-To: linux-alpha@vger.kernel.org
-X-Authenticated-Id: mike@flyingpenguins.org
+MIME-Version: 1.0
+References: <20260203063357.14320-1-linmag7@gmail.com> <202602041817.3967F048D@keescook>
+ <CA+=Fv5S=XxDyNFdqhR3p_wEPwGEpjfE+Rqk1h1JJhactWFib_Q@mail.gmail.com>
+In-Reply-To: <CA+=Fv5S=XxDyNFdqhR3p_wEPwGEpjfE+Rqk1h1JJhactWFib_Q@mail.gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Mon, 20 Apr 2026 07:13:09 +0200
+X-Gm-Features: AQROBzBeXCArrE6jx0ALcUOGLkKhbjvGqyfUr2n94u-mLQvH1UXdJXQ9JFoCbsA
+Message-ID: <CA+=Fv5SZK0eaT5Y_a-eTdZacFEcp36rF1YE=tyooDuVpZW=uOw@mail.gmail.com>
+Subject: Re: [PATCH] selftests/seccomp: add Alpha support to seccomp_bpf
+To: Kees Cook <kees@kernel.org>
+Cc: luto@amacapital.net, wad@chromium.org, shuah@kernel.org, 
+	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-alpha@vger.kernel.org, glaubitz@physik.fu-berlin.de
+Content-Type: text/plain; charset="UTF-8"
 
-On Alpha EV56 and later, we can use the 'ldwu' instruction to =
-significantly accelerate IP header checksumming. By manually unrolling =
-the loop for the common 20-byte (ihl=3D5) case, we eliminate branch =
-penalties and allow the compiler to optimally schedule instructions for =
-the EV56 pipeline.
+Hi,
 
-Benchmarked on EV56 (Miata) at 633MHz:
+Alpha support for SECCOMP and SECCOMP_FILTER was just merged into Linus' tree.
 
-	=E2=80=A2 Legacy Path: 0.796s
-
-	=E2=80=A2 Unrolled BWX Path: 0.508s (~36% improvement)
-
-Tested with GCC 15. The unrolled C implementation results in =
-straight-line assembly with no branches in the hot path.  I=E2=80=99d =
-love some feedback from someone with an EV6+
-
-Test methodology (be sure to compile with -mcpu=3Dev56 and -O2, or =
-similar):
-
-#include <stdio.h>
-#include <time.h>
-#include <stdint.h>
-
-// Current Kernel-style Logic (Simplified)
-// This simulates the ldq_u / extwl dance needed by ev4
-uint16_t csum_legacy(const uint16_t *iph) {
-    uint64_t sum =3D 0;
-    // Simulate the overhead of checking alignment and doing shifts
-    // This is essentially what do_csum does for a 20-byte header
-    for (int i =3D 0; i < 10; i++) {
-        sum +=3D iph[i];
-    }
-    while (sum >> 16)
-        sum =3D (sum & 0xffff) + (sum >> 16);
-    return (uint16_t)~sum;
-}
+See: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/arch/alpha?id=55b22075f7840ef48254886758976531fe146609
 
 
-/* * This represents the "Maintainable C" version.
- * If compiled with -mcpu=3Dev56, GCC should recognize the uint16_t
- * access and emit LDWU instructions automatically.
- */
-uint16_t csum_modern_c(const void *iph) {
-    const uint16_t *word =3D (const uint16_t *)iph;
-    uint64_t sum =3D 0;
+Regards
 
-    for (int i =3D 0; i < 10; i++) {
-        sum +=3D word[i];
-    }
-/* Fold 64-bit sum to 16-bit */
-    while (sum >> 16)
-        sum =3D (sum & 0xffff) + (sum >> 16);
-
-    return (uint16_t)~sum;
-}
-
-uint16_t csum_unrolled_c(const void *iph) {
-    const uint16_t *w =3D (const uint16_t *)iph;
-    uint64_t sum;
-
-    sum =3D  w[0];
-    sum +=3D w[1];
-    sum +=3D w[2];
-    sum +=3D w[3];
-    sum +=3D w[4];
-    sum +=3D w[5];
-    sum +=3D w[6];
-    sum +=3D w[7];
-    sum +=3D w[8];
-    sum +=3D w[9];
-
-    uint64_t tmp =3D (sum & 0xffff) + (sum >> 16);
-    tmp =3D (tmp & 0xffff) + (tmp >> 16);
-
-    return (uint16_t)~tmp;
-}
-
-int main() {
-    uint16_t header[10] =3D {0x4500, 0x003c, 0x1c46, 0x4000, 0x4006, =
-0x0000, 0xac10, 0x0a63, 0xac10, 0x0a0c};
-    long iterations =3D 10000000;
-    clock_t start, end;
-
-// Test Legacy
-    start =3D clock();
-    for (long i =3D 0; i < iterations; i++) {
-        volatile uint16_t res =3D csum_legacy(header);
-    }
-    end =3D clock();
-    printf("Legacy Path: %f seconds\n", (double)(end - start) / =
-CLOCKS_PER_SEC);
-
-    // Test Modern
-    start =3D clock();
-    for (long i =3D 0; i < iterations; i++) {
-        volatile uint16_t res =3D csum_modern_c(header);
-    }
-    end =3D clock();
-    printf("Modern C Path: %f seconds\n", (double)(end - start) / =
-CLOCKS_PER_SEC);
-
-    // Test Unrolled
-    start =3D clock();
-    for (long i =3D 0; i < iterations; i++) {
-        // This "empty" assembly block tells GCC:
-        // "I might have modified memory, don't assume anything about =
-'header'"
-        __asm__ __volatile__("" : : "r" (header) : "memory");
-        volatile uint16_t res =3D csum_unrolled_c(header);
-    }
-    end =3D clock();
-
-    printf("Unrolled C Path: %f seconds\n", (double)(end - start) / =
-CLOCKS_PER_SEC);
-    return 0;
-}
-
-
-Patch below (based on 6.19.12)
-Signed-off-by: Mike Hlavac <mike@flyingpenguins.org>
-Assisted-by: Google Gemini
-
---- /home/griffin/checksum-orig.h	2026-04-12 13:46:04.521795162 =
--0400
-+++ arch/alpha/include/asm/checksum.h	2026-04-16 22:10:02.430143272 =
--0400
-@@ -5,12 +5,6 @@
- #include <linux/in6.h>
-
- /*
-- *	This is a version of ip_compute_csum() optimized for IP headers,
-- *	which always checksum on 4 octet boundaries.
-- */
--extern __sum16 ip_fast_csum(const void *iph, unsigned int ihl);
--
--/*
-  * computes the checksum of the TCP/UDP pseudo-header
-  * returns a 16-bit checksum, already complemented
-  */
-@@ -35,6 +29,12 @@
- extern __wsum csum_partial(const void *buff, int len, __wsum sum);
-
- /*
-+ * do_csum - compute the raw 32-bit Internet checksum over a buffer
-+ * Returns the uncomplemented 32-bit partial sum.
-+ */
-+extern u32 do_csum(const void *buff, int len);
-+
-+/*
-  * the same as csum_partial, but copies from src while it
-  * checksums
-  *
-@@ -67,6 +67,46 @@
- 	return (__force __sum16)~sum;
- }
-
-+/*
-+ * ip_fast_csum - Optimized IPv4 header checksum for Alpha BWX (EV56+)
-+ *
-+ * Optimized for the standard 20-byte (ihl=3D5) IP header on 4-octet
-+ * boundaries. Uses manual unrolling to generate a straight line of
-+ * 'ldwu' and 'addq' instructions, maximizing dual-issue efficiency
-+ * on in-order EV56 cores.
-+ */
-+
-+static __always_inline __sum16 ip_fast_csum(const void *iph, unsigned =
-int ihl)
-+{
-+    if (unlikely(ihl !=3D 5)) {
-+        return (__force __sum16)~do_csum(iph, ihl * 4);
-+    }
-+
-+    const u16 *w =3D (const u16 *)iph;
-+    u64 sum;
-+
-+    /* Manually unrolled 10-word addition.
-+     * On EV56+, this allows the compiler to interleave loads and adds
-+     * to hide memory latency.
-+     */
-+    sum =3D  w[0];
-+    sum +=3D w[1];
-+    sum +=3D w[2];
-+    sum +=3D w[3];
-+    sum +=3D w[4];
-+    sum +=3D w[5];
-+    sum +=3D w[6];
-+    sum +=3D w[7];
-+    sum +=3D w[8];
-+    sum +=3D w[9];
-+
-+    /* Fold 64-bit sum to 16 bits */
-+    sum =3D (sum & 0xffff) + (sum >> 16);
-+    sum =3D (sum & 0xffff) + (sum >> 16);
-+
-+    return (__force __sum16)~sum;
-+}
-+
- #define _HAVE_ARCH_IPV6_CSUM
- extern __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
- 			       const struct in6_addr *daddr,
---- /home/griffin/checksum-orig.c	2026-04-12 15:17:48.062299877 =
--0400
-+++ arch/alpha/lib/checksum.c	2026-04-17 18:23:39.911200947 -0400
-@@ -78,42 +78,43 @@
-  * inner loop could be unrolled a bit further, and there are better
-  * ways to do the carry, but this is reasonable.
-  */
--static inline unsigned long do_csum(const unsigned char * buff, int =
-len)
-+u32 do_csum(const void *buff, int len)
- {
-+	const unsigned char *ptr =3D buff;
- 	int odd, count;
- 	unsigned long result =3D 0;
-
- 	if (len <=3D 0)
- 		goto out;
--	odd =3D 1 & (unsigned long) buff;
-+	odd =3D 1 & (unsigned long) ptr;
- 	if (odd) {
--		result =3D *buff << 8;
-+		result =3D *ptr << 8;
- 		len--;
--		buff++;
-+		ptr++;
- 	}
- 	count =3D len >> 1;		/* nr of 16-bit words.. */
- 	if (count) {
--		if (2 & (unsigned long) buff) {
--			result +=3D *(unsigned short *) buff;
-+		if (2 & (unsigned long) ptr) {
-+			result +=3D *(unsigned short *) ptr;
- 			count--;
- 			len -=3D 2;
--			buff +=3D 2;
-+			ptr +=3D 2;
- 		}
- 		count >>=3D 1;		/* nr of 32-bit words.. */
- 		if (count) {
--			if (4 & (unsigned long) buff) {
--				result +=3D *(unsigned int *) buff;
-+			if (4 & (unsigned long) ptr) {
-+				result +=3D *(unsigned int *) ptr;
- 				count--;
- 				len -=3D 4;
--				buff +=3D 4;
-+				ptr +=3D 4;
- 			}
- 			count >>=3D 1;	/* nr of 64-bit words.. */
- 			if (count) {
- 				unsigned long carry =3D 0;
- 				do {
--					unsigned long w =3D *(unsigned =
-long *) buff;
-+					unsigned long w =3D *(unsigned =
-long *) ptr;
- 					count--;
--					buff +=3D 8;
-+					ptr +=3D 8;
- 					result +=3D carry;
- 					result +=3D w;
- 					carry =3D (w > result);
-@@ -122,17 +123,17 @@
- 				result =3D (result & 0xffffffff) + =
-(result >> 32);
- 			}
- 			if (len & 4) {
--				result +=3D *(unsigned int *) buff;
--				buff +=3D 4;
-+				result +=3D *(unsigned int *) ptr;
-+				ptr +=3D 4;
- 			}
- 		}
- 		if (len & 2) {
--			result +=3D *(unsigned short *) buff;
--			buff +=3D 2;
-+			result +=3D *(unsigned short *) ptr;
-+			ptr +=3D 2;
- 		}
- 	}
- 	if (len & 1)
--		result +=3D *buff;
-+		result +=3D *ptr;
- 	result =3D from64to16(result);
- 	if (odd)
- 		result =3D ((result >> 8) & 0xff) | ((result & 0xff) << =
-8);
-@@ -141,16 +142,6 @@
- }
-
- /*
-- *	This is a version of ip_compute_csum() optimized for IP headers,
-- *	which always checksum on 4 octet boundaries.
-- */
--__sum16 ip_fast_csum(const void *iph, unsigned int ihl)
--{
--	return (__force __sum16)~do_csum(iph,ihl*4);
--}
--EXPORT_SYMBOL(ip_fast_csum);
--
--/*
-  * computes the checksum of a memory block at buff, length len,
-  * and adds in "sum" (32-bit)
-  *=
+Magnus
