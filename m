@@ -1,59 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 829D13451C1;
-	Tue, 21 Apr 2026 20:06:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DBC53845B5
+	for <linux-alpha@vger.kernel.org>; Tue, 21 Apr 2026 22:01:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776801971; cv=none; b=MVn50YXXrmgLa5z6wT4lh13hrGrVbvbQwkaE0V27qBCm/o2KkFNshwurx9+o2sMxVsEQzBlgYPcGQ74x3Rt5R94vSf0P/Wb4vpyRwh7PLqoJdkVmMqq4oJSwFQUEDwOvvkoRkxLxU7rbbJVqyPX19MkXNc4MeRV9+CtAKHJqjWQ=
+	t=1776808913; cv=none; b=EE44z+W0YQmwV5VKL0yg3c7Wu1m11uj9KufvCkfJOzRfmLVnQMVJB0+vsR9dhmB1tc5xSL58iP2WTIXdjBq8qoRatqEgW4Lkoc3hurPuh54QAkhFnY9rbzivfGbkB6VS5Kq/744+xf9Izk3ziNIUrspZhCYeo9+7N7UiOaKNXGc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776801971; c=relaxed/simple;
-	bh=zLaqEY2AdfsU2z/D1pNc/O8p+28fE6XTfonBYfspxZc=;
+	s=arc-20240116; t=1776808913; c=relaxed/simple;
+	bh=xyYx6EKfSNYgy8umDBVjFDGC9ANxj/5Tbt7GkFR38jI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FDMPyzdVq17Yq4OfhOUAgINLVMcga5rvVK+LmtelFLo3nEy3W32BhhMO2mzq4aSlES+Ggw1+bfc/wHHAOWVr2qOS3Siz/IanZJOcqXdU/g5ldmD6G7apVmaX0P8Bf4QUNh1o3ZAXKx+8/hU3JKrMUEtNcF/d32/wTmfP31xV6+U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PLk8TvvJ; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=RosXm5aOsNZ5CXkdUN4CUhi9teotXABJxRdIkDtwgk2qwuDJ3vE4zjAEWMqoE6uZPqn1qkCQZEE5UnyHyW0vWSRMXynil08dZoE2DQKhbBasXTJQzbJIGqPItn05E2A0N1DhoLAO9zVZJA8d96J6FGfR58LVpRNgo82PaKgWVeU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=T3Ku1jm7; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=VM8sk+fz; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PLk8TvvJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC9ACC2BCB0;
-	Tue, 21 Apr 2026 20:06:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776801971;
-	bh=zLaqEY2AdfsU2z/D1pNc/O8p+28fE6XTfonBYfspxZc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=PLk8TvvJWIBLYMgP5fE2xmhBa2sDysetrsKMet0ZyBqA4TLBhTuhOrlV6iENIIWdR
-	 9MV2DnzdojJcU3BaEzpZCq2nUisl1jhVxlquirkUp8NXpn/65Tey1NbkfAf0MoQRcv
-	 BpBJ4xsWX8UfXeTe08QMZri30FLYvVkHL44G4R3Hm2kTuyCO6FGLT0kmyUuMmo9qzC
-	 eHkN1fzraxOPfgFp/hQv5mF0ZAen36o18ZcP+xAqjQw9i1L1JMGfMochPPfqEaOKtP
-	 Z4t34hSHUtGQudYD+6ZGVOL5oHNDy5g84MtN1dY3ENmO/ZjzYdaXdh/GgRcBd6KaOs
-	 fKtSFqf6yTcTA==
-Date: Wed, 22 Apr 2026 05:06:09 +0900
-From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Matt Turner <mattst88@gmail.com>,
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="T3Ku1jm7";
+	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="VM8sk+fz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1776808909;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JVwG8S2po1iduREwk8io7PMDE8wG9YqvUAWHOi+D4qs=;
+	b=T3Ku1jm733ofpBp4NFCYlA7i+sj69T7vm948aMKzIgVWKE19VZbZLcPzkpCOq7ZEZTqkCk
+	FmGRTwtbid+xyNunPg9WXAhw1JyaPBDcHFzsvFnXCyJd5Jn4WwbieAg3ykVahIYkKz+9gu
+	nplNJoI+1mGjOv1V71IS639F8qvMlg4=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-65-33ElrXhkMPOSwCw23mKXbQ-1; Tue, 21 Apr 2026 18:01:48 -0400
+X-MC-Unique: 33ElrXhkMPOSwCw23mKXbQ-1
+X-Mimecast-MFC-AGG-ID: 33ElrXhkMPOSwCw23mKXbQ_1776808907
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-488c2cc0cbaso31080225e9.3
+        for <linux-alpha@vger.kernel.org>; Tue, 21 Apr 2026 15:01:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=redhat.com; s=google; t=1776808907; x=1777413707; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=JVwG8S2po1iduREwk8io7PMDE8wG9YqvUAWHOi+D4qs=;
+        b=VM8sk+fzYFB9wZrk6YKEd38F5lC5fNsgZhgtGGi85s8KRi/uWx0lareBfmfdcVrWGe
+         j8MjQrL+jyJkLq3CIaj5r/VNoHysPPxSnw+5eo1nUWCjGFl/fkfQA8xBQVbiNYuOaDA5
+         WzaVZoyY9ZNo5af5Z2SIrwOQvawrD/37UqhTY2z/UpI9pQGyE+269yGyrgYunGPO4MuW
+         crRnYP9u/B3uSTAMyJeLi668q5D6UgEAJSAS4pIFi7An2eyI1ETJ5EKB0KS+PAY4105F
+         wR1qdk5SBBRvgMFUqjHoRid+JdalxzXd+peb5SwkwzmNJ3Y0qQydN8V57HhRMonG/xuV
+         7Cpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1776808907; x=1777413707;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JVwG8S2po1iduREwk8io7PMDE8wG9YqvUAWHOi+D4qs=;
+        b=hGgL7QtKWdYxdJfCDwiqUhNWhy1Cf13Re37gKPCBXSG+VllSuC5PpNJpVFVt6qdxPH
+         W2GCRAYl4YrCbcWtpvgMsablqtwElPv0cw9qbFheTtEpYTkKE6nDU/bBO3TsUUvGkis3
+         wQlh/EhKrKsNckrvqEBQjebbqWbM51UxBO0UiLCKHs6wk7l8/DMFzw24A5TUMokKTVEz
+         aRgslgJ7lebiCZZYfbzwTYxuBaer2oRBgvvxiXF8/K5PI0Mg7is++1CLYCDEEz/L222T
+         /qHU1iUrRS4KOuOrAGjl8/iPB+Iwd/14m3wEPQkh94DTydnjwnh3J9N0delw6va9H5O2
+         ZhvA==
+X-Forwarded-Encrypted: i=1; AFNElJ+SqTlfpO6Dznv4cu9sCWrch9cPrZ3m+fnc8idxD4Aw6uRDxsIP/+nrS6EU4Oi4VXwmDHSvji07yV6/dg==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxTSJ1YdKEUGOcP/dFx4ELOGEqCnCz06YwED8F47i0DjC5Y1Ak6
+	Rn0czG4VOfem3Up5L4YmLSmLgtTBw/lP7d4iOJ8HZsekVsbdH/BeE5TA6qXiFY515EEZorU5D0W
+	qpdbolc4qQAl+UhM7ZNDnpvENsasK7BbM6qZVVOfqSeCR78A+3WXvEkv9vAOJaJyw
+X-Gm-Gg: AeBDieuCIHsRK5jqIKgq50PoR0eSgJ0VSiUZlAGkaT0Sr/ryn15FBJsiKNJXs7OuFQ8
+	3f5EUv9GUwYzemdaZzL8RbCdNOlt6t8isDnpmNgJ3s6RjjT0r3YHSGdYG4mpfAnz7D50xFuIGGg
+	lfAfuaOISyoV1L8MwYsMxeI4eZ/IC6uTLqU7l9TqxLo37uhDhsqne/WEQvyrtq9tCxnjKuPIKcn
+	qRTkfQLM6ALocEInv5LrtBwBO2ofXsRCRARirCfH17YGRaEoLGFWWISFkydbjrtrPBaITblRjy8
+	zfYlO/fs8N+zufpRxDqA166eF7ob5z9F6nmmGVlDzL1FO4XBLFj+/8MrWFq16/y1Dz5fGsbsK4t
+	Z0KJDsf5i4oipfxFeslBPeoS054k1bNOhcEuvFENT8Z5j8+DS0OEZ6w==
+X-Received: by 2002:a05:600c:5294:b0:48a:563c:c8d6 with SMTP id 5b1f17b1804b1-48a563cd0eemr57315975e9.7.1776808906900;
+        Tue, 21 Apr 2026 15:01:46 -0700 (PDT)
+X-Received: by 2002:a05:600c:5294:b0:48a:563c:c8d6 with SMTP id 5b1f17b1804b1-48a563cd0eemr57315565e9.7.1776808906442;
+        Tue, 21 Apr 2026 15:01:46 -0700 (PDT)
+Received: from redhat.com (IGLD-80-230-25-21.inter.net.il. [80.230.25.21])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-488fc0f8193sm361473545e9.1.2026.04.21.15.01.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Apr 2026 15:01:45 -0700 (PDT)
+Date: Tue, 21 Apr 2026 18:01:42 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: linux-kernel@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Brendan Jackman <jackmanb@google.com>,
+	Michal Hocko <mhocko@suse.com>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Andrea Arcangeli <aarcange@redhat.com>,
+	Gregory Price <gourry@gourry.net>, linux-mm@kvack.org,
+	virtualization@lists.linux.dev,
 	Richard Henderson <richard.henderson@linaro.org>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Dexuan Cui <decui@microsoft.com>,
-	Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>,
-	Lukas Wunner <lukas@wunner.de>,
-	Oliver O'Halloran <oohall@gmail.com>,
-	Saurabh Singh Sengar <ssengar@microsoft.com>,
-	Shuan He <heshuan@bytedance.com>,
-	Srivatsa Bhat <srivatsabhat@microsoft.com>,
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
-	linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v5 22/23] PCI/sysfs: Convert legacy I/O and memory
- attributes to static definitions
-Message-ID: <20260421200609.GE1684602@rocinante>
-References: <20260416180107.777065-1-kwilczynski@kernel.org>
- <20260416180107.777065-23-kwilczynski@kernel.org>
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Greg Ungerer <gerg@linux-m68k.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, linux-alpha@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
+Subject: [PATCH RFC v3 10/19] mm: remove arch vma_alloc_zeroed_movable_folio
+ overrides
+Message-ID: <006f9142e591ba8c340c3b354aee76aec5c285b9.1776808210.git.mst@redhat.com>
+References: <cover.1776808209.git.mst@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -62,110 +115,82 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260416180107.777065-23-kwilczynski@kernel.org>
+In-Reply-To: <cover.1776808209.git.mst@redhat.com>
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 
-Hello,
+Now that the generic vma_alloc_zeroed_movable_folio() uses
+__GFP_ZERO, the arch-specific macros on alpha, m68k, s390, and
+x86 that did the same thing are redundant.  Remove them.
 
-> Currently, legacy_io and legacy_mem are dynamically allocated and
-> created by pci_create_legacy_files(), with pci_adjust_legacy_attr()
-> updating the attributes at runtime on Alpha to rename them and shift
-> the size for sparse addressing.
-> 
-> Convert to four static const attributes (legacy_io, legacy_io_sparse,
-> legacy_mem, legacy_mem_sparse) with is_bin_visible() callbacks that
-> use pci_legacy_has_sparse() to select the appropriate variant per bus.
-> The sizes are compile-time constants and .size is set directly on
-> each attribute.
-> 
-> Register the groups in pcibus_groups[] under a HAVE_PCI_LEGACY guard
-> so the driver model handles creation and removal automatically.
-> 
-> Stub out pci_create_legacy_files() and pci_remove_legacy_files() as
-> the dynamic creation is no longer needed.  Remove the __weak
-> pci_adjust_legacy_attr(), Alpha's override, and its declaration from
-> both Alpha and PowerPC asm/pci.h headers.
+arm64 is not affected: it has a real function override that
+handles MTE tag zeroing, not just __GFP_ZERO.
 
-There is feedback from Sashiko about this:
+Suggested-by: David Hildenbrand <david@kernel.org>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ arch/alpha/include/asm/page.h   | 3 ---
+ arch/m68k/include/asm/page_no.h | 3 ---
+ arch/s390/include/asm/page.h    | 3 ---
+ arch/x86/include/asm/page.h     | 3 ---
+ 4 files changed, 12 deletions(-)
 
-  https://sashiko.dev/#/patchset/20260416180107.777065-1-kwilczynski%40kernel.org?part=22
+diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
+index 59d01f9b77f6..4327029cd660 100644
+--- a/arch/alpha/include/asm/page.h
++++ b/arch/alpha/include/asm/page.h
+@@ -12,9 +12,6 @@
+ 
+ extern void clear_page(void *page);
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ extern void copy_page(void * _to, void * _from);
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
+ 
+diff --git a/arch/m68k/include/asm/page_no.h b/arch/m68k/include/asm/page_no.h
+index d2532bc407ef..f511b763a235 100644
+--- a/arch/m68k/include/asm/page_no.h
++++ b/arch/m68k/include/asm/page_no.h
+@@ -12,9 +12,6 @@ extern unsigned long memory_end;
+ 
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #define __pa(vaddr)		((unsigned long)(vaddr))
+ #define __va(paddr)		((void *)((unsigned long)(paddr)))
+ 
+diff --git a/arch/s390/include/asm/page.h b/arch/s390/include/asm/page.h
+index f339258135f7..04020a19a5cf 100644
+--- a/arch/s390/include/asm/page.h
++++ b/arch/s390/include/asm/page.h
+@@ -67,9 +67,6 @@ static inline void copy_page(void *to, void *from)
+ 
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #ifdef CONFIG_STRICT_MM_TYPECHECKS
+ #define STRICT_MM_TYPECHECKS
+ #endif
+diff --git a/arch/x86/include/asm/page.h b/arch/x86/include/asm/page.h
+index 416dc88e35c1..92fa975b46f3 100644
+--- a/arch/x86/include/asm/page.h
++++ b/arch/x86/include/asm/page.h
+@@ -28,9 +28,6 @@ static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
+ 	copy_page(to, from);
+ }
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #ifndef __pa
+ #define __pa(x)		__phys_addr((unsigned long)(x))
+ #endif
+-- 
+MST
 
-This is a pre-existing issue that is does trip KASAN:
-
-  - Read successful; larger buffer.
-
-    root@kvm:~# dd if=/dev/zero of=/sys/class/pci_bus/0000:00/legacy_io bs=4 count=1 seek=32
-    1+0 records in
-    1+0 records out
-    4 bytes (4B) copied, 0.004042 seconds, 989B/s
-
-  - Splat; smaller buffer.
-
-    root@kvm:~# dd if=/dev/zero of=/sys/class/pci_bus/0000:00/legacy_io bs=1 count=1 seek=128
-    [  138.516163] ==================================================================
-    [  138.516843] BUG: KASAN: slab-out-of-bounds in pci_write_legacy_io+0x90/0xc8
-    [  138.517311] Read of size 4 at addr c29697b0 by task dd/37
-    [  138.517685] 
-    [  138.518188] CPU: 0 UID: 0 PID: 37 Comm: dd Not tainted 7.0.0-rc1-g973e040579d6 #1 PREEMPTLAZY 
-    [  138.518578] Hardware name: PowerMac3,1 7400 0xc0209 PowerMac
-    [  138.519019] Call Trace:
-    [  138.519165] [c2b8bbd0] [c12deee4] dump_stack_lvl+0x50/0x78 (unreliable)
-    [  138.519632] [c2b8bbf0] [c03f67e4] print_report+0x14c/0x514
-    [  138.519968] [c2b8bc50] [c03f646c] kasan_report+0x104/0x1d0
-    [  138.520288] [c2b8bcd0] [c0925e94] pci_write_legacy_io+0x90/0xc8
-    [  138.520624] [c2b8bcf0] [c0626cb4] kernfs_fop_write_iter+0x484/0x6cc
-    [  138.521003] [c2b8bd30] [c0419d1c] vfs_write+0x5fc/0x12f4
-    [  138.521299] [c2b8be60] [c041aeac] ksys_write+0x120/0x244
-    [  138.521605] [c2b8bf00] [c001d218] system_call_exception+0x14c/0x304
-    [  138.521976] [c2b8bf30] [c002b1bc] ret_from_syscall+0x0/0x2c
-    [  138.522317] ---- interrupt: c00 at 0x100a59f4
-    [  138.522695] NIP:  100a59f4 LR: 101005e4 CTR: b7bf44a0
-    [  138.523013] REGS: c2b8bf40 TRAP: 0c00   Not tainted  (7.0.0-rc1-g973e040579d6)
-    [  138.523413] MSR:  0000d932 <EE,PR,ME,IR,DR,RI>  CR: 28004462  XER: 00000000
-    [  138.524028] 
-    [  138.524028] GPR00: 00000004 bfbff210 1027d520 00000001 102795a0 00000001 10277237 100a4ac4 
-    [  138.524028] GPR08: 0000d932 00000002 00000000 bfbff2c0 b7bf0000 102790b2 10230000 10226faa 
-    [  138.524028] GPR16: 10237d81 00000000 00000000 102795a0 102795a0 00000000 1027721f 00000001 
-    [  138.524028] GPR24: 00000001 00000000 10271500 10270000 00000000 00000001 102795a0 00000001 
-    [  138.526014] NIP [100a59f4] 0x100a59f4
-    [  138.526264] LR [101005e4] 0x101005e4
-    [  138.526500] ---- interrupt: c00
-    [  138.526740] 
-    [  138.526913] Allocated by task 37 on cpu 0 at 138.516066s:
-    [  138.527334]  kasan_save_track+0x3c/0x90
-    [  138.527572]  __kasan_kmalloc+0xb8/0xec
-    [  138.527816]  kernfs_fop_write_iter+0x55c/0x6cc
-    [  138.528076]  vfs_write+0x5fc/0x12f4
-    [  138.528269]  ksys_write+0x120/0x244
-    [  138.528472]  system_call_exception+0x14c/0x304
-    [  138.528688]  ret_from_syscall+0x0/0x2c
-    [  138.528950] 
-    [  138.529108] The buggy address belongs to the object at c29697b0
-    [  138.529108]  which belongs to the cache kmalloc-8 of size 8
-    [  138.529673] The buggy address is located 0 bytes inside of
-    [  138.529673]  allocated 2-byte region [c29697b0, c29697b2)
-    [  138.530173] 
-    [  138.530318] The buggy address belongs to the physical page:
-    [  138.531001] page: refcount:0 mapcount:0 mapping:00000000 index:0x0 pfn:0x2969
-    [  138.531454] flags: 0x0(zone=0)
-    [  138.532076] page_type: f5(slab)
-    [  138.532520] raw: 00000000 c1c01300 00000122 00000000 00000000 005500aa f5000000 00000000
-    [  138.533046] page dumped because: kasan: bad access detected
-    [  138.533372] 
-    [  138.533496] Memory state around the buggy address:
-    [  138.533955]  c2969680: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-    [  138.534328]  c2969700: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-    [  138.534693] >c2969780: fc fc fc fc fc fc 02 fc fc fc fc fc fa fc fc fc
-    [  138.535066]                              ^
-    [  138.535358]  c2969800: fc fc fa fc fc fc fc fc fa fc fc fc fc fc 04 fc
-    [  138.535661]  c2969880: fc fc fc fc 00 fc fc fc fc fc fa fc fc fc fc fc
-    [  138.536058] ==================================================================
-    [  138.537335] Disabling lock debugging due to kernel taint
-    1+0 records in
-    1+0 records out
-    1 bytes (1B) copied, 0.023071 seconds, 43B/s
-
-Something to fix as a follow-up.
-
-Thank you!
-
-	Krzysztof
