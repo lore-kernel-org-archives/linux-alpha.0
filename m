@@ -1,125 +1,72 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B199A37FF7A;
-	Wed, 22 Apr 2026 16:15:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B543C371CE3;
+	Wed, 22 Apr 2026 21:30:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776874536; cv=none; b=Z7WZcqyHVoUK6AEdsOr0yUmAwzyhnPBEV7O7CFSUnDfN8H5AOyQ9P4J7vzZfqoRNJFZ13MPu0fNWmRkNsS6HKrJPYkIdWcAvVDnUbDMna7LWJz5P+gP6WG9UbMzlOZCizai/j2+OVDdt4y3SqjcuiaG4ScuJ2h9oL1bLLyzJP/U=
+	t=1776893404; cv=none; b=lF4/OmToILHsqZaxOCZJOUrzpoHI2eJo2lR9zy7jBlHmDdcYQhEIHtwBey5qXKHq+bbf3W2DII6OMRmjtrqoWVD5PLIPxnTdi5zMbfuhBbneAYDH/4d5vR8K/3TqlcixvqVDZv+Ase3LYesgzoT7hHa94UaZc/ww+J85KRmWi8Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776874536; c=relaxed/simple;
-	bh=dFCDzhXA2zUSnlj0+jJsCYTv9upJPkAyBg063oGGGK4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=F7+yYJZVDeyHdQ46eQ+KKujmejptxUefBOM0al5Qzpbp+PZlWH1HX9hc64kyLpuNiOGKRagOM0fqDhCtLkAOIwkvVAvQyOYGhq3w+v2iFhdaprektVJYjYZz04uAYjESGsE0Wu44cgU1E2ZF/W416XOFlmRa6W4YzqKJ12mpHv8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m8QdmUHE; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m8QdmUHE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B917C19425;
-	Wed, 22 Apr 2026 16:15:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1776874536;
-	bh=dFCDzhXA2zUSnlj0+jJsCYTv9upJPkAyBg063oGGGK4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=m8QdmUHE22S/biCkSxFIOC14JtXTSxgA4FYN2o0neiedaWK8dLMHPunLd4X2UIExa
-	 fbzI4bOnwaWE+ngvwJt6ZeJzCYXsZ4kO6kjIWY0MAg3MFhCWc5CzEN0nOs9p93y47Y
-	 zdwWd97wxcDcfUK95xpLmLs/yrQiEK5HAcFdj6zOR1/cUGAmz+OT8pWQEyqwEm6gYs
-	 sBAMXyqoPbDKR5h4lD0HI4LpjIEnV7b1fkvWyMLYXG3zJvzNLMVek/O0P9fSknydP0
-	 /TI104uBsJeLPyuRiCg9eg9mkSmplBo9QzuAoD80kRIv1cbfgTbffByeVS7VwniOQ/
-	 NF2QAwy85F9Dw==
-From: =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Matt Turner <mattst88@gmail.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Dexuan Cui <decui@microsoft.com>,
-	=?UTF-8?q?Krzysztof=20Ha=C5=82asa?= <khalasa@piap.pl>,
-	Lukas Wunner <lukas@wunner.de>,
-	"Oliver O'Halloran" <oohall@gmail.com>,
-	Saurabh Singh Sengar <ssengar@microsoft.com>,
-	Shuan He <heshuan@bytedance.com>,
-	Srivatsa Bhat <srivatsabhat@microsoft.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-pci@vger.kernel.org,
-	linux-alpha@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v6 24/24] PCI/sysfs: Limit BAR resize attribute scope to platforms with PCI mmap
-Date: Wed, 22 Apr 2026 16:14:07 +0000
-Message-ID: <20260422161407.118748-25-kwilczynski@kernel.org>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260422161407.118748-1-kwilczynski@kernel.org>
-References: <20260422161407.118748-1-kwilczynski@kernel.org>
+	s=arc-20240116; t=1776893404; c=relaxed/simple;
+	bh=nCfpV38tDkErq2dm4COGsVUfPvmgJ2mgmn7P1SLsF2Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jRiaGznUP5q7StbaZOK8D2tE9A2Q7U5OkREL6i4lSUmvdjmqi9YE1KvEjOnV+w38+pvpcCYPunBYCLxOdCfYxcDPw96DFeUgMe8VgtC2Vy3po7dipDISfGE0AGnDArRrxQKWoSTQHwZWnOnmIYebPcA33IW9+65gRVClt1F0OSE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E88EDC19425;
+	Wed, 22 Apr 2026 21:29:57 +0000 (UTC)
+Message-ID: <92be54eb-b28c-474d-a107-bdb8c6c69820@linux-m68k.org>
+Date: Thu, 23 Apr 2026 07:29:54 +1000
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v3 10/19] mm: remove arch
+ vma_alloc_zeroed_movable_folio overrides
+To: "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+ David Hildenbrand <david@kernel.org>, Vlastimil Babka <vbabka@kernel.org>,
+ Brendan Jackman <jackmanb@google.com>, Michal Hocko <mhocko@suse.com>,
+ Suren Baghdasaryan <surenb@google.com>, Jason Wang <jasowang@redhat.com>,
+ Andrea Arcangeli <aarcange@redhat.com>, Gregory Price <gourry@gourry.net>,
+ linux-mm@kvack.org, virtualization@lists.linux.dev,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>,
+ Geert Uytterhoeven <geert@linux-m68k.org>, Heiko Carstens
+ <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>, Thomas Gleixner <tglx@kernel.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+ "H. Peter Anvin" <hpa@zytor.com>, linux-alpha@vger.kernel.org,
+ linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
+References: <cover.1776808209.git.mst@redhat.com>
+ <006f9142e591ba8c340c3b354aee76aec5c285b9.1776808210.git.mst@redhat.com>
+Content-Language: en-US
+From: Greg Ungerer <gerg@linux-m68k.org>
+In-Reply-To: <006f9142e591ba8c340c3b354aee76aec5c285b9.1776808210.git.mst@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The resourceN_resize sysfs attributes allow users to resize
-Resizable BARs (ReBAR).  After a successful resize, the resource
-attribute groups are removed and recreated so that the updated
-BAR sizes are reflected in the sysfs files.
+On 22/4/26 08:01, Michael S. Tsirkin wrote:
+> Now that the generic vma_alloc_zeroed_movable_folio() uses
+> __GFP_ZERO, the arch-specific macros on alpha, m68k, s390, and
+> x86 that did the same thing are redundant.  Remove them.
+> 
+> arm64 is not affected: it has a real function override that
+> handles MTE tag zeroing, not just __GFP_ZERO.
+> 
+> Suggested-by: David Hildenbrand <david@kernel.org>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+>   arch/alpha/include/asm/page.h   | 3 ---
+>   arch/m68k/include/asm/page_no.h | 3 ---
 
-Resizable BARs are a PCI Express extended capability
-(PCI_EXT_CAP_ID_REBAR), which requires PCIe extended config
-space.
+For arch/m68k/include/asm/page_no.h:
 
-Every PCIe-capable architecture defines either HAVE_PCI_MMAP or
-ARCH_GENERIC_PCI_MMAP_RESOURCE (via the relevant arch headers
-or the generic asm-generic/pci.h fallback).  On platforms that
-define neither, the resource files are not created and the sysfs
-group remove and create calls in __resource_resize_store() are
-no-ops.
+Acked-by: Greg Ungerer <gerg@linux-m68k.org>
 
-Thus, move the resize show and store helpers, the per-BAR attribute
-definitions, and the attribute group behind the existing #ifdef
-HAVE_PCI_MMAP || ARCH_GENERIC_PCI_MMAP_RESOURCE guard, and fold
-the group reference in pci_dev_groups[] into the existing #if block.
-
-Signed-off-by: Krzysztof Wilczyński <kwilczynski@kernel.org>
----
- drivers/pci/pci-sysfs.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-index b167e32d55ac..37c1990124d0 100644
---- a/drivers/pci/pci-sysfs.c
-+++ b/drivers/pci/pci-sysfs.c
-@@ -1690,6 +1690,7 @@ static const struct attribute_group pci_dev_reset_method_attr_group = {
- 	.is_visible = pci_dev_reset_attr_is_visible,
- };
- 
-+#if defined(HAVE_PCI_MMAP) || defined(ARCH_GENERIC_PCI_MMAP_RESOURCE)
- static ssize_t __resource_resize_show(struct device *dev, int n, char *buf)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
-@@ -1804,6 +1805,7 @@ static const struct attribute_group pci_dev_resource_resize_attr_group = {
- 	.attrs = resource_resize_attrs,
- 	.is_visible = resource_resize_attr_is_visible,
- };
-+#endif
- 
- static struct attribute *pci_dev_dev_attrs[] = {
- 	&dev_attr_boot_vga.attr,
-@@ -1878,8 +1880,8 @@ const struct attribute_group *pci_dev_groups[] = {
- 	&pci_dev_resource_io_attr_group,
- 	&pci_dev_resource_uc_attr_group,
- 	&pci_dev_resource_wc_attr_group,
--#endif
- 	&pci_dev_resource_resize_attr_group,
-+#endif
- 	&pci_dev_config_attr_group,
- 	&pci_dev_rom_attr_group,
- 	&pci_dev_reset_attr_group,
--- 
-2.54.0
 
