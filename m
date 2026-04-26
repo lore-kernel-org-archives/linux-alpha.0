@@ -1,147 +1,198 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B25B333440
-	for <linux-alpha@vger.kernel.org>; Fri, 24 Apr 2026 07:16:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.49
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777015019; cv=pass; b=cY3hDxhyt6qcmeA7nPTaB+nj+W2PA1Alu1h90+CETvCc6sCG7v6cs3W2DQdrmiPCHB7Ow/QoyMv/QYyZFxLBfaaCZOMdNbwdt0Aj7dQmdGhwq7alv50fx91TK5rC1Ds9BAaEH5+QUJajr15XSwGtJm4evNaq4jgBqAGMfers6VU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777015019; c=relaxed/simple;
-	bh=W+ssi1VXndSbA3jTir7s/4LRoYtNUVNtJuZsueaDSGE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MOpCsgeVxlc5YzY2DHlaI3h/fRhwRKkQ6khl9QsisH4zcgtq6b/XhQQBuPyt3UNruyxdDNpLV2RTHazuTg0E10ArYU1Hd+1REctRe59vzt5GEDMb9qZrL9MYl2CP6eFhEJw3VGL1wAeIhay2ImV8wt1oeybTXO0QbuwLW0MDcPA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ii/v758E; arc=pass smtp.client-ip=209.85.208.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 191AD261B70
+	for <linux-alpha@vger.kernel.org>; Sun, 26 Apr 2026 21:48:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777240098; cv=none; b=dANKMClYyphGWFTiEEm6CmXPHNywW0ETgJlfyEoznCcgQ+6YgF87N/RbiVoXuORZ+9lyqTNDkV201rzbEXZWgS3cFoBsqSsms6lRHW9xEydMvLq6djwiWbefmSzK4gEGR9h3sqmZsphpcZTGQQtsHdqzVWfowFLvTxaXHoJjLs4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777240098; c=relaxed/simple;
+	bh=o+vhOTjLhvS47fv9tom+Yt3TM9vgXV0mo+tAnh6qa+g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WrR+4+ZNBx2Krm+qc+l+fSVOc0ghCJ9fRDZDgwR+Zcb8bfvrjQovcQQ5GQ10owVBEcX24ePoyC45Y4G8YOt9zHFXeEtYnbShmy/wf7VgKg+AXr/A48qbWDrbM3DSTx8kd+oWmgB/wHv4+8yIlp3R4F51K00Sq2I0DfbggzXZpI8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=TgPxFQY1; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=rezq0HIx; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ii/v758E"
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-67893fba9c3so2357674a12.2
-        for <linux-alpha@vger.kernel.org>; Fri, 24 Apr 2026 00:16:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1777015016; cv=none;
-        d=google.com; s=arc-20240605;
-        b=CXfldwKssMIzuY2n759LCcM+gRWx+gj/9dYIe5HtjuCr/9xvbYU/vvLscVfu5PU6Tj
-         OhC1F7wyhGcl4Ryv6hbv88iotOq7XD86hURLA72rvqMAzvad7M2yLTL32hHKche4fhON
-         qO04gtSMe0SeW8SaNW5PqIFeTEjEQd7QPBi/v7lQOsECcHsOzGl8yIURHDkWw6DrmTgg
-         yQFO9rcGB4c6qxhaUxjbRdNyyVbRX//VwbZO6li5OEx1TFT713V7cCAzA3voXVWKHquS
-         cWaFcreqRWAjYlutox8HH2xu7QH9A9SDhh0XrddstQCFAeQCsXeN0xq6sGw9m63gjTFu
-         0fcA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=8uv1ap7wfpWSK/rjkumTWgHiVOSnLQXCSFDMADgPR1Y=;
-        fh=aOetBlYVA3iV197WdESmX46ws60p5ouKvoxY2eo3xDM=;
-        b=A8mK2mlqo4b/YOIoD65FjCq9Zi5haCNnlA4Mka6s885UHNsB5j5IZ3vI6wb4g0gWnN
-         1hvhWAX/No7LMPsLIBV46yLjSKUVHFLbumVUAa+bkmeMY3MB0O4+iCFdpWGakTk9c3as
-         V+2p6zRMdJuk5+2jRhgieApXR+ZJfFqxY1bjWEB0JOupl6XoRmJyZGOjTqP+T/zQY0dw
-         vp3i8TU+g5jRJh7zqDIGPwhmKgl28sGUtkUp0J8Aroh9MCz+8qEp8tl4ezq92u7Nyx6o
-         s0zGVyaz+rjT/kXAUhO2uxTS8kNslK/C+s9vpjvFFY1ub9PTPWi6K07juOIxEQgDHJIl
-         g59A==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TgPxFQY1";
+	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="rezq0HIx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1777240096;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=KxxPeFo8b5YQQgq6okT6k4ODeRwXIuGSW0SUh4EUnR0=;
+	b=TgPxFQY1VvQDzV5yyrlydLtRzB0pW9KQSYCoi3c5I3q9+mjOTnqUGV7Sbo290w9wNb7En0
+	wOvmRbdDw3eyQISgm7xbK020jiC8xXzTWp8XLzJQHSviJU0d9pPwYaHrmI7BIw4MBer5Ot
+	kMWo/hjB8cpOBkH+uh0qztTA1ro2xWc=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-682-YbDCZzj2NaS9DvsSQ2hNUg-1; Sun, 26 Apr 2026 17:48:14 -0400
+X-MC-Unique: YbDCZzj2NaS9DvsSQ2hNUg-1
+X-Mimecast-MFC-AGG-ID: YbDCZzj2NaS9DvsSQ2hNUg_1777240093
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-4836abfc742so85048135e9.0
+        for <linux-alpha@vger.kernel.org>; Sun, 26 Apr 2026 14:48:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1777015016; x=1777619816; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8uv1ap7wfpWSK/rjkumTWgHiVOSnLQXCSFDMADgPR1Y=;
-        b=Ii/v758ESAPCph1vuePCXkFXQqx0DIewWiAP07QoulSKxGGgKcF7EQtj2F//bLSVrp
-         Talx2NtuhA/ZUOBYlmrO8renTgK6nt+VJyOjno4TJHW4h9ly6b4bRXvr7ARjBID1riEr
-         68MUQnetBgUwPdBwa6ZKbyOFeLUUzzSkFXmO6ARbMYRVTQJgup1FFTsxJVEEb9S5Puy/
-         6JX3j5/S/ZxI2cunsZYGL0OZuP9uRdXtuQlOfc/hwg9lXTYhrK+iSiZfzqGUEyy946f0
-         s0chDp59e0d913IZJYSiAXs9zNEGqVw9BiUldEhCCK9UHAW54FloxLHH9dGsTq8Df+7v
-         d4ug==
+        d=redhat.com; s=google; t=1777240093; x=1777844893; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KxxPeFo8b5YQQgq6okT6k4ODeRwXIuGSW0SUh4EUnR0=;
+        b=rezq0HIx5sTnzlA6s6dxqTv+0IQOo9Z2pEqzW6tGfRCFJYVKubIuFa441hLh0WV3vw
+         diZUcsi5VcsDVjsDnWCSM7C0+/zl8ocXL4WXK/Qm4W8WDjwebbKg5iqKfq4kg0NxW649
+         iJEjknvzFUx5M/Hc8XX5ZMKcInkNQxm9KSKS5rUUxwxwIAHEy3fEMORIib8HsETFvwAF
+         Dag+vaTxlitpVxNNh9WcgI1ihClnwDbuZwpoGg8V4UuSd8lBcNK1dxGx82WGnue9q1t5
+         wFcuIBq3cuOjBUPNkG7tOy/PEGHLbWsRUcijkzFYiHltASuSmpYPtPeRZzyNItpGctQt
+         RvwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777015016; x=1777619816;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=8uv1ap7wfpWSK/rjkumTWgHiVOSnLQXCSFDMADgPR1Y=;
-        b=RZSm59+WpMamOjHk7LUyKtUNBWAmP1kuJ6dMz/+LvwBWSFCFhtfmzzx9kuKNANq9nr
-         dcRSdodFQg9H687qkSg7AglaIXf1An/VDyutNTOEonPGgXtiMjPv+YqEdFsieDZBaI5Y
-         zbKHio5AuEIV4iXt6LSYERir96NbIwa3ZVYNkBOaw/MFtQd1+l7gqFLOgXyLp18VFJsA
-         prLCrMK1rqwZVKxMcK8FejXVIy85LpbhJmG27lwRlpKdp05ngmbx5pHRZhplb+CxSv4N
-         jV73F3SUhJJjK0GzQLRN2Z27x0ovAkfKtvptHoA1ZmySkLSOWAxmV0C0U2SLEXuCVMyh
-         hHpg==
-X-Forwarded-Encrypted: i=1; AFNElJ9EbW/W322vqr9TKfYL5JGqm5b83O/YatYXueBNvuu9f1dY4QiCBMVmy3xWQRBFAmraorhx9HJsMz+CVQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx5teC6y53zNtPWau90quPnjqxhsWi+CLRKFpgIJPHLFVvMfGTQ
-	HNptefWMf6+9JHUo5EF8mXtMnDls0y+SMyds9/QThnyXH/RayywF+xrqYsOEkrRaBLyp/6ynirn
-	i4WS+ohSSsI0TWv+GX89JYlOmK8pIBI4=
-X-Gm-Gg: AeBDievxMB7+8G72r45A65P7tRivlRQ4x1/nN/0fWQFcIOQhcTOZehKzwvg8SquCtw+
-	Vej7MxW4FNyMcdKi93K4Vn621qf+kkspNr0kEovQiz914f8NQwArVKhrU69lxuEOsVS4sPiTrpd
-	/n28xAq/a+g5AcD/FHoe1zG1FLQcsHzGmasHjqcxuYEj8cv0mgqTsFZYfRUljaCH7HlLy+w3wY3
-	aVP2bCNg44LF/uLHkhyIaGyjq6FjyV2yhlnMBkQ09q1XesBci7hqC0xnNC6FpoddPJHGdM53+Ow
-	YC/chT0o5uA27crZifJtK9hUU8c3B3xXL/mqrP/awAHoLKH+xoU=
-X-Received: by 2002:a17:907:1ca1:b0:bad:dfe1:6a56 with SMTP id
- a640c23a62f3a-baddfe16c2dmr60367766b.30.1777015016077; Fri, 24 Apr 2026
- 00:16:56 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1777240093; x=1777844893;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=KxxPeFo8b5YQQgq6okT6k4ODeRwXIuGSW0SUh4EUnR0=;
+        b=si6zfJ+P0CMCATyh77265iNJm/V5wCqT2+1KHezbKXgpaNxRBgWHjAenGXfjT3X51G
+         x7HC41bRpRZs8qmxHpsqMu5qalvw9PU7W952zj25E9d0Iq84GleR0zVmr75xXPGgomVT
+         YoNabKRf7w7+FwTgPQcpg5kAFPIEF6RH9JCmy7Hh5nxiR+KL2CwWcKbGudbybEcy4hPd
+         7M1qfuAw9OJfLLwlkxXZAsmToSMSlWZ0OPwgiNcfJXBA26Z/V5x97q5Ma6g4FCC8J/if
+         kIKOHwbacDRrjnQq4V9AR1dDKfDjHeVcTkCEkVIeNa8woAbS+WQBqU1uggM0/4qF5NXz
+         u1Dw==
+X-Forwarded-Encrypted: i=1; AFNElJ9lP5xI4eW6Pv6XSRMXx0y/U0XWodDN/n2tJjFuP98Px/MBY0tTKV1LUqB4wiwh3W4i+2i2m9rCKi4r2g==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy1aWYTaoEl+WSgYBLl5RXYqA5JbCRtTqnbauduYdcFQA5D3gTQ
+	3yoCq0dHZvgyTyhTDE4dcH3J0NubNXc9x+nd1bHDMKi68MmV15OLu1a0klsAhWo4RaryQPMRj8i
+	IvQQTTk4p9XtMUKeossNRKag/Ss5h5wKG+kbPG3knB8KY99g9GjaYGANETetsG6YD
+X-Gm-Gg: AeBDieszJ6NWFuvoIqw7QtHVsXUYIE2qmQyv9TEAUEr47WPD1vzD5PCbzMF7ueHuHz1
+	JNrfaSFQiIFUG3L1YpHl00F+PyV1yq1bhIjEItrhgpbaJdY3Err5S0a3O1J+lbWjk6vTavX06Qv
+	VrDaPwl7R6frFWyeeyKDXhjyjDBnNBvG89wU50f7kCaDIRVlMsC9/6bc2RDexOrr/y52OlO4uve
+	9l+Eiblsm8QwCc0BzzEbM7Ji52aGYWtmY8Vq6MDeZKBsB87YHN3hF1b5YfMSLtlJB4tYHG1tPNQ
+	9OEbe0VFmU6qYkx/HdEyLYQzZbhNNTjZzT4by3DA/U8g0LS26p1c4nOVXhqla0KtC99Kgf96g6J
+	qL5tKt8aweZvAX0DefHBgTw0O/0yhfqcW218Ta0h1grMl+p5gxbQLJMgC
+X-Received: by 2002:a05:600c:6296:b0:488:c40b:c8a4 with SMTP id 5b1f17b1804b1-488fb73d764mr551942915e9.1.1777240093419;
+        Sun, 26 Apr 2026 14:48:13 -0700 (PDT)
+X-Received: by 2002:a05:600c:6296:b0:488:c40b:c8a4 with SMTP id 5b1f17b1804b1-488fb73d764mr551942475e9.1.1777240092952;
+        Sun, 26 Apr 2026 14:48:12 -0700 (PDT)
+Received: from redhat.com (IGLD-80-230-47-179.inter.net.il. [80.230.47.179])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-489fec8f7cbsm454414365e9.11.2026.04.26.14.48.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Apr 2026 14:48:12 -0700 (PDT)
+Date: Sun, 26 Apr 2026 17:48:09 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: linux-kernel@vger.kernel.org
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Brendan Jackman <jackmanb@google.com>,
+	Michal Hocko <mhocko@suse.com>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Andrea Arcangeli <aarcange@redhat.com>,
+	Gregory Price <gourry@gourry.net>, linux-mm@kvack.org,
+	virtualization@lists.linux.dev, Magnus Lindholm <linmag7@gmail.com>,
+	Greg Ungerer <gerg@linux-m68k.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, linux-alpha@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
+Subject: [PATCH RFC v4 12/22] mm: remove arch vma_alloc_zeroed_movable_folio
+ overrides
+Message-ID: <424f14373b3339c93cab7a080614b7e0dbe7596f.1777223007.git.mst@redhat.com>
+References: <cover.1777223007.git.mst@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1776808209.git.mst@redhat.com> <006f9142e591ba8c340c3b354aee76aec5c285b9.1776808210.git.mst@redhat.com>
-In-Reply-To: <006f9142e591ba8c340c3b354aee76aec5c285b9.1776808210.git.mst@redhat.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Fri, 24 Apr 2026 09:16:43 +0200
-X-Gm-Features: AQROBzARFJV36R4zYM7xbfHPyy5Ua1V3EjGjDIipUn9qIBzgKGxem5ahIafz8os
-Message-ID: <CA+=Fv5T83qH-c0U4eXO84HQmG=225SepaxVYzrpQh_CWMhG5hg@mail.gmail.com>
-Subject: Re: [PATCH RFC v3 10/19] mm: remove arch vma_alloc_zeroed_movable_folio
- overrides
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	David Hildenbrand <david@kernel.org>, Vlastimil Babka <vbabka@kernel.org>, 
-	Brendan Jackman <jackmanb@google.com>, Michal Hocko <mhocko@suse.com>, 
-	Suren Baghdasaryan <surenb@google.com>, Jason Wang <jasowang@redhat.com>, 
-	Andrea Arcangeli <aarcange@redhat.com>, Gregory Price <gourry@gourry.net>, linux-mm@kvack.org, 
-	virtualization@lists.linux.dev, 
-	Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
-	Greg Ungerer <gerg@linux-m68k.org>, Geert Uytterhoeven <geert@linux-m68k.org>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
-	Sven Schnelle <svens@linux.ibm.com>, Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, 
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	"H. Peter Anvin" <hpa@zytor.com>, linux-alpha@vger.kernel.org, 
-	linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1777223007.git.mst@redhat.com>
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 
-On Wed, Apr 22, 2026 at 12:01=E2=80=AFAM Michael S. Tsirkin <mst@redhat.com=
-> wrote:
->
-> Now that the generic vma_alloc_zeroed_movable_folio() uses
-> __GFP_ZERO, the arch-specific macros on alpha, m68k, s390, and
-> x86 that did the same thing are redundant.  Remove them.
->
-> arm64 is not affected: it has a real function override that
-> handles MTE tag zeroing, not just __GFP_ZERO.
->
-> Suggested-by: David Hildenbrand <david@kernel.org>
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> ---
->  arch/alpha/include/asm/page.h   | 3 ---
->  arch/m68k/include/asm/page_no.h | 3 ---
->  arch/s390/include/asm/page.h    | 3 ---
->  arch/x86/include/asm/page.h     | 3 ---
->  4 files changed, 12 deletions(-)
->
-> diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.=
-h
-> index 59d01f9b77f6..4327029cd660 100644
-> --- a/arch/alpha/include/asm/page.h
-> +++ b/arch/alpha/include/asm/page.h
-> @@ -12,9 +12,6 @@
->
->  extern void clear_page(void *page);
->
-> -#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
-> -       vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
-> -
->  extern void copy_page(void * _to, void * _from);
->  #define copy_user_page(to, from, vaddr, pg)    copy_page(to, from)
->
+Now that the generic vma_alloc_zeroed_movable_folio() uses
+__GFP_ZERO, the arch-specific macros on alpha, m68k, s390, and
+x86 that did the same thing are redundant.  Remove them.
 
-From an alpha perspective, this looks good to me.
+arm64 is not affected: it has a real function override that
+handles MTE tag zeroing, not just __GFP_ZERO.
 
+Suggested-by: David Hildenbrand <david@kernel.org>
 Acked-by: Magnus Lindholm <linmag7@gmail.com>
+Acked-by: Greg Ungerer <gerg@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ arch/alpha/include/asm/page.h   | 3 ---
+ arch/m68k/include/asm/page_no.h | 3 ---
+ arch/s390/include/asm/page.h    | 3 ---
+ arch/x86/include/asm/page.h     | 3 ---
+ 4 files changed, 12 deletions(-)
+
+diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
+index 59d01f9b77f6..4327029cd660 100644
+--- a/arch/alpha/include/asm/page.h
++++ b/arch/alpha/include/asm/page.h
+@@ -12,9 +12,6 @@
+ 
+ extern void clear_page(void *page);
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ extern void copy_page(void * _to, void * _from);
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
+ 
+diff --git a/arch/m68k/include/asm/page_no.h b/arch/m68k/include/asm/page_no.h
+index d2532bc407ef..f511b763a235 100644
+--- a/arch/m68k/include/asm/page_no.h
++++ b/arch/m68k/include/asm/page_no.h
+@@ -12,9 +12,6 @@ extern unsigned long memory_end;
+ 
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #define __pa(vaddr)		((unsigned long)(vaddr))
+ #define __va(paddr)		((void *)((unsigned long)(paddr)))
+ 
+diff --git a/arch/s390/include/asm/page.h b/arch/s390/include/asm/page.h
+index f339258135f7..04020a19a5cf 100644
+--- a/arch/s390/include/asm/page.h
++++ b/arch/s390/include/asm/page.h
+@@ -67,9 +67,6 @@ static inline void copy_page(void *to, void *from)
+ 
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #ifdef CONFIG_STRICT_MM_TYPECHECKS
+ #define STRICT_MM_TYPECHECKS
+ #endif
+diff --git a/arch/x86/include/asm/page.h b/arch/x86/include/asm/page.h
+index 416dc88e35c1..92fa975b46f3 100644
+--- a/arch/x86/include/asm/page.h
++++ b/arch/x86/include/asm/page.h
+@@ -28,9 +28,6 @@ static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
+ 	copy_page(to, from);
+ }
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #ifndef __pa
+ #define __pa(x)		__phys_addr((unsigned long)(x))
+ #endif
+-- 
+MST
+
