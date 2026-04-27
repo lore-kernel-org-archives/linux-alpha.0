@@ -1,198 +1,193 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 191AD261B70
-	for <linux-alpha@vger.kernel.org>; Sun, 26 Apr 2026 21:48:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 549803B9DA6;
+	Mon, 27 Apr 2026 14:10:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777240098; cv=none; b=dANKMClYyphGWFTiEEm6CmXPHNywW0ETgJlfyEoznCcgQ+6YgF87N/RbiVoXuORZ+9lyqTNDkV201rzbEXZWgS3cFoBsqSsms6lRHW9xEydMvLq6djwiWbefmSzK4gEGR9h3sqmZsphpcZTGQQtsHdqzVWfowFLvTxaXHoJjLs4=
+	t=1777299040; cv=none; b=iMnqH8KT5EQebja7QzQ68GFy+NhKfj9+ZJUEiA6o32t9/5NvMICKABf+TM9r9xho+QonMNZJNzJkbxuWL9BdUttfw4E+7kP+isbQG6jolXbcWkGLPUddfXiwVzxDGOQI8pRpyZsunRMhefj98PjkgVi4u688ZewU6h5rsKq+WtY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777240098; c=relaxed/simple;
-	bh=o+vhOTjLhvS47fv9tom+Yt3TM9vgXV0mo+tAnh6qa+g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WrR+4+ZNBx2Krm+qc+l+fSVOc0ghCJ9fRDZDgwR+Zcb8bfvrjQovcQQ5GQ10owVBEcX24ePoyC45Y4G8YOt9zHFXeEtYnbShmy/wf7VgKg+AXr/A48qbWDrbM3DSTx8kd+oWmgB/wHv4+8yIlp3R4F51K00Sq2I0DfbggzXZpI8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=TgPxFQY1; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=rezq0HIx; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1777299040; c=relaxed/simple;
+	bh=RkKqyrysBUT7flg1f6VdMeLLMLba04eccNzcmGE8CSc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=h4lvgsZXJTAzv1UPiHYr1Mpr0Ykjcd40dPQzR7xtJ2lFAfIDmUDDZZ0TpwILhNHHmsVeguKhGHaRskLvo4JqiKhfgX9oQxipHSmR6CQWEdzkZir/2wT5u8bDNaob7zZWtE/QC/JX+nBiRYW2rxQKaDR5KcwSRxyWuFMj4KHfY9Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=oo3sGO51; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TgPxFQY1";
-	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="rezq0HIx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1777240096;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KxxPeFo8b5YQQgq6okT6k4ODeRwXIuGSW0SUh4EUnR0=;
-	b=TgPxFQY1VvQDzV5yyrlydLtRzB0pW9KQSYCoi3c5I3q9+mjOTnqUGV7Sbo290w9wNb7En0
-	wOvmRbdDw3eyQISgm7xbK020jiC8xXzTWp8XLzJQHSviJU0d9pPwYaHrmI7BIw4MBer5Ot
-	kMWo/hjB8cpOBkH+uh0qztTA1ro2xWc=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-682-YbDCZzj2NaS9DvsSQ2hNUg-1; Sun, 26 Apr 2026 17:48:14 -0400
-X-MC-Unique: YbDCZzj2NaS9DvsSQ2hNUg-1
-X-Mimecast-MFC-AGG-ID: YbDCZzj2NaS9DvsSQ2hNUg_1777240093
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-4836abfc742so85048135e9.0
-        for <linux-alpha@vger.kernel.org>; Sun, 26 Apr 2026 14:48:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=redhat.com; s=google; t=1777240093; x=1777844893; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KxxPeFo8b5YQQgq6okT6k4ODeRwXIuGSW0SUh4EUnR0=;
-        b=rezq0HIx5sTnzlA6s6dxqTv+0IQOo9Z2pEqzW6tGfRCFJYVKubIuFa441hLh0WV3vw
-         diZUcsi5VcsDVjsDnWCSM7C0+/zl8ocXL4WXK/Qm4W8WDjwebbKg5iqKfq4kg0NxW649
-         iJEjknvzFUx5M/Hc8XX5ZMKcInkNQxm9KSKS5rUUxwxwIAHEy3fEMORIib8HsETFvwAF
-         Dag+vaTxlitpVxNNh9WcgI1ihClnwDbuZwpoGg8V4UuSd8lBcNK1dxGx82WGnue9q1t5
-         wFcuIBq3cuOjBUPNkG7tOy/PEGHLbWsRUcijkzFYiHltASuSmpYPtPeRZzyNItpGctQt
-         RvwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1777240093; x=1777844893;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KxxPeFo8b5YQQgq6okT6k4ODeRwXIuGSW0SUh4EUnR0=;
-        b=si6zfJ+P0CMCATyh77265iNJm/V5wCqT2+1KHezbKXgpaNxRBgWHjAenGXfjT3X51G
-         x7HC41bRpRZs8qmxHpsqMu5qalvw9PU7W952zj25E9d0Iq84GleR0zVmr75xXPGgomVT
-         YoNabKRf7w7+FwTgPQcpg5kAFPIEF6RH9JCmy7Hh5nxiR+KL2CwWcKbGudbybEcy4hPd
-         7M1qfuAw9OJfLLwlkxXZAsmToSMSlWZ0OPwgiNcfJXBA26Z/V5x97q5Ma6g4FCC8J/if
-         kIKOHwbacDRrjnQq4V9AR1dDKfDjHeVcTkCEkVIeNa8woAbS+WQBqU1uggM0/4qF5NXz
-         u1Dw==
-X-Forwarded-Encrypted: i=1; AFNElJ9lP5xI4eW6Pv6XSRMXx0y/U0XWodDN/n2tJjFuP98Px/MBY0tTKV1LUqB4wiwh3W4i+2i2m9rCKi4r2g==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy1aWYTaoEl+WSgYBLl5RXYqA5JbCRtTqnbauduYdcFQA5D3gTQ
-	3yoCq0dHZvgyTyhTDE4dcH3J0NubNXc9x+nd1bHDMKi68MmV15OLu1a0klsAhWo4RaryQPMRj8i
-	IvQQTTk4p9XtMUKeossNRKag/Ss5h5wKG+kbPG3knB8KY99g9GjaYGANETetsG6YD
-X-Gm-Gg: AeBDieszJ6NWFuvoIqw7QtHVsXUYIE2qmQyv9TEAUEr47WPD1vzD5PCbzMF7ueHuHz1
-	JNrfaSFQiIFUG3L1YpHl00F+PyV1yq1bhIjEItrhgpbaJdY3Err5S0a3O1J+lbWjk6vTavX06Qv
-	VrDaPwl7R6frFWyeeyKDXhjyjDBnNBvG89wU50f7kCaDIRVlMsC9/6bc2RDexOrr/y52OlO4uve
-	9l+Eiblsm8QwCc0BzzEbM7Ji52aGYWtmY8Vq6MDeZKBsB87YHN3hF1b5YfMSLtlJB4tYHG1tPNQ
-	9OEbe0VFmU6qYkx/HdEyLYQzZbhNNTjZzT4by3DA/U8g0LS26p1c4nOVXhqla0KtC99Kgf96g6J
-	qL5tKt8aweZvAX0DefHBgTw0O/0yhfqcW218Ta0h1grMl+p5gxbQLJMgC
-X-Received: by 2002:a05:600c:6296:b0:488:c40b:c8a4 with SMTP id 5b1f17b1804b1-488fb73d764mr551942915e9.1.1777240093419;
-        Sun, 26 Apr 2026 14:48:13 -0700 (PDT)
-X-Received: by 2002:a05:600c:6296:b0:488:c40b:c8a4 with SMTP id 5b1f17b1804b1-488fb73d764mr551942475e9.1.1777240092952;
-        Sun, 26 Apr 2026 14:48:12 -0700 (PDT)
-Received: from redhat.com (IGLD-80-230-47-179.inter.net.il. [80.230.47.179])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-489fec8f7cbsm454414365e9.11.2026.04.26.14.48.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 26 Apr 2026 14:48:12 -0700 (PDT)
-Date: Sun, 26 Apr 2026 17:48:09 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: linux-kernel@vger.kernel.org
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Brendan Jackman <jackmanb@google.com>,
-	Michal Hocko <mhocko@suse.com>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Andrea Arcangeli <aarcange@redhat.com>,
-	Gregory Price <gourry@gourry.net>, linux-mm@kvack.org,
-	virtualization@lists.linux.dev, Magnus Lindholm <linmag7@gmail.com>,
-	Greg Ungerer <gerg@linux-m68k.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H. Peter Anvin" <hpa@zytor.com>, linux-alpha@vger.kernel.org,
-	linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
-Subject: [PATCH RFC v4 12/22] mm: remove arch vma_alloc_zeroed_movable_folio
- overrides
-Message-ID: <424f14373b3339c93cab7a080614b7e0dbe7596f.1777223007.git.mst@redhat.com>
-References: <cover.1777223007.git.mst@redhat.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="oo3sGO51"
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 63R4PgGb358063;
+	Mon, 27 Apr 2026 14:10:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=a7JaMq
+	hDSTtKP1nxs8mIWHrE2LNBA2J8QRTcf6ZYiH4=; b=oo3sGO51pv6OKG5DFjukmj
+	iJ+8UF7BuKWfWDsSRHJMJxXgbPEEaG0+NCa56T7iqBcjX2VmfU/wrGxNQZeUgeDf
+	sPsNzBb/bCL7ZPGyUV5LerJYiuEDnd+1zpJyCrRJZ04DRqveh0zN79+N82cfpwrU
+	OgDM4OTh2aJ5VtVPsBuaS9crOlYFAxjz2oYYRtgI9N5GpUjCRDCszZze+NaIe9Fz
+	wk66LEb0WotoYmtbx8Hwyvu39P8LEKY3DzYr8ZDovoLbCFQdfCMb6XRM++RfD5A9
+	wvM6ZbONZJNDQwI2Ny38uOxqo8NbL/BBwLcvU2oKTW1eLEQcnfM/vfwYarmHnxyg
+	==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4drnb50rpx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 27 Apr 2026 14:10:04 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 63RE8pI3021819;
+	Mon, 27 Apr 2026 14:10:03 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 4ds7xq5khb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 27 Apr 2026 14:10:03 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 63REA1OJ53019092
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Mon, 27 Apr 2026 14:10:01 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 900132004B;
+	Mon, 27 Apr 2026 14:10:01 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6A01420040;
+	Mon, 27 Apr 2026 14:09:57 +0000 (GMT)
+Received: from [9.123.12.85] (unknown [9.123.12.85])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Mon, 27 Apr 2026 14:09:57 +0000 (GMT)
+Message-ID: <56ce57ca-b5ce-415c-b17e-bdcddf93770e@linux.ibm.com>
+Date: Mon, 27 Apr 2026 19:39:56 +0530
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1777223007.git.mst@redhat.com>
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 00/24] PCI: Convert all dynamic sysfs attributes to
+ static
+To: =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc: Bjorn Helgaas <helgaas@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Magnus Lindholm <linmag7@gmail.com>, Matt Turner <mattst88@gmail.com>,
+        Richard Henderson <richard.henderson@linaro.org>,
+        Christophe Leroy <chleroy@kernel.org>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>, Dexuan Cui <decui@microsoft.com>,
+        =?UTF-8?Q?Krzysztof_Ha=C5=82asa?=
+ <khalasa@piap.pl>,
+        Lukas Wunner <lukas@wunner.de>, "Oliver O'Halloran" <oohall@gmail.com>,
+        Saurabh Singh Sengar <ssengar@microsoft.com>,
+        Shuan He <heshuan@bytedance.com>,
+        Srivatsa Bhat
+ <srivatsabhat@microsoft.com>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>,
+        linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+References: <20260422161407.118748-1-kwilczynski@kernel.org>
+ <20260423172200.GA2271460@rocinante>
+Content-Language: en-US
+From: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+In-Reply-To: <20260423172200.GA2271460@rocinante>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-Authority-Analysis: v=2.4 cv=AqDeGu9P c=1 sm=1 tr=0 ts=69ef6e3c cx=c_pps
+ a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
+ a=IkcTkHD0fZMA:10 a=A5OVakUREuEA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=U7nrCbtTmkRpXpFmAIza:22 a=VwQbUJbxAAAA:8
+ a=QyXUC8HyAAAA:8 a=U0zfkUukAAAA:8 a=c92rfblmAAAA:8 a=pGLkceISAAAA:8
+ a=VnNF1IyMAAAA:8 a=FB4Pc6ld7FYhm39QvKAA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=rXRU1dkEVDZ1dOovDhQH:22 a=GvGzcOZaWPEFPQC_NcjD:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNDI3MDE0NyBTYWx0ZWRfX//TWFSeXRnVQ
+ 0Vb2Ne8wBPwL+E2dHkJB/vamFXPlWjwAD7TSU06HSAoLS0azKdsodeYcl8oMO0Ggofnvi5CnOW/
+ JUrANq0WXc/vHB154jrY1IvKHoqeXGxSWuCFU9OlTEFNC0cvhlHjjWtNkG0dNFKOWMdcAfDr2ui
+ hotabDQ1XhHrj/48+yP2Di6OWmbW5e+gvz7FJvlr7R3bshxUnvmYo9QzBpwicbsbO0Q5bXPK0ck
+ bTtavvSV59s3yvVqmJEIpLGrDW94ERAjB2NvU5j22GV+hNyXnklJ3tvpX4PqRsGtGNnlpyB80Jv
+ cfZLGnIInmSM/aXEsd2LnrnwM6rJ9IfhkYN+1e7Igh/1hYqqlx4a1x6ZE7NPqbi/4jE9XdHgvIY
+ CvT4CYzb6WhYgfMTDChqgXeTeoYbuVYpWy/qaydo+usT4XKF5BUCNYWJPCRFlDGxR/+uFqwewH8
+ 7EcigXeXdlCRcMvDDOQ==
+X-Proofpoint-GUID: s2eXEFhHAfT8LQSe00gQCaa5KhkOWOqg
+X-Proofpoint-ORIG-GUID: CSDA3wBC8VPYGjsnSimM148BH4m3RJ0m
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-04-27_04,2026-04-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 priorityscore=1501 phishscore=0 suspectscore=0 clxscore=1011
+ lowpriorityscore=0 spamscore=0 bulkscore=0 impostorscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2604200000 definitions=main-2604270147
 
-Now that the generic vma_alloc_zeroed_movable_folio() uses
-__GFP_ZERO, the arch-specific macros on alpha, m68k, s390, and
-x86 that did the same thing are redundant.  Remove them.
+Hi Krzysztof,
 
-arm64 is not affected: it has a real function override that
-handles MTE tag zeroing, not just __GFP_ZERO.
 
-Suggested-by: David Hildenbrand <david@kernel.org>
-Acked-by: Magnus Lindholm <linmag7@gmail.com>
-Acked-by: Greg Ungerer <gerg@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- arch/alpha/include/asm/page.h   | 3 ---
- arch/m68k/include/asm/page_no.h | 3 ---
- arch/s390/include/asm/page.h    | 3 ---
- arch/x86/include/asm/page.h     | 3 ---
- 4 files changed, 12 deletions(-)
+On 4/23/26 10:52 PM, Krzysztof Wilczyński wrote:
+> Hello,
+>
+>> This series converts every dynamically allocated PCI sysfs attribute to
+>> a static const definition.  After the full series, pci_sysfs_init() and
+>> sysfs_initialized are gone, and every sysfs file is created by the
+>> driver model at device_add() time.
+> A note on testing:
+>
+>    0-day bot (recent test runs; newer builds will arrive later):
+>      - https://lore.kernel.org/linux-pci/202604231622.DgR0zih3-lkp@intel.com
+>      - https://lore.kernel.org/linux-pci/202604161928.DzuHQmeM-lkp@intel.com
+>      - https://lore.kernel.org/linux-pci/202604121312.sF0Ua4gP-lkp@intel.com
+>      - https://lore.kernel.org/linux-pci/202604111631.lrwAylMM-lkp@intel.com
+>      - https://lore.kernel.org/linux-pci/202603170336.zSLrDvlj-lkp@intel.com
+>      - https://lore.kernel.org/linux-pci/202603122052.tMV5rzNq-lkp@intel.com
+>      - https://lore.kernel.org/linux-pci/202603081334.b91RGVS6-lkp@intel.com
+>      - https://lore.kernel.org/linux-pci/202603060207.pnGfKgGa-lkp@intel.com
+>
+>    KernelCI (for the "for-kernelci" branch):
+>      - https://dashboard.kernelci.org/tree/linux-pci/for-kernelci/941dd7c3e16840724dc961f10b84e193d13cdb57
+>      - https://dashboard.kernelci.org/tree/linux-pci/for-kernelci/683e66b11da157f730101f6919c7468a09cf3e3f
+>      - https://dashboard.kernelci.org/tree/linux-pci/for-kernelci/209e2cfd205a8aad4bae32e6f82b96b20902aa74
+>      - https://dashboard.kernelci.org/tree/linux-pci/for-kernelci/70293477e2c0ae8cbc250098818e726e1d658b53
+>      - https://dashboard.kernelci.org/tree?ts=pci
+>
+>    Sashiko's feedback:
+>      - https://sashiko.dev/#/patchset/20260422161407.118748-1-kwilczynski%40kernel.org
+>      - https://sashiko.dev/#/patchset/20260416180107.777065-1-kwilczynski%40kernel.org
+>      - https://sashiko.dev/#/patchset/20260411080148.471335-1-kwilczynski%40kernel.org
+>      - https://sashiko.dev/#/patchset/20260410055040.39233-1-kwilczynski%40kernel.org
+>
+> I sadly do not own any Alpha or PowerPC hardware, so when I was testing
+> these architectures while working on the series, it would be only under
+> QEMU.
 
-diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
-index 59d01f9b77f6..4327029cd660 100644
---- a/arch/alpha/include/asm/page.h
-+++ b/arch/alpha/include/asm/page.h
-@@ -12,9 +12,6 @@
- 
- extern void clear_page(void *page);
- 
--#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
--	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
--
- extern void copy_page(void * _to, void * _from);
- #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
- 
-diff --git a/arch/m68k/include/asm/page_no.h b/arch/m68k/include/asm/page_no.h
-index d2532bc407ef..f511b763a235 100644
---- a/arch/m68k/include/asm/page_no.h
-+++ b/arch/m68k/include/asm/page_no.h
-@@ -12,9 +12,6 @@ extern unsigned long memory_end;
- 
- #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
- 
--#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
--	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
--
- #define __pa(vaddr)		((unsigned long)(vaddr))
- #define __va(paddr)		((void *)((unsigned long)(paddr)))
- 
-diff --git a/arch/s390/include/asm/page.h b/arch/s390/include/asm/page.h
-index f339258135f7..04020a19a5cf 100644
---- a/arch/s390/include/asm/page.h
-+++ b/arch/s390/include/asm/page.h
-@@ -67,9 +67,6 @@ static inline void copy_page(void *to, void *from)
- 
- #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
- 
--#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
--	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
--
- #ifdef CONFIG_STRICT_MM_TYPECHECKS
- #define STRICT_MM_TYPECHECKS
- #endif
-diff --git a/arch/x86/include/asm/page.h b/arch/x86/include/asm/page.h
-index 416dc88e35c1..92fa975b46f3 100644
---- a/arch/x86/include/asm/page.h
-+++ b/arch/x86/include/asm/page.h
-@@ -28,9 +28,6 @@ static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
- 	copy_page(to, from);
- }
- 
--#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
--	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
--
- #ifndef __pa
- #define __pa(x)		__phys_addr((unsigned long)(x))
- #endif
--- 
-MST
+I tested the patches on PPC64 machines running as pSeries(on PowerVM and 
+KVM) also PowerNV.
 
+The sysfs attributes looks normal on boot, and on hotplug/unplug of 
+devices and SRIOV use cases.
+
+I see no warnings/errors in dmesg during PCI scans, initialization.
+
+
+Tested-By: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+
+
+Thanks,
+
+Shivaprasad
+
+
+> That said, Magnus Lindholm was able to test the series on the Alpha
+> hardware he owns, see:
+>
+>    - https://lore.kernel.org/linux-pci/CA+=Fv5Q1tZQwnanw99NbvzT-QenfYz7vUdY02_TuPqHX32ZAiA@mail.gmail.com
+>
+> Lorenzo Pieralisi did some testing reported outside the mailing list (we
+> talked on IRC), on the platform he had issues before, and while the issues
+> were more with procfs races, similar to the sysfs ones this series aims to
+> fix, he didn't notice regressions when having this series applied.
+>
+> Thank you!
+>
+>          Krzysztof
+>
