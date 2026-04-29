@@ -1,90 +1,129 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEA70302750;
-	Wed, 29 Apr 2026 11:26:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13F6B194A6C;
+	Wed, 29 Apr 2026 19:50:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777462002; cv=none; b=T4w88c8pfdui+uKTZ/A75N54vv5+ygt6XtOs+c3C834wo0jn3RKHbz8ymm034YMsyjybqeQRh4/Pkv4+hdKrXyhNd6+FeEmf1vc8g4TePtP2zeSpc7qPPwVv/agvMsclMeZvSkFsu2dIiPIE3NOV7HwPXDkT9IpDdJth3Fb3HrQ=
+	t=1777492257; cv=none; b=my8NNPAzJ8O5fPaDor7cL6CALuHj7w0D4RVEzzpuZperQRA28k0GADsPZaXk+3+Dmqx3HnLPSR54HLkIYQIMB1ma1kzxmTHCw3uK0/T0xTW/+26ex3pDv6j65fPT4HgcHiOWdGckADofAl1SHyJcrGtRcPvePzy3th+9Ut8VTEY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777462002; c=relaxed/simple;
-	bh=HgV0q/+gZ9n2giWTxhUD6P3yQ6wEmY66ZwCWQHhgQ2g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kKGPImIqofHhHWkrh4obt4PWgAsqITzuUZVnGNDkfXyNLSZcsDoFgpxWWpSmbc5g0edrzTytstBlWuiMROxKCSnCuFDN5vsyWoqKkpkiSdJCcn9sghnNkWFaAx9gXkuVuHeVxtZuU4tcBqXoQ9JIGTcKIDXLTkfHvbQdDMgSy0U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ejvHWE1z; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777492257; c=relaxed/simple;
+	bh=KV0jOqo91Nc5X7Pf3+Y8ZL1SPzxDfjq7fwMURhV0piM=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=Z/XDaXz3wfxx1gTs5eHM3XFozdKpHsrUdrmwPLWc/YRaI+eznK4NLRJmSp6lhc4CKJqLr7fY5kRvnOE9F9n0WXFbwZuKSqVAIlaZdV5uajb5Z3H6YkJ+mYsBDoZN5tCED8YS6jH4FOsX0T1lShFkubhbzCyBzo2Lq9Ytax2wWng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NEwvBJq7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ejvHWE1z"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 158D1C19425;
-	Wed, 29 Apr 2026 11:26:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NEwvBJq7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F602C19425;
+	Wed, 29 Apr 2026 19:50:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777462002;
-	bh=HgV0q/+gZ9n2giWTxhUD6P3yQ6wEmY66ZwCWQHhgQ2g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ejvHWE1zJ0tb1KwQu/gVCMj0KcNhlMqCOjLI4kQmWC01EPIO4HFDTFQg5PpNyMx2F
-	 7OMWgwbyfp16yd5ZKGLwfDDMuBlWK8CK9qcSIqUHZRxyhnWE4iAN+OK+xmr5WBtr4T
-	 BgqmCB7r/rsFvwFu/mT2z67QkDE/mDzOf7GDi68KHsQjYM3r7svy7TXqJDW5kWsfNa
-	 xYHmkznhflijvwvOUJkH6AcM42ZHWo8kZp7k26fwbFC82N/jHC8/F/rL8GlM8z6Ksh
-	 UMOZ5KVH94exo80oAIrmoHKOK/k/qke5mU8V2uOXUW3Mlxuf7JynBO/Edq8wMcfI5M
-	 twwrBSWDcoLLw==
-Date: Wed, 29 Apr 2026 12:26:30 +0100
-From: Will Deacon <will@kernel.org>
-To: "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>
-Cc: Yury Norov <ynorov@nvidia.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	David Laight <david.laight.linux@gmail.com>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
-	dmaengine@vger.kernel.org, linux-efi@vger.kernel.org,
-	linux-fsi@lists.ozlabs.org, amd-gfx@lists.freedesktop.org,
-	dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-	linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-	linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-	xen-devel@lists.xenproject.org, linux-fsdevel@vger.kernel.org,
-	ocfs2-devel@lists.linux.dev, bpf@vger.kernel.org,
-	kasan-dev@googlegroups.com, linux-mm@kvack.org,
-	linux-x25@vger.kernel.org, rust-for-linux@vger.kernel.org,
-	linux-sound@vger.kernel.org, sound-open-firmware@alsa-project.org,
-	linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-	loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org,
-	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org,
-	linux-sh@vger.kernel.org, linux-arch@vger.kernel.org,
-	catalin.marinas@arm.com
-Subject: Re: [RFC PATCH v1 8/9] arm64: Add unsafe_copy_from_user()
-Message-ID: <afHq5vyNUJzxVwDV@willie-the-truck>
-References: <cover.1777306795.git.chleroy@kernel.org>
- <5b09e58a84c9edcfe5724db5cd57e45d96a96bfa.1777306795.git.chleroy@kernel.org>
+	s=k20201202; t=1777492256;
+	bh=KV0jOqo91Nc5X7Pf3+Y8ZL1SPzxDfjq7fwMURhV0piM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=NEwvBJq7WK44M3W5Zehz9jff7Syq93gIaLa34rIEJ7kqJgreQpIc/bigVkpENOlov
+	 f9U7oGNP9EVqK5hok1xeIwscY0arcT+jqEPyVKDDdbfoAKEdUlunICYRCNFxhtJRvq
+	 HAaSrXYtgB11Hhix5he+GW0cB3lS7oMpNJdcm/t2LTGeL4t7+otLTbxUpGr7FJCAt7
+	 Iz2bhvjeKsj6Tx0fPPh2grltl4vPcYLHHm+hecuJ84O2oDI30VaXgfdVM/OnhcJQt+
+	 /3Z7K8IBXmGIHP3Wlr0Cuw0gLXdJdihkesJx3urvU8wKPCLiIT0+tlfmqfn3uyO9Gf
+	 4jQDfKAfRS8gw==
+Date: Wed, 29 Apr 2026 14:50:55 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Matt Turner <mattst88@gmail.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>,
+	Lukas Wunner <lukas@wunner.de>,
+	Oliver O'Halloran <oohall@gmail.com>,
+	Saurabh Singh Sengar <ssengar@microsoft.com>,
+	Shuan He <heshuan@bytedance.com>,
+	Srivatsa Bhat <srivatsabhat@microsoft.com>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v6 04/24] PCI/sysfs: Use BAR length in
+ pci_llseek_resource() when attr->size is zero
+Message-ID: <20260429195055.GA312811@bhelgaas>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <5b09e58a84c9edcfe5724db5cd57e45d96a96bfa.1777306795.git.chleroy@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260422161407.118748-5-kwilczynski@kernel.org>
 
-[+Catalin]
-
-On Mon, Apr 27, 2026 at 07:13:49PM +0200, Christophe Leroy (CS GROUP) wrote:
-> At the time being, x86 and arm64 are missing unsafe_copy_from_user().
+On Wed, Apr 22, 2026 at 04:13:47PM +0000, Krzysztof Wilczyński wrote:
+> Both legacy and resource attributes set .f_mapping = iomem_get_mapping,
+> so the default generic_file_llseek() would consult iomem_inode for the
+> file size, which knows nothing about the attribute.  That is why this
+> custom llseek callback exists.
 > 
-> Add it.
+> Currently, the legacy and resource attributes have .size set at creation
+> time, as such, using the attr->size is sufficient.  However, the upcoming
+> static resource attributes will have .size == 0 set, since they are const,
+> and the .bin_size callback will be used to provide the real size to kernfs
+> instead.
 > 
-> Signed-off-by: Christophe Leroy (CS GROUP) <chleroy@kernel.org>
+> Thus, update pci_llseek_resource() to derive the file size from the
+> BAR using pci_resource_len() instead of reading the attr->size directly.
+> 
+> The custom pci_llseek_resource() helper has been added in commit
+> 24de09c16f97 ("PCI: Implement custom llseek for sysfs resource
+> entries").
+> 
+> Signed-off-by: Krzysztof Wilczyński <kwilczynski@kernel.org>
 > ---
->  arch/arm64/include/asm/uaccess.h | 29 ++++++++++++++++++++++++-----
->  1 file changed, 24 insertions(+), 5 deletions(-)
+>  drivers/pci/pci-sysfs.c | 14 ++++++++++++--
+>  1 file changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+> index 6783c6168445..73a9ae9d289b 100644
+> --- a/drivers/pci/pci-sysfs.c
+> +++ b/drivers/pci/pci-sysfs.c
+> @@ -909,11 +909,21 @@ static const struct attribute_group pci_dev_config_attr_group = {
+>   */
+>  static __maybe_unused loff_t
+>  pci_llseek_resource(struct file *filep,
+> -		    struct kobject *kobj __always_unused,
+> +		    struct kobject *kobj,
+>  		    const struct bin_attribute *attr,
+>  		    loff_t offset, int whence)
+>  {
+> -	return fixed_size_llseek(filep, offset, whence, attr->size);
+> +	struct pci_dev *pdev;
+> +	int bar;
+> +
+> +	if (attr->size)
+> +		return fixed_size_llseek(filep, offset, whence, attr->size);
+> +
+> +	pdev = to_pci_dev(kobj_to_dev(kobj));
+> +	bar = (unsigned long)attr->private;
+> +
+> +	return fixed_size_llseek(filep, offset, whence,
+> +				 pci_resource_len(pdev, bar));
 
-Why?
+Is there a case where using "attr->size" is better than using
+"pci_resource_len(pdev, bar)"?
 
-And please cc the arm64 maintainers on arm64 patches next time. You've
-managed to cc most of the world apart from us.
+In other words, would the following be equivalent?
 
-Will
+  pci_llseek_resource(...)
+  {
+    ...
+    pdev = to_pci_dev(kobj_to_dev(kobj));
+    bar = (unsigned long)attr->private;
+
+    return fixed_size_llseek(filep, offset, whence,
+                             pci_resource_len(pdev, bar));
+  }
