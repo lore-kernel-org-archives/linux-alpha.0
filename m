@@ -1,101 +1,103 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A94C1340DA6;
-	Thu, 30 Apr 2026 03:25:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D907282F0C;
+	Thu, 30 Apr 2026 23:32:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777519554; cv=none; b=SVtXiLJVEmUEVP+fmRVBydYvuzF8wccaPo6dMxrO5xNlr7zZE1qbPvC3g4n9AqwZJ/liK5uR2cO7M6q+jdCY4V19NkObgT5vbOR2EejEk2r5Bi4vYPQFSgRkQQjPzLnHrJ0fJmUJjmKIfNKAT8b7vpKepzBX2OlxNmRGBD6qovI=
+	t=1777591954; cv=none; b=JehnLWmf9GILZOOl+oGvuI6WnSzuZ+ikLqxlmycdLPpRw4Fa3XKNz1I4JSFRw5NL+8iXNrao3iU31l7kdepiagK8M5KsGLs4etCZ0mhz2AybHsHnZOYFigysT3kI5kJ//nfDZIA4hn5G3pT2FrZpv2un7e9kCYjhj+JCOOGcRhI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777519554; c=relaxed/simple;
-	bh=7DUN2QuqQEe+BONI1ESG4SkIz1fzsjbqa3ckTuuKON0=;
-	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=IEas1vT90gxtI1lPUrCSKfLn3neEyilN64FRKY7RTMK1LCD78B72sjJXOmrbj0TZdyM9NL5XFxDeRr6RA0JXPdGCjFVur4PZdsZIPhwFEY6s7F7g6g3ZkzJKgxmwIVBhucu/zZcWCwg3FQpewWbrqf4zNtzW48uHStQS7D6SxNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S3K5G1Xo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1777591954; c=relaxed/simple;
+	bh=vnBYxUC+9YLt4GbugUxdFgg5DUIjNo5beM9TG7+8oZs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=m2SiAfLY99I7PuGt0lR9vkt7QGLa6Hd40zaCfwlZvCUFeipFOfeMFZ7hh25jl1K4vXxgQLkHYOX12eGDsijTypDH1VF7H006cdbUpyvJCM08sAtKSeM1I6XOvKIg3OVxo8sQEcQ1XPrJh73JB83weoj+k0XldO2hovd/pYDEOOE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j41sztTr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S3K5G1Xo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67F0EC2BCB8;
-	Thu, 30 Apr 2026 03:25:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j41sztTr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E6B5C2BCB3;
+	Thu, 30 Apr 2026 23:32:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1777519554;
-	bh=7DUN2QuqQEe+BONI1ESG4SkIz1fzsjbqa3ckTuuKON0=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=S3K5G1XovhD07R5O5Cfcy7lVvTxvdUAegkMVL4L8Mtzf9fKcNC7CadGfDm94ncYW3
-	 /b3gcg0/YcLg9Als2F8ssWaUxHQUhQMOrsInNGp23YyNVEoZesnW9na1KfzAJGwADp
-	 KTU1UQLuwoaLC0FxYgCBT9ErRd1+nqtKD6J1vJmiEmkbMPNMtG+lgotURJHsePS61S
-	 RLCqfSNYiEnZojyCuQbicPLDo3ywac2PmflqikQdR6Ir9LNvsPRYjNWI6Ol8jDiw5K
-	 s6K1opc7+K/SSJ8ToRvLUcMAZC9t1wDEJ2EBfwZ5oF2rytHLJHY/YtizCxlNq2AgJI
-	 UMoMxqu7YBolw==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id BA0123809A07;
-	Thu, 30 Apr 2026 03:25:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	s=k20201202; t=1777591953;
+	bh=vnBYxUC+9YLt4GbugUxdFgg5DUIjNo5beM9TG7+8oZs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=j41sztTrnonOcGk4i7hFsn1OZj3ZVxBy22IOCYM1FPKjwTEchsNZvGR98gfhppo7Z
+	 bhMXUaF1QclCYPFnZLBEwnmgWNs9TNJKsNh62PUD+1RlrE+aVZtcf1tAnhKN0pHP0O
+	 yAe89bCvd/XV8/o1niZkrvGAznRCvRcDTVwe9cRO5lqAcR0ymTWO5snVbBDEV6j9RQ
+	 buECZri1HuzCD2UhkhlPV7LZ9sIYFvScZrLTA8roeUusZ/5dftl1JFhLO1UQIUVtyQ
+	 CkNJcOdJYDcuiZpOOCg3OdUweENzWAF3hk1OP9FMM9xgnyLYbjwTBh0HUfjqVpvKvX
+	 icZ1gke5AIg8w==
+Date: Fri, 1 May 2026 08:32:30 +0900
+From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, 
+	Manivannan Sadhasivam <mani@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	Magnus Lindholm <linmag7@gmail.com>, Matt Turner <mattst88@gmail.com>, 
+	Richard Henderson <richard.henderson@linaro.org>, Christophe Leroy <chleroy@kernel.org>, 
+	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	Nicholas Piggin <npiggin@gmail.com>, Dexuan Cui <decui@microsoft.com>, 
+	Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>, Lukas Wunner <lukas@wunner.de>, 
+	Oliver O'Halloran <oohall@gmail.com>, Saurabh Singh Sengar <ssengar@microsoft.com>, 
+	Shuan He <heshuan@bytedance.com>, Srivatsa Bhat <srivatsabhat@microsoft.com>, 
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH v6 04/24] PCI/sysfs: Use BAR length in
+ pci_llseek_resource() when attr->size is zero
+Message-ID: <20260430232202.GA3577346@rocinante>
+References: <20260422161407.118748-5-kwilczynski@kernel.org>
+ <20260429195055.GA312811@bhelgaas>
+ <20260429203625.GA3724801@rocinante>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 0/4] arch, mm: consolidate empty_zero_page
-From: patchwork-bot+linux-riscv@kernel.org
-Message-Id: 
- <177751950929.2274119.3965174046465654804.git-patchwork-notify@kernel.org>
-Date: Thu, 30 Apr 2026 03:25:09 +0000
-References: <20260211103141.3215197-1-rppt@kernel.org>
-In-Reply-To: <20260211103141.3215197-1-rppt@kernel.org>
-To: Mike Rapoport <rppt@kernel.org>
-Cc: linux-riscv@lists.infradead.org, akpm@linux-foundation.org,
- andreas@gaisler.com, bp@alien8.de, bcain@kernel.org, catalin.marinas@arm.com,
- chleroy@kernel.org, davem@davemloft.net, dave.hansen@linux.intel.com,
- david@kernel.org, dinguyen@kernel.org, geert@linux-m68k.org,
- guoren@kernel.org, deller@gmx.de, chenhuacai@kernel.org, mingo@redhat.com,
- johannes@sipsolutions.net, glaubitz@physik.fu-berlin.de,
- Liam.Howlett@oracle.com, lorenzo.stoakes@oracle.com, maddy@linux.ibm.com,
- linmag7@gmail.com, mattst88@gmail.com, jcmvbkbc@gmail.com,
- mpe@ellerman.id.au, mhocko@suse.com, monstr@monstr.eu, palmer@dabbelt.com,
- richard@nod.at, linux@armlinux.org.uk, shorne@gmail.com, surenb@google.com,
- tglx@kernel.org, vgupta@kernel.org, vbabka@suse.cz, will@kernel.org,
- linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
- loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org,
- linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-um@lists.infradead.org, linux-mm@kvack.org,
- x86@kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260429203625.GA3724801@rocinante>
 
-Hello:
+Hello,
 
-This series was applied to riscv/linux.git (fixes)
-by Andrew Morton <akpm@linux-foundation.org>:
+> The alternative would be separate llseek callbacks for both the legacy
+> and resource attributes, which we can add if this would be the preference
+> here.
 
-On Wed, 11 Feb 2026 12:31:37 +0200 you wrote:
-> From: "Mike Rapoport (Microsoft)" <rppt@kernel.org>
-> 
-> Hi,
-> 
-> These patches cleanup handling of ZERO_PAGE() and zero_pfn.
-> 
-> v3 changes:
-> * move zero_page_pfn extern declaration back inside the helpers
-> * add tags, thanks all!
-> 
-> [...]
+If we were to do this, then it would be as follows:
 
-Here is the summary with links:
-  - [v3,1/4] mm: don't special case !MMU for is_zero_pfn() and my_zero_pfn()
-    https://git.kernel.org/riscv/c/652d12bc74a0
-  - [v3,2/4] mm: rename my_zero_pfn() to zero_pfn()
-    https://git.kernel.org/riscv/c/9a1d0c738b45
-  - [v3,3/4] arch, mm: consolidate empty_zero_page
-    https://git.kernel.org/riscv/c/6215d9f4470f
-  - [v3,4/4] mm: cache struct page for empty_zero_page and return it from ZERO_PAGE()
-    https://git.kernel.org/riscv/c/26513781d1b3
+  static loff_t pci_llseek_resource(struct file *filep,
+                                    struct kobject *kobj,
+                                    const struct bin_attribute *attr,
+                                    loff_t offset, int whence)
+  {
+        struct pci_dev *pdev = to_pci_dev(kobj_to_dev(kobj));
+        int bar = (unsigned long)attr->private;
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+        return fixed_size_llseek(filep, offset, whence,
+                                 pci_resource_len(pdev, bar));
+  }
 
+  static loff_t pci_llseek_resource_legacy(struct file *filep,
+					   struct kobject *kobj __always_unused,
+                                           const struct bin_attribute *attr,
+                                           loff_t offset, int whence)
+  {
+        return fixed_size_llseek(filep, offset, whence, attr->size);
+  }
 
+Each callback would be placed within the corresponding #ifdef block, so one
+for HAVE_PCI_MMAP or ARCH_GENERIC_PCI_MMAP_RESOURCE, and the other for the
+legacy attributes, so behind the HAVE_PCI_LEGACY guard.
+
+Note, the names need to be different, as some architectures offer both
+type of resource files, like PowerPC, which defines both the HAVE_PCI_LEGACY
+and HAVE_PCI_MMAP.
+
+With this split, we can also drop the __maybe_unused annotation.
+
+While I wanted to keep the changes to only what was needed for the
+pci_llseek_resource() to cover both type of resources, it would be
+also fine to have two distinct callbacks, too.
+
+Thank you!
+
+	Krzysztof
