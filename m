@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FD152F3C0A;
-	Tue,  5 May 2026 23:19:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60DD540DFDA;
+	Tue,  5 May 2026 23:42:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778023159; cv=none; b=npalkWcdC+u/fqbmf4xoA31nMNMTMaoZpgZ/b/ggVimbINLoUazE2UeeWwKhugSquAvWHpUpRromIagXQ77dFsa3UeEJzM4uP+Awn1OOuIGCj5S2+klJsI3SrnvVI7D0jVC01pPf8KeAw3Z3CCdgMGlE9ee7V3EJbFMUaZYL4lY=
+	t=1778024522; cv=none; b=Vkhv98L0CLiGBiKLzH8LI2x6EwE2ybArVsipVEIKSU2biRzgW315ertjjk3DOJxd0OHIcOLvfOwteSWENwci8GP1jK+mK6X//7bkkce9hmoyLP7wt45gfG7k7eT0wKIEqs/tsBxBQaYG3UBbggTUONNBbh77pBCJcncSJ9v+Yao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778023159; c=relaxed/simple;
-	bh=aSUWwvC/Z4hL7kLLz0uyOBLteb3wXBC4iS5QzbWk3v8=;
+	s=arc-20240116; t=1778024522; c=relaxed/simple;
+	bh=1+LqtftsVIosaHSl04Cer7GCqmGqOkVQufDLaggxVfU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nQrtgLRybCQoci2Bzz07meeMwyKdOr7nwmQJDC38kTf5soKPi7u8hgSivcLCZixE2c+3G1c3CYVOJOVUJQGvKzBm3WEyq5ofBX5qqGHSUa1s3DzkFG7ujJHlAogDCXSDaoWRFZZUwDgY2A+ZOru2X0qd0Kq01tQn49X0xG4+gog=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H1irtPcp; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=byRw1m+3SG6WEuzrsGE+aQaJFArxoMQSg3bHeaMxW7WeK+9f5JItu3CyT5Wy5E7uOy6nIFXY+VISN4VBDy88pmtffezCzPWCfEF2GPDZWFZimzLdT1++bA65LK9KJIGalwOAHUoWpX4B9dcTzJGKjtapziZjD7CwO7FY6cLEe6I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uHV7SKol; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H1irtPcp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF4AAC2BCB4;
-	Tue,  5 May 2026 23:19:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uHV7SKol"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1FD8C2BCB4;
+	Tue,  5 May 2026 23:42:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1778023159;
-	bh=aSUWwvC/Z4hL7kLLz0uyOBLteb3wXBC4iS5QzbWk3v8=;
+	s=k20201202; t=1778024522;
+	bh=1+LqtftsVIosaHSl04Cer7GCqmGqOkVQufDLaggxVfU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=H1irtPcpfqHFY1VDM3K8ELysNJFq/zwjdjMpTSwrQSsgIhrG3hD4jfvtldFC0r+B1
-	 Qv32FF7xVtw6QRvptdGazbpcqIAhhypVAB8rtdLVu6PxiwFnf4vjsyV7QJL1J2CRmP
-	 gaGXGGDc/YsWmrSzjTsD9VdsETYnebTmntkloGM1/R9AvdXITa0lDE606YYADj3Y3b
-	 l6G78KuaByZtWVEudnARiWkGJ1SlPCckAQciDPSAjljBHmkz3gabvnVoKik1123AyO
-	 HnhTR4xt3ZxAaSeWmecxnGt13CJqKt+ps/vRL8UBweVmXQNoh0w9tjSKs0/NAH8uX4
-	 nVitbO6Aijv0A==
-Date: Wed, 6 May 2026 08:19:17 +0900
+	b=uHV7SKol0CAsenoLhmkp0r6exuLnPtN/CCCpf7Il98BCLYLj4pi5bt9uxiANXYhb5
+	 GalDzDowOpCKkjApBkyKZB4epvkQUbNVU46MjLDx0OotsQC+WkYsNC7xlJriSRRV1y
+	 uuOto96W9fnc4u9NW80gZneUfNbrcxZtVB5po3VXB+OMmzgYscw4D7Z/BsPvUlE558
+	 6/ms70vHd86rlzdNIlZDuXB2c8oI+sCkIaJ5kaRsdRi9TjNq8nfTp4yzObBh/qvq/7
+	 LofCPMS4PCe3qdGCVLayBL4PuJ5WkN1qW5JMShfnxxzOz4IHRK0qHbr3XPeMwKPmhV
+	 8y7C2hGk4zXWA==
+Date: Wed, 6 May 2026 08:42:00 +0900
 From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>
 To: Bjorn Helgaas <helgaas@kernel.org>
 Cc: Bjorn Helgaas <bhelgaas@google.com>, 
@@ -40,11 +40,11 @@ Cc: Bjorn Helgaas <bhelgaas@google.com>,
 	Shuan He <heshuan@bytedance.com>, Srivatsa Bhat <srivatsabhat@microsoft.com>, 
 	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, linux-pci@vger.kernel.org, linux-alpha@vger.kernel.org, 
 	linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v6 04/24] PCI/sysfs: Use BAR length in
- pci_llseek_resource() when attr->size is zero
-Message-ID: <20260505231700.GA1410272@rocinante>
-References: <20260430232202.GA3577346@rocinante>
- <20260505214659.GA752301@bhelgaas>
+Subject: Re: [PATCH v6 24/24] PCI/sysfs: Limit BAR resize attribute scope to
+ platforms with PCI mmap
+Message-ID: <20260505231945.GB1410272@rocinante>
+References: <20260430020648.GA3923076@rocinante>
+ <20260505220135.GA752411@bhelgaas>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -53,55 +53,85 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260505214659.GA752301@bhelgaas>
+In-Reply-To: <20260505220135.GA752411@bhelgaas>
 
 Hello,
 
-> > > The alternative would be separate llseek callbacks for both the legacy
-> > > and resource attributes, which we can add if this would be the preference
-> > > here.
+> > > The only platform without these aforementioned defines is Alpha, which is
+> > > conventional PCI only and cannot have ReBAR.  So this guard removes dead
+> > > sysfs code on platforms where it can never be executed.
 > > 
-> > If we were to do this, then it would be as follows:
+> > Having a closer look:
 > > 
-> >   static loff_t pci_llseek_resource(struct file *filep,
-> >                                     struct kobject *kobj,
-> >                                     const struct bin_attribute *attr,
-> >                                     loff_t offset, int whence)
-> >   {
-> >         struct pci_dev *pdev = to_pci_dev(kobj_to_dev(kobj));
-> >         int bar = (unsigned long)attr->private;
+> >   resource_resize_attr_is_visible()
+> >     pci_rebar_get_current_size()      <- returns -ENOTSUPP, so is_visible callback returns 0
+> >       pci_rebar_find_pos()
+> >         pos = pdev->rebar_cap         <- set to 0 on a conventional PCI
+> >         if (!pos)
+> >           return -ENOTSUPP            <- no ReBAR support
 > > 
-> >         return fixed_size_llseek(filep, offset, whence,
-> >                                  pci_resource_len(pdev, bar));
-> >   }
+> > The pdev->rebar_cap is set during PCI enumeration:
 > > 
-> >   static loff_t pci_llseek_resource_legacy(struct file *filep,
-> >					       struct kobject *kobj __always_unused,
-> >                                            const struct bin_attribute *attr,
-> >                                            loff_t offset, int whence)
-> >   {
-> >         return fixed_size_llseek(filep, offset, whence, attr->size);
-> >   }
+> >   pci_init_capabilities()
+> >     pci_rebar_init()
+> >       pdev->rebar_cap = pci_find_ext_capability()
+> >         pci_find_next_ext_capability()
+> >           if (dev->cfg_size <= PCI_CFG_SPACE_SIZE)
+> >             return 0;                 <- dev->cfg_size set to 256 here for conventional PCI
 > > 
-> > Each callback would be placed within the corresponding #ifdef block, so one
-> > for HAVE_PCI_MMAP or ARCH_GENERIC_PCI_MMAP_RESOURCE, and the other for the
-> > legacy attributes, so behind the HAVE_PCI_LEGACY guard.
+> > The PCI_CFG_SPACE_SIZE is 256 here.
 > > 
-> > Note, the names need to be different, as some architectures offer both
-> > type of resource files, like PowerPC, which defines both the HAVE_PCI_LEGACY
-> > and HAVE_PCI_MMAP.
+> > When the platform has support for PCI Express, the dev->cfg_size is then
+> > set to 4096.  On an architecture that supports conventional PCI only (such
+> > as Alpha), the pdev->rebar_cap will be set to 0, the is_visible callback
+> > will then return 0, and the resize sysfs attribute is never created, as
+> > such, the __resource_resize_store() callback will never be executed.
 > > 
-> > With this split, we can also drop the __maybe_unused annotation.
+> > To make the connetion here to the #ifdef guards:
 > > 
-> > While I wanted to keep the changes to only what was needed for the
-> > pci_llseek_resource() to cover both type of resources, it would be
-> > also fine to have two distinct callbacks, too.
+> > For the pci_rebar_get_current_size() to return >= 0, the device needs
+> > PCI Express and extended configuration space support.  As of today,
+> > every architecture with PCI Express support defines HAVE_PCI_MMAP or
+> > ARCH_GENERIC_PCI_MMAP_RESOURCE.
+> > 
+> > I hope the reasoning here works.
 > 
-> Yes, I think this is much more readable than the "if (attr->size)"
-> check.
+> We're talking about this #ifdef:
+> 
+>   +#if defined(HAVE_PCI_MMAP) || defined(ARCH_GENERIC_PCI_MMAP_RESOURCE)
+>    static ssize_t __resource_resize_show(struct device *dev, int n, char *buf)
+>    ...
+>   +#endif
+> 
+> I follow the reasoning now but by next week I won't, so I think it
+> requires too much background knowledge.  Future changes involving
+> HAVE_PCI_MMAP or ARCH_GENERIC_PCI_MMAP_RESOURCE could easily break
+> this.
+> 
+> IIUC it's basically doing what "#ifdef CONFIG_PCI_REBAR" or even
+> "#ifdef CONFIG_PCI_EXPRESS" would do, if we had such a thing.
 
-OK.  I will switch to two llseek callbacks in the next version.
+We don't sadly have such guards at the moment, so using the guards like
+HAVE_PCI_MMAP or ARCH_GENERIC_PCI_MMAP_RESOURCE would be the next best
+thing.  We already rely on these throughout the pci-sysfs.c already, and
+will also rely on either for the static sysfs attributes, so if there was
+some issues with either of these, if these "broke" somehow, then we would
+have other more severe problems.  Note, that architectures rely on these
+macros to let us know about what "feature" is expected to be enabled, so to
+speak, so I would imagine nobody would break this accidentally (famous last
+words) and perhaps with extreme caution would do it on purpose.
 
-Thank you,
+> How terrible would it be if we just accepted this dead code on Alpha?
+
+I would prefer not to build any dead code anywhere if it can be helped,
+especially with as little as two lines of code added.  Plus, most of the
+code setting up resources that are not specific to Alpha, would have been
+disabled using exactly the same guard as the one proposed to be added
+here, not like this sets any precedent or adds something new.
+
+That being said, I will drop this from the next version.
+
+Thank you!
 
 	Krzysztof
+
