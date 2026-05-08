@@ -1,190 +1,349 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C7F339A074
-	for <linux-alpha@vger.kernel.org>; Thu,  7 May 2026 22:23:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 122182F8EAC;
+	Fri,  8 May 2026 04:35:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778192592; cv=none; b=Sww2Y/U7LZNKRtlhZ7NbkC4Z6UpiuCppjigPp7l/ujhiK/qVTj4N7PCTHO/csD1Qcq6pIz9C1Rk4mF4OL4AEdHqsCyiHKEQQqzKVm6SQ+J9BNOrOc7OsQKGMYjgyEc3Qd6NPZiVKi3HTuMC0+/ch5t8ZYIE/bA6fekpeFGIMBuQ=
+	t=1778214949; cv=none; b=NYFAR9qw+jJn4mGC6CIuGD6P1Yd1uB0T0v2nlAj1DqnlJKmA3u9YHqg3ZKRR66/BLPMR4gE90ot9IP4HvcbzJqmR3A4IFXU2ze3pHraDqnKhF/ubGXRvoc+NVMzLYYhawEX5ZvdpiwadmMh84t/Mi0tgUisxxjuFif1qSkkNmrU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778192592; c=relaxed/simple;
-	bh=o+vhOTjLhvS47fv9tom+Yt3TM9vgXV0mo+tAnh6qa+g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dwwOe18090XlMG0/laa11N/mexY+HafouvgBBZgGptEKq0ZK/IDAOHji+FkettjVgDLctED3E6wGqOfl3kJLi3+qg6a74YjK5iZD5BzNt/f1iSi543RXgeh++27Q3OYUnfgrcqgSUVGjMAeigjw5EsinxEfUgkyNoEmK8FyhMqA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Kxn/7SRT; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=K+cB4XwQ; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1778214949; c=relaxed/simple;
+	bh=L5IVCLmebtoVabNgoZlJQXA8WZVntrHmMT+E5piotwM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=HUhf8ft6qZLEQq0YRDOasJa4x8NcLm8WGCUT+H6uhvJGYswIuzHhY6ZZlKp1qs6MGqQ+1l9q+tTudCY7n2yW2Jryu83g8PG8JbJ2WQWPifBCXiaHECOpUxmKogPAU4XYU5wRQN3VE8W6+W3Kf1bPzbHNJ56W9l8tO0/zX1cGxt8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hCAM4YSw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Kxn/7SRT";
-	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="K+cB4XwQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1778192589;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KxxPeFo8b5YQQgq6okT6k4ODeRwXIuGSW0SUh4EUnR0=;
-	b=Kxn/7SRTVg+1y11F3weI900bT53eSmNN/IZfbKom9F+w5LBFqwnxAZPo/9elyIOm0uLSHt
-	l5UsvJQOFSWe3Lvc2eP45z6M5dMvMVHukBk449fL93SJlH+IfI3MQXZ87/qtW8ve4lRj6X
-	Vs8j6xQ9hCtOdYbzFjbcDUAuH3WKYcM=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-711-xLgZ18t3PnmaTa9lX4yDRA-1; Thu, 07 May 2026 18:23:08 -0400
-X-MC-Unique: xLgZ18t3PnmaTa9lX4yDRA-1
-X-Mimecast-MFC-AGG-ID: xLgZ18t3PnmaTa9lX4yDRA_1778192587
-Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-48a7994e8ddso8976225e9.0
-        for <linux-alpha@vger.kernel.org>; Thu, 07 May 2026 15:23:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=redhat.com; s=google; t=1778192587; x=1778797387; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KxxPeFo8b5YQQgq6okT6k4ODeRwXIuGSW0SUh4EUnR0=;
-        b=K+cB4XwQKShvaqBdKcldswwmuDkaf431z7P2oI5KuH9wWoQw7UVnkM4nmfcRQNE69P
-         xAIVztalsE7+yaC2+YoHpT7wM7dInlVJWIx6VN3SUz7tly8plrFGTfz78Bn6UuUKEckT
-         05tWgrgdoNqrwkO8nTgkkbGPpKSwLkQHpZbPCYb5RIxim5FjXilDYT5G7fKHFdE6g9fW
-         etuixKtwd6ZUJAu6MmUYJrIpHm10FtQAyqXqK+Px0/Pc25wzmxZ/6AYP8QzgHn4EN783
-         HKUg+ocLt318X5k88aEAFhm9CxXj1oCpT/AvgmcyoC6ayHxl1vRHodMOibhGrehcN157
-         p5Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778192587; x=1778797387;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KxxPeFo8b5YQQgq6okT6k4ODeRwXIuGSW0SUh4EUnR0=;
-        b=jbddpUtVByIbWyEWeHnzBh2SX0LaP8BkiQ040XDnRreuqv0pQDydd67ufwKFTRo7KM
-         nbmRzrhLFIZpE2S8hBp39Owe6drj5/3zpPMAsV/GM3n1cnvOpVuppP7WlIDmT9JBYn1F
-         xe+qlo9YskPgoTw1HRu0+PBZ5IVadKlcyiRhaCgUsHHSYjIPzbpmAnFKkXSihYwRlIpe
-         QsES5Wo51Q2ZZczUH5FiSOWHpRak1y9pjVRHHGarHG7TNGTLNHI5ZzqFpgOsDH4DeEAj
-         wVhzeKaWs7UYrp9jR8/3qo1trjmAVoySOqUb/TbMihtEJs9GRoXdI7UqBLV9oZS5joxE
-         xiHw==
-X-Forwarded-Encrypted: i=1; AFNElJ8g99lPGzOV2f5lnRo/Fq0rWiuBwcJmxqPdiND2PCkmwNa1yvE9CESCF9bBmB0i4/ZhjYnip7Kyg9XjKg==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzhz4fgI5L+PoXnIJfCcymNUYOmujcZfpKU7RpqkhQhk7zT3wPY
-	FtvyWNknQxCUvkggjlCVyM1+IlBtIIKrOL5xyZNhcAinXwd2DJo1pm0SzD4VUCqQpU7Jb3AXthh
-	k7yFN0K0glteAgYYLElVd/rG7L1ZcrPluJNhtlsS+9qNspZWvFlJmxzg9HR1h3dmZ
-X-Gm-Gg: AeBDievL6UX0YifnFL3riRaP/8hgq4FkdWTePBQtD1rEHtlHLJhK7k70kTBQZHKGVyT
-	f0OhSBzPRihx0MVp0f7L++kpD0U1v5RYHGtEImAW9lBUtBHzbDCy2sQU72MDK8+DIQvESFgtc5h
-	0oTeuh1CE2+dNL3RqxcjRxyaD+sWzHLoZo/JaCTZcArMr9hwShIS+ZFO6iKcwPMd/ymzqWTtfeV
-	XLsMgxmjSaSHO6jvd39owompFDlWk4t64Vig2+7grh0VZ4jM3oxfL9BJOd9YLthFMF2DOzBOoQG
-	z+JgFYdYBr/vuPhOE9kXPsSoaHtsw8f3lq9bSV9kqFPZ0AGGqxJvyJd2lYuflo3GENNRPi2scjT
-	Rra1ty6cWyS8tXqmFkKz5A/ywDVRAFqFvx9Uy010I
-X-Received: by 2002:a05:600c:1c0f:b0:48a:5342:36b5 with SMTP id 5b1f17b1804b1-48e51f3deddmr177389045e9.21.1778192586766;
-        Thu, 07 May 2026 15:23:06 -0700 (PDT)
-X-Received: by 2002:a05:600c:1c0f:b0:48a:5342:36b5 with SMTP id 5b1f17b1804b1-48e51f3deddmr177388435e9.21.1778192586184;
-        Thu, 07 May 2026 15:23:06 -0700 (PDT)
-Received: from redhat.com (IGLD-80-230-48-7.inter.net.il. [80.230.48.7])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-45412820303sm2289369f8f.4.2026.05.07.15.23.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 May 2026 15:23:05 -0700 (PDT)
-Date: Thu, 7 May 2026 18:23:03 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: linux-kernel@vger.kernel.org
-Cc: David Hildenbrand <david@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hCAM4YSw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E429C2BCB0;
+	Fri,  8 May 2026 04:35:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1778214948;
+	bh=L5IVCLmebtoVabNgoZlJQXA8WZVntrHmMT+E5piotwM=;
+	h=From:To:Cc:Subject:Date:From;
+	b=hCAM4YSwxWA5jRhKmnStsbk/bzQwycwL66hoqKd7rRNgJELMTvfXZUFg1lpN4gg+r
+	 ggi7cbiey1a32Ncz2LqGNmerwJDd7vzh0Vjz+CTz88f1tnsgmvOZ2roB4X2wfu5kCm
+	 efEWlEhAP6Y4ezAIQVdxcMvsc7Pk/dC5hQo+9BdF0Yqp/6SQXlwu4NEjMd9j/AodN1
+	 VPHYhv8GgoR5YyBDBt9ydFecrov6U+kq+yRQ/e+e4ONeXS7G0uVi/sRBWY+crn9Ydm
+	 au1rTxseNpppj946g5oxlqSC0XuNQ7PggZs+jWrLoOAL6GLGGvSYWI9Frac7USiFi3
+	 9sLRLVCRdTC3A==
+From: =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Bjorn Helgaas <helgaas@kernel.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Alex Williamson <alex@shazbot.org>,
 	Magnus Lindholm <linmag7@gmail.com>,
-	Greg Ungerer <gerg@linux-m68k.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
 	Matt Turner <mattst88@gmail.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H. Peter Anvin" <hpa@zytor.com>, linux-alpha@vger.kernel.org,
-	linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
-Subject: [PATCH v5 13/28] mm: remove arch vma_alloc_zeroed_movable_folio
- overrides
-Message-ID: <44d46ba982b39e53a2b5f978dd7239836e535196.1778192416.git.mst@redhat.com>
-References: <cover.1778192416.git.mst@redhat.com>
+	Richard Henderson <richard.henderson@linaro.org>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	=?UTF-8?q?Krzysztof=20Ha=C5=82asa?= <khalasa@piap.pl>,
+	Lukas Wunner <lukas@wunner.de>,
+	"Oliver O'Halloran" <oohall@gmail.com>,
+	Saurabh Singh Sengar <ssengar@microsoft.com>,
+	Shuan He <heshuan@bytedance.com>,
+	Srivatsa Bhat <srivatsabhat@microsoft.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-pci@vger.kernel.org,
+	linux-alpha@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH v7 00/24] PCI: Convert all dynamic sysfs attributes to static
+Date: Fri,  8 May 2026 04:35:19 +0000
+Message-ID: <20260508043543.217179-1-kwilczynski@kernel.org>
+X-Mailer: git-send-email 2.54.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1778192416.git.mst@redhat.com>
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Now that the generic vma_alloc_zeroed_movable_folio() uses
-__GFP_ZERO, the arch-specific macros on alpha, m68k, s390, and
-x86 that did the same thing are redundant.  Remove them.
+Hello,
 
-arm64 is not affected: it has a real function override that
-handles MTE tag zeroing, not just __GFP_ZERO.
+This series converts every dynamically allocated PCI sysfs attribute to
+a static const definition.  After the full series, pci_sysfs_init() and
+sysfs_initialized are gone, and every sysfs file is created by the
+driver model at device_add() time.
 
-Suggested-by: David Hildenbrand <david@kernel.org>
-Acked-by: Magnus Lindholm <linmag7@gmail.com>
-Acked-by: Greg Ungerer <gerg@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Currently, the PCI resource files (resourceN, resourceN_wc) and the
+legacy bus files (legacy_io, legacy_mem) are created dynamically
+from two unsynchronised paths:
+
+Path A: late_initcall
+
+  pci_sysfs_init()                        (late_initcall)
+    sysfs_initialized = 1
+    for_each_pci_dev()
+      pci_create_sysfs_dev_files()
+        sysfs_create_bin_file()           (resourceN, resourceN_wc)
+    pci_find_next_bus()
+      pci_create_legacy_files()
+        sysfs_create_bin_file()           (legacy_io, legacy_mem)
+
+Path B: device registration / hotplug
+
+  pci_bus_add_devices()
+    pci_bus_add_device()
+      pci_create_sysfs_dev_files()
+        if (!sysfs_initialized)           <- only guard
+          return
+        sysfs_create_bin_file()           (resourceN, resourceN_wc)
+
+On most ACPI systems this does not race because PCI enumeration
+completes at subsys_initcall time, before pci_sysfs_init() runs:
+
+  subsys_initcall (level 4):
+    acpi_pci_root_add()
+      pci_bus_add_device()
+        pci_create_sysfs_dev_files()
+          if (!sysfs_initialized)         <- variable not yet set
+            return -EACCES
+
+  late_initcall (level 7):
+    pci_sysfs_init()
+      sysfs_initialized = 1
+      for_each_pci_dev()
+        pci_create_sysfs_dev_files()      <- creates the files, no race
+
+On Devicetree platforms the host controller is a platform driver that
+probes via the driver model, often on a workqueue, and overlaps with the
+late_initcall:
+
+  CPU 0 (late_initcall)                CPU 1 (driver probe)
+  ---------------------------          ----------------------------
+  pci_sysfs_init()
+    sysfs_initialized = 1
+    for_each_pci_dev()                 pci_bus_add_device()
+      pci_create_sysfs_dev_files()       pci_create_sysfs_dev_files()
+        sysfs_create_bin_file()            sysfs_create_bin_file()
+                                             -> "duplicate filename"
+
+The same happens on ACPI when probing is asynchronous (hv_pci on
+Azure, RISC-V with ACPI).
+
+The duplicate causes sysfs_create_bin_file() to fail with -EEXIST.
+pci_create_resource_files() then calls pci_remove_resource_files() in
+its error unwind, tearing down files the other thread created and
+still references through pdev->res_attr[].  This has caused kernel
+panics on i.MX6 and boot failures on other platforms.
+
+Several different fixes have been proposed over the years: reordering
+the sysfs_initialized assignment, adding locks, checking
+pci_dev_is_added(), setting pdev->res_attr[] to NULL after kfree
+(which only prevents a double-free on the teardown path, not the
+error unwind removing the other thread's files).  None would address the
+root cause.
+
+This has been reported a few times:
+
+  - https://lore.kernel.org/linux-pci/20250702155112.40124-1-heshuan@bytedance.com/
+  - https://lore.kernel.org/linux-pci/b51519d6-ce45-4b6d-8135-c70169bd110e@h-partners.com/
+  - https://lore.kernel.org/linux-pci/1702093576-30405-1-git-send-email-ssengar@linux.microsoft.com/
+  - https://lore.kernel.org/linux-pci/SY0P300MB04687548090B73E40AF97D8897B82@SY0P300MB0468.AUSP300.PROD.OUTLOOK.COM/
+  - https://lore.kernel.org/linux-pci/20230105174736.GA1154719@bhelgaas/
+  - https://lore.kernel.org/linux-pci/m3eebg9puj.fsf@t19.piap.pl/
+  - https://lore.kernel.org/linux-pci/20200716110423.xtfyb3n6tn5ixedh@pali/
+  - https://lore.kernel.org/linux-pci/1366196798-15929-1-git-send-email-artem.savkov@gmail.com/
+  - https://bugzilla.kernel.org/show_bug.cgi?id=215515
+  - https://bugzilla.kernel.org/show_bug.cgi?id=216888
+
+With static attributes the driver model creates sysfs entries once per
+device at device_add() time, under the device lock, eliminating the
+late_initcall iteration and the race along with it.
+
+	Krzysztof
+
 ---
- arch/alpha/include/asm/page.h   | 3 ---
- arch/m68k/include/asm/page_no.h | 3 ---
- arch/s390/include/asm/page.h    | 3 ---
- arch/x86/include/asm/page.h     | 3 ---
- 4 files changed, 12 deletions(-)
+Changes in v7:
+  https://lore.kernel.org/linux-pci/20260422161407.118748-1-kwilczynski@kernel.org/
 
-diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
-index 59d01f9b77f6..4327029cd660 100644
---- a/arch/alpha/include/asm/page.h
-+++ b/arch/alpha/include/asm/page.h
-@@ -12,9 +12,6 @@
- 
- extern void clear_page(void *page);
- 
--#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
--	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
--
- extern void copy_page(void * _to, void * _from);
- #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
- 
-diff --git a/arch/m68k/include/asm/page_no.h b/arch/m68k/include/asm/page_no.h
-index d2532bc407ef..f511b763a235 100644
---- a/arch/m68k/include/asm/page_no.h
-+++ b/arch/m68k/include/asm/page_no.h
-@@ -12,9 +12,6 @@ extern unsigned long memory_end;
- 
- #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
- 
--#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
--	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
--
- #define __pa(vaddr)		((unsigned long)(vaddr))
- #define __va(paddr)		((void *)((unsigned long)(paddr)))
- 
-diff --git a/arch/s390/include/asm/page.h b/arch/s390/include/asm/page.h
-index f339258135f7..04020a19a5cf 100644
---- a/arch/s390/include/asm/page.h
-+++ b/arch/s390/include/asm/page.h
-@@ -67,9 +67,6 @@ static inline void copy_page(void *to, void *from)
- 
- #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
- 
--#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
--	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
--
- #ifdef CONFIG_STRICT_MM_TYPECHECKS
- #define STRICT_MM_TYPECHECKS
- #endif
-diff --git a/arch/x86/include/asm/page.h b/arch/x86/include/asm/page.h
-index 416dc88e35c1..92fa975b46f3 100644
---- a/arch/x86/include/asm/page.h
-+++ b/arch/x86/include/asm/page.h
-@@ -28,9 +28,6 @@ static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
- 	copy_page(to, from);
- }
- 
--#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
--	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
--
- #ifndef __pa
- #define __pa(x)		__phys_addr((unsigned long)(x))
- #endif
+  - Addded Alex Williamson (author of the resource resize sysfs
+    attributes) to the list of recipients for visibility.
+  - Split pci_llseek_resource() into pci_llseek_resource() and
+    pci_llseek_resource_legacy() since legacy attributes operate
+    on a struct pci_bus where to_pci_dev() would be invalid,
+    as per Bjorn Helgaas' feedback.
+  - Moved each llseek variant inside its respective #ifdef guard
+    during the corresponding dynamic-to-static conversion commit,
+    dropping the __maybe_unused annotations.
+  - Extended the WARN macro removal to also cover __legacy_mmap_fits().
+  - Updated commit message of patch 18, so that it correctly mentions
+    pci_stop_dev() rather than pci_stop_bus_device().
+  - Updated commit message of patch 24 to clarify the indirect
+    relationship between ReBAR and the HAVE_PCI_MMAP and/or
+    ARCH_GENERIC_PCI_MMAP_RESOURCE guards.
+
+Changes in v6:
+  https://lore.kernel.org/linux-pci/20260416180107.777065-1-kwilczynski@kernel.org/
+
+   - Fixed commit message for patch 13, removing reference to
+     pci_resource_flags() which was no longer changed there.
+   - Added a new patch (24) to move the BAR resource resize
+     (ReBAR) support behind existing PCI mmap #ifdef guard,
+     so that the code is not included on architectures that
+     do not support resource resizing (i.e., Alpha, etc.).
+
+Changes in v5:
+  https://lore.kernel.org/linux-pci/20260411080148.471335-1-kwilczynski@kernel.org/
+  
+   - Added new Tested-by, Reviewed-by, and Acked-by tags.
+   - Used the existing _io function names in the static macro
+     definitions, deferring the rename to the conversion commit
+     where it belongs, to avoid a forward reference across
+     commits. This was reported by Sashiko, see:
+     https://sashiko.dev/#/patchset/20260411080148.471335-1-kwilczynski%40kernel.org?part=6
+   - Folded the __resource_resize_store() conversion into the
+     main static attributes commit so the resize path is never
+     broken between commits. This was reported by Sashiko, see:
+     https://sashiko.dev/#/patchset/20260410055040.39233-1-kwilczynski%40kernel.org?part=6
+     https://sashiko.dev/#/patchset/20260411080148.471335-1-kwilczynski%40kernel.org?part=7
+   - Dropped the unnecessary parentheses cleanup from the Alpha
+     BAR index commit, as the line is replaced two commits later
+     anyway, as per Ilpo Järvinen's feedback.
+   - Squashed the Alpha accessor macro and cleanup commits into
+     one, using pci_resource_is_mem() directly instead of the
+     intermediate pci_resource_flags() step, as per Ilpo
+     Järvinen's feedback.
+   - Moved the raw literal conversion in pci_create_legacy_files()
+     into the macro definition commit, so the macros and their
+     usage are introduced together, as per Ilpo Järvinen's
+     feedback.
+   - Removed unnecessary backslash line continuation from the
+     ternary in pci_mmap_legacy_page_range().
+   - Kept pci_resource_len() for visibility checks instead of
+     resource_assigned().  The static is_visible() callback
+     runs at device_add() time during the PCI enumeration,
+     before the pci_assign_unassigned_bus_resources() populates
+     res->parent, as such, resource_assigned() returned false
+     for every BAR, hiding all resource files.  This is related
+     to review feedback from Ilpo Järvinen.
+
+Changes in v4:
+  https://lore.kernel.org/linux-pci/20260410055040.39233-1-kwilczynski@kernel.org/
+
+   - Added new Reviewed-by tags.
+   - Added pci_resource_is_io() and pci_resource_is_mem() helpers
+     for resource type checks, replacing the open-coded bitwise
+     flag tests in pci_mmap_resource(), pci_resource_io(), and
+     Alpha's pci_mmap_resource(), as per Ilpo Järvinen's
+     suggestion.
+   - Split the __pci_mmap_fits() cleanup into two patches.  An
+     overflow fix for zero-length BARs, which now includes a
+     Fixes: tag referencing the original Alpha PCI sysfs commit,
+     and the WARN macro removal is a separate cleanup as per Ilpo
+     Järvinen's suggestion.
+   - Added a missing Fixes: tag to the Alpha lockdown check,
+     referencing the commit that added the check to the generic
+     path but missed Alpha's implementation.
+   - Added PCI_LEGACY_IO_SIZE and PCI_LEGACY_MEM_SIZE macros to
+     replace the raw literals used for legacy address space sizes.
+     These are used in both Alpha's pci_mmap_legacy_page_range()
+     and the static legacy attribute definitions, as per Ilpo
+     Järvinen's suggestion.
+   - Replaced sysfs_update_groups() in the BAR resize path with
+     sysfs_remove_groups() before the resize and sysfs_create_groups()
+     after, restoring the original teardown before BAR resize
+     ordering.  This was reported by Sashiko, see:
+     https://sashiko.dev/#/patchset/20260410055040.39233-1-kwilczynski%40kernel.org?part=7
+   - Defined pci_dev_resource_attr_groups as a NULL macro when
+     HAVE_PCI_MMAP and ARCH_GENERIC_PCI_MMAP_RESOURCE are both
+     absent, so the resize path compiles unconditionally without
+     #ifdef guards in the function body.  This was reported by
+     Sashiko, see:
+     https://sashiko.dev/#/patchset/20260410055040.39233-1-kwilczynski%40kernel.org?part=7
+   - Moved the pci_legacy_has_sparse() prototype into the patch
+     that introduces the function, alongside the existing
+     pci_adjust_legacy_attr() declaration, to fix a bisection
+     issue where Alpha would warn on -Wmissing-prototypes.
+     This was reported by Sashiko, see:
+     https://sashiko.dev/#/patchset/20260410055040.39233-1-kwilczynski%40kernel.org?part=18
+
+Changes in v3:
+  https://lore.kernel.org/linux-pci/20210910202623.2293708-1-kw@linux.com/
+
+  - Updated for modern kernel releases and expanded scope.  The
+    v2 only covered the generic resource files.  This version
+    also converts Alpha's sparse/dense resource files and the
+    legacy bus attributes, removing pci_sysfs_init() entirely.
+  - Split the single macro definition into three distinct ones
+    (per I/O, UC, and WC), to make sure that each carries only
+    the callbacks its resource type needs.
+  - Updated to use the new .bin_size callback, as the attributes
+    are const, to replace using a->size directly, which was not
+    ideal.  This required changes to pci_llseek_resource(), to
+    ensure that it would work for device and bus-level attributes.
+  - Updated the __resource_resize_store() to include CAP_SYS_ADMIN
+    capabilities check.
+  - Added the security_locked_down() check to Alpha's
+    pci_mmap_resource(), to align with other architectures.
+
+Changes in v2:
+  https://lore.kernel.org/linux-pci/20210825212255.878043-1-kw@linux.com/
+
+  - Refactored code so that the macros, helpers and internal
+    functions can be used to correctly leverage the read(),
+    write() and mmap() callbacks rather than to use the
+    .is_bin_visible() callback to set up sysfs objects
+    internals as this is not supported.
+  - Refactored some if-statements to check for a resource
+    flag first, and then call either arch_can_pci_mmap_io()
+    or arch_can_pci_mmap_wc(), plus store result of testing
+    for IORESOURCE_MEM and IORESOURCE_PREFETCH flags into
+    a boolean variable, as per Bjorn Helgaas' suggestion.
+  - Renamed pci_read_resource_io() and pci_write_resource_io()
+    callbacks so that these are not specifically tied to I/O
+    BARs read() and write() operations also as per Bjorn
+    Helgaas' suggestion.
+  - Updated style for code handling bitwise operations to
+    match the style that is preferred as per Bjorn Helgaas'
+    suggestion.
+  - Updated commit messages adding more details about the
+    implementation as requested by Bjorn Helgaas.
+
+Krzysztof Wilczyński (24):
+  PCI/sysfs: Use PCI resource accessor macros
+  PCI: Add pci_resource_is_io() and pci_resource_is_mem() helpers
+  PCI/sysfs: Only allow supported resource types in I/O and MMIO helpers
+  PCI/sysfs: Split pci_llseek_resource() for device and legacy
+    attributes
+  PCI/sysfs: Add CAP_SYS_ADMIN check to __resource_resize_store()
+  PCI/sysfs: Add static PCI resource attribute macros
+  PCI/sysfs: Convert PCI resource files to static attributes
+  PCI/sysfs: Warn about BAR resize failure in __resource_resize_store()
+  PCI/sysfs: Add stubs for pci_{create,remove}_sysfs_dev_files()
+  PCI/sysfs: Limit pci_sysfs_init() late_initcall compile scope
+  alpha/PCI: Add security_locked_down() check to pci_mmap_resource()
+  alpha/PCI: Use BAR index in sysfs attr->private instead of resource
+    pointer
+  alpha/PCI: Use PCI resource accessor macros
+  alpha/PCI: Fix __pci_mmap_fits() overflow for zero-length BARs
+  alpha/PCI: Remove WARN from __pci_mmap_fits() and __legacy_mmap_fits()
+  alpha/PCI: Add static PCI resource attribute macros
+  alpha/PCI: Convert resource files to static attributes
+  PCI/sysfs: Remove pci_{create,remove}_sysfs_dev_files()
+  PCI: Add macros for legacy I/O and memory address space sizes
+  alpha/PCI: Compute legacy size in pci_mmap_legacy_page_range()
+  PCI/sysfs: Add __weak pci_legacy_has_sparse() helper
+  PCI/sysfs: Convert legacy I/O and memory attributes to static
+    definitions
+  PCI/sysfs: Remove pci_create_legacy_files() and pci_sysfs_init()
+  PCI/sysfs: Limit BAR resize attribute scope to platforms with PCI mmap
+
+ arch/alpha/include/asm/pci.h   |  13 +-
+ arch/alpha/kernel/pci-sysfs.c  | 385 +++++++++++----------
+ arch/powerpc/include/asm/pci.h |   2 -
+ drivers/pci/bus.c              |   1 -
+ drivers/pci/pci-sysfs.c        | 592 +++++++++++++++++++--------------
+ drivers/pci/pci.h              |  16 +-
+ drivers/pci/probe.c            |   6 -
+ drivers/pci/remove.c           |   3 -
+ include/linux/pci.h            |  39 ++-
+ 9 files changed, 589 insertions(+), 468 deletions(-)
+
 -- 
-MST
+2.54.0
 
