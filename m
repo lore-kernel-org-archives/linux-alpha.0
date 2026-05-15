@@ -1,61 +1,61 @@
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6159A37F015;
-	Fri, 15 May 2026 14:23:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFF5A3B19DB;
+	Fri, 15 May 2026 14:23:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778854987; cv=none; b=ucXK+G4Is2YIK+agsyD95J2HUJAhyPBfzy7jj3jZJfQryho3Ayi7VMETG+XDURgxykNeLIqYEfrRxIVMz/ctxXvjmy4Qr9H4tP5Js2H5XzGHQ9v9txoY++PZdDSMlt7jip2CLqqe+73zDV95RndG024J1wh9WfTNeTIXPjgbIlo=
+	t=1778854990; cv=none; b=TautddhYmE2gyKkCttUcI5TVDjVqACXJsVn7suLJP1l2kU7rp+u0wxUv1IQ1O9hud5caJuj1rZMEWhhUIj2uh7gRPpNz6qpbJwnLCovyTwUs/7WxYr4GyL7r/wt7Ibwq52zSMEyxk1CcnuRAwFo1TLYxlYRiQFmr4r33E6wvPuA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778854987; c=relaxed/simple;
-	bh=XpSydRBxT4Tx9uG/K7wJ/j4v7NjShbeWAJefrXdls4g=;
+	s=arc-20240116; t=1778854990; c=relaxed/simple;
+	bh=6WBKg3Z6d6bDxwbEE57rV0gZXpgH4cYTHFISRN8uP/4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sotogsar9DZ1xntuAiV1wtT7zyDcfW+ZVEcvrlmIedYdY/kHK0oQIKu9NyEhibHWvEctQKUCyjVuHJp6f0Lm2TSPJ0gOXI0wAY5xNw2Zi4KJXvYGj1O64z7C8IaGyrX4vDmyW4kBhOMWQncnualHATCltciKnEWUJmwmImY1O8g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=JKCe1194; arc=none smtp.client-ip=148.163.156.1
+	 In-Reply-To:To:Cc; b=maiXLQvLlRV88ccxQDLKb0Mg0GtqzapDxAt+Pgmtj5jn4Op0NQ/hZFiPS8laDktVCxCVyiPYa+KD00oTt9opNRYQ43cJ2TScTHW26GkETwfmafeJR/JnJIFLKrVhz9dF+a1Z7Bxr5/sYpJxJzafZWC4/nq89LOFAqvlHwi3ZNbw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=DQyfFv7h; arc=none smtp.client-ip=148.163.156.1
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="JKCe1194"
-Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64FBH4RO394204;
-	Fri, 15 May 2026 14:22:31 GMT
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="DQyfFv7h"
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64FAWWhF3950751;
+	Fri, 15 May 2026 14:22:34 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=ufGlv0
-	CVGjiDuGZD9L5jSfGD3Qkubf2rfZSAyyegaMI=; b=JKCe11946uEaM37tUPyS9y
-	+GBxXV5ecwZBQGE0MG4VXlSrNehAMbch2D7dDWZrZycQBS1ldFCCiHMj1JuZ5yPY
-	icRai+mkrMt/HT8ndPt5ABv8XmVAI48Co4KO97PEtDj85CHe1Im0jjBL5OXR0gYU
-	wJsBhcNMQtI03lEMPQlMavDm4KAEDRjiIn4wHiUvrCb0cGK1nbFZLMTlK+3xgsBs
-	ButtUnAXawJ1NqpcQif3FkFW9zK+6xTnKsIg88JNRZLTdEpmYWOwdgQW7egbjttN
-	1Kmoe9a4vSz5RNHoqkTR2EzSdFRc6orkdtFnXNLJP5UnVrw+To+I9TlTn0hi7Wrg
+	:message-id:mime-version:references:subject:to; s=pp1; bh=sSrBZL
+	pLsG21cYV5sFRehKkQIMmaXEBuOlBtNeue/K0=; b=DQyfFv7hqyMqDY11+8o6y2
+	Gb8giGVwPZ25I3udbDcpgZX8ubOe6/CS+Oh2WAGQQ4QO4NGF7Z6QH+82qkC2uDxu
+	QEA7br6P123CEF/PgSu12dmD/Zf1Gx+EAgApa0HRteFFkN+F79C7Q38mQzm2zv18
+	+9sOHLEKAn6yio/1+xTNAbxStGxNvCqx/dHMZJVaUI/e8gLGt8+zIraYFYrBtovd
+	/4+Ale/7IfWRAiLfvYAhWOCvWygF65fkaTfDWvRkdo7VkHXJSVCt703YjzKBjBCl
+	nSrT+0QpCNKO/uoXYcdMMrP/xevd9XGOIKsK4s+vYhfn9wYA835pr/Fb/LY8I+0A
 	==
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4e5m8vbkuv-1
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4e5m8ybkfb-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 15 May 2026 14:22:30 +0000 (GMT)
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma13.dal12v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 64FE9Ft3006470;
-	Fri, 15 May 2026 14:22:29 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 4e5kvckveb-1
+	Fri, 15 May 2026 14:22:33 +0000 (GMT)
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 64FE9Dxo026631;
+	Fri, 15 May 2026 14:22:32 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 4e5kvckvdu-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 15 May 2026 14:22:29 +0000 (GMT)
+	Fri, 15 May 2026 14:22:32 +0000 (GMT)
 Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 64FEMPAo31195568
+	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 64FEMS1545089222
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 15 May 2026 14:22:26 GMT
+	Fri, 15 May 2026 14:22:28 GMT
 Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id DB78920040;
-	Fri, 15 May 2026 14:22:25 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 445612004D;
+	Fri, 15 May 2026 14:22:28 +0000 (GMT)
 Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id BFEF620043;
-	Fri, 15 May 2026 14:22:24 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 309FA20043;
+	Fri, 15 May 2026 14:22:27 +0000 (GMT)
 Received: from [192.168.178.55] (unknown [9.87.148.246])
 	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 15 May 2026 14:22:24 +0000 (GMT)
+	Fri, 15 May 2026 14:22:27 +0000 (GMT)
 From: Gerd Bayer <gbayer@linux.ibm.com>
-Date: Fri, 15 May 2026 16:22:04 +0200
-Subject: [PATCH 2/5] arm/pci: Use official API to iterate over PCI buses
+Date: Fri, 15 May 2026 16:22:06 +0200
+Subject: [PATCH 4/5] x86/pci: Use official API to iterate over PCI buses
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -64,7 +64,7 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260515-priv_root_buses-v1-2-f8e393c57390@linux.ibm.com>
+Message-Id: <20260515-priv_root_buses-v1-4-f8e393c57390@linux.ibm.com>
 References: <20260515-priv_root_buses-v1-0-f8e393c57390@linux.ibm.com>
 In-Reply-To: <20260515-priv_root_buses-v1-0-f8e393c57390@linux.ibm.com>
 To: Richard Henderson <richard.henderson@linaro.org>,
@@ -85,27 +85,27 @@ Cc: Yinghai Lu <yinghai@kernel.org>, linux-alpha@vger.kernel.org,
 X-Mailer: b4 0.14.3
 X-TM-AS-GCONF: 00
 X-Proofpoint-Reinject: loops=2 maxloops=12
-X-Proofpoint-ORIG-GUID: aFzaU5N9Oxsa1AO5roV0iznLLypVfmcE
-X-Authority-Analysis: v=2.4 cv=duXrzVg4 c=1 sm=1 tr=0 ts=6a072c27 cx=c_pps
- a=AfN7/Ok6k8XGzOShvHwTGQ==:117 a=AfN7/Ok6k8XGzOShvHwTGQ==:17
+X-Proofpoint-GUID: 9Fn6JSOYn5leHLgBxi1ZPSEXCI3IZ1Fr
+X-Authority-Analysis: v=2.4 cv=Os5/DS/t c=1 sm=1 tr=0 ts=6a072c2a cx=c_pps
+ a=3Bg1Hr4SwmMryq2xdFQyZA==:117 a=3Bg1Hr4SwmMryq2xdFQyZA==:17
  a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=iQ6ETzBq9ecOQQE5vZCe:22 a=VnNF1IyMAAAA:8
- a=HxxVBxD7FXS1ytRSE9oA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-GUID: Vk9kN3RNJI3bq8vbFbT44kmcusmLN0wu
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE1MDE0MyBTYWx0ZWRfX7dDcHAfANlOI
- GKwpojpJaG7R1bvch3otKbJzIwMp0BiWYn7rHqHR3N9164Ug1+J362q2Fem5JBuahC6NVudBKnc
- LLC3VjG7QHU2CqVb3hnUmY4HfpmYn/dT+/Ky1s+Yr9BZfEZfWgtdTYF5jLuRUNYt/v7RkiuB0FU
- y4FIqW1KYb5BlSaehRP+Ni/edGqSaZSLIDHFyOZevqI53BWkXgM2pqJEO0K7Bx3w0gHqPC+YMdz
- dqwwGhGSECKYNwXWsBxZ4IN+4iA+nemw20T8fMpQN1I2y7XdzS5d62Fki2F5QytcYa5Dr7bYutI
- 3x4suhzacH5WtZfDYgGF16sQaz9Oi1z9DR7g2g4nQNaEiuUe7qsJkKqwjZx+chY1C76yhNxMvWy
- 1eKwF+edzqgjeT36CHG5SB8yhBWF4FCjWXuakv5486/oTMfIqCOUWEiMl8gHyfmB+SS4oy+9SBG
- 4PohG+EbdVb16N2Spaw==
+ a=RnoormkPH1_aCDwRdu11:22 a=U7nrCbtTmkRpXpFmAIza:22 a=VnNF1IyMAAAA:8
+ a=OS3CRczKEtLnDcx_Za4A:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: Hovlul_bhRsIek30WEVnGj5qQFZaeLIw
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE1MDE0MyBTYWx0ZWRfX8fTqgyx8V9Rj
+ 7PIPlXLIF2L+55hDHOOLgFHrNMNvc+E9B/YgLccoZ9JbpahswH+v0GcPtNUy1Fj/4YbDFMmjpN5
+ dsOAzBtjiTJGzessVoH9tOvhsmvQqkhRJYcrYG4+sPegQbIJZrtixlITfUPJUTFb+b8jrwPmd89
+ xzvZcmH0VHM0f9gFbct8PjAQfk/vjPi9eVEyl2gTNvoonUq3wIEvqxS1yQ7vPgwHle4FiApuoLw
+ lEOE9WqGAblLXwLwbBGJwjUi63SlvtDBcXrNMK0MnmgPskxcksDNPcdzhHif80L4SQjmEHID0lH
+ WVpnEqFSmDr2BJVq1aCE1we6mrvOrz14mU99t6i0yH5u3MS1pGOSD5+2ojbUXsIfqat+2BNPngS
+ ZNds6u3CUxixk0LLa9V5IyiZvcIlKW666DsSaV8LZXI+t1aQFLBxNxT/c9fr0dJ8Ch0oqjZU8+s
+ T9qrTeS+f9x7LA7dKfA==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-05-15_03,2026-05-13_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 clxscore=1015 priorityscore=1501 phishscore=0 bulkscore=0
- adultscore=0 impostorscore=0 lowpriorityscore=0 suspectscore=0 spamscore=0
+ spamscore=0 phishscore=0 impostorscore=0 clxscore=1015 lowpriorityscore=0
+ adultscore=0 malwarescore=0 priorityscore=1501 bulkscore=0 suspectscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605150143
 
@@ -115,25 +115,49 @@ pci_root_buses private to PCI core.
 
 Signed-off-by: Gerd Bayer <gbayer@linux.ibm.com>
 ---
- arch/arm/kernel/bios32.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/pci/i386.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/kernel/bios32.c b/arch/arm/kernel/bios32.c
-index ac0e890510da..35642c9ba054 100644
---- a/arch/arm/kernel/bios32.c
-+++ b/arch/arm/kernel/bios32.c
-@@ -59,9 +59,9 @@ static void pcibios_bus_report_status(struct pci_bus *bus, u_int status_mask, in
+diff --git a/arch/x86/pci/i386.c b/arch/x86/pci/i386.c
+index e2de26b82940..194d0fa3cec8 100644
+--- a/arch/x86/pci/i386.c
++++ b/arch/x86/pci/i386.c
+@@ -357,10 +357,10 @@ static void pcibios_allocate_rom_resources(struct pci_bus *bus)
  
- void pcibios_report_status(u_int status_mask, int warn)
+ static int __init pcibios_assign_resources(void)
  {
 -	struct pci_bus *bus;
 +	struct pci_bus *bus = NULL;
  
+ 	if (!(pci_probe & PCI_ASSIGN_ROMS))
+-		list_for_each_entry(bus, &pci_root_buses, node)
++		while ((bus = pci_find_next_bus(bus)) != NULL)
+ 			pcibios_allocate_rom_resources(bus);
+ 
+ 	pci_assign_unassigned_resources();
+@@ -390,16 +390,18 @@ void pcibios_resource_survey_bus(struct pci_bus *bus)
+ 
+ void __init pcibios_resource_survey(void)
+ {
+-	struct pci_bus *bus;
++	struct pci_bus *bus = NULL;
+ 
+ 	DBG("PCI: Allocating resources\n");
+ 
 -	list_for_each_entry(bus, &pci_root_buses, node)
 +	while ((bus = pci_find_next_bus(bus)) != NULL)
- 		pcibios_bus_report_status(bus, status_mask, warn);
- }
+ 		pcibios_allocate_bus_resources(bus);
  
+-	list_for_each_entry(bus, &pci_root_buses, node)
++	bus = NULL; /* start all over */
++	while ((bus = pci_find_next_bus(bus)) != NULL)
+ 		pcibios_allocate_resources(bus, 0);
+-	list_for_each_entry(bus, &pci_root_buses, node)
++	bus = NULL; /* start all over */
++	while ((bus = pci_find_next_bus(bus)) != NULL)
+ 		pcibios_allocate_resources(bus, 1);
+ 
+ 	e820__reserve_resources_late();
 
 -- 
 2.54.0
