@@ -1,144 +1,280 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-108-mta251.mxroute.com (mail-108-mta251.mxroute.com [136.175.108.251])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 079283BFE4C;
-	Fri, 15 May 2026 15:13:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1E8E39183C
+	for <linux-alpha@vger.kernel.org>; Fri, 15 May 2026 20:23:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.175.108.251
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778857986; cv=none; b=CcI4z+hfK+9eKlc7chQlUTW9QaS0/5lJ/8EuLqUQEIMKnfEg6a4Ha13rkSCTUGTFgzMOW+2x6mB82S7Tqj/JdXMtLawnjZloe/CmRS90cck+u5u8cP5TAuKlI9vUCOIee5Fy1sN+HwQDHlVWeKFLgxrkCvAoP1+Dxo/F+cqhxYQ=
+	t=1778876641; cv=none; b=ATcOyU2xQx2J4PxvLHrytozWo/cuI7wNDF8Fims6Jv+KbwKskOe5Q+owYfSXPaRNK79Sb4VFj06X9vkhXqgfayqvTTL7XjsJOi3xaou6sP63goFlTsbLrto4BQuwKp2nNCNsApjNof7lJSrsaKjQVgdgx7DGltOQM1x8B0KRxdQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778857986; c=relaxed/simple;
-	bh=4IhRgNHwgF9KisZ+y9jAJ0AYhpD36rJJFkukHbZlp/o=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Q9jk19s5HSNSyNawi5dvExebEB1mPaYnMs9R5IRQI5RpZhlReU9JYRCuOYtWW6tRMrwXQ5tP4dVbCx2JbtL01QJax5Y4saHQTMO4WJwNEfM8CHx0D3xHz+TUJgXPMkP+xD5v0Lw2e5UD6S6f1znM3mZYYh0gmD656hiCsGuCrLs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e4LCYAal; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1778876641; c=relaxed/simple;
+	bh=+UlrDE3xZGI/XeFoXmI+y2HdUCNCWuidXYS2IYBrObQ=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=PZVPRm3nIx8gpNqp7zFumf2xL60hQ4rAThxpTeKO8m5wS+wT/fgwUTjfQVAdRhUpc21/1gCsUmAMRfTELHXq/Gu24MQvkwI9i8mJ5ZDOEPN6Esa4FRZyHQK6eNyQpNGxMnaEpguzGqc4eU5yrQZtgEmPPLOghIYQRhnu/RjWk90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=flyingpenguins.org; spf=pass smtp.mailfrom=flyingpenguins.org; dkim=pass (2048-bit key) header.d=flyingpenguins.org header.i=@flyingpenguins.org header.b=ioB6DX3z; arc=none smtp.client-ip=136.175.108.251
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=flyingpenguins.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flyingpenguins.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e4LCYAal"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1778857985; x=1810393985;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4IhRgNHwgF9KisZ+y9jAJ0AYhpD36rJJFkukHbZlp/o=;
-  b=e4LCYAalhDWJTwBorpaICSl+XWerdGgEF6ksh02hjz9g08Q8OezcsBU8
-   c2orjOPnlP1TM1JbG/Ze3TAxsbBQ01qJwKKBo0yv/HE6+QUhbJ99joF+A
-   rcDVVNbYGoQ6L2nHAyuaO3cxHSIfZdFyQwNXL7X8FsAWqMMBzANGEqHSZ
-   06Hjkz0JG6qWKoaF/KRxt5x35+5CMBns5eTKLdAK1GUBCp6N+d4s1GrY3
-   TfIYPhUQLw9+f8bGJ3BNyd8LP3okc+4PmFLUEeTyp2p/EM8VRhxCoCrhl
-   UiUlKVz9tAKn2oxDWNqkkSF/KziJbjFyXaguEA5iv+NJjIEE34S67/u4/
-   w==;
-X-CSE-ConnectionGUID: 3TIChrXBQ36//4UL9/blLA==
-X-CSE-MsgGUID: /FbOPLgET8ayvTdlaYQqlQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11787"; a="79984383"
-X-IronPort-AV: E=Sophos;i="6.23,236,1770624000"; 
-   d="scan'208";a="79984383"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 08:13:04 -0700
-X-CSE-ConnectionGUID: 50mF0sFfS8OzpJSmSM7YlQ==
-X-CSE-MsgGUID: 27YDzGnWRYGPkx/USbgI8A==
-X-ExtLoop1: 1
-Received: from dwoodwor-mobl2.amr.corp.intel.com (HELO [10.125.108.157]) ([10.125.108.157])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 May 2026 08:13:02 -0700
-Message-ID: <553c703f-ba9c-4785-91ba-2cf62ceb9653@intel.com>
-Date: Fri, 15 May 2026 08:13:03 -0700
+	dkim=pass (2048-bit key) header.d=flyingpenguins.org header.i=@flyingpenguins.org header.b="ioB6DX3z"
+Received: from filter006.mxroute.com ([136.175.111.3] filter006.mxroute.com)
+ (Authenticated sender: mN4UYu2MZsgR)
+ by mail-108-mta251.mxroute.com (ZoneMTA) with ESMTPSA id 19e2d4a98aa00067f7.002
+ for <linux-alpha@vger.kernel.org>
+ (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
+ Fri, 15 May 2026 20:18:44 +0000
+X-Zone-Loop: c27cc625d7fffefede3f47a2859bab79afdaa1d18865
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=flyingpenguins.org; s=x; h=To:References:Message-Id:
+	Content-Transfer-Encoding:Cc:Date:In-Reply-To:From:Subject:Mime-Version:
+	Content-Type:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=1FDgRPoVQMQ3Nb/mYal2hDDUeHc3K6v3vKNZHP1hcnU=; b=ioB6DX3zfeBs+ARemo5LnypulI
+	X+KHk4wNnZZh4Zm7PXTZvoCGPfMiALIJXKSUtwF7dQnElu712gic6Cqk5R9MH/V4JwxunLEuONFFF
+	YMLsG156KY/22o1KSnkwRpgtekcIuX9KOk9FR+NXPthd4nAUIuGboXB6iYWNHXU1Xe0r7vRmjiGn9
+	mHU9W0J0ZyZWgbBPWdMWCuRQ0+Iv/vSaJL97en2KFTFybbtHsv8p/PZpaGMfrW5IG6dZJOrJypWJ8
+	npPW0oRC0L4/vINtqvQ9WYIiQyh4xHQTWyVXhZVIwFBuQrMv9VHCmNj6x4nfyNHSkiaHfiasty7ba
+	9ReJdFiA==;
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/5] x86/pci: Use official API to iterate over PCI buses
-To: Gerd Bayer <gbayer@linux.ibm.com>,
- Richard Henderson <richard.henderson@linaro.org>,
- Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>,
- Russell King <linux@armlinux.org.uk>,
- Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@kernel.org>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
- "H. Peter Anvin" <hpa@zytor.com>
-Cc: Yinghai Lu <yinghai@kernel.org>, linux-alpha@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org
-References: <20260515-priv_root_buses-v1-0-f8e393c57390@linux.ibm.com>
- <20260515-priv_root_buses-v1-4-f8e393c57390@linux.ibm.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <20260515-priv_root_buses-v1-4-f8e393c57390@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.10\))
+Subject: Re: [RFC] alpha: optimize ip_fast_csum for BWX-capable CPUs
+From: Mike Hlavac <mike@flyingpenguins.org>
+In-Reply-To: <CA+=Fv5RaTrRkjzsWgoE1hJ+nBmTzV19Ps2Wuzn1z9EKnDmN8Tw@mail.gmail.com>
+Date: Fri, 15 May 2026 16:18:41 -0400
+Cc: linux-alpha@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <5249DDD2-6962-475D-880A-E3D6C57E97DD@flyingpenguins.org>
+References: <E005E33F-8F2B-4885-89E7-CEAEA04F914A@flyingpenguins.org>
+ <CA+=Fv5RaTrRkjzsWgoE1hJ+nBmTzV19Ps2Wuzn1z9EKnDmN8Tw@mail.gmail.com>
+To: Magnus Lindholm <linmag7@gmail.com>
+X-Authenticated-Id: mike@flyingpenguins.org
 
-On 5/15/26 07:22, Gerd Bayer wrote:
->  static int __init pcibios_assign_resources(void)
->  {
-> -	struct pci_bus *bus;
-> +	struct pci_bus *bus = NULL;
->  
->  	if (!(pci_probe & PCI_ASSIGN_ROMS))
-> -		list_for_each_entry(bus, &pci_root_buses, node)
-> +		while ((bus = pci_find_next_bus(bus)) != NULL)
->  			pcibios_allocate_rom_resources(bus);
 
-What's with the 'bus = NULL'? I thought there was some crazy macro magic
-going on or something, but pci_find_next_bus() looks like a normal
-function that's just taking a pointer and not _modifying_ the pointer value.
 
-Also, wouldn't this be a more readable way of writing what you have?
+> On Apr 23, 2026, at 5:30 AM, Magnus Lindholm <linmag7@gmail.com> =
+wrote:
+>=20
+> On Mon, Apr 20, 2026 at 1:44=E2=80=AFAM Mike Hlavac =
+<mike@flyingpenguins.org> wrote:
+>>=20
+>> On Alpha EV56 and later, we can use the 'ldwu' instruction to =
+significantly accelerate IP header checksumming. By manually unrolling =
+the loop for the common 20-byte (ihl=3D5) case, we eliminate branch =
+penalties and allow the compiler to optimally schedule instructions for =
+the EV56 pipeline.
+>>=20
+>> Benchmarked on EV56 (Miata) at 633MHz:
+>>=20
+>>        =E2=80=A2 Legacy Path: 0.796s
+>>=20
+>>        =E2=80=A2 Unrolled BWX Path: 0.508s (~36% improvement)
+>>=20
+>> Tested with GCC 15. The unrolled C implementation results in =
+straight-line assembly with no branches in the hot path.  I=E2=80=99d =
+love some feedback from someone with an EV6+
+>>=20
+>=20
+> Mike,
+>=20
+> Thanks for working on this.  I tested the benchmark here with GCC
+> 15.2.1 at -O2 on several CPU targets.  There does seem to be a real
+> optimization opportunity, but I do not think this patch is the right
+> shape yet.
+>=20
+> Results here (EV67 833 MHz system) were roughly:
+>=20
+>  ev4:  legacy ~0.365s, modern ~0.83s,  unrolled ~0.230s
+>  ev5:  legacy ~0.394s, modern ~0.716s, unrolled ~0.230s
+>  ev56: legacy ~0.304s, modern ~0.304s, unrolled ~0.171s
+>  ev6:  legacy ~0.314s, modern ~0.313s, unrolled ~0.177s
+>=20
+> The measured win comes from the manually unrolled ihl=3D=3D5 case =
+becoming
+> straight-line code with no inner loop branch, not from the "modern C"
+> rewrite by itself.  On ev56/ev6, the looped legacy and looped modern-C
+> variants compile to essentially the same code, while on ev4/ev5 the
+> plain uint16_t loop is actually much worse than legacy.
+>=20
+> One caveat is that the benchmark repeatedly checksums the same small
+> static header, so it mainly measures code shape with hot data.  That
+> is useful, but it does not say much by itself about the end-to-end
+> gain on real traffic. Touching old and stable code is alway a risk to
+> introduce new problems.
+>=20
+> I also think the interface change is a problem.  Today Alpha has an
+> out-of-line ip_fast_csum() symbol.  This patch turns it into a header
+> inline and makes the fallback path call do_csum(), but do_csum() is
+> not exported, which looks wrong for modules.
+>=20
+> The optimization itself does not seem out of line; other archs also
+> treat ip_fast_csum() as a specialized IPv4-header routine.  What
+> would seem safer here would be to keep the Alpha-specific fast path
+> behind the existing ip_fast_csum() implementation, with the current
+> checksum code as the fallback for larger ihl values and non-BWX
+> friendly builds.
+>=20
+> Thanks,
+> Magnus
 
-	while (bus = pci_find_next_bus(bus))
+Magnus,
 
-For that matter isn't the kernel idiom for these things:
+Thanks for the feedback.   I=E2=80=99ve re-worked the patch and =
+micro-benchmark based on your comments.   The benchmark has more =
+overhead from the XOR operations, but it gives a different view of the =
+same picture with a non-static header.
 
-	for_each_pci_bus(bus) {
-		// do bus stuff
-	}
+Benchmark results on my machine (updated version):
 
-I'm kinda surprised there isn't one of those already.
+Legacy Path: 2.648437 seconds
+Unrolled C Path: 2.429688 seconds
+
+Updated benchmark:
+
+#include <stdio.h>
+#include <time.h>
+#include <stdint.h>
+
+//generate more randomized header values
+static inline uint32_t xorshift32(uint32_t *state)
+{
+    uint32_t x =3D *state;
+    x ^=3D x << 13;
+    x ^=3D x >> 17;
+    x ^=3D x << 5;
+    return *state =3D x;
+}
+
+// Current Kernel-style Logic (Simplified)
+// This simulates the ldq_u / extwl dance needed by ev4
+uint16_t csum_legacy(const uint16_t *iph) {
+   uint64_t sum =3D 0;
+   // Simulate the overhead of checking alignment and doing shifts
+   // This is essentially what do_csum does for a 20-byte header
+   for (int i =3D 0; i < 10; i++) {
+       sum +=3D iph[i];
+   }
+   while (sum >> 16)
+       sum =3D (sum & 0xffff) + (sum >> 16);
+   return (uint16_t)~sum;
+}
+
+uint16_t csum_unrolled_c(const void *iph) {
+   const uint16_t *w =3D (const uint16_t *)iph;
+   uint64_t sum;
+
+   sum =3D  w[0];
+   sum +=3D w[1];
+   sum +=3D w[2];
+   sum +=3D w[3];
+   sum +=3D w[4];
+   sum +=3D w[5];
+   sum +=3D w[6];
+   sum +=3D w[7];
+   sum +=3D w[8];
+   sum +=3D w[9];
+
+   uint64_t tmp =3D (sum & 0xffff) + (sum >> 16);
+   tmp =3D (tmp & 0xffff) + (tmp >> 16);
+
+   return (uint16_t)~tmp;
+}
+
+int main() {
+   uint16_t header[10] =3D {0x4500, 0x003c, 0x1c46, 0x4000, 0x4006, =
+0x0000, 0xac10, 0x0a63, 0xac10, 0x0a0c};
+   uint16_t header2[10] =3D {0x4500, 0x003c, 0x1c46, 0x4000, 0x4006, =
+0x0000, 0xac10, 0x0a63, 0xac10, 0x0a0c};
+   long iterations =3D 10000000;
+   uint32_t rng_state =3D 0x12345678;
+   clock_t start, end;
+
+// Test Legacy
+   start =3D clock();
+   for (long i =3D 0; i < iterations; i++) {
+       for (int j =3D 0; j < 10; j++)
+           header[j] ^=3D (uint16_t)xorshift32(&rng_state);
+       volatile uint16_t res =3D csum_legacy(header);
+   }
+   end =3D clock();
+   printf("Legacy Path: %f seconds\n", (double)(end - start) / =
+CLOCKS_PER_SEC);
+
+   rng_state =3D 0x12345678;
+
+   // Test Unrolled
+   start =3D clock();
+   for (long i =3D 0; i < iterations; i++) {
+       for (int j =3D 0; j < 10; j++)
+           header2[j] ^=3D (uint16_t)xorshift32(&rng_state);
+       volatile uint16_t res =3D csum_unrolled_c(header2);
+   }
+   end =3D clock();
+
+   printf("Unrolled C Path: %f seconds\n", (double)(end - start) / =
+CLOCKS_PER_SEC);
+   return 0;
+}
+
+Updated patch:
+
+Signed-off-by: Mike Hlavac <mike@flyingpenguins.org>
+Assisted-by: Google Gemini
+
+--- /home/griffin/kernel-hacking/checksum/checksum-orig.c	=
+2026-04-12 15:17:48.062299877 -0400
++++ arch/alpha/lib/checksum.c	2026-05-13 02:41:15.379142990 -0400
+@@ -16,6 +16,7 @@
+
+ #include <asm/byteorder.h>
+ #include <asm/checksum.h>
++#include <asm/special_insns.h>
+
+ static inline unsigned short from64to16(unsigned long x)
+ {
+@@ -142,12 +143,38 @@
+
+ /*
+  *	This is a version of ip_compute_csum() optimized for IP headers,
+- *	which always checksum on 4 octet boundaries.
++ *	which always checksum on 4 octet boundaries.   Optimized version
++ *	provided for CPUs that see benefit for the unrolled logic.
+  */
+ __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
+ {
++    if (likely(ihl =3D=3D 5) && !amask(AMASK_BWX)) {
++        const u16 *w =3D iph;
++        u64 sum;
++
++        sum  =3D w[0];
++        sum +=3D w[1];
++        sum +=3D w[2];
++        sum +=3D w[3];
++        sum +=3D w[4];
++        sum +=3D w[5];
++        sum +=3D w[6];
++        sum +=3D w[7];
++        sum +=3D w[8];
++        sum +=3D w[9];
++
++        sum =3D (sum & 0xffff) + (sum >> 16);
++        sum =3D (sum & 0xffff) + (sum >> 16);
++
++        return (__force __sum16)~sum;
++    }
++	/* existing legacy implementation as fallback for:
++	*   - ihl !=3D 5
++	*   - EV4/EV5 where the old code is better
++	*/
+ 	return (__force __sum16)~do_csum(iph,ihl*4);
+ }
++
+ EXPORT_SYMBOL(ip_fast_csum);
+
+ /*
+
