@@ -1,64 +1,64 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EB6831F9A8
-	for <linux-alpha@vger.kernel.org>; Sun, 17 May 2026 21:40:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD96A322A1C
+	for <linux-alpha@vger.kernel.org>; Sun, 17 May 2026 21:40:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779054005; cv=none; b=j0+mZ9QJif1T3ed6c+hUYKWUXGSkLwVb2IVf+Th53g3o/Hn5pvBKA6kJTbgT5Zfz2nwrYaCD/rOX2LZHArV4xiOuHZAdi4DUzjs1YEFhg1ODMftW1BPv/RoxOCxgN4GpVjEf8LCO7riqrHsW5RwZMRVQp3WyeOuoK4ZbqOvjklQ=
+	t=1779054006; cv=none; b=kH6qsisK0F1r3UlZSHZyzLfDMiPpkGwOjedogEDWkVeuyMDDSKon8tBLDt0/n7kFhZ4KW/RuKWRylcZJGSkE/bcXHyWIaYeMYYWUafpFi9efUNWFkv+xVnwqKfs25Q4623JmBAhp4fiEgRHx+aiSimmdtBqPFCmnrqj9UxvlYTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779054005; c=relaxed/simple;
-	bh=8ZCTjRwEU90aOFjdM2BqJWPcGFCLfSq9sbu77JodwCg=;
+	s=arc-20240116; t=1779054006; c=relaxed/simple;
+	bh=9Gis33Sp7AVsisa6JN4s5EdMk7i/H0Ra9vdSrPS89l0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AVd80SqS/0UcResygt3fITxjEhy23+7flYOtZlWAyr/NZIX4aBk2BH6uTbW9XdL3/mG8LnenwKd512j9+8KwyOd84h4fuPJAeWuZwzWcZWeTs8AE+Eh+L9crVVHUZu7Fa3AJ4NgjqxfZ9v52joV4+xNEZixuia+q3PVC2o9RYNo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ib7p+O3n; arc=none smtp.client-ip=209.85.167.52
+	 MIME-Version; b=drUVRK/0PJx+Y5cz4H4xneUbUWgso/d3yOaQzU+GdseV1I64n3rMB7iMhczoe9HGUqqUNjcEubHyjjci8N217SKacExdsrvkgDSLJs8q64zZzUjvDc1+UmOfUJPec4hOGtLWKbWWbLVfhaSZq/aSoQVn1TB7jXX/YoDmOOHQ6s4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CK/7skxu; arc=none smtp.client-ip=209.85.167.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ib7p+O3n"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5a8704dc3a8so1884159e87.3
-        for <linux-alpha@vger.kernel.org>; Sun, 17 May 2026 14:40:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CK/7skxu"
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5a8891febd2so2315845e87.1
+        for <linux-alpha@vger.kernel.org>; Sun, 17 May 2026 14:40:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779054002; x=1779658802; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779054003; x=1779658803; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Vo/kqexim4ywDwuffxHgaw4wfPoKPS0jDc9dhEX2Cmk=;
-        b=ib7p+O3nKiHlkLJeU0CZdzUMbTfqijH0cxC1ytP69aDG6vDu5OWH6WOKW3uMBmH/kH
-         rfb2KTNbAg61w8EqObGhOIWAKhdJ6RJTf4ItxWQ2UFTTUUOzKcdlWoio5s6AuFjGDn3b
-         AMr2IFgEOO0Z/ZdjCep+5K6WdLWaiXJjqwxwaJNqOrqPOmGMjjxM0AK1Ml9aHGi0irC1
-         VIw4X8O3wEAi4m4YYYzr5QntGOfb9f99UY3AWHv/pRpDnreKLYiW3UUpAgImxKyGDvhi
-         jSZB5+gndiZ5FxMSAT5jBHj2XTz7j5IZEgBuBAxg3Z7EwLVI7htXrFtWvTan7gPOZbxF
-         SniQ==
+        bh=+Zeom7iA0plPmE0dSLPeGIAyQiaLvJZwK3BO3d2pnzY=;
+        b=CK/7skxuwkVfoMi0oED6dWzXo9FJicD2tuh/0Zd1QviLngub8Lv+u/XcpDbBrWPJkH
+         bvi3pyA0lqYBT38jLhmZX0IIuE507rcHk5QSpzikffsLQq13RTyInDVUA/Wi/d2IlPCy
+         HHHPrNNPLGpFS34P92lfrHIU4t/WEcsL8inLWdH9aSXkfa5G1ioL18p4Kgy6FyCmaC5A
+         x1Nq56x+czkThqGydQGlkXP9F0w5UOvglg1PeAfjGq26F79rUEmFNmkAloQxtCEbrQdg
+         ZnAOJw2DMEeA6WLOJ3zgGr6RZt+Wo+MpiHWHh/yHe8aevveWjC0AR+UpvgkaREkRJzZI
+         YKyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779054002; x=1779658802;
+        d=1e100.net; s=20251104; t=1779054003; x=1779658803;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=Vo/kqexim4ywDwuffxHgaw4wfPoKPS0jDc9dhEX2Cmk=;
-        b=rLiLJgKdLVhVBhAWCWIeUtkgazDbpaSAGyHXz3241zF1LHpiKl4wvTfIuVY/mIh8f2
-         Ou+sQstqs+aIej9WrLcEbg7HPHQzTniU7FcCTn9sbQ8w/sdlSW/s1lL+T+j/4+dB0a7m
-         NPWuYGM2rwJl7moE1E/Upj3Dw559OW2FynLbV2fT7b1dn6xHFKR84BIDUuFTUPk+dWYH
-         3tBULFf2GisejG+CfzocahEeZ9SHq2NWUycJ3nNK2s9wrCwUTf4/RI6tF9lLfOrl6E8j
-         oXETqewkBCdC4y4UG1gf7d7YPFp6WTzJI2BdKk9AG5N/YZLz7G+5fyIUPnuCBDeVNINl
-         JkYg==
-X-Forwarded-Encrypted: i=1; AFNElJ8aStm2WHkrRqyq8KiQS3mlUrj2QouCsr8TNGlADeLfcKSBlI8cPdyD+IFOY6f1HvFp3nDuH4pVXAzt+w==@vger.kernel.org
-X-Gm-Message-State: AOJu0YxhRy75WqHPBNQwkDP4SbVvJcZm/SDttZFje8skfqxUjKZXoftW
-	T1/c12AZsSVyaYIbdMKltSmuwzn3bkmXwWwBOFGZ4lGRJ/rVekzA0pSs
-X-Gm-Gg: Acq92OEsSfq8Nb8WSE/GF7r8xN+YZ2ARi0ruK0WWzYaL/X/w6mcqJ9ClHPUvIH7KRZJ
-	+etktRn5mu599+ajRYRrymZ7sK3Vqr8pPg9rCs/zhz4Oh9+waRNlkWgzm2hIndloCWpkVhbtheR
-	rZuK06Mj28y+AMiUew6ZP9Q2fqS0MnTplDvpluKbY684FjDSfS5/+AVnB6Wp4K6lHap0d76zTiW
-	RGbU/Q1mrua93GPCee+EvsKLKNVxmPIe2nCvl2hDQaEuANYYGJVnx1nSIBZ1giRTt2yCzSpwI1R
-	kWuECk73IYVH08ybey7UuPUrvoB5w+MhkFk48Y8HFo64v9G+O22OW8uLThYghlZQ7BRr3YSDMaf
-	SkgdYIsfYdolg69CRFCUy3yQYxtgI3kL/fi4VSM5QNAszwzWe9ipw8Ue9Jl967F1NPsZ7SAVEl7
-	Budad03oeXYLkGTHQ9F+P43jZHvPoJwlJCp8QYrDdIe70BiARnog4QMdenGNTFCLWoIvTYgK4q/
-	iN7nt+BU2rjFY3yrMzkCTy9VUpxwkn0luM=
-X-Received: by 2002:a05:6512:15a6:b0:5a8:b963:cef6 with SMTP id 2adb3069b0e04-5aa0e769c37mr3063617e87.38.1779054001648;
-        Sun, 17 May 2026 14:40:01 -0700 (PDT)
+        bh=+Zeom7iA0plPmE0dSLPeGIAyQiaLvJZwK3BO3d2pnzY=;
+        b=qjGtEcs4eQBSW5dLI6EtR05qGpkVmq0Vz7+QPzIQ1l4d7w4Fw9wywG4tSHmOC7HrDl
+         zUogw/3PLk7Fo6wyV2ZqiDxEvtk+qRQL2gYi5O94oN79yv3nPGeBNfh2kc2HHj26PP4/
+         AcWYy+bO4nYeF9RweYt5DmJs3XRaZ5+LyrepSUOdNxuWxAtXUSgBK0vOC/ueEqVcJgPW
+         gi3ttkY8gvMnWM/d5tbr8cZQC2VvMwA9O+l7jJxpRLXokg9IheW2XHCr+8Mgo9tpgHFc
+         xrEEfBTJbl2QbUMjxx8cSs4eXrD6pzF7RDlF0Szc/AON2+56+3fuD3Ko9QQzMvnDcKB/
+         7ZlA==
+X-Forwarded-Encrypted: i=1; AFNElJ8QjTR3YrWSNVQb1XDYuYUwMB8UVyIn3GdGhBwXrwMODvh5nUOKu7Bl0J9+pWOAei9ytayJTKET20O3Jg==@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywtm77UXvakazYActeQMSlWbYYKftMTYKauWCXCBmpgaf+gtXHL
+	ofXMr56tbHXCGvpveCpNL5fGHl0QRN6Hq2yUIzuyh1l9mV7WbQ8LW7T2
+X-Gm-Gg: Acq92OGJ816aYqTL421zQXDJ1TS+7aKQotAMGm5MC5fWH6hCeNq+kSeWMn7pN5xbpEx
+	YIuJMyY8dOy+K7Uc7X59UVCdZF6gCUMvQE+MGjFja6UhGlJP8rjxduzkAta5lwlFykPu6bDpQYp
+	+z+SWL19ofbUOI2NfduWVkjB1L32YTjEeKD50yIJh4sSQSfU5SJK9+xa0KUffQI5b0HyD3Mk6jQ
+	HB+2rLpMc3CsknIoRrxkC7qH4cOVG5c0H6naTDfJbPHFRQ92S4q7yV3PFppk4Nh7TqCytsJWstt
+	VHhNoILRdvb0/wtzcTpmca8FsZUWhuU/8KjAFAsqssQafYFlOx0fhZg0ntIuFfLmagTx7H6Wbdd
+	TXvsuiEXGwgVscqIljBXSL+nf0PbmWP4AC0vMMeXH/jRomiAzNK/UuQLocgZiybqyfSpjdGZR5T
+	R+EUfsnKzJFlKrEmzBSKJT2azp/whnmEYn4kjB2qlKFzV/JRNCBVwHtNu7+Qvve3at922rtS3GN
+	jBaoGpbW4ATXoXq3dEPYGqqNQD+jDZjgTw=
+X-Received: by 2002:a05:6512:3d88:b0:5a8:7f52:62d1 with SMTP id 2adb3069b0e04-5aa0e733f44mr4523580e87.1.1779054002895;
+        Sun, 17 May 2026 14:40:02 -0700 (PDT)
 Received: from buildhost.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a91c1558f3sm2890076e87.77.2026.05.17.14.40.00
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a91c1558f3sm2890076e87.77.2026.05.17.14.40.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 14:40:00 -0700 (PDT)
+        Sun, 17 May 2026 14:40:02 -0700 (PDT)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: richard.henderson@linaro.org,
 	mattst88@gmail.com,
@@ -69,9 +69,9 @@ Cc: glaubitz@physik.fu-berlin.de,
 	ink@unseen.parts,
 	macro@orcam.me.uk,
 	Magnus Lindholm <linmag7@gmail.com>
-Subject: [PATCH 2/8] alpha: add ARCH_STACKWALK-based stacktrace support
-Date: Sun, 17 May 2026 23:36:11 +0200
-Message-ID: <20260517213919.347523-3-linmag7@gmail.com>
+Subject: [PATCH 3/8] alpha: make irqflags helpers operate on IPL state
+Date: Sun, 17 May 2026 23:36:12 +0200
+Message-ID: <20260517213919.347523-4-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260517213919.347523-1-linmag7@gmail.com>
 References: <20260517213919.347523-1-linmag7@gmail.com>
@@ -83,144 +83,52 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Implement arch_stack_walk() for Alpha using a simple kernel
-stack scanning walker. Start from regs+1 for current tasks
-to skip pt_regs and use pcb.ksp for blocked tasks. Filter
-candidates with __kernel_text_address() and stop at stack
-bounds via kstack_end().
+Alpha interrupt masking is controlled by the PAL IPL value, not by the
+full processor status word.  Make arch_local_save_flags() return the
+current IPL directly, and make arch_local_irq_restore() and
+arch_irqs_disabled_flags() treat their argument as IPL state.
 
-Enable CONFIG_STACKTRACE_SUPPORT and CONFIG_ARCH_STACKWALK
-so generic stacktrace users (dump_stack(), /proc/*/stack,
-SysRq backtraces, etc.) work on Alpha.
+Mask the low IPL bits in the restore and test helpers so callers which
+still pass a saved PS value continue to behave as expected.
 
-This provides functional in-kernel stack traces without
-requiring frame pointer unwinding.
+This prepares the irqflags helpers for lockdep IRQ-state tracking, where
+the saved flags value is used to determine whether hard IRQs are enabled
+or disabled.
 
 Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/alpha/Kconfig              |  4 +++
- arch/alpha/kernel/Makefile      |  3 +-
- arch/alpha/kernel/stacktrace.c  | 61 +++++++++++++++++++++++++++++++++
- arch/alpha/kernel/vmlinux.lds.S |  2 ++
- 4 files changed, 69 insertions(+), 1 deletion(-)
- create mode 100644 arch/alpha/kernel/stacktrace.c
+ arch/alpha/include/asm/irqflags.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index f3b882835617..7ac435c56845 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -39,6 +39,7 @@ config ALPHA
- 	select MODULES_USE_ELF_RELA
- 	select ODD_RT_SIGACTION
- 	select OLD_SIGSUSPEND
-+	select ARCH_STACKWALK
- 	select CPU_NO_EFFICIENT_FFS if !ALPHA_EV67
- 	select MMU_GATHER_NO_RANGE
- 	select MMU_GATHER_RCU_TABLE_FREE
-@@ -80,6 +81,9 @@ config PGTABLE_LEVELS
- config AUDIT_ARCH
- 	bool
+diff --git a/arch/alpha/include/asm/irqflags.h b/arch/alpha/include/asm/irqflags.h
+index 9f25d4e0d37e..f207544f52de 100644
+--- a/arch/alpha/include/asm/irqflags.h
++++ b/arch/alpha/include/asm/irqflags.h
+@@ -26,7 +26,7 @@ extern int __min_ipl;
  
-+config STACKTRACE_SUPPORT
-+	def_bool y
-+
- menu "System setup"
+ static inline unsigned long arch_local_save_flags(void)
+ {
+-	return rdps();
++	return getipl();
+ }
  
- choice
-diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
-index 187cd8df2faf..4ea5c189e60e 100644
---- a/arch/alpha/kernel/Makefile
-+++ b/arch/alpha/kernel/Makefile
-@@ -9,7 +9,8 @@ ccflags-y	:= -Wno-sign-compare
+ static inline void arch_local_irq_disable(void)
+@@ -51,13 +51,13 @@ static inline void arch_local_irq_enable(void)
+ static inline void arch_local_irq_restore(unsigned long flags)
+ {
+ 	barrier();
+-	setipl(flags);
++	setipl(flags & 7);
+ 	barrier();
+ }
  
- obj-y    := head.o entry.o traps.o process.o osf_sys.o irq.o \
- 	    irq_alpha.o signal.o setup.o ptrace.o time.o \
--	    systbls.o err_common.o io.o bugs.o termios.o
-+	    systbls.o err_common.o io.o bugs.o termios.o \
-+	    stacktrace.o
+ static inline bool arch_irqs_disabled_flags(unsigned long flags)
+ {
+-	return flags == IPL_MAX;
++	return (flags & 7) == IPL_MAX;
+ }
  
- obj-$(CONFIG_VGA_HOSE)	+= console.o
- obj-$(CONFIG_SMP)	+= smp.o
-diff --git a/arch/alpha/kernel/stacktrace.c b/arch/alpha/kernel/stacktrace.c
-new file mode 100644
-index 000000000000..74d95f591039
---- /dev/null
-+++ b/arch/alpha/kernel/stacktrace.c
-@@ -0,0 +1,61 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/sched.h>
-+#include <linux/sched/task_stack.h>
-+#include <linux/stacktrace.h>
-+#include <linux/kallsyms.h>
-+
-+#include <asm/thread_info.h>
-+#include <asm/ptrace.h>
-+
-+static __always_inline unsigned long alpha_get_current_ksp(void)
-+{
-+	unsigned long sp;
-+
-+	asm volatile("mov $30, %0" : "=r"(sp));
-+	return sp;
-+}
-+
-+static void alpha_scan_kernel_stack(unsigned long ksp,
-+				    stack_trace_consume_fn consume_entry,
-+				    void *cookie)
-+{
-+	unsigned long *p = (unsigned long *)ksp;
-+
-+	if (unlikely(ksp & (sizeof(unsigned long) - 1)))
-+		return;
-+
-+	while (!kstack_end(p)) {
-+		unsigned long addr = READ_ONCE_NOCHECK(*p++);
-+
-+		if (!__kernel_text_address(addr))
-+			continue;
-+
-+		if (!consume_entry(cookie, addr))
-+			break;
-+	}
-+}
-+
-+noinline void arch_stack_walk(stack_trace_consume_fn consume_entry,
-+				      void *cookie,
-+				      struct task_struct *task,
-+				      struct pt_regs *regs)
-+{
-+	unsigned long ksp;
-+
-+	if (!task)
-+		task = current;
-+
-+	if (regs && task == current) {
-+		/*
-+		 * pt_regs is stored on the kernel stack; regs+1 matches
-+		 * what arch/alpha/kernel/traps.c uses as the trace start.
-+		 */
-+		ksp = (unsigned long)(regs + 1);
-+	} else if (task == current) {
-+		ksp = alpha_get_current_ksp();
-+	} else {
-+		ksp = task_thread_info(task)->pcb.ksp;
-+	}
-+
-+	alpha_scan_kernel_stack(ksp, consume_entry, cookie);
-+}
-diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
-index 2d136c63db16..95704e64b6a6 100644
---- a/arch/alpha/kernel/vmlinux.lds.S
-+++ b/arch/alpha/kernel/vmlinux.lds.S
-@@ -28,6 +28,8 @@ SECTIONS
- 		TEXT_TEXT
- 		SCHED_TEXT
- 		LOCK_TEXT
-+		IRQENTRY_TEXT
-+		SOFTIRQENTRY_TEXT
- 		*(.fixup)
- 		*(.gnu.warning)
- 	} :text
+ static inline bool arch_irqs_disabled(void)
 -- 
 2.53.0
 
