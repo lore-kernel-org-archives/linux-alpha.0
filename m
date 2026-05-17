@@ -1,64 +1,64 @@
 Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD96A322A1C
-	for <linux-alpha@vger.kernel.org>; Sun, 17 May 2026 21:40:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA5FD320A34
+	for <linux-alpha@vger.kernel.org>; Sun, 17 May 2026 21:40:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779054006; cv=none; b=kH6qsisK0F1r3UlZSHZyzLfDMiPpkGwOjedogEDWkVeuyMDDSKon8tBLDt0/n7kFhZ4KW/RuKWRylcZJGSkE/bcXHyWIaYeMYYWUafpFi9efUNWFkv+xVnwqKfs25Q4623JmBAhp4fiEgRHx+aiSimmdtBqPFCmnrqj9UxvlYTg=
+	t=1779054007; cv=none; b=pjFzwC7CoSKhlOetdA44jaA1wG3eToIZMnhiP62Tb6pqnb7hXa+Gf0zXZi2R/SGFyAh4PXr2FiJDaZ3XtVmE4ygpuSN4B4g6mDq0LCTNrEaNEttz9HTprIRnLlMcdpnR9uvlbrsQl+XMNY0OXq0W8aofGlFP0zOhmy8KALmh2lE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779054006; c=relaxed/simple;
-	bh=9Gis33Sp7AVsisa6JN4s5EdMk7i/H0Ra9vdSrPS89l0=;
+	s=arc-20240116; t=1779054007; c=relaxed/simple;
+	bh=HE6RHHD80LhTOnOIxDn55ZV+XR4m0A2pX3dfr15Ejfk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=drUVRK/0PJx+Y5cz4H4xneUbUWgso/d3yOaQzU+GdseV1I64n3rMB7iMhczoe9HGUqqUNjcEubHyjjci8N217SKacExdsrvkgDSLJs8q64zZzUjvDc1+UmOfUJPec4hOGtLWKbWWbLVfhaSZq/aSoQVn1TB7jXX/YoDmOOHQ6s4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CK/7skxu; arc=none smtp.client-ip=209.85.167.49
+	 MIME-Version; b=Qgpdh+y4AWBlW1vO7MbbhAOJU8TDoCczb2DtKztRNzP48kgbwWwzJeC6fQLdhFIRP/qYiMdXtrfCpa/sZRzYGem7e6GHLxpUFDdXQ/XPMu4QpxG+DmU4B5q8sx4t68LZYjlpfuifhtUGRPvBFmG7Pf/10nXQQb1sxA8ydsA1588=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L8T3U94o; arc=none smtp.client-ip=209.85.167.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CK/7skxu"
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5a8891febd2so2315845e87.1
-        for <linux-alpha@vger.kernel.org>; Sun, 17 May 2026 14:40:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L8T3U94o"
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5a87782588cso1969669e87.3
+        for <linux-alpha@vger.kernel.org>; Sun, 17 May 2026 14:40:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779054003; x=1779658803; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1779054004; x=1779658804; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+Zeom7iA0plPmE0dSLPeGIAyQiaLvJZwK3BO3d2pnzY=;
-        b=CK/7skxuwkVfoMi0oED6dWzXo9FJicD2tuh/0Zd1QviLngub8Lv+u/XcpDbBrWPJkH
-         bvi3pyA0lqYBT38jLhmZX0IIuE507rcHk5QSpzikffsLQq13RTyInDVUA/Wi/d2IlPCy
-         HHHPrNNPLGpFS34P92lfrHIU4t/WEcsL8inLWdH9aSXkfa5G1ioL18p4Kgy6FyCmaC5A
-         x1Nq56x+czkThqGydQGlkXP9F0w5UOvglg1PeAfjGq26F79rUEmFNmkAloQxtCEbrQdg
-         ZnAOJw2DMEeA6WLOJ3zgGr6RZt+Wo+MpiHWHh/yHe8aevveWjC0AR+UpvgkaREkRJzZI
-         YKyA==
+        bh=jM2g/fNisSlNBmuh3HXPnL9GcxMgIFTfKPUaQ1PrVMU=;
+        b=L8T3U94oL01yKLEsJnkDqK75FeqqMshPUV36gH7FGjzXKzCTY7HIJSujcHdSWi+nXd
+         44t2L9Vemv3BfJpiZGUIyc21ZleZtnBV5WRw7oCMjOuN3/dYrxYt/GvVm5bgd64hGr+A
+         jp2wVo5O+19UqOOoHibamcFJuPZzE3s6p7wk0ZnbIGDGRqEInrwCcvA0Qp2ul+zrX8W8
+         HIWeOIXIQdIVERNKtezKzse/Kltx1TLURICAmeGw70K4t1/Fjnw21d4nZSL3UKj45fiS
+         BZ0jHn0dn72bP2me8EFlZyBRfvtbYywBggGXHCNIt8v8FnRWUs3DtmVV3sWvjOtkCUv+
+         qVpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779054003; x=1779658803;
+        d=1e100.net; s=20251104; t=1779054004; x=1779658804;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=+Zeom7iA0plPmE0dSLPeGIAyQiaLvJZwK3BO3d2pnzY=;
-        b=qjGtEcs4eQBSW5dLI6EtR05qGpkVmq0Vz7+QPzIQ1l4d7w4Fw9wywG4tSHmOC7HrDl
-         zUogw/3PLk7Fo6wyV2ZqiDxEvtk+qRQL2gYi5O94oN79yv3nPGeBNfh2kc2HHj26PP4/
-         AcWYy+bO4nYeF9RweYt5DmJs3XRaZ5+LyrepSUOdNxuWxAtXUSgBK0vOC/ueEqVcJgPW
-         gi3ttkY8gvMnWM/d5tbr8cZQC2VvMwA9O+l7jJxpRLXokg9IheW2XHCr+8Mgo9tpgHFc
-         xrEEfBTJbl2QbUMjxx8cSs4eXrD6pzF7RDlF0Szc/AON2+56+3fuD3Ko9QQzMvnDcKB/
-         7ZlA==
-X-Forwarded-Encrypted: i=1; AFNElJ8QjTR3YrWSNVQb1XDYuYUwMB8UVyIn3GdGhBwXrwMODvh5nUOKu7Bl0J9+pWOAei9ytayJTKET20O3Jg==@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywtm77UXvakazYActeQMSlWbYYKftMTYKauWCXCBmpgaf+gtXHL
-	ofXMr56tbHXCGvpveCpNL5fGHl0QRN6Hq2yUIzuyh1l9mV7WbQ8LW7T2
-X-Gm-Gg: Acq92OGJ816aYqTL421zQXDJ1TS+7aKQotAMGm5MC5fWH6hCeNq+kSeWMn7pN5xbpEx
-	YIuJMyY8dOy+K7Uc7X59UVCdZF6gCUMvQE+MGjFja6UhGlJP8rjxduzkAta5lwlFykPu6bDpQYp
-	+z+SWL19ofbUOI2NfduWVkjB1L32YTjEeKD50yIJh4sSQSfU5SJK9+xa0KUffQI5b0HyD3Mk6jQ
-	HB+2rLpMc3CsknIoRrxkC7qH4cOVG5c0H6naTDfJbPHFRQ92S4q7yV3PFppk4Nh7TqCytsJWstt
-	VHhNoILRdvb0/wtzcTpmca8FsZUWhuU/8KjAFAsqssQafYFlOx0fhZg0ntIuFfLmagTx7H6Wbdd
-	TXvsuiEXGwgVscqIljBXSL+nf0PbmWP4AC0vMMeXH/jRomiAzNK/UuQLocgZiybqyfSpjdGZR5T
-	R+EUfsnKzJFlKrEmzBSKJT2azp/whnmEYn4kjB2qlKFzV/JRNCBVwHtNu7+Qvve3at922rtS3GN
-	jBaoGpbW4ATXoXq3dEPYGqqNQD+jDZjgTw=
-X-Received: by 2002:a05:6512:3d88:b0:5a8:7f52:62d1 with SMTP id 2adb3069b0e04-5aa0e733f44mr4523580e87.1.1779054002895;
-        Sun, 17 May 2026 14:40:02 -0700 (PDT)
+        bh=jM2g/fNisSlNBmuh3HXPnL9GcxMgIFTfKPUaQ1PrVMU=;
+        b=bYE8VrcIqaBViBVv88mwL3ZAYPUWY5+84ow2JzFjoRwDokeV+ZG1Ja1zfdqwLPjApC
+         McWtz+pOkDQTqAbc4jwZ4iKwBjC40coOuqDkXZJTQ9WIA32Nc26qIofMATsh7E+FcXOp
+         p9LVNS4by9EHVNxWe5TQAf5S14VbKpHfKA+ykRdVPoF7rpzaj4X+t5pF593U7HZq1osu
+         osZv7aU1zH8wx7ypsDPcO3zim2DEfI1lH4miwZ4+bNvt+1I9o0mKryIQu4KcgKl9ebog
+         zarWRra+7/yfsPyrdzG2uWyS+MfC/1olhe6D6Y7bvnk8NkynQo7y3TyjrjTiaTnu1g3a
+         ovoA==
+X-Forwarded-Encrypted: i=1; AFNElJ8rZLRm+eHIap4uYWTaFj8NQpXcDmTaxo5AcgMJ1pE4Boms+gvunZ+hrPWnFPW9EISjLWgbG7aojPk7SA==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxeaqosjF7+XWxWEtUTDcVhv98Ik3KNcjDCcJ7yPgTkYNu0bBYF
+	ugzUCELy74+1/MlwT919qCK7q4AtMB49ORwqi+1h2m6c24bKxmVF17pB
+X-Gm-Gg: Acq92OFNLHI9lYgOxOUJqeqwj8ZYB7CuoI3xZPiIMthrCSzeCA/PYje1R/MwW9a+cVX
+	oPwkA+kOBobcqZgA7Pd/mn2l6NqFiXcu0605fRyM0OD/SfcYTd+6ZIV7/9Wl6Hc1422zT0M6pMK
+	UqD+YPZEp/XabYYzm6M3zSlKBlhHxEYLp5Rh/QaFLsgPpT53CKS9P9ZGkzyjS7RcThImjY67/dw
+	VUkU7bcHwMk7Y09ohWQg5X5xiUFy8FD/r06/W3eFgIT461MCe0L4CvoqzgYZKzwAktzAZUfwuhT
+	7MV61ymmtovG0qlCHkedYyoYt35dzAv+NrhFK3+pjh2WCwgdS8SPBrgmmlLw9ofTfHpuLvI4Lvb
+	MZfUAHMZu9rzmr0wuhWvCk2PuWhOHF07I8ZFjufitOTxrHG756WwlrkcsBtHig2ecRVBFoXVH1C
+	KSdGz8NgzFTNKAOHJRDgAs8taPmxf2XsjuzyY2EwIQ3dmBo73ljGvX9xUz7sq7/iGnD3SuGYl5H
+	t/u2Pppgw8c9PO9V/3k3r7wbQfYgg0HBwmWQwA615VM+w==
+X-Received: by 2002:a05:6512:3192:b0:5aa:b6b:93c1 with SMTP id 2adb3069b0e04-5aa0e744e11mr3627600e87.43.1779054004091;
+        Sun, 17 May 2026 14:40:04 -0700 (PDT)
 Received: from buildhost.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a91c1558f3sm2890076e87.77.2026.05.17.14.40.01
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a91c1558f3sm2890076e87.77.2026.05.17.14.40.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 May 2026 14:40:02 -0700 (PDT)
+        Sun, 17 May 2026 14:40:03 -0700 (PDT)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: richard.henderson@linaro.org,
 	mattst88@gmail.com,
@@ -69,9 +69,9 @@ Cc: glaubitz@physik.fu-berlin.de,
 	ink@unseen.parts,
 	macro@orcam.me.uk,
 	Magnus Lindholm <linmag7@gmail.com>
-Subject: [PATCH 3/8] alpha: make irqflags helpers operate on IPL state
-Date: Sun, 17 May 2026 23:36:12 +0200
-Message-ID: <20260517213919.347523-4-linmag7@gmail.com>
+Subject: [PATCH 4/8] alpha: initialize PCI sysfs bin attributes for lockdep
+Date: Sun, 17 May 2026 23:36:13 +0200
+Message-ID: <20260517213919.347523-5-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260517213919.347523-1-linmag7@gmail.com>
 References: <20260517213919.347523-1-linmag7@gmail.com>
@@ -83,52 +83,32 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Alpha interrupt masking is controlled by the PAL IPL value, not by the
-full processor status word.  Make arch_local_save_flags() return the
-current IPL directly, and make arch_local_irq_restore() and
-arch_irqs_disabled_flags() treat their argument as IPL state.
+Alpha allocates PCI resource sysfs bin attributes dynamically.  When
+lockdep is enabled, dynamically allocated sysfs attributes need their
+lockdep metadata initialized before registration.
 
-Mask the low IPL bits in the restore and test helpers so callers which
-still pass a saved PS value continue to behave as expected.
-
-This prepares the irqflags helpers for lockdep IRQ-state tracking, where
-the saved flags value is used to determine whether hard IRQs are enabled
-or disabled.
+Call sysfs_bin_attr_init() before registering the resource bin attribute
+with sysfs.  This avoids unrelated sysfs lock-class warnings once Alpha
+enables lockdep support.
 
 Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/alpha/include/asm/irqflags.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/alpha/kernel/pci-sysfs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/alpha/include/asm/irqflags.h b/arch/alpha/include/asm/irqflags.h
-index 9f25d4e0d37e..f207544f52de 100644
---- a/arch/alpha/include/asm/irqflags.h
-+++ b/arch/alpha/include/asm/irqflags.h
-@@ -26,7 +26,7 @@ extern int __min_ipl;
- 
- static inline unsigned long arch_local_save_flags(void)
+diff --git a/arch/alpha/kernel/pci-sysfs.c b/arch/alpha/kernel/pci-sysfs.c
+index 3048758304b5..ba08dbb43521 100644
+--- a/arch/alpha/kernel/pci-sysfs.c
++++ b/arch/alpha/kernel/pci-sysfs.c
+@@ -159,6 +159,8 @@ static int pci_create_one_attr(struct pci_dev *pdev, int num, char *name,
  {
--	return rdps();
-+	return getipl();
- }
+ 	size_t size = pci_resource_len(pdev, num);
  
- static inline void arch_local_irq_disable(void)
-@@ -51,13 +51,13 @@ static inline void arch_local_irq_enable(void)
- static inline void arch_local_irq_restore(unsigned long flags)
- {
- 	barrier();
--	setipl(flags);
-+	setipl(flags & 7);
- 	barrier();
- }
- 
- static inline bool arch_irqs_disabled_flags(unsigned long flags)
- {
--	return flags == IPL_MAX;
-+	return (flags & 7) == IPL_MAX;
- }
- 
- static inline bool arch_irqs_disabled(void)
++	sysfs_bin_attr_init(res_attr);
++
+ 	sprintf(name, "resource%d%s", num, suffix);
+ 	res_attr->mmap = sparse ? pci_mmap_resource_sparse :
+ 				  pci_mmap_resource_dense;
 -- 
 2.53.0
 
