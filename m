@@ -1,280 +1,247 @@
-Received: from mail-108-mta251.mxroute.com (mail-108-mta251.mxroute.com [136.175.108.251])
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1E8E39183C
-	for <linux-alpha@vger.kernel.org>; Fri, 15 May 2026 20:23:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=136.175.108.251
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E505131E84F
+	for <linux-alpha@vger.kernel.org>; Sun, 17 May 2026 21:40:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778876641; cv=none; b=ATcOyU2xQx2J4PxvLHrytozWo/cuI7wNDF8Fims6Jv+KbwKskOe5Q+owYfSXPaRNK79Sb4VFj06X9vkhXqgfayqvTTL7XjsJOi3xaou6sP63goFlTsbLrto4BQuwKp2nNCNsApjNof7lJSrsaKjQVgdgx7DGltOQM1x8B0KRxdQ=
+	t=1779054002; cv=none; b=m9bUf5VR34yrkjKPI5PXZcKW4r/KejDXDEXkJZsH2UFzg5KwS/pHbRHO3VZRbZwMwFXbonrlEqy29GVZevZ5vNLHXFDLPt0fFhUQhzDot6DAapDI208y7vh/z1eATYH4bK2vHV2vdfmzrB7op2Fz47sMxxq3uaIq8wjNJzLL2wU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778876641; c=relaxed/simple;
-	bh=+UlrDE3xZGI/XeFoXmI+y2HdUCNCWuidXYS2IYBrObQ=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=PZVPRm3nIx8gpNqp7zFumf2xL60hQ4rAThxpTeKO8m5wS+wT/fgwUTjfQVAdRhUpc21/1gCsUmAMRfTELHXq/Gu24MQvkwI9i8mJ5ZDOEPN6Esa4FRZyHQK6eNyQpNGxMnaEpguzGqc4eU5yrQZtgEmPPLOghIYQRhnu/RjWk90=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=flyingpenguins.org; spf=pass smtp.mailfrom=flyingpenguins.org; dkim=pass (2048-bit key) header.d=flyingpenguins.org header.i=@flyingpenguins.org header.b=ioB6DX3z; arc=none smtp.client-ip=136.175.108.251
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=flyingpenguins.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flyingpenguins.org
+	s=arc-20240116; t=1779054002; c=relaxed/simple;
+	bh=/yujYzh/VEoO10PH6kI+lqKssvJ4Cxgb2p3W2gzOiG4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HXu3mm5rB142qTSdkreJer1pmHnT+8jUx+wAwhU0fvn0qxOVGjownbaQlCWncw9PNDwPc4xPU2QBA/L/xpgurEy3pzUMVgRfqD36HyhkKuPUMfMp95oFSdmW1TdE7/jzXw36rxcb0IcFFOn94bC4LTwRFRg1wUWZb/9pdbYRWEw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pn3FMcl0; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=flyingpenguins.org header.i=@flyingpenguins.org header.b="ioB6DX3z"
-Received: from filter006.mxroute.com ([136.175.111.3] filter006.mxroute.com)
- (Authenticated sender: mN4UYu2MZsgR)
- by mail-108-mta251.mxroute.com (ZoneMTA) with ESMTPSA id 19e2d4a98aa00067f7.002
- for <linux-alpha@vger.kernel.org>
- (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384);
- Fri, 15 May 2026 20:18:44 +0000
-X-Zone-Loop: c27cc625d7fffefede3f47a2859bab79afdaa1d18865
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=flyingpenguins.org; s=x; h=To:References:Message-Id:
-	Content-Transfer-Encoding:Cc:Date:In-Reply-To:From:Subject:Mime-Version:
-	Content-Type:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=1FDgRPoVQMQ3Nb/mYal2hDDUeHc3K6v3vKNZHP1hcnU=; b=ioB6DX3zfeBs+ARemo5LnypulI
-	X+KHk4wNnZZh4Zm7PXTZvoCGPfMiALIJXKSUtwF7dQnElu712gic6Cqk5R9MH/V4JwxunLEuONFFF
-	YMLsG156KY/22o1KSnkwRpgtekcIuX9KOk9FR+NXPthd4nAUIuGboXB6iYWNHXU1Xe0r7vRmjiGn9
-	mHU9W0J0ZyZWgbBPWdMWCuRQ0+Iv/vSaJL97en2KFTFybbtHsv8p/PZpaGMfrW5IG6dZJOrJypWJ8
-	npPW0oRC0L4/vINtqvQ9WYIiQyh4xHQTWyVXhZVIwFBuQrMv9VHCmNj6x4nfyNHSkiaHfiasty7ba
-	9ReJdFiA==;
-Content-Type: text/plain;
-	charset=utf-8
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pn3FMcl0"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5aa0cf8bca3so1706649e87.0
+        for <linux-alpha@vger.kernel.org>; Sun, 17 May 2026 14:40:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779053999; x=1779658799; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=iz0cTrfiY989F3h8vG33Dyb4UoEDmV5PO+DhGeooQmk=;
+        b=Pn3FMcl0Gp/M8J9iRSyu3C3yl1nmi6ehnq0qC1jyWRJykyAU8d1yn/efLd7EOBb4Gi
+         rzWKtsGStz+hTtoA/sWtRtkKctjQ0wHMUcEVA5UnA6LvybdDIwjgdzTVB3VtvjrhuLKB
+         lABg31MZC02OojvO79G/o1GJuzOHAZiICxr4ha9+rrU32deaCRPf0wEnIWa17UZx7KIv
+         1yDPCj+R5b0JnFropUgPFnJSxSVEvZ6UIvlXZnMl0Z3WtXU0QjA3MN67irUs8ONfvTsw
+         eX1s4bhEY565KhJW480LnC17kakkMF77VrcbtkbcyHV9rClBovRSgicgQQnxMrtrWasl
+         lWQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779053999; x=1779658799;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iz0cTrfiY989F3h8vG33Dyb4UoEDmV5PO+DhGeooQmk=;
+        b=cPIqCA3ULVCUYWHKiVCNUQ/4ggITEdaQZAXVw8Y+/a9gR2ph91fd2HVbFsq8i2P/aW
+         ZGukBA4H66nP0cPbQCR+SK54A6+pgvZpHSkPDYAXJFjK2YlO08zQeeS2eaMEnpaAG/nD
+         9VNhhNRg1oW7Q77SEKQlTOwDLfuYdFT73+fvyCHRD6G52ga/fmRfvT+jk5QOM8AEdTHp
+         F0iBW1I21CjcTU8YmQQcaQ3zbq0SBJcMX/f7LI//uHvCP98vWumKpuKvGr4GW7Z8/qQu
+         iDFdR1KzH0JD5BuxKc1UDCkCXF4CV+4gJBhVWbx7IfUD7jtT0zW0mP2TGwL9aNAuXk/q
+         6gKA==
+X-Forwarded-Encrypted: i=1; AFNElJ9TwQYZNn/mjxWtKYqC2bERV/tsGhNtcaSahKa8kJMF8J+zAf/pHBhLW0KXxEDpIHdncLcb61dBQPJ1ig==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwE0+G7Ir6f1EE7KiNOuUOPKtR+mbjNb72v39G3ecV1QXKQtFPR
+	Y77QG3APAJ/t0+F3Sn++JYtus46mQ4TdkOp8VsFU3I1T9MMl+WOkcU4A
+X-Gm-Gg: Acq92OGFs6d3uPYYY8NycIrowSgCGSFcm/hM13c/lWcB5n1eN5SwoHPh3Jc1mzsS89L
+	DUYeKF16PAtJZ0X/B+NLSoWPLpKB1kcePoKJzGqzf+7f52l4MW2kpg7vX0FQ2vAf4s+JYXnrD/S
+	CdubbCyXOTfdyIAlpJBKei/4Wd9KfE9pLSKEYO6zEoAhLdhlTnPPz4+qATSXoe8khxE8iDYKtdV
+	0qzogRU9bNIAW0mwx8Rt8DY+zFEZvam+P/eTMXCRSyRVC9ozg1vQ91wYK23ztifPThaOHoqYxf4
+	pG9AVrjLXhXcFX7cRP3QfPKu9GRF/pFD1LFsGD0An7dPz0yZpwdTkrrUFFe5qZnDMBUJgPcqA30
+	rg6OIIKen0XRhEn7xtYKYdKZf3DD8Tt0kb/gqM6eZkHAl0NoLJwCUr74njYtFvOo7Jpy6yQ/lGV
+	ARv39aI4OyFrx/jQoy7T731W4iY2lf2i+XuUyAihrqwyy8gHJB6Hj0YNG4RDjUaMTE/hK5J2qnn
+	uusfbYxXw2JTPWjLG9bHRHLKqHxJwyDkLwsfouepg1y8A==
+X-Received: by 2002:a05:6512:b24:b0:5a8:e363:6f7e with SMTP id 2adb3069b0e04-5aa0e73d776mr3594039e87.17.1779053998828;
+        Sun, 17 May 2026 14:39:58 -0700 (PDT)
+Received: from buildhost.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a91c1558f3sm2890076e87.77.2026.05.17.14.39.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 May 2026 14:39:58 -0700 (PDT)
+From: Magnus Lindholm <linmag7@gmail.com>
+To: richard.henderson@linaro.org,
+	mattst88@gmail.com,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org
+Cc: glaubitz@physik.fu-berlin.de,
+	mcree@orcon.net.nz,
+	ink@unseen.parts,
+	macro@orcam.me.uk,
+	Magnus Lindholm <linmag7@gmail.com>
+Subject: [PATCH 0/8] alpha: enable generic entry infrastructure
+Date: Sun, 17 May 2026 23:36:09 +0200
+Message-ID: <20260517213919.347523-1-linmag7@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.10\))
-Subject: Re: [RFC] alpha: optimize ip_fast_csum for BWX-capable CPUs
-From: Mike Hlavac <mike@flyingpenguins.org>
-In-Reply-To: <CA+=Fv5RaTrRkjzsWgoE1hJ+nBmTzV19Ps2Wuzn1z9EKnDmN8Tw@mail.gmail.com>
-Date: Fri, 15 May 2026 16:18:41 -0400
-Cc: linux-alpha@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <5249DDD2-6962-475D-880A-E3D6C57E97DD@flyingpenguins.org>
-References: <E005E33F-8F2B-4885-89E7-CEAEA04F914A@flyingpenguins.org>
- <CA+=Fv5RaTrRkjzsWgoE1hJ+nBmTzV19Ps2Wuzn1z9EKnDmN8Tw@mail.gmail.com>
-To: Magnus Lindholm <linmag7@gmail.com>
-X-Authenticated-Id: mike@flyingpenguins.org
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
+Hi,
 
+This series moves Alpha closer to the common architecture infrastructure
+and enables GENERIC_ENTRY and GENERIC_IRQ_ENTRY.
 
-> On Apr 23, 2026, at 5:30 AM, Magnus Lindholm <linmag7@gmail.com> =
-wrote:
->=20
-> On Mon, Apr 20, 2026 at 1:44=E2=80=AFAM Mike Hlavac =
-<mike@flyingpenguins.org> wrote:
->>=20
->> On Alpha EV56 and later, we can use the 'ldwu' instruction to =
-significantly accelerate IP header checksumming. By manually unrolling =
-the loop for the common 20-byte (ihl=3D5) case, we eliminate branch =
-penalties and allow the compiler to optimally schedule instructions for =
-the EV56 pipeline.
->>=20
->> Benchmarked on EV56 (Miata) at 633MHz:
->>=20
->>        =E2=80=A2 Legacy Path: 0.796s
->>=20
->>        =E2=80=A2 Unrolled BWX Path: 0.508s (~36% improvement)
->>=20
->> Tested with GCC 15. The unrolled C implementation results in =
-straight-line assembly with no branches in the hot path.  I=E2=80=99d =
-love some feedback from someone with an EV6+
->>=20
->=20
-> Mike,
->=20
-> Thanks for working on this.  I tested the benchmark here with GCC
-> 15.2.1 at -O2 on several CPU targets.  There does seem to be a real
-> optimization opportunity, but I do not think this patch is the right
-> shape yet.
->=20
-> Results here (EV67 833 MHz system) were roughly:
->=20
->  ev4:  legacy ~0.365s, modern ~0.83s,  unrolled ~0.230s
->  ev5:  legacy ~0.394s, modern ~0.716s, unrolled ~0.230s
->  ev56: legacy ~0.304s, modern ~0.304s, unrolled ~0.171s
->  ev6:  legacy ~0.314s, modern ~0.313s, unrolled ~0.177s
->=20
-> The measured win comes from the manually unrolled ihl=3D=3D5 case =
-becoming
-> straight-line code with no inner loop branch, not from the "modern C"
-> rewrite by itself.  On ev56/ev6, the looped legacy and looped modern-C
-> variants compile to essentially the same code, while on ev4/ev5 the
-> plain uint16_t loop is actually much worse than legacy.
->=20
-> One caveat is that the benchmark repeatedly checksums the same small
-> static header, so it mainly measures code shape with hot data.  That
-> is useful, but it does not say much by itself about the end-to-end
-> gain on real traffic. Touching old and stable code is alway a risk to
-> introduce new problems.
->=20
-> I also think the interface change is a problem.  Today Alpha has an
-> out-of-line ip_fast_csum() symbol.  This patch turns it into a header
-> inline and makes the fallback path call do_csum(), but do_csum() is
-> not exported, which looks wrong for modules.
->=20
-> The optimization itself does not seem out of line; other archs also
-> treat ip_fast_csum() as a specialized IPv4-header routine.  What
-> would seem safer here would be to keep the Alpha-specific fast path
-> behind the existing ip_fast_csum() implementation, with the current
-> checksum code as the fallback for larger ihl values and non-BWX
-> friendly builds.
->=20
-> Thanks,
-> Magnus
+The main motivation is to reduce Alpha-specific syscall tracing, ptrace,
+seccomp, and return-to-user handling where common code already provides
+the required infrastructure. Alpha still has ABI-sensitive syscall
+details, most notably the assembly syscall invocation and the r0/r19
+return-value encoding, so those remain Alpha-specific. The surrounding
+entry/exit decisions are moved towards common code.
 
-Magnus,
+The series first adds regset-based ptrace and core dump support. Alpha
+now provides a user_regset_view for NT_PRSTATUS and NT_PRFPREG, exports
+the ELF-visible general and floating-point register layouts, and uses the
+common ptrace regset implementation for PTRACE_GETREGSET and
+PTRACE_SETREGSET instead of open-coding iovec handling in arch_ptrace().
+This also provides the basis for HAVE_ARCH_TRACEHOOK and common ptrace
+syscall-info support.
 
-Thanks for the feedback.   I=E2=80=99ve re-worked the patch and =
-micro-benchmark based on your comments.   The benchmark has more =
-overhead from the XOR operations, but it gives a different view of the =
-same picture with a non-static header.
+It then adds ARCH_STACKWALK support. The implementation uses a simple
+kernel stack scanning walker, starting after pt_regs for current tasks
+and using the saved PCB kernel stack pointer for blocked tasks. This
+enables common stacktrace users such as dump_stack(), /proc/*/stack, and
+SysRq backtraces, without introducing a frame-pointer-based unwinder. It
+also avoids relying on the legacy weak save_stack_trace_*() fallbacks,
+which is needed by the later generic IRQ-entry configuration in this
+series.
 
-Benchmark results on my machine (updated version):
+The next group of patches prepares Alpha for lockdep IRQ-state tracking.
+Alpha interrupt masking is controlled by the PAL IPL state, so the
+irqflags helpers are made to operate on IPL state rather than treating
+the full processor status word as the saved interrupt state. The series
+also initializes dynamically allocated PCI sysfs bin attributes for
+lockdep, provides ftrace return-address support for lockdep call-site
+reporting, and converts low-level platform locks to raw spinlocks where
+regular spinlock instrumentation is not appropriate for the hardware and
+interrupt paths involved.
 
-Legacy Path: 2.648437 seconds
-Unrolled C Path: 2.429688 seconds
+The lockdep patch then adds hardirq state tracking in Alpha's low-level
+entry/exit paths. It annotates PAL IPL transitions and the shared return
+path so lockdep can keep its interrupt state in sync with the hardware
+IPL state. This allows CONFIG_PROVE_LOCKING to remain useful on Alpha
+instead of quickly disabling debug_locks due to IRQ state mismatches.
 
-Updated benchmark:
+The final patch enables GENERIC_ENTRY and GENERIC_IRQ_ENTRY. Syscall
+entry now uses C helpers built around syscall_enter_from_user_mode().
+The C entry helper handles the common syscall-entry work, including
+ptrace/seccomp entry processing, skip decisions, syscall-number
+shadowing, and syscall table lookup. It returns the selected syscall
+function pointer to assembly.
 
-#include <stdio.h>
-#include <time.h>
-#include <stdint.h>
+Assembly then performs only the Alpha-specific dispatch: it reloads the
+syscall arguments, preserves the required GP/stack conventions, and
+performs the indirect call through the function pointer returned by C.
+Skipped syscalls bypass that dispatch and return through the Alpha
+syscall-exit helper.
 
-//generate more randomized header values
-static inline uint32_t xorshift32(uint32_t *state)
-{
-    uint32_t x =3D *state;
-    x ^=3D x << 13;
-    x ^=3D x >> 17;
-    x ^=3D x << 5;
-    return *state =3D x;
-}
+Syscall exit is split in the same way. Alpha first performs its
+ABI-specific result handling: r0/v0 carries the return value or positive
+errno, and r19/a3 carries the error flag. It also handles skipped
+syscall restart state and successful syscalls whose return values may
+look like negative errnos, such as legacy ptrace PEEK requests. Once the
+Alpha-specific r0/r19 state is encoded, the path enters
+syscall_exit_to_user_mode() for the common syscall-exit and
+exit-to-user-mode work.
 
-// Current Kernel-style Logic (Simplified)
-// This simulates the ldq_u / extwl dance needed by ev4
-uint16_t csum_legacy(const uint16_t *iph) {
-   uint64_t sum =3D 0;
-   // Simulate the overhead of checking alignment and doing shifts
-   // This is essentially what do_csum does for a 20-byte header
-   for (int i =3D 0; i < 10; i++) {
-       sum +=3D iph[i];
-   }
-   while (sum >> 16)
-       sum =3D (sum & 0xffff) + (sum >> 16);
-   return (uint16_t)~sum;
-}
+The syscall number used by generic entry is kept separately from the
+return-value register. entSys copies the raw r0 syscall number into r1,
+and r1 is used as Alpha's generic-entry syscall-number shadow. Restart
+bookkeeping that used to be carried by low-level assembly state is now
+kept explicitly in thread_info. This avoids using user-visible general
+registers as hidden restart state while preserving Alpha's restart and
+ptrace semantics.
 
-uint16_t csum_unrolled_c(const void *iph) {
-   const uint16_t *w =3D (const uint16_t *)iph;
-   uint64_t sum;
+Testing was performed on an Alpha EV68/Tsunami SMP system (UP2000+) as
+well as an Alphaserver 4100 (rawhide) system. 
 
-   sum =3D  w[0];
-   sum +=3D w[1];
-   sum +=3D w[2];
-   sum +=3D w[3];
-   sum +=3D w[4];
-   sum +=3D w[5];
-   sum +=3D w[6];
-   sum +=3D w[7];
-   sum +=3D w[8];
-   sum +=3D w[9];
+For the regset, ptrace, tracehook, and generic-entry changes, testing
+included:
 
-   uint64_t tmp =3D (sum & 0xffff) + (sum >> 16);
-   tmp =3D (tmp & 0xffff) + (tmp >> 16);
+  - custom ptrace/regset round-trip tests for both GPR and FPR regsets
+  - PTRACE_GET_SYSCALL_INFO validation, including the reported user
+    stack pointer
+  - ELF core dump inspection with readelf
+  - tools/testing/selftests/seccomp/seccomp_bpf, with all applicable
+    tests passing
+  - strace testsuite (make check), with the remaining failures comparable
+    to the pre-series baseline on the same system.
 
-   return (uint16_t)~tmp;
-}
+For the stacktrace changes, the following scenarios were verified:
 
-int main() {
-   uint16_t header[10] =3D {0x4500, 0x003c, 0x1c46, 0x4000, 0x4006, =
-0x0000, 0xac10, 0x0a63, 0xac10, 0x0a0c};
-   uint16_t header2[10] =3D {0x4500, 0x003c, 0x1c46, 0x4000, 0x4006, =
-0x0000, 0xac10, 0x0a63, 0xac10, 0x0a0c};
-   long iterations =3D 10000000;
-   uint32_t rng_state =3D 0x12345678;
-   clock_t start, end;
+  - SysRq 'l' prints backtraces for all CPUs, including syscall and
+    interrupt contexts
+  - /proc/<pid>/stack returns sensible call chains for both the current
+    task and sleeping tasks, such as nanosleep
+  - stack traces remain stable under scheduler and I/O load, including
+    ping, ext4 writes, and background workqueues
+  - no crashes, lockups, or obvious mis-unwinds were observed
 
-// Test Legacy
-   start =3D clock();
-   for (long i =3D 0; i < iterations; i++) {
-       for (int j =3D 0; j < 10; j++)
-           header[j] ^=3D (uint16_t)xorshift32(&rng_state);
-       volatile uint16_t res =3D csum_legacy(header);
-   }
-   end =3D clock();
-   printf("Legacy Path: %f seconds\n", (double)(end - start) / =
-CLOCKS_PER_SEC);
+For the lockdep changes, /proc/lockdep_stats shows debug_locks remaining
+enabled, with no redundant hardirq or softirq on/off annotations observed
+during testing.
 
-   rng_state =3D 0x12345678;
+Review feedback is very welcome. Additional testing on other Alpha
+systems, CPU variants, and workloads would also be much appreciated.
 
-   // Test Unrolled
-   start =3D clock();
-   for (long i =3D 0; i < iterations; i++) {
-       for (int j =3D 0; j < 10; j++)
-           header2[j] ^=3D (uint16_t)xorshift32(&rng_state);
-       volatile uint16_t res =3D csum_unrolled_c(header2);
-   }
-   end =3D clock();
+Patches:
 
-   printf("Unrolled C Path: %f seconds\n", (double)(end - start) / =
-CLOCKS_PER_SEC);
-   return 0;
-}
+  1. alpha: enable regset-based ptrace and core dumps
+  2. alpha: add ARCH_STACKWALK-based stacktrace support
+  3. alpha: make irqflags helpers operate on IPL state
+  4. alpha: initialize PCI sysfs bin attributes for lockdep
+  5. alpha: provide ftrace return address support for lockdep
+  6. alpha: convert low-level platform locks to raw spinlocks
+  7. alpha: enable lockdep hardirq state tracking
+  8. alpha: enable GENERIC_ENTRY and GENERIC_IRQ_ENTRY
 
-Updated patch:
+Thanks,
 
-Signed-off-by: Mike Hlavac <mike@flyingpenguins.org>
-Assisted-by: Google Gemini
+Magnus
 
---- /home/griffin/kernel-hacking/checksum/checksum-orig.c	=
-2026-04-12 15:17:48.062299877 -0400
-+++ arch/alpha/lib/checksum.c	2026-05-13 02:41:15.379142990 -0400
-@@ -16,6 +16,7 @@
+Magnus Lindholm (8):
+  alpha: enable regset-based ptrace and core dumps
+  alpha: add ARCH_STACKWALK-based stacktrace support
+  alpha: make irqflags helpers operate on IPL state
+  alpha: initialize PCI sysfs bin attributes for lockdep
+  alpha: provide ftrace return address support for lockdep
+  alpha: use raw spinlocks for low-level platform locks
+  alpha: enable lockdep hardirq state tracking
+  alpha: enable GENERIC_ENTRY and GENERIC_IRQ_ENTRY
 
- #include <asm/byteorder.h>
- #include <asm/checksum.h>
-+#include <asm/special_insns.h>
+ .../features/core/tracehook/arch-support.txt  |   2 +-
+ .../features/locking/lockdep/arch-support.txt |   2 +-
+ arch/alpha/Kconfig                            |  13 +
+ arch/alpha/include/asm/elf.h                  |   1 +
+ arch/alpha/include/asm/entry-common.h         |  14 +
+ arch/alpha/include/asm/ftrace.h               |  30 +-
+ arch/alpha/include/asm/irqflags.h             |   6 +-
+ arch/alpha/include/asm/ptrace.h               |  21 +-
+ arch/alpha/include/asm/stacktrace.h           |  20 +
+ arch/alpha/include/asm/syscall.h              |  18 +-
+ arch/alpha/include/asm/thread_info.h          |  31 +-
+ arch/alpha/include/uapi/asm/ptrace.h          |   2 +-
+ arch/alpha/kernel/Makefile                    |   3 +-
+ arch/alpha/kernel/asm-offsets.c               |   6 +
+ arch/alpha/kernel/entry.S                     | 328 +++++---------
+ arch/alpha/kernel/irq_alpha.c                 |  78 +++-
+ arch/alpha/kernel/irq_i8259.c                 |  19 +-
+ arch/alpha/kernel/pci-sysfs.c                 |   2 +
+ arch/alpha/kernel/proto.h                     |  13 +-
+ arch/alpha/kernel/ptrace.c                    | 405 ++++++++++++++----
+ arch/alpha/kernel/signal.c                    | 143 ++++++-
+ arch/alpha/kernel/stacktrace.c                |  61 +++
+ arch/alpha/kernel/sys_dp264.c                 |  38 +-
+ arch/alpha/kernel/sys_rawhide.c               |  17 +-
+ arch/alpha/kernel/traps.c                     |   8 +
+ arch/alpha/kernel/vmlinux.lds.S               |   2 +
+ 26 files changed, 862 insertions(+), 421 deletions(-)
+ create mode 100644 arch/alpha/include/asm/entry-common.h
+ create mode 100644 arch/alpha/include/asm/stacktrace.h
+ create mode 100644 arch/alpha/kernel/stacktrace.c
 
- static inline unsigned short from64to16(unsigned long x)
- {
-@@ -142,12 +143,38 @@
-
- /*
-  *	This is a version of ip_compute_csum() optimized for IP headers,
-- *	which always checksum on 4 octet boundaries.
-+ *	which always checksum on 4 octet boundaries.   Optimized version
-+ *	provided for CPUs that see benefit for the unrolled logic.
-  */
- __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
- {
-+    if (likely(ihl =3D=3D 5) && !amask(AMASK_BWX)) {
-+        const u16 *w =3D iph;
-+        u64 sum;
-+
-+        sum  =3D w[0];
-+        sum +=3D w[1];
-+        sum +=3D w[2];
-+        sum +=3D w[3];
-+        sum +=3D w[4];
-+        sum +=3D w[5];
-+        sum +=3D w[6];
-+        sum +=3D w[7];
-+        sum +=3D w[8];
-+        sum +=3D w[9];
-+
-+        sum =3D (sum & 0xffff) + (sum >> 16);
-+        sum =3D (sum & 0xffff) + (sum >> 16);
-+
-+        return (__force __sum16)~sum;
-+    }
-+	/* existing legacy implementation as fallback for:
-+	*   - ihl !=3D 5
-+	*   - EV4/EV5 where the old code is better
-+	*/
- 	return (__force __sum16)~do_csum(iph,ihl*4);
- }
-+
- EXPORT_SYMBOL(ip_fast_csum);
-
- /*
+-- 
+2.53.0
 
