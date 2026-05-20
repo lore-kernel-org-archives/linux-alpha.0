@@ -1,175 +1,837 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f65.google.com (mail-dl1-f65.google.com [74.125.82.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 581904F5E0;
-	Mon, 18 May 2026 15:46:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAEA8348465
+	for <linux-alpha@vger.kernel.org>; Wed, 20 May 2026 03:32:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779119190; cv=none; b=pQeo5YlXJRi8hpW1eRjSlQRFcVJq4rwuHpLJXTwL+Dy0drB/ABF3NTEuLeuzdxdQzV7splxo/jxL9zXdyx6LlNtMukPBEIj54HQorvBz/gi+EDpeM3bG3UR+qONybVt6wVY5dwkIHiukFE63rpjdKfIQ74y7lfcdGpZddxf38rU=
+	t=1779247978; cv=none; b=FB0UsjJRSpaIMfhFrAjzAIFSOzJmzRQXSBW/FQ+W7IDZ1vcZqNftd6Q1aa9yh5jgSi9ycC2nbTwaeUZ1y6TGSpnkaX1ozAMIGKHgtkieTVCslsKkBBPux5HL4XdWOa+Z8ctSohNy8mzeCrKGYb24hmqRP+0JA3aSIoss1VNmbPs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779119190; c=relaxed/simple;
-	bh=AjL8N2LVB/OojDQzv9xLNPYHoiSC52XQwwBwyjGPaZc=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Wz47uap9KV8jhcXIBc9sJDoXkk7owEY6dpz5zIbEeabqwMbngd0rrTlPirnQDUWeaTI7WfWhbAPhHddrO+EdlT8eejOT3AVIuIr4ntWjdhsAf40kDQqkBsrD8izROkiUIqm/Y0FQRJ/LiRJI/fdccLEBMy0/xVTdf/2qYPPX4iw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=DaZ69NTy; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1779247978; c=relaxed/simple;
+	bh=DE7lfdFY0tW8txQ93NLpBlb9NX1IgxQFhteEfn+hLH0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SnxMK4+bLgSRweXSZow3jqTyzllEYdaIx6DarcFttSJ21b3nLKM77w4HP+DEYPb6lMByB+Wu/kGdleQOXeFP897I8ZItkuSLHP4whESO3XgLB6wUSc3vy5RnldTt7LsVn+yVhRlNDo7PysJrOBUuxemCA9Yq4N8x21+VKbqre0I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Duk+i3PY; arc=none smtp.client-ip=74.125.82.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="DaZ69NTy"
-Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 64I5TeTc3681418;
-	Mon, 18 May 2026 15:45:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=yMnLBz
-	Y0p0Cd+gtn+Agv9RdL/bu0d4IkitP7BLovXc0=; b=DaZ69NTy6khgPB2oBKO7hR
-	qPq1BlhIydDYngtnammgp3r0aiYWbExr0FbdV/xb+TqO/7WqXypPeXYGOX2Py7sr
-	s6ee4AP4dfeo8FQKPiXw6YQ9w6op/QP2mfQ3yNsPaah26bKRJCdbv/0h20/3auf6
-	NIvK6HIW7oxbP+1AK+jGsDirK6ZdtSEC8G29/iQq0TBb4JtPeBTwTvlXKXOeoq10
-	WCFTMBSh2iWsbbjSH7yYr/ODAz4MyeydG+0SVeIeBazfBY6qmKQZTUPj8DwhflAW
-	KppGsoV+1A0CTdXRPfMYUJQ8auXLDUBuMt98G8TmNZWej1KXsfl53WhMVapG1lMQ
-	==
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4e6h9xrw5t-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 18 May 2026 15:45:55 +0000 (GMT)
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 64IFdCpG023083;
-	Mon, 18 May 2026 15:45:54 GMT
-Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 4e75kxx9m5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 18 May 2026 15:45:54 +0000 (GMT)
-Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
-	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 64IFjonp30474780
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 18 May 2026 15:45:50 GMT
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 9B7CF2004D;
-	Mon, 18 May 2026 15:45:50 +0000 (GMT)
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 5194A2004B;
-	Mon, 18 May 2026 15:45:50 +0000 (GMT)
-Received: from [9.52.210.163] (unknown [9.52.210.163])
-	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Mon, 18 May 2026 15:45:50 +0000 (GMT)
-Message-ID: <c12e2f60504c8988a172cd947fc5a07f5cf9148c.camel@linux.ibm.com>
-Subject: Re: [PATCH 2/5] arm/pci: Use official API to iterate over PCI buses
-From: Gerd Bayer <gbayer@linux.ibm.com>
-To: Russell King <linux@armlinux.org.uk>
-Cc: Yinghai Lu <yinghai@kernel.org>, linux-alpha@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
-        Richard Henderson
-	 <richard.henderson@linaro.org>,
-        Matt Turner <mattst88@gmail.com>, Magnus
- Lindholm <linmag7@gmail.com>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Michael Ellerman	 <mpe@ellerman.id.au>,
-        Nicholas Piggin
- <npiggin@gmail.com>,
-        "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen
- <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin"
- <hpa@zytor.com>, Gerd Bayer <gbayer@linux.ibm.com>
-Date: Mon, 18 May 2026 17:45:50 +0200
-In-Reply-To: <20260515-priv_root_buses-v1-2-f8e393c57390@linux.ibm.com>
-References: <20260515-priv_root_buses-v1-0-f8e393c57390@linux.ibm.com>
-	 <20260515-priv_root_buses-v1-2-f8e393c57390@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Duk+i3PY"
+Received: by mail-dl1-f65.google.com with SMTP id a92af1059eb24-135200bc7d2so931807c88.0
+        for <linux-alpha@vger.kernel.org>; Tue, 19 May 2026 20:32:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779247975; x=1779852775; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+ZwT6jFAkQrUSs7LqDce8uNZux1QgXwZ4Wl56JV19lI=;
+        b=Duk+i3PYiW4IdRnR82qeVs1OB63hZ2gUlunzOaZxIvb1I2wkQVC7dWma1bJ+iw94H6
+         3QCHMB4TEUflSs3XLVm+IIeJUoN1Bx8C2vhk62LxfC2GlKQcf8IP3ctyNAm3DQA/8Vlu
+         ODo7+2B0ufkSPisPlXriUm2ieaG8oh/2kwrJyhgeZrd2zGvpcbMBiFEXPbJGxp1CMTrb
+         2mZfjBnc5AZ0UTrMj15okoLmtQICEi8eahl74br0oWmVTowKZAEVD7Ry7HwhYhPGEPrw
+         3sz9DyxAWSNogPAIlmYGTHIr4rMWDBI3Ywj18YlA7WzGOOgR1V06m/In5Ufygp0T77cK
+         pe3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779247975; x=1779852775;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+ZwT6jFAkQrUSs7LqDce8uNZux1QgXwZ4Wl56JV19lI=;
+        b=iKYyCX9t2JIvuJdlacfYhudr1hQgBNQI/SWs97tVg0EH5tvJUlbMTksZ5tOFtKBlO0
+         atxJJrLPdNPG7xxHsiNtnZzAr4KCImyGinjKyh3LSXgWKCpSOKtW+mg25owWHXKPvCC8
+         Qy1qrXWth5w3vIpWxsyEE3bXSZHpzJl7XawH/f1HYADtqJn+g7FvCrfzgQsYpS1Wjjkj
+         r86DzcwmdhAL9ZicQXISDgXt0TzvfzzgwcR1+X79uvx0HFNbG6CPFYbJVwhOXsZ7ucFG
+         osdz7JSkI6GLJbBKbIzjYvIOPMCbVGGFBRUqOZgiv/5QjUcFdWJ3Kyr70ixbtr+eDffg
+         jWiA==
+X-Forwarded-Encrypted: i=1; AFNElJ8nKcyBbR6phGDmeLNWyhspDw8iuyRAkn1754RkBEyGTmjjakXNr63QNhXFm1eZD7eAH+2+oRE6ILAM0A==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwliBAGKASzBxC0VgMe1S3EGvM1cVp1l0d/jAMNPDS1VfQW7ZFh
+	RdsGWbT+hPYqI3iH4Et2C2WjNO1Y3GVvRXYxIyRsRXjQNQbR5lycq/5I
+X-Gm-Gg: Acq92OGRNKgmrlh1vqpMXa7w2SAfB0q72w5yhtFX2rTOhLG6S9iZxjwbDYqo30UV/Bq
+	sRmaxDa1QKUyDZza5R4Nc8r128m+W0PYVpErMqnHXmxSEaaJvVgr7X8cIxMKhe42nTBHpIJ7aFJ
+	fTARJNMTTkKniRA+kXnWPIxLszWv8BbTBHLZ2LKqzM0zgYKAcV8lW6Z66EjGaC7TTkBLdAJcyQ4
+	AXWr3oMKRM+258N1Df8SpmOgh30cwlPA9S5R8NvvYGUjThX/BlzqWCbbV3OemUwi2m1J35QI3C2
+	d46IIpjFU6J0kIQvCk44an7IsZ/A5yqMfzsH86zEW9t0pZdxBRgCjyAIVPDKvw7E24PT0EJ5ECR
+	Bck1YzL/7wXkWYYxrM0INU2N0poUehQKEh5NnJh1yHZG3FeLc/OmKQH/oyk4m+pCNyprE6bx6G6
+	JNtJxWk/zTFLLwPHBnsbx0o5ugpt23rf4p4lG5FRB35Pkqd7NGstEOHwGI9DNNbOdSYQvIJWn+x
+	ieahK7qVv85fvINdsY2Zze/t2srOCrlElz/fVbsFce6o09mmzEcplHYoRCvLPp+XAkA8m6WINO3
+	JAoF1Ohbf0gk8aBygA==
+X-Received: by 2002:a05:7022:f9d:b0:133:1ba6:f42d with SMTP id a92af1059eb24-1350451e2b2mr11405371c88.3.1779247974860;
+        Tue, 19 May 2026 20:32:54 -0700 (PDT)
+Received: from ethan-latitude5420.. (host-127-24.cafrjco.fresno.ca.us.clients.pavlovmedia.net. [68.180.127.24])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-134cbcb9ef5sm24582900c88.2.2026.05.19.20.32.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 May 2026 20:32:54 -0700 (PDT)
+From: Ethan Nelson-Moore <enelsonmoore@gmail.com>
+To: linux-doc@vger.kernel.org,
+	linux-alpha@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-fbdev@vger.kernel.org
+Cc: Ethan Nelson-Moore <enelsonmoore@gmail.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Helge Deller <deller@gmx.de>,
+	Nicolas Pitre <nico@fluxnic.net>
+Subject: [PATCH] video: console: mdacon: remove this obsolete driver
+Date: Tue, 19 May 2026 20:31:36 -0700
+Message-ID: <20260520033155.17378-1-enelsonmoore@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-Reinject: loops=2 maxloops=12
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNTE4MDE1MyBTYWx0ZWRfX8r3cbmeKr0/7
- ZjyyZTE/MFfCBi9GbmXKpcNX+lwwkqC/9EqO4bFEKkV0WxHMu8YU0cBV1HoQiap3G8VrbbOhPqX
- cIVfyD5AhPx1YaItAYhYQCGqrHOagMWcAE3rumBa5VM1U0HRMmzgHAH8cxXQLRwUG9a7zv+SoSh
- c2bAAz/2ICYd/8D8AkBWM3CQq/JaA5wrKvpxgQtOs5xg1QKftyVzMr4wwI5LtajgClZtVrhMJcE
- TN1xSrsUsMzR8prwkGf/BQuS4GKBSgJKfIIz4XO23oksI0bbnyKrllJJq05fOGQeK9FvA9zifSt
- ILHC+u9s2O+MSeSQYqvF/D1QBzQMRoScTjrbjFUP295QGllnikQaHWgnadjneqDXfBgv2UOSqOF
- zBcOuQSW//l0VWrlAEwh+SLRmdEalckBAM9FewQOuKevizxfqy2W4DKwOdIVrPNhLkEftxXcmQk
- LX9aKHmREnD9ktNyOWQ==
-X-Authority-Analysis: v=2.4 cv=BNuDalQG c=1 sm=1 tr=0 ts=6a0b3433 cx=c_pps
- a=aDMHemPKRhS1OARIsFnwRA==:117 a=aDMHemPKRhS1OARIsFnwRA==:17
- a=IkcTkHD0fZMA:10 a=NGcC8JguVDcA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=RnoormkPH1_aCDwRdu11:22 a=iQ6ETzBq9ecOQQE5vZCe:22 a=c92rfblmAAAA:8
- a=VwQbUJbxAAAA:8 a=VnNF1IyMAAAA:8 a=FcXVdTTBcE9J8dFX6AQA:9 a=QEXdDO2ut3YA:10
- a=GvGzcOZaWPEFPQC_NcjD:22
-X-Proofpoint-ORIG-GUID: xIpXrCK9Gg9N_OlSikDLILgWx7FxlsfY
-X-Proofpoint-GUID: FH1kcY4D8qIED2hpPqBlCS4uqhpURrUR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-05-18_03,2026-05-18_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 priorityscore=1501 malwarescore=0 impostorscore=0 suspectscore=0
- lowpriorityscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2605130000 definitions=main-2605180153
+Content-Transfer-Encoding: 8bit
 
-On Fri, 2026-05-15 at 16:22 +0200, Gerd Bayer wrote:
-> Replace iterating over pci_root_buses with the official
-> pci_find_next_bus() call provided by PCI core. This allows to make
-> pci_root_buses private to PCI core.
->=20
-> Signed-off-by: Gerd Bayer <gbayer@linux.ibm.com>
-> ---
->  arch/arm/kernel/bios32.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/arch/arm/kernel/bios32.c b/arch/arm/kernel/bios32.c
-> index ac0e890510da..35642c9ba054 100644
-> --- a/arch/arm/kernel/bios32.c
-> +++ b/arch/arm/kernel/bios32.c
-> @@ -59,9 +59,9 @@ static void pcibios_bus_report_status(struct pci_bus *b=
-us, u_int status_mask, in
-> =20
->  void pcibios_report_status(u_int status_mask, int warn)
->  {
-> -	struct pci_bus *bus;
-> +	struct pci_bus *bus =3D NULL;
-> =20
-> -	list_for_each_entry(bus, &pci_root_buses, node)
-> +	while ((bus =3D pci_find_next_bus(bus)) !=3D NULL)
->  		pcibios_bus_report_status(bus, status_mask, warn);
->  }
-> =20
+The mdacon driver supports using ISA MDA or Hercules-compatible display
+adapters as a secondary text console. This was commonly used in the
+1990s and earlier for debugging software which took over the primary
+display. It is highly unlikely anyone is doing so nowadays because
+serial consoles and much better methods of debugging exist.
 
-Hi Russell,
+The driver is not enabled by any defconfig, nor any of the
+dozens of distro configs collected at [1]. It has been relegated to VTs
+13-16 since commit 0b9cf3aa6b1e ("mdacon messing up default vc's - set
+default to vc13-16 again") in Linux 2.6.27 (and before Linux 2.5.53 -
+see the link in the message of the above commit). The change in 2.6.27
+was done because it was incorrectly detecting non-MDA adapters as MDA
+and taking over all VTs, rendering them unusable.
 
-Sashiko
-https://sashiko.dev/#/message/20260515145940.E85AAC2BCB0%40smtp.kernel.org
-reported:
+Furthermore, vgacon supports using MDA/Hercules-compatible adapters as
+the primary text console, so any systems with only one of these
+adapters were already using vgacon and will not experience any loss in
+functionality from the removal of this driver.
 
-> Since pci_find_next_bus() unconditionally acquires the pci_bus_sem read-w=
-rite
-> semaphore using down_read(), this introduces a blocking operation into th=
-at
-> atomic path:
->=20
-> dc21285_abort_irq() [hardirq context]
->   pcibios_report_status()
->     pci_find_next_bus()
->       down_read(&pci_bus_sem) [sleeps]
->=20
-> Does this path need an alternative approach to safely iterate over the bu=
-ses
-> without taking a sleeping lock?
+Given all of these factors, the mdacon driver is likely entirely
+unused. Remove it.
 
-IMHO, it looks like this entire pcibios_report_status() iterating over
-all PCI buses and all their devices would be better off if moved
-outside of the hardirq context?
+[1] https://github.com/nyrahul/linux-kernel-configs/tree/f0bee86a135a0406ea427855f52702dd00d770f9
 
-Or could pcibios_report_status() be converted to use
-for_each_pci_device()?
+Signed-off-by: Ethan Nelson-Moore <enelsonmoore@gmail.com>
+---
+ .../admin-guide/kernel-parameters.txt         |   5 -
+ arch/alpha/kernel/io.c                        |   2 +-
+ arch/powerpc/include/asm/vga.h                |   4 +-
+ drivers/tty/vt/vt.c                           |   3 -
+ drivers/video/console/Kconfig                 |  15 -
+ drivers/video/console/Makefile                |   1 -
+ drivers/video/console/mdacon.c                | 566 ------------------
+ include/linux/console.h                       |   2 -
+ include/linux/vt_buffer.h                     |   2 +-
+ 9 files changed, 4 insertions(+), 596 deletions(-)
+ delete mode 100644 drivers/video/console/mdacon.c
 
-Any suggestions welcome...
-Gerd
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 4d0f545fb3ec..e873b27cdd30 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -36,7 +36,6 @@
+ 	M68k	M68k architecture is enabled.
+ 			These options have more detailed description inside of
+ 			Documentation/arch/m68k/kernel-options.rst.
+-	MDA	MDA console support is enabled.
+ 	MIPS	MIPS architecture is enabled.
+ 	MOUSE	Appropriate mouse support is enabled.
+ 	MSI	Message Signaled Interrupts (PCI).
+@@ -3816,10 +3815,6 @@ Kernel parameters
+ 	md=		[HW] RAID subsystems devices and level
+ 			See Documentation/admin-guide/md.rst.
+ 
+-	mdacon=		[MDA]
+-			Format: <first>,<last>
+-			Specifies range of consoles to be captured by the MDA.
+-
+ 	mds=		[X86,INTEL,EARLY]
+ 			Control mitigation for the Micro-architectural Data
+ 			Sampling (MDS) vulnerability.
+diff --git a/arch/alpha/kernel/io.c b/arch/alpha/kernel/io.c
+index c28035d6d1e6..2bad1b4fb240 100644
+--- a/arch/alpha/kernel/io.c
++++ b/arch/alpha/kernel/io.c
+@@ -647,7 +647,7 @@ void _memset_c_io(volatile void __iomem *to, unsigned long c, long count)
+ 
+ EXPORT_SYMBOL(_memset_c_io);
+ 
+-#if IS_ENABLED(CONFIG_VGA_CONSOLE) || IS_ENABLED(CONFIG_MDA_CONSOLE)
++#if IS_ENABLED(CONFIG_VGA_CONSOLE)
+ 
+ #include <asm/vga.h>
+ 
+diff --git a/arch/powerpc/include/asm/vga.h b/arch/powerpc/include/asm/vga.h
+index f2dc40e1c52a..e45063b02b45 100644
+--- a/arch/powerpc/include/asm/vga.h
++++ b/arch/powerpc/include/asm/vga.h
+@@ -14,7 +14,7 @@
+ #include <asm/io.h>
+ 
+ 
+-#if defined(CONFIG_VGA_CONSOLE) || defined(CONFIG_MDA_CONSOLE)
++#ifdef CONFIG_VGA_CONSOLE
+ 
+ #define VT_BUF_HAVE_RW
+ /*
+@@ -40,7 +40,7 @@ static inline void scr_memsetw(u16 *s, u16 v, unsigned int n)
+ 	memset16(s, cpu_to_le16(v), n / 2);
+ }
+ 
+-#endif /* !CONFIG_VGA_CONSOLE && !CONFIG_MDA_CONSOLE */
++#endif /* !CONFIG_VGA_CONSOLE */
+ 
+ #ifdef __powerpc64__
+ #define VGA_MAP_MEM(x,s) ((unsigned long) ioremap((x), s))
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index e99636ab9db5..3ca5e3dc5ac0 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -3978,9 +3978,6 @@ int __init vty_init(const struct file_operations *console_fops)
+ 		panic("Couldn't register console driver\n");
+ 	kbd_init();
+ 	console_map_init();
+-#ifdef CONFIG_MDA_CONSOLE
+-	mda_console_init();
+-#endif
+ 	return 0;
+ }
+ 
+diff --git a/drivers/video/console/Kconfig b/drivers/video/console/Kconfig
+index 12f54480f57f..9f81af3506da 100644
+--- a/drivers/video/console/Kconfig
++++ b/drivers/video/console/Kconfig
+@@ -23,21 +23,6 @@ config VGA_CONSOLE
+ 
+ 	  Say Y.
+ 
+-config MDA_CONSOLE
+-	depends on VGA_CONSOLE && ISA
+-	tristate "MDA text console (dual-headed)"
+-	help
+-	  Say Y here if you have an old MDA or monochrome Hercules graphics
+-	  adapter in your system acting as a second head ( = video card). You
+-	  will then be able to use two monitors with your Linux system. Do not
+-	  say Y here if your MDA card is the primary card in your system; the
+-	  normal VGA driver will handle it.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called mdacon.
+-
+-	  If unsure, say N.
+-
+ config SGI_NEWPORT_CONSOLE
+ 	tristate "SGI Newport Console support"
+ 	depends on SGI_IP22 && HAS_IOMEM
+diff --git a/drivers/video/console/Makefile b/drivers/video/console/Makefile
+index fd79016a0d95..f1000605210c 100644
+--- a/drivers/video/console/Makefile
++++ b/drivers/video/console/Makefile
+@@ -7,4 +7,3 @@ obj-$(CONFIG_DUMMY_CONSOLE)       += dummycon.o
+ obj-$(CONFIG_SGI_NEWPORT_CONSOLE) += newport_con.o
+ obj-$(CONFIG_STI_CONSOLE)         += sticon.o
+ obj-$(CONFIG_VGA_CONSOLE)         += vgacon.o
+-obj-$(CONFIG_MDA_CONSOLE)         += mdacon.o
+diff --git a/drivers/video/console/mdacon.c b/drivers/video/console/mdacon.c
+deleted file mode 100644
+index d52cd99cd18b..000000000000
+--- a/drivers/video/console/mdacon.c
++++ /dev/null
+@@ -1,566 +0,0 @@
+-/*
+- *  linux/drivers/video/mdacon.c -- Low level MDA based console driver
+- *
+- *	(c) 1998 Andrew Apted <ajapted@netspace.net.au>
+- *
+- *      including portions (c) 1995-1998 Patrick Caulfield.
+- *
+- *      slight improvements (c) 2000 Edward Betts <edward@debian.org>
+- *
+- *  This file is based on the VGA console driver (vgacon.c):
+- *	
+- *	Created 28 Sep 1997 by Geert Uytterhoeven
+- *
+- *	Rewritten by Martin Mares <mj@ucw.cz>, July 1998
+- *
+- *  and on the old console.c, vga.c and vesa_blank.c drivers:
+- *
+- *	Copyright (C) 1991, 1992  Linus Torvalds
+- *			    1995  Jay Estabrook
+- *
+- *  This file is subject to the terms and conditions of the GNU General Public
+- *  License.  See the file COPYING in the main directory of this archive for
+- *  more details.
+- *
+- *  Changelog:
+- *  Paul G. (03/2001) Fix mdacon= boot prompt to use __setup().
+- */
+-
+-#include <linux/types.h>
+-#include <linux/fs.h>
+-#include <linux/kernel.h>
+-#include <linux/module.h>
+-#include <linux/console.h>
+-#include <linux/string.h>
+-#include <linux/kd.h>
+-#include <linux/vt_kern.h>
+-#include <linux/vt_buffer.h>
+-#include <linux/selection.h>
+-#include <linux/spinlock.h>
+-#include <linux/ioport.h>
+-#include <linux/delay.h>
+-#include <linux/init.h>
+-
+-#include <asm/io.h>
+-#include <asm/vga.h>
+-
+-static DEFINE_SPINLOCK(mda_lock);
+-
+-/* description of the hardware layout */
+-
+-static u16		*mda_vram_base;		/* Base of video memory */
+-static unsigned long	mda_vram_len;		/* Size of video memory */
+-static unsigned int	mda_num_columns;	/* Number of text columns */
+-static unsigned int	mda_num_lines;		/* Number of text lines */
+-
+-static unsigned int	mda_index_port;		/* Register select port */
+-static unsigned int	mda_value_port;		/* Register value port */
+-static unsigned int	mda_mode_port;		/* Mode control port */
+-static unsigned int	mda_status_port;	/* Status and Config port */
+-static unsigned int	mda_gfx_port;		/* Graphics control port */
+-
+-/* current hardware state */
+-
+-static int	mda_cursor_loc=-1;
+-static int	mda_cursor_size_from=-1;
+-static int	mda_cursor_size_to=-1;
+-
+-static enum { TYPE_MDA, TYPE_HERC, TYPE_HERCPLUS, TYPE_HERCCOLOR } mda_type;
+-static char *mda_type_name;
+-
+-/* console information */
+-
+-static int	mda_first_vc = 13;
+-static int	mda_last_vc  = 16;
+-
+-static struct vc_data	*mda_display_fg = NULL;
+-
+-module_param(mda_first_vc, int, 0);
+-MODULE_PARM_DESC(mda_first_vc, "First virtual console. Default: 13");
+-module_param(mda_last_vc, int, 0);
+-MODULE_PARM_DESC(mda_last_vc, "Last virtual console. Default: 16");
+-
+-/* MDA register values
+- */
+-
+-#define MDA_CURSOR_BLINKING	0x00
+-#define MDA_CURSOR_OFF		0x20
+-#define MDA_CURSOR_SLOWBLINK	0x60
+-
+-#define MDA_MODE_GRAPHICS	0x02
+-#define MDA_MODE_VIDEO_EN	0x08
+-#define MDA_MODE_BLINK_EN	0x20
+-#define MDA_MODE_GFX_PAGE1	0x80
+-
+-#define MDA_STATUS_HSYNC	0x01
+-#define MDA_STATUS_VSYNC	0x80
+-#define MDA_STATUS_VIDEO	0x08
+-
+-#define MDA_CONFIG_COL132	0x08
+-#define MDA_GFX_MODE_EN		0x01
+-#define MDA_GFX_PAGE_EN		0x02
+-
+-
+-/*
+- * MDA could easily be classified as "pre-dinosaur hardware".
+- */
+-
+-static void write_mda_b(unsigned int val, unsigned char reg)
+-{
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&mda_lock, flags);	
+-
+-	outb_p(reg, mda_index_port); 
+-	outb_p(val, mda_value_port);
+-
+-	spin_unlock_irqrestore(&mda_lock, flags);
+-}
+-
+-static void write_mda_w(unsigned int val, unsigned char reg)
+-{
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&mda_lock, flags);
+-
+-	outb_p(reg,   mda_index_port); outb_p(val >> 8,   mda_value_port);
+-	outb_p(reg+1, mda_index_port); outb_p(val & 0xff, mda_value_port);
+-
+-	spin_unlock_irqrestore(&mda_lock, flags);
+-}
+-
+-#ifdef TEST_MDA_B
+-static int test_mda_b(unsigned char val, unsigned char reg)
+-{
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&mda_lock, flags);
+-
+-	outb_p(reg, mda_index_port); 
+-	outb  (val, mda_value_port);
+-
+-	udelay(20); val = (inb_p(mda_value_port) == val);
+-
+-	spin_unlock_irqrestore(&mda_lock, flags);
+-	return val;
+-}
+-#endif
+-
+-static inline void mda_set_cursor(unsigned int location) 
+-{
+-	if (mda_cursor_loc == location)
+-		return;
+-
+-	write_mda_w(location >> 1, 0x0e);
+-
+-	mda_cursor_loc = location;
+-}
+-
+-static inline void mda_set_cursor_size(int from, int to)
+-{
+-	if (mda_cursor_size_from==from && mda_cursor_size_to==to)
+-		return;
+-	
+-	if (from > to) {
+-		write_mda_b(MDA_CURSOR_OFF, 0x0a);	/* disable cursor */
+-	} else {
+-		write_mda_b(from, 0x0a);	/* cursor start */
+-		write_mda_b(to,   0x0b);	/* cursor end */
+-	}
+-
+-	mda_cursor_size_from = from;
+-	mda_cursor_size_to   = to;
+-}
+-
+-
+-#ifndef MODULE
+-static int __init mdacon_setup(char *str)
+-{
+-	/* command line format: mdacon=<first>,<last> */
+-
+-	int ints[3];
+-
+-	str = get_options(str, ARRAY_SIZE(ints), ints);
+-
+-	if (ints[0] < 2)
+-		return 0;
+-
+-	if (ints[1] < 1 || ints[1] > MAX_NR_CONSOLES || 
+-	    ints[2] < 1 || ints[2] > MAX_NR_CONSOLES)
+-		return 0;
+-
+-	mda_first_vc = ints[1];
+-	mda_last_vc  = ints[2];
+-	return 1;
+-}
+-
+-__setup("mdacon=", mdacon_setup);
+-#endif
+-
+-static int mda_detect(void)
+-{
+-	int count=0;
+-	u16 *p, p_save;
+-	u16 *q, q_save;
+-
+-	/* do a memory check */
+-
+-	p = mda_vram_base;
+-	q = mda_vram_base + 0x01000 / 2;
+-
+-	p_save = scr_readw(p);
+-	q_save = scr_readw(q);
+-
+-	scr_writew(0xAA55, p);
+-	if (scr_readw(p) == 0xAA55)
+-		count++;
+-
+-	scr_writew(0x55AA, p);
+-	if (scr_readw(p) == 0x55AA)
+-		count++;
+-
+-	scr_writew(p_save, p);
+-
+-	if (count != 2) {
+-		return 0;
+-	}
+-
+-	/* check if we have 4K or 8K */
+-
+-	scr_writew(0xA55A, q);
+-	scr_writew(0x0000, p);
+-	if (scr_readw(q) == 0xA55A)
+-		count++;
+-	
+-	scr_writew(0x5AA5, q);
+-	scr_writew(0x0000, p);
+-	if (scr_readw(q) == 0x5AA5)
+-		count++;
+-
+-	scr_writew(p_save, p);
+-	scr_writew(q_save, q);
+-	
+-	if (count == 4) {
+-		mda_vram_len = 0x02000;
+-	}
+-	
+-	/* Ok, there is definitely a card registering at the correct
+-	 * memory location, so now we do an I/O port test.
+-	 */
+-
+-#ifdef TEST_MDA_B
+-	/* Edward: These two mess `tests' mess up my cursor on bootup */
+-
+-	/* cursor low register */
+-	if (!test_mda_b(0x66, 0x0f))
+-		return 0;
+-
+-	/* cursor low register */
+-	if (!test_mda_b(0x99, 0x0f))
+-		return 0;
+-#endif
+-
+-	/* See if the card is a Hercules, by checking whether the vsync
+-	 * bit of the status register is changing.  This test lasts for
+-	 * approximately 1/10th of a second.
+-	 */
+-	
+-	p_save = q_save = inb_p(mda_status_port) & MDA_STATUS_VSYNC;
+-
+-	for (count = 0; count < 50000 && p_save == q_save; count++) {
+-		q_save = inb(mda_status_port) & MDA_STATUS_VSYNC;
+-		udelay(2);
+-	}
+-
+-	if (p_save != q_save) {
+-		switch (inb_p(mda_status_port) & 0x70) {
+-		case 0x10:
+-			mda_type = TYPE_HERCPLUS;
+-			mda_type_name = "HerculesPlus";
+-			break;
+-		case 0x50:
+-			mda_type = TYPE_HERCCOLOR;
+-			mda_type_name = "HerculesColor";
+-			break;
+-		default:
+-			mda_type = TYPE_HERC;
+-			mda_type_name = "Hercules";
+-			break;
+-		}
+-	}
+-
+-	return 1;
+-}
+-
+-static void mda_initialize(void)
+-{
+-	write_mda_b(97, 0x00);		/* horizontal total */
+-	write_mda_b(80, 0x01);		/* horizontal displayed */
+-	write_mda_b(82, 0x02);		/* horizontal sync pos */
+-	write_mda_b(15, 0x03);		/* horizontal sync width */
+-
+-	write_mda_b(25, 0x04);		/* vertical total */
+-	write_mda_b(6,  0x05);		/* vertical total adjust */
+-	write_mda_b(25, 0x06);		/* vertical displayed */
+-	write_mda_b(25, 0x07);		/* vertical sync pos */
+-
+-	write_mda_b(2,  0x08);		/* interlace mode */
+-	write_mda_b(13, 0x09);		/* maximum scanline */
+-	write_mda_b(12, 0x0a);		/* cursor start */
+-	write_mda_b(13, 0x0b);		/* cursor end */
+-
+-	write_mda_w(0x0000, 0x0c);	/* start address */
+-	write_mda_w(0x0000, 0x0e);	/* cursor location */
+-
+-	outb_p(MDA_MODE_VIDEO_EN | MDA_MODE_BLINK_EN, mda_mode_port);
+-	outb_p(0x00, mda_status_port);
+-	outb_p(0x00, mda_gfx_port);
+-}
+-
+-static const char *mdacon_startup(void)
+-{
+-	mda_num_columns = 80;
+-	mda_num_lines   = 25;
+-
+-	mda_vram_len  = 0x01000;
+-	mda_vram_base = (u16 *)VGA_MAP_MEM(0xb0000, mda_vram_len);
+-
+-	mda_index_port  = 0x3b4;
+-	mda_value_port  = 0x3b5;
+-	mda_mode_port   = 0x3b8;
+-	mda_status_port = 0x3ba;
+-	mda_gfx_port    = 0x3bf;
+-
+-	mda_type = TYPE_MDA;
+-	mda_type_name = "MDA";
+-
+-	if (! mda_detect()) {
+-		printk("mdacon: MDA card not detected.\n");
+-		return NULL;
+-	}
+-
+-	if (mda_type != TYPE_MDA) {
+-		mda_initialize();
+-	}
+-
+-	/* cursor looks ugly during boot-up, so turn it off */
+-	mda_set_cursor(mda_vram_len - 1);
+-
+-	printk("mdacon: %s with %ldK of memory detected.\n",
+-		mda_type_name, mda_vram_len/1024);
+-
+-	return "MDA-2";
+-}
+-
+-static void mdacon_init(struct vc_data *c, bool init)
+-{
+-	c->vc_complement_mask = 0x0800;	 /* reverse video */
+-	c->vc_display_fg = &mda_display_fg;
+-
+-	if (init) {
+-		c->vc_cols = mda_num_columns;
+-		c->vc_rows = mda_num_lines;
+-	} else
+-		vc_resize(c, mda_num_columns, mda_num_lines);
+-
+-	/* make the first MDA console visible */
+-
+-	if (mda_display_fg == NULL)
+-		mda_display_fg = c;
+-}
+-
+-static void mdacon_deinit(struct vc_data *c)
+-{
+-	/* con_set_default_unimap(c->vc_num); */
+-
+-	if (mda_display_fg == c)
+-		mda_display_fg = NULL;
+-}
+-
+-static inline u16 mda_convert_attr(u16 ch)
+-{
+-	u16 attr = 0x0700;
+-
+-	/* Underline and reverse-video are mutually exclusive on MDA.
+-	 * Since reverse-video is used for cursors and selected areas,
+-	 * it takes precedence. 
+-	 */
+-
+-	if (ch & 0x0800)	attr = 0x7000;	/* reverse */
+-	else if (ch & 0x0400)	attr = 0x0100;	/* underline */
+-
+-	return ((ch & 0x0200) << 2) | 		/* intensity */ 
+-		(ch & 0x8000) |			/* blink */ 
+-		(ch & 0x00ff) | attr;
+-}
+-
+-static u8 mdacon_build_attr(struct vc_data *c, u8 color,
+-			    enum vc_intensity intensity,
+-			    bool blink, bool underline, bool reverse,
+-			    bool italic)
+-{
+-	/* The attribute is just a bit vector:
+-	 *
+-	 *	Bit 0..1 : intensity (0..2)
+-	 *	Bit 2    : underline
+-	 *	Bit 3    : reverse
+-	 *	Bit 7    : blink
+-	 */
+-
+-	return (intensity & VCI_MASK) |
+-		(underline << 2) |
+-		(reverse << 3) |
+-		(italic << 4) |
+-		(blink << 7);
+-}
+-
+-static void mdacon_invert_region(struct vc_data *c, u16 *p, int count)
+-{
+-	for (; count > 0; count--) {
+-		scr_writew(scr_readw(p) ^ 0x0800, p);
+-		p++;
+-	}
+-}
+-
+-static inline u16 *mda_addr(unsigned int x, unsigned int y)
+-{
+-	return mda_vram_base + y * mda_num_columns + x;
+-}
+-
+-static void mdacon_putcs(struct vc_data *c, const u16 *s, unsigned int count,
+-			 unsigned int y, unsigned int x)
+-{
+-	u16 *dest = mda_addr(x, y);
+-
+-	for (; count > 0; count--) {
+-		scr_writew(mda_convert_attr(scr_readw(s++)), dest++);
+-	}
+-}
+-
+-static void mdacon_clear(struct vc_data *c, unsigned int y, unsigned int x,
+-			 unsigned int width)
+-{
+-	u16 *dest = mda_addr(x, y);
+-	u16 eattr = mda_convert_attr(c->vc_video_erase_char);
+-
+-	scr_memsetw(dest, eattr, width * 2);
+-}
+-
+-static bool mdacon_switch(struct vc_data *c)
+-{
+-	return true;	/* redrawing needed */
+-}
+-
+-static bool mdacon_blank(struct vc_data *c, enum vesa_blank_mode blank,
+-			 bool mode_switch)
+-{
+-	if (mda_type == TYPE_MDA) {
+-		if (blank) 
+-			scr_memsetw(mda_vram_base,
+-				mda_convert_attr(c->vc_video_erase_char),
+-				c->vc_screenbuf_size);
+-		/* Tell console.c that it has to restore the screen itself */
+-		return true;
+-	} else {
+-		if (blank)
+-			outb_p(0x00, mda_mode_port);	/* disable video */
+-		else
+-			outb_p(MDA_MODE_VIDEO_EN | MDA_MODE_BLINK_EN, 
+-				mda_mode_port);
+-		return false;
+-	}
+-}
+-
+-static void mdacon_cursor(struct vc_data *c, bool enable)
+-{
+-	if (!enable) {
+-		mda_set_cursor(mda_vram_len - 1);
+-		return;
+-	}
+-
+-	mda_set_cursor(c->state.y * mda_num_columns * 2 + c->state.x * 2);
+-
+-	switch (CUR_SIZE(c->vc_cursor_type)) {
+-
+-		case CUR_LOWER_THIRD:	mda_set_cursor_size(10, 13); break;
+-		case CUR_LOWER_HALF:	mda_set_cursor_size(7,  13); break;
+-		case CUR_TWO_THIRDS:	mda_set_cursor_size(4,  13); break;
+-		case CUR_BLOCK:		mda_set_cursor_size(1,  13); break;
+-		case CUR_NONE:		mda_set_cursor_size(14, 13); break;
+-		default:		mda_set_cursor_size(12, 13); break;
+-	}
+-}
+-
+-static bool mdacon_scroll(struct vc_data *c, unsigned int t, unsigned int b,
+-		enum con_scroll dir, unsigned int lines)
+-{
+-	u16 eattr = mda_convert_attr(c->vc_video_erase_char);
+-
+-	if (!lines)
+-		return false;
+-
+-	if (lines > c->vc_rows)   /* maximum realistic size */
+-		lines = c->vc_rows;
+-
+-	switch (dir) {
+-
+-	case SM_UP:
+-		scr_memmovew(mda_addr(0, t), mda_addr(0, t + lines),
+-				(b-t-lines)*mda_num_columns*2);
+-		scr_memsetw(mda_addr(0, b - lines), eattr,
+-				lines*mda_num_columns*2);
+-		break;
+-
+-	case SM_DOWN:
+-		scr_memmovew(mda_addr(0, t + lines), mda_addr(0, t),
+-				(b-t-lines)*mda_num_columns*2);
+-		scr_memsetw(mda_addr(0, t), eattr, lines*mda_num_columns*2);
+-		break;
+-	}
+-
+-	return false;
+-}
+-
+-
+-/*
+- *  The console `switch' structure for the MDA based console
+- */
+-
+-static const struct consw mda_con = {
+-	.owner =		THIS_MODULE,
+-	.con_startup =		mdacon_startup,
+-	.con_init =		mdacon_init,
+-	.con_deinit =		mdacon_deinit,
+-	.con_clear =		mdacon_clear,
+-	.con_putcs =		mdacon_putcs,
+-	.con_cursor =		mdacon_cursor,
+-	.con_scroll =		mdacon_scroll,
+-	.con_switch =		mdacon_switch,
+-	.con_blank =		mdacon_blank,
+-	.con_build_attr =	mdacon_build_attr,
+-	.con_invert_region =	mdacon_invert_region,
+-};
+-
+-int __init mda_console_init(void)
+-{
+-	int err;
+-
+-	if (mda_first_vc > mda_last_vc)
+-		return 1;
+-	console_lock();
+-	err = do_take_over_console(&mda_con, mda_first_vc-1, mda_last_vc-1, 0);
+-	console_unlock();
+-	return err;
+-}
+-
+-static void __exit mda_console_exit(void)
+-{
+-	give_up_console(&mda_con);
+-}
+-
+-module_init(mda_console_init);
+-module_exit(mda_console_exit);
+-
+-MODULE_DESCRIPTION("MDA based console driver");
+-MODULE_LICENSE("GPL");
+-
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 5520e4477ad7..d624200cfc17 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -718,8 +718,6 @@ extern bool console_suspend_enabled;
+ extern void console_suspend_all(void);
+ extern void console_resume_all(void);
+ 
+-int mda_console_init(void);
+-
+ void vcs_make_sysfs(int index);
+ void vcs_remove_sysfs(int index);
+ 
+diff --git a/include/linux/vt_buffer.h b/include/linux/vt_buffer.h
+index b6eeb8cb6070..6c15c6a15f74 100644
+--- a/include/linux/vt_buffer.h
++++ b/include/linux/vt_buffer.h
+@@ -16,7 +16,7 @@
+ 
+ #include <linux/string.h>
+ 
+-#if IS_ENABLED(CONFIG_VGA_CONSOLE) || IS_ENABLED(CONFIG_MDA_CONSOLE)
++#if IS_ENABLED(CONFIG_VGA_CONSOLE)
+ #include <asm/vga.h>
+ #endif
+ 
+-- 
+2.43.0
+
