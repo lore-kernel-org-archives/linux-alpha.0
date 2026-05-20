@@ -1,837 +1,241 @@
-Received: from mail-dl1-f65.google.com (mail-dl1-f65.google.com [74.125.82.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAEA8348465
-	for <linux-alpha@vger.kernel.org>; Wed, 20 May 2026 03:32:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 000883D8910;
+	Wed, 20 May 2026 11:46:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779247978; cv=none; b=FB0UsjJRSpaIMfhFrAjzAIFSOzJmzRQXSBW/FQ+W7IDZ1vcZqNftd6Q1aa9yh5jgSi9ycC2nbTwaeUZ1y6TGSpnkaX1ozAMIGKHgtkieTVCslsKkBBPux5HL4XdWOa+Z8ctSohNy8mzeCrKGYb24hmqRP+0JA3aSIoss1VNmbPs=
+	t=1779277580; cv=none; b=ptOuad2cuuEKjo7WKDWmKNEoJu9lIOAhftO7omUYkLps99/sV08S7Px+MjnZ6Za8xZz6gpHhBYhbDpGaBHaaDugbVJg7/G5tMC/yuCGcNQFt/3j41b1psLSRd/okWWJwTS5x0EcPclgoO0bdPgrM5IPnA6L/4jkIn+Bf8i2RRJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779247978; c=relaxed/simple;
-	bh=DE7lfdFY0tW8txQ93NLpBlb9NX1IgxQFhteEfn+hLH0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SnxMK4+bLgSRweXSZow3jqTyzllEYdaIx6DarcFttSJ21b3nLKM77w4HP+DEYPb6lMByB+Wu/kGdleQOXeFP897I8ZItkuSLHP4whESO3XgLB6wUSc3vy5RnldTt7LsVn+yVhRlNDo7PysJrOBUuxemCA9Yq4N8x21+VKbqre0I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Duk+i3PY; arc=none smtp.client-ip=74.125.82.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779277580; c=relaxed/simple;
+	bh=ONIhh98n9cCUrqIzxdSaE4ch3ewZyNQyyavFnnvB2is=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=pFIB0bVwNsNYv9uJoZCY8/Z1B4LFVufDw5hfxh0KXEqV6+OkXW2gwvgV6knqcPU6B1qWGOrHIPazqvOtsYdcA9ixm84FyVm04ihBEOmiW5t/QSdzzX+b4TfbC7AUJD9cmYIHhcQW1FV6iHonzWywHcrLGpdTILri8sUz5efJjxU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de; spf=pass smtp.mailfrom=gmx.de; dkim=pass (2048-bit key) header.d=gmx.de header.i=deller@gmx.de header.b=KrbKgJxC; arc=none smtp.client-ip=212.227.15.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Duk+i3PY"
-Received: by mail-dl1-f65.google.com with SMTP id a92af1059eb24-135200bc7d2so931807c88.0
-        for <linux-alpha@vger.kernel.org>; Tue, 19 May 2026 20:32:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779247975; x=1779852775; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+ZwT6jFAkQrUSs7LqDce8uNZux1QgXwZ4Wl56JV19lI=;
-        b=Duk+i3PYiW4IdRnR82qeVs1OB63hZ2gUlunzOaZxIvb1I2wkQVC7dWma1bJ+iw94H6
-         3QCHMB4TEUflSs3XLVm+IIeJUoN1Bx8C2vhk62LxfC2GlKQcf8IP3ctyNAm3DQA/8Vlu
-         ODo7+2B0ufkSPisPlXriUm2ieaG8oh/2kwrJyhgeZrd2zGvpcbMBiFEXPbJGxp1CMTrb
-         2mZfjBnc5AZ0UTrMj15okoLmtQICEi8eahl74br0oWmVTowKZAEVD7Ry7HwhYhPGEPrw
-         3sz9DyxAWSNogPAIlmYGTHIr4rMWDBI3Ywj18YlA7WzGOOgR1V06m/In5Ufygp0T77cK
-         pe3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779247975; x=1779852775;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+ZwT6jFAkQrUSs7LqDce8uNZux1QgXwZ4Wl56JV19lI=;
-        b=iKYyCX9t2JIvuJdlacfYhudr1hQgBNQI/SWs97tVg0EH5tvJUlbMTksZ5tOFtKBlO0
-         atxJJrLPdNPG7xxHsiNtnZzAr4KCImyGinjKyh3LSXgWKCpSOKtW+mg25owWHXKPvCC8
-         Qy1qrXWth5w3vIpWxsyEE3bXSZHpzJl7XawH/f1HYADtqJn+g7FvCrfzgQsYpS1Wjjkj
-         r86DzcwmdhAL9ZicQXISDgXt0TzvfzzgwcR1+X79uvx0HFNbG6CPFYbJVwhOXsZ7ucFG
-         osdz7JSkI6GLJbBKbIzjYvIOPMCbVGGFBRUqOZgiv/5QjUcFdWJ3Kyr70ixbtr+eDffg
-         jWiA==
-X-Forwarded-Encrypted: i=1; AFNElJ8nKcyBbR6phGDmeLNWyhspDw8iuyRAkn1754RkBEyGTmjjakXNr63QNhXFm1eZD7eAH+2+oRE6ILAM0A==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwliBAGKASzBxC0VgMe1S3EGvM1cVp1l0d/jAMNPDS1VfQW7ZFh
-	RdsGWbT+hPYqI3iH4Et2C2WjNO1Y3GVvRXYxIyRsRXjQNQbR5lycq/5I
-X-Gm-Gg: Acq92OGRNKgmrlh1vqpMXa7w2SAfB0q72w5yhtFX2rTOhLG6S9iZxjwbDYqo30UV/Bq
-	sRmaxDa1QKUyDZza5R4Nc8r128m+W0PYVpErMqnHXmxSEaaJvVgr7X8cIxMKhe42nTBHpIJ7aFJ
-	fTARJNMTTkKniRA+kXnWPIxLszWv8BbTBHLZ2LKqzM0zgYKAcV8lW6Z66EjGaC7TTkBLdAJcyQ4
-	AXWr3oMKRM+258N1Df8SpmOgh30cwlPA9S5R8NvvYGUjThX/BlzqWCbbV3OemUwi2m1J35QI3C2
-	d46IIpjFU6J0kIQvCk44an7IsZ/A5yqMfzsH86zEW9t0pZdxBRgCjyAIVPDKvw7E24PT0EJ5ECR
-	Bck1YzL/7wXkWYYxrM0INU2N0poUehQKEh5NnJh1yHZG3FeLc/OmKQH/oyk4m+pCNyprE6bx6G6
-	JNtJxWk/zTFLLwPHBnsbx0o5ugpt23rf4p4lG5FRB35Pkqd7NGstEOHwGI9DNNbOdSYQvIJWn+x
-	ieahK7qVv85fvINdsY2Zze/t2srOCrlElz/fVbsFce6o09mmzEcplHYoRCvLPp+XAkA8m6WINO3
-	JAoF1Ohbf0gk8aBygA==
-X-Received: by 2002:a05:7022:f9d:b0:133:1ba6:f42d with SMTP id a92af1059eb24-1350451e2b2mr11405371c88.3.1779247974860;
-        Tue, 19 May 2026 20:32:54 -0700 (PDT)
-Received: from ethan-latitude5420.. (host-127-24.cafrjco.fresno.ca.us.clients.pavlovmedia.net. [68.180.127.24])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-134cbcb9ef5sm24582900c88.2.2026.05.19.20.32.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2026 20:32:54 -0700 (PDT)
-From: Ethan Nelson-Moore <enelsonmoore@gmail.com>
-To: linux-doc@vger.kernel.org,
-	linux-alpha@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-fbdev@vger.kernel.org
-Cc: Ethan Nelson-Moore <enelsonmoore@gmail.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Helge Deller <deller@gmx.de>,
-	Nicolas Pitre <nico@fluxnic.net>
-Subject: [PATCH] video: console: mdacon: remove this obsolete driver
-Date: Tue, 19 May 2026 20:31:36 -0700
-Message-ID: <20260520033155.17378-1-enelsonmoore@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=gmx.de header.i=deller@gmx.de header.b="KrbKgJxC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.de;
+	s=s31663417; t=1779277552; x=1779882352; i=deller@gmx.de;
+	bh=RNZTCia8bRlSbSgz5D/BvEXx+e8tvmS3lBEOF+WnOwE=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=KrbKgJxCkH2Vi4EDAlGhjtWOUpqkt0dH+lAaNR2uGUEuy3VxrI3LDKIm6D0Pt7FG
+	 1WEHPomJJGFQlAXYm+53aUk1Imr2OIFsn4VaaNIPyc27GdyNuuppSWVH6OvZnPB8z
+	 mq/HkqqL5MrQCj1D0ibcLd+WF0gaZieyoEftyuLxXLsaRBTOKb9vkOIPLi/KYrlRS
+	 2ZAD2eW5giWJqH51yIlB5PC5ZaEerE5hE9uaam+Pc6Po0y3mxBB/PGqWSDgTJd1GS
+	 D2zf2Sv9czt5Ii+LOygBUR9rJuMSNi2EYdvfy0WQH5Hk6q3asxRbbq7+vGroTY8pw
+	 ENWosdQUfBMMsH0d5Q==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from client.hidden.invalid by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MxUnz-1xIIG12Klt-011VXL; Wed, 20
+ May 2026 13:45:52 +0200
+Message-ID: <0ec8d725-1f86-486c-a8fa-ee1c68a01985@gmx.de>
+Date: Wed, 20 May 2026 13:45:48 +0200
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] video: console: mdacon: remove this obsolete driver
+To: Ethan Nelson-Moore <enelsonmoore@gmail.com>, linux-doc@vger.kernel.org,
+ linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-fbdev@vger.kernel.org,
+ Linux DRI Development <dri-devel@lists.freedesktop.org>,
+ linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Cc: Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>,
+ Madhavan Srinivasan <maddy@linux.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Nicolas Pitre <nico@fluxnic.net>
+References: <20260520033155.17378-1-enelsonmoore@gmail.com>
+Content-Language: en-US
+From: Helge Deller <deller@gmx.de>
+Autocrypt: addr=deller@gmx.de; keydata=
+ xsFNBF3Ia3MBEAD3nmWzMgQByYAWnb9cNqspnkb2GLVKzhoH2QD4eRpyDLA/3smlClbeKkWT
+ HLnjgkbPFDmcmCz5V0Wv1mKYRClAHPCIBIJgyICqqUZo2qGmKstUx3pFAiztlXBANpRECgwJ
+ r+8w6mkccOM9GhoPU0vMaD/UVJcJQzvrxVHO8EHS36aUkjKd6cOpdVbCt3qx8cEhCmaFEO6u
+ CL+k5AZQoABbFQEBocZE1/lSYzaHkcHrjn4cQjc3CffXnUVYwlo8EYOtAHgMDC39s9a7S90L
+ 69l6G73lYBD/Br5lnDPlG6dKfGFZZpQ1h8/x+Qz366Ojfq9MuuRJg7ZQpe6foiOtqwKym/zV
+ dVvSdOOc5sHSpfwu5+BVAAyBd6hw4NddlAQUjHSRs3zJ9OfrEx2d3mIfXZ7+pMhZ7qX0Axlq
+ Lq+B5cfLpzkPAgKn11tfXFxP+hcPHIts0bnDz4EEp+HraW+oRCH2m57Y9zhcJTOJaLw4YpTY
+ GRUlF076vZ2Hz/xMEvIJddRGId7UXZgH9a32NDf+BUjWEZvFt1wFSW1r7zb7oGCwZMy2LI/G
+ aHQv/N0NeFMd28z+deyxd0k1CGefHJuJcOJDVtcE1rGQ43aDhWSpXvXKDj42vFD2We6uIo9D
+ 1VNre2+uAxFzqqf026H6cH8hin9Vnx7p3uq3Dka/Y/qmRFnKVQARAQABzRxIZWxnZSBEZWxs
+ ZXIgPGRlbGxlckBnbXguZGU+wsGRBBMBCAA7AhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheA
+ FiEERUSCKCzZENvvPSX4Pl89BKeiRgMFAl3J1zsCGQEACgkQPl89BKeiRgNK7xAAg6kJTPje
+ uBm9PJTUxXaoaLJFXbYdSPfXhqX/BI9Xi2VzhwC2nSmizdFbeobQBTtRIz5LPhjk95t11q0s
+ uP5htzNISPpwxiYZGKrNnXfcPlziI2bUtlz4ke34cLK6MIl1kbS0/kJBxhiXyvyTWk2JmkMi
+ REjR84lCMAoJd1OM9XGFOg94BT5aLlEKFcld9qj7B4UFpma8RbRUpUWdo0omAEgrnhaKJwV8
+ qt0ULaF/kyP5qbI8iA2PAvIjq73dA4LNKdMFPG7Rw8yITQ1Vi0DlDgDT2RLvKxEQC0o3C6O4
+ iQq7qamsThLK0JSDRdLDnq6Phv+Yahd7sDMYuk3gIdoyczRkXzncWAYq7XTWl7nZYBVXG1D8
+ gkdclsnHzEKpTQIzn/rGyZshsjL4pxVUIpw/vdfx8oNRLKj7iduf11g2kFP71e9v2PP94ik3
+ Xi9oszP+fP770J0B8QM8w745BrcQm41SsILjArK+5mMHrYhM4ZFN7aipK3UXDNs3vjN+t0zi
+ qErzlrxXtsX4J6nqjs/mF9frVkpv7OTAzj7pjFHv0Bu8pRm4AyW6Y5/H6jOup6nkJdP/AFDu
+ 5ImdlA0jhr3iLk9s9WnjBUHyMYu+HD7qR3yhX6uWxg2oB2FWVMRLXbPEt2hRGq09rVQS7DBy
+ dbZgPwou7pD8MTfQhGmDJFKm2jvOwU0EXchrcwEQAOsDQjdtPeaRt8EP2pc8tG+g9eiiX9Sh
+ rX87SLSeKF6uHpEJ3VbhafIU6A7hy7RcIJnQz0hEUdXjH774B8YD3JKnAtfAyuIU2/rOGa/v
+ UN4BY6U6TVIOv9piVQByBthGQh4YHhePSKtPzK9Pv/6rd8H3IWnJK/dXiUDQllkedrENXrZp
+ eLUjhyp94ooo9XqRl44YqlsrSUh+BzW7wqwfmu26UjmAzIZYVCPCq5IjD96QrhLf6naY6En3
+ ++tqCAWPkqKvWfRdXPOz4GK08uhcBp3jZHTVkcbo5qahVpv8Y8mzOvSIAxnIjb+cklVxjyY9
+ dVlrhfKiK5L+zA2fWUreVBqLs1SjfHm5OGuQ2qqzVcMYJGH/uisJn22VXB1c48yYyGv2HUN5
+ lC1JHQUV9734I5cczA2Gfo27nTHy3zANj4hy+s/q1adzvn7hMokU7OehwKrNXafFfwWVK3OG
+ 1dSjWtgIv5KJi1XZk5TV6JlPZSqj4D8pUwIx3KSp0cD7xTEZATRfc47Yc+cyKcXG034tNEAc
+ xZNTR1kMi9njdxc1wzM9T6pspTtA0vuD3ee94Dg+nDrH1As24uwfFLguiILPzpl0kLaPYYgB
+ wumlL2nGcB6RVRRFMiAS5uOTEk+sJ/tRiQwO3K8vmaECaNJRfJC7weH+jww1Dzo0f1TP6rUa
+ fTBRABEBAAHCwXYEGAEIACAWIQRFRIIoLNkQ2+89Jfg+Xz0Ep6JGAwUCXchrcwIbDAAKCRA+
+ Xz0Ep6JGAxtdEAC54NQMBwjUNqBNCMsh6WrwQwbg9tkJw718QHPw43gKFSxFIYzdBzD/YMPH
+ l+2fFiefvmI4uNDjlyCITGSM+T6b8cA7YAKvZhzJyJSS7pRzsIKGjhk7zADL1+PJei9p9idy
+ RbmFKo0dAL+ac0t/EZULHGPuIiavWLgwYLVoUEBwz86ZtEtVmDmEsj8ryWw75ZIarNDhV74s
+ BdM2ffUJk3+vWe25BPcJiaZkTuFt+xt2CdbvpZv3IPrEkp9GAKof2hHdFCRKMtgxBo8Kao6p
+ Ws/Vv68FusAi94ySuZT3fp1xGWWf5+1jX4ylC//w0Rj85QihTpA2MylORUNFvH0MRJx4mlFk
+ XN6G+5jIIJhG46LUucQ28+VyEDNcGL3tarnkw8ngEhAbnvMJ2RTx8vGh7PssKaGzAUmNNZiG
+ MB4mPKqvDZ02j1wp7vthQcOEg08z1+XHXb8ZZKST7yTVa5P89JymGE8CBGdQaAXnqYK3/yWf
+ FwRDcGV6nxanxZGKEkSHHOm8jHwvQWvPP73pvuPBEPtKGLzbgd7OOcGZWtq2hNC6cRtsRdDx
+ 4TAGMCz4j238m+2mdbdhRh3iBnWT5yPFfnv/2IjFAk+sdix1Mrr+LIDF++kiekeq0yUpDdc4
+ ExBy2xf6dd+tuFFBp3/VDN4U0UfG4QJ2fg19zE5Z8dS4jGIbLg==
+In-Reply-To: <20260520033155.17378-1-enelsonmoore@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:gfI53cV7IIsiLFY311/gxZupMFCovWyFn8QlWFedzR4EoHdRxzU
+ fd3FhpqqnL5hLnvs7A9JXsSS0GGY1a0PpTCHg+cRT9QMot4prVLbfqDIPQapOQ8bspQVjFb
+ uq0WdoxAmexngai8kuobQsHlsp2lKE2++58Fzt4ADKClbjiBp7PG7kB7ESbtE841bsP+Ngp
+ QbwIySazlAhGsM93n3U3g==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:wd6J/JnIWZM=;3DjiavRrerC71RWZ5FsWzOYKg7p
+ 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
 
-The mdacon driver supports using ISA MDA or Hercules-compatible display
-adapters as a secondary text console. This was commonly used in the
-1990s and earlier for debugging software which took over the primary
-display. It is highly unlikely anyone is doing so nowadays because
-serial consoles and much better methods of debugging exist.
+On 5/20/26 05:31, Ethan Nelson-Moore wrote:
+> The mdacon driver supports using ISA MDA or Hercules-compatible display
+> adapters as a secondary text console. This was commonly used in the
+> 1990s and earlier for debugging software which took over the primary
+> display. It is highly unlikely anyone is doing so nowadays because
+> serial consoles and much better methods of debugging exist.
+>=20
+> The driver is not enabled by any defconfig, nor any of the
+> dozens of distro configs collected at [1]. It has been relegated to VTs
+> 13-16 since commit 0b9cf3aa6b1e ("mdacon messing up default vc's - set
+> default to vc13-16 again") in Linux 2.6.27 (and before Linux 2.5.53 -
+> see the link in the message of the above commit). The change in 2.6.27
+> was done because it was incorrectly detecting non-MDA adapters as MDA
+> and taking over all VTs, rendering them unusable.
+>=20
+> Furthermore, vgacon supports using MDA/Hercules-compatible adapters as
+> the primary text console, so any systems with only one of these
+> adapters were already using vgacon and will not experience any loss in
+> functionality from the removal of this driver.
+>=20
+> Given all of these factors, the mdacon driver is likely entirely
+> unused. Remove it.
 
-The driver is not enabled by any defconfig, nor any of the
-dozens of distro configs collected at [1]. It has been relegated to VTs
-13-16 since commit 0b9cf3aa6b1e ("mdacon messing up default vc's - set
-default to vc13-16 again") in Linux 2.6.27 (and before Linux 2.5.53 -
-see the link in the message of the above commit). The change in 2.6.27
-was done because it was incorrectly detecting non-MDA adapters as MDA
-and taking over all VTs, rendering them unusable.
+I've applied this patch to the fbdev git tree, since I also believe that
+there is no use case or user left (with Linux kernels >=3D 7.0), which use=
+s the mdacon.
 
-Furthermore, vgacon supports using MDA/Hercules-compatible adapters as
-the primary text console, so any systems with only one of these
-adapters were already using vgacon and will not experience any loss in
-functionality from the removal of this driver.
+If someone thinks we need to keep it, please speak up.
 
-Given all of these factors, the mdacon driver is likely entirely
-unused. Remove it.
+Helge
 
-[1] https://github.com/nyrahul/linux-kernel-configs/tree/f0bee86a135a0406ea427855f52702dd00d770f9
 
-Signed-off-by: Ethan Nelson-Moore <enelsonmoore@gmail.com>
----
- .../admin-guide/kernel-parameters.txt         |   5 -
- arch/alpha/kernel/io.c                        |   2 +-
- arch/powerpc/include/asm/vga.h                |   4 +-
- drivers/tty/vt/vt.c                           |   3 -
- drivers/video/console/Kconfig                 |  15 -
- drivers/video/console/Makefile                |   1 -
- drivers/video/console/mdacon.c                | 566 ------------------
- include/linux/console.h                       |   2 -
- include/linux/vt_buffer.h                     |   2 +-
- 9 files changed, 4 insertions(+), 596 deletions(-)
- delete mode 100644 drivers/video/console/mdacon.c
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 4d0f545fb3ec..e873b27cdd30 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -36,7 +36,6 @@
- 	M68k	M68k architecture is enabled.
- 			These options have more detailed description inside of
- 			Documentation/arch/m68k/kernel-options.rst.
--	MDA	MDA console support is enabled.
- 	MIPS	MIPS architecture is enabled.
- 	MOUSE	Appropriate mouse support is enabled.
- 	MSI	Message Signaled Interrupts (PCI).
-@@ -3816,10 +3815,6 @@ Kernel parameters
- 	md=		[HW] RAID subsystems devices and level
- 			See Documentation/admin-guide/md.rst.
- 
--	mdacon=		[MDA]
--			Format: <first>,<last>
--			Specifies range of consoles to be captured by the MDA.
--
- 	mds=		[X86,INTEL,EARLY]
- 			Control mitigation for the Micro-architectural Data
- 			Sampling (MDS) vulnerability.
-diff --git a/arch/alpha/kernel/io.c b/arch/alpha/kernel/io.c
-index c28035d6d1e6..2bad1b4fb240 100644
---- a/arch/alpha/kernel/io.c
-+++ b/arch/alpha/kernel/io.c
-@@ -647,7 +647,7 @@ void _memset_c_io(volatile void __iomem *to, unsigned long c, long count)
- 
- EXPORT_SYMBOL(_memset_c_io);
- 
--#if IS_ENABLED(CONFIG_VGA_CONSOLE) || IS_ENABLED(CONFIG_MDA_CONSOLE)
-+#if IS_ENABLED(CONFIG_VGA_CONSOLE)
- 
- #include <asm/vga.h>
- 
-diff --git a/arch/powerpc/include/asm/vga.h b/arch/powerpc/include/asm/vga.h
-index f2dc40e1c52a..e45063b02b45 100644
---- a/arch/powerpc/include/asm/vga.h
-+++ b/arch/powerpc/include/asm/vga.h
-@@ -14,7 +14,7 @@
- #include <asm/io.h>
- 
- 
--#if defined(CONFIG_VGA_CONSOLE) || defined(CONFIG_MDA_CONSOLE)
-+#ifdef CONFIG_VGA_CONSOLE
- 
- #define VT_BUF_HAVE_RW
- /*
-@@ -40,7 +40,7 @@ static inline void scr_memsetw(u16 *s, u16 v, unsigned int n)
- 	memset16(s, cpu_to_le16(v), n / 2);
- }
- 
--#endif /* !CONFIG_VGA_CONSOLE && !CONFIG_MDA_CONSOLE */
-+#endif /* !CONFIG_VGA_CONSOLE */
- 
- #ifdef __powerpc64__
- #define VGA_MAP_MEM(x,s) ((unsigned long) ioremap((x), s))
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index e99636ab9db5..3ca5e3dc5ac0 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -3978,9 +3978,6 @@ int __init vty_init(const struct file_operations *console_fops)
- 		panic("Couldn't register console driver\n");
- 	kbd_init();
- 	console_map_init();
--#ifdef CONFIG_MDA_CONSOLE
--	mda_console_init();
--#endif
- 	return 0;
- }
- 
-diff --git a/drivers/video/console/Kconfig b/drivers/video/console/Kconfig
-index 12f54480f57f..9f81af3506da 100644
---- a/drivers/video/console/Kconfig
-+++ b/drivers/video/console/Kconfig
-@@ -23,21 +23,6 @@ config VGA_CONSOLE
- 
- 	  Say Y.
- 
--config MDA_CONSOLE
--	depends on VGA_CONSOLE && ISA
--	tristate "MDA text console (dual-headed)"
--	help
--	  Say Y here if you have an old MDA or monochrome Hercules graphics
--	  adapter in your system acting as a second head ( = video card). You
--	  will then be able to use two monitors with your Linux system. Do not
--	  say Y here if your MDA card is the primary card in your system; the
--	  normal VGA driver will handle it.
--
--	  To compile this driver as a module, choose M here: the
--	  module will be called mdacon.
--
--	  If unsure, say N.
--
- config SGI_NEWPORT_CONSOLE
- 	tristate "SGI Newport Console support"
- 	depends on SGI_IP22 && HAS_IOMEM
-diff --git a/drivers/video/console/Makefile b/drivers/video/console/Makefile
-index fd79016a0d95..f1000605210c 100644
---- a/drivers/video/console/Makefile
-+++ b/drivers/video/console/Makefile
-@@ -7,4 +7,3 @@ obj-$(CONFIG_DUMMY_CONSOLE)       += dummycon.o
- obj-$(CONFIG_SGI_NEWPORT_CONSOLE) += newport_con.o
- obj-$(CONFIG_STI_CONSOLE)         += sticon.o
- obj-$(CONFIG_VGA_CONSOLE)         += vgacon.o
--obj-$(CONFIG_MDA_CONSOLE)         += mdacon.o
-diff --git a/drivers/video/console/mdacon.c b/drivers/video/console/mdacon.c
-deleted file mode 100644
-index d52cd99cd18b..000000000000
---- a/drivers/video/console/mdacon.c
-+++ /dev/null
-@@ -1,566 +0,0 @@
--/*
-- *  linux/drivers/video/mdacon.c -- Low level MDA based console driver
-- *
-- *	(c) 1998 Andrew Apted <ajapted@netspace.net.au>
-- *
-- *      including portions (c) 1995-1998 Patrick Caulfield.
-- *
-- *      slight improvements (c) 2000 Edward Betts <edward@debian.org>
-- *
-- *  This file is based on the VGA console driver (vgacon.c):
-- *	
-- *	Created 28 Sep 1997 by Geert Uytterhoeven
-- *
-- *	Rewritten by Martin Mares <mj@ucw.cz>, July 1998
-- *
-- *  and on the old console.c, vga.c and vesa_blank.c drivers:
-- *
-- *	Copyright (C) 1991, 1992  Linus Torvalds
-- *			    1995  Jay Estabrook
-- *
-- *  This file is subject to the terms and conditions of the GNU General Public
-- *  License.  See the file COPYING in the main directory of this archive for
-- *  more details.
-- *
-- *  Changelog:
-- *  Paul G. (03/2001) Fix mdacon= boot prompt to use __setup().
-- */
--
--#include <linux/types.h>
--#include <linux/fs.h>
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/console.h>
--#include <linux/string.h>
--#include <linux/kd.h>
--#include <linux/vt_kern.h>
--#include <linux/vt_buffer.h>
--#include <linux/selection.h>
--#include <linux/spinlock.h>
--#include <linux/ioport.h>
--#include <linux/delay.h>
--#include <linux/init.h>
--
--#include <asm/io.h>
--#include <asm/vga.h>
--
--static DEFINE_SPINLOCK(mda_lock);
--
--/* description of the hardware layout */
--
--static u16		*mda_vram_base;		/* Base of video memory */
--static unsigned long	mda_vram_len;		/* Size of video memory */
--static unsigned int	mda_num_columns;	/* Number of text columns */
--static unsigned int	mda_num_lines;		/* Number of text lines */
--
--static unsigned int	mda_index_port;		/* Register select port */
--static unsigned int	mda_value_port;		/* Register value port */
--static unsigned int	mda_mode_port;		/* Mode control port */
--static unsigned int	mda_status_port;	/* Status and Config port */
--static unsigned int	mda_gfx_port;		/* Graphics control port */
--
--/* current hardware state */
--
--static int	mda_cursor_loc=-1;
--static int	mda_cursor_size_from=-1;
--static int	mda_cursor_size_to=-1;
--
--static enum { TYPE_MDA, TYPE_HERC, TYPE_HERCPLUS, TYPE_HERCCOLOR } mda_type;
--static char *mda_type_name;
--
--/* console information */
--
--static int	mda_first_vc = 13;
--static int	mda_last_vc  = 16;
--
--static struct vc_data	*mda_display_fg = NULL;
--
--module_param(mda_first_vc, int, 0);
--MODULE_PARM_DESC(mda_first_vc, "First virtual console. Default: 13");
--module_param(mda_last_vc, int, 0);
--MODULE_PARM_DESC(mda_last_vc, "Last virtual console. Default: 16");
--
--/* MDA register values
-- */
--
--#define MDA_CURSOR_BLINKING	0x00
--#define MDA_CURSOR_OFF		0x20
--#define MDA_CURSOR_SLOWBLINK	0x60
--
--#define MDA_MODE_GRAPHICS	0x02
--#define MDA_MODE_VIDEO_EN	0x08
--#define MDA_MODE_BLINK_EN	0x20
--#define MDA_MODE_GFX_PAGE1	0x80
--
--#define MDA_STATUS_HSYNC	0x01
--#define MDA_STATUS_VSYNC	0x80
--#define MDA_STATUS_VIDEO	0x08
--
--#define MDA_CONFIG_COL132	0x08
--#define MDA_GFX_MODE_EN		0x01
--#define MDA_GFX_PAGE_EN		0x02
--
--
--/*
-- * MDA could easily be classified as "pre-dinosaur hardware".
-- */
--
--static void write_mda_b(unsigned int val, unsigned char reg)
--{
--	unsigned long flags;
--
--	spin_lock_irqsave(&mda_lock, flags);	
--
--	outb_p(reg, mda_index_port); 
--	outb_p(val, mda_value_port);
--
--	spin_unlock_irqrestore(&mda_lock, flags);
--}
--
--static void write_mda_w(unsigned int val, unsigned char reg)
--{
--	unsigned long flags;
--
--	spin_lock_irqsave(&mda_lock, flags);
--
--	outb_p(reg,   mda_index_port); outb_p(val >> 8,   mda_value_port);
--	outb_p(reg+1, mda_index_port); outb_p(val & 0xff, mda_value_port);
--
--	spin_unlock_irqrestore(&mda_lock, flags);
--}
--
--#ifdef TEST_MDA_B
--static int test_mda_b(unsigned char val, unsigned char reg)
--{
--	unsigned long flags;
--
--	spin_lock_irqsave(&mda_lock, flags);
--
--	outb_p(reg, mda_index_port); 
--	outb  (val, mda_value_port);
--
--	udelay(20); val = (inb_p(mda_value_port) == val);
--
--	spin_unlock_irqrestore(&mda_lock, flags);
--	return val;
--}
--#endif
--
--static inline void mda_set_cursor(unsigned int location) 
--{
--	if (mda_cursor_loc == location)
--		return;
--
--	write_mda_w(location >> 1, 0x0e);
--
--	mda_cursor_loc = location;
--}
--
--static inline void mda_set_cursor_size(int from, int to)
--{
--	if (mda_cursor_size_from==from && mda_cursor_size_to==to)
--		return;
--	
--	if (from > to) {
--		write_mda_b(MDA_CURSOR_OFF, 0x0a);	/* disable cursor */
--	} else {
--		write_mda_b(from, 0x0a);	/* cursor start */
--		write_mda_b(to,   0x0b);	/* cursor end */
--	}
--
--	mda_cursor_size_from = from;
--	mda_cursor_size_to   = to;
--}
--
--
--#ifndef MODULE
--static int __init mdacon_setup(char *str)
--{
--	/* command line format: mdacon=<first>,<last> */
--
--	int ints[3];
--
--	str = get_options(str, ARRAY_SIZE(ints), ints);
--
--	if (ints[0] < 2)
--		return 0;
--
--	if (ints[1] < 1 || ints[1] > MAX_NR_CONSOLES || 
--	    ints[2] < 1 || ints[2] > MAX_NR_CONSOLES)
--		return 0;
--
--	mda_first_vc = ints[1];
--	mda_last_vc  = ints[2];
--	return 1;
--}
--
--__setup("mdacon=", mdacon_setup);
--#endif
--
--static int mda_detect(void)
--{
--	int count=0;
--	u16 *p, p_save;
--	u16 *q, q_save;
--
--	/* do a memory check */
--
--	p = mda_vram_base;
--	q = mda_vram_base + 0x01000 / 2;
--
--	p_save = scr_readw(p);
--	q_save = scr_readw(q);
--
--	scr_writew(0xAA55, p);
--	if (scr_readw(p) == 0xAA55)
--		count++;
--
--	scr_writew(0x55AA, p);
--	if (scr_readw(p) == 0x55AA)
--		count++;
--
--	scr_writew(p_save, p);
--
--	if (count != 2) {
--		return 0;
--	}
--
--	/* check if we have 4K or 8K */
--
--	scr_writew(0xA55A, q);
--	scr_writew(0x0000, p);
--	if (scr_readw(q) == 0xA55A)
--		count++;
--	
--	scr_writew(0x5AA5, q);
--	scr_writew(0x0000, p);
--	if (scr_readw(q) == 0x5AA5)
--		count++;
--
--	scr_writew(p_save, p);
--	scr_writew(q_save, q);
--	
--	if (count == 4) {
--		mda_vram_len = 0x02000;
--	}
--	
--	/* Ok, there is definitely a card registering at the correct
--	 * memory location, so now we do an I/O port test.
--	 */
--
--#ifdef TEST_MDA_B
--	/* Edward: These two mess `tests' mess up my cursor on bootup */
--
--	/* cursor low register */
--	if (!test_mda_b(0x66, 0x0f))
--		return 0;
--
--	/* cursor low register */
--	if (!test_mda_b(0x99, 0x0f))
--		return 0;
--#endif
--
--	/* See if the card is a Hercules, by checking whether the vsync
--	 * bit of the status register is changing.  This test lasts for
--	 * approximately 1/10th of a second.
--	 */
--	
--	p_save = q_save = inb_p(mda_status_port) & MDA_STATUS_VSYNC;
--
--	for (count = 0; count < 50000 && p_save == q_save; count++) {
--		q_save = inb(mda_status_port) & MDA_STATUS_VSYNC;
--		udelay(2);
--	}
--
--	if (p_save != q_save) {
--		switch (inb_p(mda_status_port) & 0x70) {
--		case 0x10:
--			mda_type = TYPE_HERCPLUS;
--			mda_type_name = "HerculesPlus";
--			break;
--		case 0x50:
--			mda_type = TYPE_HERCCOLOR;
--			mda_type_name = "HerculesColor";
--			break;
--		default:
--			mda_type = TYPE_HERC;
--			mda_type_name = "Hercules";
--			break;
--		}
--	}
--
--	return 1;
--}
--
--static void mda_initialize(void)
--{
--	write_mda_b(97, 0x00);		/* horizontal total */
--	write_mda_b(80, 0x01);		/* horizontal displayed */
--	write_mda_b(82, 0x02);		/* horizontal sync pos */
--	write_mda_b(15, 0x03);		/* horizontal sync width */
--
--	write_mda_b(25, 0x04);		/* vertical total */
--	write_mda_b(6,  0x05);		/* vertical total adjust */
--	write_mda_b(25, 0x06);		/* vertical displayed */
--	write_mda_b(25, 0x07);		/* vertical sync pos */
--
--	write_mda_b(2,  0x08);		/* interlace mode */
--	write_mda_b(13, 0x09);		/* maximum scanline */
--	write_mda_b(12, 0x0a);		/* cursor start */
--	write_mda_b(13, 0x0b);		/* cursor end */
--
--	write_mda_w(0x0000, 0x0c);	/* start address */
--	write_mda_w(0x0000, 0x0e);	/* cursor location */
--
--	outb_p(MDA_MODE_VIDEO_EN | MDA_MODE_BLINK_EN, mda_mode_port);
--	outb_p(0x00, mda_status_port);
--	outb_p(0x00, mda_gfx_port);
--}
--
--static const char *mdacon_startup(void)
--{
--	mda_num_columns = 80;
--	mda_num_lines   = 25;
--
--	mda_vram_len  = 0x01000;
--	mda_vram_base = (u16 *)VGA_MAP_MEM(0xb0000, mda_vram_len);
--
--	mda_index_port  = 0x3b4;
--	mda_value_port  = 0x3b5;
--	mda_mode_port   = 0x3b8;
--	mda_status_port = 0x3ba;
--	mda_gfx_port    = 0x3bf;
--
--	mda_type = TYPE_MDA;
--	mda_type_name = "MDA";
--
--	if (! mda_detect()) {
--		printk("mdacon: MDA card not detected.\n");
--		return NULL;
--	}
--
--	if (mda_type != TYPE_MDA) {
--		mda_initialize();
--	}
--
--	/* cursor looks ugly during boot-up, so turn it off */
--	mda_set_cursor(mda_vram_len - 1);
--
--	printk("mdacon: %s with %ldK of memory detected.\n",
--		mda_type_name, mda_vram_len/1024);
--
--	return "MDA-2";
--}
--
--static void mdacon_init(struct vc_data *c, bool init)
--{
--	c->vc_complement_mask = 0x0800;	 /* reverse video */
--	c->vc_display_fg = &mda_display_fg;
--
--	if (init) {
--		c->vc_cols = mda_num_columns;
--		c->vc_rows = mda_num_lines;
--	} else
--		vc_resize(c, mda_num_columns, mda_num_lines);
--
--	/* make the first MDA console visible */
--
--	if (mda_display_fg == NULL)
--		mda_display_fg = c;
--}
--
--static void mdacon_deinit(struct vc_data *c)
--{
--	/* con_set_default_unimap(c->vc_num); */
--
--	if (mda_display_fg == c)
--		mda_display_fg = NULL;
--}
--
--static inline u16 mda_convert_attr(u16 ch)
--{
--	u16 attr = 0x0700;
--
--	/* Underline and reverse-video are mutually exclusive on MDA.
--	 * Since reverse-video is used for cursors and selected areas,
--	 * it takes precedence. 
--	 */
--
--	if (ch & 0x0800)	attr = 0x7000;	/* reverse */
--	else if (ch & 0x0400)	attr = 0x0100;	/* underline */
--
--	return ((ch & 0x0200) << 2) | 		/* intensity */ 
--		(ch & 0x8000) |			/* blink */ 
--		(ch & 0x00ff) | attr;
--}
--
--static u8 mdacon_build_attr(struct vc_data *c, u8 color,
--			    enum vc_intensity intensity,
--			    bool blink, bool underline, bool reverse,
--			    bool italic)
--{
--	/* The attribute is just a bit vector:
--	 *
--	 *	Bit 0..1 : intensity (0..2)
--	 *	Bit 2    : underline
--	 *	Bit 3    : reverse
--	 *	Bit 7    : blink
--	 */
--
--	return (intensity & VCI_MASK) |
--		(underline << 2) |
--		(reverse << 3) |
--		(italic << 4) |
--		(blink << 7);
--}
--
--static void mdacon_invert_region(struct vc_data *c, u16 *p, int count)
--{
--	for (; count > 0; count--) {
--		scr_writew(scr_readw(p) ^ 0x0800, p);
--		p++;
--	}
--}
--
--static inline u16 *mda_addr(unsigned int x, unsigned int y)
--{
--	return mda_vram_base + y * mda_num_columns + x;
--}
--
--static void mdacon_putcs(struct vc_data *c, const u16 *s, unsigned int count,
--			 unsigned int y, unsigned int x)
--{
--	u16 *dest = mda_addr(x, y);
--
--	for (; count > 0; count--) {
--		scr_writew(mda_convert_attr(scr_readw(s++)), dest++);
--	}
--}
--
--static void mdacon_clear(struct vc_data *c, unsigned int y, unsigned int x,
--			 unsigned int width)
--{
--	u16 *dest = mda_addr(x, y);
--	u16 eattr = mda_convert_attr(c->vc_video_erase_char);
--
--	scr_memsetw(dest, eattr, width * 2);
--}
--
--static bool mdacon_switch(struct vc_data *c)
--{
--	return true;	/* redrawing needed */
--}
--
--static bool mdacon_blank(struct vc_data *c, enum vesa_blank_mode blank,
--			 bool mode_switch)
--{
--	if (mda_type == TYPE_MDA) {
--		if (blank) 
--			scr_memsetw(mda_vram_base,
--				mda_convert_attr(c->vc_video_erase_char),
--				c->vc_screenbuf_size);
--		/* Tell console.c that it has to restore the screen itself */
--		return true;
--	} else {
--		if (blank)
--			outb_p(0x00, mda_mode_port);	/* disable video */
--		else
--			outb_p(MDA_MODE_VIDEO_EN | MDA_MODE_BLINK_EN, 
--				mda_mode_port);
--		return false;
--	}
--}
--
--static void mdacon_cursor(struct vc_data *c, bool enable)
--{
--	if (!enable) {
--		mda_set_cursor(mda_vram_len - 1);
--		return;
--	}
--
--	mda_set_cursor(c->state.y * mda_num_columns * 2 + c->state.x * 2);
--
--	switch (CUR_SIZE(c->vc_cursor_type)) {
--
--		case CUR_LOWER_THIRD:	mda_set_cursor_size(10, 13); break;
--		case CUR_LOWER_HALF:	mda_set_cursor_size(7,  13); break;
--		case CUR_TWO_THIRDS:	mda_set_cursor_size(4,  13); break;
--		case CUR_BLOCK:		mda_set_cursor_size(1,  13); break;
--		case CUR_NONE:		mda_set_cursor_size(14, 13); break;
--		default:		mda_set_cursor_size(12, 13); break;
--	}
--}
--
--static bool mdacon_scroll(struct vc_data *c, unsigned int t, unsigned int b,
--		enum con_scroll dir, unsigned int lines)
--{
--	u16 eattr = mda_convert_attr(c->vc_video_erase_char);
--
--	if (!lines)
--		return false;
--
--	if (lines > c->vc_rows)   /* maximum realistic size */
--		lines = c->vc_rows;
--
--	switch (dir) {
--
--	case SM_UP:
--		scr_memmovew(mda_addr(0, t), mda_addr(0, t + lines),
--				(b-t-lines)*mda_num_columns*2);
--		scr_memsetw(mda_addr(0, b - lines), eattr,
--				lines*mda_num_columns*2);
--		break;
--
--	case SM_DOWN:
--		scr_memmovew(mda_addr(0, t + lines), mda_addr(0, t),
--				(b-t-lines)*mda_num_columns*2);
--		scr_memsetw(mda_addr(0, t), eattr, lines*mda_num_columns*2);
--		break;
--	}
--
--	return false;
--}
--
--
--/*
-- *  The console `switch' structure for the MDA based console
-- */
--
--static const struct consw mda_con = {
--	.owner =		THIS_MODULE,
--	.con_startup =		mdacon_startup,
--	.con_init =		mdacon_init,
--	.con_deinit =		mdacon_deinit,
--	.con_clear =		mdacon_clear,
--	.con_putcs =		mdacon_putcs,
--	.con_cursor =		mdacon_cursor,
--	.con_scroll =		mdacon_scroll,
--	.con_switch =		mdacon_switch,
--	.con_blank =		mdacon_blank,
--	.con_build_attr =	mdacon_build_attr,
--	.con_invert_region =	mdacon_invert_region,
--};
--
--int __init mda_console_init(void)
--{
--	int err;
--
--	if (mda_first_vc > mda_last_vc)
--		return 1;
--	console_lock();
--	err = do_take_over_console(&mda_con, mda_first_vc-1, mda_last_vc-1, 0);
--	console_unlock();
--	return err;
--}
--
--static void __exit mda_console_exit(void)
--{
--	give_up_console(&mda_con);
--}
--
--module_init(mda_console_init);
--module_exit(mda_console_exit);
--
--MODULE_DESCRIPTION("MDA based console driver");
--MODULE_LICENSE("GPL");
--
-diff --git a/include/linux/console.h b/include/linux/console.h
-index 5520e4477ad7..d624200cfc17 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -718,8 +718,6 @@ extern bool console_suspend_enabled;
- extern void console_suspend_all(void);
- extern void console_resume_all(void);
- 
--int mda_console_init(void);
--
- void vcs_make_sysfs(int index);
- void vcs_remove_sysfs(int index);
- 
-diff --git a/include/linux/vt_buffer.h b/include/linux/vt_buffer.h
-index b6eeb8cb6070..6c15c6a15f74 100644
---- a/include/linux/vt_buffer.h
-+++ b/include/linux/vt_buffer.h
-@@ -16,7 +16,7 @@
- 
- #include <linux/string.h>
- 
--#if IS_ENABLED(CONFIG_VGA_CONSOLE) || IS_ENABLED(CONFIG_MDA_CONSOLE)
-+#if IS_ENABLED(CONFIG_VGA_CONSOLE)
- #include <asm/vga.h>
- #endif
- 
--- 
-2.43.0
-
+>=20
+> [1] https://github.com/nyrahul/linux-kernel-configs/tree/f0bee86a135a040=
+6ea427855f52702dd00d770f9
+>=20
+> Signed-off-by: Ethan Nelson-Moore <enelsonmoore@gmail.com>
+> ---
+>   .../admin-guide/kernel-parameters.txt         |   5 -
+>   arch/alpha/kernel/io.c                        |   2 +-
+>   arch/powerpc/include/asm/vga.h                |   4 +-
+>   drivers/tty/vt/vt.c                           |   3 -
+>   drivers/video/console/Kconfig                 |  15 -
+>   drivers/video/console/Makefile                |   1 -
+>   drivers/video/console/mdacon.c                | 566 ------------------
+>   include/linux/console.h                       |   2 -
+>   include/linux/vt_buffer.h                     |   2 +-
+>   9 files changed, 4 insertions(+), 596 deletions(-)
+>   delete mode 100644 drivers/video/console/mdacon.c
