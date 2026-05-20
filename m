@@ -1,241 +1,258 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 000883D8910;
-	Wed, 20 May 2026 11:46:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9907D3126D9
+	for <linux-alpha@vger.kernel.org>; Wed, 20 May 2026 22:21:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779277580; cv=none; b=ptOuad2cuuEKjo7WKDWmKNEoJu9lIOAhftO7omUYkLps99/sV08S7Px+MjnZ6Za8xZz6gpHhBYhbDpGaBHaaDugbVJg7/G5tMC/yuCGcNQFt/3j41b1psLSRd/okWWJwTS5x0EcPclgoO0bdPgrM5IPnA6L/4jkIn+Bf8i2RRJQ=
+	t=1779315711; cv=none; b=rwMXelE667RRma5cq6hH2i57Qn70GKfWoyHQFBfTXjTS+37gtU0NwiNrzIm3wr6PICXm536ipxtelPbom/Xno5wTC5uSvYT9VhkFi1e7VHSwOUAAd+40XI4funZ7t67QQCk/sxC0wDMSPPjP/5vht7TktYYkF0iV0JmYxh6p2KQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779277580; c=relaxed/simple;
-	bh=ONIhh98n9cCUrqIzxdSaE4ch3ewZyNQyyavFnnvB2is=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pFIB0bVwNsNYv9uJoZCY8/Z1B4LFVufDw5hfxh0KXEqV6+OkXW2gwvgV6knqcPU6B1qWGOrHIPazqvOtsYdcA9ixm84FyVm04ihBEOmiW5t/QSdzzX+b4TfbC7AUJD9cmYIHhcQW1FV6iHonzWywHcrLGpdTILri8sUz5efJjxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de; spf=pass smtp.mailfrom=gmx.de; dkim=pass (2048-bit key) header.d=gmx.de header.i=deller@gmx.de header.b=KrbKgJxC; arc=none smtp.client-ip=212.227.15.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
+	s=arc-20240116; t=1779315711; c=relaxed/simple;
+	bh=+lLqKB25GJ8Nk/N/QA5/TP30kbyhPVpqAySiqciCa4w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hm8iYlrkFFzChp4vFPlmEVg8H2W7DlTTkwkvuFrahs6jIt9rj/aXYvoXG/X9J8pt4AeL6ey6I9LrfYgWiWjdFG+FZ/BaDUXH1+pmhH8eegwXaGWPcZQHELc2esUiwQRM2rvz9ZuEr/K3aYH+Lj/9eysQFtQZvzMQrdvs9jC7fBo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ac3P9kZA; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=GIiPUiFe; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=deller@gmx.de header.b="KrbKgJxC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.de;
-	s=s31663417; t=1779277552; x=1779882352; i=deller@gmx.de;
-	bh=RNZTCia8bRlSbSgz5D/BvEXx+e8tvmS3lBEOF+WnOwE=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=KrbKgJxCkH2Vi4EDAlGhjtWOUpqkt0dH+lAaNR2uGUEuy3VxrI3LDKIm6D0Pt7FG
-	 1WEHPomJJGFQlAXYm+53aUk1Imr2OIFsn4VaaNIPyc27GdyNuuppSWVH6OvZnPB8z
-	 mq/HkqqL5MrQCj1D0ibcLd+WF0gaZieyoEftyuLxXLsaRBTOKb9vkOIPLi/KYrlRS
-	 2ZAD2eW5giWJqH51yIlB5PC5ZaEerE5hE9uaam+Pc6Po0y3mxBB/PGqWSDgTJd1GS
-	 D2zf2Sv9czt5Ii+LOygBUR9rJuMSNi2EYdvfy0WQH5Hk6q3asxRbbq7+vGroTY8pw
-	 ENWosdQUfBMMsH0d5Q==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from client.hidden.invalid by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MxUnz-1xIIG12Klt-011VXL; Wed, 20
- May 2026 13:45:52 +0200
-Message-ID: <0ec8d725-1f86-486c-a8fa-ee1c68a01985@gmx.de>
-Date: Wed, 20 May 2026 13:45:48 +0200
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ac3P9kZA";
+	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="GIiPUiFe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1779315708;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=yTMC7Vi3qz2eQrpu1XXxCoOuK0TKvwPfinMf53HH2Ps=;
+	b=ac3P9kZAYdPg3T8iCDdcDF0fIK6mXidCldOgbU+siL0zIjn1AnlBYySweUMgZ/4Fw/1Moy
+	b9ke52rKwPxVIWP0qgNHyEss54S3t8EizjDWw1DzeUb1ReA3JmKzcBGvoR8sMQxebUEIaU
+	j7R5XbP9HdjlARpZGDeTZMaM8JZDygk=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-402-mtOdv508PhmIbt33yWWxFQ-1; Wed, 20 May 2026 18:21:47 -0400
+X-MC-Unique: mtOdv508PhmIbt33yWWxFQ-1
+X-Mimecast-MFC-AGG-ID: mtOdv508PhmIbt33yWWxFQ_1779315706
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-48ff0eb77b5so51027475e9.0
+        for <linux-alpha@vger.kernel.org>; Wed, 20 May 2026 15:21:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=redhat.com; s=google; t=1779315706; x=1779920506; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yTMC7Vi3qz2eQrpu1XXxCoOuK0TKvwPfinMf53HH2Ps=;
+        b=GIiPUiFeyXoYfQcSzCQ8UDLKNF8eIxCGoGWYZUAP2105svD2H6KOUyYeVB/Xr6sMva
+         3BowiY+z5O5SrdheNyzuqgpyYM/zshTqAAXW7g04eN0C8eL1Au+kUrpa9Xiuobj1UpoT
+         2awR7+9l/TNjwnv5QdShBeZjYM794QlHyumKE21++S52oDAQ9cjQy7617xplq8PJxteE
+         7s2fgPlDrVBD7v/BxhdCdTcuExdsWcu6iOogWguLL1dwSU3xPudt+5MlOGxt9Y/qUdO3
+         32BAWJ+t7w/zg5DBl7xa11mSmhIG7hfAXnJGG1z8Z2kxetk015oSEB71v4lLLG/SnqC/
+         mPPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779315706; x=1779920506;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yTMC7Vi3qz2eQrpu1XXxCoOuK0TKvwPfinMf53HH2Ps=;
+        b=ocYnMFvkPqRuOXT87H+5tc5dBSTUO5ZtQGTEsycKNwSnSEDJL/dutQCrkVpHz1jwvM
+         OC6GsxYMS+PiAiPJ3iRcH1qv8ci4IuABUhoKhG0QPt/21s3/1MkVEAeaAnDayRWFCHEm
+         ZICh30L0bp9bkjggGhIYSK/iasVIx8YI/xmoDRreSLt0byfcG+Z6AQF7E/TsDUao3gmD
+         QT3RHjDh1CwupPp4XXWIPzwM7Z9Bxzhb/1dEOBrcBKBFgLPwqYvdol1WbbZWB10atLwQ
+         6vB5YQtynpn2mN37i8wcByl+e/HWg/fQ47Y9otofH/mMJ49zJg6W2WcEyYfOXUwDRGci
+         AbCA==
+X-Forwarded-Encrypted: i=1; AFNElJ/6tjXkPfJ4cynAlh2zl0bw1KEx+NCTz1JwUeIMfeflxSSTJIzd8n+oygdRngchbSYiu6fewGQwJYES7w==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzfc1XFE8IuhFbpb7StvJ79ho0a0zcdQJ31gNeBIdZ6YJLhsOHV
+	rnazV3C3GgafgxyFcH7tGEDITPmP7x9Ns1wCCItPkcgQN7jPDhJ0s7yYhceLIuoro3LlBABMY8X
+	ywxum20o9A6TEQaekW8HFV1aGAHSHrTSPWR+Een6dihLaDLipuOjroONirr7FlW+E
+X-Gm-Gg: Acq92OE0nT9I66VpVp4G5F0WioEol0l9F6ynO8oMGCW2H3TowwEUVUrYr/NobIIaYqX
+	2MEUhJ0GLLomZAGnId9UMM1BPb5/dl9dWQOapAu+WJ+j72xNGO6tRP3npcseZ76SDw8weuRHKcn
+	uP+Dcpcp4xaBczQNnf7ZLmON0kjyF8Xu0neujCCFctNUU2WqLs5Qz9AyrtUjMqIoEfm5Da7sTAi
+	kURrEfzlfegmhoII5eapTR2Ms1mElWcaGvbs4ySD3rzPdDXFWqgrX6TQTMeGVOqB4BvjXdhZuGF
+	5tFqbF51sSB5uqxDsDwdO1K7unwPOQ9pTpt++twhitDR1Cdq2uzlaKuLVnWm2e5XmluevCz+vzI
+	Go0oF4LMnRqsOWYGmPeEXv1JxokfQ/DUQTBBFTMbk6toEoWVi3/XevQ==
+X-Received: by 2002:a05:600c:492f:b0:48f:dfe3:dae3 with SMTP id 5b1f17b1804b1-490360af200mr1567265e9.17.1779315706136;
+        Wed, 20 May 2026 15:21:46 -0700 (PDT)
+X-Received: by 2002:a05:600c:492f:b0:48f:dfe3:dae3 with SMTP id 5b1f17b1804b1-490360af200mr1566725e9.17.1779315705516;
+        Wed, 20 May 2026 15:21:45 -0700 (PDT)
+Received: from redhat.com (IGLD-80-230-25-45.inter.net.il. [80.230.25.45])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49033d8e24bsm20846035e9.10.2026.05.20.15.21.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 May 2026 15:21:44 -0700 (PDT)
+Date: Wed, 20 May 2026 18:21:38 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: linux-kernel@vger.kernel.org
+Cc: "David Hildenbrand (Arm)" <david@kernel.org>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
+	Muchun Song <muchun.song@linux.dev>,
+	Oscar Salvador <osalvador@suse.de>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Lorenzo Stoakes <ljs@kernel.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Mike Rapoport <rppt@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>,
+	Brendan Jackman <jackmanb@google.com>,
+	Johannes Weiner <hannes@cmpxchg.org>, Zi Yan <ziy@nvidia.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Nico Pache <npache@redhat.com>, Ryan Roberts <ryan.roberts@arm.com>,
+	Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>,
+	Lance Yang <lance.yang@linux.dev>, Hugh Dickins <hughd@google.com>,
+	Matthew Brost <matthew.brost@intel.com>,
+	Joshua Hahn <joshua.hahnjy@gmail.com>, Rakie Kim <rakie.kim@sk.com>,
+	Byungchul Park <byungchul@sk.com>,
+	Gregory Price <gourry@gourry.net>,
+	Ying Huang <ying.huang@linux.alibaba.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Christoph Lameter <cl@gentwo.org>,
+	David Rientjes <rientjes@google.com>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Harry Yoo <harry.yoo@oracle.com>,
+	Axel Rasmussen <axelrasmussen@google.com>,
+	Yuanchu Xie <yuanchu@google.com>, Wei Xu <weixugc@google.com>,
+	Chris Li <chrisl@kernel.org>, Kairui Song <kasong@tencent.com>,
+	Kemeng Shi <shikemeng@huaweicloud.com>,
+	Nhat Pham <nphamcs@gmail.com>, Baoquan He <bhe@redhat.com>,
+	virtualization@lists.linux.dev, linux-mm@kvack.org,
+	Andrea Arcangeli <aarcange@redhat.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Greg Ungerer <gerg@linux-m68k.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, linux-alpha@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
+Subject: [PATCH v8 14/37] mm: remove arch vma_alloc_zeroed_movable_folio
+ overrides
+Message-ID: <9c2ac9d2fc159822b9fd6cb1304bf222324d70a3.1779315441.git.mst@redhat.com>
+References: <cover.1779315441.git.mst@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] video: console: mdacon: remove this obsolete driver
-To: Ethan Nelson-Moore <enelsonmoore@gmail.com>, linux-doc@vger.kernel.org,
- linux-alpha@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-fbdev@vger.kernel.org,
- Linux DRI Development <dri-devel@lists.freedesktop.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Cc: Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- Richard Henderson <richard.henderson@linaro.org>,
- Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>,
- Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Nicolas Pitre <nico@fluxnic.net>
-References: <20260520033155.17378-1-enelsonmoore@gmail.com>
-Content-Language: en-US
-From: Helge Deller <deller@gmx.de>
-Autocrypt: addr=deller@gmx.de; keydata=
- xsFNBF3Ia3MBEAD3nmWzMgQByYAWnb9cNqspnkb2GLVKzhoH2QD4eRpyDLA/3smlClbeKkWT
- HLnjgkbPFDmcmCz5V0Wv1mKYRClAHPCIBIJgyICqqUZo2qGmKstUx3pFAiztlXBANpRECgwJ
- r+8w6mkccOM9GhoPU0vMaD/UVJcJQzvrxVHO8EHS36aUkjKd6cOpdVbCt3qx8cEhCmaFEO6u
- CL+k5AZQoABbFQEBocZE1/lSYzaHkcHrjn4cQjc3CffXnUVYwlo8EYOtAHgMDC39s9a7S90L
- 69l6G73lYBD/Br5lnDPlG6dKfGFZZpQ1h8/x+Qz366Ojfq9MuuRJg7ZQpe6foiOtqwKym/zV
- dVvSdOOc5sHSpfwu5+BVAAyBd6hw4NddlAQUjHSRs3zJ9OfrEx2d3mIfXZ7+pMhZ7qX0Axlq
- Lq+B5cfLpzkPAgKn11tfXFxP+hcPHIts0bnDz4EEp+HraW+oRCH2m57Y9zhcJTOJaLw4YpTY
- GRUlF076vZ2Hz/xMEvIJddRGId7UXZgH9a32NDf+BUjWEZvFt1wFSW1r7zb7oGCwZMy2LI/G
- aHQv/N0NeFMd28z+deyxd0k1CGefHJuJcOJDVtcE1rGQ43aDhWSpXvXKDj42vFD2We6uIo9D
- 1VNre2+uAxFzqqf026H6cH8hin9Vnx7p3uq3Dka/Y/qmRFnKVQARAQABzRxIZWxnZSBEZWxs
- ZXIgPGRlbGxlckBnbXguZGU+wsGRBBMBCAA7AhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheA
- FiEERUSCKCzZENvvPSX4Pl89BKeiRgMFAl3J1zsCGQEACgkQPl89BKeiRgNK7xAAg6kJTPje
- uBm9PJTUxXaoaLJFXbYdSPfXhqX/BI9Xi2VzhwC2nSmizdFbeobQBTtRIz5LPhjk95t11q0s
- uP5htzNISPpwxiYZGKrNnXfcPlziI2bUtlz4ke34cLK6MIl1kbS0/kJBxhiXyvyTWk2JmkMi
- REjR84lCMAoJd1OM9XGFOg94BT5aLlEKFcld9qj7B4UFpma8RbRUpUWdo0omAEgrnhaKJwV8
- qt0ULaF/kyP5qbI8iA2PAvIjq73dA4LNKdMFPG7Rw8yITQ1Vi0DlDgDT2RLvKxEQC0o3C6O4
- iQq7qamsThLK0JSDRdLDnq6Phv+Yahd7sDMYuk3gIdoyczRkXzncWAYq7XTWl7nZYBVXG1D8
- gkdclsnHzEKpTQIzn/rGyZshsjL4pxVUIpw/vdfx8oNRLKj7iduf11g2kFP71e9v2PP94ik3
- Xi9oszP+fP770J0B8QM8w745BrcQm41SsILjArK+5mMHrYhM4ZFN7aipK3UXDNs3vjN+t0zi
- qErzlrxXtsX4J6nqjs/mF9frVkpv7OTAzj7pjFHv0Bu8pRm4AyW6Y5/H6jOup6nkJdP/AFDu
- 5ImdlA0jhr3iLk9s9WnjBUHyMYu+HD7qR3yhX6uWxg2oB2FWVMRLXbPEt2hRGq09rVQS7DBy
- dbZgPwou7pD8MTfQhGmDJFKm2jvOwU0EXchrcwEQAOsDQjdtPeaRt8EP2pc8tG+g9eiiX9Sh
- rX87SLSeKF6uHpEJ3VbhafIU6A7hy7RcIJnQz0hEUdXjH774B8YD3JKnAtfAyuIU2/rOGa/v
- UN4BY6U6TVIOv9piVQByBthGQh4YHhePSKtPzK9Pv/6rd8H3IWnJK/dXiUDQllkedrENXrZp
- eLUjhyp94ooo9XqRl44YqlsrSUh+BzW7wqwfmu26UjmAzIZYVCPCq5IjD96QrhLf6naY6En3
- ++tqCAWPkqKvWfRdXPOz4GK08uhcBp3jZHTVkcbo5qahVpv8Y8mzOvSIAxnIjb+cklVxjyY9
- dVlrhfKiK5L+zA2fWUreVBqLs1SjfHm5OGuQ2qqzVcMYJGH/uisJn22VXB1c48yYyGv2HUN5
- lC1JHQUV9734I5cczA2Gfo27nTHy3zANj4hy+s/q1adzvn7hMokU7OehwKrNXafFfwWVK3OG
- 1dSjWtgIv5KJi1XZk5TV6JlPZSqj4D8pUwIx3KSp0cD7xTEZATRfc47Yc+cyKcXG034tNEAc
- xZNTR1kMi9njdxc1wzM9T6pspTtA0vuD3ee94Dg+nDrH1As24uwfFLguiILPzpl0kLaPYYgB
- wumlL2nGcB6RVRRFMiAS5uOTEk+sJ/tRiQwO3K8vmaECaNJRfJC7weH+jww1Dzo0f1TP6rUa
- fTBRABEBAAHCwXYEGAEIACAWIQRFRIIoLNkQ2+89Jfg+Xz0Ep6JGAwUCXchrcwIbDAAKCRA+
- Xz0Ep6JGAxtdEAC54NQMBwjUNqBNCMsh6WrwQwbg9tkJw718QHPw43gKFSxFIYzdBzD/YMPH
- l+2fFiefvmI4uNDjlyCITGSM+T6b8cA7YAKvZhzJyJSS7pRzsIKGjhk7zADL1+PJei9p9idy
- RbmFKo0dAL+ac0t/EZULHGPuIiavWLgwYLVoUEBwz86ZtEtVmDmEsj8ryWw75ZIarNDhV74s
- BdM2ffUJk3+vWe25BPcJiaZkTuFt+xt2CdbvpZv3IPrEkp9GAKof2hHdFCRKMtgxBo8Kao6p
- Ws/Vv68FusAi94ySuZT3fp1xGWWf5+1jX4ylC//w0Rj85QihTpA2MylORUNFvH0MRJx4mlFk
- XN6G+5jIIJhG46LUucQ28+VyEDNcGL3tarnkw8ngEhAbnvMJ2RTx8vGh7PssKaGzAUmNNZiG
- MB4mPKqvDZ02j1wp7vthQcOEg08z1+XHXb8ZZKST7yTVa5P89JymGE8CBGdQaAXnqYK3/yWf
- FwRDcGV6nxanxZGKEkSHHOm8jHwvQWvPP73pvuPBEPtKGLzbgd7OOcGZWtq2hNC6cRtsRdDx
- 4TAGMCz4j238m+2mdbdhRh3iBnWT5yPFfnv/2IjFAk+sdix1Mrr+LIDF++kiekeq0yUpDdc4
- ExBy2xf6dd+tuFFBp3/VDN4U0UfG4QJ2fg19zE5Z8dS4jGIbLg==
-In-Reply-To: <20260520033155.17378-1-enelsonmoore@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:gfI53cV7IIsiLFY311/gxZupMFCovWyFn8QlWFedzR4EoHdRxzU
- fd3FhpqqnL5hLnvs7A9JXsSS0GGY1a0PpTCHg+cRT9QMot4prVLbfqDIPQapOQ8bspQVjFb
- uq0WdoxAmexngai8kuobQsHlsp2lKE2++58Fzt4ADKClbjiBp7PG7kB7ESbtE841bsP+Ngp
- QbwIySazlAhGsM93n3U3g==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:wd6J/JnIWZM=;3DjiavRrerC71RWZ5FsWzOYKg7p
- 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
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1779315441.git.mst@redhat.com>
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 
-On 5/20/26 05:31, Ethan Nelson-Moore wrote:
-> The mdacon driver supports using ISA MDA or Hercules-compatible display
-> adapters as a secondary text console. This was commonly used in the
-> 1990s and earlier for debugging software which took over the primary
-> display. It is highly unlikely anyone is doing so nowadays because
-> serial consoles and much better methods of debugging exist.
->=20
-> The driver is not enabled by any defconfig, nor any of the
-> dozens of distro configs collected at [1]. It has been relegated to VTs
-> 13-16 since commit 0b9cf3aa6b1e ("mdacon messing up default vc's - set
-> default to vc13-16 again") in Linux 2.6.27 (and before Linux 2.5.53 -
-> see the link in the message of the above commit). The change in 2.6.27
-> was done because it was incorrectly detecting non-MDA adapters as MDA
-> and taking over all VTs, rendering them unusable.
->=20
-> Furthermore, vgacon supports using MDA/Hercules-compatible adapters as
-> the primary text console, so any systems with only one of these
-> adapters were already using vgacon and will not experience any loss in
-> functionality from the removal of this driver.
->=20
-> Given all of these factors, the mdacon driver is likely entirely
-> unused. Remove it.
+Now that the generic vma_alloc_zeroed_movable_folio() uses
+__GFP_ZERO, the arch-specific macros on alpha, m68k, s390, and
+x86 that did the same thing are redundant.  Remove them.
 
-I've applied this patch to the fbdev git tree, since I also believe that
-there is no use case or user left (with Linux kernels >=3D 7.0), which use=
-s the mdacon.
+arm64 is not affected: it has a real function override that
+handles MTE tag zeroing, not just __GFP_ZERO.
 
-If someone thinks we need to keep it, please speak up.
+Suggested-by: David Hildenbrand <david@kernel.org>
+Acked-by: Magnus Lindholm <linmag7@gmail.com>
+Acked-by: Greg Ungerer <gerg@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Assisted-by: Claude:claude-opus-4-6
+Reviewed-by: Gregory Price <gourry@gourry.net>
+---
+ arch/alpha/include/asm/page.h   | 3 ---
+ arch/m68k/include/asm/page_no.h | 3 ---
+ arch/s390/include/asm/page.h    | 3 ---
+ arch/x86/include/asm/page.h     | 3 ---
+ include/linux/highmem.h         | 8 +++++---
+ 5 files changed, 5 insertions(+), 15 deletions(-)
 
-Helge
+diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
+index 59d01f9b77f6..4327029cd660 100644
+--- a/arch/alpha/include/asm/page.h
++++ b/arch/alpha/include/asm/page.h
+@@ -12,9 +12,6 @@
+ 
+ extern void clear_page(void *page);
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ extern void copy_page(void * _to, void * _from);
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
+ 
+diff --git a/arch/m68k/include/asm/page_no.h b/arch/m68k/include/asm/page_no.h
+index d2532bc407ef..f511b763a235 100644
+--- a/arch/m68k/include/asm/page_no.h
++++ b/arch/m68k/include/asm/page_no.h
+@@ -12,9 +12,6 @@ extern unsigned long memory_end;
+ 
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #define __pa(vaddr)		((unsigned long)(vaddr))
+ #define __va(paddr)		((void *)((unsigned long)(paddr)))
+ 
+diff --git a/arch/s390/include/asm/page.h b/arch/s390/include/asm/page.h
+index 56da819a79e6..e995d2a413f9 100644
+--- a/arch/s390/include/asm/page.h
++++ b/arch/s390/include/asm/page.h
+@@ -67,9 +67,6 @@ static inline void copy_page(void *to, void *from)
+ 
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #ifdef CONFIG_STRICT_MM_TYPECHECKS
+ #define STRICT_MM_TYPECHECKS
+ #endif
+diff --git a/arch/x86/include/asm/page.h b/arch/x86/include/asm/page.h
+index 416dc88e35c1..92fa975b46f3 100644
+--- a/arch/x86/include/asm/page.h
++++ b/arch/x86/include/asm/page.h
+@@ -28,9 +28,6 @@ static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
+ 	copy_page(to, from);
+ }
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #ifndef __pa
+ #define __pa(x)		__phys_addr((unsigned long)(x))
+ #endif
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index ffa683f64f1d..7b5955bf9336 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -303,7 +303,6 @@ static inline void clear_user_highpages(struct page *page, unsigned long vaddr,
+ #endif
+ }
+ 
+-#ifndef vma_alloc_zeroed_movable_folio
+ /**
+  * vma_alloc_zeroed_movable_folio - Allocate a zeroed page for a VMA.
+  * @vma: The VMA the page is to be allocated for.
+@@ -317,12 +316,15 @@ static inline void clear_user_highpages(struct page *page, unsigned long vaddr,
+  * we are out of memory.
+  */
+ static inline
+-struct folio *vma_alloc_zeroed_movable_folio(struct vm_area_struct *vma,
++struct folio *vma_alloc_zeroed_movable_folio_noprof(struct vm_area_struct *vma,
+ 				   unsigned long vaddr)
+ {
+-	return vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO,
++	return vma_alloc_folio_noprof(GFP_HIGHUSER_MOVABLE | __GFP_ZERO,
+ 			      0, vma, vaddr);
+ }
++#ifndef vma_alloc_zeroed_movable_folio
++#define vma_alloc_zeroed_movable_folio(...) \
++	alloc_hooks(vma_alloc_zeroed_movable_folio_noprof(__VA_ARGS__))
+ #endif
+ 
+ static inline void clear_highpage(struct page *page)
+-- 
+MST
 
-
->=20
-> [1] https://github.com/nyrahul/linux-kernel-configs/tree/f0bee86a135a040=
-6ea427855f52702dd00d770f9
->=20
-> Signed-off-by: Ethan Nelson-Moore <enelsonmoore@gmail.com>
-> ---
->   .../admin-guide/kernel-parameters.txt         |   5 -
->   arch/alpha/kernel/io.c                        |   2 +-
->   arch/powerpc/include/asm/vga.h                |   4 +-
->   drivers/tty/vt/vt.c                           |   3 -
->   drivers/video/console/Kconfig                 |  15 -
->   drivers/video/console/Makefile                |   1 -
->   drivers/video/console/mdacon.c                | 566 ------------------
->   include/linux/console.h                       |   2 -
->   include/linux/vt_buffer.h                     |   2 +-
->   9 files changed, 4 insertions(+), 596 deletions(-)
->   delete mode 100644 drivers/video/console/mdacon.c
