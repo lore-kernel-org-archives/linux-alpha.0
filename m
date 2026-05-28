@@ -1,61 +1,61 @@
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 293F130566B
-	for <linux-alpha@vger.kernel.org>; Thu, 28 May 2026 23:07:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 098D533BBD0
+	for <linux-alpha@vger.kernel.org>; Thu, 28 May 2026 23:10:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780009678; cv=none; b=KyDwOLAF7vRPcQ5FzKX7Edj6KfnXaA/8RqYacpHGlzAoXkdum716H7HmLKEmjq6AQjG6b4gcWXK4kT5oXDcq0BLsVQZheFfhD87bziWm1K1veU7rI6qowxEg29i7fiiN2Dg6LMNuGT/BM4kDtp8sRnkq7Onw6CZQrz+vq6p/JDU=
+	t=1780009849; cv=none; b=qcPP9LGhld28OwqWabiF9qWlTCb6mdO60s8uiyyz5xVr2DOqYcW61u97ObkiZubiROvGqndowCOYBzgL09JFAIxYqVVG8BUVY91BC0Qe1AE5AKBuj6im/kGDyUAhlGRcY6xrcJn6+IcgRA0nzP7J9mc+dpJGGtDiCs9jolIrrEU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780009678; c=relaxed/simple;
-	bh=+4t3Gs4dNBrwz9KCzJpmkQXSngU3pbblQPUNrZVuQ5s=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Tg6YWjEBSBjlsoQpa1Hdn4NYbmlYrWEhVeGJP5+xGmPWrvFThXJVxCDAyPHFDKM913Zw4nTzJsTCulc5nzDCdYvv9KiQOJu3IxpkjuWnmmnHZ9EgV3sjjen9mfgGAh27gEyeUV9yoqG95In6Paas2uAiGaIveFsw0q7a93bzz5U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=pfaItyyV; arc=none smtp.client-ip=209.85.128.177
+	s=arc-20240116; t=1780009849; c=relaxed/simple;
+	bh=fhdDODqpR4chdblBJU8fdAmz1DLGOrwpgf0lUaM2PoU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fEmhg3HXV6mXvfW/E2LPunP2BmleFRjSBqpX6xHWYhxU7cEbM8UiSiZc34gFZ8BZ3fMZA6jplfQv/9FBGYhwCpE9SiDKDhSfck8DehERzU6VsKSi6LbbN0bFWpoZejxlluXlw6ozrEzzacMrxDjj14KueuTOqIRsTntfh8K2iNY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s6uB1knX; arc=none smtp.client-ip=209.85.128.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pfaItyyV"
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-7ca947f9b00so130866017b3.0
-        for <linux-alpha@vger.kernel.org>; Thu, 28 May 2026 16:07:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s6uB1knX"
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-7dc93d02916so12424257b3.3
+        for <linux-alpha@vger.kernel.org>; Thu, 28 May 2026 16:10:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780009676; x=1780614476; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780009847; x=1780614647; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=EsmYLjdQXSnwyvW2KX4QOuwimq2GRxmHKitgrfKsf1E=;
-        b=pfaItyyVQ3VRBPrEIMVRSoFwTEhToC5qo2g8rtcSBCqwxBqe5ymQ2M2P+SlUoR4wJ/
-         3fukwAIYx7/XGalSMZSXV7Y8DB3XFwVkJBo5sJlEGc8PyQR5kH/vjLLICvxGXkVnfqKs
-         Lx2O9ymxQFFKeVEY3PtgnPFC4DswO2XZ9EdJz64DKOYfGu3uFJmpM5P+y59642Sbzr+e
-         HN0mTldDSYTY6qpg42/rIHE3c9HzLDCK7Zs6Yicp8egokRVi3NvcVV1MXMBb/Ire8nIu
-         SpJJMfjtOfOG2xlGPx7Pb90iAZ/Bgwq1w5vF89oI05FPJUlAn+a4bVKoH2mJ9DeRqu2a
-         YGyQ==
+        bh=n9S3g84A5WnXh4iXXrEMsVPJdFWPARrWB1WQLZWJngA=;
+        b=s6uB1knX29QnqkLhm8Fz32YH6HqwHQU0VyFZsjGSvbfJcvjlW/ABX0DlUATj1RmXWk
+         rN0dxmgZJWDMrIe4fwKxgZyopijeDreRWbOdVSIK8bepkLo3RyyS34euy/2VUCKUHOTX
+         6w92nc+FglHq6wPf/RH66bl2tv/4vCxnvIjsqQ4ac2srDRncE0V+VY1UIUwcbacIOWBO
+         U2qUvibWUxaJ8tj1AA+vK6FGt67kIF+Vz88SD9Nxvb15owHsTaLBYg7YYTkkZgghc1sM
+         Czm6+6BUFy5IUJFKpgnK06T8Gthfj49HrU8lUjHsDKZXVg07V2BwWgSuJf5fugr3DWMr
+         mkSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780009676; x=1780614476;
+        d=1e100.net; s=20251104; t=1780009847; x=1780614647;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EsmYLjdQXSnwyvW2KX4QOuwimq2GRxmHKitgrfKsf1E=;
-        b=EYTdJUHTfLPX43o2GdNAvC049NXVhT5XtKblvqEYmIcjGHVV9NcozmL2tkIKOo6DHF
-         +WMN2qYw6FN28f2kine81hD8eOktvztwLHo+l27gTxBMzOth+N8PIdQE9F6fNTPYBMGV
-         OovSP54E+gQ84lX17uUh0uTbnrmDelEFbFE1xRph8VoMC8nrtCAn+CWlgczyPKBpAAtQ
-         r9xkA15IKFE9Onrr0F+27/qE0A3At8yuNxu+xNGIFqFX5Io2/8v5sRZ1MIGzbdQEAcL7
-         3W6GFToDlKGLmAR8xD6g9l6FbEsh+w90gkSxToF7bZwx3xWr5VksEDok4hG4tjTl+AcV
-         DtZA==
-X-Gm-Message-State: AOJu0YxmrCLy0tOhHd45k9nONQvpCatU5T+MVEoHPJbaUQ8Ryvft1Nno
-	hRsj4AoMYfpbrLe8bbnlUU4eIXugWOqoxZIVLG1MxfijG+DbAwYz4emz1gTy0uLH
-X-Gm-Gg: Acq92OGrfYnTMesUY3wAYmBP37LqbPVunvgS3btUviGiCAvhaAKJb7c3uTI1gbL6h4e
-	/vWAoiOJHTV5trCxocJanBOAYaLKuV664IMUTDEwihxlR7MltwZrXr5WoAcvkrb4Q887gsuWcAm
-	NNRb/SfKaHEPudH01Vdogu4vzKWSICdgsYBNHeU602nJ8YlvoLGecBn92gDH7BA6gwr1j2pE6Wa
-	wTHGrAeJOCfjnMpz8z+qdZy1yliHYJXEL6UjTMyCzrHCosime0o8C3pEg/yy6n7699tYhezVrjl
-	6XAQ/Q1yFrozYkIVF4R/wejahuXtZiQieHKEMZly7+Ri1uS3RfcRD+17svMUTU3exI2T0j4XKo9
-	FekUJjxm6w1rROjvVzfRnS5KIOMG7WsZ2pS6clC4Hy9xrGQpbOLO1uFRGmvYrAOlb/o6MRNTuer
-	EDf0tVVwi49+mhVm0o2v9nnmep+M+52g1fAKwfw3+Hrpx3j9ZgoNKnki7uA4VWZ1SbvsWmiLd4N
-	eRRWyIKJ9t2/zZRqfXDrMWK
-X-Received: by 2002:a05:690c:e3f1:b0:7cf:a117:4ece with SMTP id 00721157ae682-7de43b55932mr3086127b3.10.1780009676141;
-        Thu, 28 May 2026 16:07:56 -0700 (PDT)
+        bh=n9S3g84A5WnXh4iXXrEMsVPJdFWPARrWB1WQLZWJngA=;
+        b=NhLEgWu9lg89HYgMa4EDVZMeF8L8t4z3OiY0gZXt7rg7v5Js0ScGO4jBjTtYI6ymP0
+         dY8+bHmOlA/oAOCNXbeIS38fHpGl+JDG0iENo40WWGP+v5Y8uMz3ZFcuqIJCI3mVPZys
+         jLtK1mYshdyc1Dj3igOSJtTW++EeRNPguadH/y/knlsO7PC70qgBf5RWqNY+xCl863e3
+         d6U32bcNC+JQSj5JQAMzc9YmyO12feRBJKeXQ47ZDDhgzp2HDqaKu9fTFOMJgubp2HvI
+         1WkznAGInzwGbozfmUPs9d+A2TsagxHW69NV0z05KBf6ly/3zbugWWAXpf9pOl6hppE0
+         noQg==
+X-Gm-Message-State: AOJu0Yz8qEmY+F2LnuOe7xIIOPZhTXw0haHVAqaBsqSAs8RTcy7LQzI8
+	rhVw2HcYIIY6rQVUeAy8xt34GgpuUNh+EpSWCB8a4YvvGTyskxBwxvDEVyXFkAqg
+X-Gm-Gg: Acq92OE7I768f0dGL9Td84I2kwItRj/UZfZAoRCHenF0U0o6Ahb1sS8flBEqf0ZeSNX
+	N311MYW06FcJ3Q+rpzW1uJ6fdeSSt+1HMycL5nJCGJLcSht/Vff4/r8Wg2RrS+P93Q/6/hjzy8M
+	XUhR7Ia1/i2NoVxmNuc8a+G7Ug2tI0vpWfDgXZjyNYjl/jwiOgj1BhTtK08xdZSQJuKKYRDlwEM
+	GbK4XopqzoFi1BKFRWRKVvXL16qdcibt+0PRG6QST529JoAyr54iUARuBCy/Rjk5sET0J9wGPjQ
+	hiO2GbCXTmSkyTPS7p9uV3FXi5ch9neeRobuqjr5viD+isFKveNP0ShsTtRL07TJ72eZ74BtTqr
+	DesCY96GbYaR5NZjics1hwijmGhADDBI5X8I2T02N0CAZkq3W3CY929ZmTW1mcLAp8Dmzvh5Hj0
+	eCaXyojQl8xqNfpiYSWRmPrgNkAN8pR0PMyJ/Vh/XmL01HmjqqNWfOvcKBgs3zIZ8aTLR9lczPn
+	DzSO+ZVqcrmj/bWC6hhA7B1
+X-Received: by 2002:a05:690e:1904:b0:65c:5b88:84a2 with SMTP id 956f58d0204a3-66052cb1fb4mr144652d50.4.1780009847107;
+        Thu, 28 May 2026 16:10:47 -0700 (PDT)
 Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7de6d1f3943sm69177b3.26.2026.05.28.16.07.55
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-6604e6a5b44sm261601d50.10.2026.05.28.16.10.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 May 2026 16:07:55 -0700 (PDT)
+        Thu, 28 May 2026 16:10:46 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
 To: linux-alpha@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -63,9 +63,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Magnus Lindholm <linmag7@gmail.com>,
 	Matt Turner <mattst88@gmail.com>,
 	stable@vger.kernel.org
-Subject: [PATCH] alpha: Use work_on_cpu() for cross-CPU RTC access
-Date: Thu, 28 May 2026 19:07:50 -0400
-Message-ID: <20260528230750.1840681-1-mattst88@gmail.com>
+Subject: [PATCH] alpha: Fix SMP shutdown hang due to missing memory barriers
+Date: Thu, 28 May 2026 19:10:43 -0400
+Message-ID: <20260528231043.1842326-1-mattst88@gmail.com>
 X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
@@ -75,77 +75,45 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-smp_call_function_single() runs its callback in IPI (hardirq)
-context. mc146818_set_time() and mc146818_get_time() take rtc_lock
-(spinlock_t), which is a sleeping lock on PREEMPT_RT, triggering
-a lockdep "Invalid wait context" splat on Marvel SMP.
+Alpha has a very weak memory model. halt() makes no guarantee that
+pending stores have drained from the store buffer. If set_cpu_present()
+stores are still buffered when a secondary CPU halts, they are lost,
+and the boot CPU spins forever in the cpu_present_mask wait loop.
 
-work_on_cpu() runs the callback in a kthread (process) context,
-which can acquire sleeping locks.
+Add mb() before halt() on secondary CPUs to flush the store buffer,
+and use smp_mb() in the boot CPU's poll loop instead of the
+compiler-only barrier() to ensure it observes secondary CPUs' stores.
+
+This avoids a deadlock on shutdown on EV7/Marvel platforms.
 
 Cc: stable@vger.kernel.org
 Assisted-by: Claude:claude-sonnet-4-6
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- arch/alpha/kernel/rtc.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ arch/alpha/kernel/process.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git ./arch/alpha/kernel/rtc.c ./arch/alpha/kernel/rtc.c
-index cfdf90bc8b3f..4ad5846a1d71 100644
---- ./arch/alpha/kernel/rtc.c
-+++ ./arch/alpha/kernel/rtc.c
-@@ -15,6 +15,7 @@
- #include <linux/bcd.h>
- #include <linux/rtc.h>
- #include <linux/platform_device.h>
-+#include <linux/workqueue.h>
- 
- #include "proto.h"
- 
-@@ -155,11 +156,12 @@ union remote_data {
- 	long retval;
- };
- 
--static void
-+static long
- do_remote_read(void *data)
- {
- 	union remote_data *x = data;
- 	x->retval = alpha_rtc_read_time(NULL, x->tm);
-+	return 0;
- }
- 
- static int
-@@ -168,17 +170,18 @@ remote_read_time(struct device *dev, struct rtc_time *tm)
- 	union remote_data x;
- 	if (smp_processor_id() != boot_cpuid) {
- 		x.tm = tm;
--		smp_call_function_single(boot_cpuid, do_remote_read, &x, 1);
-+		work_on_cpu(boot_cpuid, do_remote_read, &x);
- 		return x.retval;
+diff --git ./arch/alpha/kernel/process.c ./arch/alpha/kernel/process.c
+index 06522451f018..d50f9cfd8333 100644
+--- ./arch/alpha/kernel/process.c
++++ ./arch/alpha/kernel/process.c
+@@ -99,6 +99,7 @@ common_shutdown_1(void *generic_ptr)
+ 		*pflags = flags;
+ 		set_cpu_present(cpuid, false);
+ 		set_cpu_possible(cpuid, false);
++		mb();
+ 		halt();
  	}
- 	return alpha_rtc_read_time(NULL, tm);
- }
+ #endif
+@@ -127,7 +128,7 @@ common_shutdown_1(void *generic_ptr)
+ 	set_cpu_present(boot_cpuid, false);
+ 	set_cpu_possible(boot_cpuid, false);
+ 	while (!cpumask_empty(cpu_present_mask))
+-		barrier();
++		smp_mb();
+ #endif
  
--static void
-+static long
- do_remote_set(void *data)
- {
- 	union remote_data *x = data;
- 	x->retval = alpha_rtc_set_time(NULL, x->tm);
-+	return 0;
- }
- 
- static int
-@@ -187,7 +190,7 @@ remote_set_time(struct device *dev, struct rtc_time *tm)
- 	union remote_data x;
- 	if (smp_processor_id() != boot_cpuid) {
- 		x.tm = tm;
--		smp_call_function_single(boot_cpuid, do_remote_set, &x, 1);
-+		work_on_cpu(boot_cpuid, do_remote_set, &x);
- 		return x.retval;
- 	}
- 	return alpha_rtc_set_time(NULL, tm);
+ 	/* If booted from SRM, reset some of the original environment. */
 -- 
 2.53.0
 
