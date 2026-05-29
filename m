@@ -1,64 +1,64 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D1333ECBDA
-	for <linux-alpha@vger.kernel.org>; Fri, 29 May 2026 14:23:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A2063ED3C1
+	for <linux-alpha@vger.kernel.org>; Fri, 29 May 2026 14:23:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780064633; cv=none; b=XdaOWfL0NWRztzJC6YRj/ya1JU59bj6uiJdOL7qt31o5v1XbhJDyOx8iqU9RzuJRlGgaeKib1pusbdDvVR+Iu7qxferqQI0GTNtrSioiqmQJ1KmAbh76Rn97ZjwYbpct/RpsZSJakPFW32I+2B0kMEz2d85GEQ266nUTkRNZhG0=
+	t=1780064634; cv=none; b=gXpgMD951aThVjFkFfglZigzosEoKXlwaWJ4LPWCao39WxH3sRM7JAmnCdQsuT5h8VXmzQNKnIEmjD918+nRP9cO8cI4W/AwM5CTANg+UzJ85NhhiLXZCG/m6kbWBU+WqHJIsZgMf2xJaHRcK0nR9NzOd6FIVowo4b34z7Bnmco=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780064633; c=relaxed/simple;
-	bh=OeW1Tq5ib65YfcgaRKyfCUETSHjLbYZg7diBythuaoc=;
+	s=arc-20240116; t=1780064634; c=relaxed/simple;
+	bh=rstuAOpzPRL3H4jqrx/1JVpnPt5XUiL8d1ntp57R1fs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=NC+J7HmuLElb0Gr9yuZZIfQSJp0EOY5KxBqxEmof1Pr7miDdcrRakBKNnYKYXFrKIBBOJCGFB5lEGufCc5PO7YrTQggVGy6+q2m3GPJD2L4aiTF3BMZBqoncoJpOibuDXJoup4WMpG4behuyoOrwY74C4TyH14X9KGKeeoqAI4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sZ3b0QKB; arc=none smtp.client-ip=209.85.167.48
+	 MIME-Version; b=WEtKUhyD2cJNEbGE67ha9wHcLFN7kMzrqT4LDiPmj8Fsd2ZszWjDfxvdlF0WMURe1A+dhTtdnFORTL3cftjhAeHMhMtw/zq06Rf3E/Xkk43D0PyvHokcGHwuhKyiPNE48mQ9PbNd2JEBjWxtTX0ym4EbBxS3O4kvdqGgvRBRqlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=P9KELAIk; arc=none smtp.client-ip=209.85.167.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sZ3b0QKB"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5aa2691db86so14900231e87.3
-        for <linux-alpha@vger.kernel.org>; Fri, 29 May 2026 07:23:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="P9KELAIk"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5aa2d5a1d51so6981794e87.3
+        for <linux-alpha@vger.kernel.org>; Fri, 29 May 2026 07:23:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780064629; x=1780669429; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780064630; x=1780669430; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=eqwt2J6l0ZWPmkw65w0oYYHsmnLHukO+G7CDsx/E9qs=;
-        b=sZ3b0QKBT5SmJFq83MhT0wiR8ABvNNHWOHPTSjGutftd7AkLnofGdzlfYlvho4Fq/k
-         WbL/NuvtjYgpp07C4J1URmjJ6QAFmjHILWEPwS6WKdjks3uDM9OiwHW7+91psUslZjDL
-         W/9tp5xuMdk4j43Cv8beOLT0V/JO6Hw0v/Z9OMmnQ98D/Py3HdcdPagKFj9KcYcLrcap
-         AyXgHnOT9DsvS6PAtM+2cPwwSeMsxtGKGTSdEJECy7mRfipFeZlolSQmcaefkptIcFDk
-         Aidr2OGDTo2NhigfF4JuHcDin0UausDjPV7xjXM+kkG6mcf8SUp6Oa+XxAncnoVeLPHC
-         Sb6w==
+        bh=a86MAytxrH2fF3O6D6kt7FPeAwppSxDYFF7ddN+lZOs=;
+        b=P9KELAIkDmFyzObeutWWGVWCNg9FNUNEQY0v8XUaln9aYXR/PyqK6FdQ287P70mxq5
+         QoHA2bQgrj9mxN1lUw9R8m1aFD5CLLzTbaLtb7hk7/uU19yGeVfWkYhRtnFQRaOTLGMs
+         GjOUNr0mImwhP/DK9+urbraC31LSBe3BeY0sd/vlbmNooxCu70lZNeoPKHokUW3NB2Dv
+         GMTkFdjO39HiyvLoNyN0gQcCy2g0hzfVHFsWBsB8CiuuQOVdE7ogmnCCotstUjjTTioY
+         Micegk1BprQnDFSh7ku1dfOXUUk0MNplHHZf3Q0D+wpNNjw6/zZgsqDS1ihHvfyM9zAR
+         +xSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780064629; x=1780669429;
+        d=1e100.net; s=20251104; t=1780064630; x=1780669430;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=eqwt2J6l0ZWPmkw65w0oYYHsmnLHukO+G7CDsx/E9qs=;
-        b=fjjpygjG3eOQpZx4CRVW3RW1cQVpgtX0Tbl5Vb2YoyLQyyGOIMOP9uyI5mlIcXOOFo
-         QONVVUkrBqgaKXEn1RbyPMzFDcOwotP0h8RtROQ4SeuahUvFeStBqnJEKgMo36jCxZUn
-         ig/gehQd22+uPOuhXfW+ABq/K3Pt2c+b5emVu/6777UB561LK7N5Sz/puMDTmPzFhUhb
-         7fUVe9Qi7xYCxO/twttvj/FrJJxCPNHKYg8msepBZotr6JkWvkx/65tH5KEn/ydOTOE1
-         zRjII2mcgD8Ps7Ry1uN2TInc7LOtz2g0ldI3i8u9HSs7o5PZwNHI/dkaUwXosEfcn5Ky
-         O0lw==
-X-Forwarded-Encrypted: i=1; AFNElJ/aKsPj8ghO4nfnmdjE0yQv0RRfwA/oAzh2DdiLt5eDDSYMQzgXZfBYaq/fKrSuehZUvYOwlYoIXK17mQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz/cgliyBh/K862Yqe1+DgNEriPLAZQ7WInZq8lXJZAleomOaYv
-	crZIlmVJM/MR5I/efntrIahAP0GUCqCrTjF/sV0vPeIJM2dVPMw6AbSq
-X-Gm-Gg: Acq92OGDifTTIERrWtAJgM70/739TvmJYCNeSV5mgh33sIaQejMb/3rpEEDymst9QMv
-	Qplrpm6J78Rmu+qD36BSdnJuhZbhn0fFBd41sIjB6G08gXZRxVZpLz8b7sAFWhgj+nMk+ntQaDP
-	ddohHO2kSXalcuL+CNUKqJtzfPMVnH9Ukis8m1dqpZGpnIe/AO9jGxpu3PtcWep4a+5ftyXavKo
-	2dYUHffH88ST/oqNE87774QRuYoMmLaBK3uGAV6ExE2KqGuu9/J1eYGELFI4fulGQelbR2cZVDJ
-	lHzJ+ODuaoxJ9k2fwCw9pquatL29r/3AyYDdveInSfedAdKU58p8vgEVeDGexQ/DHyjZy7zjJB1
-	69S1wS2xL93/qAxTzx7S2YZ0MTE2Dctb30Sffh8eYUE/WX3dsSJbZJ9YPd5gMLTteAkqWhNyssn
-	2g1DxruZTlv7cnotR+3FYedDpC4yAyiFIpRMPgA0ueq8Rx6nxTtuiBJTAFPtTbyBPxawRiY/8Jo
-	Xbz+/lfPPqNC5c4TJohnMadRQ1zQBM7Igh6XyPJUVptBQ==
-X-Received: by 2002:a05:6512:65d1:20b0:5a8:94c2:d49a with SMTP id 2adb3069b0e04-5aa6090338emr4326e87.27.1780064628626;
-        Fri, 29 May 2026 07:23:48 -0700 (PDT)
+        bh=a86MAytxrH2fF3O6D6kt7FPeAwppSxDYFF7ddN+lZOs=;
+        b=Fs6uYEg9UrRGcQzJqiLAFGt0C9L+GcsBHrxlpFbyDJztLzPco9XIICBuJipA8EpPXU
+         v3y84qgojudUa6DDiXF2id6mC2BNb5psttevlAJvIKlBquXcZ2FBiyFKK8yReqkusabQ
+         /emS1naWkoURr378tsoyNJ8tno5EDgTD5B5jHGvTFCTwqPqr4gs7p/1nh//X9Hm85wyi
+         gJpuBluy1GGPmUanuNPefUYHw8TPtVhGFgNCPDealTjtkHdmqARRavOoYAFnlcTBt7N6
+         ze65PnOKTB7+7nUT2KCQCRen2U+ZrhV2dim/qFCwjbRspMHKqHt/xI1N4+JLrap4HUZh
+         6RGg==
+X-Forwarded-Encrypted: i=1; AFNElJ8X4LsoiOvNh3YckhdF34K2Utj+m2VLzCLLHA559SGgmxTLF99DI44+N0gyUWdECbccuHUCk/kBPn6NKQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzD5UGBj3cW0U47OjwarkHhbE41s9gjjUnkNThxj0HQPWjXy/IX
+	FqtcyMnQrGWWKX7ST1+/w5gTwv2C3bu3vc+G4GsCKa8UuLBLom8kQ2b7
+X-Gm-Gg: Acq92OEhf7dYoENQM0qYRkBLtLJ2qYWvLFOWS4oL7HdoZWn6oRlfQiK4CaAZewJk183
+	g6f2D8dQLK6cYO//TljEvzPzSplketRfMAiYik/zEjBWisnXdxO7uBBw1LVJMD9mgQSwE2DB6xL
+	vTRMdj8c8HIVSh0VUIYPC7a/hhBwxRmQXnpOkISkREJ3N7FCMre2KirSHaRcRcIWTxp/IHkXvLl
+	PM9VZrHyrZonbITnQtUzs/KzgYS04phIi8R7BjcdYaJoWgO0Zb7Kt2athr8FPndDp75kqMbH6+D
+	/r9LjjIS12xm9f597aN9ER4x+g8h/7tWyIhpR8/E/UKLMsKI1mHPn/Uc9CfNQ4vhCgn6lu+jGe3
+	G/y72/TsrGFPhufNQxAoeIQA9EnXFL7mubTpTkv4D0tZsED3onKMQIv0ddviLCPJc3Th7KYLbkM
+	utt4L+oLpzhxwGvfBY27nmTTsn3eBbOsg/nmEnGgrMZ16z+BZf+6RhFvz7ar/LXOfdQASMSJ2DA
+	S2WSC5FL+FqnnbgIR23slA/pQVUgZ9HItABMRLaa9hkZQ==
+X-Received: by 2002:a05:6512:2345:b0:5aa:10e2:29ab with SMTP id 2adb3069b0e04-5aa607ccf24mr16499e87.18.1780064629470;
+        Fri, 29 May 2026 07:23:49 -0700 (PDT)
 Received: from buildhost.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa5b0687e2sm310433e87.6.2026.05.29.07.23.47
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa5b0687e2sm310433e87.6.2026.05.29.07.23.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2026 07:23:47 -0700 (PDT)
+        Fri, 29 May 2026 07:23:49 -0700 (PDT)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: richard.henderson@linaro.org,
 	mattst88@gmail.com,
@@ -69,9 +69,9 @@ Cc: glaubitz@physik.fu-berlin.de,
 	ink@unseen.parts,
 	macro@orcam.me.uk,
 	Magnus Lindholm <linmag7@gmail.com>
-Subject: [PATCH v2 6/8] alpha: use raw spinlocks for low-level platform locks
-Date: Fri, 29 May 2026 16:22:02 +0200
-Message-ID: <20260529142322.1362438-7-linmag7@gmail.com>
+Subject: [PATCH v2 7/8] alpha: enable lockdep hardirq state tracking
+Date: Fri, 29 May 2026 16:22:03 +0200
+Message-ID: <20260529142322.1362438-8-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260529142322.1362438-1-linmag7@gmail.com>
 References: <20260529142322.1362438-1-linmag7@gmail.com>
@@ -83,267 +83,272 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Some Alpha platform locks are used as low-level hardware serialization
-locks in interrupt-controller and chipset access paths. These paths can
-run while IRQ state is being changed or while lockdep is tracking that
-state, so regular spinlock instrumentation is not appropriate once
-lockdep is enabled.
+Alpha masks interrupts through the PAL IPL state, so lockdep cannot infer
+hardirq state transitions from generic code alone. Add explicit
+hardirq on/off annotations to the low-level entry and return paths so
+lockdep's IRQ state follows the hardware IPL state.
 
-Convert the affected Tsunami and Rawhide platform locks to
-raw_spinlock_t. This keeps the locks as simple hardware serialization
-locks and avoids lockdep recursion or IRQ-state mismatches when
-CONFIG_PROVE_LOCKING is enabled.
+Annotate the PAL IPL transitions and the shared return-to-user/kernel
+paths where interrupts become enabled or disabled.  With the preceding
+irqflags, raw-lock, sysfs, and ftrace return-address preparations in
+place, select LOCKDEP_SUPPORT and TRACE_IRQFLAGS_SUPPORT for Alpha.
 
-This is a preparatory change for enabling lockdep hardirq state tracking
-on Alpha.
+This keeps CONFIG_PROVE_LOCKING usable on Alpha instead of disabling
+debug_locks due to IRQ-state mismatches.
 
 Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/alpha/kernel/irq_i8259.c   | 19 +++++++++++------
- arch/alpha/kernel/sys_dp264.c   | 38 ++++++++++++++++++++++-----------
- arch/alpha/kernel/sys_rawhide.c | 17 +++++++++------
- 3 files changed, 47 insertions(+), 27 deletions(-)
+ .../features/locking/lockdep/arch-support.txt |  2 +-
+ arch/alpha/Kconfig                            |  5 ++
+ arch/alpha/kernel/entry.S                     | 17 ++++-
+ arch/alpha/kernel/irq_alpha.c                 | 74 ++++++++++++++-----
+ arch/alpha/kernel/proto.h                     |  4 +
+ arch/alpha/kernel/signal.c                    |  9 +++
+ 6 files changed, 91 insertions(+), 20 deletions(-)
 
-diff --git a/arch/alpha/kernel/irq_i8259.c b/arch/alpha/kernel/irq_i8259.c
-index 29c6c477ac35..28f7b0680564 100644
---- a/arch/alpha/kernel/irq_i8259.c
-+++ b/arch/alpha/kernel/irq_i8259.c
-@@ -22,7 +22,7 @@
+diff --git a/Documentation/features/locking/lockdep/arch-support.txt b/Documentation/features/locking/lockdep/arch-support.txt
+index b6b00469f7d0..87a534c89636 100644
+--- a/Documentation/features/locking/lockdep/arch-support.txt
++++ b/Documentation/features/locking/lockdep/arch-support.txt
+@@ -6,7 +6,7 @@
+     -----------------------
+     |         arch |status|
+     -----------------------
+-    |       alpha: | TODO |
++    |       alpha: |  ok  |
+     |         arc: |  ok  |
+     |         arm: |  ok  |
+     |       arm64: |  ok  |
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 7ac435c56845..e53ef2d88463 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -45,6 +45,8 @@ config ALPHA
+ 	select MMU_GATHER_RCU_TABLE_FREE
+ 	select SPARSEMEM_EXTREME if SPARSEMEM
+ 	select ZONE_DMA
++	select TRACE_IRQFLAGS_SUPPORT
++	select ARCH_WANT_FRAME_POINTERS
+ 	help
+ 	  The Alpha is a 64-bit general-purpose processor designed and
+ 	  marketed by the Digital Equipment Corporation of blessed memory,
+@@ -84,6 +86,9 @@ config AUDIT_ARCH
+ config STACKTRACE_SUPPORT
+ 	def_bool y
  
- /* Note mask bit is true for DISABLED irqs.  */
- static unsigned int cached_irq_mask = 0xffff;
--static DEFINE_SPINLOCK(i8259_irq_lock);
-+static DEFINE_RAW_SPINLOCK(i8259_irq_lock);
- 
- static inline void
- i8259_update_irq_hw(unsigned int irq, unsigned long mask)
-@@ -36,9 +36,11 @@ i8259_update_irq_hw(unsigned int irq, unsigned long mask)
- inline void
- i8259a_enable_irq(struct irq_data *d)
- {
--	spin_lock(&i8259_irq_lock);
-+	unsigned long flags;
++config LOCKDEP_SUPPORT
++	def_bool y
 +
-+	raw_spin_lock_irqsave(&i8259_irq_lock, flags);
- 	i8259_update_irq_hw(d->irq, cached_irq_mask &= ~(1 << d->irq));
--	spin_unlock(&i8259_irq_lock);
-+	raw_spin_unlock_irqrestore(&i8259_irq_lock, flags);
- }
+ menu "System setup"
  
- static inline void
-@@ -50,17 +52,20 @@ __i8259a_disable_irq(unsigned int irq)
- void
- i8259a_disable_irq(struct irq_data *d)
- {
--	spin_lock(&i8259_irq_lock);
-+	unsigned long flags;
+ choice
+diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
+index 449092a31eef..9f2608de2544 100644
+--- a/arch/alpha/kernel/entry.S
++++ b/arch/alpha/kernel/entry.S
+@@ -93,6 +93,19 @@
+ 4:
+ .endm
+ 
++.macro LOCKDEP_HARDIRQS_ON_RESTORE
++#ifdef CONFIG_PROVE_LOCKING
++	/* a0 = saved PS */
++	ldq	$16, SP_OFF($sp)
 +
-+	raw_spin_lock_irqsave(&i8259_irq_lock, flags);
- 	__i8259a_disable_irq(d->irq);
--	spin_unlock(&i8259_irq_lock);
-+	raw_spin_unlock_irqrestore(&i8259_irq_lock, flags);
- }
++	/* a1 = callsite IP for lockdep */
++	lda	$17, 1f
++
++	jsr	$26, lockdep_on_restore
++	ldgp	$gp, 0($26)
++1:
++#endif
++.endm
  
- void
- i8259a_mask_and_ack_irq(struct irq_data *d)
+ /*
+  * This defines the normal kernel pt-regs layout.
+@@ -427,6 +440,7 @@ CFI_START_OSF_FRAME entUna
+ 	.cfi_restore	$28
+ 	.cfi_restore	$29
+ 	.cfi_adjust_cfa_offset	-256
++	LOCKDEP_HARDIRQS_ON_RESTORE
+ 	call_pal PAL_rti
+ 
+ 	.align	4
+@@ -577,6 +591,7 @@ restore_all:
+ 	bne	$3, restore_fpu
+ restore_other:
+ 	.cfi_remember_state
++	LOCKDEP_HARDIRQS_ON_RESTORE
+ 	RESTORE_ALL
+ 	call_pal PAL_rti
+ 
+@@ -622,7 +637,7 @@ $work_resched:
+ 	 * or got through work_notifysig already.  Either case means no syscall
+ 	 * restarts for us, so let $18 and $19 burn.
+ 	 */
+-	jsr	$26, schedule
++	jsr	$26, alpha_schedule_user_work
+ 	mov	0, $18
+ 	br	ret_to_user
+ 
+diff --git a/arch/alpha/kernel/irq_alpha.c b/arch/alpha/kernel/irq_alpha.c
+index d17e44c99df9..736294d3dd51 100644
+--- a/arch/alpha/kernel/irq_alpha.c
++++ b/arch/alpha/kernel/irq_alpha.c
+@@ -41,7 +41,7 @@ EXPORT_SYMBOL(perf_irq);
+  * The main interrupt entry point.
+  */
+ 
+-asmlinkage void 
++asmlinkage void
+ do_entInt(unsigned long type, unsigned long vector,
+ 	  unsigned long la_ptr, struct pt_regs *regs)
  {
- 	unsigned int irq = d->irq;
-+	unsigned long flags;
- 
--	spin_lock(&i8259_irq_lock);
-+	raw_spin_lock_irqsave(&i8259_irq_lock, flags);
- 	__i8259a_disable_irq(irq);
- 
- 	/* Ack the interrupt making it the lowest priority.  */
-@@ -69,7 +74,7 @@ i8259a_mask_and_ack_irq(struct irq_data *d)
- 		irq = 2;
+@@ -54,40 +54,78 @@ do_entInt(unsigned long type, unsigned long vector,
+ 	 * (namely LX164).
+ 	 */
+ 	local_irq_disable();
++	old_regs = set_irq_regs(regs);
++
+ 	switch (type) {
+ 	case 0:
+ #ifdef CONFIG_SMP
++		irq_enter();
+ 		handle_ipi(regs);
+-		return;
++		irq_exit();
++		break;
+ #else
+ 		irq_err_count++;
+-		printk(KERN_CRIT "Interprocessor interrupt? "
+-		       "You must be kidding!\n");
+-#endif
++		pr_crit("Interprocessor interrupt? You must be kidding!\n");
+ 		break;
++#endif
+ 	case 1:
+-		old_regs = set_irq_regs(regs);
++		/* handle_irq() already does irq_enter()/irq_exit() */
+ 		handle_irq(RTC_IRQ);
+-		set_irq_regs(old_regs);
+-		return;
++		break;
+ 	case 2:
+-		old_regs = set_irq_regs(regs);
++		irq_enter();
+ 		alpha_mv.machine_check(vector, la_ptr);
+-		set_irq_regs(old_regs);
+-		return;
++		irq_exit();
++		break;
+ 	case 3:
+-		old_regs = set_irq_regs(regs);
++		irq_enter();
+ 		alpha_mv.device_interrupt(vector);
+-		set_irq_regs(old_regs);
+-		return;
++		irq_exit();
++		break;
+ 	case 4:
++		irq_enter();
+ 		perf_irq(la_ptr, regs);
+-		return;
++		irq_exit();
++		break;
+ 	default:
+-		printk(KERN_CRIT "Hardware intr %ld %lx? Huh?\n",
+-		       type, vector);
++		pr_crit("Hardware intr %lu %lx? Huh?\n", type, vector);
++		pr_crit("PC = %016lx PS=%04lx\n", regs->pc, regs->ps);
++		break;
  	}
- 	outb(0xE0 | irq, 0x20);			/* ack the master */
--	spin_unlock(&i8259_irq_lock);
-+	raw_spin_unlock_irqrestore(&i8259_irq_lock, flags);
- }
- 
- struct irq_chip i8259a_irq_type = {
-diff --git a/arch/alpha/kernel/sys_dp264.c b/arch/alpha/kernel/sys_dp264.c
-index 9fb445d7dca5..0a2d319bb1c8 100644
---- a/arch/alpha/kernel/sys_dp264.c
-+++ b/arch/alpha/kernel/sys_dp264.c
-@@ -41,7 +41,7 @@ static unsigned long cached_irq_mask;
- /* dp264 boards handle at max four CPUs */
- static unsigned long cpu_irq_affinity[4] = { 0UL, 0UL, 0UL, 0UL };
- 
--DEFINE_SPINLOCK(dp264_irq_lock);
-+static DEFINE_RAW_SPINLOCK(dp264_irq_lock);
- 
- static void
- tsunami_update_irq_hw(unsigned long mask)
-@@ -99,37 +99,45 @@ tsunami_update_irq_hw(unsigned long mask)
- static void
- dp264_enable_irq(struct irq_data *d)
- {
--	spin_lock(&dp264_irq_lock);
-+	unsigned long flags;
+-	printk(KERN_CRIT "PC = %016lx PS=%04lx\n", regs->pc, regs->ps);
 +
-+	raw_spin_lock_irqsave(&dp264_irq_lock, flags);
- 	cached_irq_mask |= 1UL << d->irq;
- 	tsunami_update_irq_hw(cached_irq_mask);
--	spin_unlock(&dp264_irq_lock);
-+	raw_spin_unlock_irqrestore(&dp264_irq_lock, flags);
- }
- 
- static void
- dp264_disable_irq(struct irq_data *d)
- {
--	spin_lock(&dp264_irq_lock);
-+	unsigned long flags;
++	set_irq_regs(old_regs);
 +
-+	raw_spin_lock_irqsave(&dp264_irq_lock, flags);
- 	cached_irq_mask &= ~(1UL << d->irq);
- 	tsunami_update_irq_hw(cached_irq_mask);
--	spin_unlock(&dp264_irq_lock);
-+	raw_spin_unlock_irqrestore(&dp264_irq_lock, flags);
- }
- 
- static void
- clipper_enable_irq(struct irq_data *d)
- {
--	spin_lock(&dp264_irq_lock);
-+	unsigned long flags;
++	/*
++	 * Intentionally no local_irq_enable(): Alpha historically avoids
++	 * enabling at IPL0 here due to PAL/RTI issues (LX164/MILO note).
++	 */
++}
 +
-+	raw_spin_lock_irqsave(&dp264_irq_lock, flags);
- 	cached_irq_mask |= 1UL << (d->irq - 16);
- 	tsunami_update_irq_hw(cached_irq_mask);
--	spin_unlock(&dp264_irq_lock);
-+	raw_spin_unlock_irqrestore(&dp264_irq_lock, flags);
- }
- 
- static void
- clipper_disable_irq(struct irq_data *d)
- {
--	spin_lock(&dp264_irq_lock);
-+	unsigned long flags;
++void notrace lockdep_on_restore(unsigned long ps,
++				unsigned long ip)
++{
++#ifdef CONFIG_PROVE_LOCKING
++	/* Restoring IPL==7 means interrupts remain disabled. */
++	if ((ps & 7) == 7)
++		return;
 +
-+	raw_spin_lock_irqsave(&dp264_irq_lock, flags);
- 	cached_irq_mask &= ~(1UL << (d->irq - 16));
- 	tsunami_update_irq_hw(cached_irq_mask);
--	spin_unlock(&dp264_irq_lock);
-+	raw_spin_unlock_irqrestore(&dp264_irq_lock, flags);
- }
- 
- static void
-@@ -151,10 +159,12 @@ static int
- dp264_set_affinity(struct irq_data *d, const struct cpumask *affinity,
- 		   bool force)
- {
--	spin_lock(&dp264_irq_lock);
-+	unsigned long flags;
++	/*
++	 * If hardware IRQs are already enabled here, then emitting a
++	 * hardirqs-on transition is redundant.
++	 */
++	if (!irqs_disabled())
++		return;
 +
-+	raw_spin_lock_irqsave(&dp264_irq_lock, flags);
- 	cpu_set_irq_affinity(d->irq, *affinity);
- 	tsunami_update_irq_hw(cached_irq_mask);
--	spin_unlock(&dp264_irq_lock);
-+	raw_spin_unlock_irqrestore(&dp264_irq_lock, flags);
- 
- 	return 0;
- }
-@@ -163,10 +173,12 @@ static int
- clipper_set_affinity(struct irq_data *d, const struct cpumask *affinity,
- 		     bool force)
- {
--	spin_lock(&dp264_irq_lock);
-+	unsigned long flags;
++	/*
++	 * Only emit the transition if lockdep currently believes
++	 * hardirqs are off.
++	 */
++	if (lockdep_hardirqs_enabled())
++		return;
 +
-+	raw_spin_lock_irqsave(&dp264_irq_lock, flags);
- 	cpu_set_irq_affinity(d->irq - 16, *affinity);
- 	tsunami_update_irq_hw(cached_irq_mask);
--	spin_unlock(&dp264_irq_lock);
-+	raw_spin_unlock_irqrestore(&dp264_irq_lock, flags);
- 
- 	return 0;
++	lockdep_hardirqs_on_prepare();
++	lockdep_hardirqs_on(ip);
++#endif
  }
-diff --git a/arch/alpha/kernel/sys_rawhide.c b/arch/alpha/kernel/sys_rawhide.c
-index b5846ffdadce..b4a08890dce9 100644
---- a/arch/alpha/kernel/sys_rawhide.c
-+++ b/arch/alpha/kernel/sys_rawhide.c
-@@ -41,7 +41,7 @@ static unsigned int hose_irq_masks[4] = {
- 	0xff0000, 0xfe0000, 0xff0000, 0xff0000
- };
- static unsigned int cached_irq_masks[4];
--DEFINE_SPINLOCK(rawhide_irq_lock);
-+DEFINE_RAW_SPINLOCK(rawhide_irq_lock);
  
- static inline void
- rawhide_update_irq_hw(int hose, int mask)
-@@ -59,6 +59,7 @@ rawhide_enable_irq(struct irq_data *d)
+ void __init
+diff --git a/arch/alpha/kernel/proto.h b/arch/alpha/kernel/proto.h
+index a8bc3ead776b..9b262ef09a3a 100644
+--- a/arch/alpha/kernel/proto.h
++++ b/arch/alpha/kernel/proto.h
+@@ -173,6 +173,7 @@ extern void do_sigreturn(struct sigcontext __user *);
+ struct rt_sigframe;
+ extern void do_rt_sigreturn(struct rt_sigframe __user *);
+ extern void do_work_pending(struct pt_regs *, unsigned long, unsigned long, unsigned long);
++extern void alpha_schedule_user_work(void);
+ 
+ /* traps.c */
+ extern void dik_show_regs(struct pt_regs *regs, unsigned long *r9_15);
+@@ -185,6 +186,9 @@ struct allregs;
+ extern void do_entUna(void *, unsigned long, unsigned long, struct allregs *);
+ extern void do_entUnaUser(void __user *, unsigned long, unsigned long, struct pt_regs *);
+ 
++/* irq_alpha.c */
++extern void notrace lockdep_on_restore(unsigned long ps, unsigned long ip);
++
+ /* sys_titan.c */
+ extern void titan_dispatch_irqs(u64);
+ 
+diff --git a/arch/alpha/kernel/signal.c b/arch/alpha/kernel/signal.c
+index e62d1d461b1f..ce40a49b8496 100644
+--- a/arch/alpha/kernel/signal.c
++++ b/arch/alpha/kernel/signal.c
+@@ -41,6 +41,14 @@ asmlinkage void ret_from_sys_call(void);
+  * The OSF/1 sigprocmask calling sequence is different from the
+  * C sigprocmask() sequence..
+  */
++
++asmlinkage void alpha_schedule_user_work(void)
++{
++	local_irq_enable();
++	schedule();
++	local_irq_disable();
++}
++
+ SYSCALL_DEFINE2(osf_sigprocmask, int, how, unsigned long, newmask)
  {
- 	unsigned int mask, hose;
- 	unsigned int irq = d->irq;
-+	unsigned long flags;
- 
- 	irq -= 16;
- 	hose = irq / 24;
-@@ -68,11 +69,11 @@ rawhide_enable_irq(struct irq_data *d)
- 	irq -= hose * 24;
- 	mask = 1 << irq;
- 
--	spin_lock(&rawhide_irq_lock);
-+	raw_spin_lock_irqsave(&rawhide_irq_lock, flags);
- 	mask |= cached_irq_masks[hose];
- 	cached_irq_masks[hose] = mask;
- 	rawhide_update_irq_hw(hose, mask);
--	spin_unlock(&rawhide_irq_lock);
-+	raw_spin_unlock_irqrestore(&rawhide_irq_lock, flags);
- }
- 
- static void 
-@@ -80,6 +81,7 @@ rawhide_disable_irq(struct irq_data *d)
+ 	sigset_t oldmask;
+@@ -525,6 +533,7 @@ do_work_pending(struct pt_regs *regs, unsigned long thread_flags,
  {
- 	unsigned int mask, hose;
- 	unsigned int irq = d->irq;
-+	unsigned long flags;
- 
- 	irq -= 16;
- 	hose = irq / 24;
-@@ -89,11 +91,11 @@ rawhide_disable_irq(struct irq_data *d)
- 	irq -= hose * 24;
- 	mask = ~(1 << irq) | hose_irq_masks[hose];
- 
--	spin_lock(&rawhide_irq_lock);
-+	raw_spin_lock_irqsave(&rawhide_irq_lock, flags);
- 	mask &= cached_irq_masks[hose];
- 	cached_irq_masks[hose] = mask;
- 	rawhide_update_irq_hw(hose, mask);
--	spin_unlock(&rawhide_irq_lock);
-+	raw_spin_unlock_irqrestore(&rawhide_irq_lock, flags);
- }
- 
- static void
-@@ -101,6 +103,7 @@ rawhide_mask_and_ack_irq(struct irq_data *d)
- {
- 	unsigned int mask, mask1, hose;
- 	unsigned int irq = d->irq;
-+	unsigned long flags;
- 
- 	irq -= 16;
- 	hose = irq / 24;
-@@ -111,7 +114,7 @@ rawhide_mask_and_ack_irq(struct irq_data *d)
- 	mask1 = 1 << irq;
- 	mask = ~mask1 | hose_irq_masks[hose];
- 
--	spin_lock(&rawhide_irq_lock);
-+	raw_spin_lock_irqsave(&rawhide_irq_lock, flags);
- 
- 	mask &= cached_irq_masks[hose];
- 	cached_irq_masks[hose] = mask;
-@@ -120,7 +123,7 @@ rawhide_mask_and_ack_irq(struct irq_data *d)
- 	/* Clear the interrupt.  */
- 	*(vuip)MCPCIA_INT_REQ(MCPCIA_HOSE2MID(hose)) = mask1;
- 
--	spin_unlock(&rawhide_irq_lock);
-+	raw_spin_unlock_irqrestore(&rawhide_irq_lock, flags);
- }
- 
- static struct irq_chip rawhide_irq_type = {
+ 	do {
+ 		if (thread_flags & _TIF_NEED_RESCHED) {
++			local_irq_enable();
+ 			schedule();
+ 		} else {
+ 			local_irq_enable();
 -- 
 2.53.0
 
