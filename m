@@ -1,1313 +1,258 @@
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E4BF3EEAC3
-	for <linux-alpha@vger.kernel.org>; Fri, 29 May 2026 14:23:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C56D405C55
+	for <linux-alpha@vger.kernel.org>; Fri, 29 May 2026 15:23:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780064641; cv=none; b=F1Whln66Ixn7leGC3Ct24TytsPt4ktnu/9vfJXG6n+H9O3N6mfyI0EjWzpx46UEJCrQPY679JmLVeu1+5r2pKgaFlZOQ9CcQ17xkcTPyBuQDNpvP7B5zvQ9rZQmEoS6eF9K7csfsUCmUc93RbYO6NhSoeeuC67eNFzWhi3I2jks=
+	t=1780068206; cv=none; b=FHP6X0zoOREVqWP1Bpqo2oelLcRkuJgX/BuZuFcvyA4vMJ+A9tY8Ui5Z0pT/jcZM/ZJG2ImFPRLCTqT/0lQdjmTCdvjyqsrhq4jTASnyG/GuPVrSLX1PgRRmOLulZh77focaWA8N+B55As7CSvSEvxcin5Sbdg2CbPlEXnGEPY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780064641; c=relaxed/simple;
-	bh=OpirQJpTLHX5vgiC/Iqt9cldSr9jkBiZpnCgQoK1U04=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WyQgyzAyM7wMPtHlyksKnmWFCuyIPCI/k1EugPeW0AqFzxPgg28EE/jURL5rHaRALsFCaYT+FGlCJg9vu04f54ULGB83myqdXeMu+SL/2UlQt9p4vpH1RFY/qnEn0ZrobwTqSetZVNpkRYVotAROgYeTo37j/dM0od8PrrqtE8w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j/8fUnqr; arc=none smtp.client-ip=209.85.167.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1780068206; c=relaxed/simple;
+	bh=+lLqKB25GJ8Nk/N/QA5/TP30kbyhPVpqAySiqciCa4w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hn6qXO4XyLJIRA6c3ccMI80ti2Cxb/apViDbdArmJ1c1KYOsor5N7npuC16MA8y4zCnq0fwqLYLomlWaHoj6dj7i59gMK7r0FWm5AnntFXTTdjtZqxpnANHzt2SFQMCyoq/wzWXaxnqO+Dhaky1pAtF0irVQvo6ki+aHCG80krE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=dK1aQaXX; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=OlpWIUV4; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j/8fUnqr"
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5a4113ab355so9255028e87.1
-        for <linux-alpha@vger.kernel.org>; Fri, 29 May 2026 07:23:52 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dK1aQaXX";
+	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="OlpWIUV4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1780068204;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=yTMC7Vi3qz2eQrpu1XXxCoOuK0TKvwPfinMf53HH2Ps=;
+	b=dK1aQaXXY0JHN4RWNfdQ7XY4BkKGITOeYoyRCWADUc9ezTd7k69HCpRBziJ2yQutO8zFKb
+	tnYq9L+hrAU3tbOEl6KlaHlku4L7uP41oAkZ/7lQdM0mDoiQdHO7a1nGc+50+KQaO3/lGe
+	9JTjgVfOS6zLKKaB7htJRbukbu9eJiA=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-363-tNB3JjrXPDeP-WJ74t6FDg-1; Fri, 29 May 2026 11:23:22 -0400
+X-MC-Unique: tNB3JjrXPDeP-WJ74t6FDg-1
+X-Mimecast-MFC-AGG-ID: tNB3JjrXPDeP-WJ74t6FDg_1780068201
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-48eb0da933fso93822855e9.0
+        for <linux-alpha@vger.kernel.org>; Fri, 29 May 2026 08:23:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780064631; x=1780669431; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ES1x4bbZIbuWfiJUjfoGqhMl01zFUAzDawD7+XjtYvQ=;
-        b=j/8fUnqr4n0QRXOM+Lfu0tSTOchmvvHFNjpHJpcbXk1gdnX9196QXxx2PEaSxMjKD8
-         gw65zr3/vDdlotmHhUrxG7P1wPdoLXdRfKOwK92qfRwgDjBc5jhO7cdvt/kVFsn1UedK
-         mbsX0XwqsIVeuzaa7PtVElcQKlbdZU5KeVUA5ny/FcXn456KYRqEd1/93k6J62VBl3/m
-         px5qcIe+O0le+sD8ek5mRbhmcQEAING34/ADTGAye3xzlB6KJ4RM96AwUvD4ENkapqKI
-         Gg5c/0Lf9F7wSa/hZbMbJ3vhmMDlfS5bx19n3A3gqlkaG1CwFHRpkXdC7gG+r44sbQCT
-         6X5w==
+        d=redhat.com; s=google; t=1780068201; x=1780673001; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yTMC7Vi3qz2eQrpu1XXxCoOuK0TKvwPfinMf53HH2Ps=;
+        b=OlpWIUV4FBBPwNsZ8qu2qqvQdMJThXFnzKBbUjl2YYo2oIEEYHnOsaLdXgAAlPqVR4
+         GKS75CfNj+cenXZL+x15szsXRcDIkwX3LercyhdytT+R62VEEqutvamNuhemslzo5Lh2
+         h/u0ahzxw2bZD32vXs+uXuHm5bM3aVXHZskesPM4ztyaMTnYa7Llx4EE/9dj5GVfd+w6
+         ovL166BG6fZThuKkTxi8SUZ4vF+CitxBveclW779oNWgKt3SU90rwfd1f7ujkVSypGyX
+         BfC3XDvcViZlt8IuXtrSIICY6LMTf1wQxDIpp5B3i9FKutEZc4JmF2dp/qEYv5tCq03X
+         g5Ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780064631; x=1780669431;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=ES1x4bbZIbuWfiJUjfoGqhMl01zFUAzDawD7+XjtYvQ=;
-        b=Ql4S6M/3QrCaXK8CPfjoB3EWO+7ZokDE9a/rSROBiDsNMEMfUKxQkG66WoMe/9BPik
-         27mcoHk9QHrsfbCzqkeh2tAZ1FjRh0ruUTVoNbDIrhhU8W2O1opZmz1dA2OQ0Fe3fCZy
-         ZngGI3VlHHUTIz7nCLdtHhFoMjrqoKtDz6reJwhxbH45BrBKW6B1kGDElEtw4+nh+Uvh
-         2Z0Tyd1mBbOMKWPcMT6E1SKVjg9sqELWD7IkWqHghsz+7igV0hqz+kUKCrTSJr6OO4Be
-         ScasUvBu90+mZVDL4mAqaoAyFvtCHdBrEd7ypyewzzpWmWwq7GXlKe4pbZK1y6uuR5rL
-         yJxA==
-X-Forwarded-Encrypted: i=1; AFNElJ96J2KJqxbWU8pO/Aehr8wkjXXUiSeFsVw6frsMYAq7fqcF+a1tfd2aMhnyXDNn1/hO1rwpfLdWkt5Rxw==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw1VprMpyzgQKi7V2MItgoCUBUsRcaLj8nBEUm+ar0C+rRFQZMY
-	3iSdbfkc/jfR97PIUa+6qeR8QFmwF0StV77y6oHMONtutx4WGTG9gAUF
-X-Gm-Gg: Acq92OG3BBf219v27vfQI09IviBjXLbcVk2CYMrhTEjoSPcOWUuuWAlsrbT+JJyCXsB
-	DHYfv268aDUu04qY2j8wUfjHHiHraY0RLMD3oRWRbMFWrllGpVjzWbkBgTFDXBVJPSrxpD86IWx
-	Ei/XyzOInpc7VI3/D3/ddxnefNhoAZ5WeAqITXMYLjS9vE1b0KL6sRFp8AQwuihzrix5XAyFJxw
-	hRNpNiaDX010Z6nZ4CMFknShGl5FTV7L1h1T0pEK8LxfGV6qMGAoOJ0jjiemrRWqzxz2emAxSR5
-	i3XIDePHZRkS00twmpYFuL7g89BWOFKugLmRfmDgqYIt6XaGHGfUBhcnEEJSUWykHZSOkBuOdg5
-	NlUxeb4FdA/20h0CQCsux6CUG3+YzzkSE1iT3mIgKz76yDglhQZYgcbz68kX7195uZIlkN4o+tL
-	KHCRqICNUJXxMKAESdbYOfGNl5tQEJ6z4ohHvnaiSfCLf8j0rTUjluWTJF9faXag3pjZjzkqNnU
-	zx/onBvRGt1du5Ge7X7Awv2edEpko9UCvnj42Hh/oy1BA==
-X-Received: by 2002:a05:6512:3d02:b0:5aa:59e0:6c65 with SMTP id 2adb3069b0e04-5aa6090e2f4mr5985e87.35.1780064630413;
-        Fri, 29 May 2026 07:23:50 -0700 (PDT)
-Received: from buildhost.darklands.se (h-94-254-104-176.A469.priv.bahnhof.se. [94.254.104.176])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aa5b0687e2sm310433e87.6.2026.05.29.07.23.49
+        d=1e100.net; s=20251104; t=1780068201; x=1780673001;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yTMC7Vi3qz2eQrpu1XXxCoOuK0TKvwPfinMf53HH2Ps=;
+        b=VNOmFZqv8mdylZG8V5GMQkKgKtQW17hM90n8yVXtEpvPLnvv3EA9I3duMkd1RB2XvI
+         Wkmrg+Lpm/KVT3C5ZFZkcXlJz+q5lENcucuUWVYT20aod82xVuhsHsf7NZsQJbbcdouu
+         O+oyIHqchPUEGCykfJ3olEXi9WTUU79wcDpwqgl0kZO32My2nnWMDGBBRTA7axOsqvnK
+         o/DNOqzZ83pY1Ua7yJfVmxOwPBfMuaQNgYGJDpDXsPEoH5repZ3P+kAwj65+WN8rezxt
+         UrfvWEQmCMW5sPN9jLIsuC8oqECQIdlCXpqNm3llUHtBhKqnCD7BbF2Xy7g0MEVHftYY
+         3U0Q==
+X-Forwarded-Encrypted: i=1; AFNElJ9oUpUurM2PNX3MK/4g4iui8wNkH0aTZL9LqPOvXlkOx628iwMESKkJDTu0E/eAQS+K8vfw0Dwxg1b3Iw==@vger.kernel.org
+X-Gm-Message-State: AOJu0YzRhFyuRf189Ei7wkDR+DNW/XNwbNKC6LgG4Itsk1kW2haCREbw
+	t8ijFDKECAbwh/ozMY7fuXqCHsFf2+FWmNGxefo8v6afWMkx2chjQ9SUzWu61Yugez8MdWbRthj
+	Ivr6+a8Zn+Y4EoWBI4QB75rXgHnxSxP40mmQpYcxRuo0ApwbAxShn8veEomf7pRwl
+X-Gm-Gg: Acq92OGXCbM5pSON/Gv0CWsV3s0y7v3ndRkj2e/kxVikwYOgrQE4KH9GVBEpStiW/4o
+	CUc4O5AqSQu/qlENGVpuEryMZO2ZzrYBCyzhJ3DzpVd9iE603SGx0JU8b8KH+5bwkXkkGYaIjK4
+	SERvF+KeWqwVb7KVYCxB3elpqS9il/x35PI1/CB0XjCIE5WeCnW2NXkx5UyxRyuQ3fvqMpLAr/k
+	KdO7ZsiwmYQ/suQKE7fYqBB3wbpQL5+jokc+MPwdV+5IkX4XUHr/0X+MiAfocq88QWxqDq1Qxa5
+	7+IUrC0GMSi1y3Tf3FNP5dN75gT4vBeXkdsCqA9cvWiwNwjGo/UjoAWe/GOMfkw/Rm49/zNnpUd
+	GmtlQUGYGYGkH0fe5Cy2EFkROXxA7EHe2e3nLjfc7jSZIacGXgvOAjw==
+X-Received: by 2002:a05:600c:4fc4:b0:490:6889:202 with SMTP id 5b1f17b1804b1-490a29639e6mr547935e9.29.1780068200788;
+        Fri, 29 May 2026 08:23:20 -0700 (PDT)
+X-Received: by 2002:a05:600c:4fc4:b0:490:6889:202 with SMTP id 5b1f17b1804b1-490a29639e6mr546645e9.29.1780068200009;
+        Fri, 29 May 2026 08:23:20 -0700 (PDT)
+Received: from redhat.com (IGLD-80-230-25-45.inter.net.il. [80.230.25.45])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4909d6f35f8sm40956085e9.13.2026.05.29.08.23.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 May 2026 07:23:49 -0700 (PDT)
-From: Magnus Lindholm <linmag7@gmail.com>
-To: richard.henderson@linaro.org,
-	mattst88@gmail.com,
-	linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org
-Cc: glaubitz@physik.fu-berlin.de,
-	mcree@orcon.net.nz,
-	ink@unseen.parts,
-	macro@orcam.me.uk,
-	Magnus Lindholm <linmag7@gmail.com>
-Subject: [PATCH v2 8/8] alpha: enable GENERIC_ENTRY and GENERIC_IRQ_ENTRY
-Date: Fri, 29 May 2026 16:22:04 +0200
-Message-ID: <20260529142322.1362438-9-linmag7@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260529142322.1362438-1-linmag7@gmail.com>
-References: <20260529142322.1362438-1-linmag7@gmail.com>
+        Fri, 29 May 2026 08:23:19 -0700 (PDT)
+Date: Fri, 29 May 2026 11:23:13 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: linux-kernel@vger.kernel.org
+Cc: "David Hildenbrand (Arm)" <david@kernel.org>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
+	Muchun Song <muchun.song@linux.dev>,
+	Oscar Salvador <osalvador@suse.de>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Lorenzo Stoakes <ljs@kernel.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Mike Rapoport <rppt@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>,
+	Brendan Jackman <jackmanb@google.com>,
+	Johannes Weiner <hannes@cmpxchg.org>, Zi Yan <ziy@nvidia.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Nico Pache <npache@redhat.com>, Ryan Roberts <ryan.roberts@arm.com>,
+	Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>,
+	Lance Yang <lance.yang@linux.dev>, Hugh Dickins <hughd@google.com>,
+	Matthew Brost <matthew.brost@intel.com>,
+	Joshua Hahn <joshua.hahnjy@gmail.com>, Rakie Kim <rakie.kim@sk.com>,
+	Byungchul Park <byungchul@sk.com>,
+	Gregory Price <gourry@gourry.net>,
+	Ying Huang <ying.huang@linux.alibaba.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Christoph Lameter <cl@gentwo.org>,
+	David Rientjes <rientjes@google.com>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Harry Yoo <harry.yoo@oracle.com>,
+	Axel Rasmussen <axelrasmussen@google.com>,
+	Yuanchu Xie <yuanchu@google.com>, Wei Xu <weixugc@google.com>,
+	Chris Li <chrisl@kernel.org>, Kairui Song <kasong@tencent.com>,
+	Kemeng Shi <shikemeng@huaweicloud.com>,
+	Nhat Pham <nphamcs@gmail.com>, Baoquan He <bhe@redhat.com>,
+	virtualization@lists.linux.dev, linux-mm@kvack.org,
+	Andrea Arcangeli <aarcange@redhat.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Greg Ungerer <gerg@linux-m68k.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, linux-alpha@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org, linux-s390@vger.kernel.org
+Subject: [PATCH v9 14/37] mm: remove arch vma_alloc_zeroed_movable_folio
+ overrides
+Message-ID: <17905f527ee63479bd406efc228acf481a54b2d0.1780067977.git.mst@redhat.com>
+References: <cover.1780067977.git.mst@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1780067977.git.mst@redhat.com>
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 
-Wire Alpha into the generic entry code for syscall entry/exit and
-return-to-user handling, while keeping the low-level PALcode return paths
-Alpha-specific.
+Now that the generic vma_alloc_zeroed_movable_folio() uses
+__GFP_ZERO, the arch-specific macros on alpha, m68k, s390, and
+x86 that did the same thing are redundant.  Remove them.
 
-Move most of the syscall entry/exit logic out of entSys and into C helpers
-built around the generic entry API. Syscall entry now uses
-syscall_enter_from_user_mode(), records Alpha-local syscall metadata in
-thread_info, handles the ptrace/seccomp skip decision, and selects the
-syscall table target in C.  The final target call remains in entry.S so
-Alpha can preserve its existing syscall ABI and assembly syscall-table
-wrappers.
+arm64 is not affected: it has a real function override that
+handles MTE tag zeroing, not just __GFP_ZERO.
 
-On return from syscalls, finish Alpha's r0/r19 result encoding and
-skipped-syscall restart handling in C before calling
-syscall_exit_to_user_mode(). Non-syscall returns to user mode use a
-separate alpha_exit_to_user_mode() helper, which disables interrupts,
-runs irqentry_exit_to_user_mode_prepare(), and then enters the common
-exit_to_user_mode() path.
-
-Keep the remaining PALcode restore handling in assembly. In particular,
-kernel-mode returns still need Alpha-specific lockdep IRQ-state annotation
-based on the saved processor status, while user-mode returns are handed to
-the generic exit-to-user code.
-
-Add the generic-entry support bits needed by common code, including
-thread_info.syscall_work, syscall trace support, ptrace sysemu request
-numbers, and arch_syscall_is_vdso_sigreturn().
-
-This has been tested by booting Alpha with GENERIC_ENTRY enabled, checking
-lockdep IRQ-state accounting, running fork/clone-heavy package builds, and
-running the seccomp as well as strace test suites.
-
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+Suggested-by: David Hildenbrand <david@kernel.org>
+Acked-by: Magnus Lindholm <linmag7@gmail.com>
+Acked-by: Greg Ungerer <gerg@linux-m68k.org>
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Assisted-by: Claude:claude-opus-4-6
+Reviewed-by: Gregory Price <gourry@gourry.net>
 ---
- arch/alpha/Kconfig                    |   3 +
- arch/alpha/include/asm/entry-common.h |  14 ++
- arch/alpha/include/asm/ptrace.h       |  14 +-
- arch/alpha/include/asm/stacktrace.h   |  20 ++
- arch/alpha/include/asm/syscall.h      |  11 +-
- arch/alpha/include/asm/thread_info.h  |  30 +--
- arch/alpha/kernel/asm-offsets.c       |   5 +
- arch/alpha/kernel/entry.S             | 322 +++++++-------------------
- arch/alpha/kernel/irq_alpha.c         |  14 +-
- arch/alpha/kernel/proto.h             |   9 +-
- arch/alpha/kernel/ptrace.c            | 135 ++++++-----
- arch/alpha/kernel/signal.c            | 155 ++++++++++---
- 12 files changed, 367 insertions(+), 365 deletions(-)
- create mode 100644 arch/alpha/include/asm/entry-common.h
- create mode 100644 arch/alpha/include/asm/stacktrace.h
+ arch/alpha/include/asm/page.h   | 3 ---
+ arch/m68k/include/asm/page_no.h | 3 ---
+ arch/s390/include/asm/page.h    | 3 ---
+ arch/x86/include/asm/page.h     | 3 ---
+ include/linux/highmem.h         | 8 +++++---
+ 5 files changed, 5 insertions(+), 15 deletions(-)
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index e53ef2d88463..74795e22aafa 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -2,6 +2,9 @@
- config ALPHA
- 	bool
- 	default y
-+	select GENERIC_IRQ_ENTRY
-+	select GENERIC_ENTRY
-+	select HAVE_SYSCALL_TRACEPOINTS
- 	select ARCH_32BIT_USTAT_F_TINODE
- 	select ARCH_HAS_CURRENT_STACK_POINTER
- 	select ARCH_HAS_DMA_OPS if PCI
-diff --git a/arch/alpha/include/asm/entry-common.h b/arch/alpha/include/asm/entry-common.h
-new file mode 100644
-index 000000000000..a811c73454d2
---- /dev/null
-+++ b/arch/alpha/include/asm/entry-common.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef ARCH_ALPHA_ENTRY_COMMON_H
-+#define ARCH_ALPHA_ENTRY_COMMON_H
-+
-+#include <asm/stacktrace.h> /* For on_thread_stack() */
-+#include <asm/syscall.h>
-+
-+#define arch_exit_to_user_mode_work arch_exit_to_user_mode_work
-+
-+static __always_inline void arch_exit_to_user_mode_work(struct pt_regs *regs,
-+				unsigned long ti_work)
-+{
-+}
-+#endif
-diff --git a/arch/alpha/include/asm/ptrace.h b/arch/alpha/include/asm/ptrace.h
-index 8e0a589e2d15..430e8dc27ff7 100644
---- a/arch/alpha/include/asm/ptrace.h
-+++ b/arch/alpha/include/asm/ptrace.h
-@@ -3,7 +3,7 @@
- #define _ASMAXP_PTRACE_H
+diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.h
+index 59d01f9b77f6..4327029cd660 100644
+--- a/arch/alpha/include/asm/page.h
++++ b/arch/alpha/include/asm/page.h
+@@ -12,9 +12,6 @@
  
- #include <uapi/asm/ptrace.h>
+ extern void clear_page(void *page);
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
 -
-+#include <asm/irqflags.h>
+ extern void copy_page(void * _to, void * _from);
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
  
- #define arch_has_single_step()		(1)
- #define user_mode(regs) (((regs)->ps & 8) != 0)
-@@ -17,7 +17,9 @@
- #define current_pt_regs() \
-   ((struct pt_regs *) ((char *)current_thread_info() + 2*PAGE_SIZE) - 1)
+diff --git a/arch/m68k/include/asm/page_no.h b/arch/m68k/include/asm/page_no.h
+index d2532bc407ef..f511b763a235 100644
+--- a/arch/m68k/include/asm/page_no.h
++++ b/arch/m68k/include/asm/page_no.h
+@@ -12,9 +12,6 @@ extern unsigned long memory_end;
  
--#define force_successful_syscall_return() (current_pt_regs()->r0 = 0)
-+#define force_successful_syscall_return() \
-+	(current_thread_info()->syscall_meta \
-+	|= ALPHA_SYSCALL_META_FORCE_SUCCESS)
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
  
- static inline unsigned long regs_return_value(struct pt_regs *regs)
- {
-@@ -31,4 +33,12 @@ static inline unsigned long user_stack_pointer(struct pt_regs *regs)
- 	return regs->usp;
- }
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #define __pa(vaddr)		((unsigned long)(vaddr))
+ #define __va(paddr)		((void *)((unsigned long)(paddr)))
  
-+static __always_inline bool regs_irqs_disabled(struct pt_regs *regs)
-+{
-+	return arch_irqs_disabled_flags(regs->ps);
-+}
-+
-+/* Syscall emulation defines */
-+#define PTRACE_SYSEMU			0x1d
-+#define PTRACE_SYSEMU_SINGLESTEP	0x1e
+diff --git a/arch/s390/include/asm/page.h b/arch/s390/include/asm/page.h
+index 56da819a79e6..e995d2a413f9 100644
+--- a/arch/s390/include/asm/page.h
++++ b/arch/s390/include/asm/page.h
+@@ -67,9 +67,6 @@ static inline void copy_page(void *to, void *from)
+ 
+ #define copy_user_page(to, from, vaddr, pg)	copy_page(to, from)
+ 
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #ifdef CONFIG_STRICT_MM_TYPECHECKS
+ #define STRICT_MM_TYPECHECKS
  #endif
-diff --git a/arch/alpha/include/asm/stacktrace.h b/arch/alpha/include/asm/stacktrace.h
-new file mode 100644
-index 000000000000..f006d6f00fd0
---- /dev/null
-+++ b/arch/alpha/include/asm/stacktrace.h
-@@ -0,0 +1,20 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_ALPHA_STACKTRACE_H
-+#define _ASM_ALPHA_STACKTRACE_H
-+
-+#include <linux/compiler_attributes.h>
-+#include <linux/types.h>
-+
-+#include <asm/current.h>
-+#include <asm/processor.h>
-+#include <asm/thread_info.h>
-+
-+static __always_inline bool on_thread_stack(void)
-+{
-+	unsigned long base = (unsigned long)current->stack;
-+	unsigned long sp = (unsigned long)current_stack_pointer;
-+
-+	return !((base ^ sp) & ~(THREAD_SIZE - 1));
-+}
-+
-+#endif /* _ASM_ALPHA_STACKTRACE_H */
-diff --git a/arch/alpha/include/asm/syscall.h b/arch/alpha/include/asm/syscall.h
-index 1e78cbd46faf..c1394910f584 100644
---- a/arch/alpha/include/asm/syscall.h
-+++ b/arch/alpha/include/asm/syscall.h
-@@ -8,6 +8,8 @@
- #include <linux/types.h>
- #include <asm/ptrace.h>
- 
-+extern void *sys_call_table[];
-+
- static inline int syscall_get_arch(struct task_struct *task)
- {
- 	return AUDIT_ARCH_ALPHA;
-@@ -104,10 +106,17 @@ static inline void syscall_set_return_value(struct task_struct *task,
+diff --git a/arch/x86/include/asm/page.h b/arch/x86/include/asm/page.h
+index 416dc88e35c1..92fa975b46f3 100644
+--- a/arch/x86/include/asm/page.h
++++ b/arch/x86/include/asm/page.h
+@@ -28,9 +28,6 @@ static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
+ 	copy_page(to, from);
  }
  
- /* Restore the original syscall nr after seccomp/ptrace modified regs->r1. */
-+
- static inline void syscall_rollback(struct task_struct *task,
- 					struct pt_regs *regs)
- {
--	regs->r1 = regs->r2;
-+	unsigned long nr = task_thread_info(task)->syscall_saved_nr;
-+
-+	regs->r1 = nr;
+-#define vma_alloc_zeroed_movable_folio(vma, vaddr) \
+-	vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO, 0, vma, vaddr)
+-
+ #ifndef __pa
+ #define __pa(x)		__phys_addr((unsigned long)(x))
+ #endif
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index ffa683f64f1d..7b5955bf9336 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -303,7 +303,6 @@ static inline void clear_user_highpages(struct page *page, unsigned long vaddr,
+ #endif
  }
  
-+static inline bool arch_syscall_is_vdso_sigreturn(struct pt_regs *regs)
-+{
-+	return false;
-+}
- #endif	/* _ASM_ALPHA_SYSCALL_H */
-diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
-index 1552ecca8520..d781ac79106d 100644
---- a/arch/alpha/include/asm/thread_info.h
-+++ b/arch/alpha/include/asm/thread_info.h
-@@ -12,16 +12,21 @@
+-#ifndef vma_alloc_zeroed_movable_folio
+ /**
+  * vma_alloc_zeroed_movable_folio - Allocate a zeroed page for a VMA.
+  * @vma: The VMA the page is to be allocated for.
+@@ -317,12 +316,15 @@ static inline void clear_user_highpages(struct page *page, unsigned long vaddr,
+  * we are out of memory.
+  */
+ static inline
+-struct folio *vma_alloc_zeroed_movable_folio(struct vm_area_struct *vma,
++struct folio *vma_alloc_zeroed_movable_folio_noprof(struct vm_area_struct *vma,
+ 				   unsigned long vaddr)
+ {
+-	return vma_alloc_folio(GFP_HIGHUSER_MOVABLE | __GFP_ZERO,
++	return vma_alloc_folio_noprof(GFP_HIGHUSER_MOVABLE | __GFP_ZERO,
+ 			      0, vma, vaddr);
+ }
++#ifndef vma_alloc_zeroed_movable_folio
++#define vma_alloc_zeroed_movable_folio(...) \
++	alloc_hooks(vma_alloc_zeroed_movable_folio_noprof(__VA_ARGS__))
  #endif
  
- #ifndef __ASSEMBLER__
-+
- struct thread_info {
- 	struct pcb_struct	pcb;		/* palcode state */
- 
- 	struct task_struct	*task;		/* main task structure */
--	unsigned int		flags;		/* low level flags */
-+	unsigned long		flags;		/* low level flags */
-+	unsigned long		syscall_work;	/* SYSCALL_WORK_* flags */
- 	unsigned int		ieee_state;	/* see fpu.h */
- 
- 	unsigned		cpu;		/* current CPU */
--	int			preempt_count; /* 0 => preemptable, <0 => BUG */
-+	int			preempt_count;	/* 0 => preemptable, <0 => BUG */
- 	unsigned int		status;		/* thread-synchronous flags */
-+	unsigned long		syscall_saved_r19;
-+	unsigned long		syscall_meta;
-+	unsigned long		syscall_saved_nr;
- 
- 	int bpt_nsaved;
- 	unsigned long bpt_addr[2];		/* breakpoint handling  */
-@@ -50,6 +55,9 @@ register unsigned long *current_stack_pointer __asm__ ("$30");
- #define THREAD_SIZE_ORDER 1
- #define THREAD_SIZE (2*PAGE_SIZE)
- 
-+#define ALPHA_SYSCALL_META_SKIP			0x2
-+#define ALPHA_SYSCALL_META_FORCE_SUCCESS	0x4
-+
- /*
-  * Thread information flags:
-  * - these are process state flags and used from assembly
-@@ -68,6 +76,7 @@ register unsigned long *current_stack_pointer __asm__ ("$30");
- #define TIF_SECCOMP		6	/* seccomp syscall filtering active */
- #define	TIF_SYSCALL_TRACEPOINT	7	/* syscall tracepoint instrumentation */
- #define TIF_DIE_IF_KERNEL	9	/* dik recursion lock */
-+#define TIF_UPROBE		10	/* uprobe breakpoint or singlestep */
- #define TIF_MEMDIE		13	/* is terminating due to OOM killer */
- #define TIF_POLLING_NRFLAG	14	/* idle is polling for TIF_NEED_RESCHED */
- 
-@@ -80,22 +89,7 @@ register unsigned long *current_stack_pointer __asm__ ("$30");
- #define _TIF_SECCOMP		(1<<TIF_SECCOMP)
- #define _TIF_POLLING_NRFLAG	(1<<TIF_POLLING_NRFLAG)
- #define _TIF_SYSCALL_TRACEPOINT	(1<<TIF_SYSCALL_TRACEPOINT)
--
--/*
-- * Work to do on syscall entry (in entry.S).
-- * If you want this to exactly mirror what entry.S checks, keep it aligned
-- * with the mask used before branching to syscall_trace_enter().
-- */
--#ifdef CONFIG_AUDITSYSCALL
--# define _TIF_SYSCALL_WORK	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT | _TIF_SECCOMP \
--				| _TIF_SYSCALL_TRACEPOINT)
--#else
--# define _TIF_SYSCALL_WORK	(_TIF_SYSCALL_TRACE | _TIF_SECCOMP | _TIF_SYSCALL_TRACEPOINT)
--#endif
--
--/* Work to do on interrupt/exception return.  */
--#define _TIF_WORK_MASK		(_TIF_SIGPENDING | _TIF_NEED_RESCHED | \
--				 _TIF_NOTIFY_RESUME | _TIF_NOTIFY_SIGNAL)
-+#define _TIF_UPROBE		(1 << TIF_UPROBE)
- 
- #define TS_UAC_NOPRINT		0x0001	/* ! Preserve the following three */
- #define TS_UAC_NOFIX		0x0002	/* ! flags as they match          */
-diff --git a/arch/alpha/kernel/asm-offsets.c b/arch/alpha/kernel/asm-offsets.c
-index 1d3bfca319ae..c89792c86044 100644
---- a/arch/alpha/kernel/asm-offsets.c
-+++ b/arch/alpha/kernel/asm-offsets.c
-@@ -22,6 +22,7 @@ static void __used foo(void)
- 
- 	DEFINE(SP_OFF, offsetof(struct pt_regs, ps));
- 	DEFINE(SIZEOF_PT_REGS, sizeof(struct pt_regs));
-+	DEFINE(TI_SYSCALL_META, offsetof(struct thread_info, syscall_meta));
- 	BLANK();
- 
- 	DEFINE(SWITCH_STACK_SIZE, sizeof(struct switch_stack));
-@@ -30,4 +31,8 @@ static void __used foo(void)
- 	DEFINE(HAE_CACHE, offsetof(struct alpha_machine_vector, hae_cache));
- 	DEFINE(HAE_REG, offsetof(struct alpha_machine_vector, hae_register));
- 	DEFINE(PT_REGS_USP, offsetof(struct pt_regs, usp));
-+
-+	DEFINE(TI_FLAGS,        offsetof(struct thread_info, flags));
-+	DEFINE(TI_SYSCALL_WORK, offsetof(struct thread_info, syscall_work));
-+	DEFINE(TI_STATUS,       offsetof(struct thread_info, status));
- }
-diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
-index 9f2608de2544..bfa116d455fb 100644
---- a/arch/alpha/kernel/entry.S
-+++ b/arch/alpha/kernel/entry.S
-@@ -36,67 +36,10 @@
- 	.size	\func, . - \func
- .endm
- 
--/*
-- * SYSCALL_SKIP_RETURN_RESTART_GATE
-- *
-- * Used when syscall dispatch is skipped (seccomp/ptrace injected nr=-1).
-- *  - Ensure we never return r0==-1 with a3==0 (success); convert to ENOSYS.
-- *  - Gate whether syscall restart is allowed by preserving restart context
-- *    only for ERESTART* returns. Result:
-- *        $26 = 0  => restart allowed
-- *        $26 = 1  => restart NOT allowed
-- *        $18 = preserved syscall nr (regs->r2) if restart allowed, else 0
-- */
--.macro  SYSCALL_SKIP_RETURN_RESTART_GATE
--	/* Fix up invalid "-1 success" return state. */
--	ldq	$19, 72($sp)		/* a3 */
--	bne	$19, 1f			/* already error => skip fixup */
--
--	ldq	$20, 0($sp)		/* r0 */
--	lda	$21, -1($31)
--	cmpeq	$20, $21, $22
--	beq	$22, 1f			/* r0 != -1 => skip fixup */
--
--
--	lda	$20, ENOSYS($31)
--	stq	$20, 0($sp)		/* r0 = ENOSYS */
--	lda	$19, 1($31)
--	stq	$19, 72($sp)		/* a3 = 1 */
--1:
--	/* Restart gating: success is never restartable here. */
--	ldq	$19, 72($sp)		/* a3 */
--	beq	$19, 3f			/* success => not restartable */
--
--	ldq	$20, 0($sp)		/* r0 (positive errno if a3==1) */
--	lda	$21, ERESTARTSYS($31)
--	cmpeq	$20, $21, $22
--	bne	$22, 2f
--	lda	$21, ERESTARTNOINTR($31)
--	cmpeq	$20, $21, $22
--	bne	$22, 2f
--	lda	$21, ERESTARTNOHAND($31)
--	cmpeq	$20, $21, $22
--	bne	$22, 2f
--	lda	$21, ERESTART_RESTARTBLOCK($31)
--	cmpeq	$20, $21, $22
--	bne	$22, 2f
--
--3:	/* Not a restart code (or success) => restart NOT allowed. */
--	addq	$31, 1, $26		/* $26=1 => restart NOT allowed */
--	mov	0, $18
--	br	4f
--
--2:	/* Restart allowed. */
--	ldq	$18, 16($sp)		/* preserved syscall nr (regs->r2) */
--	mov	$31, $26		/* $26=0 => restart allowed */
--	br	4f
--4:
--.endm
--
--.macro LOCKDEP_HARDIRQS_ON_RESTORE
-+.macro LOCKDEP_HARDIRQS_ON_RESTORE psreg
- #ifdef CONFIG_PROVE_LOCKING
- 	/* a0 = saved PS */
--	ldq	$16, SP_OFF($sp)
-+	ldq	$16, \psreg
- 
- 	/* a1 = callsite IP for lockdep */
- 	lda	$17, 1f
-@@ -248,7 +191,7 @@
- CFI_START_OSF_FRAME entInt
- 	SAVE_ALL
- 	lda	$8, 0x3fff
--	lda	$26, ret_from_sys_call
-+	lda	$26, ret_from_exception
- 	bic	$sp, $8, $8
- 	mov	$sp, $19
- 	jsr	$31, do_entInt
-@@ -257,7 +200,7 @@ CFI_END_OSF_FRAME entInt
- CFI_START_OSF_FRAME entArith
- 	SAVE_ALL
- 	lda	$8, 0x3fff
--	lda	$26, ret_from_sys_call
-+	lda	$26, ret_from_exception
- 	bic	$sp, $8, $8
- 	mov	$sp, $18
- 	jsr	$31, do_entArith
-@@ -305,13 +248,13 @@ CFI_START_OSF_FRAME entMM
- 	.cfi_restore	$15
- 	.cfi_adjust_cfa_offset	-64
- /* finish up the syscall as normal.  */
--	br	ret_from_sys_call
-+	br	ret_from_exception
- CFI_END_OSF_FRAME entMM
- 
- CFI_START_OSF_FRAME entIF
- 	SAVE_ALL
- 	lda	$8, 0x3fff
--	lda	$26, ret_from_sys_call
-+	lda	$26, ret_from_exception
- 	bic	$sp, $8, $8
- 	mov	$sp, $17
- 	jsr	$31, do_entIF
-@@ -440,7 +383,7 @@ CFI_START_OSF_FRAME entUna
- 	.cfi_restore	$28
- 	.cfi_restore	$29
- 	.cfi_adjust_cfa_offset	-256
--	LOCKDEP_HARDIRQS_ON_RESTORE
-+	LOCKDEP_HARDIRQS_ON_RESTORE SP_OFF($sp)
- 	call_pal PAL_rti
- 
- 	.align	4
-@@ -487,18 +430,19 @@ entUnaUser:
- 	.cfi_restore	$14
- 	.cfi_restore	$15
- 	.cfi_adjust_cfa_offset	-64
--	br	ret_from_sys_call
-+	br	ret_from_exception
- CFI_END_OSF_FRAME entUna
- 
- CFI_START_OSF_FRAME entDbg
- 	SAVE_ALL
- 	lda	$8, 0x3fff
--	lda	$26, ret_from_sys_call
-+	lda	$26, ret_from_exception
- 	bic	$sp, $8, $8
- 	mov	$sp, $16
- 	jsr	$31, do_entDbg
- CFI_END_OSF_FRAME entDbg
- 
-+
- /*
-  * The system call entry point is special.  Most importantly, it looks
-  * like a function call to userspace as far as clobbered registers.  We
-@@ -516,9 +460,7 @@ CFI_END_OSF_FRAME entDbg
-  * For seccomp/ptrace/generic syscall helpers we track the syscall
-  * number separately:
-  *   - regs->r1: current (mutable) syscall number (may be changed or set to -1)
-- *   - regs->r2: original syscall number for restart/rollback
-  *
-- * On entry PAL provides the syscall number in r0; copy it into r1/r2.
-  */
- 
- 	.align	4
-@@ -531,203 +473,117 @@ CFI_END_OSF_FRAME entDbg
- 	.cfi_rel_offset	$gp, 16
- entSys:
- 	SAVE_ALL
--        ldq     $1, 0($sp)          /* syscall nr from saved r0 */
--        stq     $1, 8($sp)          /* regs->r1 = shadow syscall nr */
--        stq     $1, 16($sp)         /* regs->r2 = restart syscall nr */
--	/* Syscalls always enter from user mode: snapshot USP into pt_regs->usp */
-+	ldq	$1, 0($sp)	/* syscall nr from saved r0 */
-+	stq	$1, 8($sp)	/* regs->r1 = shadow syscall nr */
-+
- 	mov	$0, $8
- 	call_pal PAL_rdusp
--	stq      $0, PT_REGS_USP($sp)
-+	stq	$0, PT_REGS_USP($sp)
- 	mov	$8, $0
- 
--
- 	lda	$8, 0x3fff
- 	bic	$sp, $8, $8
--	lda	$4, NR_syscalls($31)
-+
- 	stq	$16, SP_OFF+24($sp)
--	lda	$5, sys_call_table
--	lda	$27, sys_ni_syscall
--	cmpult	$0, $4, $4
--	ldl	$3, TI_FLAGS($8)
- 	stq	$17, SP_OFF+32($sp)
--	s8addq	$0, $5, $5
- 	stq	$18, SP_OFF+40($sp)
--	.cfi_rel_offset	$16, SP_OFF+24
--	.cfi_rel_offset	$17, SP_OFF+32
--	.cfi_rel_offset	$18, SP_OFF+40
--	lda     $6, _TIF_SYSCALL_WORK
--	and     $3, $6, $3
--	bne     $3, strace
- 
--	beq	$4, 1f
--	ldq	$27, 0($5)
--1:	ldq	$0, 8($sp)		/* syscall nr shadow (regs->r1) */
-+	mov	$0, $1
-+	lda	$16, 7
-+	call_pal PAL_swpipl
-+	mov	$1, $0
-+	mov	$sp, $16
-+	mov	$0, $17	 /* pv = selected syscall function */
-+
-+	DO_SWITCH_STACK
-+	jsr	$26, alpha_syscall_enter_select
-+	ldgp	$gp, 0($26)
-+	UNDO_SWITCH_STACK
-+
-+	/*
-+	 * C returned syscall function pointer in $0.
-+	 * It also stored SKIP in TI_SYSCALL_META if dispatch is skipped.
-+	 */
-+	lda	$8, 0x3fff
-+	bic	$sp, $8, $8
-+	ldq	$3, TI_SYSCALL_META($8)
-+	lda	$6, ALPHA_SYSCALL_META_SKIP
-+	and	$3, $6, $6
-+	bne	$6, skip_dispatch
-+
-+
-+	mov	$0, $27
-+	ldq	$16, SP_OFF+24($sp)
-+	ldq	$17, SP_OFF+32($sp)
-+	ldq	$18, SP_OFF+40($sp)
-+	ldq	$19, 72($sp)
-+	ldq	$20, 80($sp)
-+	ldq	$21, 88($sp)
- 
- 	jsr	$26, ($27), sys_ni_syscall
- 	ldgp	$gp, 0($26)
--	blt	$0, $syscall_error	/* the call failed */
--$ret_success:
--	stq	$0, 0($sp)
--	stq	$31, 72($sp)		/* a3=0 => no error */
- 
--	.align	4
--	.globl	ret_from_sys_call
--ret_from_sys_call:
--	cmovne	$26, 0, $18		/* $18 = 0 => non-restartable */
--	ldq	$0, SP_OFF($sp)
--	and	$0, 8, $0
--	beq	$0, ret_to_kernel
--ret_to_user:
--	/* Make sure need_resched and sigpending don't change between
--		sampling and the rti.  */
--	lda	$16, 7
--	call_pal PAL_swpipl
--	ldl	$17, TI_FLAGS($8)
--	and	$17, _TIF_WORK_MASK, $2
--	bne	$2, work_pending
-+skip_dispatch:
-+	mov	$0, $17		/* raw ret; ignored if SKIP is set */
-+	mov	$sp, $16	/* regs */
-+
-+	DO_SWITCH_STACK
-+	jsr	$26, alpha_finish_syscall_to_user_mode
-+	ldgp	$gp, 0($26)
-+	UNDO_SWITCH_STACK
-+
- restore_all:
-+	lda	$8, 0x3fff
-+	bic	$sp, $8, $8
- 	ldl	$2, TI_STATUS($8)
- 	and	$2, TS_SAVED_FP | TS_RESTORE_FP, $3
- 	bne	$3, restore_fpu
- restore_other:
- 	.cfi_remember_state
--	LOCKDEP_HARDIRQS_ON_RESTORE
- 	RESTORE_ALL
- 	call_pal PAL_rti
- 
--ret_to_kernel:
--	.cfi_restore_state
--	lda	$16, 7
--	call_pal PAL_swpipl
--	br restore_other
--
--	.align 3
--$syscall_error:
--        /* Restart syscall nr comes from saved r2 (preserved even if r0 overwritten). */
--	ldq	$18, 16($sp)	/* old syscall nr for restart */
--
--	ldq	$19, 72($sp)	/* .. and this a3 */
--	subq	$31, $0, $0	/* with error in v0 */
--	addq	$31, 1, $1	/* set a3 for errno return */
--	stq	$0, 0($sp)
--	mov	$31, $26	/* tell "ret_from_sys_call" we can restart */
--	stq	$1, 72($sp)	/* a3 for return */
--	br	ret_from_sys_call
--
--/*
-- * Do all cleanup when returning from all interrupts and system calls.
-- *
-- * Arguments:
-- *       $8: current.
-- *      $17: TI_FLAGS.
-- *      $18: The old syscall number, or zero if this is not a return
-- *           from a syscall that errored and is possibly restartable.
-- *      $19: The old a3 value
-- */
--
--	.align	4
--	.type	work_pending, @function
--work_pending:
--	and	$17, _TIF_NOTIFY_RESUME | _TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL, $2
--	bne	$2, $work_notifysig
--
--$work_resched:
--	/*
--	 * We can get here only if we returned from syscall without SIGPENDING
--	 * or got through work_notifysig already.  Either case means no syscall
--	 * restarts for us, so let $18 and $19 burn.
--	 */
--	jsr	$26, alpha_schedule_user_work
--	mov	0, $18
--	br	ret_to_user
-+ret_to_user_from_syscall:
-+	lda	$8, 0x3fff
-+	bic	$sp, $8, $8
- 
--$work_notifysig:
- 	mov	$sp, $16
- 	DO_SWITCH_STACK
--	jsr	$26, do_work_pending
-+	jsr	$26, alpha_syscall_exit_to_user_mode
-+	ldgp	$gp, 0($26)
- 	UNDO_SWITCH_STACK
- 	br	restore_all
- 
--/*
-- * PTRACE syscall handler
-- */
--
- 	.align	4
--	.type	strace, @function
--strace:
--	/* set up signal stack, call syscall_trace */
--	// NB: if anyone adds preemption, this block will need to be protected
--	ldl	$1, TI_STATUS($8)
--	and	$1, TS_SAVED_FP, $3
--	or	$1, TS_SAVED_FP, $2
--	bne	$3, 1f
--	stl	$2, TI_STATUS($8)
--	bsr	$26, __save_fpu
--1:
--	DO_SWITCH_STACK
--	jsr	$26, syscall_trace_enter /* returns the syscall number */
--	UNDO_SWITCH_STACK
--
--	stq     $0, 8($sp)		/* regs->r1 = shadow syscall nr */
--
--	/* get the arguments back.. */
--	ldq	$16, SP_OFF+24($sp)
--	ldq	$17, SP_OFF+32($sp)
--	ldq	$18, SP_OFF+40($sp)
--	ldq	$19, 72($sp)
--	ldq	$20, 80($sp)
--	ldq	$21, 88($sp)
-+	.globl	ret_from_sys_call
-+ret_from_sys_call:
-+	ldq	$0, SP_OFF($sp)
-+	and	$0, 8, $0
-+	beq	$0, ret_to_kernel
-+	br	ret_to_user_from_syscall
- 
--	/* nr == -1: internal skip-dispatch or userspace syscall(-1)? */
--        lda     $6, -1($31)
--        cmpeq   $0, $6, $6
--	bne	$6, $strace_skip_call	/* nr == -1 => dispatch */
--
--	/* get the system call pointer.. */
--	lda	$1, NR_syscalls($31)
--	lda	$2, sys_call_table
--	lda	$27, sys_ni_syscall
--	cmpult	$0, $1, $1
--	s8addq	$0, $2, $2
--	beq	$1, 1f
--	ldq	$27, 0($2)
--1:	jsr	$26, ($27), sys_gettimeofday
--ret_from_straced:
--	ldgp	$gp, 0($26)
-+ret_from_exception:
-+	ldq	$0, SP_OFF($sp)
-+	and	$0, 8, $0
-+	beq	$0, ret_to_kernel
-+	br	ret_to_user_from_exception
- 
--	/* check return.. */
--	blt	$0, $strace_error	/* the call failed */
--$strace_success:
--	stq	$31, 72($sp)		/* a3=0 => no error */
--	stq	$0, 0($sp)		/* save return value */
-+ret_to_user_from_exception:
- 
--$strace_skip_call:
--	SYSCALL_SKIP_RETURN_RESTART_GATE
-+	mov	$sp, $16
- 	DO_SWITCH_STACK
--	jsr	$26, syscall_trace_leave
-+	jsr	$26, alpha_exit_to_user_mode
-+	ldgp	$gp, 0($26)
- 	UNDO_SWITCH_STACK
--	br	$31, ret_from_sys_call
--
--	.align	3
--$strace_error:
--	ldq	$18, 16($sp)	/* restart syscall nr */
--	ldq	$19, 72($sp)	/* .. and this a3 */
--
--	subq	$31, $0, $0	/* with error in v0 */
--	addq	$31, 1, $1	/* set a3 for errno return */
--	stq	$0, 0($sp)
--	stq	$1, 72($sp)	/* a3 for return */
-+	br	restore_all
- 
--	DO_SWITCH_STACK
--	mov	$18, $9		/* save old syscall number */
--	mov	$19, $10	/* save old a3 */
--	jsr	$26, syscall_trace_leave
--	mov	$9, $18
--	mov	$10, $19
--	UNDO_SWITCH_STACK
-+ret_to_kernel:
-+	.cfi_restore_state
-+	lda	$16, 7
-+	call_pal PAL_swpipl
-+	LOCKDEP_HARDIRQS_ON_RESTORE SP_OFF($sp)
-+	br restore_other
- 
--	mov	$31, $26	/* tell "ret_from_sys_call" we can restart */
--	br	ret_from_sys_call
- CFI_END_OSF_FRAME entSys
- 
- /*
-@@ -815,7 +671,6 @@ restore_fpu:
- 	br restore_other
- #undef V
- 
--
- /*
-  * The meat of the context switch code.
-  */
-@@ -851,7 +706,7 @@ alpha_switch_to:
- 	.align	4
- 	.ent	ret_from_fork
- ret_from_fork:
--	lda	$26, ret_to_user
-+	lda	$26, ret_to_user_from_exception
- 	mov	$17, $16
- 	jmp	$31, schedule_tail
- .end ret_from_fork
-@@ -868,7 +723,7 @@ ret_from_kernel_thread:
- 	mov	$9, $27
- 	mov	$10, $16
- 	jsr	$26, ($9)
--	br	$31, ret_to_user
-+	br	$31, ret_to_user_from_exception
- .end ret_from_kernel_thread
- 
- 
-@@ -910,12 +765,9 @@ fork_like clone3
- 	.ent	sys_\name
- sys_\name:
- 	.prologue 0
--	lda	$9, ret_from_straced
--	cmpult	$26, $9, $9
-+	mov	$sp, $10
- 	lda	$sp, -SWITCH_STACK_SIZE($sp)
- 	jsr	$26, do_\name
--	bne	$9, 1f
--	jsr	$26, syscall_trace_leave
- 1:	br	$1, undo_switch_stack
- 	br	ret_from_sys_call
- .end sys_\name
-diff --git a/arch/alpha/kernel/irq_alpha.c b/arch/alpha/kernel/irq_alpha.c
-index 736294d3dd51..ac941172ae66 100644
---- a/arch/alpha/kernel/irq_alpha.c
-+++ b/arch/alpha/kernel/irq_alpha.c
-@@ -105,20 +105,24 @@ void notrace lockdep_on_restore(unsigned long ps,
- 				unsigned long ip)
- {
- #ifdef CONFIG_PROVE_LOCKING
--	/* Restoring IPL==7 means interrupts remain disabled. */
-+	/*
-+	 * If PAL_rti will restore IPL == 7, IRQs remain disabled.
-+	 * There is no hardirqs-on transition to annotate.
-+	 */
- 	if ((ps & 7) == 7)
- 		return;
- 
- 	/*
--	 * If hardware IRQs are already enabled here, then emitting a
--	 * hardirqs-on transition is redundant.
-+	 * This helper is meant to run before PAL_rti, after entry.S has
-+	 * forced IPL to 7.  If IRQs are already enabled, do not emit a
-+	 * fake transition.
- 	 */
- 	if (!irqs_disabled())
- 		return;
- 
- 	/*
--	 * Only emit the transition if lockdep currently believes
--	 * hardirqs are off.
-+	 * Only emit an ON transition if lockdep currently tracks hardirqs
-+	 * as off.
- 	 */
- 	if (lockdep_hardirqs_enabled())
- 		return;
-diff --git a/arch/alpha/kernel/proto.h b/arch/alpha/kernel/proto.h
-index 9b262ef09a3a..f138bd494628 100644
---- a/arch/alpha/kernel/proto.h
-+++ b/arch/alpha/kernel/proto.h
-@@ -2,6 +2,7 @@
- #include <linux/interrupt.h>
- #include <linux/screen_info.h>
- #include <linux/io.h>
-+#include <asm/ptrace.h>
- 
- /* Prototypes of functions used across modules here in this directory.  */
- 
-@@ -164,16 +165,18 @@ extern void pcibios_claim_one_bus(struct pci_bus *);
- /* ptrace.c */
- extern int ptrace_set_bpt (struct task_struct *child);
- extern int ptrace_cancel_bpt (struct task_struct *child);
--extern void syscall_trace_leave(void);
--extern unsigned long syscall_trace_enter(void);
- 
- /* signal.c */
- struct sigcontext;
- extern void do_sigreturn(struct sigcontext __user *);
- struct rt_sigframe;
- extern void do_rt_sigreturn(struct rt_sigframe __user *);
--extern void do_work_pending(struct pt_regs *, unsigned long, unsigned long, unsigned long);
- extern void alpha_schedule_user_work(void);
-+extern void do_signal(struct pt_regs *regs, unsigned long r0, unsigned long r19);
-+extern void alpha_syscall_exit_to_user_mode(struct pt_regs *regs);
-+extern void alpha_exit_to_user_mode(struct pt_regs *regs);
-+extern void alpha_finish_syscall_to_user_mode(struct pt_regs *regs, long ret);
-+extern unsigned long alpha_syscall_enter_select(struct pt_regs *regs, long syscall);
- 
- /* traps.c */
- extern void dik_show_regs(struct pt_regs *regs, unsigned long *r9_15);
-diff --git a/arch/alpha/kernel/ptrace.c b/arch/alpha/kernel/ptrace.c
-index 69eb337347df..d4a8937985be 100644
---- a/arch/alpha/kernel/ptrace.c
-+++ b/arch/alpha/kernel/ptrace.c
-@@ -134,18 +134,51 @@ get_reg_addr(struct task_struct * task, unsigned long regno)
- /*
-  * Get contents of register REGNO in task TASK.
-  */
--static unsigned long
--get_reg(struct task_struct * task, unsigned long regno)
-+
-+static bool
-+valid_regno(unsigned long regno)
- {
--	/* Special hack for fpcr -- combine hardware and software bits.  */
-+	switch (regno) {
-+	case 0 ... 31:
-+	case 63:
-+	case 65:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static long
-+get_reg(struct task_struct *task, unsigned long regno)
-+{
-+	unsigned long *addr;
-+
-+	if (!valid_regno(regno))
-+		return -EIO;
-+
-+	/*
-+	 * Special hack for fpcr -- combine hardware and software bits.
-+	 */
- 	if (regno == 63) {
--		unsigned long fpcr = *get_reg_addr(task, regno);
--		unsigned long swcr
--		  = task_thread_info(task)->ieee_state & IEEE_SW_MASK;
-+		unsigned long fpcr;
-+		unsigned long swcr;
-+
-+		addr = get_reg_addr(task, regno);
-+		if (!addr)
-+			return -EIO;
-+
-+		fpcr = *addr;
-+		swcr = task_thread_info(task)->ieee_state & IEEE_SW_MASK;
- 		swcr = swcr_update_status(swcr, fpcr);
-+
- 		return fpcr | swcr;
- 	}
--	return *get_reg_addr(task, regno);
-+
-+	addr = get_reg_addr(task, regno);
-+	if (!addr)
-+		return -EIO;
-+
-+	return *addr;
- }
- 
- static void alpha_elf_fpregs_get(struct task_struct *target,
-@@ -271,14 +304,15 @@ static void alpha_elf_gregs_set(struct task_struct *child,
- 		pt->r19 = 1;
- }
- 
--
--/*
-- * Write contents of register REGNO in task TASK.
-- */
- static int
- put_reg(struct task_struct *task, unsigned long regno, unsigned long data)
- {
- 	struct pt_regs *regs = task_pt_regs(task);
-+	unsigned long *addr;
-+	unsigned long old_r0 = regs->r0;
-+
-+	if (regno == 31)
-+		return 0;
- 
- 	if (regno == 63) {
- 		task_thread_info(task)->ieee_state
-@@ -287,24 +321,30 @@ put_reg(struct task_struct *task, unsigned long regno, unsigned long data)
- 		data = (data & FPCR_DYN_MASK) | ieee_swcr_to_fpcr(data);
- 	}
- 
--	*get_reg_addr(task, regno) = data;
-+	addr = get_reg_addr(task, regno);
-+	if (!addr)
-+		return -EIO;
-+
-+	*addr = data;
- 
- 	/*
- 	 * Alpha historically exposes r0/v0 as the syscall number at a
- 	 * syscall-entry stop.  The generic-entry conversion keeps the
--	 * mutable syscall number in regs->r1, so old ptrace users such
--	 * as strace that skip a syscall by poking r0 to -1 must also
--	 * update the internal shadow syscall number.
--	 *
--	 * Do not mirror other r0 writes.  strace later pokes r0 to the
--	 * injected return value, e.g. 42, while r1 must remain -1.
-+	 * mutable syscall number in regs->r1.
- 	 */
- 
--	if (regno == 0 && data == (unsigned long)-1) {
-+	if (regno == 0 && regs->r1 == old_r0 &&
-+		(data == (unsigned long)-1 ||
-+		(regs->r19 == 0 && data < NR_syscalls))) {
- 		regs->r1 = data;
--		regs->r19 = 0;
--	}
- 
-+	/*
-+	 * Keep the skip path looking like a clean entry-side syscall
-+	 * rewrite.  Do not touch r19 for ordinary syscall substitution.
-+	 */
-+		if (data == (unsigned long)-1)
-+			regs->r19 = 0;
-+	}
- 	return 0;
- }
- 
-@@ -435,25 +475,24 @@ long arch_ptrace(struct task_struct *child, long request,
- 
- 	switch (request) {
- 	/* When I and D space are separate, these will need to be fixed.  */
--	case PTRACE_PEEKTEXT: /* read word at location addr. */
-+	case PTRACE_PEEKTEXT:
- 	case PTRACE_PEEKDATA:
- 		copied = ptrace_access_vm(child, addr, &tmp, sizeof(tmp),
- 				FOLL_FORCE);
- 		ret = -EIO;
- 		if (copied != sizeof(tmp))
- 			break;
--		
- 		force_successful_syscall_return();
- 		ret = tmp;
- 		break;
- 
--	/* Read register number ADDR. */
- 	case PTRACE_PEEKUSR:
--		force_successful_syscall_return();
- 		ret = get_reg(child, addr);
--		DBG(DBG_MEM, ("peek $%lu->%#lx\n", addr, ret));
--		break;
-+		if (ret == -EIO)
-+			break;
- 
-+		force_successful_syscall_return();
-+		break;
- 	/* When I and D space are separate, this will have to be fixed.  */
- 	case PTRACE_POKETEXT: /* write the word at location addr. */
- 	case PTRACE_POKEDATA:
-@@ -471,47 +510,6 @@ long arch_ptrace(struct task_struct *child, long request,
- 	return ret;
- }
- 
--asmlinkage unsigned long syscall_trace_enter(void)
--{
--	struct pt_regs *regs = current_pt_regs();
--
--	if (test_thread_flag(TIF_SYSCALL_TRACE) &&
--		ptrace_report_syscall_entry(regs)) {
--		syscall_set_nr(current, regs, -1);
--		if (regs->r19 == 0 && regs->r0 == (unsigned long)-1)
--			syscall_set_return_value(current, regs, -ENOSYS, 0);
--		return -1UL;
--	}
--
--	/*
--	 * Do the secure computing after ptrace; failures should be fast.
--	 * If this fails, seccomp may already have set up the return value
--	 * (e.g. SECCOMP_RET_ERRNO / TRACE).
--	 */
--	if (secure_computing() == -1) {
--		if (regs->r19 == 0 && regs->r0 == (unsigned long)-1)
--			syscall_set_return_value(current, regs, -ENOSYS, 0);
--		syscall_set_nr(current, regs, -1);
--		return -1UL;
--	}
--
--#ifdef CONFIG_AUDITSYSCALL
--	audit_syscall_entry(syscall_get_nr(current, regs),
--		regs->r16, regs->r17, regs->r18, regs->r19);
--#endif
--	return syscall_get_nr(current, regs);
--}
--
--
--
--asmlinkage void
--syscall_trace_leave(void)
--{
--	audit_syscall_exit(current_pt_regs());
--	if (test_thread_flag(TIF_SYSCALL_TRACE))
--		ptrace_report_syscall_exit(current_pt_regs(), 0);
--}
--
- /*
-  * Minimal regset support for Alpha.
-  *
-@@ -522,7 +520,6 @@ syscall_trace_leave(void)
-  *    regset_get should return 0 on success. So call dump_elf_thread()
-  *    directly and return membuf_write()'s result.
-  */
--
- static int alpha_regset_set(struct task_struct *target,
- 			    const struct user_regset *regset,
- 			    unsigned int pos, unsigned int count,
-diff --git a/arch/alpha/kernel/signal.c b/arch/alpha/kernel/signal.c
-index ce40a49b8496..9dae17f288c4 100644
---- a/arch/alpha/kernel/signal.c
-+++ b/arch/alpha/kernel/signal.c
-@@ -27,10 +27,9 @@
- #include <linux/uaccess.h>
- #include <asm/sigcontext.h>
- #include <asm/ucontext.h>
--
-+#include <linux/entry-common.h>
- #include "proto.h"
- 
--
- #define DEBUG_SIG 0
- 
- #define _BLOCKABLE (~(sigmask(SIGKILL) | sigmask(SIGSTOP)))
-@@ -41,14 +40,6 @@ asmlinkage void ret_from_sys_call(void);
-  * The OSF/1 sigprocmask calling sequence is different from the
-  * C sigprocmask() sequence..
-  */
--
--asmlinkage void alpha_schedule_user_work(void)
--{
--	local_irq_enable();
--	schedule();
--	local_irq_disable();
--}
--
- SYSCALL_DEFINE2(osf_sigprocmask, int, how, unsigned long, newmask)
- {
- 	sigset_t oldmask;
-@@ -465,6 +456,7 @@ syscall_restart(unsigned long r0, unsigned long r19,
- 		fallthrough;
- 	case ERESTARTNOINTR:
- 		regs->r0 = r0;	/* reset v0 and a3 and replay syscall */
-+		regs->r1 = r0;
- 		regs->r19 = r19;
- 		regs->pc -= 4;
- 		break;
-@@ -488,7 +480,7 @@ syscall_restart(unsigned long r0, unsigned long r19,
-  * restart. "r0" is also used as an indicator whether we can restart at
-  * all (if we get here from anything but a syscall return, it will be 0)
-  */
--static void
-+void
- do_signal(struct pt_regs *regs, unsigned long r0, unsigned long r19)
- {
- 	unsigned long single_stepping = ptrace_cancel_bpt(current);
-@@ -511,12 +503,14 @@ do_signal(struct pt_regs *regs, unsigned long r0, unsigned long r19)
- 			case ERESTARTNOINTR:
- 				/* Reset v0 and a3 and replay syscall.  */
- 				regs->r0 = r0;
-+				regs->r1 = r0;
- 				regs->r19 = r19;
- 				regs->pc -= 4;
- 				break;
- 			case ERESTART_RESTARTBLOCK:
- 				/* Set v0 to the restart_syscall and replay */
- 				regs->r0 = __NR_restart_syscall;
-+				regs->r1 = __NR_restart_syscall;
- 				regs->pc -= 4;
- 				break;
- 			}
-@@ -527,27 +521,124 @@ do_signal(struct pt_regs *regs, unsigned long r0, unsigned long r19)
- 		ptrace_set_bpt(current);	/* re-set breakpoint */
- }
- 
--void
--do_work_pending(struct pt_regs *regs, unsigned long thread_flags,
--		 unsigned long r0, unsigned long r19)
-+asmlinkage void alpha_exit_to_user_mode(struct pt_regs *regs)
- {
--	do {
--		if (thread_flags & _TIF_NEED_RESCHED) {
--			local_irq_enable();
--			schedule();
--		} else {
--			local_irq_enable();
--			if (thread_flags & (_TIF_SIGPENDING|_TIF_NOTIFY_SIGNAL)) {
--				preempt_disable();
--				save_fpu();
--				preempt_enable();
--				do_signal(regs, r0, r19);
--				r0 = 0;
--			} else {
--				resume_user_mode_work(regs);
--			}
-+	local_irq_disable();
-+	irqentry_exit_to_user_mode_prepare(regs);
-+	exit_to_user_mode();
-+}
-+
-+/*
-+ * Syscall return reaches here after Alpha-specific r0/a3 result encoding.
-+ * Delegate syscall-exit work and final exit-to-user handling to generic
-+ * entry code; low-level PAL restore remains in assembly.
-+ */
-+asmlinkage void alpha_syscall_exit_to_user_mode(struct pt_regs *regs)
-+{
-+	syscall_exit_to_user_mode(regs);
-+}
-+
-+void arch_do_signal_or_restart(struct pt_regs *regs)
-+{
-+	struct thread_info *ti = current_thread_info();
-+
-+	do_signal(regs, ti->syscall_saved_nr, ti->syscall_saved_r19);
-+}
-+
-+asmlinkage unsigned long
-+alpha_syscall_enter_select(struct pt_regs *regs, long syscall)
-+{
-+	struct thread_info *ti = current_thread_info();
-+	unsigned long work;
-+	unsigned long nr;
-+	unsigned long fn = (unsigned long)sys_ni_syscall;
-+
-+	ti->syscall_meta = 0;
-+	ti->syscall_saved_nr = syscall;
-+
-+	if (!(ti->status & TS_SAVED_FP)) {
-+		ti->status |= TS_SAVED_FP;
-+		__save_fpu();
-+	}
-+
-+	work = READ_ONCE(ti->syscall_work) & SYSCALL_WORK_ENTER;
-+
-+	nr = syscall_enter_from_user_mode(regs, syscall);
-+
-+	syscall_set_nr(current, regs, nr);
-+	/*
-+	 * In the unified path, nr == -1 is ambiguous:
-+	 *   - without syscall work: syscall(-1), dispatch to sys_ni_syscall
-+	 *   - with syscall work: ptrace/seccomp skip marker
-+	 */
-+	if (work && (long)nr == -1L) {
-+		ti->syscall_meta = ALPHA_SYSCALL_META_SKIP;
-+		return fn; /* ignored by asm when SKIP is set */
-+	}
-+
-+	instrumentation_begin();
-+	if (likely(nr < (unsigned long)NR_syscalls)) {
-+		nr = array_index_nospec(nr, NR_syscalls);
-+		fn = (unsigned long)sys_call_table[nr];
-+	}
-+	instrumentation_end();
-+
-+	return fn;
-+}
-+
-+asmlinkage noinstr void
-+alpha_finish_syscall_to_user_mode(struct pt_regs *regs, long ret)
-+{
-+	struct thread_info *ti = current_thread_info();
-+	unsigned long meta = ti->syscall_meta;
-+
-+	ti->syscall_meta = 0;
-+	ti->syscall_saved_r19 = regs->r19;
-+
-+	instrumentation_begin();
-+
-+	if (meta & ALPHA_SYSCALL_META_SKIP) {
-+	/*
-+	 * Skip-dispatch path: ptrace/seccomp may already have installed
-+	 * the return state in r0/r19. Preserve it unless the syscall was
-+	 * skipped with no explicit return value.
-+	 *
-+	 * Generic PTRACE_SET_SYSCALL_INFO changes only the syscall-number
-+	 * shadow, so r1 == -1 while r0 still contains the original Alpha
-+	 * syscall number. Legacy PTRACE_POKEUSR based skipping can leave
-+	 * r0 == -1 with a3/r19 still indicating success. Both represent
-+	 * an unhandled skipped syscall and should become ENOSYS/a3=1.
-+	 */
-+		if (regs->r1 == (unsigned long)-1 &&
-+		   (regs->r0 == ti->syscall_saved_nr ||
-+		    regs->r0 == (unsigned long)-1)) {
-+			regs->r0 = ENOSYS;
-+			regs->r19 = 1;
- 		}
--		local_irq_disable();
--		thread_flags = read_thread_flags();
--	} while (thread_flags & _TIF_WORK_MASK);
-+
-+		instrumentation_end();
-+
-+		syscall_exit_to_user_mode(regs);
-+		return;
-+	}
-+
-+	/*
-+	 * Some successful syscalls, notably legacy ptrace PEEK requests,
-+	 * return arbitrary data in r0.  That data may have the bit pattern
-+	 * of a negative errno, so do not infer failure from ret < 0 when
-+	 * arch code explicitly requested a successful Alpha return.
-+	 */
-+	if (meta & ALPHA_SYSCALL_META_FORCE_SUCCESS) {
-+		regs->r0 = ret;
-+		regs->r19 = 0;
-+	} else if (ret < 0) {
-+		regs->r0 = -ret;
-+		regs->r19 = 1;
-+	} else {
-+		regs->r0 = ret;
-+		regs->r19 = 0;
-+	}
-+
-+	instrumentation_end();
-+	syscall_exit_to_user_mode(regs);
- }
+ static inline void clear_highpage(struct page *page)
 -- 
-2.53.0
+MST
 
