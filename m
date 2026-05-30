@@ -1,62 +1,62 @@
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+Received: from mail-yx1-f43.google.com (mail-yx1-f43.google.com [74.125.224.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBF0232BF4B
-	for <linux-alpha@vger.kernel.org>; Sat, 30 May 2026 20:26:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DFA533AD99
+	for <linux-alpha@vger.kernel.org>; Sat, 30 May 2026 20:26:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780172762; cv=none; b=Ik9oHBq7xkJmndbFEZeGBlAYAUWLOWqsRIo2k2YardIAiQpCQYK2W7nnXiMvHMog1dfPF5hD9BqkZzYOJMnIUNgLh3h733zQX/+xQ53NV5J27VwTPOdT1whzxlZS01jaMmS6QSZWO6El/H9fapqg4SETuDNt9RuHCu4dYDmqlX0=
+	t=1780172763; cv=none; b=VZSJd4r0iyHCWrXedZ6WMoykBY1RBSX6Dwo2tvjL0zaUA1p5vp6oqamMCRYmoGXT9dYBrvA7T8toZCSpYs+LZff5Q3rBs5TvXTEAR1OTfptch1wg/ZBPLRXF3Lkw8al1IIY4PYeX9ScDOyf13nMmFMeLG/qkLF7zegiEL4Yz0Ls=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780172762; c=relaxed/simple;
-	bh=NJMctWkCkvaKSvd5Uce3HvzWFWfIWYwWyFq+kwfh0kA=;
+	s=arc-20240116; t=1780172763; c=relaxed/simple;
+	bh=lSq1XiVdFbegW3dLAoeQ8xE+ZRtn2eqXPy7IPZ9+odk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IKT19RoE9UUM38UhTk4LR1gSAPcYjNSjFCEp8pRNZV/RjvRJFNSpdfFQSOQyUPmMjLJBWBI0TGWftbf55gTVDhUVmuWWiXTfCOda+/4fCTOdZJgwEHc+7p7YoWtJm2QNHiztTtCmTMJu+rotiazsBTA5Eqa8YRZE2SasBMaBc8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AAoQpJRO; arc=none smtp.client-ip=209.85.128.180
+	 MIME-Version; b=kDrqsaj4+8KGyEj1axI9omMDo2KCsA1u19afIjUNu/YZwmNP2mZ3t4KMEerc4JdHLpw5KEzOFdr1jjTQmA3rm3m9DQHxkMvTGtdad+IxMSLU5I23lt5nJK5AM0EFVkD05duubF7CDeG2X3ZSxuALJSFwUiLQSxK/qS4V1DHcWzE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BtMT3GpX; arc=none smtp.client-ip=74.125.224.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AAoQpJRO"
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-7dbe0943b21so47469537b3.1
-        for <linux-alpha@vger.kernel.org>; Sat, 30 May 2026 13:26:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BtMT3GpX"
+Received: by mail-yx1-f43.google.com with SMTP id 956f58d0204a3-66058b880e9so1391559d50.2
+        for <linux-alpha@vger.kernel.org>; Sat, 30 May 2026 13:26:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1780172760; x=1780777560; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1780172761; x=1780777561; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xzxLFbOxRCDOeLozJMvg6yHAwBzCK2kggsGVQYYIzAk=;
-        b=AAoQpJRO/VrIddgTVa1eD/U7wI7XtiWI+JGMEjpwWHb82hMoZ8qE7oraHuLAT21XLU
-         7iwosoB29SQRKy8EZ6YnQXXd3F7bz2fKn15ZZokDItMiPTmaQgDW7EPKnI3nMHHCxan9
-         e6otxA8qbtZOmiKuLbPWDZO8aPYGfQ8pMo1aLFzQBzvKMmeuWDdXiBqLiOxOVIruxGGR
-         jVYE+j2q1Qm7ujjQo1YrJ5qzbLULYmh0u58tLv+MzXakcnkqSw4lZr+kzgZlR1dFovV8
-         7362LEiQS1VmTLElypvsGE3hdVMjA5xUrQK1WbVB/6gddMIbudIftcDKhAmjYAA+Y4WQ
-         6w4Q==
+        bh=lljDjPO0XM3n9bEJfoxc211+yO6B5dMSriEAJih/sic=;
+        b=BtMT3GpXpJvN0avXcy3oxCM7sXooitTOfw0++EuBYLPQc4bsNiI+4LGyCaRSt8XGJd
+         WPNqZcnuXy/VN/jKA+N8Llzl1rhqbpUR6fJjMVQ120QgUcva95oY3Xl/eL5EbCN/okTD
+         NmQ4m4/72rF44nttQ0ujSnnbIIEdFS59PKOU6kuFd+eEfKBssotY1x192xrFu+muESHY
+         zDLuF7uiqtY1cnHRMjr3onQWsw1LIzv0U0ULW1FvCQPxdONFMe3yuCHVvaGEy4hUniu3
+         YcyHq0ZN/R24QUqkXU0/95OEkE9eyk4oUa1qpuYxtqrNLszIXlL6qSlbROvqXLiYmo1G
+         3Tww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1780172760; x=1780777560;
+        d=1e100.net; s=20251104; t=1780172761; x=1780777561;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=xzxLFbOxRCDOeLozJMvg6yHAwBzCK2kggsGVQYYIzAk=;
-        b=DYT9U9ZHNc5OPY8zm25SGgZrn1GknhaS7bPz4D2ZkItsUi//d5lfpbtXmN//9tv1q2
-         IZ0WFrRj/SeHMoy2gvbU3RrmUWwQvXsIBikk6XeHro23ugB34oSZnEevayc7mr7VC3Ij
-         ovAGHSli9BXjpt5oKACY4el2ezwxKRKPLFjYilQzCZUKqRxeUCqA5N2Et0FqlYStbvHA
-         Chb6u5+NZ/B6C8+4wcMY6N1nAfa36poOuhZl5qJ9bPWREK8oFMBRWyHnlchZu3A/deCu
-         GsR/te/ofRxjUveyYo7AZ63ZeC9V7IlXfYyyZ8Q2K9BEfS5QXR2/P906qLaq11xJ931p
-         bzzA==
-X-Gm-Message-State: AOJu0YwDbD4d7U1xSfsmGdEoOgY8qWcF+ejcYUHpRhFiQH5ToWpVabYe
-	6gq0K+qvLMTP8sbZn2M9VKOpQ0Te8sPtrTrq7PrBm3RLdWQGsdH1O3iboiypGt5V
-X-Gm-Gg: Acq92OHl1cvy99KUnMCfGqyCW2ZYTrWEbiNjL5NEwb/XxfBgOLKKp8f/ISM2nwoF6GH
-	/QxWjMT6kmr5MUzIGQOZooIa5Om0Q1asAKTMfpiM2d/qXsBvIevwPcFWuqZssnDn15dYn+FMb+E
-	SqORkvUPbY8zVu0OHrZ/yqTw0a8YOzRCg6hcSN2Pco+mC6J7JQMX8w+K4EP8O7Y+CeYndp/yx67
-	1C0n0gXbUjQTpjQMrgpSWeghornsZkpe9LwvbWlHN7AFpBXJIRleh34ZF0PMWjsvVU91zUdSAAe
-	D2fFt0IB0g/KwmeMZ8IfuT6BR/1YT7eRVQQgncou8923yeYWk56k0794kdqiBV6vWCzdJaePYVw
-	rHwh4bbUQko1Qomi7G1/56egGHq1p0rDs/TLNCEhFnGxdmxrXAI6Znhj5SAO3uiHqXrdOYgKisU
-	lmzTY+gEH5A69IScPYPrCDFZyarn9lsZ6nXQ==
-X-Received: by 2002:a05:690c:4711:b0:7dc:7dfa:7266 with SMTP id 00721157ae682-7de2759ce27mr46275927b3.34.1780172759901;
-        Sat, 30 May 2026 13:25:59 -0700 (PDT)
+        bh=lljDjPO0XM3n9bEJfoxc211+yO6B5dMSriEAJih/sic=;
+        b=sA12X2yIDS2po5e/jMCxJGDxv5cWiuqSt491MrYT5PWITbstzCXfdiYKsKoIf9xNP+
+         0rHSUKYfLf3xIvgTTnRZwG/Z5eg7D/N+LnM+iaFetaeZExUQY7zCpjDu6C46hzqW1UB0
+         J7nAqFbntyAw0VaUdZW4/m6WESnrzH+3dyKF/XoY1p3OxcGfg6S1NKgWRkLTGq0cGJda
+         /1/CvM4yWwb9H81w+D5DVWKaPYQrSkM5pR78QLp5vroN4KBGkRlVdza4pJp7N4rpKQ45
+         BHC3RBpHSMFzF+TKbcwczw2fWFxoUZYI9aXYjLfetQ2H2HRXnY3YW1S8E5UFDw1lqvhi
+         A9EA==
+X-Gm-Message-State: AOJu0YzB03tkqZXpYzGYmKAW5mwEZzEw2mJdofVq0tWxgDPf76hcwRMr
+	L3c1+md7/lx6Jpyq0MMpIp4Ncd2jhQMJRpqs8lxkaj7JjSoLF39gkp7XfmUe/iHu
+X-Gm-Gg: Acq92OEBlMiE8v+h6uuVhBcPvJ1ka86AA3GD8vKH/i7MPgZ93BBD/9WwfxatnMQoQrg
+	lsd171UnkC9BpS25VUOPxMC3j8sjuEGXP5DFThhEJuhU+jUGTm6LBH2AelPIG45xiCbpDg+hSlG
+	cGAmHzIkNLhWF3PqyzHsTX5MXU14jb1slWKKVbGl7Ka+6G2zMr0SRast0fgpYI4L30rT+magfic
+	x2qAXor2j9374TCuCPe/M/jwF6y5Xi2Tusdj4PstdFvYa4EIdSBOXWAEVmdxL4asg7pP0RwEvUr
+	ikDlR3bY6WPgmcsbG2gqIUw7NoYY7I2Cl7fLagVjbuHiAfcWKZ6yI+wMEhQywjgGF2Lse8vwoVg
+	j3n0Hfp+2TO4+yijiFcGeqPiZPEsU8dCeL/xL1Th94z6TXpNQaUsPPGPlVNEgKk3VumQAU19SMz
+	Q8Q36WXpdmDK28nx3pUN3BT7vV1by+8C4xgg==
+X-Received: by 2002:a05:690e:4812:b0:64c:c616:c349 with SMTP id 956f58d0204a3-6605ef9948bmr2773016d50.31.1780172761303;
+        Sat, 30 May 2026 13:26:01 -0700 (PDT)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7e17ae7e240sm12675387b3.32.2026.05.30.13.25.59
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-6606977ab05sm1178609d50.9.2026.05.30.13.26.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 May 2026 13:25:59 -0700 (PDT)
+        Sat, 30 May 2026 13:26:00 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
 To: linux-alpha@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org,
@@ -64,9 +64,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Magnus Lindholm <linmag7@gmail.com>,
 	Ivan Kokshaysky <ink@unseen.parts>,
 	Matt Turner <mattst88@gmail.com>
-Subject: [PATCH 1/3] alpha: smp: Serialize all synchronous IPI operations to fix SMP deadlock
-Date: Sat, 30 May 2026 16:25:42 -0400
-Message-ID: <20260530202544.59231-2-mattst88@gmail.com>
+Subject: [PATCH 2/3] alpha: Fix SMP IPI loss when target CPU is in interrupt handler
+Date: Sat, 30 May 2026 16:25:43 -0400
+Message-ID: <20260530202544.59231-3-mattst88@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260530202544.59231-1-mattst88@gmail.com>
 References: <20260530202544.59231-1-mattst88@gmail.com>
@@ -76,192 +76,178 @@ List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Two or more CPUs simultaneously calling any function that uses
-on_each_cpu(wait=1) or smp_call_function(wait=1) deadlock: each blocks
-in csd_lock_wait spinning while waiting for the remote CPU to signal CSD
-completion. While spinning, neither CPU can receive the other's IPI, so
-neither completion signal arrives — permanent hang.
+On EV7/IO7, the wripir PALcall delivers IPIs as edge-triggered hardware
+signals through the IO7 I/O controller. If the target CPU is already
+executing at IPL=7 inside do_entInt handling another interrupt, the IPI
+edge is lost: the hardware never re-delivers it when the CPU drops back
+to IPL=0.
 
-Affected callers: smp_imb, flush_tlb_all, flush_tlb_mm, flush_tlb_page,
-flush_icache_user_page (smp.c) and migrate_flush_tlb_page (tlbflush.c).
+The software IPI bit in ipi_data[cpu].bits is set before wripir is
+called, so it remains set after the interrupt handler returns. But
+because no hardware edge fires, handle_ipi() is never invoked again,
+and the sending CPU spins forever in csd_lock_wait.
 
-Introduce alpha_smp_ipi_lock (plain spinlock, defined in smp.c, declared
-in asm/smp.h) and apply it to all six callers. Rather than spin_lock(),
-use a trylock loop with alpha_drain_ipi(): if the lock is held, the loser
-actively drains any pending IPI bits on the local CPU before retrying.
-This is necessary because some callers hold IRQs disabled (e.g. paths
-that take spin_lock_irqsave), so no RTC interrupt will fire to rescue a
-lost wripir edge via alpha_poll_ipi_inirq(). alpha_drain_ipi() calls
-handle_ipi() under local_irq_save/restore, satisfying handle_ipi()'s
-requirement that IRQs be disabled, without touching lockdep
-hardirq-context state.
+This race is the root cause of a 15-year SMP deadlock on EV7/Marvel
+systems. It is reliably triggered by workloads that generate many
+synchronous IPIs (TLB flushes via on_each_cpu(wait=1)) while the
+target CPU receives concurrent I/O or RTC interrupts.
 
-This fix is necessary but not sufficient. A separate, independent
-deadlock path exists: if the target CPU is inside do_entInt at IPL=7
-when wripir fires, the hardware IPI edge is lost and the sending CPU
-spins forever even when only one CPU is issuing a wait=1 call. That
-race is fixed independently by alpha_poll_ipi_inirq() (see follow-on
-commit). Both fixes are required for a complete solution.
+Fix: add alpha_poll_ipi_inirq(), called from do_entInt within each
+interrupt handler's irq_enter/irq_exit bracket. It checks
+ipi_data[smp_processor_id()].bits and drains any pending IPIs that
+arrived while we were at IPL=7, before irq_exit() opens the softirq
+window where a TLB-flush softirq could itself deadlock on
+alpha_smp_ipi_lock. The check is a single READ_ONCE so there is no
+overhead when no IPI was missed.
 
-The deadlock has been observed on EV7/Marvel under workloads generating
-a high rate of synchronous TLB flush IPIs (e.g. the git test suite).
+For the RTC interrupt (case 1 in do_entInt), handle_irq() already calls
+its own irq_enter()/irq_exit() internally. The outer irq_enter/irq_exit
+pair added here is intentional: it keeps irq_count > 0 while handle_irq()
+runs, so handle_irq()'s inner irq_exit() sees a non-zero count and skips
+the softirq window. The softirq window is deferred until the outer
+irq_exit(), which runs after alpha_poll_ipi_inirq() has already drained
+any pending IPIs. Without this outer bracket, irq_exit() inside
+handle_irq() could open the softirq window before any missed IPIs are
+rescued, risking a deadlock on alpha_smp_ipi_lock.
+
+Approximately 98% of rescued IPIs are IPI_CALL_FUNC (the TLB-flush
+type), confirming that IO7 genuinely drops the hardware edge rather than
+holding it pending until IPL falls.
+
+A lost IPI_CALL_FUNC only deadlocks when the sender is blocking (wait=1).
+wait=0 callers do not hang, but silently skip the function on the remote
+CPU, which may be a correctness issue in its own right.
+
+This fix is complementary to the alpha_smp_ipi_lock serialization
+(previous commit). Both are required:
+  - Serialization prevents two CPUs simultaneously issuing wait=1 IPIs
+    from deadlocking each other in csd_lock_wait.
+  - This fix prevents a single wait=1 caller from deadlocking due to an
+    IPI edge lost to an IPL=7 window on the remote CPU.
 
 Assisted-by: Claude:claude-sonnet-4-6
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- arch/alpha/include/asm/smp.h |  9 ++++++
- arch/alpha/kernel/smp.c      | 62 ++++++++++++++++++++++++++++++++++++
- arch/alpha/mm/tlbflush.c     |  3 ++
- 3 files changed, 74 insertions(+)
+ arch/alpha/kernel/irq_alpha.c | 29 ++++++++++++++++++++++++++++-
+ arch/alpha/kernel/proto.h     |  1 +
+ arch/alpha/kernel/smp.c       | 35 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 64 insertions(+), 1 deletion(-)
 
-diff --git ./arch/alpha/include/asm/smp.h ./arch/alpha/include/asm/smp.h
-index 2264ae72673b..8bd529376cf6 100644
---- ./arch/alpha/include/asm/smp.h
-+++ ./arch/alpha/include/asm/smp.h
-@@ -48,6 +48,15 @@ extern int smp_num_cpus;
- extern void arch_send_call_function_single_ipi(int cpu);
- extern void arch_send_call_function_ipi_mask(const struct cpumask *mask);
+diff --git ./arch/alpha/kernel/irq_alpha.c ./arch/alpha/kernel/irq_alpha.c
+index ac941172ae66..0e4234ef7ea0 100644
+--- ./arch/alpha/kernel/irq_alpha.c
++++ ./arch/alpha/kernel/irq_alpha.c
+@@ -69,22 +69,49 @@ do_entInt(unsigned long type, unsigned long vector,
+ 		break;
+ #endif
+ 	case 1:
+-		/* handle_irq() already does irq_enter()/irq_exit() */
++		/*
++		 * Wrap handle_irq() in our own irq_enter/irq_exit so that the
++		 * inner irq_exit() inside handle_irq() does not run softirqs
++		 * (irq_count remains > 0). We poll for lost IPIs before the
++		 * outer irq_exit(), which is where softirqs may run. This
++		 * prevents a TLB flush softirq from deadlocking on
++		 * alpha_smp_ipi_lock while the sending CPU waits for our ACK.
++		 */
++		irq_enter();
+ 		handle_irq(RTC_IRQ);
++#ifdef CONFIG_SMP
++		alpha_poll_ipi_inirq(regs);
++#endif
++		irq_exit();
+ 		break;
+ 	case 2:
+ 		irq_enter();
+ 		alpha_mv.machine_check(vector, la_ptr);
++#ifdef CONFIG_SMP
++		alpha_poll_ipi_inirq(regs);
++#endif
+ 		irq_exit();
+ 		break;
+ 	case 3:
+ 		irq_enter();
+ 		alpha_mv.device_interrupt(vector);
++#ifdef CONFIG_SMP
++		/*
++		 * Drain any IPIs whose edge was lost while we were at IPL=7.
++		 * Must be called before irq_exit() to prevent softirqs (e.g.
++		 * a TLB flush) from deadlocking on alpha_smp_ipi_lock while
++		 * the sending CPU spins in csd_lock_wait.
++		 */
++		alpha_poll_ipi_inirq(regs);
++#endif
+ 		irq_exit();
+ 		break;
+ 	case 4:
+ 		irq_enter();
+ 		perf_irq(la_ptr, regs);
++#ifdef CONFIG_SMP
++		alpha_poll_ipi_inirq(regs);
++#endif
+ 		irq_exit();
+ 		break;
+ 	default:
+diff --git ./arch/alpha/kernel/proto.h ./arch/alpha/kernel/proto.h
+index f138bd494628..04879e0b2932 100644
+--- ./arch/alpha/kernel/proto.h
++++ ./arch/alpha/kernel/proto.h
+@@ -120,6 +120,7 @@ extern void unregister_srm_console(void);
+ /* smp.c */
+ extern void setup_smp(void);
+ extern void handle_ipi(struct pt_regs *);
++extern void alpha_poll_ipi_inirq(struct pt_regs *);
+ extern void __init smp_callin(void);
  
-+/*
-+ * Global spinlock serializing all synchronous (wait=1) IPI callers.
-+ * Callers must use the trylock+alpha_drain_ipi() pattern, not spin_lock(),
-+ * because some call sites hold IRQs disabled and cannot rely on the RTC
-+ * interrupt to rescue a lost wripir edge.
-+ */
-+extern spinlock_t alpha_smp_ipi_lock;
-+extern void alpha_drain_ipi(void);
-+
- #else /* CONFIG_SMP */
- 
- #define hard_smp_processor_id()		0
+ /* bios32.c */
 diff --git ./arch/alpha/kernel/smp.c ./arch/alpha/kernel/smp.c
-index ed06367ece57..d900da49b0d8 100644
+index d900da49b0d8..099e1ac6a0d6 100644
 --- ./arch/alpha/kernel/smp.c
 +++ ./arch/alpha/kernel/smp.c
-@@ -597,11 +597,61 @@ ipi_imb(void *ignored)
- 	imb();
+@@ -557,6 +557,41 @@ handle_ipi(struct pt_regs *regs)
+ 		recv_secondary_console_msg();
  }
  
 +/*
-+ * Serialize all synchronous (wait=1) IPI operations to prevent cross-CPU
-+ * deadlock on EV7/Marvel.  If two CPUs simultaneously call any function that
-+ * uses on_each_cpu(wait=1) or smp_call_function(wait=1), each blocks in
-+ * csd_lock_wait spinning for the remote CPU to signal completion.  While
-+ * spinning, neither CPU can receive the other's IPI, so neither completion
-+ * signal arrives — permanent hang.
++ * On EV7/IO7, IPI signals are edge-triggered. If an IPI arrives while this
++ * CPU is executing at IPL=7 (inside another interrupt handler), the hardware
++ * edge is lost. The software bit in ipi_data[] remains set but handle_ipi()
++ * is never re-invoked, causing the sending CPU to spin forever in csd_lock_wait.
 + *
-+ * A plain spinlock (not irqsave) is intentional: the CPU that loses the lock
-+ * race spins with IRQs enabled and can service the winner's IPI before
-+ * taking the lock itself.
-+ *
-+ * All callers of synchronous IPIs — including migrate_flush_tlb_page in
-+ * tlbflush.c — must hold this lock.
++ * Call this from within hardirq context (between irq_enter and irq_exit) to
++ * drain any IPIs that arrived while we were running at IPL=7, before irq_exit()
++ * opens the softirq window where a TLB flush could deadlock on alpha_smp_ipi_lock.
 + */
-+DEFINE_SPINLOCK(alpha_smp_ipi_lock);
-+
-+/*
-+ * Drain any pending IPIs for this CPU while spinning on alpha_smp_ipi_lock.
-+ *
-+ * The lock holder has already sent a wripir but is blocked in csd_lock_wait
-+ * waiting for our IPI ACK.  We cannot simply spin on the lock: if IRQs are
-+ * disabled (e.g. caller holds a spin_lock_irqsave), no RTC interrupt will
-+ * fire and the lost wripir edge is never rescued by alpha_poll_ipi_inirq.
-+ *
-+ * Call this from the trylock loop so the IPI is processed even with IRQs
-+ * disabled, breaking the circular wait.
-+ *
-+ * handle_ipi() requires IRQs disabled: generic_smp_call_function_interrupt
-+ * asserts lockdep_assert_irqs_disabled().  Use local_irq_save/restore so
-+ * this is safe whether the caller has IRQs enabled (e.g. page fault path)
-+ * or disabled (e.g. spin_lock_irqsave holder).  Avoid __irq_enter_raw/
-+ * __irq_exit_raw: those manipulate lockdep hardirq-context state and trigger
-+ * a lockdep WARNING when called while lockdep already tracks hardirq context.
-+ */
-+void alpha_drain_ipi(void)
++void alpha_poll_ipi_inirq(struct pt_regs *regs)
 +{
-+	unsigned long flags;
++	int cpu = smp_processor_id();
++	unsigned long bits = READ_ONCE(ipi_data[cpu].bits);
 +
-+	if (!READ_ONCE(ipi_data[smp_processor_id()].bits))
++	if (!bits)
 +		return;
 +
-+	local_irq_save(flags);
-+	handle_ipi(NULL); /* regs unused in handle_ipi() */
-+	local_irq_restore(flags);
++	/*
++	 * Peek at type bits before handle_ipi() clears them via xchg().
++	 * Bits arriving after this READ_ONCE are drained but not counted;
++	 * the counters are approximate but sufficient for diagnosis.
++	 * Note: handle_ipi() also increments ipi_count, so the "IPI:" row
++	 * in /proc/interrupts includes both normal and rescued deliveries.
++	 */
++	if (bits & (1UL << IPI_RESCHEDULE))
++		cpu_data[cpu].rescued_reschedule_count++;
++	if (bits & (1UL << IPI_CALL_FUNC))
++		cpu_data[cpu].rescued_call_func_count++;
++	if (bits & (1UL << IPI_CPU_STOP))
++		cpu_data[cpu].rescued_cpu_stop_count++;
++
++	handle_ipi(regs);
 +}
 +
  void
- smp_imb(void)
+ arch_smp_send_reschedule(int cpu)
  {
- 	/* Must wait other processors to flush their icache before continue. */
-+	while (!spin_trylock(&alpha_smp_ipi_lock))
-+		alpha_drain_ipi();
- 	on_each_cpu(ipi_imb, NULL, 1);
-+	spin_unlock(&alpha_smp_ipi_lock);
- }
- EXPORT_SYMBOL(smp_imb);
- 
-@@ -616,7 +666,10 @@ flush_tlb_all(void)
- {
- 	/* Although we don't have any data to pass, we do want to
- 	   synchronize with the other processors.  */
-+	while (!spin_trylock(&alpha_smp_ipi_lock))
-+		alpha_drain_ipi();
- 	on_each_cpu(ipi_flush_tlb_all, NULL, 1);
-+	spin_unlock(&alpha_smp_ipi_lock);
- }
- 
- #define asn_locked() (cpu_data[smp_processor_id()].asn_lock)
-@@ -651,7 +704,10 @@ flush_tlb_mm(struct mm_struct *mm)
- 		}
- 	}
- 
-+	while (!spin_trylock(&alpha_smp_ipi_lock))
-+		alpha_drain_ipi();
- 	smp_call_function(ipi_flush_tlb_mm, mm, 1);
-+	spin_unlock(&alpha_smp_ipi_lock);
- 
- 	preempt_enable();
- }
-@@ -702,7 +758,10 @@ flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
- 	data.mm = mm;
- 	data.addr = addr;
- 
-+	while (!spin_trylock(&alpha_smp_ipi_lock))
-+		alpha_drain_ipi();
- 	smp_call_function(ipi_flush_tlb_page, &data, 1);
-+	spin_unlock(&alpha_smp_ipi_lock);
- 
- 	preempt_enable();
- }
-@@ -752,7 +811,10 @@ flush_icache_user_page(struct vm_area_struct *vma, struct page *page,
- 		}
- 	}
- 
-+	while (!spin_trylock(&alpha_smp_ipi_lock))
-+		alpha_drain_ipi();
- 	smp_call_function(ipi_flush_icache_page, mm, 1);
-+	spin_unlock(&alpha_smp_ipi_lock);
- 
- 	preempt_enable();
- }
-diff --git ./arch/alpha/mm/tlbflush.c ./arch/alpha/mm/tlbflush.c
-index ccbc317b9a34..37607d08796b 100644
---- ./arch/alpha/mm/tlbflush.c
-+++ ./arch/alpha/mm/tlbflush.c
-@@ -89,7 +89,10 @@ void migrate_flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
- 	 * This is the "combined" version of flush_tlb_mm + per-page invalidate.
- 	 */
- 	preempt_disable();
-+	while (!spin_trylock(&alpha_smp_ipi_lock))
-+		alpha_drain_ipi();
- 	on_each_cpu(ipi_flush_mm_and_page, &d, 1);
-+	spin_unlock(&alpha_smp_ipi_lock);
- 
- 	/*
- 	 * mimic flush_tlb_mm()'s mm_users<=1 optimization.
 -- 
 2.53.0
 
