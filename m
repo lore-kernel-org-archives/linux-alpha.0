@@ -1,101 +1,105 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp-3.orcon.net.nz (smtp-3.orcon.net.nz [60.234.4.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 256EB3DFC71
-	for <linux-alpha@vger.kernel.org>; Sat, 13 Jun 2026 12:25:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB42C212566;
+	Sun, 14 Jun 2026 02:22:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.234.4.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781353532; cv=none; b=MZOJ62sYjup5L9S1MGXBmS6AiDKLoT0GFc0neii3foHy4jltKRwQ2GuhHFWA3ZEQSp/pBUIySYYDvSX3syezL8GGlTwVLHQ0jRIFdU72B8jWQfSmkehqD394FtdEJKrh6VGouECiMT2VYmI9rTCICErxHVfyuU0TBAAf9n9ikdQ=
+	t=1781403756; cv=none; b=pneDK++dFgQduP56ms4v/V2JadbwtoK8IiZJSageRzpQEWc6Vnqeu/GF0/Mgz7RJNMi6Z3lC8nV2IgecxTGnrUcj+GG3t3I7NmCeLltgIhf7uay2p9/LPwms584H44LoXFJWoMZtV6SfyCMiAP5GtXS6qCI1RangUl5uWRqHzDQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781353532; c=relaxed/simple;
-	bh=CLakk+opCQ604PeVJ4oUQQ0fKHYH5ZbX22hDORMoS/I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OYjzvGkr/Gc0NDo0ifnnROy6Rx30XkaGp7m9YJ8haopEAoSx1qpwdQNB96NSUdZfHuYhPP2WfTy1L6QZ0AkqXtgAP4gWdtYaYcCx+23BkaGV0McNTlOqyzbqJp9VnOOSM2/rLm77K1d+aR5hV2T3dB/auGQ71LAPtj9GYxC20MI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iWxYQmEh; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1781403756; c=relaxed/simple;
+	bh=v/+NupT1tX8UuyPxdFZ6ESTy3ZuqZcSbCDJ6JvaDy5g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=n3Sg/IuDefzcqVjJ7MtU3PF9e8OXbYsCKr0IxLsUApalSYFAFwrT4OlFe/OFIKM8WscqwABUgSeHVbpqRgDJe/TXHbDvJ5qAM7qDt8K8Ovn7yP7F6SheMyOiYrE3f+XbXnGnZq1TG+u4rqoEp0RjYexVcJsWZBZoiQ0ds92tEVk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=orcon.net.nz; spf=pass smtp.mailfrom=orcon.net.nz; dkim=pass (2048-bit key) header.d=orcon.net.nz header.i=@orcon.net.nz header.b=jyQ6ZAyW; arc=none smtp.client-ip=60.234.4.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=orcon.net.nz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=orcon.net.nz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iWxYQmEh"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-490cf3000f0so18639845e9.1
-        for <linux-alpha@vger.kernel.org>; Sat, 13 Jun 2026 05:25:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781353529; x=1781958329; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=cDDXIjsr5zUuEb2kKgGGrimrWwrINceaOBEv/AjB+r0=;
-        b=iWxYQmEhenGcpCfQ6cj5wLTmg53MkqQzfqqp5pwa8kVUskY8ZzlYUi7XdtQTyMXMOG
-         Ejk9+dwIu7rrGEAYo9JVf3GErMOFpfi9N1vzzYg3M3438xE4ZAbyCITGVPyvNgM4i1C1
-         7hU31lKsodbvg2iqdl31rFWS3CKTQjxOXpG4isnfOp/omn1hkXIOGdBzzEgzog1H4k6K
-         //64KUglMpW5Yq/HYl++TMUeO88aWON5bc/7wxPBYgwLojqlwx3DyZdIqWbKTNaXyxXF
-         MKmIHWW5ksYZ0KDK1TRA7TwlrPk48pGU19PEeMKyFeitNUs+wc8JyRfErVw/pHL90hiD
-         YrkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781353529; x=1781958329;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cDDXIjsr5zUuEb2kKgGGrimrWwrINceaOBEv/AjB+r0=;
-        b=kb+S4kcUloySBcvBEZ5j4cFHTC4c/h1Yeqe4pS1JexM/o0/mnv88n43CzWNYfnq6C7
-         4Njkzsifr1TQz76mdsarVKHOQnyI6qFENDqY5YwdhQ0TuA6PuL0ndPRjgLRcI5va4alh
-         Y1tdEiovtTSm95rjBoayDoFWwo0py4yuPccA3aXbDxNsCrYzzoaOt4benglefvgwWEX5
-         HHN6JkK43hSC8QEIs+7Q9TbjF7/cuUPRgNJzy8BwSYOAAORwiJ2Nyukx/KHMFQFT3s2i
-         zaZvepe/FZ0jnPjLOY4TyN+BgY2GtIVj1Rv7POBkET0qR4y7NiMx1X33KI6NOz31lVeD
-         IidQ==
-X-Forwarded-Encrypted: i=1; AFNElJ9tuu95OzbDmq8wual2kRrTmbxfT1aTK/slpP4Kp5sZ8yV5Kj3uswUMXuOTMw9a8IpONPSWE55bvH287Q==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx5LNxEk++Jo2TJ/Ph6kWxRtQ+xFrQ8hEP7goINUA8qBeyaqMXo
-	RO2JHdcRu35rIaJ2fQ3XE7VcaabRDpFeyR0uUkE9J6VqvZkB0ZsZpG7E
-X-Gm-Gg: Acq92OHcsnWZp/QzVpDV6a+9eEbEdj4U8DV0ZofxzqTqktqzlezHtX7hzbweu5pac39
-	ZvIoABrNbQ5CaU+NbnmXcW0DzOCMxj7ZRM1edZ5wiBG4BYyk8Fj0DeYebGXWcuDYTjnp1tNhyOr
-	AG0zD7zxn93FTshDXfbYebVooJOiouGjCobCl2IogCz4pxLXBXSz/kUZgh6gl0bdss1Yrems0Fi
-	IuwYQQYPT8IuoerkRjPJk5MbaGKqK1vZEymef/hUmRs+mlFCIO3XuaKA2NLeKPykiygpn9qHbju
-	huCGOo446xTggOg1aKEvkkXHSi4o4aBo0uTDFurX73k8mqXFA9FywAfSlPDV10TObQNm4EtlsdZ
-	Ye/mN9CXI3BBA3Rl9rNI24nqrQYNn8yQpjy4Rnd9u/6AyKqgzoLp/oRA6NBD3XkhDhDazQmqHCF
-	/F1TLByjhB+z5n4tAvWPw4uVqYk4EgQNJcLshfVLvr3qoEZaky7iSAi91sLCuLYeSFaChIRS6WK
-	85fSTQ68MMI9c57euo=
-X-Received: by 2002:a05:600c:e547:20b0:490:b58b:a8ca with SMTP id 5b1f17b1804b1-490ec50c366mr58510035e9.27.1781353529244;
-        Sat, 13 Jun 2026 05:25:29 -0700 (PDT)
-Received: from [10.128.10.215] (195-23-151-163.net.novis.pt. [195.23.151.163])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4922037ba81sm74662045e9.15.2026.06.13.05.25.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 13 Jun 2026 05:25:28 -0700 (PDT)
-Sender: Julian Braha <julian.braha@gmail.com>
-Message-ID: <dcc4f002-8ce8-4193-8e55-0dc6968a78e8@gmail.com>
-Date: Sat, 13 Jun 2026 13:25:26 +0100
+	dkim=pass (2048-bit key) header.d=orcon.net.nz header.i=@orcon.net.nz header.b="jyQ6ZAyW"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=orcon.net.nz; s=s1; h=In-Reply-To:Content-Type:MIME-Version:References:
+	Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=Fv/T+krM1NU6y0WWahYchqiFV5uKIKb1LnSrxym/Wnw=; b=jyQ6ZAyW1eZnZvTTIf3lhurfRa
+	cerVS2vXpGwSTSdEBAOiaVzwvF9VjzYh594kR0Q2Yf2wVKlMYMBbgxj3y8itJ2/GEXOmI81YmB05K
+	jTIoQFL44WH/SprQzhfnBwy/5Jri1xr9KOo4OLnjmFo1SvqIi2NQwCuPB0Ew7AE4eAbQRQ25uPyju
+	/k8JTCFVaII6jYLDXscK+96yCAvZe873Fumtyg/diY/WXXgjw1tLmLCM7pmBE4+/Z//dLI2qUC+CW
+	PNCyxYqg72Cw0odRk1AeDRx0qaL7fQhKZTjn6My3sfK2m/79rKpuCi2vcC8u7kasuEMKyGA4JRP9v
+	pBYRhxmQ==;
+Received: from [121.99.247.178] (port=58657 helo=creeky)
+	by smtp-3.orcon.net.nz with esmtpa (Exim 4.90_1)
+	(envelope-from <mcree@orcon.net.nz>)
+	id 1wYZoR-0005R7-BA; Sun, 14 Jun 2026 13:38:59 +1200
+Date: Sun, 14 Jun 2026 13:38:54 +1200
+From: Michael Cree <mcree@orcon.net.nz>
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: richard.henderson@linaro.org, mattst88@gmail.com,
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+	glaubitz@physik.fu-berlin.de, ink@unseen.parts, macro@orcam.me.uk
+Subject: Re: [PATCH v3 0/8] alpha: enable generic entry infrastructure
+Message-ID: <ai4GLtp1Iaqz_aVK@creeky>
+Mail-Followup-To: Michael Cree <mcree@orcon.net.nz>,
+	Magnus Lindholm <linmag7@gmail.com>, richard.henderson@linaro.org,
+	mattst88@gmail.com, linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org, glaubitz@physik.fu-berlin.de,
+	ink@unseen.parts, macro@orcam.me.uk
+References: <20260612203006.2265557-1-linmag7@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 8/8] alpha: enable GENERIC_ENTRY and GENERIC_IRQ_ENTRY
-To: Magnus Lindholm <linmag7@gmail.com>, richard.henderson@linaro.org,
- mattst88@gmail.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
-Cc: glaubitz@physik.fu-berlin.de, mcree@orcon.net.nz, ink@unseen.parts,
- macro@orcam.me.uk
-References: <20260612203006.2265557-1-linmag7@gmail.com>
- <20260612203006.2265557-9-linmag7@gmail.com>
-Content-Language: en-US
-From: Julian Braha <julianbraha@gmail.com>
-In-Reply-To: <20260612203006.2265557-9-linmag7@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260612203006.2265557-1-linmag7@gmail.com>
+X-GeoIP: NZ
+X-Spam_score: -2.9
+X-Spam_score_int: -28
+X-Spam_bar: --
 
-On 6/12/26 21:26, Magnus Lindholm wrote:
+On Fri, Jun 12, 2026 at 10:26:48PM +0200, Magnus Lindholm wrote:
+> This series moves Alpha closer to the common architecture infrastructure
+> and enables GENERIC_ENTRY and GENERIC_IRQ_ENTRY. This is v3 of this patch
+> series, please see below for changes since v1 and v2.
 
->  config ALPHA
->  	bool
->  	default y
-> +	select GENERIC_IRQ_ENTRY
-> +	select GENERIC_ENTRY
-> +	select HAVE_SYSCALL_TRACEPOINTS
->  	select ARCH_32BIT_USTAT_F_TINODE
+I am seeing sporadic Xorg crashes with this patchset applied to a 7.0
+stable series kernel, usually within a minute of logging into the
+desktop. The rest of system keeps running fine and there are no
+messsages in the kernel log.  I am testing on an XP1000 with Radeon
+HD4350 graphics card.  The same kernel without this patchset works
+fine -- no Xorg crashes.  Indeed, it has been playing the dulcet
+tones of Pink Floyd through my sound system for the last hour without
+a problem.
 
-Hi Magnus,
+Example Xorg backtrace follows.  In this case it is a fp exception
+but sometimes it is a segfault:
 
-Selecting GENERIC_IRQ_ENTRY is unnecessary here since you're already
-selecting GENERIC_ENTRY.
+[   307.748] (EE) 
+[   307.748] (EE) Backtrace:
+[   307.750] (EE) 0: /usr/lib/xorg/Xorg (xorg_backtrace+0x7c) [0x12022b3dc]
+[   307.750] (EE) 1: /usr/lib/xorg/Xorg (0x120000000+0x230ae8) [0x120230ae8]
+[   307.751] (EE) 2: /usr/lib/alpha-linux-gnu/libc.so.6.1 (0x20000720000+0x49e70) [0x20000769e70]
+[   307.753] (EE) 3: /usr/lib/alpha-linux-gnu/libc.so.6.1 (0x20000720000+0x1a02e0) [0x200008c02e0]
+[   307.753] (EE) 4: /usr/lib/alpha-linux-gnu/libpixman-1.so.0 (pixman_sample_ceil_y+0xbc) [0x200003472fc]
+[   307.755] (EE) 5: /usr/lib/alpha-linux-gnu/libpixman-1.so.0 (pixman_rasterize_trapezoid+0xec) [0x20000347abc]
+[   307.755] (EE) 6: /usr/lib/xorg/modules/libglamoregl.so (0x20003d30000+0x6c5bc) [0x20003d9c5bc]
+[   307.755] (EE) 7: /usr/lib/xorg/Xorg (CompositeTrapezoids+0xb0) [0x12016a290]
+[   307.756] (EE) 8: /usr/lib/xorg/Xorg (0x120000000+0x16fa04) [0x12016fa04]
+[   307.758] (EE) 9: /usr/lib/xorg/Xorg (0x120000000+0x16a6c8) [0x12016a6c8]
+[   307.758] (EE) 10: /usr/lib/xorg/Xorg (0x120000000+0x58578) [0x120058578]
+[   307.758] (EE) 11: /usr/lib/xorg/Xorg (0x120000000+0x5d978) [0x12005d978]
+[   307.760] (EE) 12: /usr/lib/xorg/Xorg (0x120000000+0x3f9b8) [0x12003f9b8]
+[   307.762] (EE) 13: /usr/lib/alpha-linux-gnu/libc.so.6.1 (0x20000720000+0x2e490) [0x2000074e490]
+[   307.763] (EE) 14: /usr/lib/alpha-linux-gnu/libc.so.6.1 (__libc_start_main+0xc4) [0x2000074e5d4]
+[   307.763] (EE) 15: /usr/lib/xorg/Xorg (__start+0x38) [0x12003fa08]
+[   307.763] (EE) 
+[   307.765] (EE) Floating point exception at address 0x200008c02e0
+[   307.765] (EE) 
+Fatal server error:
+[   307.765] (EE) Caught signal 8 (Floating point exception). Server aborting
 
-- Julian Braha
+Cheers,
+Michael.
