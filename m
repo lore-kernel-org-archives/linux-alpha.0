@@ -1,146 +1,181 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C5A33AE1B4
-	for <linux-alpha@vger.kernel.org>; Mon, 15 Jun 2026 19:55:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18A473B52EE
+	for <linux-alpha@vger.kernel.org>; Mon, 15 Jun 2026 20:05:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781553341; cv=pass; b=lO/R6Iiw4n3fkBT+Zvnjow8UTo2UHsTdxMWSeDf2JnvA1uVyFmkupJjf+78K9YhjJOYfKVQ+k+Ed68EKfdsxFN6wCHWgA19Emel2S+ZrJQHRtR659ojTTz+Mxd8SMByLvoE/Euws1eDcBRjjrAENLgO8dLoJlHOsjT/cZ7VMaZA=
+	t=1781553946; cv=pass; b=QAH5X1NUx5xrK55dUNKT68BPnvVs3ZuxfkPSHFpE7CRiK3RC7oTk4NLbGd+tLgLOfeWitk+5b72MT224UG5QGpZWPK0B4QOLdjgu6XLdGcWfzFCVqBYN6t/3OeVdtOTypCKPyRDjmVo62PTok5C4kNgcvF8Yb6EZkfCKGA508Jg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781553341; c=relaxed/simple;
-	bh=eG9bjO+yPnqL3K1HuULNf3d6m/0FOLFESw4HBy5/K6Y=;
+	s=arc-20240116; t=1781553946; c=relaxed/simple;
+	bh=3V/U8KgIXhuClTDyJ1k6zrpIQe+ZvsYMWtZDcuyI4E0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Content-Type; b=MbXm+YytA5BgPtaZL0+OpjXudwasRNQrG/s1Vm1lRnvyhY0ikTWTeM1coPiG8yj8/hBjy7VP4mJLYeLcCcvJgyifZTMnYKcpSfVWqnM+f/Bqwix5NUMTPS8qK6q8+u7JATi7D1l1XAekGwC4gBYDZnCMqz7GA7K6Y0l5fkTKUZs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kt5FOxSc; arc=pass smtp.client-ip=209.85.218.51
+	 To:Cc:Content-Type; b=C1h0C7hdoUe6XuO6fVC/hRevESfdMu3M9iv5TTPbDnb14xCSz4PWwHd698BLuqNY5zLrlxLTf+JrgZtUFPk/785lbKmCTVOb73qSFbDTe65YjAfnTmBWJAiAubm1to5r11nq17K7gagp8Vx7GFR+19U1iZL4hoDS92QWSCR6cVM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gLPib+9t; arc=pass smtp.client-ip=209.85.208.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kt5FOxSc"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-beb1bee8c16so423863966b.0
-        for <linux-alpha@vger.kernel.org>; Mon, 15 Jun 2026 12:55:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1781553339; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gLPib+9t"
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-68852b58d87so6638154a12.3
+        for <linux-alpha@vger.kernel.org>; Mon, 15 Jun 2026 13:05:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781553943; cv=none;
         d=google.com; s=arc-20240605;
-        b=HYM364wruQJGU+AxW9Uifz7T+EGuxuXZHLIz8yUUWAnxTF9COOM1LfyQ1rhqkaWRz2
-         A7/e/9ORNIaZHkVHBTVvB0gPrdDvr3FqfcOD+g1krkovHgM/qg4k5Fb/Gd0oo+eNCT59
-         4o12ItOhimDf/Fe8OwaWZvx5FI5qOV3jMsvplZBszmSeNYR4FHvX8uBHeW9OQzsnCtIX
-         ecjakmmkbNaSoF1EIo/Mqorjuuc3LsLWaBKWVkFIYYjjpuZ0WQBwz892zuWw6wa8Bi9h
-         18331JIMOR+S9l2RKJ/hG5HQxXc9RwK5+nkzL3qJpHkLSPfx6sLQJdlNAsL5E+eqq4Rt
-         HbWg==
+        b=Zgjq2ZsoYrmXYbj2jon3A/sptuifwmFJwEDJLxPeYkRT3/iCp2ooBGqfhGunJdzBP5
+         D10HXn2tJ71ICjJJU70qpmtnAqcmPuVw4h41JB9v6risOqks90qexyUqHBFOltP9VlMe
+         pO2rZAgEqzsDQDHfS6iDcvGTIsdO6KF2T9BhgOV7+qEGtJk32W3Vqtk3RS3ZNOQFiX1V
+         3ZgG3C7taIZ68/nhTSNvWRzZ7NLEvG4aElnUquTGk407T4AVckcTJNgqH0QcMm3ADDf7
+         DbV6pZUR41R1K5w7Le15W7jMeqUr+CWjaixiJO0WkhZIyUNYEpLLEOtcYQ7/F8L9u8+4
+         Cc0A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:to:subject:message-id:date:from
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=YeTtuHVS57e7HABEo54rZ9rKgT8KEheoZm3MySUQOXk=;
-        fh=4MEgfSX0AZcf1G+vzcHkAMPuyWlYU8ni8YkGLNTWs70=;
-        b=NY9cOddiifPnnHsrxaPdv1W9uFy6K7uDtLDDjGx39Q/Ou1Xy629JL+U55Ud4Y4+hxy
-         WH5/etJ27ZLRIDBsgEC3bAhnJIsTyg/0pkeQJqDBR4AA9E6dNlLPJsq6i+QoCkVQxKxZ
-         cLXPKbRpl+BuyyB7e2i216LPyHvO5M6iq22MlmmGJx3g5QD3b1OMQ4wcaJm28IJDCaMc
-         IPSfCMpwMR/tGUTEL95r3evIjRKcWn/ILQ/JTEdTTcQ7/3kRSpVk51YysMlC+KBmXdnY
-         k7FZJAi3orOQGaA7tdTtecHVe9MMrLKeg8TUQuqX/gAjRKIVwEs12BK9hkWRP1NYrwL7
-         GvBw==;
+        bh=Kv3VSLJgNyoH+NUWiTKXsR5r5F4mupN8PAxWMZPbE/8=;
+        fh=/FiiqxTBjj6KgHaSL+PPIisxMiPQyd/jIjWc7ZBeeDA=;
+        b=kp+o2nIrcmkxHgV36SRLPAJODes5lUpZoHEIGuhUkMlKG/DrJE+ZIznhel4s1HcX2T
+         JnT85Okx0EtpbQhcIgTkNmrjIjGzwMbzVP1qJxv412in0VMkuGchN9W4jgA7knUNmg1K
+         CwNYD94qjY7c6JByQU58XxIIHGdGanREddH4cVivNqX+hkYdmxJE3zQbqkLlhgLLe/EY
+         DH7IrGxNOeDONx8T8ZdUmegGIfbHy3h/kGXLB40E8a8Iwk5/gMC0K0mEdTf7BYyRz6j3
+         gw/FnVu0Jm4hyJRbSLnCRGoDvoTOGLwNysOiBsKeygwh91NezF1c875UBcw5Mzac/aOZ
+         YYLw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1781553339; x=1782158139; darn=vger.kernel.org;
-        h=content-transfer-encoding:to:subject:message-id:date:from
+        d=gmail.com; s=20251104; t=1781553943; x=1782158743; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YeTtuHVS57e7HABEo54rZ9rKgT8KEheoZm3MySUQOXk=;
-        b=kt5FOxScDq7LCQgfEgsjhs7sn1D1Q9CfUImGNpmtMq5nYQXtoslsqQsJONQ3Y/P3SH
-         +1Loi9LwSxs3C+/ptje65bn3XAvvvAt/AvDmZo/xzu7whXA24H39FSxzJBk3r6nFEaGA
-         KXieQEu7ChFkjW63HIR4qtPMxIE8x+6KH54rDbSsSEA65Z8KS2LSXxI3omMuiQ75yYEM
-         WhmjlzJ/5MpKqaKaWFfTqarB6U28XOdF93MBoYpmbA+7lQ0wpfxYg+8whh4m5rud629o
-         J5zSzPhrx1wjufXlAp5Graa6pMfIxkNn3l+1Mvalwv8sPynyjv0o0SftQGuR5uaROU0b
-         kOCw==
+        bh=Kv3VSLJgNyoH+NUWiTKXsR5r5F4mupN8PAxWMZPbE/8=;
+        b=gLPib+9tNEu3NOvFixvGG8vTXvzlN8K5remQ+rj+4QTWAc6rY7O6w6bLkyde2A2JXM
+         THRRIXK6LGvHi6rZYXkRRxm+pgj7iFjz3Pb/fFbZBYXwJueVGZ8IR1NiX4bFd4H0lhT4
+         QtE8iAtv/+SvRPKW3/Y5oAOh4RqIkHQ0pceHWRIi9q/zyd3aHQ/ycQHlSLtM1HMbL/Lk
+         bj5A2i2Wd2/t0omVrb+i9w/T4N9Q2pvTuguWtut3wOdren0XYhytc2kWcyG1xVmhBYX/
+         wYovmeGF5hyNunVEAjB8IE3Xt3rrKGn/CvR5OaluOrBMNsJzR/oUeQtnOfd0YiuYBeLB
+         KqDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1781553339; x=1782158139;
-        h=content-transfer-encoding:to:subject:message-id:date:from
+        d=1e100.net; s=20251104; t=1781553943; x=1782158743;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=YeTtuHVS57e7HABEo54rZ9rKgT8KEheoZm3MySUQOXk=;
-        b=WYQku2+moSBLy7W+zgW6a7RfhG6buRfN+8ZJ68u5sFoeQdh19rL88OO5uoM3Cz65Xs
-         OJ4t6DqPIl7QmKnbaMTjswMmmtsTm2KxTp4feTj2aJqb/AzHSJ8RigX7YBHww8a31vs3
-         MXKnoI6vmfTDVlrUMVPUShnEqyG2GFISvFb+ZzWzFGanbXG3bCU9KbFg09Ig+n1lmhYP
-         ycyGLyWBnXQKBrgPYULwe9fKQFSu/sX25DV3nPNUHBgMAN0Fbl/8aOxB09cE58XpPXCz
-         MMol2hyYJDgE4vEhgeR3gylKJvmoJXzxeuMrPyEmWbGZFAwt4ykVoXmuUbpRvgTn6847
-         Q4eA==
-X-Forwarded-Encrypted: i=1; AFNElJ8zcFZyZayAXtbraAHWt8VdO3FXP8unRCctEF6lZ5wEfii5enirrQZ+Ig61Ixg2LU+Cxmrt7ghn89mLkg==@vger.kernel.org
-X-Gm-Message-State: AOJu0YymB30JjyO7dtgrfaJhC0C3CoOSTTdQ/kWvY/BOmRlhzKHgWFBb
-	Nb9zYnOO6IfHzOJbxulcHFHIbqn3AOL/lQvh/qbNnCCjqhuH2DNJKTAQeB2m62LUjr7Jzr5oabZ
-	W9nHrZsYMHjWrBPFTI0OgWhoVxiJNLx4=
-X-Gm-Gg: Acq92OEOyrxCiJ+R2AWrHv2C8Aao4CsH7j0sjpXyabjhNxIuGsyVyeQ6n6xfQfJdtmp
-	f7EvKrFR4Uh0T4/HTbWrrUBAKrzXK98WUEjoOiVJSA/tVWW3hZnlnkHrFHxQIYKVv1Pa7QTGWEm
-	WPprp6tgauNz0hwHI6/OQTm+pHTqMG3vzY+/a5MBny24CtfqTvJp88EGCC5rrpvATQybv83/x+Y
-	1kqhB7vjzQbML6q+7pp69fAWvdMUUV0XwNn/Kl9ykPwsFXUQe+Acr1sOXC5/9dIPJaqbRE2HADb
-	BmVUqsNLcbqmqkOJV+XdF7HXSyAGaEmnYEhYQbQ=
-X-Received: by 2002:a17:907:7fa3:b0:bec:5264:e527 with SMTP id
- a640c23a62f3a-c04177e049fmr52353366b.26.1781553338384; Mon, 15 Jun 2026
- 12:55:38 -0700 (PDT)
+        bh=Kv3VSLJgNyoH+NUWiTKXsR5r5F4mupN8PAxWMZPbE/8=;
+        b=EdA4OEnru7YPRnJhAXK+0nAxiUSXy4sNwun0GUMVAMxWZcnmASZKtqGziO7UeFyXc4
+         dwIM0R0pSZQtFFSorfD+2f0ie4mGEbBMr1WoINooCqvgYPVNz5308ifSp4xmzKC1Pt+M
+         IwTMn2SpdnzAIoewRNahlnVF5lbDW2OAmugVR30smIJBKqXl6MIzj00YWwiiwaKUpZDE
+         qd04gHHjBk6U7Z/GrgPlwOz6A5DcEzzZhaSVDcTZG55iqVrnVaZ35BOaUsk+z52weLTS
+         c5JjfulpddKRfC27AdmFbOseXFStf3DlUP940IoRWd/D65fGCohJtH1M+CKkiqtTsG0c
+         MK6w==
+X-Forwarded-Encrypted: i=1; AFNElJ+FVH3c7FLyrTU4pING0CY4WXl3NFUaEq30s21JMQyKtwlK42RmMoN+j1cKyft8Mnn4T94fF7hLXQ9Kuw==@vger.kernel.org
+X-Gm-Message-State: AOJu0YycinUKLlYLVQA1yN/OEL2Ixx9JQ1C4yGkrHasjBWft+WlovFMY
+	/cMkoFhSieDTIVsAfnKMlJS+29Yu7sj/qjRMTdxJhA5IxnRUiOkN6IAMu8YVOR1WExZY8jik+gZ
+	FpG0QMiHXfHxfTs3GzETq2AgInrQa9W8=
+X-Gm-Gg: Acq92OFpw/U0O7FnHUVP6UGzLRT0MncGeDV6NYBSOmaIkkG4cku9KpERF37MNRbLyjr
+	Jam516HO/86tVmJ4TfGBprYXBdydUQgEBNKD+EF8ptmppe5zr1iySJmiI7RfLduoP0E4G9UBN1x
+	BCrKNwR5xz/FJT4EvAM3gCNcaW960+yynM6e0RscA7/XXD2cCxWqFVE+z7H9oUTykflS7m5ckN4
+	TavShstSTN10Cn2eUH3GP4zGd88daMgM3V2Mtq1R4ydKi5n9tU4/V1JsCsBcBMV4nN0THqMHjW3
+	DneykW7aghU8RPpU7bV8ZDvbFssGn0pN4Ks+fdw=
+X-Received: by 2002:a05:6402:a51c:10b0:68c:f3a5:4990 with SMTP id
+ 4fb4d7f45d1cf-693c6a93526mr3313262a12.25.1781553943083; Mon, 15 Jun 2026
+ 13:05:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260612203006.2265557-1-linmag7@gmail.com> <ai4GLtp1Iaqz_aVK@creeky>
-In-Reply-To: <ai4GLtp1Iaqz_aVK@creeky>
+References: <20260612232400.585195-1-kwilczynski@kernel.org>
+In-Reply-To: <20260612232400.585195-1-kwilczynski@kernel.org>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Mon, 15 Jun 2026 21:55:26 +0200
-X-Gm-Features: AVVi8CcWxUOPV2r3Zx_fEsn6yU7cGGDt6Bu1L4A5SP_BgYc4fV38gyCHXAlRlVo
-Message-ID: <CA+=Fv5QgH19VsbbQcJFMWJ-8rnzEwqUv_HrYVZLGVMUnj51=Fg@mail.gmail.com>
-Subject: Re: [PATCH v3 0/8] alpha: enable generic entry infrastructure
-To: Michael Cree <mcree@orcon.net.nz>, Magnus Lindholm <linmag7@gmail.com>, richard.henderson@linaro.org, 
-	mattst88@gmail.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, 
-	glaubitz@physik.fu-berlin.de, ink@unseen.parts, macro@orcam.me.uk
+Date: Mon, 15 Jun 2026 22:05:31 +0200
+X-Gm-Features: AVVi8CcsKHXnY2Y_-E5yGWXaZJVn7GiYK3wlMHP7wC_FW7_gkEwKQPN8p-F0FZc
+Message-ID: <CA+=Fv5Q4dG0JC0yPn9iwQJTwYMb+VwT9EANpcL28=WzGLLAz9A@mail.gmail.com>
+Subject: Re: [PATCH] alpha/PCI: Fix I/O port accessor argument order in pci_legacy_write()
+To: =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
+	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jesse Barnes <jbarnes@virtuousgeek.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Bjorn Helgaas <helgaas@kernel.org>, linux-alpha@vger.kernel.org, 
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jun 14, 2026 at 3:39=E2=80=AFAM Michael Cree <mcree@orcon.net.nz> w=
-rote:
+On Sat, Jun 13, 2026 at 1:24=E2=80=AFAM Krzysztof Wilczy=C5=84ski
+<kwilczynski@kernel.org> wrote:
 >
-> On Fri, Jun 12, 2026 at 10:26:48PM +0200, Magnus Lindholm wrote:
-> > This series moves Alpha closer to the common architecture infrastructur=
-e
-> > and enables GENERIC_ENTRY and GENERIC_IRQ_ENTRY. This is v3 of this pat=
-ch
-> > series, please see below for changes since v1 and v2.
+> pci_legacy_write() in arch/alpha/kernel/pci-sysfs.c passes its arguments
+> to outb(), outw() and outl() in the wrong order:
 >
-> I am seeing sporadic Xorg crashes with this patchset applied to a 7.0
-> stable series kernel, usually within a minute of logging into the
-> desktop. The rest of system keeps running fine and there are no
-> messsages in the kernel log.  I am testing on an XP1000 with Radeon
-> HD4350 graphics card.  The same kernel without this patchset works
-> fine -- no Xorg crashes.  Indeed, it has been playing the dulcet
-> tones of Pink Floyd through my sound system for the last hour without
-> a problem.
+>   outb(port, val);
 >
-> Example Xorg backtrace follows.  In this case it is a fp exception
-> but sometimes it is a segfault:
+> The Alpha I/O accessors in arch/alpha/include/asm/io.h take the value
+> first and the port second:
 >
+>   extern void outb(u8 b, unsigned long port);
+>
+> So the port number is written as data to the I/O address taken from the
+> user-supplied value, and the intended write to the requested port never
+> happens.
+>
+> The arguments have been reversed since the file was added, and the
+> function returns the access size regardless, so the caller sees success
+> while the requested port is left untouched.
+>
+> Fixes: 10a0ef39fbd1 ("PCI/alpha: pci sysfs resources")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Krzysztof Wilczy=C5=84ski <kwilczynski@kernel.org>
+> ---
+>  arch/alpha/kernel/pci-sysfs.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/alpha/kernel/pci-sysfs.c b/arch/alpha/kernel/pci-sysfs.=
+c
+> index 3048758304b5..354ec5f10ad0 100644
+> --- a/arch/alpha/kernel/pci-sysfs.c
+> +++ b/arch/alpha/kernel/pci-sysfs.c
+> @@ -355,17 +355,17 @@ int pci_legacy_write(struct pci_bus *bus, loff_t po=
+rt, u32 val, size_t size)
+>
+>         switch(size) {
+>         case 1:
+> -               outb(port, val);
+> +               outb(val, port);
+>                 return 1;
+>         case 2:
+>                 if (port & 1)
+>                         return -EINVAL;
+> -               outw(port, val);
+> +               outw(val, port);
+>                 return 2;
+>         case 4:
+>                 if (port & 3)
+>                         return -EINVAL;
+> -               outl(port, val);
+> +               outl(val, port);
+>                 return 4;
+>         }
+>         return -EINVAL;
+> --
 
-Michael,
+Krzysztof,
 
-Thanks a lot for taking the time to test this series. I was close to sendin=
-g
-a pull request with it, but your testing clearly shows that it still needs
-more work, so I will hold off.
+Well spotted, this looks correct to me.
 
-Given the symptoms, my first suspicion is that the final generic-entry patc=
-h
-has changed the Alpha return-to-user/signal path in a way that loses the ol=
-d
-explicit FPU save before signal delivery. The old do_work_pending() path di=
-d
-a save_fpu() before calling do_signal(), while the new path goes through
-arch_do_signal_or_restart() and the generic exit-to-user code. If I missed
-preserving that Alpha-specific FPU handling, that could plausibly explain
-sporadic SIGFPE/SEGV failures in FP-heavy code such as Xorg/pixman.
+This must have been lingering here unnoticed for quite some time.  The
+Alpha outb/outw/outl accessors take the value first and the port second,
+so the current pci_legacy_write() argument order is clearly wrong.
 
-I have an XP1000 with a similar Radeon card, so this sounds like something =
-I
-should be able to reproduce locally. Unfortunately I do not have access to
-that machine right now, so any proper fix will have to wait until the next
-merge window.
+I tested this on an AlphaStation DS10 by exercising the PCI legacy_io
+sysfs path against the scratch registers of the onboard 16550A UARTs at
+0x3f8/0x2f8.  With the fix applied, writes through legacy_io read back
+correctly:
 
-Thanks again for catching this before I sent the pull request.
+  ttyS0 scratch at 0x3ff: 0x5a/0xa5 write/readback passed
+  ttyS1 scratch at 0x2ff: 0x5a/0xa5 write/readback passed
 
-Magnus
+For comparison, attempting the same test on the unpatched kernel caused
+the machine to hang, which is consistent with the reversed arguments
+turning the intended UART scratch-register write into an access to an
+unrelated legacy I/O port.
+
+I will pick this up.  It might not make this merge window, but I will try
+to get it queued sooner rather than later.
+
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
