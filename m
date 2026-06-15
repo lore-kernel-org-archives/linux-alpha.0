@@ -1,104 +1,146 @@
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FAF334DB56;
-	Mon, 15 Jun 2026 17:04:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781543087; cv=none; b=Ymi+PTGKMzWF8JcTVF73EXAhbBWkyV676XQLbOinj95wiD3KXcnzHBSYzJQ9YI1CNsQmf+IMQeTd44SNvPWBs/kRlkKUZdVvrG3ze1Da5CgAsp0d+wiRbF5cqUK8nE3NBk1gPtc5MCRhjSXVgiBRFMn7efV9r/hxOt6iDe3Icpg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781543087; c=relaxed/simple;
-	bh=k9wzEDrn8OWY0tjJOa6e5RtLbGoq+IyJnXkfwU07P80=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QF6uQEQEHg9futom0hrFQOs9iAFBd2WEcfKDttCLlCD6R0Y/uNsPWnjE6MHD5X8PasxdiQqHa54gITg+3IHa1VtAZ+aNpnwCBPcZv1C4K5OpK+yDoWu2/F++GoHEZ6jDbfrui1TsI8VJq+htd6F1Ds5re9OTUVUXD4hh3rbekcI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=SLabnQnx; arc=none smtp.client-ip=62.89.141.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C5A33AE1B4
+	for <linux-alpha@vger.kernel.org>; Mon, 15 Jun 2026 19:55:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1781553341; cv=pass; b=lO/R6Iiw4n3fkBT+Zvnjow8UTo2UHsTdxMWSeDf2JnvA1uVyFmkupJjf+78K9YhjJOYfKVQ+k+Ed68EKfdsxFN6wCHWgA19Emel2S+ZrJQHRtR659ojTTz+Mxd8SMByLvoE/Euws1eDcBRjjrAENLgO8dLoJlHOsjT/cZ7VMaZA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1781553341; c=relaxed/simple;
+	bh=eG9bjO+yPnqL3K1HuULNf3d6m/0FOLFESw4HBy5/K6Y=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Content-Type; b=MbXm+YytA5BgPtaZL0+OpjXudwasRNQrG/s1Vm1lRnvyhY0ikTWTeM1coPiG8yj8/hBjy7VP4mJLYeLcCcvJgyifZTMnYKcpSfVWqnM+f/Bqwix5NUMTPS8qK6q8+u7JATi7D1l1XAekGwC4gBYDZnCMqz7GA7K6Y0l5fkTKUZs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kt5FOxSc; arc=pass smtp.client-ip=209.85.218.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="SLabnQnx"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-	Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description;
-	bh=be/KypQX5Q9fujajARM6Q7r9w26ilWIZmzbrtGfAKys=; b=SLabnQnxi8RKG6kB4YLIrRrIte
-	+jYEaBgX5DOoDOdPOU6k6ypOK6lDxxOMXQzKEUszFj5yTLPDASBaagrmnsOk8tUGdmzHw2XGk68HM
-	2J1tv7+pE0CjbBOIjeYCz0TsyHOIrqFb8Mb1LadfEs+3t0bUVsavfv//KIZ2S3hmTXIBIqEbnE3qn
-	zsd3Hxu29/Ylu8C3lRKI+WwMxWxUWcLIz0u0fTGyYSKAR/XPPXo0Rkv03xUIJElu5cOtap9hCSZj1
-	74eb7LaTsGudBKuTsb4/IH254uFPRDECMTh8XzLqKRh9ykQzpGUZV9OECxDmxcCHO22vobRU+rK1T
-	RNRNGWLQ==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.99.2 #2 (Red Hat Linux))
-	id 1wZAjg-00000000Vxn-0xg6;
-	Mon, 15 Jun 2026 17:04:32 +0000
-Date: Mon, 15 Jun 2026 18:04:32 +0100
-From: Al Viro <viro@zeniv.linux.org.uk>
-To: Vincent Mailhol <mailhol@kernel.org>
-Cc: Jens Axboe <axboe@kernel.dk>, Davidlohr Bueso <dave@stgolabs.net>,
-	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
-	linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-	linux-efi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Magnus Lindholm <linmag7@gmail.com>, linux-alpha@vger.kernel.org,
-	Vineet Gupta <vgupta@kernel.org>,
-	linux-snps-arc@lists.infradead.org,
-	Russell King <linux@armlinux.org.uk>,
-	linux-arm-kernel@lists.infradead.org,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
-	WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	linux-mips@vger.kernel.org,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	linuxppc-dev@lists.ozlabs.org, Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, linux-riscv@lists.infradead.org,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	linux-s390@vger.kernel.org, Thomas Gleixner <tglx@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH 00/19] init: discoverable root partitions, a.k.a. an
- omittable "root=" cmdline option
-Message-ID: <20260615170432.GW2636677@ZenIV>
-References: <20260615-discoverable-root_partitions-v1-0-39c78fac42e2@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kt5FOxSc"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-beb1bee8c16so423863966b.0
+        for <linux-alpha@vger.kernel.org>; Mon, 15 Jun 2026 12:55:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1781553339; cv=none;
+        d=google.com; s=arc-20240605;
+        b=HYM364wruQJGU+AxW9Uifz7T+EGuxuXZHLIz8yUUWAnxTF9COOM1LfyQ1rhqkaWRz2
+         A7/e/9ORNIaZHkVHBTVvB0gPrdDvr3FqfcOD+g1krkovHgM/qg4k5Fb/Gd0oo+eNCT59
+         4o12ItOhimDf/Fe8OwaWZvx5FI5qOV3jMsvplZBszmSeNYR4FHvX8uBHeW9OQzsnCtIX
+         ecjakmmkbNaSoF1EIo/Mqorjuuc3LsLWaBKWVkFIYYjjpuZ0WQBwz892zuWw6wa8Bi9h
+         18331JIMOR+S9l2RKJ/hG5HQxXc9RwK5+nkzL3qJpHkLSPfx6sLQJdlNAsL5E+eqq4Rt
+         HbWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=YeTtuHVS57e7HABEo54rZ9rKgT8KEheoZm3MySUQOXk=;
+        fh=4MEgfSX0AZcf1G+vzcHkAMPuyWlYU8ni8YkGLNTWs70=;
+        b=NY9cOddiifPnnHsrxaPdv1W9uFy6K7uDtLDDjGx39Q/Ou1Xy629JL+U55Ud4Y4+hxy
+         WH5/etJ27ZLRIDBsgEC3bAhnJIsTyg/0pkeQJqDBR4AA9E6dNlLPJsq6i+QoCkVQxKxZ
+         cLXPKbRpl+BuyyB7e2i216LPyHvO5M6iq22MlmmGJx3g5QD3b1OMQ4wcaJm28IJDCaMc
+         IPSfCMpwMR/tGUTEL95r3evIjRKcWn/ILQ/JTEdTTcQ7/3kRSpVk51YysMlC+KBmXdnY
+         k7FZJAi3orOQGaA7tdTtecHVe9MMrLKeg8TUQuqX/gAjRKIVwEs12BK9hkWRP1NYrwL7
+         GvBw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1781553339; x=1782158139; darn=vger.kernel.org;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YeTtuHVS57e7HABEo54rZ9rKgT8KEheoZm3MySUQOXk=;
+        b=kt5FOxScDq7LCQgfEgsjhs7sn1D1Q9CfUImGNpmtMq5nYQXtoslsqQsJONQ3Y/P3SH
+         +1Loi9LwSxs3C+/ptje65bn3XAvvvAt/AvDmZo/xzu7whXA24H39FSxzJBk3r6nFEaGA
+         KXieQEu7ChFkjW63HIR4qtPMxIE8x+6KH54rDbSsSEA65Z8KS2LSXxI3omMuiQ75yYEM
+         WhmjlzJ/5MpKqaKaWFfTqarB6U28XOdF93MBoYpmbA+7lQ0wpfxYg+8whh4m5rud629o
+         J5zSzPhrx1wjufXlAp5Graa6pMfIxkNn3l+1Mvalwv8sPynyjv0o0SftQGuR5uaROU0b
+         kOCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1781553339; x=1782158139;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=YeTtuHVS57e7HABEo54rZ9rKgT8KEheoZm3MySUQOXk=;
+        b=WYQku2+moSBLy7W+zgW6a7RfhG6buRfN+8ZJ68u5sFoeQdh19rL88OO5uoM3Cz65Xs
+         OJ4t6DqPIl7QmKnbaMTjswMmmtsTm2KxTp4feTj2aJqb/AzHSJ8RigX7YBHww8a31vs3
+         MXKnoI6vmfTDVlrUMVPUShnEqyG2GFISvFb+ZzWzFGanbXG3bCU9KbFg09Ig+n1lmhYP
+         ycyGLyWBnXQKBrgPYULwe9fKQFSu/sX25DV3nPNUHBgMAN0Fbl/8aOxB09cE58XpPXCz
+         MMol2hyYJDgE4vEhgeR3gylKJvmoJXzxeuMrPyEmWbGZFAwt4ykVoXmuUbpRvgTn6847
+         Q4eA==
+X-Forwarded-Encrypted: i=1; AFNElJ8zcFZyZayAXtbraAHWt8VdO3FXP8unRCctEF6lZ5wEfii5enirrQZ+Ig61Ixg2LU+Cxmrt7ghn89mLkg==@vger.kernel.org
+X-Gm-Message-State: AOJu0YymB30JjyO7dtgrfaJhC0C3CoOSTTdQ/kWvY/BOmRlhzKHgWFBb
+	Nb9zYnOO6IfHzOJbxulcHFHIbqn3AOL/lQvh/qbNnCCjqhuH2DNJKTAQeB2m62LUjr7Jzr5oabZ
+	W9nHrZsYMHjWrBPFTI0OgWhoVxiJNLx4=
+X-Gm-Gg: Acq92OEOyrxCiJ+R2AWrHv2C8Aao4CsH7j0sjpXyabjhNxIuGsyVyeQ6n6xfQfJdtmp
+	f7EvKrFR4Uh0T4/HTbWrrUBAKrzXK98WUEjoOiVJSA/tVWW3hZnlnkHrFHxQIYKVv1Pa7QTGWEm
+	WPprp6tgauNz0hwHI6/OQTm+pHTqMG3vzY+/a5MBny24CtfqTvJp88EGCC5rrpvATQybv83/x+Y
+	1kqhB7vjzQbML6q+7pp69fAWvdMUUV0XwNn/Kl9ykPwsFXUQe+Acr1sOXC5/9dIPJaqbRE2HADb
+	BmVUqsNLcbqmqkOJV+XdF7HXSyAGaEmnYEhYQbQ=
+X-Received: by 2002:a17:907:7fa3:b0:bec:5264:e527 with SMTP id
+ a640c23a62f3a-c04177e049fmr52353366b.26.1781553338384; Mon, 15 Jun 2026
+ 12:55:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260615-discoverable-root_partitions-v1-0-39c78fac42e2@kernel.org>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+References: <20260612203006.2265557-1-linmag7@gmail.com> <ai4GLtp1Iaqz_aVK@creeky>
+In-Reply-To: <ai4GLtp1Iaqz_aVK@creeky>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Mon, 15 Jun 2026 21:55:26 +0200
+X-Gm-Features: AVVi8CcWxUOPV2r3Zx_fEsn6yU7cGGDt6Bu1L4A5SP_BgYc4fV38gyCHXAlRlVo
+Message-ID: <CA+=Fv5QgH19VsbbQcJFMWJ-8rnzEwqUv_HrYVZLGVMUnj51=Fg@mail.gmail.com>
+Subject: Re: [PATCH v3 0/8] alpha: enable generic entry infrastructure
+To: Michael Cree <mcree@orcon.net.nz>, Magnus Lindholm <linmag7@gmail.com>, richard.henderson@linaro.org, 
+	mattst88@gmail.com, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	glaubitz@physik.fu-berlin.de, ink@unseen.parts, macro@orcam.me.uk
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 15, 2026 at 06:08:56PM +0200, Vincent Mailhol wrote:
+On Sun, Jun 14, 2026 at 3:39=E2=80=AFAM Michael Cree <mcree@orcon.net.nz> w=
+rote:
+>
+> On Fri, Jun 12, 2026 at 10:26:48PM +0200, Magnus Lindholm wrote:
+> > This series moves Alpha closer to the common architecture infrastructur=
+e
+> > and enables GENERIC_ENTRY and GENERIC_IRQ_ENTRY. This is v3 of this pat=
+ch
+> > series, please see below for changes since v1 and v2.
+>
+> I am seeing sporadic Xorg crashes with this patchset applied to a 7.0
+> stable series kernel, usually within a minute of logging into the
+> desktop. The rest of system keeps running fine and there are no
+> messsages in the kernel log.  I am testing on an XP1000 with Radeon
+> HD4350 graphics card.  The same kernel without this patchset works
+> fine -- no Xorg crashes.  Indeed, it has been playing the dulcet
+> tones of Pink Floyd through my sound system for the last hour without
+> a problem.
+>
+> Example Xorg backtrace follows.  In this case it is a fp exception
+> but sometimes it is a segfault:
+>
 
-> Tested with GRUB, which implements the LoaderDevicePartUUID EFI variable
-> in its bli module [3]. With this, I was able to boot a kernel with a
-> completely empty cmdline and no initrd.
-> 
-> [1] The Discoverable Partitions Specification (DPS)
-> Link: https://uapi-group.org/specifications/specs/discoverable_partitions_specification/
-> 
-> [2] systemd-gpt-auto-generator
-> Link: https://www.freedesktop.org/software/systemd/man/latest/systemd-gpt-auto-generator.html
-> 
-> [3] GRUB -- §16.2 bli
-> Link: https://www.gnu.org/software/grub/manual/grub/html_node/bli_005fmodule.html
+Michael,
 
-So what does that thing, tied to EFI as it is, have to do with architectures where
-	* firmware is rather unlike EFI
-	* firmware wouldn't know what to do with GPT
-	* GRUB is *not* ported to, let alone used
-such as, say it, the very first one mentioned at your [1]?
+Thanks a lot for taking the time to test this series. I was close to sendin=
+g
+a pull request with it, but your testing clearly shows that it still needs
+more work, so I will hold off.
 
-Or is that conditional upon "if anyone wants to design replacement firmware
-for those, and if they agree to follow our wishlist"?
+Given the symptoms, my first suspicion is that the final generic-entry patc=
+h
+has changed the Alpha return-to-user/signal path in a way that loses the ol=
+d
+explicit FPU save before signal delivery. The old do_work_pending() path di=
+d
+a save_fpu() before calling do_signal(), while the new path goes through
+arch_do_signal_or_restart() and the generic exit-to-user code. If I missed
+preserving that Alpha-specific FPU handling, that could plausibly explain
+sporadic SIGFPE/SEGV failures in FP-heavy code such as Xorg/pixman.
+
+I have an XP1000 with a similar Radeon card, so this sounds like something =
+I
+should be able to reproduce locally. Unfortunately I do not have access to
+that machine right now, so any proper fix will have to wait until the next
+merge window.
+
+Thanks again for catching this before I sent the pull request.
+
+Magnus
