@@ -1,105 +1,216 @@
-Received: from smtp-3.orcon.net.nz (smtp-3.orcon.net.nz [60.234.4.44])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB42C212566;
-	Sun, 14 Jun 2026 02:22:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.234.4.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76C1A408603;
+	Mon, 15 Jun 2026 16:10:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781403756; cv=none; b=pneDK++dFgQduP56ms4v/V2JadbwtoK8IiZJSageRzpQEWc6Vnqeu/GF0/Mgz7RJNMi6Z3lC8nV2IgecxTGnrUcj+GG3t3I7NmCeLltgIhf7uay2p9/LPwms584H44LoXFJWoMZtV6SfyCMiAP5GtXS6qCI1RangUl5uWRqHzDQ=
+	t=1781539811; cv=none; b=MZQqMCQtX3jiIn/HPzoIj6MHS5ShzEXqO8/nNYhhMCl5XeojQXurP1TJ/AXOX33g0MAjtSTmYy75nB8G53YhQe0WVLvuqKQKZmV4HwFAdllAzOElM47+xJnIqsh3Z21m3FOYm2CHHoBtYpSS5JYCfasdFMJi8oB21HEHXd4C84o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781403756; c=relaxed/simple;
-	bh=v/+NupT1tX8UuyPxdFZ6ESTy3ZuqZcSbCDJ6JvaDy5g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n3Sg/IuDefzcqVjJ7MtU3PF9e8OXbYsCKr0IxLsUApalSYFAFwrT4OlFe/OFIKM8WscqwABUgSeHVbpqRgDJe/TXHbDvJ5qAM7qDt8K8Ovn7yP7F6SheMyOiYrE3f+XbXnGnZq1TG+u4rqoEp0RjYexVcJsWZBZoiQ0ds92tEVk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=orcon.net.nz; spf=pass smtp.mailfrom=orcon.net.nz; dkim=pass (2048-bit key) header.d=orcon.net.nz header.i=@orcon.net.nz header.b=jyQ6ZAyW; arc=none smtp.client-ip=60.234.4.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=orcon.net.nz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=orcon.net.nz
+	s=arc-20240116; t=1781539811; c=relaxed/simple;
+	bh=RjmwbjJUekMN4XQbpwM2sAMQ8Q4VGqazX1lTIqnbeDs=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=IMl7CLdJOsS2s6bxCbiYu6LtSl35ibyDER8y61j9QAvdZR2VLKpRCnUJWFZJWGIMWcxlRNxAwAxt/x+J773LjG3QMktPr8+uR0bVZ/Q4X8HGr0n8SON811H+ce7WUmcdhZbFGrfUdWhmwCIXkGsjzpyfS0N5bGZhIc4USuEj9no=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J2bt7UtU; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=orcon.net.nz header.i=@orcon.net.nz header.b="jyQ6ZAyW"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=orcon.net.nz; s=s1; h=In-Reply-To:Content-Type:MIME-Version:References:
-	Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=Fv/T+krM1NU6y0WWahYchqiFV5uKIKb1LnSrxym/Wnw=; b=jyQ6ZAyW1eZnZvTTIf3lhurfRa
-	cerVS2vXpGwSTSdEBAOiaVzwvF9VjzYh594kR0Q2Yf2wVKlMYMBbgxj3y8itJ2/GEXOmI81YmB05K
-	jTIoQFL44WH/SprQzhfnBwy/5Jri1xr9KOo4OLnjmFo1SvqIi2NQwCuPB0Ew7AE4eAbQRQ25uPyju
-	/k8JTCFVaII6jYLDXscK+96yCAvZe873Fumtyg/diY/WXXgjw1tLmLCM7pmBE4+/Z//dLI2qUC+CW
-	PNCyxYqg72Cw0odRk1AeDRx0qaL7fQhKZTjn6My3sfK2m/79rKpuCi2vcC8u7kasuEMKyGA4JRP9v
-	pBYRhxmQ==;
-Received: from [121.99.247.178] (port=58657 helo=creeky)
-	by smtp-3.orcon.net.nz with esmtpa (Exim 4.90_1)
-	(envelope-from <mcree@orcon.net.nz>)
-	id 1wYZoR-0005R7-BA; Sun, 14 Jun 2026 13:38:59 +1200
-Date: Sun, 14 Jun 2026 13:38:54 +1200
-From: Michael Cree <mcree@orcon.net.nz>
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: richard.henderson@linaro.org, mattst88@gmail.com,
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
-	glaubitz@physik.fu-berlin.de, ink@unseen.parts, macro@orcam.me.uk
-Subject: Re: [PATCH v3 0/8] alpha: enable generic entry infrastructure
-Message-ID: <ai4GLtp1Iaqz_aVK@creeky>
-Mail-Followup-To: Michael Cree <mcree@orcon.net.nz>,
-	Magnus Lindholm <linmag7@gmail.com>, richard.henderson@linaro.org,
-	mattst88@gmail.com, linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org, glaubitz@physik.fu-berlin.de,
-	ink@unseen.parts, macro@orcam.me.uk
-References: <20260612203006.2265557-1-linmag7@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J2bt7UtU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 659B51F000E9;
+	Mon, 15 Jun 2026 16:09:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1781539810;
+	bh=WrhOiAXY4BpdFNkpuEH5kqbHucFA9LBquobYeTzjtI4=;
+	h=From:Subject:Date:To:Cc;
+	b=J2bt7UtU/OYY8PxVyIm3d95v5G+IcTrjBW3L2jU7dt2De3kFnXcxRBS+wcjkcf6fN
+	 XltNpsJON5Ei+eQjAfRadOoGZ6Zr5MKKrnWqjtat85KDYFuJIzaAhhV9joTPZvvnm/
+	 Upf4GSVXporZ+/9u524Qsag7+a/uWIBE8WrhynM4IvaF/bx9BOfhayePviKAuHtMdm
+	 yF/mMlzcia/W4uNmZrGta+pMv2x8g5cbMGvX0YqVwoVCDJpU+Ht9xei0zv8nicGVwV
+	 SRcRt86DYJ9ycUYURQM1lx9ByNJFh+o5TVH1JyohwC9u2Q2ptXr+Wwo4pEiWgn9BWI
+	 W8aRU0vDmzPwg==
+From: Vincent Mailhol <mailhol@kernel.org>
+Subject: [PATCH 00/19] init: discoverable root partitions, a.k.a. an
+ omittable "root=" cmdline option
+Date: Mon, 15 Jun 2026 18:08:56 +0200
+Message-Id: <20260615-discoverable-root_partitions-v1-0-39c78fac42e2@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260612203006.2265557-1-linmag7@gmail.com>
-X-GeoIP: NZ
-X-Spam_score: -2.9
-X-Spam_score_int: -28
-X-Spam_bar: --
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MQQqEMAxA0atI1hZaQQWvMgySNlEDYiUpMiDef
+ YrLt/j/BmMVNpiaG5QvMclHRWgbSBseKzuhauh8N/ghBEdiKV+sGHd2mnOZT9QipXbmImGKSNi
+ PnqAuTuVFfu/+832eP+2uWG1uAAAA
+X-Change-ID: 20260611-discoverable-root_partitions-bdacbada570d
+To: Jens Axboe <axboe@kernel.dk>, Davidlohr Bueso <dave@stgolabs.net>, 
+ Alexander Viro <viro@zeniv.linux.org.uk>, 
+ Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>
+Cc: linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, 
+ linux-efi@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+ Vincent Mailhol <mailhol@kernel.org>, 
+ Richard Henderson <richard.henderson@linaro.org>, 
+ Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>, 
+ linux-alpha@vger.kernel.org, Vineet Gupta <vgupta@kernel.org>, 
+ linux-snps-arc@lists.infradead.org, Russell King <linux@armlinux.org.uk>, 
+ linux-arm-kernel@lists.infradead.org, 
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+ Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, 
+ loongarch@lists.linux.dev, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+ linux-mips@vger.kernel.org, 
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
+ Helge Deller <deller@gmx.de>, linux-parisc@vger.kernel.org, 
+ Madhavan Srinivasan <maddy@linux.ibm.com>, 
+ Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org, 
+ Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
+ Albert Ou <aou@eecs.berkeley.edu>, linux-riscv@lists.infradead.org, 
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+ Alexander Gordeev <agordeev@linux.ibm.com>, linux-s390@vger.kernel.org, 
+ Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, 
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, 
+ x86@kernel.org, Jonathan Corbet <corbet@lwn.net>, 
+ Shuah Khan <skhan@linuxfoundation.org>, linux-doc@vger.kernel.org
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6653; i=mailhol@kernel.org;
+ h=from:subject:message-id; bh=RjmwbjJUekMN4XQbpwM2sAMQ8Q4VGqazX1lTIqnbeDs=;
+ b=owGbwMvMwCV2McXO4Xp97WbG02pJDFkGyhcU3klMvHNzftiCl6lmH3kWl02+abz8VKXHlaTy/
+ w4vP39V7pjIwiDGxWAppsiyrJyTW6Gj0Dvs0F9LmDmsTCBDpEUaGICAhYEvNzGv1EjHSM9U21DP
+ EMjQMWLg4hSAqfbXZfgr2rolQuyW6w6JgNKDJ4tvO69i+ZPHkj6Tv9JAckFms/tLRoYma5u3R6a
+ 1csurnulLb7M78HnNmlIVnlf38k/kSby8dJsZAA==
+X-Developer-Key: i=mailhol@kernel.org; a=openpgp;
+ fpr=ED8F700574E67F20E574E8E2AB5FEB886DBB99C2
 
-On Fri, Jun 12, 2026 at 10:26:48PM +0200, Magnus Lindholm wrote:
-> This series moves Alpha closer to the common architecture infrastructure
-> and enables GENERIC_ENTRY and GENERIC_IRQ_ENTRY. This is v3 of this patch
-> series, please see below for changes since v1 and v2.
+DPS [1] defines GPT partition type UUIDs for OS partitions and
+attributes that control whether such partitions should be
+automatically discovered. The specification states that:
 
-I am seeing sporadic Xorg crashes with this patchset applied to a 7.0
-stable series kernel, usually within a minute of logging into the
-desktop. The rest of system keeps running fine and there are no
-messsages in the kernel log.  I am testing on an XP1000 with Radeon
-HD4350 graphics card.  The same kernel without this patchset works
-fine -- no Xorg crashes.  Indeed, it has been playing the dulcet
-tones of Pink Floyd through my sound system for the last hour without
-a problem.
+  The OS can discover and mount the necessary file systems with a
+  non-existent or incomplete /etc/fstab file and without the root=
+  kernel command line option.
 
-Example Xorg backtrace follows.  In this case it is a fp exception
-but sometimes it is a segfault:
+DPS is already implemented in systemd-gpt-auto-generator [2], which,
+when embedded in an initrd, indeed allows automatic detection of the
+root filesystem through its partition type UUID.
 
-[   307.748] (EE) 
-[   307.748] (EE) Backtrace:
-[   307.750] (EE) 0: /usr/lib/xorg/Xorg (xorg_backtrace+0x7c) [0x12022b3dc]
-[   307.750] (EE) 1: /usr/lib/xorg/Xorg (0x120000000+0x230ae8) [0x120230ae8]
-[   307.751] (EE) 2: /usr/lib/alpha-linux-gnu/libc.so.6.1 (0x20000720000+0x49e70) [0x20000769e70]
-[   307.753] (EE) 3: /usr/lib/alpha-linux-gnu/libc.so.6.1 (0x20000720000+0x1a02e0) [0x200008c02e0]
-[   307.753] (EE) 4: /usr/lib/alpha-linux-gnu/libpixman-1.so.0 (pixman_sample_ceil_y+0xbc) [0x200003472fc]
-[   307.755] (EE) 5: /usr/lib/alpha-linux-gnu/libpixman-1.so.0 (pixman_rasterize_trapezoid+0xec) [0x20000347abc]
-[   307.755] (EE) 6: /usr/lib/xorg/modules/libglamoregl.so (0x20003d30000+0x6c5bc) [0x20003d9c5bc]
-[   307.755] (EE) 7: /usr/lib/xorg/Xorg (CompositeTrapezoids+0xb0) [0x12016a290]
-[   307.756] (EE) 8: /usr/lib/xorg/Xorg (0x120000000+0x16fa04) [0x12016fa04]
-[   307.758] (EE) 9: /usr/lib/xorg/Xorg (0x120000000+0x16a6c8) [0x12016a6c8]
-[   307.758] (EE) 10: /usr/lib/xorg/Xorg (0x120000000+0x58578) [0x120058578]
-[   307.758] (EE) 11: /usr/lib/xorg/Xorg (0x120000000+0x5d978) [0x12005d978]
-[   307.760] (EE) 12: /usr/lib/xorg/Xorg (0x120000000+0x3f9b8) [0x12003f9b8]
-[   307.762] (EE) 13: /usr/lib/alpha-linux-gnu/libc.so.6.1 (0x20000720000+0x2e490) [0x2000074e490]
-[   307.763] (EE) 14: /usr/lib/alpha-linux-gnu/libc.so.6.1 (__libc_start_main+0xc4) [0x2000074e5d4]
-[   307.763] (EE) 15: /usr/lib/xorg/Xorg (__start+0x38) [0x12003fa08]
-[   307.763] (EE) 
-[   307.765] (EE) Floating point exception at address 0x200008c02e0
-[   307.765] (EE) 
-Fatal server error:
-[   307.765] (EE) Caught signal 8 (Floating point exception). Server aborting
+This series adds this discovery feature directly into the kernel so
+that people who are not using systemd or not using an initrd can still
+benefit from it. The implementation follows the same model as
+systemd-gpt-auto-generator:
 
-Cheers,
-Michael.
+  - GPT partition type UUIDs are used for automatic discovery policy
+    only. No root=PARTTYPEUUID=xxx cmdline option or similar syntax is
+    added.
+
+  - The root= cmdline option takes precedence. This prevents unexpected
+    behaviour.
+
+  - Only the disk with the active EFI System Partition is scanned, as
+    required by DPS. The disk is identified through the Boot Loader
+    Interface LoaderDevicePartUUID EFI variable.
+
+The DPS no-auto attribute is also implemented, giving another option for
+the user to disable this auto discovery. However, the DPS read-only
+attribute is intentionally not enforced. The kernel already mounts the
+root filesystem read-only by default unless the command line requests
+rw, and user space remains responsible for deciding whether a discovered
+root should later be remounted read-write based on DPS metadata and
+local policy. The other partition type UUIDs (home, swap, var...) are
+also out of scope for the same reason: user space remains responsible
+for mounting anything other than the root partition.
+
+Patch 1 adds the ARCH_HAS_DPS_ROOT_PARTITION_TYPE_UUID capability and
+the hidden CONFIG_DPS_ROOT_AUTO_DISCOVERY Kconfig symbol used to signal
+whether the feature is available. Patches 2 to 12 declare the
+ARCH_HAS_DPS_ROOT_PARTITION_TYPE_UUID capability for the supported
+architectures and define their architecture-specific root partition type
+UUID values in asm/dps_root.h.
+
+Patches 13 to 16 make the GPT partition type UUID and the no-auto
+attribute available during early block lookup.
+
+Patch 17 is a small code refactor that prepares for patch 18, which
+updates the root mount path so that, when root= is omitted, the kernel
+reads LoaderDevicePartUUID and uses the early block lookup
+infrastructure to discover the DPS root partition on that disk.
+
+Finally, patch 19 documents this automatic root discovery feature.
+
+Tested with GRUB, which implements the LoaderDevicePartUUID EFI variable
+in its bli module [3]. With this, I was able to boot a kernel with a
+completely empty cmdline and no initrd.
+
+[1] The Discoverable Partitions Specification (DPS)
+Link: https://uapi-group.org/specifications/specs/discoverable_partitions_specification/
+
+[2] systemd-gpt-auto-generator
+Link: https://www.freedesktop.org/software/systemd/man/latest/systemd-gpt-auto-generator.html
+
+[3] GRUB -- §16.2 bli
+Link: https://www.gnu.org/software/grub/manual/grub/html_node/bli_005fmodule.html
+
+Signed-off-by: Vincent Mailhol <mailhol@kernel.org>
+---
+Vincent Mailhol (19):
+      init: add DPS root partition type UUID capability
+      alpha: define DPS root partition type UUID
+      arc: define DPS root partition type UUID
+      arm: define DPS root partition type UUID
+      arm64: define DPS root partition type UUID
+      loongarch: define DPS root partition type UUID
+      mips: define DPS root partition type UUIDs
+      parisc: define DPS root partition type UUID
+      powerpc: define DPS root partition type UUIDs
+      riscv: define DPS root partition type UUIDs
+      s390: define DPS root partition type UUIDs
+      x86: define DPS root partition type UUIDs
+      block: store GPT partition type UUID
+      block: add early_lookup_bdev_by_type_uuid()
+      block: store GPT attributes as a raw value
+      block: don't discover partition with DPS no-auto GPT attribute
+      init: factor out root device lookup into lookup_root_device()
+      init: discover root by DPS partition type UUID
+      docs: document discoverable root partitions
+
+ Documentation/admin-guide/discoverable-root.rst | 33 +++++++++
+ Documentation/admin-guide/index.rst             |  1 +
+ Documentation/admin-guide/kernel-parameters.txt |  5 ++
+ arch/alpha/Kconfig                              |  1 +
+ arch/alpha/include/asm/dps_root.h               |  8 +++
+ arch/arc/Kconfig                                |  1 +
+ arch/arc/include/asm/dps_root.h                 |  8 +++
+ arch/arm/Kconfig                                |  1 +
+ arch/arm/include/asm/dps_root.h                 |  8 +++
+ arch/arm64/Kconfig                              |  1 +
+ arch/arm64/include/asm/dps_root.h               |  8 +++
+ arch/loongarch/Kconfig                          |  1 +
+ arch/loongarch/include/asm/dps_root.h           |  8 +++
+ arch/mips/Kconfig                               |  1 +
+ arch/mips/include/asm/dps_root.h                | 20 ++++++
+ arch/parisc/Kconfig                             |  1 +
+ arch/parisc/include/asm/dps_root.h              |  8 +++
+ arch/powerpc/Kconfig                            |  1 +
+ arch/powerpc/include/asm/dps_root.h             | 16 +++++
+ arch/riscv/Kconfig                              |  1 +
+ arch/riscv/include/asm/dps_root.h               | 12 ++++
+ arch/s390/Kconfig                               |  1 +
+ arch/s390/include/asm/dps_root.h                | 12 ++++
+ arch/x86/Kconfig                                |  1 +
+ arch/x86/include/asm/dps_root.h                 | 12 ++++
+ block/blk.h                                     |  1 +
+ block/early-lookup.c                            | 68 +++++++++++++++++-
+ block/partitions/core.c                         |  2 +
+ block/partitions/efi.c                          |  3 +
+ block/partitions/efi.h                          | 11 ++-
+ include/linux/blk_types.h                       |  1 +
+ include/linux/blkdev.h                          |  5 ++
+ include/linux/root_dev.h                        |  6 ++
+ init/Kconfig                                    |  6 ++
+ init/do_mounts.c                                | 94 ++++++++++++++++++++++++-
+ 35 files changed, 355 insertions(+), 12 deletions(-)
+---
+base-commit: 36808d5e983985bbda87e01059cccc071fe3ec8d
+change-id: 20260611-discoverable-root_partitions-bdacbada570d
+
+Best regards,
+-- 
+Vincent Mailhol <mailhol@kernel.org>
+
