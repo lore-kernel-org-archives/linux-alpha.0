@@ -1,208 +1,278 @@
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B079238889B;
-	Mon,  6 Jul 2026 02:58:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C3872E8DE3
+	for <linux-alpha@vger.kernel.org>; Mon,  6 Jul 2026 17:00:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783306722; cv=none; b=gI+Y1r1i9jXzYIRw1vt4GqHPMJ5l0sDvMzEvgGvmQO/L2qqQbfdoBVtHYnLUIqXW/6UpJ5dwRLJuJ5pNy6F0PIcJiVOWu9mqpYydEuQHRfOcN6wNUeNqdW5X41Mwf181psOe0s+eYWJshixPsPSFc/BbWybTSSrhmb/QLOEZ7tk=
+	t=1783357234; cv=none; b=td4QAhb9DKrqfMnGeSiHR4/FauOkCzCn7gE5W0+35rrshjO3GWxwaSVehps1xgCvzsafCvSklE+/q4F3pGsODz1gUtf8kRGnGKDud00OUHdXXxF93ygz6p4SWiDZ8TX6ECjWLvCNvSX1lY2JLRczn4cEs012DMRhDiFp42DO76E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783306722; c=relaxed/simple;
-	bh=zWMLAltis/gGzTCBAkuWo6mi2BsY773R0tgyf3USLhs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=SNxjgpxhWnd2LNWSi7+vNvcV0evl7SVASMOuC+w8aLEObFgaynVEYdMsJ2Q3Y0abeRfomtEwSlpsN0K6/4ocaC5pQ61eFLxImxdGbonlCJ1O4VMonADc7t7botXnHTBScPG0uqfgzZ2A63xsBqY59C/2lKINif3CbcEjxIuJ7vQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=6kW0tTks; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=6kW0tTks; arc=none smtp.client-ip=45.249.212.190
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	s=arc-20240116; t=1783357234; c=relaxed/simple;
+	bh=+l6e+VeRLW7xzJmxVInFSOsqx9LIi5Wt5E8ntYb1c4U=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Nl8bK5roEotFY7HphWAcFpakRP3zkJ/hFz+J/3hJhOfOSMjJLP8pkS8KPbq/9G+ts39Eje0BuAP5PAQln1ZT/eHlrhUb99Cs2P8AAxEHt7jkXjho2g2oEHBKqX3ALNfPYJ40e8C3Z8yYxBMShCrL275EduxAJ/5sNqeZ01QhfAs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KwwYkvaJ; arc=none smtp.client-ip=209.85.167.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="6kW0tTks";
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="6kW0tTks"
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=tLzU64zcWCpCqtKqdJfi72+8jOLqHwm6rAX9TlEnpBE=;
-	b=6kW0tTks7I4JJHDfBVjF8dEaDL2J766PtNvpdA6LbQQFpMfTqMznvyBNQeh9wxbc/IYSzn3ZU
-	f2djYQecToR3moTosPPfqQapkuoiHKQieMFK0sbmqWZPM62GXgOZ9REO2UonKr5TBLANxucel3h
-	3onSIAA/PUlP2PaW4QIuLbU=
-Received: from canpmsgout05.his.huawei.com (unknown [172.19.92.145])
-	by szxga04-in.huawei.com (SkyGuard) with ESMTPS id 4gtpWs5S8Wz126M0b;
-	Mon,  6 Jul 2026 10:41:13 +0800 (CST)
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=tLzU64zcWCpCqtKqdJfi72+8jOLqHwm6rAX9TlEnpBE=;
-	b=6kW0tTks7I4JJHDfBVjF8dEaDL2J766PtNvpdA6LbQQFpMfTqMznvyBNQeh9wxbc/IYSzn3ZU
-	f2djYQecToR3moTosPPfqQapkuoiHKQieMFK0sbmqWZPM62GXgOZ9REO2UonKr5TBLANxucel3h
-	3onSIAA/PUlP2PaW4QIuLbU=
-Received: from mail.maildlp.com (unknown [172.19.163.0])
-	by canpmsgout05.his.huawei.com (SkyGuard) with ESMTPS id 4gtpL20K7Pz12LHv;
-	Mon,  6 Jul 2026 10:32:42 +0800 (CST)
-Received: from dggpemf500011.china.huawei.com (unknown [7.185.36.131])
-	by mail.maildlp.com (Postfix) with ESMTPS id 836134057A;
-	Mon,  6 Jul 2026 10:41:22 +0800 (CST)
-Received: from [10.67.109.254] (10.67.109.254) by
- dggpemf500011.china.huawei.com (7.185.36.131) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Mon, 6 Jul 2026 10:41:17 +0800
-Message-ID: <e53b3d1f-c9fe-428c-bf1c-6505b3bcb894@huawei.com>
-Date: Mon, 6 Jul 2026 10:41:16 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KwwYkvaJ"
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-5aeb5e85378so3659866e87.1
+        for <linux-alpha@vger.kernel.org>; Mon, 06 Jul 2026 10:00:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1783357230; x=1783962030; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0V25XMahcmii4A05+ZXdyvVIS5DOaF/YxXJrya9TUv0=;
+        b=KwwYkvaJ8rakiMYzBvwhurSSB1kNDdlmFSxJQsjutWfh6MqK1e5SeDQuyoWArc1bdk
+         9IgBqXkQ4KC9FfQ0bVR+rX2xjt5odbBjxUnmeM6k1ZhAFBZbO+sxpaZ1oabuKhgrMevN
+         r6WJcoTLs9YPjejw7Qe0lOTwdHEjH4q4rW8z0d4tMSXiYeE7PlcB32aEePMzecxfbIUs
+         lQdRFsbFCMqHErgwWyvxIPVis1MV7S2h8wGTquMWg1Pa79dB3nXOWHLcN0VwK/esLBB1
+         JwRNc1f9X8cQuOnUzZuq9FX3ae+2mixSSGUQqyMhWZ1HejKvTkqUExChLYtl1I4GBNKW
+         W7IA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783357230; x=1783962030;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0V25XMahcmii4A05+ZXdyvVIS5DOaF/YxXJrya9TUv0=;
+        b=Aajc5bHt5uNpUYldcG27TBpFMOVHplAQ7Hf66dDt0wDMYSptSosdlw3Dd0DbaP2T5P
+         DJOG8z+fu7SeL2WP5peqg98vPsSG2CQ3avdnzJoHttaJGRPjYQSPKVRiUYFEz0I7UY1t
+         IKzxjYT5ACMG1uZrgyJgUJuf4To3lcml06eP2y6n8AW5h7XIRBzLC8Q3P0ZGUtN2gtaC
+         uUEjjlNp3JFNrtIg9Pj2iAemlOAQDwCywDesp5iwaN0lVg/cU2zC+e6h3Vx8J7C+j9At
+         Dv1K3wovG44BYVMCBDMBYeKiCW7oXgiH0VF2JZcRNOAGVNYBjpRGd8hPK1GqYzNvS5fc
+         j4hA==
+X-Forwarded-Encrypted: i=1; AHgh+RqcJRmXuXCzXWSUnK1gGyg+IqOCfMRQXU7zhPWC/T/dqlrmPJ+GaVpCt2QiGoflqqZBG7jG23fgdvvxgQ==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx3Gw77zEZ6PEi8eenAP6OazONFRlsm3z5NGAfjuXHq/XhIwQhR
+	z6QmciLmg9o/9VgQCazx2TlEU5iKhTQ9Qw8/uFnnzxJE5BwBwqBuIrd4
+X-Gm-Gg: AfdE7ckOh6Afp195GdfyGQBWzIapy7Q92ZtuU4Zm5yCdZ+n4OfTZUQWFeIJolsjW6Eg
+	XqkpzZt13lpd2JoO8tFePfPkhckk7c35+ZQYC7avSNnhLSU4+Qpzlx799il4ZZgPi0AGMNV+BMj
+	L5jPzSDKIJIl1DDbiMxaS9n22wqmICb2GTBJuA7jRlaWSGfJ1K0xWZdna2VCO2GROT5v2yxJQhb
+	8JDQJIZRirbL8E6e+u8Bjq00e9oGzS8oZ+KpzV1+pWivhfuMHI2D2YFbHazn+KTzc640S4UOHEu
+	tC8asNgLiCRALhiGmzI6u9bVEmjmo2vjmhy3THzF6oLu5LajVohuRToCiIEG/Zo8PCTMV/KtHu9
+	0kGiJYWaI+UGIKqS3PLHSKmazt1jmbb+kKSicJ2w+DwixDW4YTgKoI2f8sDcnCMzp7ZNN2DbNS3
+	abZKC2WDf3sOuwzkG3DG0gxCh2Rm6FIHDDqveRM4IB0s6LMm2MFvvspILGU7pTIk2w7xYNIKH7M
+	aBwh9ri7iWaTttYS4kK6JfpRrY=
+X-Received: by 2002:a05:6512:6885:10b0:5ae:b8f2:a63d with SMTP id 2adb3069b0e04-5b007c59167mr177353e87.65.1783357229947;
+        Mon, 06 Jul 2026 10:00:29 -0700 (PDT)
+Received: from buildhost.darklands.se (h-158-174-102-211.A469.priv.bahnhof.se. [158.174.102.211])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5aed13bfd1fsm2961021e87.55.2026.07.06.10.00.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jul 2026 10:00:29 -0700 (PDT)
+From: Magnus Lindholm <linmag7@gmail.com>
+To: richard.henderson@linaro.org,
+	mattst88@gmail.com,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org
+Cc: glaubitz@physik.fu-berlin.de,
+	mcree@orcon.net.nz,
+	ink@unseen.parts,
+	macro@orcam.me.uk,
+	Magnus Lindholm <linmag7@gmail.com>
+Subject: [PATCH v4 0/7] alpha: enable generic entry infrastructure
+Date: Mon,  6 Jul 2026 18:56:41 +0200
+Message-ID: <20260706170019.2941459-1-linmag7@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v16 01/18] seccomp: Convert __secure_computing() to return
- boolean
-To: Ada Couprie Diaz <ada.coupriediaz@arm.com>
-CC: <oleg@redhat.com>, <richard.henderson@linaro.org>, <mattst88@gmail.com>,
-	<linmag7@gmail.com>, <linux@armlinux.org.uk>, <catalin.marinas@arm.com>,
-	<will@kernel.org>, <kees@kernel.org>, <guoren@kernel.org>,
-	<chenhuacai@kernel.org>, <kernel@xen0n.name>, <geert@linux-m68k.org>,
-	<tsbogend@alpha.franken.de>, <James.Bottomley@HansenPartnership.com>,
-	<deller@gmx.de>, <maddy@linux.ibm.com>, <mpe@ellerman.id.au>,
-	<npiggin@gmail.com>, <chleroy@kernel.org>, <pjw@kernel.org>,
-	<palmer@dabbelt.com>, <aou@eecs.berkeley.edu>, <alex@ghiti.fr>,
-	<hca@linux.ibm.com>, <gor@linux.ibm.com>, <agordeev@linux.ibm.com>,
-	<borntraeger@linux.ibm.com>, <svens@linux.ibm.com>,
-	<ysato@users.sourceforge.jp>, <dalias@libc.org>,
-	<glaubitz@physik.fu-berlin.de>, <richard@nod.at>,
-	<anton.ivanov@cambridgegreys.com>, <johannes@sipsolutions.net>,
-	<luto@kernel.org>, <tglx@kernel.org>, <mingo@redhat.com>, <bp@alien8.de>,
-	<dave.hansen@linux.intel.com>, <hpa@zytor.com>, <chris@zankel.net>,
-	<jcmvbkbc@gmail.com>, <peterz@infradead.org>, <wad@chromium.org>,
-	<thuth@redhat.com>, <mark.rutland@arm.com>, <kevin.brodsky@arm.com>,
-	<linusw@kernel.org>, <yeoreum.yun@arm.com>, <song@kernel.org>,
-	<james.morse@arm.com>, <anshuman.khandual@arm.com>, <broonie@kernel.org>,
-	<liqiang01@kylinos.cn>, <pengcan@kylinos.cn>, <ryan.roberts@arm.com>,
-	<yangtiezhu@loongson.cn>, <sshegde@linux.ibm.com>, <mchauras@linux.ibm.com>,
-	<austin.kim@lge.com>, <jchrist@linux.ibm.com>, <arnd@arndb.de>,
-	<thomas.weissschuh@linutronix.de>, <sohil.mehta@intel.com>,
-	<andrew.cooper3@citrix.com>, <jgross@suse.com>, <kas@kernel.org>,
-	<x86@kernel.org>, <linux-alpha@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-mm@kvack.org>, <linux-csky@vger.kernel.org>,
-	<loongarch@lists.linux.dev>, <linux-m68k@lists.linux-m68k.org>,
-	<linux-mips@vger.kernel.org>, <linux-parisc@vger.kernel.org>,
-	<linuxppc-dev@lists.ozlabs.org>, <linux-riscv@lists.infradead.org>,
-	<linux-s390@vger.kernel.org>, <linux-sh@vger.kernel.org>,
-	<linux-um@lists.infradead.org>
-References: <20260629130616.642022-1-ruanjinjie@huawei.com>
- <20260629130616.642022-2-ruanjinjie@huawei.com>
- <b8f3b5cd-8d8a-4396-ba0c-011a83234dd9@arm.com>
-From: Jinjie Ruan <ruanjinjie@huawei.com>
-In-Reply-To: <b8f3b5cd-8d8a-4396-ba0c-011a83234dd9@arm.com>
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: kwepems500002.china.huawei.com (7.221.188.17) To
- dggpemf500011.china.huawei.com (7.185.36.131)
 
+Hi,
 
+This series moves Alpha closer to the common architecture infrastructure
+and enables GENERIC_ENTRY. This is v4 of this patch
+series, please see below for changes since v1, v2 and v3.
 
-On 7/1/2026 12:37 AM, Ada Couprie Diaz wrote:
-> Hi Jinjie,
-> 
-> On 29/06/2026 14:05, Jinjie Ruan wrote:
->> The return value of __secure_computing() currently uses 0 to indicate
->> that a system call should be allowed, and -1 to indicate that it should
->> be blocked/killed. This 0/-1 pattern is non-intuitive for a security
->> check function and makes the control flow at the call sites less
->> readable.
->>
->> Furthermore, any potential future changes to these return values would
->> require a high-risk, error-prone audit of all its users across different
->> architectures.
->>
->> Sanitize this logic by converting the return type of __secure_computing()
->> to a proper boolean, where 'true' explicitly means 'allow' and 'false'
->> means 'fail/deny'.
->>
->> Update all the two dozen or so call sites across the tree to align with
->> this new boolean semantic. No functional changes are intended, as the
->> callers still return -1 to the lower-level assembly entry code upon
->> seccomp denial.
-> Would it be relevant to mention that this fixes the unsound return value of
-> `syscall_trace_enter()` in generic entry, which motivated the patch
-> initially[0] ?
+The main motivation is to reduce Alpha-specific syscall tracing, ptrace,
+seccomp, and return-to-user handling where common code already provides
+the required infrastructure. Alpha still has ABI-sensitive syscall
+details, most notably the assembly syscall invocation and the r0/r19
+return-value encoding, so those remain Alpha-specific. The surrounding
+entry/exit decisions are moved towards common code.
 
-That's a very good point. It's definitely worth mentioning
+The series first adds regset-based ptrace and core dump support. Alpha
+now provides a user_regset_view for NT_PRSTATUS and NT_PRFPREG, exports
+the ELF-visible general and floating-point register layouts, and uses the
+common ptrace regset implementation for PTRACE_GETREGSET and
+PTRACE_SETREGSET instead of open-coding iovec handling in arch_ptrace().
+This also provides the basis for HAVE_ARCH_TRACEHOOK and common ptrace
+syscall-info support.
 
->> Suggested-by: Thomas Gleixner <tglx@kernel.org>
->> Signed-off-by: Jinjie Ruan <ruanjinjie@huawei.com>
->> ---
->>   arch/alpha/kernel/ptrace.c            |  2 +-
->>   arch/arm/kernel/ptrace.c              |  2 +-
->>   arch/arm64/kernel/ptrace.c            |  2 +-
->>   arch/csky/kernel/ptrace.c             |  2 +-
->>   arch/m68k/kernel/ptrace.c             |  2 +-
->>   arch/mips/kernel/ptrace.c             |  2 +-
->>   arch/parisc/kernel/ptrace.c           |  2 +-
->>   arch/sh/kernel/ptrace_32.c            |  2 +-
->>   arch/um/kernel/skas/syscall.c         |  2 +-
->>   arch/x86/entry/vsyscall/vsyscall_64.c |  2 +-
->>   arch/xtensa/kernel/ptrace.c           |  3 +--
->>   include/linux/entry-common.h          |  7 +++---
->>   include/linux/seccomp.h               | 10 ++++----
->>   kernel/seccomp.c                      | 34 +++++++++++++--------------
->>   14 files changed, 36 insertions(+), 38 deletions(-)
-> 
-> This is missing an update to the Kconfig documentation, a possible
-> suggestion :
+It then adds ARCH_STACKWALK support. The implementation uses a simple
+kernel stack scanning walker, starting after pt_regs for current tasks
+and using the saved PCB kernel stack pointer for blocked tasks. This
+enables common stacktrace users such as dump_stack(), /proc/*/stack, and
+SysRq backtraces, without introducing a frame-pointer-based unwinder. It
+also avoids relying on the legacy weak save_stack_trace_*() fallbacks,
+which is needed by the later generic IRQ-entry configuration in this
+series.
 
-Will update it.
+The next group of patches prepares Alpha for lockdep IRQ-state tracking.
+Alpha interrupt masking is controlled by the PAL IPL state, so the
+irqflags helpers are made to operate on IPL state rather than treating
+the full processor status word as the saved interrupt state. The series
+also provides ftrace return-address support for lockdep call-site
+reporting and converts low-level platform locks to raw spinlocks where
+regular spinlock instrumentation is not appropriate for the hardware and
+interrupt paths involved.
 
-> 
-> diff --git a/arch/Kconfig b/arch/Kconfig
-> index fa7507ac8e13..9e3d40088afb 100644
-> --- a/arch/Kconfig
-> +++ b/arch/Kconfig
-> @@ -637,7 +637,7 @@ config HAVE_ARCH_SECCOMP_FILTER
->           - syscall_set_return_value()
->           - SIGSYS siginfo_t support
->           - secure_computing is called from a ptrace_event()-safe context
-> -         - secure_computing return value is checked and a return value
-> of -1
-> +         - secure_computing return value is checked and if false
->             results in the system call being skipped immediately.
->           - seccomp syscall wired up
->           - if !HAVE_SPARSE_SYSCALL_NR, have SECCOMP_ARCH_NATIVE,
-> 
->> [...]
->> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
->> index 416a3352261f..3f66320e46d3 100644
->> --- a/include/linux/entry-common.h
->> +++ b/include/linux/entry-common.h
->> @@ -100,9 +100,8 @@ static __always_inline long
->> syscall_trace_enter(struct pt_regs *regs, unsigned l
->>         /* Do seccomp after ptrace, to catch any tracer changes. */
->>       if (work & SYSCALL_WORK_SECCOMP) {
->> -        ret = __secure_computing();
->> -        if (ret == -1L)
->> -            return ret;
->> +        if (!__secure_computing())
->> +            return -1L;
->>       }
->>         /* Either of the above might have changed the syscall number */
->> @@ -113,7 +112,7 @@ static __always_inline long
->> syscall_trace_enter(struct pt_regs *regs, unsigned l
->>         syscall_enter_audit(regs, syscall);
->>   -    return ret ? : syscall;
->> +    return syscall;
->>   }
->> [...]
-> 
-> Otherwise this feels like a more appropriate change with regards to
-> "safeguarding against new `secure_computing()` return value" !
-> 
-> With the updated Kconfig :
-> Reviewed-by: Ada Couprie Diaz <ada.coupriediaz@arm.com>
-> 
-> Thanks,
-> Ada
-> 
-> [0]: https://lore.kernel.org/r/20260511092103.1974980-2-
-> ruanjinjie@huawei.com
-> 
-> 
+The lockdep patch then adds hardirq state tracking in Alpha's low-level
+entry/exit paths. It annotates PAL IPL transitions and the shared return
+path so lockdep can keep its interrupt state in sync with the hardware
+IPL state. This allows CONFIG_PROVE_LOCKING to remain useful on Alpha
+instead of quickly disabling debug_locks due to IRQ state mismatches.
+
+The final patch enables GENERIC_ENTRY and. Syscall
+entry now uses C helpers built around syscall_enter_from_user_mode().
+The C entry helper handles the common syscall-entry work, including
+ptrace/seccomp entry processing, skip decisions, syscall-number
+shadowing, and syscall table lookup. It returns the selected syscall
+function pointer to assembly.
+
+Assembly then performs only the Alpha-specific dispatch: it reloads the
+syscall arguments, preserves the required GP/stack conventions, and
+performs the indirect call through the function pointer returned by C.
+Skipped syscalls bypass that dispatch and return through the Alpha
+syscall-exit helper.
+
+Syscall exit is split in the same way. Alpha first performs its
+ABI-specific result handling: r0/v0 carries the return value or positive
+errno, and r19/a3 carries the error flag. It also handles skipped
+syscall restart state and successful syscalls whose return values may
+look like negative errnos, such as legacy ptrace PEEK requests. Once the
+Alpha-specific r0/r19 state is encoded, the path enters
+syscall_exit_to_user_mode() for the common syscall-exit and
+exit-to-user-mode work.
+
+The syscall number used by generic entry is kept separately from the
+return-value register. entSys copies the raw r0 syscall number into r1,
+and r1 is used as Alpha's generic-entry syscall-number shadow. Restart
+bookkeeping that used to be carried by low-level assembly state is now
+kept explicitly in thread_info. This avoids using user-visible general
+registers as hidden restart state while preserving Alpha's restart and
+ptrace semantics.
+
+Testing was performed on an Alpha EV68/Tsunami SMP system (UP2000+) as
+well as an Alphaserver 4100 (rawhide) system.
+
+For the regset, ptrace, tracehook, and generic-entry changes, testing
+included:
+
+  - custom ptrace/regset round-trip tests for both GPR and FPR regsets
+  - PTRACE_GET_SYSCALL_INFO validation, including the reported user
+    stack pointer
+  - ELF core dump inspection with readelf
+  - strace testsuite (make check), with the remaining failures comparable
+    to the pre-series baseline on the same system.
+
+Kernel tools/testing/selftests:
+  - ptrace: syscall-info tests improved over the baseline.
+  - seccomp: seccomp_bpf passes all applicable tests.
+  - exec: check-exec now passes once loop block-device support is enabled.
+  - ipc: ipc selftests improved over the baseline.
+  - acct: acct selftests improved over the baseline.
+
+Overall, the selftest comparison did not show an obvious regression
+introduced by this series. Instead, the patched kernel reduced the
+number of failing top-level selftests and fixed several failures in areas
+that exercise the new ptrace, tracehook, seccomp, and generic-entry
+paths. Some unrelated failures remain and need separate investigation,
+but they are either also present in the baseline run or explained by
+missing kernel configuration or test-environment support.
+
+For the stacktrace changes, the following scenarios were verified:
+
+  - SysRq 'l' prints backtraces for all CPUs, including syscall and
+    interrupt contexts
+  - /proc/<pid>/stack returns sensible call chains for both the current
+    task and sleeping tasks, such as nanosleep
+  - stack traces remain stable under scheduler and I/O load, including
+    ping, ext4 writes, and background workqueues
+  - no crashes, lockups, or obvious mis-unwinds were observed
+
+For the lockdep changes, /proc/lockdep_stats shows debug_locks remaining
+enabled, with no redundant hardirq or softirq on/off annotations observed
+during testing.
+
+Review feedback is very welcome. Additional testing on other Alpha
+systems, CPU variants, and workloads would also be much appreciated.
+
+Patches:
+
+  1. alpha: enable regset-based ptrace and core dumps
+  2. alpha: add ARCH_STACKWALK-based stacktrace support
+  3. alpha: make irqflags helpers operate on IPL state
+  4. alpha: provide ftrace return address support for lockdep
+  5. alpha: convert low-level platform locks to raw spinlocks
+  6. alpha: enable lockdep hardirq state tracking
+  7. alpha: enable GENERIC_ENTRY
+
+Thanks,
+
+Magnus
+
+---
+Changes since v1:
+ - Fixed skipped-syscall exit handling so PTRACE_SET_SYSCALL_INFO and legacy
+   POKEUSR skips return ENOSYS/a3=1 only when no ptrace/seccomp return value
+   was installed.
+Changes since v2:
+ - patch 8: add PTRACE_PEEKUSR support for FP registers and PC
+ - patch 8: add/fix focused ptrace single-step validation
+ - patches 1-7: add Reviewed-by and Tested-by tag
+Changes since v3:
+ - Rebase on v7.2-rc1
+ - Restored Alpha's explicit FPU save before signal delivery in the generic
+   return-to-user path, fixing FP state corruption seen with asynchronous
+   signals and FP-heavy userspace.
+ - Dropped the explicit GENERIC_IRQ_ENTRY select from Kconfig, since
+   GENERIC_ENTRY already selects it.
+ - Dropped the pci-sysfs bin_attribute initialization patch; it is no longer
+   needed after rebasing onto v7.2-rc1, where Alpha PCI resource attributes
+   are static attribute-group entries rather than dynamically allocated
+   bin_attributes.
+
+Magnus Lindholm (7):
+  alpha: enable regset-based ptrace and core dumps
+  alpha: add ARCH_STACKWALK-based stacktrace support
+  alpha: make irqflags helpers operate on IPL state
+  alpha: provide ftrace return address support for lockdep
+  alpha: use raw spinlocks for low-level platform locks
+  alpha: enable lockdep hardirq state tracking
+  alpha: enable GENERIC_ENTRY
+
+ .../features/core/tracehook/arch-support.txt  |   2 +-
+ .../features/locking/lockdep/arch-support.txt |   2 +-
+ arch/alpha/Kconfig                            |  12 +
+ arch/alpha/include/asm/elf.h                  |   1 +
+ arch/alpha/include/asm/entry-common.h         |  14 +
+ arch/alpha/include/asm/ftrace.h               |  30 +-
+ arch/alpha/include/asm/irqflags.h             |   6 +-
+ arch/alpha/include/asm/ptrace.h               |  21 +-
+ arch/alpha/include/asm/stacktrace.h           |  20 +
+ arch/alpha/include/asm/syscall.h              |  18 +-
+ arch/alpha/include/asm/thread_info.h          |  31 +-
+ arch/alpha/include/uapi/asm/ptrace.h          |   2 +-
+ arch/alpha/kernel/Makefile                    |   3 +-
+ arch/alpha/kernel/asm-offsets.c               |   6 +
+ arch/alpha/kernel/entry.S                     | 328 +++++---------
+ arch/alpha/kernel/irq_alpha.c                 |  78 +++-
+ arch/alpha/kernel/irq_i8259.c                 |  19 +-
+ arch/alpha/kernel/proto.h                     |  13 +-
+ arch/alpha/kernel/ptrace.c                    | 400 ++++++++++++++----
+ arch/alpha/kernel/signal.c                    | 149 ++++++-
+ arch/alpha/kernel/stacktrace.c                |  61 +++
+ arch/alpha/kernel/sys_dp264.c                 |  38 +-
+ arch/alpha/kernel/sys_rawhide.c               |  17 +-
+ arch/alpha/kernel/traps.c                     |   8 +
+ arch/alpha/kernel/vmlinux.lds.S               |   2 +
+ 25 files changed, 860 insertions(+), 421 deletions(-)
+ create mode 100644 arch/alpha/include/asm/entry-common.h
+ create mode 100644 arch/alpha/include/asm/stacktrace.h
+ create mode 100644 arch/alpha/kernel/stacktrace.c
+
+-- 
+2.53.0
 
