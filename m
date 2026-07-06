@@ -1,120 +1,208 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 767693815D0
-	for <linux-alpha@vger.kernel.org>; Sun,  5 Jul 2026 14:07:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783260449; cv=pass; b=NgiQq4HkstCbBIZxWjs88uHcrDqx+7dSpSfdoobDY6ufbmUHYmBp/47Y2lmvSmVCUhahKkq74BFDQZFMHmUeLlBkNpJGmkM/avx1SFoNnZQ1Y08CFnpCe42c1nNUkoJc/bRYpI+/HkoaVNAMgKoKIZLvxiXW44tDhL3T65AHdqo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783260449; c=relaxed/simple;
-	bh=rJTLgXhHbzb6m4yuwfvd7DNNK4sQXEKA4fD/etrYkds=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BQQNTQbSnLn02CFYhuBxFutzbxHYFU9VIIMTS3sKqzmCLHIkKKyLV75rFRcpheLSvqfBUAjoGESpF4Y8GpnrUS3Oj0Bz34BAN8EePMVTaWovmPNLx8/8J7tO1GKGi1ZTvAeagOAjSKi8tPuCb1anadso8I/lwuTHXmagtPhxk9s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Uc4vM4E8; arc=pass smtp.client-ip=209.85.208.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B079238889B;
+	Mon,  6 Jul 2026 02:58:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783306722; cv=none; b=gI+Y1r1i9jXzYIRw1vt4GqHPMJ5l0sDvMzEvgGvmQO/L2qqQbfdoBVtHYnLUIqXW/6UpJ5dwRLJuJ5pNy6F0PIcJiVOWu9mqpYydEuQHRfOcN6wNUeNqdW5X41Mwf181psOe0s+eYWJshixPsPSFc/BbWybTSSrhmb/QLOEZ7tk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783306722; c=relaxed/simple;
+	bh=zWMLAltis/gGzTCBAkuWo6mi2BsY773R0tgyf3USLhs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=SNxjgpxhWnd2LNWSi7+vNvcV0evl7SVASMOuC+w8aLEObFgaynVEYdMsJ2Q3Y0abeRfomtEwSlpsN0K6/4ocaC5pQ61eFLxImxdGbonlCJ1O4VMonADc7t7botXnHTBScPG0uqfgzZ2A63xsBqY59C/2lKINif3CbcEjxIuJ7vQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=6kW0tTks; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=6kW0tTks; arc=none smtp.client-ip=45.249.212.190
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Uc4vM4E8"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-69a50b818c8so494157a12.2
-        for <linux-alpha@vger.kernel.org>; Sun, 05 Jul 2026 07:07:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783260447; cv=none;
-        d=google.com; s=arc-20260327;
-        b=pKXnZe6bp83Bc/3YJZaohk5As0K2nCqQY3UDh1BkMZKY2S/fXJkIXaQ2aYDwwFc0eC
-         XkEgqE0TO4Filb6Fa6OCXt7boWrvcHiJrmrYmR2mh34cK2EVvIiFAdyc5TJbI7djd/Bj
-         ci8UaF6ZEa10o4QTuZdag9OhBOgMpzViBMICZ4mPI1EAaZ7cAW77tva+YhL1XcdVSu34
-         o2dy6mCWV0pnAx23su2/cyEf+zAMT5wwIZMc0QEDvV83p5zcbJBM8tC6eQrF8XKd0pQA
-         EnCLvCXrxSbt5Ht6HiKFLT9EWatbYTzW9hOhfI6nIXcZliXyauieoKrZliIBLTuM8XmU
-         nJSA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=B3eDvtCGD+y1CcmjNg7OzcOTyUVb7vyb9rRqusXMVIo=;
-        fh=OiSYg5qw1Vq6+hnNRllDvntx1PGsFe8kULBAx5w9SdU=;
-        b=F8FbuaGV/puWG6HKRDq1yNWgCdnMhM3kH0fnX9pEMXUabgzfQJ3LY2xxhVavpeTu+s
-         8XQQZ78HRb3jYyROkwhhv3r8/DaWXY7nHXUg8+9xjwk2MOWt9H1q8r+DKiP5Q2m5y1AS
-         DQ/qFVcAGi1WqerOhStIuLo4nkBfoAEPi7ZL/loCU81ppujR2WSlBTEuMZeKoDGdWEZp
-         8LI8fKojSVShPguV42yMx4iY9NEK5rpDeUn+FglAQrVyTDAJv0Yfk5dExx5GlAIUrI2r
-         alupef0pQU8q2DQKvve8e37EOr+WV5lLbIaiFiSSOn1Er/xlHUfmOxBELxe645ZB15Fb
-         O0eA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783260447; x=1783865247; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=B3eDvtCGD+y1CcmjNg7OzcOTyUVb7vyb9rRqusXMVIo=;
-        b=Uc4vM4E8qyWYy7WgvXfIxbazhfL4kwaaR8mVFgvGClPJ1z5c/C/YPoXOvo2yJPkk/Q
-         s7EpSopm/5suu5QbsVX+Etol5dhJl5WNg5Ct8ldnSL1LWgUmxuWEocL7HVnsPwjwFmrT
-         QvrjpLJ9GUeQfu7AjqOlgT1BuOURjNjljo0LYVZ1tIsSiSyaDSA1pMOAZOcWnFGWpHnY
-         APlN20/bCeMe5qB+rZ5z8iUIfrCW3opE+B16d3nytkTnylXNSgLnCZvIZumdEIkXHXiM
-         38Hle2a51rdDHwPk1lLgHE2TXPumWA2shFQJQHKb462NUfIzZosEmnkAarPR3S+nqbDT
-         HjXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783260447; x=1783865247;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=B3eDvtCGD+y1CcmjNg7OzcOTyUVb7vyb9rRqusXMVIo=;
-        b=EuPi9lnJ17cgWQF8cn2p20NJ6QmO7dWNDU5qtdvvfzWl4Q2eihPr91S+8jxqG5bRTV
-         mUWXDncgdQAwJG/HV9hgQ43EnIM5aAj8QO9MlLE9EtdwqSq2cXiJqC7Un4sZCPZ99O6q
-         qOxwAwF7ltnzIVhqYYSZVw5zuPlpHdqKXPzWWg42jbXmrkpR2FYPwEt6QAUrXEbqflod
-         rQqmmF286019F7btMafdWUosF0Rku8qI8kHnoX3UE2j4ETPJn2t9vam1A2Vg8MLSFfi0
-         tt9tWhl3wSm9hdj1yFLCy9o2woBPmDFrTInAcKNHRLjZzaB5kV3TwZjjghxq/B8ZSRuU
-         sUWQ==
-X-Forwarded-Encrypted: i=1; AHgh+RrTw75LX9sT3/O0562rPse7HKbFhpErtvP5k7A1r8GHKvBjLK+Xa7xB8s6lOwJzNGym5e2yBbKit4Gsiw==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwTilWDxNXdxAEzlC6eKB8rs07f2ZY4GHu8MEmaBnsWxM+pAhyz
-	WglLgxrJlzLeAL1c2VBTz+L4GmODtlu7262QmsPmkg7yif6Wa9JyOCT7hObnIppJpG/AyNSBTdb
-	Lxy10N5DG5MM5TEmstWFZl3+jfTvWrzY=
-X-Gm-Gg: AfdE7clt1hLkGJ9f+jm6GMm2MHHzzzxG0ldbRr/qvyfY3URxrpMbOy0vvbbqt+qv4nW
-	LlT2o6H1UQBBE1krkXU4aHTeulVg9BUJlWgXqB31XoQHHi/iPa6UbqTT0wVVGQrCQ1jalL3dl2E
-	hS/jTGKkatt1zJa8vUKrHVfOVxmIZEQ44e7dB7k/k3tIHgYEQSxv43b/ycri1It6hVKQynR0tJG
-	J0l/MAJdkcu3fDsFQGyWnVA8ZZrBiEyKE5XZT/xx8farQc+2r6Lu+UUv9p3V98ZgzMJzcqIAmS8
-	IhSS1NAYf8xT/diQ+PAweUadVMlRgwo=
-X-Received: by 2002:a05:6402:28cf:b0:698:b8ad:2349 with SMTP id
- 4fb4d7f45d1cf-69a1a3b11f1mr2008890a12.30.1783260446501; Sun, 05 Jul 2026
- 07:07:26 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="6kW0tTks";
+	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="6kW0tTks"
+dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
+	c=relaxed/relaxed; q=dns/txt;
+	h=From;
+	bh=tLzU64zcWCpCqtKqdJfi72+8jOLqHwm6rAX9TlEnpBE=;
+	b=6kW0tTks7I4JJHDfBVjF8dEaDL2J766PtNvpdA6LbQQFpMfTqMznvyBNQeh9wxbc/IYSzn3ZU
+	f2djYQecToR3moTosPPfqQapkuoiHKQieMFK0sbmqWZPM62GXgOZ9REO2UonKr5TBLANxucel3h
+	3onSIAA/PUlP2PaW4QIuLbU=
+Received: from canpmsgout05.his.huawei.com (unknown [172.19.92.145])
+	by szxga04-in.huawei.com (SkyGuard) with ESMTPS id 4gtpWs5S8Wz126M0b;
+	Mon,  6 Jul 2026 10:41:13 +0800 (CST)
+dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
+	c=relaxed/relaxed; q=dns/txt;
+	h=From;
+	bh=tLzU64zcWCpCqtKqdJfi72+8jOLqHwm6rAX9TlEnpBE=;
+	b=6kW0tTks7I4JJHDfBVjF8dEaDL2J766PtNvpdA6LbQQFpMfTqMznvyBNQeh9wxbc/IYSzn3ZU
+	f2djYQecToR3moTosPPfqQapkuoiHKQieMFK0sbmqWZPM62GXgOZ9REO2UonKr5TBLANxucel3h
+	3onSIAA/PUlP2PaW4QIuLbU=
+Received: from mail.maildlp.com (unknown [172.19.163.0])
+	by canpmsgout05.his.huawei.com (SkyGuard) with ESMTPS id 4gtpL20K7Pz12LHv;
+	Mon,  6 Jul 2026 10:32:42 +0800 (CST)
+Received: from dggpemf500011.china.huawei.com (unknown [7.185.36.131])
+	by mail.maildlp.com (Postfix) with ESMTPS id 836134057A;
+	Mon,  6 Jul 2026 10:41:22 +0800 (CST)
+Received: from [10.67.109.254] (10.67.109.254) by
+ dggpemf500011.china.huawei.com (7.185.36.131) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Mon, 6 Jul 2026 10:41:17 +0800
+Message-ID: <e53b3d1f-c9fe-428c-bf1c-6505b3bcb894@huawei.com>
+Date: Mon, 6 Jul 2026 10:41:16 +0800
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260612203006.2265557-1-linmag7@gmail.com> <20260612203006.2265557-9-linmag7@gmail.com>
- <dcc4f002-8ce8-4193-8e55-0dc6968a78e8@gmail.com>
-In-Reply-To: <dcc4f002-8ce8-4193-8e55-0dc6968a78e8@gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Sun, 5 Jul 2026 16:07:15 +0200
-X-Gm-Features: AVVi8Cc4PBKfOcKFgVuC9sn2gI2MuUiDytmckrVOusHs6ldedPOG7qFPhRxHybY
-Message-ID: <CA+=Fv5T9Z=T6g_Z6RDh22gxDi5F76K5P7+Bes7L635bg+7zuhw@mail.gmail.com>
-Subject: Re: [PATCH v3 8/8] alpha: enable GENERIC_ENTRY and GENERIC_IRQ_ENTRY
-To: Julian Braha <julianbraha@gmail.com>
-Cc: richard.henderson@linaro.org, mattst88@gmail.com, 
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, 
-	glaubitz@physik.fu-berlin.de, mcree@orcon.net.nz, ink@unseen.parts, 
-	macro@orcam.me.uk
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v16 01/18] seccomp: Convert __secure_computing() to return
+ boolean
+To: Ada Couprie Diaz <ada.coupriediaz@arm.com>
+CC: <oleg@redhat.com>, <richard.henderson@linaro.org>, <mattst88@gmail.com>,
+	<linmag7@gmail.com>, <linux@armlinux.org.uk>, <catalin.marinas@arm.com>,
+	<will@kernel.org>, <kees@kernel.org>, <guoren@kernel.org>,
+	<chenhuacai@kernel.org>, <kernel@xen0n.name>, <geert@linux-m68k.org>,
+	<tsbogend@alpha.franken.de>, <James.Bottomley@HansenPartnership.com>,
+	<deller@gmx.de>, <maddy@linux.ibm.com>, <mpe@ellerman.id.au>,
+	<npiggin@gmail.com>, <chleroy@kernel.org>, <pjw@kernel.org>,
+	<palmer@dabbelt.com>, <aou@eecs.berkeley.edu>, <alex@ghiti.fr>,
+	<hca@linux.ibm.com>, <gor@linux.ibm.com>, <agordeev@linux.ibm.com>,
+	<borntraeger@linux.ibm.com>, <svens@linux.ibm.com>,
+	<ysato@users.sourceforge.jp>, <dalias@libc.org>,
+	<glaubitz@physik.fu-berlin.de>, <richard@nod.at>,
+	<anton.ivanov@cambridgegreys.com>, <johannes@sipsolutions.net>,
+	<luto@kernel.org>, <tglx@kernel.org>, <mingo@redhat.com>, <bp@alien8.de>,
+	<dave.hansen@linux.intel.com>, <hpa@zytor.com>, <chris@zankel.net>,
+	<jcmvbkbc@gmail.com>, <peterz@infradead.org>, <wad@chromium.org>,
+	<thuth@redhat.com>, <mark.rutland@arm.com>, <kevin.brodsky@arm.com>,
+	<linusw@kernel.org>, <yeoreum.yun@arm.com>, <song@kernel.org>,
+	<james.morse@arm.com>, <anshuman.khandual@arm.com>, <broonie@kernel.org>,
+	<liqiang01@kylinos.cn>, <pengcan@kylinos.cn>, <ryan.roberts@arm.com>,
+	<yangtiezhu@loongson.cn>, <sshegde@linux.ibm.com>, <mchauras@linux.ibm.com>,
+	<austin.kim@lge.com>, <jchrist@linux.ibm.com>, <arnd@arndb.de>,
+	<thomas.weissschuh@linutronix.de>, <sohil.mehta@intel.com>,
+	<andrew.cooper3@citrix.com>, <jgross@suse.com>, <kas@kernel.org>,
+	<x86@kernel.org>, <linux-alpha@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-mm@kvack.org>, <linux-csky@vger.kernel.org>,
+	<loongarch@lists.linux.dev>, <linux-m68k@lists.linux-m68k.org>,
+	<linux-mips@vger.kernel.org>, <linux-parisc@vger.kernel.org>,
+	<linuxppc-dev@lists.ozlabs.org>, <linux-riscv@lists.infradead.org>,
+	<linux-s390@vger.kernel.org>, <linux-sh@vger.kernel.org>,
+	<linux-um@lists.infradead.org>
+References: <20260629130616.642022-1-ruanjinjie@huawei.com>
+ <20260629130616.642022-2-ruanjinjie@huawei.com>
+ <b8f3b5cd-8d8a-4396-ba0c-011a83234dd9@arm.com>
+From: Jinjie Ruan <ruanjinjie@huawei.com>
+In-Reply-To: <b8f3b5cd-8d8a-4396-ba0c-011a83234dd9@arm.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: kwepems500002.china.huawei.com (7.221.188.17) To
+ dggpemf500011.china.huawei.com (7.185.36.131)
 
->
-> >  config ALPHA
-> >       bool
-> >       default y
-> > +     select GENERIC_IRQ_ENTRY
-> > +     select GENERIC_ENTRY
-> > +     select HAVE_SYSCALL_TRACEPOINTS
-> >       select ARCH_32BIT_USTAT_F_TINODE
->
-> Hi Magnus,
->
-> Selecting GENERIC_IRQ_ENTRY is unnecessary here since you're already
-> selecting GENERIC_ENTRY.
->
 
-Hi Julian,
 
-Thanks for spotting that. You're right, the explicit GENERIC_IRQ_ENTRY select
-is redundant since GENERIC_ENTRY already selects it. I've dropped it from the
-next version.
+On 7/1/2026 12:37 AM, Ada Couprie Diaz wrote:
+> Hi Jinjie,
+> 
+> On 29/06/2026 14:05, Jinjie Ruan wrote:
+>> The return value of __secure_computing() currently uses 0 to indicate
+>> that a system call should be allowed, and -1 to indicate that it should
+>> be blocked/killed. This 0/-1 pattern is non-intuitive for a security
+>> check function and makes the control flow at the call sites less
+>> readable.
+>>
+>> Furthermore, any potential future changes to these return values would
+>> require a high-risk, error-prone audit of all its users across different
+>> architectures.
+>>
+>> Sanitize this logic by converting the return type of __secure_computing()
+>> to a proper boolean, where 'true' explicitly means 'allow' and 'false'
+>> means 'fail/deny'.
+>>
+>> Update all the two dozen or so call sites across the tree to align with
+>> this new boolean semantic. No functional changes are intended, as the
+>> callers still return -1 to the lower-level assembly entry code upon
+>> seccomp denial.
+> Would it be relevant to mention that this fixes the unsound return value of
+> `syscall_trace_enter()` in generic entry, which motivated the patch
+> initially[0] ?
 
-Thanks,
-Magnus
+That's a very good point. It's definitely worth mentioning
+
+>> Suggested-by: Thomas Gleixner <tglx@kernel.org>
+>> Signed-off-by: Jinjie Ruan <ruanjinjie@huawei.com>
+>> ---
+>>   arch/alpha/kernel/ptrace.c            |  2 +-
+>>   arch/arm/kernel/ptrace.c              |  2 +-
+>>   arch/arm64/kernel/ptrace.c            |  2 +-
+>>   arch/csky/kernel/ptrace.c             |  2 +-
+>>   arch/m68k/kernel/ptrace.c             |  2 +-
+>>   arch/mips/kernel/ptrace.c             |  2 +-
+>>   arch/parisc/kernel/ptrace.c           |  2 +-
+>>   arch/sh/kernel/ptrace_32.c            |  2 +-
+>>   arch/um/kernel/skas/syscall.c         |  2 +-
+>>   arch/x86/entry/vsyscall/vsyscall_64.c |  2 +-
+>>   arch/xtensa/kernel/ptrace.c           |  3 +--
+>>   include/linux/entry-common.h          |  7 +++---
+>>   include/linux/seccomp.h               | 10 ++++----
+>>   kernel/seccomp.c                      | 34 +++++++++++++--------------
+>>   14 files changed, 36 insertions(+), 38 deletions(-)
+> 
+> This is missing an update to the Kconfig documentation, a possible
+> suggestion :
+
+Will update it.
+
+> 
+> diff --git a/arch/Kconfig b/arch/Kconfig
+> index fa7507ac8e13..9e3d40088afb 100644
+> --- a/arch/Kconfig
+> +++ b/arch/Kconfig
+> @@ -637,7 +637,7 @@ config HAVE_ARCH_SECCOMP_FILTER
+>           - syscall_set_return_value()
+>           - SIGSYS siginfo_t support
+>           - secure_computing is called from a ptrace_event()-safe context
+> -         - secure_computing return value is checked and a return value
+> of -1
+> +         - secure_computing return value is checked and if false
+>             results in the system call being skipped immediately.
+>           - seccomp syscall wired up
+>           - if !HAVE_SPARSE_SYSCALL_NR, have SECCOMP_ARCH_NATIVE,
+> 
+>> [...]
+>> diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
+>> index 416a3352261f..3f66320e46d3 100644
+>> --- a/include/linux/entry-common.h
+>> +++ b/include/linux/entry-common.h
+>> @@ -100,9 +100,8 @@ static __always_inline long
+>> syscall_trace_enter(struct pt_regs *regs, unsigned l
+>>         /* Do seccomp after ptrace, to catch any tracer changes. */
+>>       if (work & SYSCALL_WORK_SECCOMP) {
+>> -        ret = __secure_computing();
+>> -        if (ret == -1L)
+>> -            return ret;
+>> +        if (!__secure_computing())
+>> +            return -1L;
+>>       }
+>>         /* Either of the above might have changed the syscall number */
+>> @@ -113,7 +112,7 @@ static __always_inline long
+>> syscall_trace_enter(struct pt_regs *regs, unsigned l
+>>         syscall_enter_audit(regs, syscall);
+>>   -    return ret ? : syscall;
+>> +    return syscall;
+>>   }
+>> [...]
+> 
+> Otherwise this feels like a more appropriate change with regards to
+> "safeguarding against new `secure_computing()` return value" !
+> 
+> With the updated Kconfig :
+> Reviewed-by: Ada Couprie Diaz <ada.coupriediaz@arm.com>
+> 
+> Thanks,
+> Ada
+> 
+> [0]: https://lore.kernel.org/r/20260511092103.1974980-2-
+> ruanjinjie@huawei.com
+> 
+> 
+
