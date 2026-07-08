@@ -1,170 +1,172 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62FAA3B42F1
-	for <linux-alpha@vger.kernel.org>; Wed,  8 Jul 2026 10:56:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783508202; cv=pass; b=kmwOofAGoYSw4/lXQE1xivqTH3VkDR/vDHGK/PAoF9iSGXdDs6lBiS1UsKkWBySCNn2wxmMsZ5WUI1vC7Jtro4z1nQZH1Q6pzRZWpYS2Mee6HraqY8IoMdGA6mNgbkZyDmXSzwnjZ8g3b+gSlLBJi6Jqk6KvwKbnfuLX0ZbIL8Y=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783508202; c=relaxed/simple;
-	bh=WfD4dCVWiG8ERAjlT2lUVZEkQgo52iiyfAGVYhwTEPU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fRt4Blahjtw8uaBkuR72qLCNiFXQpLTNpH0npDf3c4Lly9VE2cI2F5afDNRV5Ez0/HZUithIBEE7pflDcH7tRjKHr3F4+FpbllQwkFs+kpo+GQF0nhRd15+kNasV9HMDcmVNSZBeC7SGscPdM1JL1ReCIm5CCtVb4VuQZt8mSwU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=irGoNKdo; arc=pass smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2444442114;
+	Wed,  8 Jul 2026 14:09:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1783519754; cv=none; b=pNQTE2LnWTb/thw3LlB5ODWIM0htL4aPK7RQdBM9szKgKPOIT4IIbQdiJ7ghEHEMO2hXDWJgRE2Dxe6Bt7+5zHa+s7ZVX5Drt308FI+7QDEzIbxBuzz3SnQIGUYQMotnN2VAl2QRV/a3Yxe38ca5dbJlA3WHnVkWr5NRe/0NoCo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1783519754; c=relaxed/simple;
+	bh=M1ph9XIqBC2fH+vP/HCbgBGMTjNgNaNhQndf8/PAhgc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jkeXlL+79KIw5bntKWlTTHPxWP0Mjg3fhPYNwfIHwGTEUQT7JcCzZLkqvvuWhV2M+zs4NnLWK2nT5EUB+iJ5vEHGSL2PM3WiwYy+cPc9ozP3J8vga2SfQU8uaCkoD3yTFLaRVDnah5vXzYj5mPFzws3AE0p3BLMC4QectWORV6c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=it1AC++S; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="irGoNKdo"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-698aa7ba320so1199810a12.1
-        for <linux-alpha@vger.kernel.org>; Wed, 08 Jul 2026 03:56:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1783508191; cv=none;
-        d=google.com; s=arc-20260327;
-        b=ieOdrwqkqMW2g+V72rbrkSo63vIoBQuqXNdHN5Vxi+RS+btDpdRbwm0TzBw4NrvvU+
-         1KfKN+4dd1LccuhgYN4qWwq+ZzPO8gCOQ3KP1Lx4s2s2SEdYbpgH7DNBw3c5OXXKjl8i
-         85ZcO4GmdnCB+63bSnRPFV4jnH8xi3IlD5F5nPs5aNUyTPtuGxlgRv1F59uiYsMEBVXH
-         nq8oEE9ZNwxBXiSi0g1aB9BgvcL4+Xlg5I+BWHyTGQ3tjdUPRzidfrxvzNahla1Ar99D
-         0L5jruZEfmGe+/+T53D68R50xxWQuNak+5TOkGC3pD6i4OYLodmymOsAHMuOCXX3JdND
-         MOuw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=c2fiM2VYmvB72xpzWLhl8f8r7LxlArjuugnUoazlpVE=;
-        fh=Q1wt9VHp7yc8XCNnZkTFSKa7gojLVGzFaYEW3srwoOI=;
-        b=IrWIL5FSyyeohmuVoQKvGAgjTHrCtQiPqq6sqNujHEm3xOSpH+9IRbRtBooyhi+pwr
-         9ZUxAk7wKFgL9iyzv5a4e5ZE3oV4M+NmOiYg4XSlkc1jqUR4VRk6pXVfNtwcUPfxON4a
-         myP9C2UtR34PJOPs1K1VynhNE3v6pyAaZQG3HKX82lWdFgoQm7TXLe/19ofeIR1VZjYG
-         5Y8LDiF8U4oi9qICIAHQDZPQpKlMCo4wsXJGa0SPRXsM4cW4AiVc/oS6AIAYLC2O3/u5
-         +WIrjsLbg25E9dr9R3hcui41UokSQSWn1vTk3chTcq+3r4GEe5yVlakeoIKaYFlJaegO
-         y6RA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783508191; x=1784112991; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=c2fiM2VYmvB72xpzWLhl8f8r7LxlArjuugnUoazlpVE=;
-        b=irGoNKdolUUgTf0DnlsaMqcv8EFqrqNt9G+UMU3794JepIYHPimEvdH1xV3PIdcEtC
-         gQCwvRBq9PJwzARs9DoxCRJVJG3iDuQVnx+EoGl9vRNS7fcM9OX0vVKFNikxcx+5XrvE
-         a5Nt09e8LJOOk/nliwuP7Es6nZ5ZRrpjVDB9R7SUfoXABmq1NRwvaVZbtctVrHLUizU/
-         qdsxxkixSVjcoaszy/86kN/sFfXdm/49c/udVyh2bNaDB8je1wRETjszs3hOW8ODMv7+
-         DWrync3UG+N8UGuuBD6Zor82yrI9AnhxOhaKYubosdTZCTi/2LRwX71T5YeYmpPkHsjt
-         7cQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783508191; x=1784112991;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=c2fiM2VYmvB72xpzWLhl8f8r7LxlArjuugnUoazlpVE=;
-        b=oP6RvvLryeYlDhzeVmsoVNiSyqjeT1VWa4KmQoX4LhMfOYnBBD3X0gcw5pKnu9Bz30
-         Y5Gb9pouCXoc3apXVFuxofF9BPMvwQgBDPsMM4rpU9NZyA/bYC70xYNTVIFuKvJuoX4G
-         t0SERiJxN/R8KazMZ2KOekVhYpHmLYwIBP2ezrXXUwOQMM79UAysJSErSeu2AyofNVCD
-         VvE2uyLrcN69UgjYVbLr85SKMYLn9B16V5VZqIzfV/xjBxfUnQirQEVBpuouR097xg+t
-         63Q2QAXOPXn5H7ImWLFYxvxvJ7KOvUdamfNFAfzodiM1B/DCiJGicbuthuzPIbGJ3yzd
-         TnEw==
-X-Forwarded-Encrypted: i=1; AHgh+RqLaYBk0CPpZbo4VLbAyIVKw1LLfEC2NpekFORNbRAbgjNAFM6MKW7EVi5xhjhr/N200D1L6/QGd6wSDg==@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyklu0oShbmJ3cTHmVNtD/uxgNqyhk8lRtxZgojQa31z/bdbnzQ
-	SWnCkMXTKQE1ggXoFnmTaih4YyZOOKjC7t+g2jCo6EO34jEjxex1Yz44GbehUv6ijhHGz4aPhV/
-	alHXPxH9ky48N1+ImSJZJ+qdtHXqJssk=
-X-Gm-Gg: AfdE7cmLWc9dK85cTZozCNL6hX6SRbDP0bqdQpLJIAxPhE8mJtrIvgElyCa/m8ejpdg
-	1eHp7DeFlmnkFgKA+48NFvkMaU18nvlllY3n9FXzSOSenjvnfkEJRIVzqf2ndk5oEcFIP9j+71U
-	cEPUBKYdncVrZc3vR0HG12dujUH5YUWb9GB9CoCW5MTrVd9OwytWGUQavsA4rBWBAaXU8xqZ/At
-	7+BFkWsvWVCQRWsr9hE9A64a/eeDbSqg+sgQRB5h+SeFZO0TuqZ7Gso0x8+YbN6vm3y/GqZmplN
-	sRL2N5Vg/VfE/cwx6AnIaSzhv8UqyBQ=
-X-Received: by 2002:a05:6402:3058:20b0:695:ded2:52d7 with SMTP id
- 4fb4d7f45d1cf-69a910978edmr2584484a12.3.1783508190638; Wed, 08 Jul 2026
- 03:56:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="it1AC++S"
+Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 668CIYUk3243532;
+	Wed, 8 Jul 2026 14:08:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=GEjSUR
+	f+Oc47/KvAIRxIcmtLYIml26GEKQF9rwik+OM=; b=it1AC++SiBIAqAcqiPq93t
+	pjWkqrK605Ig+Fp+n6nyGY4MvyzTT6PVTI1d/QjJkcXBDkutS+kGZr/rMVLnsK20
+	83Nf2F5IgcwxVpzlmCJx3J59iuz/ImvWoCglnlVb9KpAsAqGRC2XDl/YWK1+5eOp
+	+BnXqWxI/05TkIjjB9RzIa/RPLO8v5Ce+RKot2wZXGgt+unxuZnOVkY/2cx6ABEy
+	pDND8FrIXRdIESKhXHId05Wgv68LATT9kkNZiQhQN6JLtMmcnTyzSWeq/RWgrKZd
+	4CNMJriX/u2aMZKyKFDeU3Xj3NqrL5l0d7VK7IFQCg9CIUGyvE7hFtSo7NlZk0Qw
+	==
+Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4f6sp3vt4n-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 08 Jul 2026 14:08:10 +0000 (GMT)
+Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma12.dal12v.mail.ibm.com (8.18.1.7/8.18.1.7) with ESMTP id 668E4aiX000987;
+	Wed, 8 Jul 2026 14:08:09 GMT
+Received: from smtprelay02.fra02v.mail.ibm.com ([9.218.2.226])
+	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 4f7cgq8hub-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 08 Jul 2026 14:08:09 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay02.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 668E87B552953472
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 8 Jul 2026 14:08:07 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 5893220043;
+	Wed,  8 Jul 2026 14:08:07 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 31CB520040;
+	Wed,  8 Jul 2026 14:07:52 +0000 (GMT)
+Received: from [9.39.26.208] (unknown [9.39.26.208])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Wed,  8 Jul 2026 14:07:51 +0000 (GMT)
+Message-ID: <771d3150-7650-4ba6-b9d7-31a534f72cb5@linux.ibm.com>
+Date: Wed, 8 Jul 2026 19:37:51 +0530
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260706175423.98305-1-kwilczynski@kernel.org>
-In-Reply-To: <20260706175423.98305-1-kwilczynski@kernel.org>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 8 Jul 2026 12:56:19 +0200
-X-Gm-Features: AVVi8CeoFjDXhiwTTyAokp7GmJLW8914hLJ0O-UdzoTFxDt0DrR1yRktWckx52o
-Message-ID: <CA+=Fv5T8GUH-d0PG6fjn6ARRcenpcDmsg8uy3dJbQ2gKZ85KhQ@mail.gmail.com>
-Subject: Re: [PATCH v2] alpha/PCI: Fix I/O port accessor argument order in pci_legacy_write()
-To: =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kwilczynski@kernel.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
-	Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Jesse Barnes <jbarnes@virtuousgeek.org>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Bjorn Helgaas <helgaas@kernel.org>, linux-alpha@vger.kernel.org, 
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [patch 01/18] powerpc: Move stack randomization after
+ syscall_enter_from_user_mode()
+To: Thomas Gleixner <tglx@kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>,
+        Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
+        Kees Cook <kees@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
+        loongarch@lists.linux.dev, Paul Walmsley <pjw@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>, linux-riscv@lists.infradead.org,
+        Sven Schnelle <svens@linux.ibm.com>, linux-s390@vger.kernel.org,
+        x86@kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Jinjie Ruan <ruanjinjie@huawei.com>, Andy Lutomirski <luto@kernel.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Richard Henderson <richard.henderson@linaro.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>, Guo Ren <guoren@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Helge Deller
+ <deller@gmx.de>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Richard Weinberger <richard@nod.at>, Chris Zankel <chris@zankel.net>,
+        linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org,
+        linux-csky@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-sh@vger.kernel.org, linux-um@lists.infradead.org,
+        Arnd Bergmann <arnd@arndb.de>, Vineet Gupta <vgupta@kernel.org>,
+        Will Deacon <will@kernel.org>, Brian Cain <bcain@kernel.org>,
+        Michal Simek <monstr@monstr.eu>, Dinh Nguyen <dinguyen@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andreas Larsson <andreas@gaisler.com>,
+        linux-snps-arc@lists.infradead.org, linux-hexagon@vger.kernel.org,
+        linux-openrisc@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-arch@vger.kernel.org,
+        =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+References: <20260707181957.433213175@kernel.org>
+ <20260707190253.718191130@kernel.org>
+Content-Language: en-US
+From: Shrikanth Hegde <sshegde@linux.ibm.com>
+In-Reply-To: <20260707190253.718191130@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-Authority-Analysis: v=2.4 cv=KsJ9H2WN c=1 sm=1 tr=0 ts=6a4e59cb cx=c_pps
+ a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
+ a=IkcTkHD0fZMA:10 a=RAioF0-LDSMA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=RnoormkPH1_aCDwRdu11:22 a=iQ6ETzBq9ecOQQE5vZCe:22 a=VwQbUJbxAAAA:8
+ a=VnNF1IyMAAAA:8 a=voM4FWlXAAAA:8 a=xoOMMzrzzHNEA0Jk9MYA:9 a=QEXdDO2ut3YA:10
+ a=IC2XNlieTeVoXbcui8wp:22
+X-Proofpoint-Spam-Info: AW1haW4tMjYwNzA4MDEzNSBTYWx0ZWRfX3Hbrj21CCLzB
+ kKSW8jXH6Bj74UUfNzioqmwVCV/ijDVvhJAjSPEr0PRBP7f/C8rZNu60kYcZr5VFMnqEWqfDA++
+ inZSpN3ruIS55U0sAZiMr1mp3yETXqg=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwNzA4MDEzNSBTYWx0ZWRfX1zZjIJAFUCrC
+ DZZFHPLhsL8y5odyoK2G1FgYpxRt932tRoGDWK0fyKR4ICWQTR7y9CixTwoRlTEsJgHxYdDsxW/
+ vDCytNNTBf9qGopcuoTa/AfoIYP5/zKMOESsc5h8MkN4K+Uf4AdxEGyFCI5+vOxHPIbB8IqmeJm
+ pofTRmoVVtdakQlcUwa/5iQWPHLRHFh3nnXP7i2wdhEwKU50t4+I1IxbYK74aJOGz40WRB4Y+V4
+ 4L8Sbqh1GTuOEjLQb44e8SVXpvqwnYBDql+ViuMKMw7GgSmmOYeHOKcPR0lJvuu+XVbWRZ1EUzc
+ 6crZl+xqk34xyqm/WMIBKetDHnyOG4hsMvqdfd6LFN/EzEGxxsXwZFa2vrz4uXcEoEG8vRy8hAQ
+ jQT68kRhg96HNn0D/8F1334ciC2LdYUUMBojPYYvDfcCxB6zftVE1+6IswOt2cm6NCMaXOgtD9o
+ i6zmvswRSv/7ugcSyPw==
+X-Proofpoint-ORIG-GUID: -jmj0fPWFB_5RGym_5okOoW04BYgxv97
+X-Proofpoint-GUID: UewskUPBCDVeXb9KcNrW_7wrTfTPl4fV
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-07-08_02,2026-07-08_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 malwarescore=0 spamscore=0 adultscore=0 clxscore=1015
+ suspectscore=0 lowpriorityscore=0 priorityscore=1501 bulkscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2606150000 definitions=main-2607080135
 
-On Mon, Jul 6, 2026 at 7:54=E2=80=AFPM Krzysztof Wilczy=C5=84ski
-<kwilczynski@kernel.org> wrote:
->
-> pci_legacy_write() in arch/alpha/kernel/pci-sysfs.c passes its arguments
-> to outb(), outw() and outl() in the wrong order:
->
->   outb(port, val);
->
-> The Alpha I/O accessors in arch/alpha/include/asm/io.h take the value
-> first and the port second:
->
->   extern void outb(u8 b, unsigned long port);
->
-> So the port number is written as data to the I/O address taken from the
-> user-supplied value, and the intended write to the requested port never
-> happens.
->
-> The arguments have been reversed since the file was added, and the
-> function returns the access size regardless, so the caller sees success
-> while the requested port is left untouched.
->
-> Fixes: 10a0ef39fbd1 ("PCI/alpha: pci sysfs resources")
-> Tested-by: Magnus Lindholm <linmag7@gmail.com>
-> Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Krzysztof Wilczy=C5=84ski <kwilczynski@kernel.org>
+
+
+On 7/8/26 12:35 AM, Thomas Gleixner wrote:
+> add_random_kstack_offset() is invoked before syscall_enter_from_user_mode()
+> establishes state. That's wrong because add_random_kstack_offset() calls
+> into instrumentable code.
+
+Thanks for fixing that.
+
+> 
+> Move it after syscall_enter_from_user_mode() to ensure that state is
+> correctly established.
+> 
+> Signed-off-by: Thomas Gleixner <tglx@kernel.org>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Shrikanth Hegde <sshegde@linux.ibm.com>
+> Cc: linuxppc-dev@lists.ozlabs.org
 > ---
-> Changes in v2:
->  https://lore.kernel.org/linux-pci/20260612232400.585195-1-kwilczynski@ke=
-rnel.org/
->
->  - Collected Reviewed-by and Tested-by tags from Magnus Lindholm.
->
->  arch/alpha/kernel/pci-sysfs.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/arch/alpha/kernel/pci-sysfs.c b/arch/alpha/kernel/pci-sysfs.=
-c
-> index 94dbc470cd6c..7050f0f7fe3d 100644
-> --- a/arch/alpha/kernel/pci-sysfs.c
-> +++ b/arch/alpha/kernel/pci-sysfs.c
-> @@ -224,17 +224,17 @@ int pci_legacy_write(struct pci_bus *bus, loff_t po=
-rt, u32 val, size_t size)
->
->         switch(size) {
->         case 1:
-> -               outb(port, val);
-> +               outb(val, port);
->                 return 1;
->         case 2:
->                 if (port & 1)
->                         return -EINVAL;
-> -               outw(port, val);
-> +               outw(val, port);
->                 return 2;
->         case 4:
->                 if (port & 3)
->                         return -EINVAL;
-> -               outl(port, val);
-> +               outl(val, port);
->                 return 4;
->         }
->         return -EINVAL;
-> --
-> 2.55.0
->
+>   arch/powerpc/kernel/syscall.c |    2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> --- a/arch/powerpc/kernel/syscall.c
+> +++ b/arch/powerpc/kernel/syscall.c
+> @@ -19,8 +19,8 @@ notrace long system_call_exception(struc
+>   	long ret;
+>   	syscall_fn f;
+>   
+> -	add_random_kstack_offset();
+>   	r0 = syscall_enter_from_user_mode(regs, r0);
+> +	add_random_kstack_offset();
+>   
+>   	if (unlikely(r0 >= NR_syscalls)) {
+>   		if (unlikely(trap_is_unsupported_scv(regs))) {
+> 
 
-Thanks for doing this, this is just me acking the v2 version of this patch,
-please go ahead and take this through your tree.
-
-Acked-by: Magnus Lindholm <linmag7@gmail.com>
+Reviewed-by: Shrikanth Hegde <sshegde@linux.ibm.com>
