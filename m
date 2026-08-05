@@ -1,173 +1,136 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C86663FCB1F
-	for <linux-alpha@vger.kernel.org>; Wed,  5 Aug 2026 09:34:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785922451; cv=pass; b=ieDF+zjCJa2QUCFcEI4VvCUnsTlfj6+dnSiyUcFrRTo12uAK4xGEJltK/SV002mRUe8Ec7dP+aBMVMIf0MeYX/dLLJwYyPvJjFznzxFXt+nVTXq6WlwjU4H0NEKOQ+4TfiqtmpZbMCmaYk25TlmNY4WNsJ0kVcZLE5eeosxqEks=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785922451; c=relaxed/simple;
-	bh=9L0j/pbQAIxYms5cegM0F3PFL7ya32kRw+S7PCbwuZA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ClRcHxsM7I/Q9jvd23Scslr1yYU8kbsmsGtSdfrCVv/WekvkGcdil7Cdq1W0pifPuyMPdaW1i7GaBvF5F5SPGoRYuOIX/zpmm//dghT/AWnCpoPKSAqYc9g//BUzyFaOewMmjrkR21f9hZkdl0r78z4xalDgmpXSgUNpNKdUzNE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nxVB3W7T; arc=pass smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 001EC3D9531
+	for <linux-alpha@vger.kernel.org>; Wed,  5 Aug 2026 18:56:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1785956164; cv=none; b=NMXaa3RcXDb4AtWgnQux5NhrFnmlEvMCIDu5uhIVqi5H5MpCA6N6R+3vD8boZsowncq9mCd7uTkb3AXWKghOOnhCcIrKi8BWnpl/dRtppwGqJ/cfcVe32QARQm3tlvxJnElMVa/BM5ZCPZV5i4bMazhZgCAW7OwgHkJSGiaM7Y0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1785956164; c=relaxed/simple;
+	bh=X/sheB2HerNRDwMRSjJhuRwSfkYyfYB880Mu9Bm0zM8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=NtZcx5/pI/l/HMX5/RAdCFeCNvuW1phT3Q/XG9SL5RdWbCh4xX+QfLMPIjgMuhWSCMjVQHrxet71pGXs6ZHV5BBrRY/BE9jWaVzX6IzMI6B5BOXdusD/qCDntnmNW2jZZysF2Pa1S1tpi78hJF4tnbkbRpwSWxSzrn3yKvemj5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cPmT/+uL; arc=none smtp.client-ip=209.85.128.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nxVB3W7T"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-6a10d02ff43so1282638a12.0
-        for <linux-alpha@vger.kernel.org>; Wed, 05 Aug 2026 02:34:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785922448; cv=none;
-        d=google.com; s=arc-20260327;
-        b=TllNiD/LufwqUJ8uN3sWmd6HZhzwwViz9aH1gyteKYBKjlqrxx9I0bwFdLtoiFbIQt
-         WarUw16Fw9lMo3EtfR5z2TtPx82Q9bhVqbsTX0LFNPFRYyosKgR8vNLZsbmzGcUeDoKb
-         ymXeZ5u2j+9uK5bQvKNTcOL3zRlr81HZPLkUY7S+lxELi1SKQGBOgELcf6j0Ij30r5/c
-         ELW2sY2cDt/hjtk9Wp4OTSaWuGxo6ZCt19ANdZiVAiB2Hzqkex0TQmu8kW6wkiL7qt15
-         PJBXRRK15IUTcsKtLDkrSEY4/Xokh1WsGowZYOfqEZf3sjVpCLZTCGYPAHbs1Cv4P3jf
-         PjOg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=UaGNs+E1Ex6iz5T9/0x/HPxcs/WYGeua7JSZh/+RxWI=;
-        fh=4FvFvVQZHeVbr/YUVs+wMQobzafF+k6PhMcj2ZwJfzY=;
-        b=kWbDp/OwJfaZsJkwp/AKdjBwtAz6d0zFO+3/OknC17t+tUFjRkIaYuakLWs3v2WVUI
-         dudm6T7uQ6kBcC1QfhoIur1fNckzePtWso+Q/gdh2V3lswobdjCKvkJlXd7bQcRhlaED
-         ZCH2pDv5gEHzGCl0fWMhRDQzw3fZa4pCAE7ZPrj/btjgZsxZagBNMl1nIqQW3poU8pwm
-         aX4AiiojurVzVujGQpcTVKqMy9+x7cW6GRXjdeVihJd2PowI0J8qz+Vg53MzVo6wxGH8
-         ivC5Fms6gp8QD94KG9et5sc+mfKi7X0a+hy6QReVAqrUmyT/ENyZHmMr6qsTtHtC7vbc
-         /lZg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cPmT/+uL"
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-80814edb536so22014767b3.2
+        for <linux-alpha@vger.kernel.org>; Wed, 05 Aug 2026 11:56:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1785922448; x=1786527248; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=UaGNs+E1Ex6iz5T9/0x/HPxcs/WYGeua7JSZh/+RxWI=;
-        b=nxVB3W7T5PzcgNakBP1/wZviKPIr0w6SG7+6Y/KxlFc3c6UOvBeK+7YYF7i1akkkBM
-         7UwQGPufJfSULubwn0MN7WYeOwvjEV4fZBUhVbCk60xIcr+afqqGymIW35nRcAYrjm6p
-         mjB78uXJT85+sRLdga3nn+YEy1MF2kl+sa/Zst5m6qP4gBB3/bJgeWf93hsGIaWuBcXq
-         PbRCoAk/5wMGqFMOftie51sXZexfx+hIyBrnuRGXdsgp7Y/yrLlRxjA6pVZ1XvohGmNv
-         zH/GTjk09mzaU0IJ7EGxmI/Rk0KclqUwffzjzzfw4hwmgnM3+lYoVTALr10KCuz+iEM6
-         h4Hg==
+        d=gmail.com; s=20251104; t=1785956160; x=1786560960; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=TGeYBl1VUIwt/G4nfmKLTgCtjzdo27V8KoUvBJpzzDw=;
+        b=cPmT/+uLpce8SKENudlRxESni5y8tchI2GJAosBoI7UNsrQMWVUhdh9jGiw2DZSV3H
+         bp7Eh1iJAmwk4s9U3Qby6oTesb588lrHrS7I5t4S7vlckBf7S/TPaiqgACP2vThFKX7I
+         xIfP1M5Wzw7/8SQOq3v+tFtzbC/IA6Lol1iUilBa97PVQtznFFVu/1Ssy9UF8JOQD4ob
+         POu3Wb+N0sO+szx9u+5tXoLKOMb/X+pJYE6Ejplh+vSI267sq51g8pNlDwt7KjQyXfuT
+         8QLyGCDhEgbEK7vk/h1WA897qVGW04btQT9Vf7QbbrdcMhebtUplbdWrnlgUnhCet5Xm
+         S8Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785922448; x=1786527248;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=UaGNs+E1Ex6iz5T9/0x/HPxcs/WYGeua7JSZh/+RxWI=;
-        b=cojTuG+x8WO7mxHb+9iFkvjbMYevyKItyaZsNMk+8Lnufil0v9dcpLsjjxrJ/mDJCo
-         vVZaGy/n8nEdG9hEmhyYXAPXgP7vC3B+N4mpkZhENvOCMFzXlLl1y74S40X2pfa1kiqH
-         53YQUNqA8pWWES41eNJrH0Ns0SMqxciOjwGZIFStXCbf/XZmtLronvnsHfzZ3SgbGD4L
-         1TuOkFjGfLBpzt/6bxAJR0tJOBUozZd31DwbzvIMcNKrY1kwgiBOzljAsDCSno+xQ9Pz
-         4y5Xb5IPqSpIfM9ELp20OgCvsbhnP7Oa2viDnXNc48TMzZsCV1SpLS0kuj3lzPmQPIDe
-         VVXw==
-X-Forwarded-Encrypted: i=1; AHgh+RrxvCBUtZQacJOFMlJTAOAATKjl8GVGvZN81apHYG0ynOhIkuAhHLVrnvS6n2OU/xGLQWljyifYQIpHaQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0YyfsGJU1sxmvpJMgg0yRPvcf7ykSFwmARoLwecHpsHOs6A9IwVC
-	iGF3jmqMTxMN66TyzoJm3vNzedezEoeETCCtwf2YZMTOT63pFBZysyWjVa2Zn40MG22RG7fUZB5
-	Hj0X/QrTRTBV7QLJKYaXB08vBa3C0ltg=
-X-Gm-Gg: AR+sD12IBXXc9NLE7ymeIk3/7p+EyWruZi2537zzlI8tjKkczycY9KJRAVwbCr+0nBn
-	ZoyUNsxKJEnxJwGhgLMGiQqi43UR8uE25t8/0y5a8C2eTkLSHa2yVpLUPgiRWibLPrynX36vBIW
-	kfrHEluwG+/R98mABIntYg/HhJ51G0VjListYbN0cs570VqBGIiOxnnEiaibrK1o5UHKbOCHIfN
-	N5uMVJ0pRbSq7y0YVCQAHi6pfjQRvt1BqyoigYt4lyT+TM9JDiACxT5a1xQco5i0bLxXX6qL0el
-	7xi3FOxQ8B6qqk2SBCqV5MEhfl8IxWB2g9o8QZJI5VCBq2ZcffD3Ckc23SlsbDlkjUWMhC5OzCI
-	jV7K81L+97yaQhKUptANwIRMC6OzOeyc=
-X-Received: by 2002:a05:6402:1f08:b0:6a1:b0b:ba6 with SMTP id
- 4fb4d7f45d1cf-6a14f13e482mr2509895a12.15.1785922446933; Wed, 05 Aug 2026
- 02:34:06 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1785956160; x=1786560960;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=TGeYBl1VUIwt/G4nfmKLTgCtjzdo27V8KoUvBJpzzDw=;
+        b=XLVKdUNKJPh+gQ7YIH188b9t1ut6xzlwu3dID3kiXx0dF8bXd5iXI7BK2aOXpUF3u8
+         8AZzen/NlhIUzrhK+Sg7DpsdcfV4haPhOBUhwDIQi2No4LK9HqRf9/TLF2Tp0hfPSMcV
+         ezRQV0NygntOS6r9lMGota8IeDmr0K+D+4a9h1NajwUdyv4zVwIbUtZIwQOOjFPKJeA5
+         QbcqvNDDvFLWk6MlM3SoDbsj5jBnhR1TjkU58IeLV+6W6uL+Th3FTTg8hnTETj334KUu
+         aAd4joEuXX9yoHrov2kT2ddxNpUtBabyqsLcagtf1q6gzwW+juLOn4cdEZ4otBQAVC35
+         cFow==
+X-Gm-Message-State: AOJu0Yzlhj7Ms/v/x2qkVcnOljiyMhNQn89L6+ypQ1qjkwtzx0W6L1bp
+	tYRElUAZ1IyHBBHb+7hjyQwwGXsZ52D1Y58n9Elxt8SoPQTtrYFGLzee
+X-Gm-Gg: AR+sD12XXSfCwJzO0jBoGm5q6FyRcvrQspEmdXpbG6SqNKuZ1UQ4DhsFnphXZt6hUQ3
+	Q+hpvTwfARWCPfKict2myTgh/evRoY0HifdTfNeYkdmcE/20xRObaAmwE+mFIVNKF1nSLGHpmz8
+	owqKnBR3bsAJ3x0oCIymHxCSInqx3MluU3wxT7qjDCiEkCoN7AX8RE6lBleS9AAQAeeNWPgaq+a
+	0pw/i9gwyvzuJ9haCTGyOeNr2kYJzx9Wv3YvMGnvRoavge0BnjrHPK2IvVCuaynuTgI5wAzrZgG
+	Lc0nv3/I4LWYhsEpxwwzGtAhxovk6LRnBiIHSqrDPTenrVitafL0Uq+bVq0pwZkxDBQ6DFYbdsl
+	by+ZJ6dj0KENe5d9KC3XSpk7+ono1VY+FkA3N5AEsIWfqX5bWj+JaluNEYfye/2JHdSYHyzsxoZ
+	CpOSA06ovAVCNBzHvFd5s2ODoLu6sVm+Z3xsHkbl83tcI1nFY7Ei6E1JHIrf0T
+X-Received: by 2002:a05:690c:6212:b0:81f:64cf:2c58 with SMTP id 00721157ae682-8201bccf8ddmr51869547b3.6.1785956159995;
+        Wed, 05 Aug 2026 11:55:59 -0700 (PDT)
+Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-820131d9135sm25910817b3.6.2026.08.05.11.55.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Aug 2026 11:55:58 -0700 (PDT)
+From: Matt Turner <mattst88@gmail.com>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
+	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>,
+	Nicolas Schier <nsc@kernel.org>
+Cc: linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	llvm@lists.linux.dev,
+	linux-kbuild@vger.kernel.org
+Subject: [PATCH v2 1/2] alpha: pass -Wa,-mev6 only when using GNU as
+Date: Wed,  5 Aug 2026 14:55:57 -0400
+Message-ID: <20260805185557.3283233-1-mattst88@gmail.com>
+X-Mailer: git-send-email 2.54.0
+In-Reply-To: <20260803-alpha-clang-v1-0-1c4ba5ba7a64@gmail.com>
+References: <20260803-alpha-clang-v1-0-1c4ba5ba7a64@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260803-alpha-fp-exceptions-v1-0-c99d75608e60@gmail.com> <20260803-alpha-fp-exceptions-v1-2-c99d75608e60@gmail.com>
-In-Reply-To: <20260803-alpha-fp-exceptions-v1-2-c99d75608e60@gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 5 Aug 2026 11:33:54 +0200
-X-Gm-Features: AUfX_mwnXqPqc_k9xGwWzJEiKBh4lXhngC_jeS43aqM9K90q-yJsxGFkXMu1yFY
-Message-ID: <CA+=Fv5Tgq7X6Tqt2s6OuoWUQirzYwwyrmwQR_tDXpHRrczK22A@mail.gmail.com>
-Subject: Re: [PATCH 2/3] alpha: don't leak hardware-fabricated FP exception
- bits to user space
-To: Matt Turner <mattst88@gmail.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, 
-	"David S. Miller" <davem@davemloft.net>, Andreas Larsson <andreas@gaisler.com>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, Aug 4, 2026 at 1:40=E2=80=AFAM Matt Turner <mattst88@gmail.com> wro=
-te:
->
-> On EV6 and later the hardware records exception status bits in the FPCR
-> before delivering a software completion trap, and those bits can be wrong
-> for the instruction that trapped.  Converting a double that is exactly
-> representable as a subnormal float sets FPCR_UNF even though the result
-> is exact, and an underflow trap additionally sets FPCR_INE even when the
-> emulated operation turns out to be exact.
->
-> alpha_fp_emul() only wrote the FPCR when soft-fp raised an exception, so
-> whenever it determined that the instruction was exact the fabricated bits
-> stayed in the FPCR and were reported to user space by fetestexcept().
->
-> Pass the exception summary register down from do_entArith() so the
-> handler can tell which exceptions the hardware attributed to the trapping
-> instruction, and always write the FPCR.  Clear the exceptions that the
-> trap reported but that soft-fp did not raise.  EXC_SUM reports only the
-> underflow or overflow when the hardware also set INE, so treat INE as a
-> candidate in that case, and treat a trap with no reported exception as a
-> denormal operand trap, for which the hardware can fabricate INE and UNF
-> as well.  Bits that software has already confirmed in ieee_state belong
-> to this or an earlier instruction and are never cleared.
->
-> The imprecise path passes no summary.  There the trap was taken somewhere
-> in the trap shadow, so EXC_SUM is not attribution for the instruction
-> being re-executed -- and only EV6, which traps precisely and so never
-> takes that path, has fabricated bits to clear.  For the same reason the
-> clearing is guarded by implver(), matching swcr_update_status().
->
-> On an UP1500 (EV68) this takes the glibc math testsuite from 831 failures
-> to 28, the remainder being unrelated to exception status.
->
-> This belongs with the preceding fix to ieee_swcr_to_fpcr(), and should
-> not be backported without it -- nor it without this.  That fix stops
-> FPCR_DNOD being set unconditionally, so denormal operand traps start
-> firing again.  Those traps very often find an exact result, which is
-> precisely the case where the old code left the FPCR unwritten and the
-> fabricated bits visible.  Applied alone it would make spurious exception
-> flags more common, not less.
->
-> One case cannot be resolved here: an inexact instruction without the
-> software completion suffix never traps, so its INE reaches the FPCR
-> without being recorded anywhere else.  Such a bit is indistinguishable
-> from an INE the hardware fabricated for a trapping instruction, and is
-> lost if an underflow or overflow trap with an exact result follows it.
-> The FPCR is the only record of those instructions and it carries no
-> attribution.
->
-> The bug predates the git history, so there is no commit to reference in a
-> Fixes tag.
->
-> Cc: stable@vger.kernel.org # 5.15+
-> Signed-off-by: Matt Turner <mattst88@gmail.com>
-> ---
->  arch/alpha/kernel/traps.c  |  6 ++--
->  arch/alpha/math-emu/math.c | 88 ++++++++++++++++++++++++++++++++++++++++=
-------
->  2 files changed, 80 insertions(+), 14 deletions(-)
->
-Hi,
+That flag exists to stop gas emulating instructions the assembler thinks
+the target lacks.  It is a gas-only option, and LLVM's integrated
+assembler does not emulate instructions in the first place, so nothing
+is needed there.
 
-Passing EXC_SUM to the precise emulation path and always writing the
-corrected FPCR state back looks correct to me.
+Condition it on CONFIG_AS_IS_GNU rather than the compiler, so it is
+still passed for clang builds using GNU as (LLVM_IAS=0) and omitted only
+for the integrated assembler.
 
-I tested the complete series with CONFIG_MATHEMU=3Dy on the same machine
-and using the same glibc build. The kernel boots normally, and the
-glibc math testsuite improves from 48 to 28 failing test programs, with
-no new failing tests. Tested on Alphaserver ES40.
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+---
+Only this patch changed; patch 2/2 ("alpha: read $gp and $sp explicitly
+for clang") is unchanged from v1 and is not resent.
 
-Reviewed-by: Magnus Lindholm linmag7@gmail.com
-Tested-by: Magnus Lindholm linmag7@gmail.com
+Changes in v2:
+- Drop the scripts/Makefile.clang CLANG_TARGET_FLAGS_alpha entry.  It
+  will be sent separately when the alpha backend is upstreamed to LLVM.
+- Condition -Wa,-mev6 on CONFIG_AS_IS_GNU rather than CONFIG_CC_IS_GCC,
+  so it is still passed for clang builds using GNU as (LLVM_IAS=0).
+- Reword the subject and commit message for the reduced scope.
+- Link to v1: https://lore.kernel.org/r/20260803-alpha-clang-v1-0-1c4ba5ba7a64@gmail.com
+
+ arch/alpha/Makefile | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/alpha/Makefile b/arch/alpha/Makefile
+index 35445ff2e489..7074602dca94 100644
+--- a/arch/alpha/Makefile
++++ b/arch/alpha/Makefile
+@@ -27,10 +27,16 @@ cpuflags-$(CONFIG_ALPHA_GENERIC)	:= -mcpu=ev56 -mtune=ev6
+ cflags-y				+= $(cpuflags-y)
+ 
+ 
++KBUILD_CFLAGS += $(cflags-y)
++
+ # For TSUNAMI, we must have the assembler not emulate our instructions.
+ # The same is true for IRONGATE, POLARIS, PYXIS.
+ # BWX is most important, but we don't really want any emulation ever.
+-KBUILD_CFLAGS += $(cflags-y) -Wa,-mev6
++# Only gas emulates instructions the target does not implement, and only gas
++# understands -mev6.  LLVM's integrated assembler never emulates.
++ifdef CONFIG_AS_IS_GNU
++KBUILD_CFLAGS += -Wa,-mev6
++endif
+ 
+ libs-y				+= arch/alpha/lib/
+ 
+-- 
+2.54.0
+
