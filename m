@@ -1,64 +1,64 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EE8C3B71BE
-	for <linux-alpha@vger.kernel.org>; Sun,  9 Aug 2026 08:55:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DAD43B6354
+	for <linux-alpha@vger.kernel.org>; Sun,  9 Aug 2026 08:55:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786265739; cv=none; b=RemEXzwUQHPhfmXifUFqV48+/R+JsTgI/ptkz3CjCQCmCGePeiXHAlqO2XBQBOshAeuOHQDfO5aipgAbAfgRerYvPpHYtQs0Cvn4kMbKC4qILOgIpjQugdaOfnjFJXk7Wq1FS46g/XE3l04qW5m2DJaqx8FFyrG5gKyO6fyf2r0=
+	t=1786265739; cv=none; b=f+3is6pdDaabYRs1FkPSewU7fuFBV9QXsJWU4zWwucReC+sn7N6A+QYiUflkOf50umeoorIdvGylg1kT9HWDk68yrop5ithN2gfZSAplQBNZ2Xd+HskQp8FTf9nUD6FI21teLdOv6oMAlhOzcy65UFHdYS8iLo1M1mIzJdAHMps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1786265739; c=relaxed/simple;
-	bh=OLtwvEZhh/H9sdbvrxT5KViQxXMRD5pB2TH7wole/jk=;
+	bh=jNdVta5xUXSTjnpylN4yxJ+wUC0ZRwFWI3FqxiileXU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=lUjX/h4wix6ka0NBqRA7LTwAwBwul2A485v82LFC6NNshEI8nU6Mb7BAnytp+Q+pD38RL1qYHAJCLco2dnvuYkYz63mHBB8jYobL7r+OHDXeZDjav3zpE0sd83BP1X1zoEuBDjEPNcMkLCyrY0VlaSp1GXb9N7apRMh8pgQPb6k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RYNGnY23; arc=none smtp.client-ip=209.85.208.52
+	 MIME-Version; b=Kg7P3xVDAsvv7RUTMcYu6a7w2tz1uujJcSM2UhykJRL0vOMhhhlLiw7dzXbEIhW6EgB1Zt3VhgqWP/y7bD8l1eqPCzdRawGGvm/vgJI++6np4Rzvzk/Ku8RCCSiszyRmW1j5Y16DIMD6vpsw0NaCZqG8VWdtHjLji1ZkGm599FU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dNJgQH49; arc=none smtp.client-ip=209.85.208.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RYNGnY23"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-6a1995ac437so1603490a12.0
-        for <linux-alpha@vger.kernel.org>; Sun, 09 Aug 2026 01:55:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dNJgQH49"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6a10d02ff43so1312120a12.0
+        for <linux-alpha@vger.kernel.org>; Sun, 09 Aug 2026 01:55:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786265733; x=1786870533; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1786265734; x=1786870534; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Im1M3BLw7bmxcZcAK4CCU6quas0ztWTFGLp+A3NEnA0=;
-        b=RYNGnY23uFdfzFxfyojAQA/YVEkNCVMmi/EYE8uQiLtb8Z5t037CDVRa9wnLEipqeE
-         g7+a7P9pJ+mkb45NfxHG0KKRfxXMGNPC+vwvyzterZN8rQxi3BcWpn6xnqpMrOdhL9HW
-         0cIe6EGuBPSpQTXVqpk1tpzv3b5dG85ddVPYy0Z7/C/FUTFHYwS6vnufI7lNAty71tOB
-         OnYGqaQv6o6JLpzKYNgFt3NKJHKc16rJ3/l8TRw+WwKYBYGEPhTSVdDThgTQmpNk6fND
-         Y5ttXWUaIxoS3JRvJvM9llAkch97y/so70qStmQYVVooye7zn/16E5KpdfQKmw6B96Ee
-         QjgA==
+        bh=4JHbNy7t36m8QFac0Mb9Mig7FuHxoP3xq252YSUXqrc=;
+        b=dNJgQH49l6zbKr9imy/1OjgiiDsdZZY1E5GhanIdp0IWxmjWJ4fkNiJJylr8W7r7sY
+         SenOYRGaGn6tFgEFINSycr36O9giQx9PFwrTXrBVIzV9+bvYVhlboSTS5YgKxhx7dkXO
+         8gj5xZEg24GTLBP51E2JVYGPb3utVR6M0yL09igzyeGWgUyeGkmfCTQX+iIUWE+aRDVj
+         7sJTRvZVCjT9w43qcmqtvLq4M7STuK3XZMefF38+Hw515VKpYfaRJFKinbUZEIxczZ2Y
+         zuYOUm/ogSSKAd2c6LXLgGARwk1/IMIOMgQyIilyWNDCIWBzwfZMZ3JvWW5T3o7DrOob
+         uIkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786265733; x=1786870533;
+        d=1e100.net; s=20251104; t=1786265734; x=1786870534;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Im1M3BLw7bmxcZcAK4CCU6quas0ztWTFGLp+A3NEnA0=;
-        b=R1jqCCTeffLrE0LqBIM7TyOPuzccVCZgWYCNE2zPYFo4f/S4azYSa4UARngjwv/LdG
-         +5+hMqK7NRsbh/XQ0Dh/OzBJoZumWuc4jx4U5Q5fKbb8+UuIos+Icmf67bRiTQ8emjBf
-         usgzI6MWUgKUW+tE8HFTnEfHTU3v3dBAseB0iC5cYYSpCzuCVe+ub1pkHyr4N9gm+RGB
-         uZrb/+IjuoBWV4K7+Y/50/2PiKXQdsYO+GCsLLnsrw92AwxkmfBHP+IUcdylx694T4yg
-         GA2k2OTdpsiW8wjK3owtLcDPOUJY+RMSg/L382RqvM7h86wItS1UkxyQGBoTUqUrLyAj
-         /sVg==
-X-Forwarded-Encrypted: i=1; AHgh+RqLv90mEYahZ+YKhbSv9JX7/bRF8nmNxI9rK+mir4F0LoNxHPInSIzKgohp1FtT+Siz/D5PqZ6tXu4y2g==@vger.kernel.org
-X-Gm-Message-State: AOJu0YxNWDkr67hNoYuqjk0FB/hws9iJghhsJ6X15Sllh+ZehAFRmc/H
-	A5fxaJW/fNqq7+Bi2ctcE+oYrX2yYvaCCweR7Zns4YbqnzHbDZ506T1a
-X-Gm-Gg: AR+sD13p1nh3nrx4TW3LbEmMyTxLaZgCyrub22KEiRdLVPrJUkc0OygtOZ2Jl8kHVC/
-	JEjXnAexLkzs/VNHsrzKQyZeBXofd2/zO4ga9TqgRTahJlVqxudmahJ6iENCLwByGREjh968QHa
-	CQj5hULNbWrKth32s9B8qE++gBPCSV/m4jY0e3/Mej3K26KwU9HUkWQYPewd3mgolKY2fFr8frD
-	NS9Vujpu/8d9dnksEExKBohwuJxrVKi534AdoIXYGqAKvg6k1q8nk7GUozEXdSfLWpJoApWqUFN
-	iiSsiDJjlqQQYybDoZ6BWkeFnhng5oMaRQnWudeJNRXUfSKVKGW+5ptHtyfx/l1bgtkqhxKKCrv
-	s43l8bPBSnjC7eJ2zF9ZxzHR/J7RYKPT3LzckTVbQFUcvLEf8QNCqkBDLaMC+gX6s+7Az3PUFc2
-	6CjA0V0tIgMto+c+6jk2JfxIqi9cozsv8bAaFdqcQ/iM5l/41du3/2J9Mie8JRYy+f1UELOksrm
-	fTWUUdPm2T/Qy/lKPB8plMWmTAtbic=
-X-Received: by 2002:a05:6402:44da:b0:69e:14ab:5966 with SMTP id 4fb4d7f45d1cf-6a1f4e32f44mr3820453a12.8.1786265733291;
-        Sun, 09 Aug 2026 01:55:33 -0700 (PDT)
+        bh=4JHbNy7t36m8QFac0Mb9Mig7FuHxoP3xq252YSUXqrc=;
+        b=aGacGTcQsDQ6nOu82xhLys2EoLdlnFaaVTmGVaVwQLvKEBVuW+3kkekyQxvnMoFcfS
+         +pdmkcoV4yRJ4BJOVwLr9U2x8xzVJTA2pDDdrN+463pjdc6EIeH0OqcqxgsMVeL2pQb2
+         rupK3trEmy4VMDWmtpN6AP/PWWl7mqcN7QeS8GxEo6KHyGHSlVwMhpCiDZi6TqZ1pPRM
+         wsv9AzYPq4Unwaz8vPws3PSpZaNrJrUzavEWQKB0bhP33kvkwdNZYWzUK65KpI153R9H
+         mH2O/h7yvOTa1vkxt7N3e9xFDrtAfpYp4hyyEjXo38nrcd1shcvRfsw4l+V/1MAiiFHW
+         iRkw==
+X-Forwarded-Encrypted: i=1; AHgh+RrhDonXW0YTjRPI69cqmeWv3xBi+3t4VZZf6w7Eq/5ZLw1GpRU3KjbMlxZZxqXD9wIO4rcAF4ufxMA9+Q==@vger.kernel.org
+X-Gm-Message-State: AOJu0YxDjGfe0eqaHuWFUMZCT8lQD7GEJg74kbNyBVINbTZAZ49Fwq22
+	uYP2/PtK7H9b6et8ezjYCVjPjsDl+maCGeVf4YYWyrP+V28SDuuG6x35
+X-Gm-Gg: AR+sD13n0uqlpl12pdw4U8d8q2Tk9cIIeBC4dyTJYDKA+es+2mQPAH/KJVZ0iFEZ1FL
+	AoS9aGn9BLYKvqQIkjh0QIBjDUVDzKbMDRq4/e9O9mWU0JFMp0cM1kw08KqQTgu8PpkE1564+8N
+	UywDFz4XE0g86jffw3+qtPl9eB+DIr1ZUReRSdbuHNQellvafL5YJrX41llpOE03Rqkhg0Fjrxl
+	aAuVjmx/xCKAxVh2CnvGQz44ziH+OoOV9U86Xfjr0oPIA7Sq89RquMc/S9mZZN2Iq3GQioPE/yG
+	BiSEsZeVyHOAJbzta1gGAu4PdKyra5zGHyGNP5BOIjlLcbp/xwsKrWOR7Fc4DlbEtIaWDpIyPPE
+	I20vTtS5VMRXM7zRpZH3+U0RMUX+OIH3LKsMc5zbYfrJFbk1HulfkgVNRvgM59YvbGNlBsYovM3
+	1Uf5V1YqaEuciNzjUCiMX5ZSeCM2HSVG/gSP3r9N8Dk1HhlOUWsOLiJrjaoUdUXq/TukkrmOWe8
+	yJqYV1LBLlbFQx+z3WqrAfu+usHcIE=
+X-Received: by 2002:a05:6402:2344:b0:6a0:c763:89e5 with SMTP id 4fb4d7f45d1cf-6a14f2576f8mr16999516a12.19.1786265734380;
+        Sun, 09 Aug 2026 01:55:34 -0700 (PDT)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a1f630a4afsm1606681a12.3.2026.08.09.01.55.32
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a1f630a4afsm1606681a12.3.2026.08.09.01.55.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Aug 2026 01:55:32 -0700 (PDT)
+        Sun, 09 Aug 2026 01:55:34 -0700 (PDT)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: richard.henderson@linaro.org,
 	mattst88@gmail.com,
@@ -69,9 +69,9 @@ Cc: glaubitz@physik.fu-berlin.de,
 	ink@unseen.parts,
 	macro@orcam.me.uk,
 	Magnus Lindholm <linmag7@gmail.com>
-Subject: [PATCH 5/6] alpha: invalidate the local context in flush_tlb_mm()
-Date: Sun,  9 Aug 2026 10:49:37 +0200
-Message-ID: <20260809085208.3262799-6-linmag7@gmail.com>
+Subject: [PATCH 6/6] alpha: invalidate the local context in flush_icache_user_page()
+Date: Sun,  9 Aug 2026 10:49:38 +0200
+Message-ID: <20260809085208.3262799-7-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260809085208.3262799-1-linmag7@gmail.com>
 References: <20260809085208.3262799-1-linmag7@gmail.com>
@@ -83,36 +83,33 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The SMP flush_tlb_mm() only touches the calling CPU when the mm is its
-active_mm:
+flush_icache_user_page() has the same caller-CPU omission that the
+previous patch fixed in flush_tlb_mm():
 
 	if (mm == current->active_mm) {
-		flush_tlb_current(mm);
+		__load_new_mm_context(mm);
 		...
 	}
 
-	smp_call_function(ipi_flush_tlb_mm, mm, 1);
+	smp_call_function(ipi_flush_icache_page, mm, 1);
 
-If it is not, nothing happens locally at all: smp_call_function() does not
-call back into the caller. mm->context[cpu] is left valid, so this CPU
-may later reuse the old ASN, and any translations it still holds for MM
-stay usable.
+When the target mm is not the calling CPU's active_mm nothing happens
+locally, and smp_call_function() handles only the other CPUs, so this CPU
+may later reuse the old ASN together with the translations it still holds.
 
-Callers reach this regularly - counting the branch gave 2934 such calls
-over a fork-heavy workload and 632 while otherwise idle.
+This matters here in particular because the function exists for operating
+on another process's mappings: the comment above it describes setting
+breakpoints through ptrace, and access_remote_vm() reaches it through
+copy_to_user_page(). The calling CPU is therefore often running something
+other than the target mm.
 
-Add the missing else. The UP implementation in asm/tlbflush.h already has
-exactly this shape:
+As in flush_tlb_mm(), the UP implementation in asm/cacheflush.h already
+has the missing case:
 
-	if (mm == current->active_mm)
-		flush_tlb_current(mm);
+	if (current->active_mm == mm)
+		__load_new_mm_context(mm);
 	else
-		flush_tlb_other(mm);
-
-Unlike flush_tlb_page(), the active_mm test itself is valid here:
-flush_tlb_current() calls __load_new_mm_context(), which allocates and
-loads a fresh context rather than relying on a targeted tbi() to operate
-on whatever ASN happened to be loaded beforehand.
+		mm->context[smp_processor_id()] = 0;
 
 Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 ---
@@ -120,23 +117,23 @@ Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
  1 file changed, 7 insertions(+)
 
 diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index d167b3ba1303..f501a91001cc 100644
+index f501a91001cc..13b86f7224de 100644
 --- a/arch/alpha/kernel/smp.c
 +++ b/arch/alpha/kernel/smp.c
-@@ -649,6 +649,13 @@ flush_tlb_mm(struct mm_struct *mm)
+@@ -780,6 +780,13 @@ flush_icache_user_page(struct vm_area_struct *vma, struct page *page,
  			preempt_enable();
  			return;
  		}
 +	} else {
 +		/*
-+		 * smp_call_function() below does not call back into this
-+		 * CPU, so this is the only chance to retire what it holds
-+		 * for MM.  The UP implementation already does this.
++		 * As in flush_tlb_mm(): smp_call_function() does not call
++		 * back into this CPU, and this function is used precisely
++		 * when operating on another process's mappings.
 +		 */
 +		flush_tlb_other(mm);
  	}
  
- 	smp_call_function(ipi_flush_tlb_mm, mm, 1);
+ 	smp_call_function(ipi_flush_icache_page, mm, 1);
 -- 
 2.53.0
 
