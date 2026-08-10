@@ -1,96 +1,95 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37EB32FBE
-	for <linux-alpha@vger.kernel.org>; Mon, 10 Aug 2026 02:45:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 081B3149DF1
+	for <linux-alpha@vger.kernel.org>; Mon, 10 Aug 2026 03:03:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.181
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786329938; cv=pass; b=nYZb13/KUbVeWdoyzwrWlJfTTLDLXs+Xox5gaETLwTBLTL/Nx0RpIGcMvsGKfd+3uaqegG3srNoxR+eswXOvQIanp4gx1qwgwom3i1wthdlHh9m2k+FAlj9ZBID0+s9Z0M+/QBfBe0KxhKCOOSvS7QYUZUFNm3z1P6U85+JnxT4=
+	t=1786331018; cv=pass; b=TOsc7R1dfXXD834w2okHi/dQloxBp59LqEf817XQtP0LKAnaxTwGfiwIuVtFxeF9BVw2XB0Ah7RSbw8kHpFji/RjXimE/87+agg5CuWkwxrNa9ak869AEB8o92O7bZWjpuLNgaps+t9Z+tsmFMQMEL07q31xr4lrNa50tz3Yx24=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786329938; c=relaxed/simple;
-	bh=KO71j+Nd9/b5mPQL+wIvMj3mS8QeRqi/TzjfzU+eRPo=;
+	s=arc-20240116; t=1786331018; c=relaxed/simple;
+	bh=X8S1IqIwXrmAOqjZP2cQg452pSsObxRdN312uji9XLI=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Vla6FTwVwmL5qQ05OQ0mmSCPnn1GdvEgF74YMJvGDhPUiPYggqxNKtlnqEHxIwKncnBPHW9gIKbufmX55ZX1fJ9Y8BEQF0nOPwrh1LBTxX4FHCKkPU3VTTvAHXfPdsKl8hJiH/eaqv1pICxHlGKP8alL8X5nFd2zZ0ObyOs/kkc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eBAoCHQS; arc=pass smtp.client-ip=209.85.167.50
+	 To:Cc:Content-Type; b=FMLAUzTvWWS30aOWtMw3yDr5px05jfPeqZQq2/xvJ9M05RTcl0XHM36EIb8rkoh4UHybps1lcjbkbq+Dwg4niGMcGBX+MuvIxzpmHt5ehIvx1MzNNMCeEbYRSm5NNdku1F49CSQGCcSo25nJpCk9lJAE0yJ/rgHmIYmG6Xg9NVw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F0xtJkE/; arc=pass smtp.client-ip=209.85.208.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eBAoCHQS"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5b28c91fba5so1605514e87.1
-        for <linux-alpha@vger.kernel.org>; Sun, 09 Aug 2026 19:45:37 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786329935; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F0xtJkE/"
+Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-39fcdaef6e2so9256601fa.1
+        for <linux-alpha@vger.kernel.org>; Sun, 09 Aug 2026 20:03:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786331015; cv=none;
         d=google.com; s=arc-20260327;
-        b=RsrVpnDIFwSxV10/BpI3AVXzhVpiz7t6RA6/eA3TNnL55ys/grqv6zVPuCIsIINwFK
-         lGSGG247TWMMeZBBoH0kiXh1bI7Bg2yfY7Exz9Lm6dn8wXEzLshSNKXz2LtyyU6tgtn0
-         yw+vAtVy7FR0O+9TS3SFyGoUwLEBqbDU9DrghsxRpfssZmk7zt/mJHc+hzJO5rNm0XhC
-         0FfOCpXFyEYBDKWOGOu2jPOJdjohnEkefN7Z5EpaP/Gav7IBcNLxCIpAesFoPWBq5Vsl
-         i2+3dMdl4YYSDBgxNcY4ovbnFXNmQ7wUG8t8qN/cJ2SLvAh4kAeM4NpeVsRBl7vZ9XtG
-         hDLQ==
+        b=p+GBryqIOCiJGdw2GQEAR5G35407gfmqUNKEg9dOKxjwhUwaGktrlciOO1MPUprT33
+         ECti0jvsGYL0IXvM2krayP0x2+3JnzgjzUSn3ioW89fnkD70ytq901MhP8WAwHhbdHA4
+         hKCVTCXoMjx2PzhgB4g+02VAdSddeJ8JBm8fYiFw+LIy1WCDxSKy7iB8GIS2JdT82r3D
+         Pubu7drCfa0jUSHANAerw2RAJt2ZYC5r/vBS6Lh15sBOuKATcA5JpADSUh2N39eeKj3e
+         WD16WbvMOWKucX3m06A24Amclar1eY4nDbFCSi+QNIeOOiN92Z7VH/jD0+EVB8uAo9Un
+         +kew==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=OVDsPM+DjMhqJUTTTfRiZAqNagGEvGInMBIstasEQvo=;
-        fh=Y2LHcOGdH30xRy25ZYaI8BODuN7hBjJ3ryZVxaw3V80=;
-        b=BgfmCnZxpBNXz73UfjxoAsp80BU9wzQZkgzj9CQ2n2tZg5Z9OhY4fZw9LuNvhc2LIN
-         zrOHBx/ssyhkd9/AIXzvS1+Uj98+r1+7CXv8WDEssJVtqUjDP9sd38b9gO31APUJ0FHR
-         UgZb9zu1eGyuAMC9c89iI1F9AFmIaJygR7EQ6yCAAeFAUgVwzklfLe2tU6Atsgs1ropd
-         XaUjTV3uObuVr6dIwRGqk7ltnOnVG/OAn92GppomvFnRmlnpocJsVHanJCPF8OaI5sYd
-         xyWZHC16hW5XY6nnJVBkWijB5xo5/2kwZVtmIdazG2LeGkNtMZv2wwCyDclFKrgnCzdv
-         Pskw==;
+        bh=8IrzNHYqfqHPp2etKhvpO4WVwetlXoKRyN7wC1hU1w0=;
+        fh=RbQ5ZS8ycLAmcOu3/AR4+dsLY3DMVHLT4WYBFb3SNG4=;
+        b=ILe6wjoqOwoYyrxHiBAqOffrQTT3DQ7VEg2r00PjosgGQyRmc7IRXIFKKYpzXFzj5v
+         py3++EoElCCKNkO7TYHM+EQq0Mwt/EBX4lJ2kf4E3hpSRDqQQi1ntFz5AXqcTZp/6TKy
+         VcSDzbNUuCnTy0O6VwPN/CRmGH6XZy4k6o7dpZ43QHOaDhZ34nDFryA2DpglRmr8+TI8
+         LAh2HUmDwEWivGURqz0Aycdc8S0smXREPWG+AwuhoKIPmhMQzLiLQOf/v9zvqn5NamYP
+         79P7w8vsjxuNE1M4itDOimFvuO4KjxxkvHYDhbGMGzrcXpIdGRdQLybWP9nDSvjC4/0u
+         kUWw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786329935; x=1786934735; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1786331015; x=1786935815; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=OVDsPM+DjMhqJUTTTfRiZAqNagGEvGInMBIstasEQvo=;
-        b=eBAoCHQSSBrDLQxVueR7myJEhprnqRqUgKvmhzvAMgLCBY2Q1ail2vlZOc8sDqbpNP
-         Yk2nINk0yhtd8MUHWOuvb/otKe1kWMIx6vBBgyBhECr1Hr0uMAzu+YxO4rGA0j1+TjqV
-         U1EyvN+iyC1zyZ1vho+vRtCqG9eH5QeVCcDlTwo167kRtUUUjMfTFf5WzhFloshPCu0K
-         +8b3jqwz+Bms21aW2RvgaesTo/8RCfOw8FasYW0llaUDQ3EY5IP5l6izaL///ZBPK3MA
-         9SYJ1ZYAFCH1A07cvr87fUe3zFG42IytNRnYfBbbI9Q1Majz8+F7vjM/6WZNHrf53WPe
-         d9JQ==
+        bh=8IrzNHYqfqHPp2etKhvpO4WVwetlXoKRyN7wC1hU1w0=;
+        b=F0xtJkE/YmiYq1fPmiVmKaEw2Uz4Imqtz7ovnQqZs382Ze7CCMVlrStMW3i02f/XKu
+         lKjLa2wXBwWxelIPF1DCRX1/bI0Iz+u2bVckqGRYYjIFkDKnZEia2IXm3q7D0K6Ye5j0
+         tniyswhh9o6UoNDgT46kEw3FA3TyLaSSs/UEr2Yh6f6ckDdn1qDToXhAhngLrkH4OTc+
+         owG4cjBcZ3y4+l5eDeZ32yTy1aGhnH6ipnw/NmP1uQqtmjnWWeD/SyYY/jG9x+dXToeX
+         4cA/gCDS45M2KQ6LMt60k4ELVc06b0fuVVN3pLYKX/sV9Wl1jA5GeRlDurixw9GKm3y9
+         o/rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786329935; x=1786934735;
+        d=1e100.net; s=20251104; t=1786331015; x=1786935815;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=OVDsPM+DjMhqJUTTTfRiZAqNagGEvGInMBIstasEQvo=;
-        b=D+PXhz1n5Um2DtMWUaEH7Pi6JWsKqai0jOr8LHWu94p60XmjyYoI4QmvZDpi3BSMCI
-         uBYgmtfBP5QaF9yE5Ai/x1Ovw8gz/845xdDoI1v6v6zjm9qTClYOlCA3lCfcEVpuqoCu
-         o9JKbSKIQSJ+/CQTyI9RNtqStdbDFS+9gIfudAY7JiTezrKwPDJi8usmm8uIHpqreXED
-         JI0paWVz+qdtSgQl+qImlLKWGVJqaiGNiP0Pk+FletmvQT2KOjUmhB1Vmgvr8sTodxhk
-         SiJW3WtfBfC5cQTVR/F5F9JqLGzxTztEEEAq/eeNpZQRzcPJUEhxR1URacAW2vAW66xf
-         cMFA==
-X-Forwarded-Encrypted: i=1; AHgh+RqJPU4TebJc/mFaEy7rIP6Bv+50DSV+Z4VE/Qin//haS2LlduoobwvQXuvDp6csOvGwJOt23TUX6/a5gA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YzleL2bQLN6FpvRx+PPf4zWKyvQaYgy1cgzak09YH0Ald63t1kl
-	wprU7KEcFgXfQ5yOYX8N65SxqdL+qNg4rTyAXQtBQOaJ9AzdMv6cXqt7eXG5fvfDJmBq0Ogi3YJ
-	5pHpy7gR7ze9YwLuEkXnGFlwuVdZ/AtIF6/DKb0w=
-X-Gm-Gg: AR+sD10aOeypmnJridej7wQrxs45k+DqqJwb7561GX0P1QpzSURvltEa0a6oiZmAFXe
-	m5Sy9atiNh+oSj6dtjoS7X6wMt7JI/j5PccnrgObyf47+HvJPxqJZeB4T2H/iu1Et1evKXKAOlw
-	1Ug2zqWCwwzlW5LnUbTORE8x2x48ja4mJzs7Od8eY6FKjggFm0jDK9JoYr3ZtBxUX042mhe7Viu
-	FZAAE3/OQ4KSQVrbCbG+qnEi+dvxOMryZgroEhr1Apj8be6Z2TLB0QgImHgCn44Eo8qMeZCIXCs
-	vk0+45mAA/2P+KhHmpNpsVOS5wA3BNJaMoNN34iCJJ490dJpRiI3MEc93wfNNxFnOm8zUPh+ZO7
-	QppPOKmDkAUZ6
-X-Received: by 2002:a05:6512:358f:b0:5b2:e178:4088 with SMTP id
- 2adb3069b0e04-5b30c0192camr1953974e87.4.1786329935034; Sun, 09 Aug 2026
- 19:45:35 -0700 (PDT)
+        bh=8IrzNHYqfqHPp2etKhvpO4WVwetlXoKRyN7wC1hU1w0=;
+        b=Ckoi2rEmc+fv3RAe8btTGVCPHBprCRMHxF9Yksg1fzRyGDbyriNPO3CGh7Auc9FVw4
+         0LVTX0qpqN+yLEbWWpo5YNXPcIRN14oKVvms9KUH5VKHjUNP4qUBZk23duBqZmivt7t2
+         qi8d2I5/kp9Inv6GQoIIoOTw9+XNJreXDlhqXjDkgRKGsCa0ptvr9EsmMxhc67P9jfdx
+         pUwLRwEGN6MgkKjPwRCoLGfsvY88u83RWJEg96ktiPHLuet+7FAnsfJutfmcDMdyDXAD
+         NNCeIIDaV+EhdY7Y2wyN929O9IIL0/EEG4qLsE+uzZWHjpeQJw1lsJ1Nraf848pGJ31w
+         UJAg==
+X-Forwarded-Encrypted: i=1; AHgh+RpoHp5hmjiuoUuDqpqlDDSPboHo+Fya4G2ym9lbpiOK0IuSpnP42svuXMJ+geXQIKXFqErB4+n2yfq+lg==@vger.kernel.org
+X-Gm-Message-State: AOJu0YwixedGZseoCrJkqB+va5Dv9xnYKmcWbbsTrGaVNSwK9azvRKcL
+	ictscWY86oDE8hRucEfmbyIRlX4iwYZMmHxdmYWA5ZbAEXcNwZKEQ3HM7+BvPMJEDqaqgq87lEb
+	ecLwxL6tXnW3DsX5F5oxnqkrvONC+b1w=
+X-Gm-Gg: AR+sD10AZNkmNLh6bQ0yMNq+0hJLsy7IaJmWif/FIzeVOfrKwRHTRVL4fQNLiEdlZ18
+	Oeby1fzsw4EFbZg9loiCGzHV2yy2nCQ1IjcjOqbLiIpioU3eFWxlja5aKErNAkVqbDbBLaftpah
+	pAYWaK/Yf4Q7YOPtZ0GG/cdaiQwIvwZuRbrMTsNVnn4y0XUuuSnBpttoEFe8rg72ccY+cPGeEDx
+	kp0wnTBzeMfyl2Te4bU9lyTA+p+GOEQQzhWksyJq8oy07O8dmi9NnorWvkujE8+kVIgO2tIi0Bo
+	rdv5lGEZY7LTP637iNu7jmDklnAoqon6FasK6dg3paBM+kJYFpNQnPLjOGRD0QTDP03ltA4QTlh
+	/RhIQSAUgwxrM
+X-Received: by 2002:a05:651c:150c:b0:39f:6700:9257 with SMTP id
+ 38308e7fff4ca-39fe58567aamr19238851fa.30.1786331014883; Sun, 09 Aug 2026
+ 20:03:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260809085208.3262799-1-linmag7@gmail.com> <20260809085208.3262799-5-linmag7@gmail.com>
-In-Reply-To: <20260809085208.3262799-5-linmag7@gmail.com>
+References: <20260809085208.3262799-1-linmag7@gmail.com> <20260809085208.3262799-7-linmag7@gmail.com>
+In-Reply-To: <20260809085208.3262799-7-linmag7@gmail.com>
 From: Matt Turner <mattst88@gmail.com>
-Date: Sun, 9 Aug 2026 22:45:22 -0400
-X-Gm-Features: AUfX_myYOcdxEOFGBbFxbOatyu5Jdw9VAgFuUXO0CH_xah7xXAvy6gQUMK0fW5k
-Message-ID: <CAEdQ38HYF0KWE0pxRBdWYfr9e0q8HqJ_BQu=_Zaredb3Xp+euQ@mail.gmail.com>
-Subject: Re: [PATCH 4/6] alpha: only use a targeted tbi() when the target mm
- is really current (UP)
+Date: Sun, 9 Aug 2026 23:03:20 -0400
+X-Gm-Features: AUfX_mwuD41J5BSvUPWHyDcXX7JeVP7f8TG_hRzbybH_lqcu7flVFA8y8uZ5H3A
+Message-ID: <CAEdQ38FEmxBu4xyf9FO9qqOO3OJewSCA-qoQ+M+X9JE+vGwa7g@mail.gmail.com>
+Subject: Re: [PATCH 6/6] alpha: invalidate the local context in flush_icache_user_page()
 To: Magnus Lindholm <linmag7@gmail.com>
 Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
 	linux-alpha@vger.kernel.org, glaubitz@physik.fu-berlin.de, mcree@orcon.net.nz, 
@@ -101,71 +100,60 @@ Content-Transfer-Encoding: quoted-printable
 On Sun, Aug 9, 2026 at 4:55=E2=80=AFAM Magnus Lindholm <linmag7@gmail.com> =
 wrote:
 >
-> The uniprocessor flush_tlb_page() has the same defect the previous patch
-> fixed for SMP:
+> flush_icache_user_page() has the same caller-CPU omission that the
+> previous patch fixed in flush_tlb_mm():
 >
->         if (mm =3D=3D current->active_mm)
->                 flush_tlb_current_page(mm, vma, addr);
+>         if (mm =3D=3D current->active_mm) {
+>                 __load_new_mm_context(mm);
+>                 ...
+>         }
+>
+>         smp_call_function(ipi_flush_icache_page, mm, 1);
+>
+> When the target mm is not the calling CPU's active_mm nothing happens
+> locally, and smp_call_function() handles only the other CPUs, so this CPU
+> may later reuse the old ASN together with the translations it still holds=
+.
+>
+> This matters here in particular because the function exists for operating
+> on another process's mappings: the comment above it describes setting
+> breakpoints through ptrace, and access_remote_vm() reaches it through
+> copy_to_user_page(). The calling CPU is therefore often running something
+> other than the target mm.
+>
+> As in flush_tlb_mm(), the UP implementation in asm/cacheflush.h already
+> has the missing case:
+>
+>         if (current->active_mm =3D=3D mm)
+>                 __load_new_mm_context(mm);
 >         else
->                 flush_tlb_other(mm);
->
-> For a non-executable vma flush_tlb_current_page() issues tbi(2, addr),
-> which acts on the address space context currently loaded, so it reaches
-> the mm's translations only when that context belongs to it. Under lazy
-> TLB an idle or kernel task keeps the mm as its active_mm while a differen=
-t
-> ASN is loaded, so the tbi() invalidates the wrong context and the stale
-> translation survives.
->
-> Use current->mm instead, as for SMP.
->
-> This is not theoretical on a uniprocessor. folio_mkclean() runs in the
-> writeback flusher kworker, which borrows the mm, and with one CPU that
-> kworker necessarily shares it with the thread holding the translation.  A
-> test that writes a small MAP_SHARED file while background writeback clean=
-s
-> it loses data on every round: the mapping holds one value and the file
-> another.
->
-> flush_tlb_mm() and flush_icache_user_page() need no equivalent change
-> here.  Both use __load_new_mm_context(), which allocates and loads a fres=
-h
-> context rather than relying on a targeted tbi() against whatever ASN
-> happened to be loaded.
+>                 mm->context[smp_processor_id()] =3D 0;
 >
 > Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 > ---
->  arch/alpha/include/asm/tlbflush.h | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+>  arch/alpha/kernel/smp.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
 >
-> diff --git a/arch/alpha/include/asm/tlbflush.h b/arch/alpha/include/asm/t=
-lbflush.h
-> index 0c8529997f54..6593a64090f1 100644
-> --- a/arch/alpha/include/asm/tlbflush.h
-> +++ b/arch/alpha/include/asm/tlbflush.h
-> @@ -87,7 +87,14 @@ flush_tlb_page(struct vm_area_struct *vma, unsigned lo=
-ng addr)
->  {
->         struct mm_struct *mm =3D vma->vm_mm;
->
-> -       if (mm =3D=3D current->active_mm)
-> +       /*
-> +        * tbi() acts on the address space context currently loaded, so i=
-t
-> +        * reaches MM's translations only when a thread of MM is current.
-> +        * Under lazy TLB an idle or kernel task keeps MM as its active_m=
-m
-> +        * with a different ASN loaded, and a targeted tbi() would then
-> +        * invalidate the wrong context.
-> +        */
-> +       if (mm =3D=3D current->mm)
->                 flush_tlb_current_page(mm, vma, addr);
->         else
->                 flush_tlb_other(mm);
-> --
-> 2.53.0
->
+> diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
+> index f501a91001cc..13b86f7224de 100644
+> --- a/arch/alpha/kernel/smp.c
+> +++ b/arch/alpha/kernel/smp.c
+> @@ -780,6 +780,13 @@ flush_icache_user_page(struct vm_area_struct *vma, s=
+truct page *page,
+>                         preempt_enable();
+>                         return;
+>                 }
+> +       } else {
+> +               /*
+> +                * As in flush_tlb_mm(): smp_call_function() does not cal=
+l
+> +                * back into this CPU, and this function is used precisel=
+y
+> +                * when operating on another process's mappings.
+> +                */
+> +               flush_tlb_other(mm);
+>         }
 
-Maybe rename this patch to
-
-> alpha: fix the local TLB invalidate in the UP flush_tlb_page().
+ipi_flush_icache_page() also doesn't issue an imb() here, so I'm
+guessing it's not actually needed... but I could see why it might be.
+Any theories?
