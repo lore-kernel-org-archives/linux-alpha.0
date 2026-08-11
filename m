@@ -1,218 +1,122 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com [209.85.222.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82C253F54C6
-	for <linux-alpha@vger.kernel.org>; Tue, 11 Aug 2026 06:33:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786430002; cv=pass; b=B9CVyIYRGpn8jQGOVw0oNf07hPE4G2Mv8RQrqoAiz/T9OMJmNvHKjNJv+lNZJiwl6jJoR/tcS+lFOf2h2YFQv6vpgMxnMx+HxR5m1G7Marvw+jAgaWr+ulZ8l9FtUf2zOBdwh+7lAE7esjrzAgG4I0ilLpV8PtQFbyuQOMoBQ+U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786430002; c=relaxed/simple;
-	bh=3eNEdKZNX11qUjLyYJSeJIvBrSPK7dlCFV5wnh1HIpw=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1992E38DC47
+	for <linux-alpha@vger.kernel.org>; Tue, 11 Aug 2026 06:49:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1786430999; cv=none; b=TZshELZVAq2wFFKg5tDR6evZuyBDxgs981LytoPQ3IS9+9DdSolxfR5rKlx+sKVJFkXx5pGQ8AtvBcJSz3y4iND2ZycMAeRYVVKsvoWjDwNJVxZeHglJvjuxXVQ7WzYZFaSzJ70PZQDzu5pnkgaDa/6NVbGbjXoZ7+qGtwSW5QU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1786430999; c=relaxed/simple;
+	bh=tZZLV6eyiwcGv5N3oyI6rD0AMUqGK1dWtQ5SUdhqr2s=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=g4aA3dF4mhzUi0TQkBslUGP6Nw8birl/CvKcFPHH6mVnZOrsDohdRBTIdIBpC8A1AYsfEf8nrGtwhkx7MHiEzU3e54aZLQry+3U0o3w2dkOdnZCVsj13vhmvhGbUUNNh4yCsEq9iIXw/Adf8liOAteefoDdEDAbPdGhMp4Mim7Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mCVe8Zdg; arc=pass smtp.client-ip=209.85.208.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	 To:Cc:Content-Type; b=kfFUKXDlAVtriqVhP1qBaOUaxNKjYCeWxJqPx2CbJVZ1LSDpVbPwSsXkF1NMxylfaa61Xf3kdZic+QSy5rTG73Wwp2m7cxsp/McM7XeccDWoFc6tVitue74YUNAOtxymbIgH2/CSgiBoxsvQP+K6Zw/oCL+U318l5xv3scNHQ7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mCVe8Zdg"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6a1f80fd2e4so1042938a12.1
-        for <linux-alpha@vger.kernel.org>; Mon, 10 Aug 2026 23:33:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1786429999; cv=none;
-        d=google.com; s=arc-20260327;
-        b=i9nEDZq5Zt56FMjf9YJy+e9ysa0Yvq7wSe2+sVGxgJJqi/+IVv9t+YfNUqvZevP/OC
-         da6jMWlSetXb/iFIQQ5sfoT37NKXI3pClEz4xi2VsxLTAIyFcwFqEEuLWKpc6CQgxSXa
-         0v8c8+ZJMdx7RLmwI/pybt4euinuYVpWjb5dWQ/EjBu8V9mtS7oistHCbi9OuNJOABP4
-         cXe4b/XI1IlAEKnvHnAMJvserq+IQ2YIkAWZJizgPjLw4k8uBRSIz8o9jSmADV9I5Frb
-         +f0RNZLHPpIyGtXU8sUuWZyDIrnqRf8o+mqTMvwZgXjKoo8rAp9LTWbrIaBhASXIrl8u
-         X6mA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=xqez7vy+wecyLapZtdwAWvksXKHeW6XcXxvp8KtworM=;
-        fh=eaUmn+PmDOkQPvqoMe47InwG945Ca0s8s2tCRhukOxE=;
-        b=E5fVquiJjRsNKzFrm6NuQ/vxuQYOh/jO0cDPXwexEJ9s3XvkRBxEJdqz86nREJ+NeM
-         81WssOfQ7ku4OSJQyPXxVOZzC1e/ivza+6JIdGqeoQBp5d7GLkVCVCQslz1JCElvVPuR
-         MfDw3CCul3YTBveRK/3GuUOT1zukeR499vdcrbhnh3YqlIFUOFupcYgQDHKDXrV/1guf
-         zwpO6UCZ+ggNKihP2S2l5/6VszG7Y28+zEFW5vpDS+1cAgcu0rVjHchomPMZVYpJY84S
-         p5MNpXwcAWUKU/m859/zHaYgL9HOgRrYRn5wLYiN5WPmRpShPtuKrqLJojfwv3oMXiCe
-         IwJw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1786429999; x=1787034799; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=xqez7vy+wecyLapZtdwAWvksXKHeW6XcXxvp8KtworM=;
-        b=mCVe8ZdgZQaw+m+SmOvZZqbbqLOXOQy7CJWIQJGrt1Brj8lgVHLQFZO1hLhoQZzS5J
-         euPaYUunynNbJAcFXsZKN8qOHlw47CV7y5Q9vf68ULM/CmAh13e6xqHvUNoG5mAyQH1a
-         CpfpaPWrkL8xKVWJGjWC2zPYjoWizu3xJRfkcozKDnpDvJr4zsm4eHJOILPBEy/ycGp+
-         EDjBq6J2K4wd49qbi3UohfYMlT0bX+EUmcn24y4ddqDFaCCv+MYmOU3jXQs1XpA8pU1w
-         6MuPJXd/qzTpRnnZhoLCGlOIOEcKIf48nyzzrf2W0Z+FgxZU/HWwT1kfvSIxYwoKo2a+
-         afig==
+Received: by mail-ua1-f45.google.com with SMTP id a1e0cc1a2514c-9770fffa5a6so558580241.3
+        for <linux-alpha@vger.kernel.org>; Mon, 10 Aug 2026 23:49:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1786429999; x=1787034799;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=xqez7vy+wecyLapZtdwAWvksXKHeW6XcXxvp8KtworM=;
-        b=LMzYqkAa/XLMRJg9FT2UCmkSEpEK52nfIvT2V68tVV+u0FzVCeyDVkPGvS1DuhV594
-         jf+TAtWNTPSO1lT7jiQZvk0/eR0GpY64YEyWBgoratWinhLEDFc5CGqX5LSIZ2XermJy
-         GhKA+rQZfLQ8k7Mr5iQqPvEX4xmcEh93tPwDEMC1AnqN1gMiMnuusqkHnSMOrtbpcvOJ
-         VUvpwUmTYAiMEurPKCkieGM03aGdxfLJE92ST7HaGk5JmPD4XV7SR4hwnVIP+tT1udNh
-         KMxTLI31G/w4xAIddR/nCmlAUkzo6csxAX5mJnpvYiIjZyjyAmKDmgsW3hEjrdRvJvUF
-         AnoA==
-X-Gm-Message-State: AOJu0YzaIAPidaAOfVEVuN18SjQ1HJ8hZoed0XJ5tRoWM0xm9I1LTGRs
-	p8X/HCyOslBr22DnitCSYMFUqBTqDnGeCKndZrDFKRR2xZziCmaXb22KRP3ZROVuvnL64nUewTs
-	G8ZlMrVem3rKQXfK55IqnJwttvRc0Q1M=
-X-Gm-Gg: AR+sD12Jf/mYFtX4fHKtvkLVHQZwXYukBQfMbY9lxdDsfIhoZxWg1+FnKF+JiIPMWYx
-	kvAL0mYgogx5mpfozvxY76zv2u8QwEhwxSjl7G7dVd6K02rCosVmJ1zputGEk86Jr/tBcDGyhYf
-	obAfeGrCYsakg3B6evRD7y2m2yboHKzqf8KzhqVIOaNt1wvBEuSiMEvYFWxDbHGCNArpv4vAr4X
-	9AeIaqTGOCqBlHVzkbyBObFqRpMLOPxKOFVy8IduyqMj1XeE4s/7Yarvix0egFj+G+nW2SvsP+e
-	snzklwzGo63mXXA4AkAC1bEZ/l3Mcy6O8IzT95SwlNW5aURZdNkfxjUch+rz26lfHBhQlFuaU8V
-	eqUNkWMUinO6HifayqWZHX/zuaEdqBAs=
-X-Received: by 2002:a05:6402:4542:b0:698:4501:3a8e with SMTP id
- 4fb4d7f45d1cf-6a364d7d18dmr302501a12.9.1786429998053; Mon, 10 Aug 2026
- 23:33:18 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1786430996; x=1787035796;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=0iZRfAdzYvTsaTTh/J3ab87cNtJMKi7JiQC3Jqumorg=;
+        b=NBW4gdgFPblHqgVuDABJodAkyLlokA5VdOrz42VHSmXMM6USop2/vTL5hMJwxVGaFM
+         2n6CQMwRMEYdVTUqsdrzC05S07bCP/i4/5E8w+tel5o3gEhoy74mNsMSA7UbiUgzF2rS
+         /qJXzy3yY4rrtq1yn9AV2zrOOIZuapKeGDS025zcKcKgT6NWirL/UXrntStwnJ6RYXMK
+         C8fiw9mfXNry/V+m4rQDxFlc/R44SpBKHNlPGDPZBs8VomQwvS5XaloVFy1nzbYOgEJk
+         XAvNkJtqxPwp/MCiKhYdoQArf3244En/tudhzGtmzpFhZStAqwJJyzedfvfwGa2B7ylL
+         Jd/w==
+X-Forwarded-Encrypted: i=1; AHgh+RroOlsYujjwDTFneaNGOT079Pbes7Z9TBVHHyy3qYG30EdwBKPUaR7ib035dBRiIFjx2KQ16ux+GBlUNw==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxgsbc3FGa4DA4aC2yldRhJxu1XgAKi5QxgUlxp2ymYqD0ARog/
+	bdjTDhgkt80o0Q2dO1pAoV3NXNDnNqU4xYfT1mAmWeAMC5zIHEvHye7hbsX+2omv
+X-Gm-Gg: AR+sD11wdxBQB6nly4EuDqqFqd6PSFYQw6yi754RhgVCuknJlNvsNM1bfXOzEpxQQzZ
+	WHJ8ooqgYhrI3MMxSuDxTgnQSV4MWSiKuaOUqVx7ZJJX50a3gVtRF++K7AXV+BaMkeK6cJ20MVj
+	TgDXTKGwA8jLmNAe07nAew9MmbNjb1EMGo9WAswG1clRqgAHnvFzSz3BhibeHUf/58YQwsSo/Ek
+	6DpwfVwA++vLDz/7kDd+V7cUUHtJwSqnUkc9+L6rfhl9/4lZm4a30Xp0tYSzoyt3jP0XfxotgVX
+	7lCCwOmhnbioJTNI45xyKrfFgR32Yo3o7daHTcxcgRlBXnZDXoKjk7DDcUD6qUD1jtKZ3TMxw5Y
+	9J+WSSYPAbMtDQkhnMmlRneCFOwcTvZvs777ffjnJXaXhFI+tJagADM5USI3Ye4mQ9FB4Xl6SUa
+	L/6pGvOG9bWY5emh7AUYX6TC6pAiWlu1e3aoK0t9bbrreSCecuhPF9wKkzZifGT6O+8YZwqiSmC
+	LJPgHwCbxuVO+GhOJBM6mqyZTl7/j9Pbahy
+X-Received: by 2002:a05:6102:f95:b0:737:4cac:52f8 with SMTP id ada2fe7eead31-76b54f87261mr306541137.4.1786430995937;
+        Mon, 10 Aug 2026 23:49:55 -0700 (PDT)
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com. [209.85.217.50])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-76b6328b2b0sm205956137.4.2026.08.10.23.49.55
+        for <linux-alpha@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Aug 2026 23:49:55 -0700 (PDT)
+Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-74ac3ea9c60so675601137.1
+        for <linux-alpha@vger.kernel.org>; Mon, 10 Aug 2026 23:49:55 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AHgh+RrcpGRpKZuLkH8pOZbv2fLDb6a3IS+SxuqU+cwaJE5hEfUEH+7xUAN8rXFBX4TlBzEVXQE6pZaQiDwtpg==@vger.kernel.org
+X-Received: by 2002:a05:6102:c4a:b0:738:ecd7:1984 with SMTP id
+ ada2fe7eead31-76b54a7a17fmr283026137.3.1786430995503; Mon, 10 Aug 2026
+ 23:49:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260810202835.3592833-1-mattst88@gmail.com> <20260810202835.3592833-2-mattst88@gmail.com>
-In-Reply-To: <20260810202835.3592833-2-mattst88@gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Tue, 11 Aug 2026 08:33:06 +0200
-X-Gm-Features: AUfX_mxVx6kC4xQsRMHEXa_jFxXEXB9L4qraQsx1q71sIWp3E0w98CIHqUb5sIo
-Message-ID: <CA+=Fv5SWCg0BcJsEY2tA95tb5CY=EPwm2ZG8CCY9m=06ngz+aQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] alpha: annotate hardirqs-off on IPL 7 interrupt entry
-To: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org, 
-	Richard Henderson <richard.henderson@linaro.org>, linux-kernel@vger.kernel.org
+References: <20260811042119.3652929-1-anshuman.khandual@arm.com> <20260811042119.3652929-7-anshuman.khandual@arm.com>
+In-Reply-To: <20260811042119.3652929-7-anshuman.khandual@arm.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 11 Aug 2026 08:49:43 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXfpkpYzZWGVb0fQrdn3uYHU3pyCkyAX9o2ux_Jj=2ByA@mail.gmail.com>
+X-Gm-Features: AUfX_mwgji-OqM2d70As4nCfmG84npBMa5IuhuEcV5XEKzcXYS3fe_Pqx16lD20
+Message-ID: <CAMuHMdXfpkpYzZWGVb0fQrdn3uYHU3pyCkyAX9o2ux_Jj=2ByA@mail.gmail.com>
+Subject: Re: [RFC V2 6/6] mm: Drop pxd_ERROR()
+To: Anshuman Khandual <anshuman.khandual@arm.com>
+Cc: linux-mm@kvack.org, akpm@linux-foundation.org, david@kernel.org, 
+	Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Helge Deller <deller@gmx.de>, 
+	Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, linux-alpha@vger.kernel.org, 
+	linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
+	linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, 
+	loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, 
+	linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org, 
+	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, 
+	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, 
+	linux-um@lists.infradead.org, linux-arch@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Aug 10, 2026 at 10:28=E2=80=AFPM Matt Turner <mattst88@gmail.com> w=
-rote:
->
-> do_entInt() opens with local_irq_disable(), which with
-> CONFIG_TRACE_IRQFLAGS only calls trace_hardirqs_off() if interrupts were
-> not already off:
->
->         #define local_irq_disable()                             \
->                 do {                                            \
->                         bool was_disabled =3D raw_irqs_disabled();\
->                         raw_local_irq_disable();                \
->                         if (!was_disabled)                      \
->                                 trace_hardirqs_off();           \
->                 } while (0)
->
-> On alpha raw_irqs_disabled() is (rdps() & 7) =3D=3D IPL_MAX, i.e. IPL 7.
-> PALcode raises PS.IPL to the level of the interrupt before entInt runs,
-> so for an IPL 7 entry - a processor machine check (vector 0x660) or a
-> system event (vector 0x680), both IPL_MCHECK =3D=3D IPL_MAX - the gate is
-> already true and the annotation is skipped.  lockdep keeps whatever
-> hardirq state the interrupted context had.  If that context had
-> interrupts enabled, lockdep believes they are still enabled for the
-> duration of the handler, and every lockdep_assert_irqs_disabled() in the
-> interrupt path fires:
->
->   WARNING: kernel/context_tracking.c:346 at ct_irq_enter+0xc4/0xd0, CPU#0=
-: swapper/0/0
->   [...]
->   [<fffffc0001ef74d4>] ct_irq_enter+0xc4/0xd0
->   [<fffffc000105ebd0>] irq_enter+0x20/0x50
->   [<fffffc000103707c>] do_entInt+0x1dc/0x2e0
->   [<fffffc0001031d60>] ret_from_exception+0x0/0x10
->
->   irq event stamp: 735356346
->   hardirqs last  enabled at (735356346): trace_hardirqs_on+0x68/0x220
->   hardirqs last disabled at (735356345): do_idle+0xf0/0x270
->
-> The stamps show the problem directly: the most recent event is the
-> enable from the interrupted idle loop, and do_entInt() recorded no
-> disable at all.  ct_irq_exit() warns the same way on the way out.
->
-> Ordinary device interrupts arrive at IPL 3-5 and IPIs and performance
-> counter interrupts at IPL 6, so was_disabled is false for them and the
-> annotation happens normally.  Only the two IPL 7 vectors are affected,
-> which is why this needs an environmental event to show up.
->
-> Take the hardware IPL out of the decision and drive the annotation from
-> lockdep's own state instead.
->
-> This corrects the annotation only.  An IPL 7 event can also interrupt a
-> region that has legitimately disabled interrupts, where irq_enter() and
-> irq_exit() are not the right primitives and NMI semantics are needed;
-> that is a larger change and is left alone here.
->
-> Tested on an AlphaServer ES47 (Marvel/EV7) by injecting system events
-> through the system management path: fifteen injections, idle and under
-> load, with no splat.  The same injection on a freshly booted kernel
-> without this change reproduces both warnings.
->
-> Signed-off-by: Matt Turner <mattst88@gmail.com>
-> ---
->  arch/alpha/kernel/irq_alpha.c | 13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/alpha/kernel/irq_alpha.c b/arch/alpha/kernel/irq_alpha.=
-c
-> index cb4d58079d83..014c1e98e922 100644
-> --- a/arch/alpha/kernel/irq_alpha.c
-> +++ b/arch/alpha/kernel/irq_alpha.c
-> @@ -52,8 +52,19 @@ do_entInt(unsigned long type, unsigned long vector,
->          * Note that there is no matching local_irq_enable() due to
->          * severe problems with RTI at IPL0 and some MILO PALcode
->          * (namely LX164).
-> +        *
-> +        * PALcode has already raised PS.IPL to the level of the interrup=
-t
-> +        * being delivered.  For an IPL 7 entry - a machine check or a sy=
-stem
-> +        * event - that is IPL_MAX, which is what arch_irqs_disabled() te=
-sts
-> +        * for, so local_irq_disable() would decide interrupts were alrea=
-dy
-> +        * off and skip trace_hardirqs_off().  lockdep would then spend t=
-he
-> +        * whole handler believing interrupts are enabled.  Drive the
-> +        * annotation from lockdep's own state rather than the hardware I=
-PL.
->          */
-> -       local_irq_disable();
-> +       raw_local_irq_disable();
-> +       if (lockdep_hardirqs_enabled())
-> +               trace_hardirqs_off();
-> +
->         old_regs =3D set_irq_regs(regs);
->
->         switch (type) {
-> --
+Hi Anshuman,
 
-Hi Matt,
+Thanks for your patch!
 
-Nice catch! On an SMP AlphaServer ES40 with GENERIC_ENTRY and lockdep enabl=
-ed,
-a PSU state change generates vector 0x680 and reliably triggers the
-lockdep/check_flags
-and ct_irq_enter warnings without this patch. With the patch applied,
-repeated PSU state
-changes generate the expected 0x680 reports without any lockdep warnings.
+On Tue, 11 Aug 2026 at 06:22, Anshuman Khandual
+<anshuman.khandual@arm.com> wrote:
+> pxd_ERROR() has been used in generic mm just to print the page table entry
+> in pxd_clear_bad() before clearing those out with pxd_clear() later. These
+> pxd_ERROR() macros have been provided by all platforms which basically did
+> the same thing.
+>
+> Make pxd_clear_bad() use recently added ptval_to_str() instead for printing
+> page table entries thus completely dropping dependency on platform provided
+> pxd_ERROR() macros which can then be dropped off. First move all required
+> helpers in core MM into a header file which could then be used else where.
 
-I also exercised normal IRQ traffic under load; lockdep remained enabled wi=
-th no
-redundant hardirq transitions or other regressions.
+Oh, the "x" in "pxd" is a wildcard?
+Except that is not, as it does not match "pte" ;-)
 
-For verbose machine checks on tsunami I had also applies this patch:
-https://lore.kernel.org/linux-alpha/20251125224352.32034-1-linmag7@gmail.co=
-m/
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
+>  arch/m68k/include/asm/mcf_pgtable.h           |  6 ---
+>  arch/m68k/include/asm/motorola_pgtable.h      |  8 ----
+>  arch/m68k/include/asm/sun3_pgtable.h          |  7 ----
 
-Thanks,
-Magnus
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
