@@ -1,101 +1,91 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4C1D441166E;
-	Tue, 11 Aug 2026 08:34:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 23A1430BB80;
+	Tue, 11 Aug 2026 11:10:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786437277; cv=none; b=u0T8KGVhyRjlENCxY7QJyDVJCiWXmi/uQglOoLhY0u3NV9ARx6PPLsifNxkMuOSCqtdBJ/REBmiGmryaJTwG+jzs5SBQUTGj6HAvxRodvudLZhSj3rMD3txU4sOjfFA9Q2D91fdA0ZSLAuT/Ah07x14pjHiiIpkU3bLNSTNUs1U=
+	t=1786446607; cv=none; b=qjimRrHbNnNWDfuDLJ4JDr5fzs7LDpgeOEQRu6g2T0Z7VxXgdE8cytFAYH5DntGNxh0iTDmK+9ifFjT2m4swGwZBYqr7qTJuYmUugsgQt8jaR+RNxlkjxPOf7caAvlituBqnEpM+/bhgTAUAkMqVsMfg+RyPsfNZjrt43sGtLh0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786437277; c=relaxed/simple;
-	bh=ZT08f1GiOgKpD31g66zZnUhmuNu7zNORWfMHkMNA+MM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gwwb2tPc+fbOTZuclvcVlBkR0mpNeQhYxiHNbs74MRtylRQ86RNcz3xcBTiYyl4mGZuFWlXuTjBzCeXq7xfVBarWabECoVSMlZ3qvcpNMHVucpFyszGPypuTShYIeCjflaa+LTxUtcInS4/7/hKmc5QkhVHdYYpxqS/LthLo5BE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=ILvmNn+1; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="ILvmNn+1"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B295E1516;
-	Tue, 11 Aug 2026 01:34:31 -0700 (PDT)
-Received: from localhost (a085714.arm.com [10.164.19.28])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EA58F3F673;
-	Tue, 11 Aug 2026 01:34:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1786437275; bh=ZT08f1GiOgKpD31g66zZnUhmuNu7zNORWfMHkMNA+MM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ILvmNn+1uP0GCjTeWxHAARq3POjelk/zkkggHRqr669N5vBlnXQv9Yg8uShAHAWPV
-	 r+uFJpIr4Ahch5mMzxC2ouczYWRZPMGrkwVkFNIVMPn+HCacIXd33isOumG+cExtcS
-	 egAiyy/T4cf+1AQQkz3B427/hIS4SjOBaBYGwt8M=
-Date: Tue, 11 Aug 2026 14:04:32 +0530
-From: Anshuman Khandual <anshuman.khandual@arm.com>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: linux-mm@kvack.org, akpm@linux-foundation.org, david@kernel.org, 
-	Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
-	Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, 
-	WANG Xuerui <kernel@xen0n.name>, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, 
-	linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, 
-	loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, 
-	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, 
-	sparclinux@vger.kernel.org, linux-um@lists.infradead.org, linux-arch@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC V2 6/6] mm: Drop pxd_ERROR()
-Message-ID: <ijjadks7zjpwqlw4nbcawr3tva2r4y6gn3weuc73vbec46petn@ovlf52m2kugw>
-References: <20260811042119.3652929-1-anshuman.khandual@arm.com>
- <20260811042119.3652929-7-anshuman.khandual@arm.com>
- <CAMuHMdXfpkpYzZWGVb0fQrdn3uYHU3pyCkyAX9o2ux_Jj=2ByA@mail.gmail.com>
+	s=arc-20240116; t=1786446607; c=relaxed/simple;
+	bh=UxWeefAb6krFvq7Fg9Ob9zIpY3o8Sn9GV7JIMzZAUVY=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=ZoC1ubmUPbwJiHEhHnDmV8z6eGdn+wlOqieP/hjJr+eL2DpYf09O7jazLANVa5J32JFKTmChyJgYlq1tWJm1GoWiXwNVC/Qa0REaCrMU2jPOWaVPHchstkXh8OgYidJVWDNKjuaLbJsGCsInr3EEltZxLqT0QYU76hkhOIB4Qn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 901AE92009C; Tue, 11 Aug 2026 13:09:55 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 81B6B92009B;
+	Tue, 11 Aug 2026 12:09:55 +0100 (BST)
+Date: Tue, 11 Aug 2026 12:09:55 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Magnus Lindholm <linmag7@gmail.com>, Magnus Lindholm <lindholm@kernel.org>
+cc: Matt Turner <mattst88@gmail.com>, 
+    Richard Henderson <richard.henderson@linaro.org>, 
+    Nathan Chancellor <nathan@kernel.org>, 
+    Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
+    Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+    Nicolas Schier <nsc@kernel.org>, linux-alpha@vger.kernel.org, 
+    linux-kernel@vger.kernel.org, llvm@lists.linux.dev, 
+    linux-kbuild@vger.kernel.org
+Subject: Re: [PATCH 2/2] alpha: read $gp and $sp explicitly for clang
+In-Reply-To: <CA+=Fv5R0tdFeEKWgSVTjfXbs=guZmR8zy8FGbqUZNSKiyB24aA@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.2608110653370.48788@angie.orcam.me.uk>
+References: <20260803-alpha-clang-v1-0-1c4ba5ba7a64@gmail.com> <20260803-alpha-clang-v1-2-1c4ba5ba7a64@gmail.com> <CA+=Fv5R0tdFeEKWgSVTjfXbs=guZmR8zy8FGbqUZNSKiyB24aA@mail.gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdXfpkpYzZWGVb0fQrdn3uYHU3pyCkyAX9o2ux_Jj=2ByA@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
 
-On Tue, Aug 11, 2026 at 08:49:43AM +0200, Geert Uytterhoeven wrote:
-> Hi Anshuman,
-> 
-> Thanks for your patch!
-> 
-> On Tue, 11 Aug 2026 at 06:22, Anshuman Khandual
-> <anshuman.khandual@arm.com> wrote:
-> > pxd_ERROR() has been used in generic mm just to print the page table entry
-> > in pxd_clear_bad() before clearing those out with pxd_clear() later. These
-> > pxd_ERROR() macros have been provided by all platforms which basically did
-> > the same thing.
+On Mon, 3 Aug 2026, Magnus Lindholm wrote:
+
+> > diff --git a/arch/alpha/kernel/traps.c b/arch/alpha/kernel/traps.c
+> > index 7631129ac914..5b4f1ae2b74b 100644
+> > --- a/arch/alpha/kernel/traps.c
+> > +++ b/arch/alpha/kernel/traps.c
+> > @@ -925,7 +925,9 @@ void
+> >  trap_init(void)
+> >  {
+> >         /* Tell PAL-code what global pointer we want in the kernel.  */
+> > -       register unsigned long gptr __asm__("$29");
+> > +       unsigned long gptr;
+> > +
+> > +       __asm__ volatile("mov $29, %0" : "=r"(gptr));
+> >         wrkgp(gptr);
 > >
-> > Make pxd_clear_bad() use recently added ptval_to_str() instead for printing
-> > page table entries thus completely dropping dependency on platform provided
-> > pxd_ERROR() macros which can then be dropped off. First move all required
-> > helpers in core MM into a header file which could then be used else where.
+> >         wrent(entArith, 1);
 > 
-> Oh, the "x" in "pxd" is a wildcard?
-> Except that is not, as it does not match "pte" ;-)
+> This looks good to me. The explicit $gp read and use of
+> current_stack_pointer avoid relying on the unsupported local
+> register-asm behavior.
 
-Unfortunately that's the odd one but "pxd" was the closest possible :)
+ It could have been worth mentioning in the change description that no 
+code quality regression results here with GCC:
 
-> 
-> > Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> 
-> >  arch/m68k/include/asm/mcf_pgtable.h           |  6 ---
-> >  arch/m68k/include/asm/motorola_pgtable.h      |  8 ----
-> >  arch/m68k/include/asm/sun3_pgtable.h          |  7 ----
-> 
-> Acked-by: Geert Uytterhoeven <geert@linux-m68k.org> # m68k
+--- arch/alpha/kernel/traps-0.dump	2026-08-11 11:57:59.895247441 +0100
++++ arch/alpha/kernel/traps-1.dump	2026-08-11 11:56:31.788713285 +0100
+@@ -2223,8 +2223,8 @@
+ 			1b70: GPDISP	.text+0x4
+     1b74:	00 00 bd 23 	lda	gp,0(gp)
+     1b78:	f0 ff de 23 	lda	sp,-16(sp)
+-    1b7c:	10 04 fd 47 	mov	gp,a0
+-    1b80:	00 00 5e b7 	stq	ra,0(sp)
++    1b7c:	00 00 5e b7 	stq	ra,0(sp)
++    1b80:	10 04 fd 47 	mov	gp,a0
+     1b84:	37 00 00 00 	call_pal	0x37
+     1b88:	04 00 00 c2 	br	a0,1b9c <trap_init+0x2c>
+     1b8c:	08 00 1e a6 	ldq	a0,8(sp)
 
-Thanks !
+ Also I think our coding style would rather see the asm written as:
 
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> -- 
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+	__asm__ __volatile__("mov $29, %0" : "=r" (gptr));
+
+ Otherwise:
+
+Reviewed-by: Maciej W. Rozycki <macro@orcam.me.uk>
+
+  Maciej
