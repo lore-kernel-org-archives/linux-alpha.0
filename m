@@ -1,161 +1,145 @@
-Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35EEF481A92;
-	Wed, 12 Aug 2026 17:39:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.97.179.56
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 99191345749;
+	Thu, 13 Aug 2026 04:34:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786556380; cv=none; b=FJtfl1IEUqyKnzMTeTF3Tflgly4OK06bQrF8SKVsiDfjkwPO47CcnU3MjsXHnmWIonztNAkF1HZcv9IG9UFBmEhhH+Jb+k+gL0uDh0QMU2VpudcpQKqLg3O+pk8an/1kxPCVQTO1v+8ru4F2CiHluyvN3sWO8fCCowQ5FmUOvhI=
+	t=1786595662; cv=none; b=GzT0Vamh6EB4IYNMm3L97CwgWT1EkfdRW13GZpBMDv5XKcp21zk3i1uWgS6SG9jCql4XHG5i0YpXlKVBS+RGBpDVRliDN9dlH8J1bLyWltVEuhX/CYHBOFWFvI/M7OoPetrxUc+z232XFg/F/l9J+0PWIRcsr1MbnTuF4B7VrvM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786556380; c=relaxed/simple;
-	bh=T2C2IQIC8AENMabj+b1Yh+MlqE8tkw02mH6onEU6zqE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=uFwesvZqTy7t2vhBByzEhzKsT2E4qtTy0uZgZDjewTa2aZSNipodO8umwdNOaPS7HASQoNcnKOzLHx49Y3xOuQRZ+ahVOnsr5ZT2D20uSDJRItVtp6VYfJYTNYLhdbxLWmtehf/tqKNRtm5Kkq7QWCSrkW3VPB2MmDYj2piS1kI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=igalia.com; spf=pass smtp.mailfrom=igalia.com; dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b=JP3/SjcW; arc=none smtp.client-ip=213.97.179.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=igalia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=igalia.com
+	s=arc-20240116; t=1786595662; c=relaxed/simple;
+	bh=mO6mrRKNqP+ykHI/mGROppdDnXxIwgWT7LgXJj+JezI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PSPFvuKsku569kd4Nk6gztsu27KRVylGr0S956nCg8L9fJetIHsu+xJFQEMxgxrAT1HDx2jmEvAejcsBY45T0xyeVjXC3KAXA4k+KUYzW9Q1nLwCb+TfDJzmakdvBaxbsUyJixpNi/AZs+dDshY/nMyWKSUbI7Tl7R64c92VeKE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=ucFab0TP; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b="JP3/SjcW"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-	s=20170329; h=Cc:To:Message-Id:Content-Transfer-Encoding:Content-Type:
-	MIME-Version:Subject:Date:From:From:Reply-To;
-	bh=xw7jIcOsSg0tBd7gNAqEYhzUy1bQIgWLTtkuMdy3GPA=; b=JP3/SjcW4cYIiHFvmK39FYekco
-	BFV5gnZDe1H68KsQRgJCoy6+n1+XRiteVypBEdMePoev1w1TlXPKUg+66AOI0A5JapTk9c82qn2aB
-	lAP09cksFDK4OFjb0HZu5243s/sRJZzE7an339IC39SxIH4AxXwKOcZ78fXtdbtfoy6DwWEI++drJ
-	3rVAvcjqaqCJoucjUb2md8KaAsvGjpK5jerzNQ03wknc1C2Ne9wlhOig6URP5WCyp90F4rrG59KTi
-	redlI1duW7V7pEOikC3Qk0weyBSmoNoAZ2SemZJcjScwSgeEFV9CmQ5IKbA+44OGG/0l8yASFLRYq
-	vYA19Q/Q==;
-Received: from [177.139.22.20] (helo=[192.168.15.100])
-	by fanzine2.igalia.com with esmtpsa 
-	(Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-	id 1wuCvP-000FR2-6K; Wed, 12 Aug 2026 19:39:35 +0200
-From: =?utf-8?q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
-Date: Wed, 12 Aug 2026 14:38:44 -0300
-Subject: [PATCH v5 13/13] alpha: Use the common syscall table
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="ucFab0TP"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B8A551596;
+	Wed, 12 Aug 2026 21:34:14 -0700 (PDT)
+Received: from localhost (a085714.arm.com [10.164.19.28])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E593D3F632;
+	Wed, 12 Aug 2026 21:34:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1786595658; bh=mO6mrRKNqP+ykHI/mGROppdDnXxIwgWT7LgXJj+JezI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ucFab0TPnxvbqz3KEVyBy+XPNcRzGlpGCroO3Eciy3LZ0+X/OxqSrfgUvooo+EVnM
+	 CkkbCWk5eaKn4RSc34lEp7tZQ4pnzvhzXI1BWphp8/e5uuWc6hv5uSnA/KhXLfZVFZ
+	 sIXAXG2CvPJZ7I27QA35Hy/JfVFzGZIK3afmsQfQ=
+Date: Thu, 13 Aug 2026 10:04:15 +0530
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+To: "David Hildenbrand (Arm)" <david@kernel.org>
+Cc: linux-mm@kvack.org, akpm@linux-foundation.org, 
+	Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
+	Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>, 
+	WANG Xuerui <kernel@xen0n.name>, linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org, 
+	linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, 
+	loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, 
+	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, linux-sh@vger.kernel.org, 
+	sparclinux@vger.kernel.org, linux-um@lists.infradead.org, linux-arch@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC V2 1/6] loongarch/mm: Stop using pte_ERROR()
+Message-ID: <qymuy4grl654s6jwwyhlwwo6kfr3ongxpfnxifojkvism2ddwg@5lyq7iooel6b>
+References: <20260811042119.3652929-1-anshuman.khandual@arm.com>
+ <20260811042119.3652929-2-anshuman.khandual@arm.com>
+ <e0ada89f-26b2-4e82-8273-8ea7b391c147@kernel.org>
+ <9a66d741-536e-44ac-b02f-395b5fc8ab6d@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260812-tonyk-syscall_table-v5-13-3d383927c609@igalia.com>
-References: <20260812-tonyk-syscall_table-v5-0-3d383927c609@igalia.com>
-In-Reply-To: <20260812-tonyk-syscall_table-v5-0-3d383927c609@igalia.com>
-To: Masami Hiramatsu <mhiramat@kernel.org>, Arnd Bergmanon <arnd@arndb.de>
-Cc: linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, 
- kernel-dev@igalia.com, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
- linux-alpha@vger.kernel.org, linux-s390@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, soc@lists.linux.dev, 
- linux-mips@vger.kernel.org, parclinux@vger.kernel.org, 
- =?utf-8?q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
-X-Mailer: b4 0.15.2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9a66d741-536e-44ac-b02f-395b5fc8ab6d@kernel.org>
 
-Remove some of the duplicated code by using the common syscall number
-table.
+On Wed, Aug 12, 2026 at 01:27:54PM +0200, David Hildenbrand (Arm) wrote:
+> On 8/12/26 13:19, David Hildenbrand (Arm) wrote:
+> > On 8/11/26 06:21, Anshuman Khandual wrote:
+> >> Directly use pr_err() in __set_fixmap() and drop pte_ERROR() which helps in
+> >> eventually dropping pte_ERROR() macro across the tree. In this new printing
+> >> __FILE__ and __LINE__ has been dropped because they are always the same and
+> >> don't really add any value.
+> >>
+> >> Cc: Huacai Chen <chenhuacai@kernel.org>
+> >> Cc: WANG Xuerui <kernel@xen0n.name>
+> >> Cc: loongarch@lists.linux.dev
+> >> Cc: linux-kernel@vger.kernel.org
+> >> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+> >> ---
+> >>  arch/loongarch/include/asm/pgtable.h | 2 --
+> >>  arch/loongarch/mm/init.c             | 2 +-
+> >>  2 files changed, 1 insertion(+), 3 deletions(-)
+> >>
+> >> diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
+> >> index 223528c04d73..a32a8fff70c1 100644
+> >> --- a/arch/loongarch/include/asm/pgtable.h
+> >> +++ b/arch/loongarch/include/asm/pgtable.h
+> >> @@ -128,8 +128,6 @@ struct vm_area_struct;
+> >>  #define ptep_get(ptep) READ_ONCE(*(ptep))
+> >>  #define pmdp_get(pmdp) READ_ONCE(*(pmdp))
+> >>  
+> >> -#define pte_ERROR(e) \
+> >> -	pr_err("%s:%d: bad pte %016lx.\n", __FILE__, __LINE__, pte_val(e))
+> >>  #ifndef __PAGETABLE_PMD_FOLDED
+> >>  #define pmd_ERROR(e) \
+> >>  	pr_err("%s:%d: bad pmd %016lx.\n", __FILE__, __LINE__, pmd_val(e))
+> >> diff --git a/arch/loongarch/mm/init.c b/arch/loongarch/mm/init.c
+> >> index 3407030f3e7a..be9b127daef2 100644
+> >> --- a/arch/loongarch/mm/init.c
+> >> +++ b/arch/loongarch/mm/init.c
+> >> @@ -203,7 +203,7 @@ void __init __set_fixmap(enum fixed_addresses idx,
+> >>  
+> >>  	ptep = populate_kernel_pte(addr);
+> >>  	if (!pte_none(ptep_get(ptep))) {
+> >> -		pte_ERROR(*ptep);
+> >> +		pr_err("bad pte %016lx\n", pte_val(*ptep));
+> >>  		return;
+> >>  	}
+> >>  
+> > 
+> > Ah, I missed that we want to print actual values, I somehow thought that we
+> > would be printing pte_none() ...
+> > 
+> > Maybe we should just be more verbose while at it?
 
-Signed-off-by: André Almeida <andrealmeid@igalia.com>
----
- arch/alpha/kernel/syscalls/Makefile    | 10 +++++--
- arch/alpha/kernel/syscalls/syscall.tbl | 48 ----------------------------------
- arch/alpha/kernel/systbls.S            |  1 +
- 3 files changed, 9 insertions(+), 50 deletions(-)
+Initially thought that these new prints should be right close to the
+original via pxd_ERROR() but I guess making them verbose while doing
+the replacements should be indeed acceptable.
 
-diff --git a/arch/alpha/kernel/syscalls/Makefile b/arch/alpha/kernel/syscalls/Makefile
-index b265e4bc16c2..18682418327b 100644
---- a/arch/alpha/kernel/syscalls/Makefile
-+++ b/arch/alpha/kernel/syscalls/Makefile
-@@ -7,12 +7,18 @@ $(shell mkdir -p $(uapi) $(kapi))
- syscall := $(src)/syscall.tbl
- syshdr := $(srctree)/scripts/syscallhdr.sh
- systbl := $(srctree)/scripts/syscalltbl.sh
-+systbl_common := $(srctree)/scripts/syscall_common.tbl
-+abis := common,__clone3
- 
- quiet_cmd_syshdr = SYSHDR  $@
--      cmd_syshdr = $(CONFIG_SHELL) $(syshdr) --emit-nr $< $@
-+      cmd_syshdr = $(CONFIG_SHELL) $(syshdr) --emit-nr \
-+		   --common-tbl $(systbl_common) --common-offset 110 \
-+		   --abis $(abis) $< $@
- 
- quiet_cmd_systbl = SYSTBL  $@
--      cmd_systbl = $(CONFIG_SHELL) $(systbl) $< $@
-+      cmd_systbl = $(CONFIG_SHELL) $(systbl) \
-+		   --common-tbl $(systbl_common) --common-offset 110 \
-+		   --abis $(abis) $< $@
- 
- $(uapi)/unistd_32.h: $(syscall) $(syshdr) FORCE
- 	$(call if_changed,syshdr)
-diff --git a/arch/alpha/kernel/syscalls/syscall.tbl b/arch/alpha/kernel/syscalls/syscall.tbl
-index 34151d1653d6..7066a3920899 100644
---- a/arch/alpha/kernel/syscalls/syscall.tbl
-+++ b/arch/alpha/kernel/syscalls/syscall.tbl
-@@ -463,51 +463,3 @@
- 532	common	getppid				sys_getppid
- # all other architectures have common numbers for new syscall, alpha
- # is the exception.
--534	common	pidfd_send_signal		sys_pidfd_send_signal
--535	common	io_uring_setup			sys_io_uring_setup
--536	common	io_uring_enter			sys_io_uring_enter
--537	common	io_uring_register		sys_io_uring_register
--538	common	open_tree			sys_open_tree
--539	common	move_mount			sys_move_mount
--540	common	fsopen				sys_fsopen
--541	common	fsconfig			sys_fsconfig
--542	common	fsmount				sys_fsmount
--543	common	fspick				sys_fspick
--544	common	pidfd_open			sys_pidfd_open
--545	common	clone3				__clone3
--546	common	close_range			sys_close_range
--547	common	openat2				sys_openat2
--548	common	pidfd_getfd			sys_pidfd_getfd
--549	common	faccessat2			sys_faccessat2
--550	common	process_madvise			sys_process_madvise
--551	common	epoll_pwait2			sys_epoll_pwait2
--552	common	mount_setattr			sys_mount_setattr
--553	common	quotactl_fd			sys_quotactl_fd
--554	common	landlock_create_ruleset		sys_landlock_create_ruleset
--555	common	landlock_add_rule		sys_landlock_add_rule
--556	common	landlock_restrict_self		sys_landlock_restrict_self
--# 557 reserved for memfd_secret
--558	common	process_mrelease		sys_process_mrelease
--559	common  futex_waitv                     sys_futex_waitv
--560	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
--561	common	cachestat			sys_cachestat
--562	common	fchmodat2			sys_fchmodat2
--563	common	map_shadow_stack		sys_map_shadow_stack
--564	common	futex_wake			sys_futex_wake
--565	common	futex_wait			sys_futex_wait
--566	common	futex_requeue			sys_futex_requeue
--567	common	statmount			sys_statmount
--568	common	listmount			sys_listmount
--569	common	lsm_get_self_attr		sys_lsm_get_self_attr
--570	common	lsm_set_self_attr		sys_lsm_set_self_attr
--571	common	lsm_list_modules		sys_lsm_list_modules
--572	common  mseal				sys_mseal
--573	common	setxattrat			sys_setxattrat
--574	common	getxattrat			sys_getxattrat
--575	common	listxattrat			sys_listxattrat
--576	common	removexattrat			sys_removexattrat
--577	common	open_tree_attr			sys_open_tree_attr
--578	common	file_getattr			sys_file_getattr
--579	common	file_setattr			sys_file_setattr
--580	common	listns				sys_listns
--581	common	rseq_slice_yield		sys_rseq_slice_yield
-diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 68f3e4f329eb..9a67d29f7818 100644
---- a/arch/alpha/kernel/systbls.S
-+++ b/arch/alpha/kernel/systbls.S
-@@ -7,6 +7,7 @@
- 
- #include <asm/unistd.h>
- 
-+#define __SYSCALL_WITH_COMPAT(nr, native, compat)        __SYSCALL(nr, native)
- #define __SYSCALL(nr, entry) .quad entry
- 	.data
- 	.align 3
+> > 
+> > pr_err("unexpected set PTE at %ul in __set_fixmap: %016lx\n",
+> >        addr, pte_val(*ptep));
+> > 
+> 
+> On second thought, why not simply use ptval_to_str() here as well?
 
--- 
-2.55.0
+Sure will do the required changes - the following builds successfully.
 
+--- a/arch/loongarch/mm/init.c
++++ b/arch/loongarch/mm/init.c
+@@ -197,13 +197,15 @@ void __init __set_fixmap(enum fixed_addresses idx,
+                               phys_addr_t phys, pgprot_t flags)
+ {
+        unsigned long addr = __fix_to_virt(idx);
++       char str[PTVAL_STR_MAX];
+        pte_t *ptep;
+
+        BUG_ON(idx <= FIX_HOLE || idx >= __end_of_fixed_addresses);
+
+        ptep = populate_kernel_pte(addr);
+        if (!pte_none(ptep_get(ptep))) {
+-               pr_err("bad pte %016lx\n", pte_val(*ptep));
++               ptval_to_str(str, pte_val(*ptep));
++               pr_err("unexpected set PTE at %lx in __set_fixmap: %s\n", addr, str);
+                return;
+        }
+
+> 
+> -- 
+> Cheers,
+> 
+> David
