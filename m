@@ -1,63 +1,176 @@
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [62.89.141.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFBF0318EF4;
-	Sun, 16 Aug 2026 17:41:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.89.141.173
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786902101; cv=none; b=ILqhLp9ooqQTrq1hHPFZbEBuOwzN3uW715HuFTnOL7fpFEySD0ZlEHH2GhN5xTPuZkp1Ypc7ZredtJgTTsOxDthTlTyq4rK8pVrj7V++vpkubsesrhppqt705ApYaZt6RnV+8fgptA6ksVJCW/kpO1V5ROt7ueBOzXSNj6z4ACU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786902101; c=relaxed/simple;
-	bh=ImVkDC+Cz7m9YLv8RA70eoorQ2LMC1IYDMuyYo3Oh2c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dQ1HheMpMSunzOEtIHVHa8atFanWKJgRcjmKcMdONPj15+rnU4qGMum562LLqUoaSs4opfnDbjdIQkFkGnUYavyNX/Dkaq74Rntxjabt7Ghw6MDrnP/wNOsVPmDjADxnJRFsT9/rFaMuPwhImIeGIItoGx3hjBTEDnEGuifPOR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk; spf=none smtp.mailfrom=ftp.linux.org.uk; dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b=vAtabzjm; arc=none smtp.client-ip=62.89.141.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zeniv.linux.org.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ftp.linux.org.uk
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C5213AD537
+	for <linux-alpha@vger.kernel.org>; Mon, 17 Aug 2026 23:16:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787008582; cv=pass; b=COAc7TCtllYPoRYy46QdzGLcYYLojLfRIJ5yRPA7EiiRQ54gJm7H/rDPNt4uNNE3CYahvp2I/x/q8NtUB8lkS8tmT12HFP3a7Vgxuf+m4krnOnvjgotiouwfHa1W2sJYnnhL1tRBsnl0VQTLHnRafBrdHLkCeD/jkuglbOf7v8U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787008582; c=relaxed/simple;
+	bh=aC4iUKA2UpUMbgOXb/TlUUJCtfx4w9IP1Z/GJ35LDvo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lA2LF+Uv6E+5hyhRjQ8SRtW1vjEuc4Z/m7PaFUz55wHPek+yxVZPNmR5tkyofmFQEpchiIitdCvynDN1O10c6gSE4qmfI0ynMiHfWhJL3WqnfnElOFobDBUosSTNq86L7tBOqwewVzfThKUa6D4Q3SB2CqgWCPR+rVGroWQZGUc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UZt90Un9; arc=pass smtp.client-ip=209.85.208.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linux.org.uk header.i=@linux.org.uk header.b="vAtabzjm"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=pv8HnO0neC3QXg07WGvX4zl0tgMmJi6+7pa3VI0iQZ0=; b=vAtabzjmGDLUZEiXB4qGC8alH5
-	I5jSwhzhCxoADzpQvXL+IoS9jHDHyIXhUAKWJM/NSC8df5VJf3K510gBjXNy4frmB8pMt8pmAYy5Y
-	6tW9hP/UBK6b9fTJEqOMM4s2LBC9LOvqnwaM1qb3mbKOEwUcqyClcOzgiwq47UL1EcqK6BP1QR4L9
-	7BMD+e5MQVHIHeFkgRxrFrhv8V4JdsmdgMV5HxF1B1M0lRMRrJ7cqz1hC2iivbrdBfvcnLoDbEtad
-	s+M/Tdjlp2P1tfEusprOl6bzmOYxGJF9eQKDwOQAKtJUlUxFRpJLUBQyzoGz9q+2V+WP4FwYB4c3r
-	5m9XnuGg==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.99.4 #2 (Red Hat Linux))
-	id 1wverS-00000005BMR-1U34;
-	Sun, 16 Aug 2026 17:41:30 +0000
-Date: Sun, 16 Aug 2026 18:41:29 +0100
-From: Al Viro <viro@zeniv.linux.org.uk>
-To: Julian Braha <julianbraha@gmail.com>
-Cc: richard.henderson@linaro.org, linmag7@gmail.com, qi.zheng@linux.dev,
-	akpm@linux-foundation.org, geert@linux-m68k.org,
-	catalin.marinas@arm.com, rppt@kernel.org, joao@joaoff.com,
-	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] alpha: cleanup dead ALPHA_LARGE_VMALLOC
-Message-ID: <20260816174129.GU2636677@ZenIV>
-References: <20260816143835.1068971-1-julianbraha@gmail.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UZt90Un9"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-69c108fee7fso5425925a12.3
+        for <linux-alpha@vger.kernel.org>; Mon, 17 Aug 2026 16:16:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1787008579; cv=none;
+        d=google.com; s=arc-20260327;
+        b=MvTF6tFsNMkX8FyNUUtMlAponPxNY2FZ5tn5x0Pj599Jy/rAAss+yRpAlUgYXZ1Oxv
+         kmlN+FJ39jDnAKbcTD1HgjmLb3/C9XgcDJVUstNtljGO4cZX/i5F1yowiJOg/CTCB2Ci
+         9Smdax34MXitpCK45EQOdEuAWZGHVZ5ZyhfmV9UwgrG7nawtM4/eMuUNZF15eFP57Q3N
+         kqvZIRmOXcQ+s6HfbjNXuY9zxAUQLH7S0nOaaQe7BoUaE5X1ICvVwThxAuPYgZY3Ft3K
+         yXCuftooTo+PMVgJorTkDoDlf6apmdwgaNGjFkopiXFguXUq98e18Cx5UUWDUA5LULzi
+         BoXg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ARxs+z6TbrEcsZAzH4ghu9PG1NybKm0D9W/EVU4HDFY=;
+        fh=gW9YRzxh23flT05OhfDHt+PjkgRUBZbWyJXl4Jf80Nw=;
+        b=czPd0Ilm3oXt65J/175ru+kpKs5muuaOsz0Sj6UPhx0JBs7mNfRyGH019lV8sm8/5C
+         XQPnozeOhxSLX5V7XltLffDx7pO+vzU4yKZBBLNOI7M1HzhXH9rsPFqoCbLonSET7XOH
+         BiFIpxUT41TwMcheryaX/cUX5SsYRz8pbWqfMF/KqdrB7CB1BKBNLjgd9W0UuVq2qpu7
+         QiDwkbz+08IrZMlx1HxKpMiNHz6dFisEV17cpMvyYI+oKqOAZx6nKegG+BPh4Zck/RqT
+         BN5Cds7W7Bvt0q4pms1TLlNywZNlbdjdVwD8AXC3PM6jtbFkc/yOfVzkUPIeuqHBAax5
+         usZw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1787008579; x=1787613379; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ARxs+z6TbrEcsZAzH4ghu9PG1NybKm0D9W/EVU4HDFY=;
+        b=UZt90Un9+qDE5TwSXRPCgyFdI5DQAtAsUObWKdSBT0tYcu7vy4ey9KBl8EcQzLhc3x
+         L0SCfiNjaGqNSp9mhRZS6HveV4dsU0X2f8cBbDYcSjAPYK6moXrwTyQLi/cp+4AqwmD/
+         UTqRoj0Lcm15n3T+q9SGsalY4SwEEDBa0dulYl8WARFqx3W5SoAP98jUIVG6el4nQvLC
+         xFbZ8/aExnNWokghR/8QOzbyWnNY/eMHDV4dBCx21bZUDiS6ZwiG2ecY3ujysGQoEbhl
+         LEGUnzSNQItDeWDQd+iYgCY4m+AQXyz7PNYF6XyRmZ114QX78h8W9g/+V+4FGi0KYQZT
+         qoEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787008579; x=1787613379;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ARxs+z6TbrEcsZAzH4ghu9PG1NybKm0D9W/EVU4HDFY=;
+        b=Nr634U33Ky+y1vCdeVZslEqVag6/kVrsCHlyIF3aXqE6kgZlLmcveEJdHD9O/4veMc
+         VdvVQFQiWl+7W7JAr0VEu5QwLuBeVSrAIN+WiqEPA8PUVYEUERQKf8SeSsqnDB+r6ghG
+         wjWYwqQWn739Obk39EiH1WpAbr/BoE/EmfYT/pGZhUMZa6aQVymuy1aJXPoZJzuIUzzp
+         5Fx0uqArvLyKRxwE0EHWy7MF8E943LiNDm8MYPaOymA0MYNYBeD0lfJF1simv6qWtxoT
+         +U8lT55ojxi/H1cum2dZ4ZMKAnFcrTtKCyWq3PEgGOxjrZYWCa+Tv8c9gNrHdO15ZxCU
+         enfQ==
+X-Forwarded-Encrypted: i=1; AHgh+RrlOr7wIzAY2Uu8+y8je/l+1wa4tu0ldTd8NwiLOviVckqjSw9qYC4hiAxKFEDZkkrei/QHnEVN4jeQNA==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxkwk8h6elPZXzZxHfXjK+htbk/IJa0cDS9XI91YwkwZdKRWiVo
+	cItU0jY4PE9OqlseSQS3xjAX9oeWINk54pXrKBu/THwFSWnYbG+yS9ObFPTgJe0+jgCl8y93+F8
+	uYypJt11qw9NPbBi/wK7aNWotfQHSx3TC8n8nAned
+X-Gm-Gg: AR+sD125qnpry0fuxMRoLbRlpgdQnXG5sxben+zZsmT5pJQYXVqKyqKF9PG6AuXrPCv
+	SiNB0nS27FpNhZ+GOIQqHY6jhRNaXMr4mLJqADBMevee5Y2ovinFhCkXkrFiAgjMuVw2lEM4Sbe
+	S65iouCSGcCRDHPMP/H6G5yWyqFukyBpZQvKlIuEVwXdWkpiCKDYu+rY50OJzfr4Pw39TOfEfsF
+	GMBTOJ1g2k/PlPvio2gr5igdamYShtpEnBaCVMCAiejSN5a/vNFj8xA/gJnxGO5WrY6BpN3l0U2
+	vCv5N29L2JtlhPxGvOsKE3MhHthTUjz14J8tod6BEsNVwbn0S9G43HmxUOYhVGUt2P8xAlHQOz1
+	QOiPgfZf3UC9gQ8wypnbhplDTav6Yhn8cbovpue7m416joPh8CQpt9QdN
+X-Received: by 2002:a17:907:94cb:b0:c20:5121:89c1 with SMTP id
+ a640c23a62f3a-c212a10a4f8mr1291313666b.12.1787008578604; Mon, 17 Aug 2026
+ 16:16:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260816143835.1068971-1-julianbraha@gmail.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+References: <20260803-alpha-clang-v1-0-1c4ba5ba7a64@gmail.com> <20260803195135.GA1083357@ax162>
+In-Reply-To: <20260803195135.GA1083357@ax162>
+From: Nick Desaulniers <ndesaulniers@google.com>
+Date: Mon, 17 Aug 2026 16:16:07 -0700
+X-Gm-Features: AcwNN1W9izkcwuAp6MkFeC5J1f8fYvzE8iJLioZu2VQvTBLrGCuk-8lW7l7-HjI
+Message-ID: <CAKwvOdnLVh3uhBTcHVcag7gL+i8Cj3B0YUa2V+UdL1TQ3p=KvA@mail.gmail.com>
+Subject: Re: [PATCH 0/2] alpha: enable building with clang
+To: Matt Turner <mattst88@gmail.com>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Magnus Lindholm <linmag7@gmail.com>, 
+	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+	Nicolas Schier <nsc@kernel.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	llvm@lists.linux.dev, linux-kbuild@vger.kernel.org, 
+	Nathan Chancellor <nathan@kernel.org>, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Aug 16, 2026 at 03:38:35PM +0100, Julian Braha wrote:
-> Currently, the ALPHA_LARGE_VMALLOC config option can never be enabled,
++ John Paul
 
-> meaning that all references to it are dead code.
-> 
-> Let's remove this dead option and its associated code.
-> 
-> This dead code was found by kconfirm, a static analysis tool for Kconfig.
+On Mon, Aug 3, 2026 at 12:51=E2=80=AFPM Nathan Chancellor <nathan@kernel.or=
+g> wrote:
+>
+> Hi Matt,
+>
+> On Mon, Aug 03, 2026 at 01:08:40PM -0400, Matt Turner wrote:
+> > Two small patches to let the alpha kernel build with clang.
+>
+> Nice!
+>
+> > The first registers the clang target triple and stops passing -Wa,-mev6
+> > when the compiler is not gcc.  That flag exists to keep gas from emulat=
+ing
+> > instructions it believes the target lacks; it is a gas-only option and
+> > clang's integrated assembler does not emulate instructions, so it is no=
+t
+> > needed there.
+> >
+> > The second fixes two uses of local register-asm variables that clang do=
+es
+> > not honor.  clang treats `register unsigned long x __asm__("$N")` as th=
+e
+> > named register only where the variable appears as an inline-asm operand=
+,
+> > so reading one to get the live $gp or $sp yields an undefined value.
+> > trap_init() passed that to PAL_wrkgp and load_PCB() stored it into the
+> > PCB for swpctx, either of which wedges an early boot.
+> >
+> > Note that the alpha backend is not in upstream LLVM.  It lives in
+> >
+> >   https://github.com/alphalinux-org/llvm-project
+> >
+> > and is a work in progress, so the scripts/Makefile.clang entry has no
+> > effect with an upstream clang today.  I am sending this now because the
+> > second patch is a real bug in its own right -- the register-asm reads a=
+re
+> > only guaranteed to work by gcc's implementation, not by anything either
+> > compiler documents -- but I understand if the kbuild side would rather
+> > wait for the backend to land upstream.
+>
+> Yeah, I am not sure how I feel taking the target triple part of the
+> first patch. On the one hand, I want it to be easy for you to test
+> against upstream Linux but on the other, I do not want people to read
+> this Makefile and assume that ARCH=3Dalpha will work with an upstream
+> clang.
 
-See https://lore.kernel.org/all/20251130030146.GN3538@ZenIV/
+Right. It's cool you have something building. I'm curious if the
+resulting image boots? (That's the next major milestone).
+
+I'm curious, since we've yet to have such a case of an out of tree
+llvm backend, what's your plan, if any, to upstream your backend in
+llvm-project proper? Perhaps as an experimental backend?  We have bugs
+filed in our issue track for m68k which is experimental (but upstream)
+in LLVM.
+
+>
+> We could add a comment that the backend is currently out of tree but
+> that would go stale once it is actually upstream and it will be floating
+> around for forever. Maybe a better compromise is taking arch/alpha
+> changes now then landing the scripts/Makefile.clang change when you
+> actually start upstreaming the backend, as being able to use an upstream
+> version of clang should be relatively imminent at that point.
+>
+> --
+> Cheers,
+> Nathan
+
+
+
+--
+Thanks,
+~Nick Desaulniers
