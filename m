@@ -1,170 +1,128 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6449647D47A
-	for <linux-alpha@vger.kernel.org>; Tue, 18 Aug 2026 16:24:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787070295; cv=pass; b=RMsZmcxTkerUSNWBpKoW0j7oCOsAo+uwo/HLSO0QqCHerboJYrHMSpdEUgmc6U7qfrnHUG7s9GOwHdLEWkfOtEs7s24/QH6KOj+4MWcX5PM4hdBUqksHqLoFF4J4RfSaMpHT+Rpg0KbMRA131KU0ce+TBMazxrMSb64BL01f2lg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787070295; c=relaxed/simple;
-	bh=33DXvXlll0HyJTxrb78h3DqOrjFtADo0DfT3EHT2Gmo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YIrBpnzS2J1B1RO4QZDLQcsGrlUXiyHGDP94mG/UtPTj2B5mpYrGSJLctuu5fuXlYqeoGuUGCkeVuyIBSt508lysWlIriosJ1LKMnI7u2rr4yLGvDxf5m3LB6iYZXnIM8d+rMZ5Q9rp+UJ8QenzJeTUvE4PCK3D02yZ5hZ+n7bM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cIqE5isQ; arc=pass smtp.client-ip=209.85.221.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC2FA47DF95;
+	Tue, 18 Aug 2026 17:25:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787073918; cv=none; b=nVWYLUiRN2AFeqBKZMYz19/zfXiOLgqoHl6vpNi7IU83/3kFoKhyv8otYEN+M5gieImURYwI2VLsOocuflqZbiSsy3nVkl9KvxyEB0JOqdaetXS/ejETA/rP+zUL6qdMI6iGz2uTPM0SoOUTO7QCjsplQhFI7SPLcFx/lI329MY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787073918; c=relaxed/simple;
+	bh=UsyiP6uczL8lxNasR7yxPsTKZ8/aZxcPz1JoV+Bk3Dc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=vB2F/pkPkQ1efKM0zYJZeZMJhX/vrBOnHRMEnemg1UMDe+rkstSRM3YsmV5uf31/UU+3ISuM+HR/5HMnMr173tZ6SryFh+no60bzj+Xzk9GGql4biG+Vzf+7CHt9D5nSL+ZwEzCZhKYIN4PQ8mrohGhuRhaSW10C8vIDBtZ76RQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HHYuHZuq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cIqE5isQ"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-47fe377a217so3325602f8f.1
-        for <linux-alpha@vger.kernel.org>; Tue, 18 Aug 2026 09:24:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787070289; cv=none;
-        d=google.com; s=arc-20260327;
-        b=p98WPUyip+a9/T9XWRaIa4Ov5lSzB8e/g9SoXVxhrTi72hUyaOWsQAuf4lgodtkFdl
-         MDIkOXUwPTaoM1e/rVKNhNu/V4XRcQKdBrYtGbFaPiIxECCWDcxlx9okUwZ5D0sSAP00
-         VHnb77eF5+PFtWjr9IbkrerIdJ/RWeFo04554e3Lf4O1ZmxMaAUgmJJHaNDeOY+m75JB
-         pAKFLGCCbCKp62tUQgUZFFYU0ZCRyemyIyZYUbS9AgCc2Cw6st6/EJVWz/EZHH6/973s
-         SVWBRdg+fK+8yzXtwfszTbu1lt6pcx+BOccKQ3wT0AmWv60CtaZgb8+Rv1z20kgt6Rfb
-         PITg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=Ig4ZJ5ec863N27eKcdbfitdKOwnVM6xhItPYCP368+k=;
-        fh=jIx7Rm5Mu3DiB+Mbvk0/8I7TwarsHxIEI9aZ690U++s=;
-        b=O91Esz0tz6E03iJGK041mQFuyTLUz7CszTAPldb7Vh9IPumKB9UJbJSndWn8TCdnmN
-         8gGevvujVie5I8WwHstPm9avLxx66WeE74u5tm7h8z8EkaHpl5BxkLSmQA0/G5picCXL
-         6zkFmT/m2wxark2yjKAeYshqYeu1GGj6klBFZ0GF5+fuR/wxEclNvM/pYQ21NarNlR0B
-         2CQaNnqS/REVq3VgxIbNJ4t2JVX5UqKgqeRX1zqg1uYzABOjJe9Uzp8sfmO3QIPfTEtH
-         hpIuwBvQDxAcmxZ9KQhrHigWiRYqcRBkW3QdShvBfoy/Mfbg1VhibPukMFbpfQbeimmB
-         jSGQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1787070289; x=1787675089; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Ig4ZJ5ec863N27eKcdbfitdKOwnVM6xhItPYCP368+k=;
-        b=cIqE5isQJPGBK+qXyELGekaBjHsALGqLd9iVC6Ql6H6ATzgtPIS+pqduCFx7XlqJIr
-         Lj7QBvRw82+Jeu44MsPvyQ9wt00l+BNTg7Xv/9+SVaoCmKY2fteIV1xec1DdDJ/c9f1U
-         2u+yznVbXeyTq22je5CCwhgzkeZxyBqtWC8wylEA8wbtE01qLZGOnskHztNjFBO6nQFW
-         LOu5NAEzrr5flBam7y57e0H2BBThhBJUYXbBRooO42PXrd+TKudYqRr4wmbymzyX0vWQ
-         /ygNTD4P/RqC64Dors9zeMVQwTRoJpiziCDVIPlxhPC1cnLRkY3y75MqXG7iAE4RPVXn
-         m6hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787070289; x=1787675089;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Ig4ZJ5ec863N27eKcdbfitdKOwnVM6xhItPYCP368+k=;
-        b=REVLLCSUcpJRR4HbT6d0/MJmS/QWgWxu86M/gIEoQ9gw8cypIm6cgcVUhpKkINesIZ
-         1Tz1hvBRA5PWkg82/alKpxqUomDwgM1qmkbJGX2glIbR55rfn9vhl0O/S0hXhKYZuBkF
-         EGvftMdX9N3oQSMvV51uepzBJDELIfrhEt6LGL2PPUW4292RFQl3Artp+80UMvDkKCFd
-         2TlZ0h7dsmHsW+PWDZQsl9o9MCRdIW/aYAbfoek1sN8YkUeu2lFkKdIMsvEdQFbJB51V
-         rtzSlmA09ashH5Lj16NDMytFdHokMkVewz7bGlIBuSvp5ASKj8fsnDe7lMFz2iioNGuS
-         USYg==
-X-Forwarded-Encrypted: i=1; AHgh+RoGBgTxH0pL6NdSoqd+hicsbOW3yweMzNG+7dO+dEY2omfXCL4K/GA2VKzUoPyhX+z+4TvyI/WZe7ghSw==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwMEknYexzVZ7wgjw0m/T9viCh4foEISKcSG0vmjzWgpOb6Fq5n
-	9RU8jKYPwAWGGIVL6y6movG3fSRGDbrLdf7uhYuUMTsiRUSE4pSJyhoKwdnxCTfs0/mcsAkZ+hr
-	nh+rDEOy28epD/N6ZL5rFwGPXPLAMchdcfyz91TeQ
-X-Gm-Gg: AR+sD13Kr9GHm8OdwnbyQVunCtELgmMteSAE8qO57onWSyg3whatXxU9s98p1t5ENVw
-	c0BQBDo8cldhEiOKi0FG/8Tf17VYr88jgrD1U4R7P+2YdEEv8kUrsucBeHxLbBe7ph3IRGgrqn/
-	N4R9gLd/1S4h+whXA/5Sxxk8HIELuFMwhvGdZNbb3xL3bT2ilSsFcInMO8Y08YERdir2MKm6ExQ
-	pdxDB3rPTOHR2c9qbkov3Wj8iWLPmH6f457LN8agGPNIjLs/FTD6nPVWY1hLrp9h43svhMeTeYi
-	ggTswPHBjC9xpaxwWcodfdat0LlyuyYgnnxqcR6UAu+UzLZY85ph9/52QzZzRZoGRyDLIdkBmnJ
-	/ylPmqhv/b0FRs+7H3k6LujeDs7TI++kN5wDSTocbvCwq0pSz64LNkwBdzapTDQkAqof4
-X-Received: by 2002:a05:6000:4919:b0:47f:e877:641b with SMTP id
- ffacd0b85a97d-482a8ff751dmr18513986f8f.11.1787070288729; Tue, 18 Aug 2026
- 09:24:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HHYuHZuq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A28E1F00A3A;
+	Tue, 18 Aug 2026 17:25:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1787073917;
+	bh=AShWrs852J7IkStssEoEst3JiywPYlSikQUVe7RTkRk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=HHYuHZuq5zMXG+8OeZcsNEd1kunHyn8X+QRRdpazCD+PrQnY2MD+Ve9C7MoKwru4x
+	 dbBzkW2cGWbBN3m3D8evXSCxOc8q2AyH3nSXNiWo+xrK2TdFxAIivDqioG1XAtwxtF
+	 aMCegUXmfY55bD/l0MdwxRF/+47ynTjAj26vHT4KSJZRH0qcQ7HSLgqNnkGJ4K3+/W
+	 crGr6GNfZ3DAGAYgRt1N7RBfRYxh3dfuxofB0XlSNCLCsppsmpUwmMlxXD5gurFGnn
+	 9/OAXbxSo02M2icN//fOoDQwicorrXfhbp04ZPJhViHl6uwc6nkSncuJyuWweMLpgg
+	 uyhaHGoSxMwtA==
+Message-ID: <55d92b3e-ad3f-464f-b2db-a2552353223e@kernel.org>
+Date: Tue, 18 Aug 2026 19:25:07 +0200
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260803-alpha-clang-v1-0-1c4ba5ba7a64@gmail.com>
- <20260803195135.GA1083357@ax162> <CAKwvOdnLVh3uhBTcHVcag7gL+i8Cj3B0YUa2V+UdL1TQ3p=KvA@mail.gmail.com>
- <CAEdQ38HhVk0rmq5ZRHbQABgLix8hq49QjzxNDodk_++DmA5Thw@mail.gmail.com>
-In-Reply-To: <CAEdQ38HhVk0rmq5ZRHbQABgLix8hq49QjzxNDodk_++DmA5Thw@mail.gmail.com>
-From: Nick Desaulniers <ndesaulniers@google.com>
-Date: Tue, 18 Aug 2026 09:24:37 -0700
-X-Gm-Features: AcwNN1U2F_9yv474aYoKrxgqvJJ_fOFHnGq3BGDcA7pmQq1T0vy1kWNlSniCBGI
-Message-ID: <CAKwvOdn_Lt6trZSHg+BRTv6v6mC=X3hCWbNe3R7Fs6n1FcHuCA@mail.gmail.com>
-Subject: Re: [PATCH 0/2] alpha: enable building with clang
-To: Matt Turner <mattst88@gmail.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Magnus Lindholm <linmag7@gmail.com>, 
-	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
-	Nicolas Schier <nsc@kernel.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	llvm@lists.linux.dev, linux-kbuild@vger.kernel.org, 
-	Nathan Chancellor <nathan@kernel.org>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC V3 1/8] mm: Make ptrval_to_str() generally available
+To: Anshuman Khandual <anshuman.khandual@arm.com>, linux-mm@kvack.org,
+ akpm@linux-foundation.org
+Cc: Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker
+ <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Helge Deller <deller@gmx.de>, Huacai Chen <chenhuacai@kernel.org>,
+ WANG Xuerui <kernel@xen0n.name>, linux-alpha@vger.kernel.org,
+ linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
+ loongarch@lists.linux.dev, linux-m68k@lists.linux-m68k.org,
+ linux-mips@vger.kernel.org, linux-openrisc@vger.kernel.org,
+ linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+ linux-um@lists.infradead.org, linux-arch@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Lorenzo Stoakes <ljs@kernel.org>
+References: <20260818040041.1891769-1-anshuman.khandual@arm.com>
+ <20260818040041.1891769-2-anshuman.khandual@arm.com>
+From: "David Hildenbrand (Arm)" <david@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=david@kernel.org; keydata=
+ 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
+ qIws/H2t
+In-Reply-To: <20260818040041.1891769-2-anshuman.khandual@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Aug 17, 2026 at 8:28=E2=80=AFPM Matt Turner <mattst88@gmail.com> wr=
-ote:
->
-> On Mon, Aug 17, 2026 at 7:16=E2=80=AFPM Nick Desaulniers
-> <ndesaulniers@google.com> wrote:
-> >
-> > >
-> > > On Mon, Aug 03, 2026 at 01:08:40PM -0400, Matt Turner wrote:
-> > > > Two small patches to let the alpha kernel build with clang.
-> > >
-> > I'm curious, since we've yet to have such a case of an out of tree
-> > llvm backend, what's your plan, if any, to upstream your backend in
-> > llvm-project proper? Perhaps as an experimental backend?  We have bugs
-> > filed in our issue track for m68k which is experimental (but upstream)
-> > in LLVM.
->
-> It builds a kernel that boots in qemu and on real hardware.
+On 8/18/26 06:00, Anshuman Khandual wrote:
+> Move ptrval_to_str() inside a header thus making the helper more generally
+> available for new users which are being added later. While here, also move
+> another related string size macro PTVAL_STR_MAX inside the header as well.
+> 
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: David Hildenbrand <david@kernel.org>
+> Cc: Lorenzo Stoakes <ljs@kernel.org>
+> Cc: linux-mm@kvack.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+> ---
 
-Wild.  Where did you even get real hardware? I know very little about Alpha=
-.
+I would have placed that into include/linux/pgtable.h. Any particular reason for
+mm_types?
 
->
-> As of two days ago, it's capable of building itself and the 373
-> packages of a Gentoo stage3 + a few other things. These include glibc
-> and other core components (in a qemu-backend container on a fast
-> multicore amd64 system).
+Acked-by: David Hildenbrand (Arm) <david@kernel.org>
 
-I haven't kept up with Adhemerval's work on building glibc with clang,
-but pretty wild to hear about glibc building with clang period, for
-alpha no less.
+-- 
+Cheers,
 
->
-> I would very much prefer to have the backend upstream, and I plan to
-> start a discussion on discourse.llvm.org this week. I think an
-> experimental backend is probably the limit of what makes sense for
-> Alpha?
-
-I agree. An RFC on discourse is the way to go. I'd use m68k as an example.
-
->
-> If you have advice on going about this, I would welcome it (privately
-> or in reply to this thread).
->
-> Current diffstat is
->
-> 461 files changed, 29735 insertions(+), 88 deletions(-)
-
-Only advice is that if any of that was AI generated, please do take
-the time to review LLVM's AI policy.  Reviewers have been getting
-crunched by low quality AI commits recently, and are a bit salty all
-around.
-
-https://llvm.org/docs/AIToolPolicy.html
-
->
-> of which {llvm,lld,clang}/test is
->
-> 266 files changed, 9871 insertions(+), 4 deletions(-)
->
-> Currently reviewing and cleaning up, so the numbers will change.
-
-
-
---=20
-Thanks,
-~Nick Desaulniers
+David
