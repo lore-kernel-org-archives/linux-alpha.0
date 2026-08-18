@@ -1,193 +1,188 @@
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91DF3361951
-	for <linux-alpha@vger.kernel.org>; Tue, 18 Aug 2026 03:28:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787023723; cv=pass; b=Ko7u3dEXqsuU/Hfg22uKbUQ7sMiqh6Ks6VvGkk09A1uCGQR4xoNVNKNRPCXQdmWCKN+NWzmrgIfSq8GS1ss7ktKXAqDS4bHCx9IsECMR2Ez35NMBYPUDZO0iAtmThfvYfssV3x7Lr4EqJ87MoKhh3+DrweZW/e0/VEABy5WP2sA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787023723; c=relaxed/simple;
-	bh=r5Zdltp6LAiYTHO3zsA88inj2HBXb4iZZpW73+FezSk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QAX+YNnNI3l3k3qW4rb0aN1CsQSBc/9JyW9KFcQY6Ia3bVMLx3ydcjwzJetpJN1q/prRCQ5hXxzQy3I37j0YUBMpW8eUAdM7uSZW8+L2tKPmEkkHqoVyK5q5UIx4U2ZqgUDGYxPpaBNdcm1q7qioR9OseAiqMzJJyub+VlYSZ6A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d1iMLsUw; arc=pass smtp.client-ip=209.85.167.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F39CA3AFB18;
+	Tue, 18 Aug 2026 04:00:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1787025650; cv=none; b=Fib8xTYK3kGT1yqSalNS96kXUfDw1tP65gmiqhYdg4xRE7Eg9Pd7TO2+Rx0YwAWezpKLwu5Ian+lI460/j6tehk+xJZvFLV4+twn31DrEnL6uFqCTp/e8xxX76QSlFR6Iq+pSG2scj8Be0JIKcczaihftow72Z0irUbY4fQWcYA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1787025650; c=relaxed/simple;
+	bh=LRR2JW96qzLG8uXgU1+MfoOsPimHhtCsmfw/iXX8kB4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=E7BrJZ0DGKPsvdoknoe78OSNsuI3shVTMV/bj1XDXzkMOXRFLjVver7CwxlosaOQMTZwyni6M3DBER51LBhgQx/L20fhYN4joNAtdmPwPPCZfpYaXE1k321+U633VlHrOwlb6tIodRA/N3idWpR/Qw/kV3V+hF+gI298NbMEd9s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=NtFRXij4; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d1iMLsUw"
-Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-5b0148201fbso3997433e87.3
-        for <linux-alpha@vger.kernel.org>; Mon, 17 Aug 2026 20:28:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1787023720; cv=none;
-        d=google.com; s=arc-20260327;
-        b=diHs13rEuxGgZ/8lcGEyDxC5fLtxO9BvG0e+Od01kcXEfJl6I4UaJ9wGYm8PK0RK7i
-         d6Zt5o/FP67ypBDVVFHpONGePuHvsw4n4pvyoA3XCDJhNEiQAq6tHz4T5ndRuXQ/XIe6
-         PErdvz3yzO+Aaqm2sEyYVrQyxDPcWjKxI+CWpP7Kcq+ohNfOvluhC0AYBCyqgvuXACIK
-         b4+A+21IPrgBBzmNIhbeVPNmv1m94Lx2vQW9S/wuXy+ucizikDupeY4vpOX+i6a12sFA
-         XA/Qk2kbrQJjKpbL7oxJj5DqrA2H/yoNyxp5iEjNMNE82Dx1heoQ8hmIa8P0LWn1g8+N
-         ogyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=6z3l6JiM3xD5bZ85VYSBuxGVuvcg5CMcHjaAX+UkSSo=;
-        fh=CmlDNRZ5CQbm7KypI8GKHra/+ah4bDH3Dw7Uv4iffuc=;
-        b=THe9OiBIWW6MMH0tPWqktYPlSXDiC/ihjAaI6Tzx1OKfAnOh/4EmplyIxVCPE1AxOG
-         BWkSIw3awKB5eAZQ46odq5EtBxrmdazwiq6FzE3KQdAYV1xYu9JVgqR+tA2yMo3mbZlO
-         zK2fUL7zhygrjy2BhVqIm6M1XtlxY/YxRyO/h03umw2hyQsDUguANp7XPB2mvUqQ+5S/
-         YhCNKdN91qBic1IhpCr8vtn0Pk+n4QDab+hTzJFVy8JJ6vNSouQh9946+5NK+9ZM+aws
-         tLL2eQKzkBMDayd9QfEpJlMDtBmTQd4EG2HqzuoPREaz8ouw39af01+tQENKk7p8j/cv
-         D5IA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787023720; x=1787628520; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=6z3l6JiM3xD5bZ85VYSBuxGVuvcg5CMcHjaAX+UkSSo=;
-        b=d1iMLsUwDR/E2ZNEn90G81ig1mscXxQ/ozaUy167uiKb5jsUeva5+QM8q/bnRmVR72
-         palPthg2rF81vx+WOsDedp7DkmAc0KwdSYZGqmLQcw5jmEze/qcSUOPXR3xxy9ONO7y9
-         VXCxk+Ts4FbuPVbdy2R7fbC6N/733o5BFOcuRQHJjjdIvQVa4ORdWF/YAw55cZSXl7fa
-         8/kLK4INrjUkgjFjx9rz5Oh63o+wuuvvUIBgI24zblPT4ijRTfI35Zc6KKpk3eZiCMrQ
-         GANbBJGUJbd/Gg4p9wka3973IolQXvRENJ9g3T7hjphooL7VGHhYQTPbjTVvGvju6OXC
-         At3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787023720; x=1787628520;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=6z3l6JiM3xD5bZ85VYSBuxGVuvcg5CMcHjaAX+UkSSo=;
-        b=YUQysFYlxhG4EQx/hh6+0RbtXxXZje3OqtAFeaoYL8D7wjz2otAD5HRRwDAQCdBMJO
-         X5Tg1ObciXChkqK3Y82SdwvmA7kJpIFbAIL9IKNK2Du2L43hAQ5OggSBjFt8LPHBukZy
-         rYE2g26T0MlADebtLD7FPfw3yqTbV6N0wP+Eoc8Ux9bxhBiRy9GaJj4e/cgPaWTEKp3r
-         e6A6MRuUcdtxCVZQRxAwARfZTzNM4g7BJXXLNm4M68iTmyrjKy8KzfmBK9T8mEW/9sqY
-         eN//mS70eHlp++Uwc6HzQ4J4/gaP71HXKcfTd1La1x6j36lNJan2ty3+B39o/clVlnBB
-         NQOQ==
-X-Forwarded-Encrypted: i=1; AHgh+RplWVoHz2GHrkojL6adRqc511PCXJBdQdzJjNlFDZ9nmHdPSy4dp1lPWAxbnUM67mC+gpOlxwRP2/V9VA==@vger.kernel.org
-X-Gm-Message-State: AOJu0YyplwKCX2/41Qj83sv042fpscTj5fBlgnx0cQlj98LQJRDYXoxK
-	iewYeovLy8LMAvHo6G/FiH7VbDzY3m0d4pojy27LGEas/Z6j5plnmlqpSeK1VrEi+93j646jQs7
-	B8xjbNO0DEcX8ES2osUZrJfEv7IPQBKw=
-X-Gm-Gg: AR+sD13dFrUFGRU/Ek5IKE84AWWq1XYBfKVRMu/JndmJUqQCpuB5Bhs/lt1YU5h1PTX
-	hDJuakXnWSDtRlhEbtj8FmFJdOn/UyazL4AUjaNUmfFZqTWDTOplm509p/6l0PZvlIN9KDiHZ12
-	UzGZh3RGmoVwql4HDeb0Sf/+0sxmuDgsnd0+iXZCEMlyUz70j2NCMw4VNKbhMW9BHTtYN5ZBdJa
-	MDIVHKD+g28umooBsY5el6iOHd3vtLMpf41gdtt1moWeZ1Nk5LEk6rq4s1MdHSWPexEvUkDiuJo
-	c6OrYtitUmLY98fuvKyK/Dt7kX6eSA3SnAnjrl+EA9CI7gJ9HHAiM4i5AeMgowk61bOnrURbwDC
-	/geZIFCuA
-X-Received: by 2002:a05:6512:8384:b0:5b2:a353:e4bb with SMTP id
- 2adb3069b0e04-5b45910e12dmr3433140e87.3.1787023719369; Mon, 17 Aug 2026
- 20:28:39 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="NtFRXij4"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 46004153B;
+	Mon, 17 Aug 2026 21:00:41 -0700 (PDT)
+Received: from localhost (a085714.arm.com [10.164.19.28])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6E5453F66F;
+	Mon, 17 Aug 2026 21:00:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1787025645; bh=LRR2JW96qzLG8uXgU1+MfoOsPimHhtCsmfw/iXX8kB4=;
+	h=From:To:Cc:Subject:Date:From;
+	b=NtFRXij4Uhwnlv72AF85fJYzj/aymvsPMmb1FV54uYlLFKg3t/C+cIPPz6W0jsHV1
+	 9J4gARXAWELXnskJwPs+BnDvgT6ZNx/a8ZwzPVKYIGTlZF5fGPZRP4qKo2lnT7Fr1w
+	 ur0UrDi2dMsXj4xyEnxA47CkAD4o6o2g2lJDsONI=
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+To: linux-mm@kvack.org,
+	akpm@linux-foundation.org,
+	david@kernel.org
+Cc: Anshuman Khandual <anshuman.khandual@arm.com>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>,
+	Rich Felker <dalias@libc.org>,
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+	"James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+	Helge Deller <deller@gmx.de>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	linux-alpha@vger.kernel.org,
+	linux-snps-arc@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-csky@vger.kernel.org,
+	linux-hexagon@vger.kernel.org,
+	loongarch@lists.linux.dev,
+	linux-m68k@lists.linux-m68k.org,
+	linux-mips@vger.kernel.org,
+	linux-openrisc@vger.kernel.org,
+	linux-parisc@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org,
+	linux-sh@vger.kernel.org,
+	sparclinux@vger.kernel.org,
+	linux-um@lists.infradead.org,
+	linux-arch@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [RFC V3 0/8] mm: Drop pxd_ERROR()
+Date: Tue, 18 Aug 2026 09:30:33 +0530
+Message-ID: <20260818040041.1891769-1-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260803-alpha-clang-v1-0-1c4ba5ba7a64@gmail.com>
- <20260803195135.GA1083357@ax162> <CAKwvOdnLVh3uhBTcHVcag7gL+i8Cj3B0YUa2V+UdL1TQ3p=KvA@mail.gmail.com>
-In-Reply-To: <CAKwvOdnLVh3uhBTcHVcag7gL+i8Cj3B0YUa2V+UdL1TQ3p=KvA@mail.gmail.com>
-From: Matt Turner <mattst88@gmail.com>
-Date: Mon, 17 Aug 2026 23:28:27 -0400
-X-Gm-Features: AcwNN1VO344mKCA8QMRP88i0pSnKKcGvbPVE5XDaO1o6Xs5HQ_NMVQdUDXtu7kI
-Message-ID: <CAEdQ38HhVk0rmq5ZRHbQABgLix8hq49QjzxNDodk_++DmA5Thw@mail.gmail.com>
-Subject: Re: [PATCH 0/2] alpha: enable building with clang
-To: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Magnus Lindholm <linmag7@gmail.com>, 
-	Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
-	Nicolas Schier <nsc@kernel.org>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	llvm@lists.linux.dev, linux-kbuild@vger.kernel.org, 
-	Nathan Chancellor <nathan@kernel.org>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 17, 2026 at 7:16=E2=80=AFPM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
->
-> + John Paul
->
-> On Mon, Aug 3, 2026 at 12:51=E2=80=AFPM Nathan Chancellor <nathan@kernel.=
-org> wrote:
-> >
-> > Hi Matt,
-> >
-> > On Mon, Aug 03, 2026 at 01:08:40PM -0400, Matt Turner wrote:
-> > > Two small patches to let the alpha kernel build with clang.
-> >
-> > Nice!
-> >
-> > > The first registers the clang target triple and stops passing -Wa,-me=
-v6
-> > > when the compiler is not gcc.  That flag exists to keep gas from emul=
-ating
-> > > instructions it believes the target lacks; it is a gas-only option an=
-d
-> > > clang's integrated assembler does not emulate instructions, so it is =
-not
-> > > needed there.
-> > >
-> > > The second fixes two uses of local register-asm variables that clang =
-does
-> > > not honor.  clang treats `register unsigned long x __asm__("$N")` as =
-the
-> > > named register only where the variable appears as an inline-asm opera=
-nd,
-> > > so reading one to get the live $gp or $sp yields an undefined value.
-> > > trap_init() passed that to PAL_wrkgp and load_PCB() stored it into th=
-e
-> > > PCB for swpctx, either of which wedges an early boot.
-> > >
-> > > Note that the alpha backend is not in upstream LLVM.  It lives in
-> > >
-> > >   https://github.com/alphalinux-org/llvm-project
-> > >
-> > > and is a work in progress, so the scripts/Makefile.clang entry has no
-> > > effect with an upstream clang today.  I am sending this now because t=
-he
-> > > second patch is a real bug in its own right -- the register-asm reads=
- are
-> > > only guaranteed to work by gcc's implementation, not by anything eith=
-er
-> > > compiler documents -- but I understand if the kbuild side would rathe=
-r
-> > > wait for the backend to land upstream.
-> >
-> > Yeah, I am not sure how I feel taking the target triple part of the
-> > first patch. On the one hand, I want it to be easy for you to test
-> > against upstream Linux but on the other, I do not want people to read
-> > this Makefile and assume that ARCH=3Dalpha will work with an upstream
-> > clang.
->
-> Right. It's cool you have something building. I'm curious if the
-> resulting image boots? (That's the next major milestone).
->
-> I'm curious, since we've yet to have such a case of an out of tree
-> llvm backend, what's your plan, if any, to upstream your backend in
-> llvm-project proper? Perhaps as an experimental backend?  We have bugs
-> filed in our issue track for m68k which is experimental (but upstream)
-> in LLVM.
+pxd_ERROR() macros have been provided by all platforms, which are very much
+identical and can be dropped off completely if these pgtable printing could
+be moved to callers in generic MM aka all pxd_clear_bad().
 
-It builds a kernel that boots in qemu and on real hardware.
+But first cleanups and re-organizations are required in some platforms that
+are using these macros internally. Afterwards [pte|pmd|pud|p4d|pgd]_ERROR()
+macros have been completely dropped from the entire tree.
 
-As of two days ago, it's capable of building itself and the 373
-packages of a Gentoo stage3 + a few other things. These include glibc
-and other core components (in a qemu-backend container on a fast
-multicore amd64 system).
+This series is based on v7.2 after the following patch and has also been
+built tested on multiple platforms.
 
-I would very much prefer to have the backend upstream, and I plan to
-start a discussion on discourse.llvm.org this week. I think an
-experimental backend is probably the limit of what makes sense for
-Alpha?
+https://lore.kernel.org/all/20260709044334.1741263-1-anshuman.khandual@arm.com/
 
-If you have advice on going about this, I would welcome it (privately
-or in reply to this thread).
+Changes in RFC V3:
 
-Current diffstat is
+- Moved ptrval_to_str() as header in a separate patch
+- Stopped using pxd_ERROR() in generic MM in a separate patch
+- Dropped pxd_ERRO() macros from all platforms in a separate patch
+- Dropped print_bad_pte() and also cleaned up set_pte_phys()
+- Added some pr_error() messages in __get_pte_phys()
+- Cleaned up error messages and used ptrval_to_str() in platforms
 
-461 files changed, 29735 insertions(+), 88 deletions(-)
+Changes in RFC V2:
 
-of which {llvm,lld,clang}/test is
+https://lore.kernel.org/all/20260811042119.3652929-1-anshuman.khandual@arm.com/
 
-266 files changed, 9871 insertions(+), 4 deletions(-)
+- Added clean up patches for platforms with existing pxd_ERROR() usage
+- Dropped __FILE__ and __LINE__ from all print sections per David
 
-Currently reviewing and cleaning up, so the numbers will change.
+Changes in RFC V1:
+
+https://lore.kernel.org/all/20260806080639.1916749-1-anshuman.khandual@arm.com/
+
+Cc: Yoshinori Sato <ysato@users.sourceforge.jp>
+Cc: Rich Felker <dalias@libc.org>
+Cc: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+Cc: Helge Deller <deller@gmx.de>
+Cc: Huacai Chen <chenhuacai@kernel.org>
+Cc: WANG Xuerui <kernel@xen0n.name>
+Cc: linux-alpha@vger.kernel.org
+Cc: linux-snps-arc@lists.infradead.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-csky@vger.kernel.org
+Cc: linux-hexagon@vger.kernel.org
+Cc: loongarch@lists.linux.dev
+Cc: linux-m68k@lists.linux-m68k.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-openrisc@vger.kernel.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-riscv@lists.infradead.org
+Cc: linux-s390@vger.kernel.org
+Cc: linux-sh@vger.kernel.org
+Cc: sparclinux@vger.kernel.org
+Cc: linux-um@lists.infradead.org
+Cc: linux-arch@vger.kernel.org
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+
+Anshuman Khandual (8):
+  mm: Make ptrval_to_str() generally available
+  mm: Stop using pxd_ERROR()
+  loongarch/mm: Stop using pte_ERROR()
+  parisc/mm: Directly use generic [pmd|pgd]_clear_bad()
+  sh/mm: Stop using pte_ERROR()
+  sh/mm: Stop using [p4d|pud|pmd]_ERROR()
+  sh/mm: Stop using pgd_ERROR()
+  mm: Drop pxd_ERROR()
+
+ arch/alpha/include/asm/pgtable.h              |  7 -------
+ arch/arc/include/asm/pgtable-levels.h         | 11 ----------
+ arch/arm/include/asm/pgtable.h                |  7 -------
+ arch/arm/kernel/traps.c                       | 17 ---------------
+ arch/arm64/include/asm/pgtable.h              | 15 -------------
+ arch/csky/include/asm/pgtable.h               |  4 ----
+ arch/hexagon/include/asm/pgtable.h            |  3 ---
+ arch/loongarch/include/asm/pgtable.h          | 13 ------------
+ arch/loongarch/mm/init.c                      |  4 +++-
+ arch/m68k/include/asm/mcf_pgtable.h           |  6 ------
+ arch/m68k/include/asm/motorola_pgtable.h      |  8 -------
+ arch/m68k/include/asm/sun3_pgtable.h          |  7 -------
+ arch/microblaze/include/asm/pgtable.h         |  7 -------
+ arch/mips/include/asm/pgtable-32.h            | 10 ---------
+ arch/mips/include/asm/pgtable-64.h            | 13 ------------
+ arch/nios2/include/asm/pgtable.h              |  7 -------
+ arch/openrisc/include/asm/pgtable.h           |  7 -------
+ arch/parisc/include/asm/pgtable.h             |  9 --------
+ arch/parisc/kernel/pci-dma.c                  |  6 ++----
+ arch/powerpc/include/asm/book3s/32/pgtable.h  |  2 --
+ arch/powerpc/include/asm/book3s/64/pgtable.h  |  7 -------
+ arch/powerpc/include/asm/nohash/32/pgtable.h  |  2 --
+ .../include/asm/nohash/64/pgtable-4k.h        |  3 ---
+ arch/powerpc/include/asm/nohash/64/pgtable.h  |  5 -----
+ arch/riscv/include/asm/pgtable-64.h           |  9 --------
+ arch/riscv/include/asm/pgtable.h              |  4 ----
+ arch/s390/include/asm/pgtable.h               | 11 ----------
+ arch/sh/include/asm/pgtable-3level.h          |  3 ---
+ arch/sh/include/asm/pgtable_32.h              | 13 ------------
+ arch/sh/mm/init.c                             | 16 +++++++-------
+ arch/sparc/include/asm/pgtable_32.h           |  3 ---
+ arch/sparc/include/asm/pgtable_64.h           | 10 ---------
+ arch/um/include/asm/pgtable-2level.h          |  7 -------
+ arch/um/include/asm/pgtable-4level.h          | 13 ------------
+ arch/x86/include/asm/pgtable-2level.h         |  5 -----
+ arch/x86/include/asm/pgtable-3level.h         | 11 ----------
+ arch/x86/include/asm/pgtable_64.h             | 18 ----------------
+ arch/xtensa/include/asm/pgtable.h             |  4 ----
+ include/asm-generic/pgtable-nop4d.h           |  1 -
+ include/asm-generic/pgtable-nopmd.h           |  1 -
+ include/asm-generic/pgtable-nopud.h           |  1 -
+ include/linux/mm_types.h                      | 15 +++++++++++++
+ mm/memory.c                                   | 16 ++------------
+ mm/pgtable-generic.c                          | 21 +++++++++++++++----
+ 44 files changed, 48 insertions(+), 314 deletions(-)
+
+-- 
+2.43.0
+
