@@ -1,72 +1,77 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C591377EA7
-	for <linux-alpha@vger.kernel.org>; Mon, 24 Aug 2026 18:11:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 562FC377EA7
+	for <linux-alpha@vger.kernel.org>; Mon, 24 Aug 2026 18:11:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787595111; cv=none; b=XCWaW4zfb1t4IP8Oa+AWzXoFHtYC5b25l0Mw8/By4dvi+XFahU9S/WtEKT0UTShoyiIFm9ygkzJYurTZubM2i7ew29kLmhgqFAO7l8bNw4BtDj8GnaeROA4g3s58C8QV/kHMo3NPsQQcIB3+FBBlvUZBtDBK4Q3oroExHP/iIm4=
+	t=1787595115; cv=none; b=Ziv2usaAD9QEFlpkRpNxS5Ueyu4voGpfJo45qKhuVT1zNdSOE3YGlGUpvlc+wIN1DdT23Zd6a0O1BR2Q5C8oP6KIXDYEYkR2l5NVok75rmkhIvxNZ2V3yhtVwffHN39iS5SFzvpYHRYzSni53kGn75zx9e822IqnlyRHqmv2dUc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787595111; c=relaxed/simple;
-	bh=MDZe9E4t93ZKZ9CWIn3OeWSjkVfP/QNe+b5AN8xnqb0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=p5eBtF3gTVW2b6Pv+PRT2H0jFygwqeXNAUxsHrbjnwXBE8lDoXfvQuNe0E8PgkH6I20AWjHiqGKnZONH4fQJSabW8NhcOQ4yavf8LeQKz3U+HBMok/baPqPdcR0RbUzRXwsExIKf7/RPS6IoZoIHjPeJQmz+AMT940+0t5coCNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M5StIGEa; arc=none smtp.client-ip=209.85.208.54
+	s=arc-20240116; t=1787595115; c=relaxed/simple;
+	bh=vgC/Nw6YHaADZa/IxWdXFcfTV8pok/WBDkFchgUIjKw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=cY0Mia8fIlUvn2No93KCd00h1K1SskznYbvyz+QIbIyLUM7sjrfx3Se16s0rzkQtaUaYXBcWFfITn7kH+fd2VkBuKiziJ9SyP9jfseRK8SPHtqU8/MlM+8yxUGwyuw4smKu6me7dCv40jBmLrso/Nj1BgXLm6qjigI7eMSH/tE4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EnsPyuIy; arc=none smtp.client-ip=209.85.208.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M5StIGEa"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-6a0de062db5so6806589a12.1
-        for <linux-alpha@vger.kernel.org>; Mon, 24 Aug 2026 11:11:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EnsPyuIy"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-6a36982a875so5770421a12.0
+        for <linux-alpha@vger.kernel.org>; Mon, 24 Aug 2026 11:11:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1787595108; x=1788199908; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=SBNJ14VCdpFgw4LDjCoQmNNZfTNO5gFu+ceu/TNn3/w=;
-        b=M5StIGEaCBb611lwUFIjuq5EivPyA1PGjC1RQs0bSJYDGk5JPellOt2VVT8jEHCgX/
-         VRWkQfztIegIRMQqGaBd7cr6c2cQlhGg8rwZpGnZDfgoglJS3NmheHOzdnKQ0T6oubgt
-         wDUK2P53gqxUV9EKfKsUMF3BWBoG4DnDivB/xCbBzJlGlWrNsFpdgYjvoJz8VTncwKmV
-         H+hRcZoUUCTsJnIFnkRoyFYSHJfeMskPEQuGKBIf/7Hj+M3wQNAUsWWMV7gEygbxpuPI
-         F2kZflxIsNorM5VfRmhD/sa+MCQbnCOs/jAJ/XZzh1kLupBXMvCLu2stGr2nM1381YbP
-         MFeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1787595108; x=1788199908;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1787595113; x=1788199913; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=SBNJ14VCdpFgw4LDjCoQmNNZfTNO5gFu+ceu/TNn3/w=;
-        b=A+ZEfB5WOjWm/tZxYCzjXv2Lws1osxZjc/2bGrAF+XcYR2hnPdGN+G7wfPpD5E0vTj
-         6iz/Mk3cnuHUGnUVQgleYYd/j1ZVoSINcWBy+LnlOyMBLmScqZw3lYkyLCxuwQSCQ0oL
-         u7SqHqFPYrTUB2h6FrnJbu2MUIjLnW/iGB7JypDrED6qW/qos6zdDKHlMvoAuHclyhE+
-         +7OK62Ay5kCWgMudD1lgJE9ndEvYVHfD5UUG415xzfgYQkxhxzRuD8wSn1546hnYFewU
-         K10u2NUx3ur+5xfA/CGM37Bk+kzNfB2Ln/oWxq/abSJLasE8ukp8+ayzD9SX2dT6iOJ+
-         kMfA==
-X-Forwarded-Encrypted: i=1; AHgh+Rptrbvarv9Zta1PkByaMv+02fWa4Q7KPQYQNogkUloIjIGPEMKeMto7MOM6+j3VIK9Z/5hntuM95CwC/A==@vger.kernel.org
-X-Gm-Message-State: AFuF++llCTWwV4v7E55ozo4/iOdvCaQ/V91CY6Ba65410+4qkxrCUWT2
-	0pcQTTvTSkFUVFGO4n9YhMKUpNTfpG+EtUVpNhWJTm6dcNTveRQjFxOEO61LpA==
-X-Gm-Gg: AR+sD12fFI1ibK0Mgh0e69f6ZX6KAk07mWBU7ZA1wXB9yuri15wdLYMJJ6U+SV3NPnx
-	M3gUuT1yAqi90rhDVgv9hDdGtmXC0q1P2ACssYAQps7e0YiEZaEAk0ZKe2KD4IBk3slt1jEPn6X
-	9cd/dzAtt3Vegby4n9poYVTSjzVP7NsgG+A3gIAHS6DQrb77T71O9kMj2Vw0g1QmuKyiGP/FKms
-	oz9N/7RICbOeiG+SV9cCbqgL8R8iUn5240XO/Gpdl8uk/lWidUSFzK6VwZ3IA/kwZPrmjky50gm
-	0tzfDf89bFCxYGJxy6ngupDutZCvMIeptA8y1nGl6YEOaodLYBDxaXVpOHkCJKYOsPhFGr6pWju
-	Xpd4WM8OBbsd7RyyvP1HXrFdSF9KxWZl6plcJYplyjhMBuJqF9k2FbCJhoelF0O/1LFTFKMyxBU
-	ywxL/eU4GJAxknu8OW7HhwIJkVwqA76+vZ/Acm0kmkQdsi9jv9KMKC102SD4Q/S8l1LBP0JD21g
-	3RUxw26txTalatwCUjtEpIL+YgWVE4=
-X-Received: by 2002:a05:6402:510d:b0:69f:d4b7:9476 with SMTP id 4fb4d7f45d1cf-6a5c40f286amr448135a12.4.1787595107634;
-        Mon, 24 Aug 2026 11:11:47 -0700 (PDT)
+        bh=0mwy+LUPZKf1Yv1+uPQ52eOzsbkTlYKsOl/zfBams6E=;
+        b=EnsPyuIyA4w4d6nuiac9IYyKmpXf8kh1vZDi7pe9gQQKu6GIGhAQzZC17QyMvIXXIp
+         N3PycUxxtMJMF8uFzytRW1mYcJxRJsITukVR10TPJvBqap71kuzQnkFxREl6YDtB8aMh
+         IRZioZcLAoIfi953EidgddHr8D23KSYYmN1My5/qnG34kTJNDdSNm0McE5Em4nZMAXEc
+         JT26bWtdV48SKjoY8kOnOd/9WZITpldR2hjZGJ57+48G0RZlWqNIraaLXwaFtzOTkdwS
+         8tW/Kkaovw3FhEknEh93N76/9+IKFl3Edzu2EaB5u2gXXWgi8fLVsS8KgZ2bFWeJCVe8
+         Y85w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1787595113; x=1788199913;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=0mwy+LUPZKf1Yv1+uPQ52eOzsbkTlYKsOl/zfBams6E=;
+        b=kI9ilpYl3GY0tHAXSpEv05Wp/PeZJBUTMoJw3AmJlnycybEx86Dss/220T3snFy5sU
+         XSfePQkEzW5Ffy93NUkr3UZJ9hT9jwcHJhu/C+8mCSp1KYYHyYCZXSzRPVlQeSUT6vD/
+         ztQqrWIhwZ9se6ZB9fEL8oMVPPAbFJ7IaSOhr20bR9671LD2BBDZiA9f3UtusVzB4DWF
+         Y4E2+9ytFvBVKNYVzHRbdPBhFQWkuek+ZXsEWu1/K38Q8rov+iOvzjTOKoYmGpq3T5Zz
+         M4mHdVtWamRNNYWkAtWx8+sjZc106OxuTz5sNan3oKJ5uhM4Q7gohrQ74e9yOlx+XaKW
+         V31Q==
+X-Forwarded-Encrypted: i=1; AHgh+Rqkn3q7fo5fAuelxm6mog/gWT0yBG9TJghWGfLLYrYxM0saFtyOI/1xMAt7SghdjLQgkN5qhBsE7CDqRw==@vger.kernel.org
+X-Gm-Message-State: AFuF++n4Icps8OiFPPespdUt5QUsLwIVNJpXE/a0shM4lmVmwu4VCX4y
+	MGC7bC8IoZjwCestfw3j39qBQTZfZfmNlXaAez8xuzNIy8Q0qSWxl28p
+X-Gm-Gg: AR+sD13u1bq1j6U0i6GGs4ZTn87pAK0Cn6WxVLjdhIQwb+jFvX+W7jLDXgkOhMXzn0B
+	jn6og1a9vcfkP8EeoJdimf8NI0p24WyxgXrVrbk6ZXe+7LbxrmpBI5G1q79GrAlI28QSvJ3q2Hz
+	pfmSL00Ifc0mI5/N8mN8WrrpCPBVDohEky/dNydDrBSI/CM0oT9UvuUUdBEEKHtxfJvVHj4n/QO
+	VFaOi6QJuaSujnEuFVq66DQ4ll4Y8dCHJXsLP9WeJQ0iT7hx6yJNoKE2N3gQqW5k31BIIrkKcxY
+	L+6jiR/YmRnsQleW9YgC4bB5YxQ4TtMaWkIJ8FXskPf3s/onEBjykMrZmLmGIO8VlF1osFs2gBl
+	gb6E8wDfyynECz71g/UIygXACzXg/QwlFoCsftt41eyRxRjkqAFv0Nm4BVMVSAW+2Saa43wzl8W
+	5oft2fKm+mO+BKFh3V9Ib3GMPtUFm2d2OTjAv7uIVCA01MEaJI2dJfA5bm+oQqT2YrRIstPOZ2G
+	TELLVTDHIHrq7DI0VvlvlFd1wHbEeQ=
+X-Received: by 2002:a05:6402:249f:b0:6a3:ebe1:c2c2 with SMTP id 4fb4d7f45d1cf-6a42f14dfacmr34920988a12.2.1787595112494;
+        Mon, 24 Aug 2026 11:11:52 -0700 (PDT)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a59dd550bcsm10586910a12.0.2026.08.24.11.11.46
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6a59dd550bcsm10586910a12.0.2026.08.24.11.11.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Aug 2026 11:11:47 -0700 (PDT)
+        Mon, 24 Aug 2026 11:11:52 -0700 (PDT)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: richard.henderson@linaro.org,
 	mattst88@gmail.com,
 	linux-kernel@vger.kernel.org,
 	linux-alpha@vger.kernel.org
-Cc: Magnus Lindholm <linmag7@gmail.com>
-Subject: [PATCH v2 0/2] alpha: disable DAC for 32-bit PCI cards on Tsunami/Typhoon
-Date: Mon, 24 Aug 2026 19:36:52 +0200
-Message-ID: <20260824181126.3559638-1-linmag7@gmail.com>
+Cc: Magnus Lindholm <linmag7@gmail.com>,
+	Maciej Rozycki <macro@orcam.me.uk>
+Subject: [PATCH v2 1/2] alpha: respect dev->bus_dma_limit as the effective DMA address ceiling
+Date: Mon, 24 Aug 2026 19:36:53 +0200
+Message-ID: <20260824181126.3559638-2-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260824181126.3559638-1-linmag7@gmail.com>
+References: <20260824181126.3559638-1-linmag7@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -75,76 +80,124 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This is a follow-up to a patch I posted last year (Sep 2025, "[PATCH
-0/1] alpha: disable DAC for 32-bit PCI on tsunami"), which was not
-merged.
+The Alpha PCI DMA-mapping code has no way for platform code to cap a
+device's addressable range below what it claims via dma_set_mask(),
+even though dev->bus_dma_limit exists precisely for an upstream bridge
+or bus to impose exactly that kind of constraint. Wire it in as the
+effective upper bound everywhere an address range gets checked or a
+DMA window gets selected:
 
-Changes since v1:
- - Split into two patches: generic bus_dma_limit plumbing (1/2) and
-   the Tsunami policy itself (2/2).
- - Rebased onto current mainline (pci_iommu.c's DMA-mapping API moved
-   from map_page()/virtual addresses to map_phys()/phys_addr_t 
- - bus_dma_limit is now treated as a numeric address ceiling rather
-   than a bitmask: the DAC path in pci_map_single_1()/sg_fill() is
-   bound-checked against it directly, instead of folding it into the
-   DAC capability test in pci_dac_dma_supported() (which is otherwise
-   unchanged). Fixed a NULL-pointer dereference this exposed on
-   no-IOMMU machines once that bound check could fail. 
- - Use ST_DEC_TSUNAMI instead of the raw sys_type value 34.
+ - pci_map_single_1() and sg_fill() already bound-check the direct-map
+   window against max_dma; make max_dma itself
+   min_not_zero(dma_mask, bus_dma_limit), and add the same
+   paddr + dac_offset + size - 1 <= max_dma check to their DAC paths,
+   which previously had no bound check at all beyond the bitmask test
+   in pci_dac_dma_supported().
+ - alpha_pci_map_sg()'s no-IOMMU fallback path (no alpha_mv.mv_pci_tbi)
+   picks up the same ceiling instead of unconditionally using -1.
+ - sg_fill() gains an explicit failure return when there is no IOMMU
+   arena and the direct/DAC paths didn't apply. Previously this relied
+   on max_dma = -1 making the (unchecked) DAC branch always succeed
+   whenever dac_allowed was true; now that DAC has a real bound check,
+   that combination is reachable and must not fall through into
+   iommu_arena_alloc() with a NULL arena. Mirrors the DMA_MAPPING_ERROR
+   return pci_map_single_1() already gives for the same situation.
 
-Boot tested on an AlphaServer ES40 (Tsunami) with a QLogic ISP1040B
-controller.
+DAC capability itself is unchanged: pci_dac_dma_supported() still
+determines whether a device's DMA mask can address the DAC bit at all
+(a capability question). bus_dma_limit is enforced separately, at each
+mapping site, against the resulting address.
 
-Original background, still accurate:
+dev->bus_dma_limit is a numeric upper bound on the end address of a
+transfer (see dma_capable() in include/linux/dma-direct.h), not
+another bitmask to AND against.
 
-I've spent quite some time trying to make the qla1280 driver work
-with 64-bit DMA on Alpha/Tsunami systems with more than 2GB RAM. Many
-thanks to Martin, James, Maciej, Thomas and Christoph who took the
-time to provide feedback and testing during my attempts.
+bus_dma_limit defaults to 0 and min_not_zero() ignores a zero operand,
+so all of this is a no-op until something actually sets bus_dma_limit
+on a device - no behaviour change by itself.
 
-This is what I've concluded:
+This is infrastructure for a following patch that uses bus_dma_limit to
+work around a Tsunami/Typhoon-specific DAC issue; kept separate since
+it's a generic, self-contained change with no policy attached.
 
-* The ISP1040B (32-bit card) works with a 64-bit DMA mask on a 21164
-  Rawhide machine - the card itself supports DAC, even though the
-  data sheet doesn't officially claim support until rev C (as Thomas
-  Bogendoerfer pointed out earlier).
-
-* The ISP1080 (64-bit PCI slot/card) works with a 64-bit DMA mask on
-  a 21264 Tsunami machine - so the monster window itself works fine
-  on Tsunami.
-
-* Data gets corrupted on Alpha/Tsunami specifically when DAC/monster
-  window is used by a 32-bit PCI card. The amount corrupted varies a
-  lot between runs, from none at all to several kilobytes out of 20MB
-  transferred. When it happens, it's always in 64-byte chunks, which
-  coincides with the 21264's cache block size. Manual inspection of
-  the corrupted data shows it's memory content from other active
-  processes doing DMA on other drives/controllers at the time.
-
-The fix is unchanged from the original posting: limit 32-bit PCI
-cards from using DAC/monster window DMA on Tsunami based Alphas, by
-setting bus_dma_limit to DMA_BIT_MASK(32) for devices that have no
-64-bit memory BAR. There are 64-bit PCI cards that only have 32-bit
-memory BARs, like the QLogic ISP1080 and ISP10160 SCSI controllers;
-these will be needlessly constrained even though they work correctly
-on Tsunami. I believe this is an acceptable trade-off, since those
-controllers are not known to be supported by SRM firmware and are
-therefore uncommon on Alpha systems.
-
-In practice there are very few 32-bit PCI cards likely to be used on
-Alpha with drivers that request 64-bit DMA addressing. The only
-example I've found is the qla1280 driver with an ISP1040 controller,
-which is supported by most SRM firmware versions and hence fairly
-common on Alpha systems.
-
-Magnus Lindholm (2):
-  alpha: respect dev->bus_dma_limit as the effective DMA address ceiling
-  alpha: disable DAC for 32-bit PCI cards on Tsunami/Typhoon
-
- arch/alpha/kernel/pci.c       | 22 ++++++++++++++++++++++
+Suggested-by: Maciej Rozycki <macro@orcam.me.uk>
+Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+---
  arch/alpha/kernel/pci_iommu.c | 22 ++++++++++++++++------
- 2 files changed, 38 insertions(+), 6 deletions(-)
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
+diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
+index 955b6ca61627..6191dcd560bd 100644
+--- a/arch/alpha/kernel/pci_iommu.c
++++ b/arch/alpha/kernel/pci_iommu.c
+@@ -228,7 +228,8 @@ pci_map_single_1(struct pci_dev *pdev, phys_addr_t paddr, size_t size,
+ 		 int dac_allowed)
+ {
+ 	struct pci_controller *hose = pdev ? pdev->sysdata : pci_isa_hose;
+-	dma_addr_t max_dma = pdev ? pdev->dma_mask : ISA_DMA_MASK;
++	dma_addr_t max_dma = pdev ? min_not_zero(pdev->dma_mask,
++		pdev->dev.bus_dma_limit) : ISA_DMA_MASK;
+ 	unsigned long offset = offset_in_page(paddr);
+ 	struct pci_iommu_arena *arena;
+ 	long npages, dma_ofs, i;
+@@ -250,7 +251,8 @@ pci_map_single_1(struct pci_dev *pdev, phys_addr_t paddr, size_t size,
+ #endif
+ 
+ 	/* Next, use DAC if selected earlier.  */
+-	if (dac_allowed) {
++	if (dac_allowed
++	    && paddr + alpha_mv.pci_dac_offset + size - 1 <= max_dma) {
+ 		ret = paddr + alpha_mv.pci_dac_offset;
+ 
+ 		DBGA2("pci_map_single: [%pa,%zx] -> DAC %llx from %ps\n",
+@@ -549,7 +551,8 @@ sg_fill(struct device *dev, struct scatterlist *leader, struct scatterlist *end,
+ #endif
+ 
+ 	/* If physically contiguous and DAC is available, use it.  */
+-	if (leader->dma_address == 0 && dac_allowed) {
++	if (leader->dma_address == 0 && dac_allowed
++	    && paddr + alpha_mv.pci_dac_offset + size - 1 <= max_dma) {
+ 		out->dma_address = paddr + alpha_mv.pci_dac_offset;
+ 		out->dma_length = size;
+ 
+@@ -559,6 +562,10 @@ sg_fill(struct device *dev, struct scatterlist *leader, struct scatterlist *end,
+ 		return 0;
+ 	}
+ 
++	/* No IOMMU and direct/DAC didn't fit: nothing left to try.  */
++	if (!arena)
++		return -1;
++
+ 	/* Otherwise, we'll use the iommu to make the pages virtually
+ 	   contiguous.  */
+ 
+@@ -654,12 +661,14 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
+ 	/* Second, figure out where we're going to map things.  */
+ 	if (alpha_mv.mv_pci_tbi) {
+ 		hose = pdev ? pdev->sysdata : pci_isa_hose;
+-		max_dma = pdev ? pdev->dma_mask : ISA_DMA_MASK;
++		max_dma = pdev ? min_not_zero(pdev->dma_mask,
++			pdev->dev.bus_dma_limit) : ISA_DMA_MASK;
+ 		arena = hose->sg_pci;
+ 		if (!arena || arena->dma_base + arena->size - 1 > max_dma)
+ 			arena = hose->sg_isa;
+ 	} else {
+-		max_dma = -1;
++		max_dma = pdev ? min_not_zero(pdev->dma_mask,
++			pdev->dev.bus_dma_limit) : -1;
+ 		arena = NULL;
+ 		hose = NULL;
+ 	}
+@@ -719,7 +728,8 @@ static void alpha_pci_unmap_sg(struct device *dev, struct scatterlist *sg,
+ 		return;
+ 
+ 	hose = pdev ? pdev->sysdata : pci_isa_hose;
+-	max_dma = pdev ? pdev->dma_mask : ISA_DMA_MASK;
++	max_dma = pdev ? min_not_zero(pdev->dma_mask,
++		pdev->dev.bus_dma_limit) : ISA_DMA_MASK;
+ 	arena = hose->sg_pci;
+ 	if (!arena || arena->dma_base + arena->size - 1 > max_dma)
+ 		arena = hose->sg_isa;
 -- 
 2.53.0
 
