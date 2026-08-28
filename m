@@ -1,143 +1,164 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00D5C36B92B;
-	Thu, 27 Aug 2026 22:50:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DAF9305699;
+	Fri, 28 Aug 2026 23:19:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.97.179.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787871051; cv=none; b=uDPTU1K8LnIHB0ZH1ceDWgRHJ6PRov4LgNLifb47KSS1HrXkuPuzag/Gf0cWQasWXlb97ZLm4GkJlvekCkI/ck7yfvny10aYlnGNMJfyyTju5+DfrJJtdeptncnWkltqiJRrvO5GkDz2OcI1OECwL7QdgkVrZ1eUIXF4jpP1gIc=
+	t=1787959195; cv=none; b=d0MM8XTzJsVQ5Dvqs1PXBYcDhoRnIGV3nmPQqEVTcJCvnwYtkNiFvl/7use6l9AZdBBKz+BRe05F7T6E0B92gbOURAXZ//3CJWsaFPAWX0GIzDG1DnD6IMGSjVUUPxXtncQEELYOUn7pSY3USn0zCAADNgPpQ6XbOoDV5Nx+YPk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787871051; c=relaxed/simple;
-	bh=oVpn3Y3xe4yNSLPISH532HiWMGCaPXfViMVpomdHH3k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pIfSA6qgSEAwqzJZJ4t+0qFTutk8n50r0czjVO03hiWGFha/Ag/jz7uSejyo9GvhWUzE4Sa1YNsmxUi0aiu5Pcc/h69dcCDQ+mIei1wHuxC+/31h1OwDxg5nV8dO6HF3U7z/4jnuIAjA4VxqQjKB5pwqkfj+UC1DPw0qvM393Xw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=GymOd4Rk; arc=none smtp.client-ip=198.137.202.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	s=arc-20240116; t=1787959195; c=relaxed/simple;
+	bh=mCmFhyvB3CiDIQFueNr3U4X4g7jmuLEAwOL4s3m6sKQ=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=OCcQ/HQPKdjMUj1mAfhoRhyLqiEPXuRNf1tFQarevsedxkM7m+E6p7CnSRYx6OHYmCnwfMH/y7J7TFaS/SJ/Aa/DBYHTUIwmG7tnNFRrJsH8e3o0RDpNUNHRtSCmp30A7tKfjWZYyJr7tULd7+87dY4CpMwiXZrV77ILU7YUS4Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=igalia.com; spf=pass smtp.mailfrom=igalia.com; dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b=AFBr+8MF; arc=none smtp.client-ip=213.97.179.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=igalia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=igalia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="GymOd4Rk"
-Received: from [IPV6:2601:646:8081:8d71:8c93:dacb:e5fa:49aa] ([IPv6:2601:646:8081:8d71:8c93:dacb:e5fa:49aa])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 67RMl4Qn1836438
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Thu, 27 Aug 2026 15:47:04 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 67RMl4Qn1836438
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2026072801; t=1787870834;
-	bh=EXQuytFudEdgp91C+uFz8aeu/WW15G7DgPzpxtGKF4M=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=GymOd4RkxGi8njVCQCfisvKP39Bb44ZVOGqd2ZqhsM67DzFyYn8S/jMXCU8Rma33W
-	 PEelxL7L8kBY+qk5qAEjpsMwfkxEwjrDmJEsL+fSa6zkpR+h5d+MOwPtTLVMwwm0lZ
-	 bCPemLIjQYuVaQEQRjl132J4YP0xzX54ej4JFh90v2xhqZFikkHSFSnGkczichDoFv
-	 sZK/qGKEclFkhvxq+v2kMkmJ4o1BjYqiHVTd5aGLm7HyH0fkUCbFxhX7p3xCNzPfY0
-	 gzR1rveeuo2MbtEx3KqfD+thNsEFw5il2Dad3o6axDhdFmbVxxjrh2OwAc/diiyN8G
-	 nWKtXnX6xx8pw==
-Message-ID: <995a61ef-ce8c-4c8b-bea8-77f375076a39@zytor.com>
-Date: Thu, 27 Aug 2026 15:46:58 -0700
+	dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b="AFBr+8MF"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+	s=20170329; h=Cc:To:Content-Transfer-Encoding:Content-Type:MIME-Version:
+	Message-Id:Date:Subject:From:From:Reply-To;
+	bh=3lS8Pe52E15AsSTbFDf2Q8tOnEgRxl/Bw8+tn4QAZ3Q=; b=AFBr+8MF6Vo2i6RVnqs6KlfZGV
+	MqMzbqDgglqnFphc/cnp9EsC5M1YMlCCa8uuHY82nTwytw0vgNMyHDHGwexSVgELFlkEj36oG5H8/
+	fqvxBpUdG7QMdriCtgNoTTLJU8jeZHfvE64QQJITv/uP+DgdJCeuhOp0aG12Z++AbA0QHqB1IjVtf
+	9xVemXIycIb/pvCosC495IjxXXO01gZjV+hF1isHqoD/O4Y9/9GmyMjdY/gWK2VXp0yuWg4MLxnn2
+	aV8w51KZdz8AR29jCkajERX+bxfEmlnltDqEOEGYexi9CZ8hOR2XgRjSpQAIBenxVLPKrox169wKa
+	BHvhK/Jg==;
+Received: from [187.57.78.212] (helo=[192.168.15.100])
+	by fanzine2.igalia.com with esmtpsa 
+	(Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+	id 1x05rI-00B3sF-KD; Sat, 29 Aug 2026 01:19:40 +0200
+From: =?utf-8?q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
+Subject: [PATCH v6 00/13] syscalls: Add a shared table for all archs
+Date: Fri, 28 Aug 2026 20:19:27 -0300
+Message-Id: <20260828-tonyk-syscall_table-v6-0-fdd358456cf1@igalia.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [patch 03/18] entry: Provide
- [syscall_]enter_from_user_mode_randomize_stack()
-To: Thomas Gleixner <tglx@kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Shrikanth Hegde <sshegde@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org,
-        Kees Cook <kees@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
-        loongarch@lists.linux.dev, Paul Walmsley <pjw@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>, linux-riscv@lists.infradead.org,
-        Sven Schnelle <svens@linux.ibm.com>, linux-s390@vger.kernel.org,
-        x86@kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Jinjie Ruan <ruanjinjie@huawei.com>, Andy Lutomirski <luto@kernel.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Richard Henderson <richard.henderson@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>, Guo Ren <guoren@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Helge Deller
- <deller@gmx.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Richard Weinberger <richard@nod.at>, Chris Zankel <chris@zankel.net>,
-        linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org,
-        linux-csky@vger.kernel.org, linux-m68k@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-sh@vger.kernel.org, linux-um@lists.infradead.org,
-        Arnd Bergmann <arnd@arndb.de>, Vineet Gupta <vgupta@kernel.org>,
-        Will Deacon <will@kernel.org>, Brian Cain <bcain@kernel.org>,
-        Michal Simek <monstr@monstr.eu>, Dinh Nguyen <dinguyen@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andreas Larsson <andreas@gaisler.com>,
-        linux-snps-arc@lists.infradead.org, linux-hexagon@vger.kernel.org,
-        linux-openrisc@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org,
-        =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-References: <20260707181957.433213175@kernel.org>
- <20260707190253.816918647@kernel.org>
-Content-Language: en-US, sv-SE
-From: "H. Peter Anvin" <hpa@zytor.com>
-In-Reply-To: <20260707190253.816918647@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/43NTU7DMBQE4KtUXmNkP9uxzYp7VBXyz0trCAmKQ
+ 0RU5e7YZUFRCmI50sw3Z5JxTJjJw+5MRpxTTkNfQnO3I+Hk+iPSFEsmwKBhGiSdhn55oXnJwXX
+ d0+R8h9SC8d5zD433pCzfRmzTx0XdH75yfvfPGKZK1cYp5WkYl8vtzGvv74eZU0ZtUIIbI0FE9
+ 5iOrkvuPgyvpF7McI3o2whUREXZckSpebtBxDdi2C+IKIgOUjkQQTGvNoi8QjjcRmRFpIkMwLo
+ o2QZR/0BUQUQURljQoWH2B7Ku6yfn2gP73QEAAA==
+X-Change-ID: 20260724-tonyk-syscall_table-928bbb1b26bb
+To: Masami Hiramatsu <mhiramat@kernel.org>, Arnd Bergmanon <arnd@arndb.de>
+Cc: Christian Brauner <brauner@kernel.org>, linux-kernel@vger.kernel.org, 
+ linux-kbuild@vger.kernel.org, kernel-dev@igalia.com, 
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+ linux-alpha@vger.kernel.org, linux-s390@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, soc@lists.linux.dev, 
+ linux-mips@vger.kernel.org, sparclinux@vger.kernel.org, 
+ =?utf-8?q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
+X-Mailer: b4 0.15.2
 
-On 2026-07-07 12:06, Thomas Gleixner wrote:
-> Randomizing the syscall stack can only happen after state is established
-> via enter_from_user_mode() or syscall_enter_from_user_mode(). The earlier
-> it happens the better.
-> 
-> Provide two new macros to consolidate that:
-> 
->   - enter_from_user_mode_randomize_stack()
-> 	enter_from_user_mode();
-> 	add_random_kstack_offset_irqsoff();
-> 
->   - syscall_enter_from_user_mode_randomize_stack()
-> 	enter_from_user_mode_randomize_stack();
-> 	syscall_enter_from_user_mode_work();
->     
-> to reduce boiler plate code.
-> 
-> Those are macros and not inline functions as the latter would limit the
-> stack randomization scope to the inline function itself.
-> 
-Not directly related to this patchset, but still:
+While implementing a new syscall, we need to wire up it's number to the arch
+table. Since syscall number 403, all architectures are on sync regarding the
+number (except alpha), which make things a lot easier but more repetitive as
+well. Have a look at commit b36d4b6aa88 ("arch: hookup listns() system call"),
+with 15 lines of mostly:
 
-Can anyone *please* find out what the actual security requirements are for the
-syscall randomization offset?
+  +470    common  listns                          sys_listns
 
-The original checkin, 39218ff4c625 ("stack: Optionally randomize kernel stack
-offset each syscall") indicates that it is fundamental that the stack offset
-is applied *after* pt_regs pushing, but that isn't documented anywhere in the
-kernel sources as far as I can tell.
+There's already a "common" table shared with a bunch of archs at
+`scripts/syscall.tbl`, but due to historical reasons some archs will never be
+able to move to this table and share all the numbers.
 
-However, I have also come to understand that there are further, undocumented
-constraints; at least at one point I was told that "the offset should not be
-stored in memory while running in the kernel", which seems more than a bit odd.
+The generic table starts from 403 (clock_gettime64), the first common syscall.
 
-This matters, because it creates a data dependency on exit. The original
-checkin does call out that RDTSC timing is inappropriate if the user could
-control it, but using a hardware CSPRNG like RDRAND (or its equivalent for
-other architectures) would be feasible if it isn't in the critical path. If an
-RDRAND - store sequence can be executed on entry, *after* the stack
-adjustment, then the high latency of RDRAND can hopefully be very effectively
-hidden by an OO CPU.
+I've compile tested for arm32, arm64, s390, mips, sparc and alpha by comparing
+the syscalls_*.h and unistd_*.h files generated before and after this patchset.
+For most of cases the files are identical, for the few cases that they are not,
+there's a note in the commit explaining why they are equivalent.
 
-Incidentally, in case you are wondering "why doesn't each core get a dedicated
-CSPRNG and hardware randomness generator, to avoid high latency", the answer
-is pretty simple: a hardware random number source, regardless of the specifics
-of the design, almost by definition violates the hardware design rules of any
-digital design; after all, the design rules are designed to *eliminate* noise
-(making the circuit behave as closely as physically possible to a realization
-of the abstract digital circuit), whereas the very goal of a HWRNG source is
-to *extract and amplify* quantum thermal noise. This means that considerable
-chip area is consumed by a "keep-out zone", a designated "no man's land"
-keeping the digital logic away from the noise source. This keep-out zone is
-typically much, much larger than the noise source itself.
+Thanks!
+	André
 
-	-hpa
+Changes in v6:
+- Rebased on top of 7.3-rc0: new syscall fchroot()
+- Fix compliance with POSIX shells
+- Add $(syscalltbl_common) to the prereq build files, so the build is triggered
+if the common table changes
+- v5: https://patch.msgid.link/20260812-tonyk-syscall_table-v5-0-3d383927c609@igalia.com
+
+Changes in v5:
+- Add archs lists to Cc
+- alpha: Change custom alpha_syscall to __syscall
+- mips: Use "common" for all ABI tables
+- mips: Kept it as a single table for n32/n64
+- Fix bug introduced by mixing --offset and --compat-offset
+- v4: https://patch.msgid.link/20260812-tonyk-syscall_table-v4-0-748d0229ad40@igalia.com
+
+Changes in v4:
+- Replace cln3 with clone3 in the ABIs
+- mips: Get rid of custom mips ABIs (o32, n32, n64) and use 32 and 64
+- mips: Unify n32 and n64 tables
+- Add alpha to the syscall party, along with it's adaptations
+- Remove --no-compat option and define SYSCALL_WITH_COMPAT() macro for archs
+that need it
+- v3: https://patch.msgid.link/20260807-tonyk-syscall_table-v3-0-7c45a23c50b5@igalia.com
+
+Changes in v3:
+- Removed x86 for now, let's wait till x32 is dropped
+- Added much more archs
+- v2: https://patch.msgid.link/20260727-tonyk-syscall_table-v2-0-95d4f1ee471f@igalia.com
+
+Changes in v2:
+- Managed to move to the real first common syscall: 403 (clock_gettime64)
+- Added -no-compat option to be used with x86_64
+- v1: https://patch.msgid.link/20260724-tonyk-syscall_table-v1-0-9c53188423da@igalia.com
+
+---
+André Almeida (13):
+      syscalls: Make --abis parsing more robust
+      syscalls: Create unified partial table for all archs
+      scripts/syscall.tbl: Use the common table
+      arm: Use the common syscall table
+      s390: Use the common syscall table
+      sparc: Use the common syscall table
+      mips: Remove duplicated syscallnr.sh
+      mips: Get rid of custom mips ABIs for syscall tables
+      mips: Use the common syscall table
+      syscalls: Add an option for offsetting the common table
+      alpha: Define entry point for set_mempolicy_home_node syscall
+      alpha: Remove alpha_ prefix from custom syscall entries
+      alpha: Use the common syscall table
+
+ arch/alpha/kernel/entry.S                 |   8 +-
+ arch/alpha/kernel/syscalls/Makefile       |  14 +-
+ arch/alpha/kernel/syscalls/syscall.tbl    |  55 +-
+ arch/alpha/kernel/systbls.S               |   1 +
+ arch/arm/tools/Makefile                   |  14 +-
+ arch/arm/tools/syscall.tbl                |  69 ---
+ arch/arm64/tools/syscall_32.tbl           |  69 ---
+ arch/mips/kernel/scall64-n32.S            |   1 +
+ arch/mips/kernel/scall64-n64.S            |   2 +
+ arch/mips/kernel/syscalls/Makefile        |  30 +-
+ arch/mips/kernel/syscalls/syscall_n.tbl   | 464 +++++++++++++++++
+ arch/mips/kernel/syscalls/syscall_n32.tbl | 413 ---------------
+ arch/mips/kernel/syscalls/syscall_n64.tbl | 389 --------------
+ arch/mips/kernel/syscalls/syscall_o32.tbl | 827 ++++++++++++++----------------
+ arch/mips/kernel/syscalls/syscallnr.sh    |  26 -
+ arch/s390/kernel/syscall.c                |   2 +
+ arch/s390/kernel/syscalls/Makefile        |  12 +-
+ arch/s390/kernel/syscalls/syscall.tbl     |  49 --
+ arch/sparc/kernel/syscalls/Makefile       |  12 +-
+ arch/sparc/kernel/syscalls/syscall.tbl    |  69 ---
+ scripts/Makefile.asm-headers              |  15 +-
+ scripts/syscall.tbl                       |  69 ---
+ scripts/syscall_common.tbl                |  84 +++
+ scripts/syscallhdr.sh                     |  83 ++-
+ scripts/syscalltbl.sh                     |  50 +-
+ 25 files changed, 1111 insertions(+), 1716 deletions(-)
+---
+base-commit: 548e7bcd0c5460ddcbca9600cea603ebeebf4da7
+change-id: 20260724-tonyk-syscall_table-928bbb1b26bb
+
+Best regards,
+--  
+André Almeida <andrealmeid@igalia.com>
 
