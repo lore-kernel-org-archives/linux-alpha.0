@@ -1,170 +1,94 @@
-Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CDA73B2D04;
-	Fri, 28 Aug 2026 23:20:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.97.179.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75734425878;
+	Sat, 29 Aug 2026 21:12:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787959230; cv=none; b=c1oeegBOdyatre4xhPFyx/xpPmcEOlunG7UhMY/iv48b4RLPB/FaACCtmuwo3gXsOVP4Ad/AKhZ4alTmXw+rCkz8taQUm1NEWWaqT42dmk5PSwgXbz3T8A3QMKMQbGnlG1lfJNDWnzqj/IY4VeWvud4YZujbedKzp8/mqPgz9v8=
+	t=1788037971; cv=none; b=vFO02VJrX73hskSfX0KFumFJorLdqlQhkH74Vff9anStk5zWBuu6YpAAd3XpHjhRsKb0la1cPKe+Ywun/OKzVavIpUmeBNw/n8B+0LZNXqWXQe9CvRkRjJrHSNQmq6tI0Nrh7bXfQcSE3bY5HdVg6UF2tdizn7YsALAObSxGvh8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787959230; c=relaxed/simple;
-	bh=eYxNeCvy4p71IloUWnXnyvA9fBmKrgyjMUcMHXcwN74=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=biTX0Fai5WJbYLxJqm4X8ruUjv/HaLRPc53I8lybVYqP8QJIENY/d6HEMsj63PNeHuQ46SYawsyX12A7fWyAzx8ha9d9fjsfhdY/kl/UHzg0V6itAz47NouxNKXhagPJ97gHNJzlQPbcsuTKnoNcIzGYvAXZmi1oIp4pPHLlpwk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=igalia.com; spf=pass smtp.mailfrom=igalia.com; dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b=kURH8nMb; arc=none smtp.client-ip=213.97.179.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=igalia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=igalia.com
+	s=arc-20240116; t=1788037971; c=relaxed/simple;
+	bh=RtxV5GtLCFd5Nxwwhw4byzarzWlVmnm61EaGDtON7B4=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=EeYqcJerSpvnXmb/PJIHuefuHGf0Yhfyb8DAtomtaj+b96HijEqzIlWLSBq8RrAJ1Akf35xkEFQ9Qsfq8jdOjmi9wiigV+GXHmdS6o0AGuqru6lfeS4xnQSmMfaCV9OhZ/UnbBkT9XpQIdaOvofR25fwMuQnAsCc4SyU4HEu5HQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n1seToYo; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=igalia.com header.i=@igalia.com header.b="kURH8nMb"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-	s=20170329; h=Cc:To:Message-Id:Content-Transfer-Encoding:Content-Type:
-	MIME-Version:Subject:Date:From:From:Reply-To;
-	bh=VjIF0aVYBJ9Ga527Xyl4l3TJ4nkphldiKj6rE37lIV8=; b=kURH8nMba3wk5Wd8yrgdvs1vIN
-	nVKxK2b/+FrRkot/NlLSOXFC7RCJzguxd+LH2Dnw++w2iqpmq0mcAHLTYX2Rfa8HVJKggWgdrszlS
-	oi/c6+Drex7sEtdWe2gxg6Fme5PSsMckcu14yYlRkhSgA/bQWF6C+PziFe0FrjnLLDidORjGg3L3Y
-	gDvLGuCNRtTAyrb25IzGYZa+kmuNMoSv3lc2mEukrl3wxjTi+Eqfv3Z39/PvUW9Xv3Dwntcvk/No9
-	AL9kLE/Z+TDDJFVe3/oJfaHl/3t3TrRkidK6mRdG1Mr3RO6XPOy+SxcH5y1v1tEhp9B4dz07vjktA
-	205ULykQ==;
-Received: from [187.57.78.212] (helo=[192.168.15.100])
-	by fanzine2.igalia.com with esmtpsa 
-	(Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-	id 1x05s2-00B3sF-4m; Sat, 29 Aug 2026 01:20:26 +0200
-From: =?utf-8?q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
-Date: Fri, 28 Aug 2026 20:19:40 -0300
-Subject: [PATCH v6 13/13] alpha: Use the common syscall table
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n1seToYo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 649AD1F000E9;
+	Sat, 29 Aug 2026 21:12:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1788037970;
+	bh=Dtc/3TiWrxvKp0avjjHTAnH0zP9eaKC6iJzs8wdLbVc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=n1seToYoBBT3aH6XYy57AvAYoTN8Sa1DDhmW2pGm9sBs8rkBWyAhcowrHekDBroX/
+	 LQ9shz0t6AxoS/RQDPShfDSc0m9IWLcU9cIQJq3FkW1jzrInW5+Iv/KAuW8URYVB2n
+	 2vCrp2pcnJfrchIq4fTPd7v9FJeK1MDe0dV9wrUv3zK9IWSwAUoaPxvg0yAGixhM4c
+	 Z9dwi/DUpv4kJC8uG3byshQrVjTrnzKYKROHUXMRnPyH/qBRKuo9hNfxOcn7FEeewO
+	 jvzQ+uh7MKEZRseKSgUEU40CtjsBO3Ee/xgR+WN5+SACHRv8m1z/ulKCStwZ7OqVFK
+	 esh+04RW4xs+A==
+From: Thomas Gleixner <tglx@kernel.org>
+To: "H. Peter Anvin" <hpa@zytor.com>, LKML <linux-kernel@vger.kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>, Michael Ellerman
+ <mpe@ellerman.id.au>, Shrikanth Hegde <sshegde@linux.ibm.com>,
+ linuxppc-dev@lists.ozlabs.org, Kees Cook <kees@kernel.org>, Huacai Chen
+ <chenhuacai@kernel.org>, loongarch@lists.linux.dev, Paul Walmsley
+ <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+ linux-riscv@lists.infradead.org, Sven Schnelle <svens@linux.ibm.com>,
+ linux-s390@vger.kernel.org, x86@kernel.org, Mark Rutland
+ <mark.rutland@arm.com>, Jinjie Ruan <ruanjinjie@huawei.com>, Andy
+ Lutomirski <luto@kernel.org>, Oleg Nesterov <oleg@redhat.com>, Richard
+ Henderson <richard.henderson@linaro.org>, Russell King
+ <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Guo
+ Ren <guoren@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Thomas
+ Bogendoerfer <tsbogend@alpha.franken.de>, Helge Deller <deller@gmx.de>,
+ Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger
+ <richard@nod.at>, Chris Zankel <chris@zankel.net>,
+ linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org,
+ linux-csky@vger.kernel.org, linux-m68k@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+ linux-sh@vger.kernel.org, linux-um@lists.infradead.org, Arnd Bergmann
+ <arnd@arndb.de>, Vineet Gupta <vgupta@kernel.org>, Will Deacon
+ <will@kernel.org>, Brian Cain <bcain@kernel.org>, Michal Simek
+ <monstr@monstr.eu>, Dinh Nguyen <dinguyen@kernel.org>, "David S. Miller"
+ <davem@davemloft.net>, Andreas Larsson <andreas@gaisler.com>,
+ linux-snps-arc@lists.infradead.org, linux-hexagon@vger.kernel.org,
+ linux-openrisc@vger.kernel.org, sparclinux@vger.kernel.org,
+ linux-arch@vger.kernel.org, Michal =?utf-8?Q?Such=C3=A1nek?=
+ <msuchanek@suse.de>, Jonathan
+ Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Subject: Re: [patch 03/18] entry: Provide
+ [syscall_]enter_from_user_mode_randomize_stack()
+In-Reply-To: <995a61ef-ce8c-4c8b-bea8-77f375076a39@zytor.com>
+References: <20260707181957.433213175@kernel.org>
+ <20260707190253.816918647@kernel.org>
+ <995a61ef-ce8c-4c8b-bea8-77f375076a39@zytor.com>
+Date: Sat, 29 Aug 2026 23:12:47 +0200
+Message-ID: <87bjakeils.ffs@fw13>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260828-tonyk-syscall_table-v6-13-fdd358456cf1@igalia.com>
-References: <20260828-tonyk-syscall_table-v6-0-fdd358456cf1@igalia.com>
-In-Reply-To: <20260828-tonyk-syscall_table-v6-0-fdd358456cf1@igalia.com>
-To: Masami Hiramatsu <mhiramat@kernel.org>, Arnd Bergmanon <arnd@arndb.de>
-Cc: Christian Brauner <brauner@kernel.org>, linux-kernel@vger.kernel.org, 
- linux-kbuild@vger.kernel.org, kernel-dev@igalia.com, 
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
- linux-alpha@vger.kernel.org, linux-s390@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, soc@lists.linux.dev, 
- linux-mips@vger.kernel.org, sparclinux@vger.kernel.org, 
- =?utf-8?q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
-X-Mailer: b4 0.15.2
+Content-Type: text/plain
 
-Remove some of the duplicated code by using the common syscall number
-table.
+On Thu, Aug 27 2026 at 15:46, H. Peter Anvin wrote:
+> Can anyone *please* find out what the actual security requirements are for the
+> syscall randomization offset?
+>
+> The original checkin, 39218ff4c625 ("stack: Optionally randomize kernel stack
+> offset each syscall") indicates that it is fundamental that the stack offset
+> is applied *after* pt_regs pushing, but that isn't documented anywhere in the
+> kernel sources as far as I can tell.
 
-Signed-off-by: André Almeida <andrealmeid@igalia.com>
----
- arch/alpha/kernel/syscalls/Makefile    | 14 +++++++---
- arch/alpha/kernel/syscalls/syscall.tbl | 49 ----------------------------------
- arch/alpha/kernel/systbls.S            |  1 +
- 3 files changed, 11 insertions(+), 53 deletions(-)
+> However, I have also come to understand that there are further, undocumented
+> constraints; at least at one point I was told that "the offset should not be
+> stored in memory while running in the kernel", which seems more than a bit odd.
 
-diff --git a/arch/alpha/kernel/syscalls/Makefile b/arch/alpha/kernel/syscalls/Makefile
-index b265e4bc16c2..03099daff6b9 100644
---- a/arch/alpha/kernel/syscalls/Makefile
-+++ b/arch/alpha/kernel/syscalls/Makefile
-@@ -7,17 +7,23 @@ $(shell mkdir -p $(uapi) $(kapi))
- syscall := $(src)/syscall.tbl
- syshdr := $(srctree)/scripts/syscallhdr.sh
- systbl := $(srctree)/scripts/syscalltbl.sh
-+systbl_common := $(srctree)/scripts/syscall_common.tbl
-+abis := common,__clone3
- 
- quiet_cmd_syshdr = SYSHDR  $@
--      cmd_syshdr = $(CONFIG_SHELL) $(syshdr) --emit-nr $< $@
-+      cmd_syshdr = $(CONFIG_SHELL) $(syshdr) --emit-nr \
-+		   --common-tbl $(systbl_common) --common-offset 110 \
-+		   --abis $(abis) $< $@
- 
- quiet_cmd_systbl = SYSTBL  $@
--      cmd_systbl = $(CONFIG_SHELL) $(systbl) $< $@
-+      cmd_systbl = $(CONFIG_SHELL) $(systbl) \
-+		   --common-tbl $(systbl_common) --common-offset 110 \
-+		   --abis $(abis) $< $@
- 
--$(uapi)/unistd_32.h: $(syscall) $(syshdr) FORCE
-+$(uapi)/unistd_32.h: $(syscall) $(systbl_common) $(syshdr) FORCE
- 	$(call if_changed,syshdr)
- 
--$(kapi)/syscall_table.h: $(syscall) $(systbl) FORCE
-+$(kapi)/syscall_table.h: $(syscall) $(systbl_common) $(systbl) FORCE
- 	$(call if_changed,systbl)
- 
- uapisyshdr-y		+= unistd_32.h
-diff --git a/arch/alpha/kernel/syscalls/syscall.tbl b/arch/alpha/kernel/syscalls/syscall.tbl
-index a41276634923..7066a3920899 100644
---- a/arch/alpha/kernel/syscalls/syscall.tbl
-+++ b/arch/alpha/kernel/syscalls/syscall.tbl
-@@ -463,52 +463,3 @@
- 532	common	getppid				sys_getppid
- # all other architectures have common numbers for new syscall, alpha
- # is the exception.
--534	common	pidfd_send_signal		sys_pidfd_send_signal
--535	common	io_uring_setup			sys_io_uring_setup
--536	common	io_uring_enter			sys_io_uring_enter
--537	common	io_uring_register		sys_io_uring_register
--538	common	open_tree			sys_open_tree
--539	common	move_mount			sys_move_mount
--540	common	fsopen				sys_fsopen
--541	common	fsconfig			sys_fsconfig
--542	common	fsmount				sys_fsmount
--543	common	fspick				sys_fspick
--544	common	pidfd_open			sys_pidfd_open
--545	common	clone3				__clone3
--546	common	close_range			sys_close_range
--547	common	openat2				sys_openat2
--548	common	pidfd_getfd			sys_pidfd_getfd
--549	common	faccessat2			sys_faccessat2
--550	common	process_madvise			sys_process_madvise
--551	common	epoll_pwait2			sys_epoll_pwait2
--552	common	mount_setattr			sys_mount_setattr
--553	common	quotactl_fd			sys_quotactl_fd
--554	common	landlock_create_ruleset		sys_landlock_create_ruleset
--555	common	landlock_add_rule		sys_landlock_add_rule
--556	common	landlock_restrict_self		sys_landlock_restrict_self
--# 557 reserved for memfd_secret
--558	common	process_mrelease		sys_process_mrelease
--559	common  futex_waitv                     sys_futex_waitv
--560	common	set_mempolicy_home_node		sys_set_mempolicy_home_node
--561	common	cachestat			sys_cachestat
--562	common	fchmodat2			sys_fchmodat2
--563	common	map_shadow_stack		sys_map_shadow_stack
--564	common	futex_wake			sys_futex_wake
--565	common	futex_wait			sys_futex_wait
--566	common	futex_requeue			sys_futex_requeue
--567	common	statmount			sys_statmount
--568	common	listmount			sys_listmount
--569	common	lsm_get_self_attr		sys_lsm_get_self_attr
--570	common	lsm_set_self_attr		sys_lsm_set_self_attr
--571	common	lsm_list_modules		sys_lsm_list_modules
--572	common  mseal				sys_mseal
--573	common	setxattrat			sys_setxattrat
--574	common	getxattrat			sys_getxattrat
--575	common	listxattrat			sys_listxattrat
--576	common	removexattrat			sys_removexattrat
--577	common	open_tree_attr			sys_open_tree_attr
--578	common	file_getattr			sys_file_getattr
--579	common	file_setattr			sys_file_setattr
--580	common	listns				sys_listns
--581	common	rseq_slice_yield		sys_rseq_slice_yield
--582	common	fchroot				sys_fchroot
-diff --git a/arch/alpha/kernel/systbls.S b/arch/alpha/kernel/systbls.S
-index 68f3e4f329eb..9a67d29f7818 100644
---- a/arch/alpha/kernel/systbls.S
-+++ b/arch/alpha/kernel/systbls.S
-@@ -7,6 +7,7 @@
- 
- #include <asm/unistd.h>
- 
-+#define __SYSCALL_WITH_COMPAT(nr, native, compat)        __SYSCALL(nr, native)
- #define __SYSCALL(nr, entry) .quad entry
- 	.data
- 	.align 3
+This thread has the initial discussions about it with more explanations:
 
--- 
-2.55.0
+  https://lore.kernel.org/kernel-hardening/2236FBA76BA1254E88B949DDB74E612BA4BC57C1@IRSMSX102.ger.corp.intel.com/
 
+Thanks,
+
+        tglx
