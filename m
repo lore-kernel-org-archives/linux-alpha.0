@@ -1,94 +1,94 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3C6447B425
-	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 22:35:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89EC72F49F6
+	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 22:46:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.48
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788302109; cv=pass; b=oH/+ANG/3ehKGBhfDDbgBZ8edmMfQasC53+XGNvCNNx2iR5pU9I5eLI9RNL1KZPSxQqg4dLgUip231yvbUX3grBMQ4r3NVKArgXMhmX8EtJSdAJEAPNjYQnbZ54imZM3gf36CccLoYW8KAupaNoSrvyO/JXorx0+GZw0ryPoUkY=
+	t=1788302775; cv=pass; b=aYEGGlBEhaHwkiJvW4F+Rn3/FuubvgFGBKSK6gjFEMX+PUs4WQIkQ0cxT19VfG1A/nV4596bLjR+ojy7MfwH5H5sxecLFxKJLMBtk7mCMrhC49i0GsJBNPGqrjRfLb5sKY54tc3jxpUllHQxDPh9tD8v2PQ/D7SFgj53buXyngo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788302109; c=relaxed/simple;
-	bh=ixWhrkDazTQwjsDRgnRpeztncVnCtwPnCq1bA67M6Mc=;
+	s=arc-20240116; t=1788302775; c=relaxed/simple;
+	bh=Y7wjL8aGKHfhrB8GHuhTYqkPVVwHctoCXeQ0PtR50jw=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=H5cnxsi2BHHTA1HIFcQts7xRbkHg+VpQxnu7PCJ3KhgSL44pSH/OT3Hrh8t8zw+89Jd6TKiGpAL3HDsvbaae75cZ3naz8P/btbrabHH8A59tZXfZjCU6s28sQIY9BznUl/up6usQtlsUDSr5gwhICRWPB76RnXO0P9iinKpRNTo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lk+tAFIj; arc=pass smtp.client-ip=209.85.208.51
+	 To:Cc:Content-Type; b=gjncHT2bbqoR011T16fqoZcxP8LNBau2TAj3IDykyWVJWnEaB6czVehva2QnN1UftRZbchb1eL9oVIHA5h8rxq3s/49bTkTMGOGAUyq5kjpaVksc+ylOuXTwQm746IdrF4vEOpGIxVpYC7O9rANhIX8gDi05Wh03c8YL742y8gI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hDpr994m; arc=pass smtp.client-ip=209.85.208.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lk+tAFIj"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6a5ebf75d62so614702a12.1
-        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 15:35:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788302103; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hDpr994m"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-69c108fee7fso604760a12.3
+        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 15:46:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788302771; cv=none;
         d=google.com; s=arc-20260327;
-        b=aXlXH9edSZjuejpGIIBijGvXBJW+sIZ52nH99oLZUD9Kc/yi09QAbtiW+4GjKzV367
-         asn1wbRX1GYTO962U4HllmANKqw0Ilj2aObb59cHvexXbR8iSpI1oZtbe62Ps36kpKtX
-         OGRM5f64JqeT1xx86vgol0FMOMIlTpxK1C1Fa623qbTpdYakQJ6oakSJSNszDhP9c1C8
-         3lxH143MI1NNQGN1i0TwAEsc4aQ5OwZgBshIrlt6ukZk65sNvdrv0U5gy6lfGjvBgPUd
-         xP9vaxdthzmOZKn8qNi8TxzY4/xBaPjiy84GD04UIdN4z6FmOWu9xk7btBI6lWNENKD5
-         Wa4g==
+        b=frPveKaanMWLw+bmRpCQ0WuBCFfoNJI6SA3nvss3xUglH6a1vpLPw2cnxdAHM4NGFq
+         q3tjSHLypRD+E+DzLtwzNeCK7oQjtxQzm9aJ+rm8+rQHcxoBBkEIIXT0oY26J57zlIyr
+         bSj+p7vQKrWDmMK8gYXz+qymHu8qsTR9UP1omrLTx2d/bgjz7g33AGr675+6UG1TpNYJ
+         lCKRfN52J5cJPSmy77B1nHpD2N6dhIFJHArdAwr1ndg3BP3s/F4oMFsyPN4mII55MrxB
+         6RTrWPCp9WkViYHlr1nq2iOj81t/zLXgeHgx+JG3680idaXg3Mq6dRBHkXmBMwXQriLk
+         lN7w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=ixWhrkDazTQwjsDRgnRpeztncVnCtwPnCq1bA67M6Mc=;
+        bh=OJSSrp57ik5SuL/p9XOeoiBv4DaL3YaC46FXR+QQSdQ=;
         fh=bLXUq4zKMKoVtr4en67hBbn5AghZJydmSMAYDJEBeBg=;
-        b=VB1eUHwkjxmbzeHdO27w9/qrTkdT7wZxa9YX1SheKTOsyCSCLZnpF7o/8YoXYBNw2N
-         cpRnIlpRcWrfCiSFLkQTydHpxGFiK59i4UBh1/LbLOYS1x6VFhqaODRKGVu62GsQVzBt
-         UrAWeQxxDH2n00CD4dmXelnyJUoNDNQns5IMjmAAuhlDrv0lTRNJtWWfFVzrmWoj9IWA
-         y3MCteos2EZ8NcjXDAJMQ/OpqeJuw9+p1Fej5LhpI8KIQMNh2etM9WlDrsRRi5E5J5dx
-         gxPf4CjbiGnPjoxuwvnTUhhKDCc6mmWYFAIfzdxMcPx91E2k9jH2otQForGkKnRHGmnZ
-         3haQ==;
+        b=qDWwzTYhfFHLitj7XliugOsRfRFBwUy4UtGDL55svqg9bsYhF9ipOJBVNggKE9lOAZ
+         OY9CSv4ipUYQ39Podd4huKxPoPxRiSREk0UdEDagJUEj2bhwJW8mfeeugzfWCvme09wX
+         neIzyVWY4YQlhQf850l4SgpmmJr/wd/sFefSl0HrgUXCD4/cFIj5wsmykn+awNJd4B3m
+         xmv3hr84BGbJUeMIfy9v3jQhf+vYhA+YjqoQm83TnTgM3A9vO8sulASSYkNkzRdn7ruz
+         NXEN+YO9Bbi3/kaw50Dt1mfuxvwJ9L59dQqD+AFPfSSQS5snqXW4mIiHY5cZlCV+64gY
+         5jvA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788302103; x=1788906903; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788302771; x=1788907571; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ixWhrkDazTQwjsDRgnRpeztncVnCtwPnCq1bA67M6Mc=;
-        b=lk+tAFIjM+a1/5pbRyFXVJ+KvSqK0v6C7+XKZqh3Kf2IIW23YuByyOHaTz7wmTxdpT
-         U4x3udcJj0P5p5qr/7XTY4ChA602DK1vqNJPKqpLAUqr9gm3zE0z0JYjzmCRE6+q2tCf
-         B5XkVAo9X4PGj7hteDiWVNWoQNlMik7rv4puAWi7PIphhKUMYS6pIwFmKgLWjbf/iiGC
-         z2bGhXPmfBi18tQCpWvd9Sa85mo8HaeSzaWQDStcpKHoInsjTOAdSxzMktWJo365db9S
-         wcaDCgyCYzI8pqAISF43f9s6sCZQEtlitigL9x8kAsdYbJQXVOjw5V/xiQIPjvjvbJI/
-         AMrg==
+        bh=OJSSrp57ik5SuL/p9XOeoiBv4DaL3YaC46FXR+QQSdQ=;
+        b=hDpr994mTzyhN1uBUQSgXLk2Si0zmstdy8S1b0jLLvhC0k2yzaeRfQOvT9vu4hzoh8
+         vXPgvteRDTZBGVN1agQsK0StCi9rFXezXZn0nCSb2nbDjOwmX3yI8el07q2QVH4hC6tK
+         V8oXbuvyECcY1b7bKKFuVCR4G8FfMokgFeSVKOuJPTK8nAH5VkCg/x8hI8sk6mnsoN0i
+         KWpasmhA+ec4tPN9roC+/ug+xmFqtSqpWwbddnAFd3K6Ia0OaE40Z67iEAhEO6TR69Q8
+         Pk+He5WiL21Q2CXrbUMaQ25l+Fe4MmqB7n3Z698YPT4Yppzlmwr67E3Tnc2lUmKco5yI
+         4qIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788302103; x=1788906903;
+        d=1e100.net; s=20251104; t=1788302771; x=1788907571;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ixWhrkDazTQwjsDRgnRpeztncVnCtwPnCq1bA67M6Mc=;
-        b=CG/DVpq+zeiN2xAksaFNTBkrTw4HQuruEMeZHe0xeTGJhp7PUjcsU8ULCvSUiWTKv6
-         Kc6UL4FsEqL7pG/o3JfnnD2XT5PVOq5zRGdItYNvhzCILj/eivhXUdEVSTJ6aJwO5PEC
-         RA4q3uRlr7l4Mani+mVhnx3zC6QbpAQ4bm2w6R2u2IWV1t3DyXWt9HRmqhXhDCbrxOa8
-         OlmvYWTpRwEYmntmZtxCt3/P4dRACqf0B40hbajM++CybfiCSJY8xe1aDSesiM6UXt27
-         LzpegODmK8O3kjKqnN98zqNVAGsCDJeoK9JWNP/eguPM0cd7V7g55w+LeFEyddmO0yME
-         2abg==
-X-Gm-Message-State: AFuF++kcmVHkUGIxjWEZjYCXXUEHUV6SI4/PG1sj09cxcL+txLcHWfrb
-	/ZgGsg2+Ga43OhWSswn1nX0ChpjuxLC/6uKtBOwvoiZxtgSa2uxiETwk/xw2a06cIMNZXZisOsS
-	ZcgTn8d53/4VU0eoQCauHrTo1Ul71JvM=
-X-Gm-Gg: AYBFou2ufvMrLg51gm9t0baPeIqSPARtiaUXjk+/V+4h5gfTGEUNQy9MwF9rUpVh+SW
-	DGrYwUqDSnKBeUySFB1cEK9lskry1UNv3+mn2CiWNF+iVsWlFGTc15QunEjr+XUAq3WPeH22lMt
-	+W8i1Kzg7JTp97FjOdNITZrpUgUcHid+QEth3/AkEy7leT71boVYcfJkcw5OL6T52qEpLceSyeh
-	S4soDBR6n0CNxpmP4axpacPEVxUx+Y6Dchh3gCVPIFqRpTW58pdjbiVnYq8JMvIrbICMVC886JZ
-	OU2iZqWuBveTrtki0sAa1/b4DfDs2RzNEqw+tEGPwtQNV/O9Ah4T3XeVOIExdfopCY2+O63J84L
-	S8VwX3waNoKN/VtQVxkQZizq8R52JVFg=
-X-Received: by 2002:a05:6402:5042:b0:6a3:5685:703 with SMTP id
- 4fb4d7f45d1cf-6a68527768emr165172a12.3.1788302102525; Tue, 01 Sep 2026
- 15:35:02 -0700 (PDT)
+        bh=OJSSrp57ik5SuL/p9XOeoiBv4DaL3YaC46FXR+QQSdQ=;
+        b=EYxozXQzMVp4W9RcIAx4xWwngMFcQrQxvl63bUziaFNUPmsQnHQUnJNC+oDZSgO+7v
+         YtH4n1f4F0gViqs3cgAeNwY99Uq2TTKSMzNbsTMVBMLDt88KtqLcjOCQ47N3nL8p7uOK
+         rT4TOVBld4fvmlN3L3ARaQt9aOgF/Zqx2FNhpPR7b8KfAY2gymdH+toVN6e6I1willqw
+         eJcrciYUrsUW2TEYYk9dk9VZ0/cPtIPbg+x6T/hFrXeoKDJHCuOmS3Sp+YsP33saWEVl
+         lgv/BgMDcVc9BrwjHvry5iSgIaJTfHX8Grg5Wh1MgJu4z9juBGvIzznEdFPnIdXImFSv
+         0NZw==
+X-Gm-Message-State: AFuF++lk6gXRO9dGmS491fm2eb10X6FaOM6SfKD1pANYzMjFWKA4bD99
+	SroRohx3neormTho4pOY+XyRX1fsHGPVGCi4c1LE3nWGCvQDO7e+EPcjg2mtX6V7mU6/8UC3ju0
+	/WL6A7wgQM7xzIBjSUsknzvsa5gaP4RA=
+X-Gm-Gg: AYBFou0mn9IqjY+z6NQZ9ctH+FBt2/An0eTD9bUjWXE07nzIDCfsnDvomCg3VDLqhOQ
+	3hRHn3kHRhsWFpA5iDb4ZkmfYo16q28s26WU000uctAmH+92rjwp11A7aBWvBeHMaUC8cjuAoil
+	vRQuNTUkfNlqgu1IOlVG42SFDbeK2Ncz0AdaPzIAxDS8vla5c3i9HAteRSe8np4UaIna/UEAhKt
+	Un5KmYr4Im3ZUbg5YIhBsMPJz0dvPZH+p6wWX8t57hg+++CjBkFkTAw3UELQsJuA7D5HkeTD9UA
+	kbLFL2V4uFHXH3zSB9KFuhlu855bRPXHYqG1PpPoBBo2rGONvGwUbNsZ04Z5OyB0tkR8Rr3rJA2
+	ZnS2pGSuiGVN44GD5V71q9Or34UGBHuOqw/MVilptq0E=
+X-Received: by 2002:a05:6402:218a:b0:6a5:f912:b092 with SMTP id
+ 4fb4d7f45d1cf-6a68257bd75mr526660a12.6.1788302771360; Tue, 01 Sep 2026
+ 15:46:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788277742.git.mattst88@gmail.com> <61175f9015771b6a6d78624579ecc180f57d17e9.1788277742.git.mattst88@gmail.com>
-In-Reply-To: <61175f9015771b6a6d78624579ecc180f57d17e9.1788277742.git.mattst88@gmail.com>
+References: <cover.1788277742.git.mattst88@gmail.com> <5ad0fa4995f9b0e6aa4af672e987a9b9ee43645d.1788277742.git.mattst88@gmail.com>
+In-Reply-To: <5ad0fa4995f9b0e6aa4af672e987a9b9ee43645d.1788277742.git.mattst88@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 2 Sep 2026 00:34:50 +0200
-X-Gm-Features: AcwNN1WgbmFzP62nTXwf1sLZrIPpu0y1q4syu1pWxP14aqgN4CoXz9yJQt7B17Y
-Message-ID: <CA+=Fv5TYnwcDLPvwScOcGq-7CUSs2bDMqrYEj-Lhf4XfQ=yTzA@mail.gmail.com>
-Subject: Re: [PATCH 03/24] alpha: select ARCH_HAS_UBSAN
+Date: Wed, 2 Sep 2026 00:45:57 +0200
+X-Gm-Features: AcwNN1XTceI-OuMu6yihuXuFe37xXWvWHcZG-GNRzI3Cp5FuDhD3aeZfLumOfus
+Message-ID: <CA+=Fv5TE5z5MUObofTPJE5jpbBLS+ntgg+6B8A9GJibK=GDPkg@mail.gmail.com>
+Subject: Re: [PATCH 14/24] alpha: add ARCH_SUPPORTS_PAGE_TABLE_CHECK support
 To: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org, richard.henderson@linaro.org, 
 	linux-kernel@vger.kernel.org
@@ -97,23 +97,35 @@ Content-Transfer-Encoding: quoted-printable
 
 Hi Matt,
 
-On Tue, Sep 1, 2026 at 5:50=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
+On Tue, Sep 1, 2026 at 5:51=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
 te:
 >
-> GCC's undefined behavior sanitizer has no architecture-specific runtime
-> requirements. Enable it for Alpha to allow UBSAN instrumentation of the
-> kernel.
+> Add the page table check helpers needed for CONFIG_PAGE_TABLE_CHECK
+> and select ARCH_SUPPORTS_PAGE_TABLE_CHECK in Kconfig.
 >
-I tested this patch on top of my rebased Alpha GENERIC_ENTRY patch on an
-AlphaServer ES40. The kernel built and booted successfully with
-CONFIG_UBSAN=3Dy, and the UBSAN instrumentation is active.
+> Alpha does not support huge pages, so pmd_user_accessible_page() and
+> pud_user_accessible_page() always return false. pte_user_accessible_page(=
+)
+> checks for present PTEs with user read access (_PAGE_URE).
+>
 
-CONFIG_UBSAN_ALIGNMENT did expose a misaligned struct bucket_table
-allocation in lib/rhashtable.c. This appears to be a generic rhashtable
-allocation-alignment issue rather than an Alpha UBSAN problem.
+This patch does not build with CONFIG_PAGE_TABLE_CHECK enabled on
+v7.3-rc1.
 
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+Commit cf8771ca4cdb ("mm/page_table_check: Pass mm_struct to
+pxx_user_accessible_page()") changed these helpers from:
+
+        pte_user_accessible_page(pte, addr)
+
+to:
+
+        pte_user_accessible_page(mm, addr, pte)
+
+The Alpha definitions added here still use the old two-argument API.
+The same applies to pmd_user_accessible_page() and
+pud_user_accessible_page().
+
+Could you update the helpers to use the new three-argument signatures?
 
 Regards,
 Magnus
