@@ -1,242 +1,201 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 831B748167E
-	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 15:52:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB41A43CE56;
+	Tue,  1 Sep 2026 15:55:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788277927; cv=none; b=h/YQ4FUeFyG5tmKst2yk8p5cWbDoxZS/4mTeyPsGvMk6CIS+Y8dx5DcJzTEzZhKf9cAw5UFCQ3TLu8cylcTMqSeNl1ZSnRg2/OIaRtraGZvl9gBmAP1nZwRFDIGLZjY5ACs8U8fUeONEtKnBC3JFWCVNF33zJ7lTh7s/f3nPpds=
+	t=1788278149; cv=none; b=byEnhNbaesqahDogHNHELOSYJ6H6ePIzi9cioZNUuqrZlgOWUcthRsRVnS5cfA4j1CYaBoAO/srkN36K+wSgt+mhodny4z+jZRaWu0pjoC/yFE/9s4SpU3jyZUInJv1R+i/l5PBuN0izoOSS/RDbds8DPzqqWapSqqoHxI+O+5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788277927; c=relaxed/simple;
-	bh=ZgKtfM9fsh/fqAvYqv8WG02V6LNUZLl52whaO2YCpZQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=faAAkCjaH8xfgop+Q3Foa5ThvQzj2KF7FNtyohbuVtsYdzJgZOwI9094LLd2lKs7QxPiHzWNAWShpmTaZFF/rhHhsUixdrfLiHfRV2wwy04Ejyo0Mu7Bypgq5Xb8Ijz9IAfZP1oT6VvGWUDJ7t0N7HZx0+jo2pgxi2Y75XzBFVA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qmkpK3PA; arc=none smtp.client-ip=209.85.128.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1788278149; c=relaxed/simple;
+	bh=qqNtHA4CTMpPgpg0tTomw2NNo+hq2OSef3C+KNnMj9Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UHUgSS+toLt1PlP/BX0xG1nWn7hWhwa8GUBPOA9xWc5kMKjtlAERahgr4yuAYi5UJgL5JmBfZuZ0Ln6Qthz5Kk/fyxaqT8uXims26T6MXqF5h6FIWk7slstF061ottvckkgiqXknd22Uobktofh0puduYflpkMj2GX6vtvWoUFk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=VuetgL2D; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qmkpK3PA"
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-85aeb506b78so1086267b3.3
-        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 08:52:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788277924; x=1788882724; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=nBZzGlKg73PGfaOMsDMRjFaZI1Y78yV95xgVDSNSIcA=;
-        b=qmkpK3PAeOM9Kgu2TowDmYDQYFA8LQ3qIFiH43brlFwx3MgeQfbVADYYQ+tv6JD4pL
-         kwk8wQnAFnLVkGgLmmZIusWNZ7yoidW+HqHqlkP/8KN/knutSPtCr40/X22GKGsSjzfU
-         RXcfbCdp04AcFFSeM3L4ZahrOyrq26kzD+W/2cSPCHI92zcMqjwWyBASl8VKr+NfYnDw
-         Ar+TPD5JPbpdBy2HL2oUZMM8/0L+FJrj32w3FYjZ50Hp7f0pR4F5Ks7cJvVpNfxrMkjx
-         gotcosqHipWGpmfrhkZzi4nkFdBGbu39XNVziwK44kkhHQXaAZw5eHIkJCVxJ/M+ABkE
-         RRyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788277924; x=1788882724;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=nBZzGlKg73PGfaOMsDMRjFaZI1Y78yV95xgVDSNSIcA=;
-        b=ktiMi3sE7XZyyEmt2PK8adej6UUxXxSpEXq+hc+tumhQhZHbCN5aQbmR4LzNh6rbJS
-         Sr2pQjmHsj8Xf8VGw+zIeWhbH/AFBfoSxdsMG9YNb0+LBwBwaY49Q4FIXzwc2ef4yt5O
-         qNlE5X7gJJDPGOdajoUI/ICTPQO7czEe0QvlEuwW+40v4JNhEYMvXA+r2qSaznXj/Jlw
-         SnPVdi7qurMzJTyuqMxbYOa+ZOBLmvZiIkl6WxLtO2ZS9LkFcDuFOn6ZOmRKJt5F7iwt
-         4P0BOYEiVAL7j7ayzgxFfSbTzMKE1WmAZ0N80+w6Dke2BDg7BrYhPdBFbAhgwckWxCWJ
-         sLrA==
-X-Gm-Message-State: AFuF++nuCWCqPwM+iFGLYYrzZdllcHuCp2yQ1O0npiVSxvZxed9zTz5h
-	B9eg42/RQQId/EXrhwqbygK3VFTA/ZcjvlDj3SVEYIGOilWB+JLERmucViPUBw==
-X-Gm-Gg: AYBFou0s+2zOxlASB8RHoQcNE8zs0KD9SegPZpFTm7OvBMkgZkaGuBI56nHtOrsAaI5
-	+G5TbJxsFRQ1rmhz3riZDHoiMy6su8/MtWk7v9kE5Ua8uI24Xw995ngejg34liRcQkRMNv2KKAB
-	+bgUHfMmiWDEgusuZHl659YtDfhUBIk42D21V/wA9f2CV4luxriv5trxoOvIQo/DXLDarMAZF5Y
-	+MmFgyu8jMIvEKG75ZZEqEX/BILHhHCvPjfGFH4kzI3XeW3Vj3v1m9ti1kC3xTCUydRJUfygxc0
-	GbbVJzC+bKv3dpnjVuH592mPiaLFLNb/wxiseUODxK8mkW6CC9kDuu6n+khLmfmQeS/VBc7KI1j
-	yRetoDeK9pp/YRtWZ/6rcufSTLv7zLvEV2Xe5wbMdHWhT3mh7lZTC4Ku4AMX8PVp6stnxJG9q2S
-	Igt4og1Lx/UUKNCBd+Qaxsa7Y2taph4ODccXTtjU4SCEeeRIQEy15R9mjm/xGmVEpZZTuWXrFav
-	nVwSn5iZrgyMHo5tZ4gFPh7t7eBkKjwOQK+IOim
-X-Received: by 2002:a05:690e:1915:b0:66c:7bd2:35a9 with SMTP id 956f58d0204a3-66f875fe067mr3350458d50.45.1788277924158;
-        Tue, 01 Sep 2026 08:52:04 -0700 (PDT)
-Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66e4eb569cdsm8656304d50.5.2026.09.01.08.52.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2026 08:52:01 -0700 (PDT)
-From: Matt Turner <mattst88@gmail.com>
-To: linux-alpha@vger.kernel.org,
-	richard.henderson@linaro.org
-Cc: linmag7@gmail.com,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 24/24] alpha: add TRACE_IRQFLAGS_SUPPORT
-Date: Tue,  1 Sep 2026 11:50:37 -0400
-Message-ID: <b71c51ff7ca699ca6e667a55d9ebce58ef092c77.1788277742.git.mattst88@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <cover.1788277742.git.mattst88@gmail.com>
-References: <cover.1788277742.git.mattst88@gmail.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="VuetgL2D"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=QVII+cUuHDdwf9Z3P2TCkoJU717I3TDa444aSejj2Fk=; b=VuetgL2DlX2s22gGISfExiPA9t
+	9DR1WYg6YZMiQdCRfQ+bclFFmqJlamray7mTao+UhH5uHuDqMjg0If3EcpdK8CT6uAbV8Evx6e3qN
+	9LKEiBOSP64GFOxx0Cep1mNRyBIuVmmcKSTv8HQZQ9qWi8T/h/J5gA+nhMhRR79oe1SuMqDRuJhz9
+	pRpKL7TL03xwEzunbCrbhKOYuAtJaLW6NfzQtbWbRGbuZxvcEga7a6JSS4BRz+hheJF51YvaJp+Zr
+	D/J641qvz7Z+tlxTfhJCmdiErtoEU9UpGW4Y1LUR3UybIWIjAgSbUj4dMePbLb0JYsVZUKGih4aiC
+	1qamG5Tw==;
+Received: from [38.23.173.23] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1x1Qp4-0000000CazZ-3xgl;
+	Tue, 01 Sep 2026 15:54:55 +0000
+Date: Tue, 1 Sep 2026 11:54:47 -0400
+From: "Liam R. Howlett" <liam@infradead.org>
+To: Kiryl Shutsemau <kas@kernel.org>
+Cc: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Andrew Morton <akpm@linux-foundation.org>, 
+	David Hildenbrand <david@kernel.org>, Zi Yan <ziy@nvidia.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <nico.pache@linux.dev>, 
+	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
+	Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>, Guo Ren <guoren@kernel.org>, 
+	Brian Cain <bcain@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, 
+	Dinh Nguyen <dinguyen@kernel.org>, Simon Schuster <schuster.simon@siemens-energy.com>, 
+	Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, 
+	Stafford Horne <shorne@gmail.com>, Yoshinori Sato <ysato@users.sourceforge.jp>, 
+	Rich Felker <dalias@libc.org>, John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
+	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, 
+	Russell King <linux@armlinux.org.uk>, Vineet Gupta <vgupta@kernel.org>, 
+	Michal Simek <monstr@monstr.eu>, Chris Zankel <chris@zankel.net>, 
+	Max Filippov <jcmvbkbc@gmail.com>, Will Deacon <will@kernel.org>, 
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin <npiggin@gmail.com>, 
+	Peter Zijlstra <peterz@infradead.org>, "David S. Miller" <davem@davemloft.net>, 
+	Andreas Larsson <andreas@gaisler.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Mark Rutland <mark.rutland@arm.com>, 
+	Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
+	Helge Deller <deller@gmx.de>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Michael Ellerman <mpe@ellerman.id.au>, "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, 
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
+	Sven Schnelle <svens@linux.ibm.com>, Richard Weinberger <richard@nod.at>, 
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes Berg <johannes@sipsolutions.net>, 
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, 
+	Arnd Bergmann <arnd@arndb.de>, Vlastimil Babka <vbabka@kernel.org>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>, 
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org, 
+	linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org, linux-openrisc@vger.kernel.org, 
+	linux-sh@vger.kernel.org, linux-riscv@lists.infradead.org, 
+	linux-arm-kernel@lists.infradead.org, linux-snps-arc@lists.infradead.org, linux-arch@vger.kernel.org, 
+	sparclinux@vger.kernel.org, linux-alpha@vger.kernel.org, loongarch@lists.linux.dev, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	linux-s390@vger.kernel.org, linux-um@lists.infradead.org, Hugh Dickins <hughd@google.com>, 
+	Qi Zheng <qi.zheng@linux.dev>
+Subject: Re: [PATCH 01/12] mm/huge_memory: zap deposited page tables after an
+ RCU grace period
+Message-ID: <kasi4mkjkt56wxsrmphm5o2qfg2lwsdxf3tlmzx5tq6t7uez74@kozleoavd6r2>
+References: <20260901-rcu-pagetable-freeing-v1-0-5456a81c8212@kernel.org>
+ <20260901-rcu-pagetable-freeing-v1-1-5456a81c8212@kernel.org>
+ <apbOlyF77yDCV4cF@thinkstation>
+ <apbcoMTVlL42G5tg@gremlin>
+ <20260901142408.GA56830@ziepe.ca>
+ <apbiB51hjm-9pRzf@gremlin>
+ <apbuO_QveZNAz3ns@thinkstation>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <apbuO_QveZNAz3ns@thinkstation>
 
-Instrument the entry/exit assembly to track hardirq state for lockdep.
+On 26/09/01 04:28PM, Kiryl Shutsemau wrote:
+> On Tue, Sep 01, 2026 at 03:41:17PM +0100, Lorenzo Stoakes (ARM) wrote:
+> > On Tue, Sep 01, 2026 at 11:24:08AM -0300, Jason Gunthorpe wrote:
+> > > On Tue, Sep 01, 2026 at 03:12:45PM +0100, Lorenzo Stoakes (ARM) wrote:
+> > >
+> > > > It won't be costly at the time of the calls obviously as its deferred. Maybe
+> > > > increase some time spent in softirq but again is 512x that big of a deal?
+> > > >
+> > > > I'm not sure how you'd both defer the free and somehow utilise mmu_gather here
+> > > > either really, certainly not without it becoming extremely messy.
+> > >
+> > > The less costly version is to thread the page to be freed onto the
+> > > mmu_gather through a linked list in the struct page memory. This is
+> > > super cheap since it is just a singly linked list operation.
+> > >
+> > > Then when the mmu_gather is flushed it does a single call_rcu using
+> > > the rcu head of the struct page of the head of the list. The callback
+> > > clears the entire linked list of pages.
 
-TRACE_IRQS_OFF is called after SAVE_ALL at each exception/interrupt
-entry point and at syscall entry.  TRACE_IRQS_ON is called at
-restore_all before returning to userspace, where PAL_rti will restore
-the user IPL (re-enabling interrupts).
+If you are going through the trouble of doing this on your side with a
+custom rcu callback, it might be better to pack the pointers in a way
+that does not need to pointer chase through a linked list.
 
-The function call clobbers caller-saved registers, so the
-TRACE_IRQS_OFF macro reloads $0 and $16-$18 from the pt_regs frame.
-$8 (current_thread_info) is preserved because it is declared as a
-global register variable.
+> > >
+> > > Since you have to tlb flush anyhow, it makes sense to always use the
+> > > mmu_gather. For example the design I ended up with for iommupt
+> > > accumulates all the invalidations and all the free-able memory into a
+> > > gather then invalidates and frees.
+> > >
+> > > This allows maximizing the tlbi efficiency too. You can't do call_srcu
+> > > until you flush the tlb and if you call once per table then you are
+> > > also tlb flushing once per table too.
+> > >
+> > > So if the kernel really does want to clear out 512 leaf tables the
+> > > optimal implementation is one range tlbi for 512 entries followed by
+> > > one call_rcu to free the memory. Hence the gather..
+> > 
+> > I think there's some confusion here.
+> > 
+> > This isn't the path in which a page table is being freed, the _deposited_
+> > table is zapped, in zap_deposited_table().
+> > 
+> > That is, the page table kept in reserve for THP split, that is not
+> > currently mapped.
+> > 
+> > It amounts to a __free_pages() call.
+> > 
+> > The TLB operations are in e.g. zap_huge_pmd() etc. and nobody has
+> > complained about inefficiencies there.
+> > 
+> > So, unless I'm missing something here, TLB flushes play no role in this
+> > whatsoever.
+> > 
+> > The issue Kiryl raised was that instead of immediately freeing page tables,
+> > they are now batched up individually by call_rcu().
+> > 
+> > I personally find it difficult to imagine the numbers here would be
+> > problematic or certainly cause anything observable beyond what is
+> > observable now.
+> > 
+> > So I'm going to have to say, unless it can be clearly demonstrated this is
+> > problematic, I don't think there's any reason to add additional complexity
+> > here.
+> 
+> It would be nice to measure munmap() overhead here.
+> 
+> I am worried about hitting DEFAULT_MAX_RCU_BLIMIT and trigger
+> rcu_force_quiescent_state() which can be disruptive to the system.
+> 
+> DEFAULT_MAX_RCU_BLIMIT is 10K, so it is ~20G of THP unmapped on x86.
+> 
+> munmap() of 64G worth of THP should be enough to demonstrate the
+> problem.
 
-Together with the previously added STACKTRACE_SUPPORT and
-LOCKDEP_SUPPORT, this enables LOCK_DEBUGGING_SUPPORT on Alpha.
+I'm not sure what that would prove besides checking if your number is
+correct?  You'll see a slow down once you hit 10K of objects in the rcu
+linked list.  And that will depend on what the system is doing as well,
+so there will be a slow down since other things are happening on the
+system before 20GB of THP is unleashed towards munmap().
 
-Assisted-by: Claude:claude-opus-4-6
-Signed-off-by: Matt Turner <mattst88@gmail.com>
----
- arch/alpha/kernel/entry.S | 54 +++++++++++++++++++++++++++++++++------
- 1 file changed, 46 insertions(+), 8 deletions(-)
+One of these does use 5.12% of the RCU items that need to wait for a
+grace period to be released, but testing it would be rather tricky and
+the numbers won't really show much..?
 
-diff --git ./arch/alpha/kernel/entry.S ./arch/alpha/kernel/entry.S
-index 9f2608de2544..ed5df48503d0 100644
---- ./arch/alpha/kernel/entry.S
-+++ ./arch/alpha/kernel/entry.S
-@@ -241,6 +241,36 @@
- 	.cfi_adjust_cfa_offset	-SWITCH_STACK_SIZE
- .endm
- 
-+/*
-+ * Trace hardirq state changes for lockdep.  TRACE_IRQS_OFF is called
-+ * after SAVE_ALL at each entry point where PALcode enters with IPL
-+ * raised (interrupts disabled).  TRACE_IRQS_ON is called before
-+ * returning to userspace, where PAL_rti will restore the user IPL.
-+ *
-+ * The function call clobbers caller-saved registers; $8 is preserved
-+ * because it is declared as a global register variable for
-+ * current_thread_info.  We reload $0 and $16-$18 from the pt_regs
-+ * frame that SAVE_ALL created, since entry points pass those to their
-+ * C handlers.
-+ */
-+.macro TRACE_IRQS_OFF
-+#ifdef CONFIG_TRACE_IRQFLAGS
-+	jsr	$26, trace_hardirqs_off
-+	ldgp	$gp, 0($26)
-+	ldq	$0, 0($sp)
-+	ldq	$16, 160($sp)
-+	ldq	$17, 168($sp)
-+	ldq	$18, 176($sp)
-+#endif
-+.endm
-+
-+.macro TRACE_IRQS_ON
-+#ifdef CONFIG_TRACE_IRQFLAGS
-+	jsr	$26, trace_hardirqs_on
-+	ldgp	$gp, 0($26)
-+#endif
-+.endm
-+
- /*
-  * Non-syscall kernel entry points.
-  */
-@@ -248,8 +278,9 @@
- CFI_START_OSF_FRAME entInt
- 	SAVE_ALL
- 	lda	$8, 0x3fff
--	lda	$26, ret_from_sys_call
- 	bic	$sp, $8, $8
-+	TRACE_IRQS_OFF
-+	lda	$26, ret_from_sys_call
- 	mov	$sp, $19
- 	jsr	$31, do_entInt
- CFI_END_OSF_FRAME entInt
-@@ -257,14 +288,18 @@ CFI_END_OSF_FRAME entInt
- CFI_START_OSF_FRAME entArith
- 	SAVE_ALL
- 	lda	$8, 0x3fff
--	lda	$26, ret_from_sys_call
- 	bic	$sp, $8, $8
-+	TRACE_IRQS_OFF
-+	lda	$26, ret_from_sys_call
- 	mov	$sp, $18
- 	jsr	$31, do_entArith
- CFI_END_OSF_FRAME entArith
- 
- CFI_START_OSF_FRAME entMM
- 	SAVE_ALL
-+	lda	$8, 0x3fff
-+	bic	$sp, $8, $8
-+	TRACE_IRQS_OFF
- /* save $9 - $15 so the inline exception code can manipulate them.  */
- 	subq	$sp, 64, $sp
- 	.cfi_adjust_cfa_offset	64
-@@ -284,8 +319,6 @@ CFI_START_OSF_FRAME entMM
- 	.cfi_rel_offset	$15, 48
- 	addq	$sp, 64, $19
- /* handle the fault */
--	lda	$8, 0x3fff
--	bic	$sp, $8, $8
- 	jsr	$26, do_page_fault
- /* reload the registers after the exception code played.  */
- 	ldq	$9, 0($sp)
-@@ -311,8 +344,9 @@ CFI_END_OSF_FRAME entMM
- CFI_START_OSF_FRAME entIF
- 	SAVE_ALL
- 	lda	$8, 0x3fff
--	lda	$26, ret_from_sys_call
- 	bic	$sp, $8, $8
-+	TRACE_IRQS_OFF
-+	lda	$26, ret_from_sys_call
- 	mov	$sp, $17
- 	jsr	$31, do_entIF
- CFI_END_OSF_FRAME entIF
-@@ -451,6 +485,9 @@ entUnaUser:
- 	.cfi_restore	$0
- 	.cfi_adjust_cfa_offset	-256
- 	SAVE_ALL		/* setup normal kernel stack */
-+	lda	$8, 0x3fff
-+	bic	$sp, $8, $8
-+	TRACE_IRQS_OFF
- 	lda	$sp, -64($sp)
- 	.cfi_adjust_cfa_offset	64
- 	stq	$9, 0($sp)
-@@ -467,9 +504,7 @@ entUnaUser:
- 	.cfi_rel_offset	$13, 32
- 	.cfi_rel_offset	$14, 40
- 	.cfi_rel_offset	$15, 48
--	lda	$8, 0x3fff
- 	addq	$sp, 64, $19
--	bic	$sp, $8, $8
- 	jsr	$26, do_entUnaUser
- 	ldq	$9, 0($sp)
- 	ldq	$10, 8($sp)
-@@ -493,8 +528,9 @@ CFI_END_OSF_FRAME entUna
- CFI_START_OSF_FRAME entDbg
- 	SAVE_ALL
- 	lda	$8, 0x3fff
--	lda	$26, ret_from_sys_call
- 	bic	$sp, $8, $8
-+	TRACE_IRQS_OFF
-+	lda	$26, ret_from_sys_call
- 	mov	$sp, $16
- 	jsr	$31, do_entDbg
- CFI_END_OSF_FRAME entDbg
-@@ -543,6 +579,7 @@ entSys:
- 
- 	lda	$8, 0x3fff
- 	bic	$sp, $8, $8
-+	TRACE_IRQS_OFF
- 	lda	$4, NR_syscalls($31)
- 	stq	$16, SP_OFF+24($sp)
- 	lda	$5, sys_call_table
-@@ -586,6 +623,7 @@ ret_to_user:
- 	and	$17, _TIF_WORK_MASK, $2
- 	bne	$2, work_pending
- restore_all:
-+	TRACE_IRQS_ON
- 	ldl	$2, TI_STATUS($8)
- 	and	$2, TS_SAVED_FP | TS_RESTORE_FP, $3
- 	bne	$3, restore_fpu
--- 
-2.54.0
+Form my understanding and experience with rcu and freeing massive
+numbers of objects, you gain more from the lower lock contention than
+you lose when you hit 10K objects.
+
+The trade off is in the Android setup, where they have restricted RCU to
+a slower core.  Combined with another RCU setting, it was causing slow
+down when we overwhelmed the queue multiple times.
+
+So this should actually be faster unless you are doing 20GB of THP
+unmapping on Android or a device configured the same way.  Considering
+the cost of RAM, we should be okay for a few phone iterations.
+
+Do you have munmap() performance dependent workload that you are
+concerned about regressing?
+
+Thanks,
+Liam
+
+
 
