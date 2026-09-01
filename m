@@ -1,71 +1,71 @@
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13594472F63
-	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 15:50:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94B9743CE5D
+	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 15:51:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788277855; cv=none; b=HRVTGAesiHf8OeSZqRuTMSd3WQzWMFyX7umFxgHAko86NUfMXb8YItrKCRbw2qVR605GlERQzMSnGRqt0+m7SvqcxqRh0eoKhhWX4V/9AHah5LTZgvI656VCo5h7/ZU0T24mimTVeJPEv7neILfatPPFjDuwCRE63zGi4KSBS2I=
+	t=1788277861; cv=none; b=HbgioLRKoSh2RAMJAhy56TWdDzaInN1t+9aJMqBtxFk9J2KlKW40XWVkOrf1uM8BsoztldsbYSXJPGCoQy3iIWbx/iTXm2YdELgZJJLVA5gTj+qIWWv9vuSewoq44MMs4o9RjMatXZkgeP5PiiEK9ZgnzSyJ6UvO8Js0/jA5f/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788277855; c=relaxed/simple;
-	bh=WkH+G/IUZp196pivH/ywUdqvfOgTYjp4BOOTiZwqrtg=;
+	s=arc-20240116; t=1788277861; c=relaxed/simple;
+	bh=3lOQEUDybbd+0QiixzpLYFm6hRd9mjudXB8HqiCXs2E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=RLSBKv3gWxbAmxTjr9NEOM+vOhl5mge7NTMCgBu3Y9KG4pvihdIUhQGRFOfb3wPg3V6Dk/jLNC5v43j2vLECCQ8C8c68eB1IYVCuqAF1maqcHiU2QmSKEczdYRqcF/5HW5ex3ljT+ZW+ROQWaM3PWTCRrhlMjRWfDZ6yPoJLpkc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SV8TAAcw; arc=none smtp.client-ip=209.85.128.174
+	 MIME-Version; b=NCIl2boo9oP/wcwL5vNScUQcmT1Z1WqFdqv33iWgzmyvfSiSrwRlizfWTXIhLaCmTf52KlZ/KpvPHyl/iWi+b2+/32p2e2dFJrN51SWIz2RdS3GJLbHBexQwokKnfXwQ4XtyvTXQjzJ5dOVQSOOwJ/J6gQUcyOM+FVVUfP4aaZA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QHLPnLh2; arc=none smtp.client-ip=209.85.128.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SV8TAAcw"
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-836c4474028so1352757b3.0
-        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 08:50:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QHLPnLh2"
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-8200b55dc47so1094507b3.3
+        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 08:51:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788277853; x=1788882653; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788277859; x=1788882659; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=CBtC5RPylpY3M2iD/VpMaHKlBH2De20pZFAz1D2ARpw=;
-        b=SV8TAAcwbt1JyajovWM5jxGuCdnCX9M8YAEF3tMWBSUAn2EuUvVx9R0WgJzabzg4vf
-         47SsBqNbPsDLL9l52GHPeR3s5lNkWRvOfrNs3XRVpiSmDMT7g/JiYfPUpExo127dvsLg
-         Dew7CGSUw9RRzZc1A0AhzOHDjhBVHEtWc81M1rZJIjK2UodoisxI0tvHD6d7xrthbA7s
-         nV3ZUtVMBzg+QmVJI16e5ZgF28oOjkrTsV4KwnC318xb9K0ptOCTGUndOLdP2DS5l3Kt
-         mfgzktGaw3ytaudeBFHg0s5A8KLVoYjrmpKF4irRC8Yu9hGXeVop8sd0CItSly7xEHH/
-         qh3A==
+        bh=r284T3Ls54xM3Z+Z7Ip63aactiab8jQhrZfKc2EHynQ=;
+        b=QHLPnLh2sRZSkneAI69J2eCvlJlZdfyfIllLDSiG/Yno9a9BB3vPIRb3/97S21MrW8
+         c3PDoSQm3JrLILM+ZmNCZDdkF67I2NKFtXH44ARYM0lNdTUB2hdlhpKhSKKrNxEQ/JnJ
+         VBjaoguQkqYYYwK38oIYVuTdvtnYOvvdHx3jFGrvyME/JmwU+D721HAEiUxGHdhiov23
+         lb/R2pyZgrExMknIYfzrL6MpnYVbUvuPfxHwYdhU2QraIsmihkO7cn9r3a4emXB0DFBG
+         NqyFIqIkbnmxYwYh9vhg2qVk16ItE9UiWmtppVx7x/iW/DIiak1lYrO7tumz2cRiH97a
+         oVcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788277853; x=1788882653;
+        d=1e100.net; s=20251104; t=1788277859; x=1788882659;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=CBtC5RPylpY3M2iD/VpMaHKlBH2De20pZFAz1D2ARpw=;
-        b=s34h5CIaNMWEDiQOFGys5ItpZt0O7zLsqPBBJ2m4Iicna1j5a36dOsX2glWkXHCeah
-         mmV0Gq35J2fHWyKbDvjax+zOu0PG/0TLgkxhq36KF+Xh+jF1zZJt/dfiMyDeAOhxRAk3
-         eWV1gaXUXXiZKJWBf1T+OQ7YSH9Cj+roxGusjoKp0utHb9TYgcxLwtBEBMQbIdlyLIpd
-         H14Fj9JYXnLgJEfG4ecKKQymI/+YrxCkAd7I20atVaAYQOO+XAIFivYjRoNcc26w1Cl0
-         8zB6lDiDuv/wDeZEi36gKm04gtAR0XAfNJ+YgTNOwj2wpO833nIHX1HMU7z2C6BKmeAk
-         zDZw==
-X-Gm-Message-State: AFuF++ka/xj9V+QlRUSFvU2tvkSJLnG69eHPlHBQw00qMkwC7GWBeDkw
-	nlB4luzjPBqy+vCJ3fyaErSagBdrU9DVHT5k4GYKfUwMfnBgwwCg1OwgpY2MHA==
-X-Gm-Gg: AYBFou1vIdL/yXwSjQImk1bWFwYhIYHWumLPPD9MgqRqcxugm2aR2+hClTxsghcJPjA
-	HWTXDALci263emliIM9TMivuprBV0TG7l9lSsgteWkqD727g20p+7KL4UwCppD3NXxJRWGnoI1v
-	v6Do9XBv6IJRL+kBX3HJYSchP9aOGVzn1TO4ENdcpDUiCn46qmfgiBeXLwmKkr7So66tgp/bIPd
-	vgAiihAdQPejizbLUDwru4D3JwRcRcAldNStu77M8eqkDKXLPlYkPgfqXXF6WLJcAvp1a9c2e5k
-	I2NK+Mh0eTnf5aSuJo9ZeThJFx0yBNUOBdcRT5IkoKNkouO2VtMQ+JybBCgr041cogsrvICuTY4
-	30Gck3iG9KPC5cOAi2rgvhwNyuQ9ohNtjPZAF2dGmVEZgESDzvC07kb/VfzZw++quIYdW/YtZcs
-	JdQ7cD2fBEjK20PUw/I/hxbj1ArVklodALwCQNBFw02d6XuRQim/Gt+csqAq4XZGN8gh3I7xomL
-	eX40XsnnZky8N+FOHiAmCxAWcZus4B6IJQZyg6T
-X-Received: by 2002:a05:690c:e159:20b0:855:37f6:a73f with SMTP id 00721157ae682-85d69f00d89mr105545497b3.13.1788277852848;
-        Tue, 01 Sep 2026 08:50:52 -0700 (PDT)
+        bh=r284T3Ls54xM3Z+Z7Ip63aactiab8jQhrZfKc2EHynQ=;
+        b=lf92jBJD31W2m5FMCB/1H9WAj527Hu06pFjV4ZjOavMio2dVyFVnSdLNUm6JhA9ifk
+         QsRBlRO0+UIRotblNuQyobzyTYUcqVE063HDgXpz6hg+mrk9l9y60AyHW6/bdYbVyLRn
+         kImheWl13zIutYMB5kuD1dvyllBEFW2auz1tllapDXnJ86gEc9QJhZUPwUICq+WdPuxd
+         rnSVp0zOp8daS1I8h5lDgLtzY8fnbpR757+mPL10r2/3gFY+hbSjZ2Y/tiRDqC5BlwsY
+         8yW3+g/zkdhCGXlZTXM+O1GfZYbP+2uQwb4aTOf8hWnuSbZox+jVpT7ACIn+fLyUggp0
+         V5YQ==
+X-Gm-Message-State: AFuF++mtE9u9D1UBBXz8lPnrXAI185lyFqNpf1in4WZhnIfIk5UyiUFR
+	CGuWT1vjoMTBN4VhUo+SM4NaF+4ndTovYz6q78Urgld4aasc9tyRXFUmDrvMgQ==
+X-Gm-Gg: AYBFou1BdlqYZ6zSdabfJooUpTm3+o3I/5jwW209M3xNBDa7lCnJp6sUOJ4Em71DWcH
+	mKY/J3AN8RX95G56RQMUbwDl3ubAy4+hCwzHFE2ylQB+h4hzIZHS05gNHdY3qiSNBIgbzBdGTST
+	e9fz6PGzu6eGhNcm0TGjGpyg46BAJzlUqGUy0pMd6M1XrgjqlvuCIvn7SxyYVxo5ujLn6cQ4DRS
+	2JVmGml5ToQ32VeJywXIJKuaCd4+Xk4AwmeY2ZVtxXh5JH1vWP8BpLtD03UxwoMTa93BfOUadEw
+	jgwGTWB4MaUvgL9fXW0nRG8eR9hBiqXSiEy1a4ZyddXrs9WHRBDmlSl1v/KoSKH187WGkxpBt+F
+	GD1iO5vM2nQ6U/maBvIcMpz8hE3D44wOiWi9e65XvVZ379l/Ed5IsvIVHCyCUMFKN02f+xwu9Be
+	QxRFJOKZSRK5OJd1i1APOUXr19lEKGSKRH7AVhussdFhx4wFAD6FMo3aZTJri0hc4f2FupMyRXB
+	TVBWn1F+jG0mL5YlQKbv3uhtNPDpPeX9Sp5Rm/DJlpbSBMG1w8=
+X-Received: by 2002:a05:690c:81:b0:864:6f4d:ef7f with SMTP id 00721157ae682-8646f4df760mr77130987b3.7.1788277859417;
+        Tue, 01 Sep 2026 08:50:59 -0700 (PDT)
 Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-85e65f146dcsm76899877b3.23.2026.09.01.08.50.51
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-85e5ed19446sm76489177b3.14.2026.09.01.08.50.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2026 08:50:51 -0700 (PDT)
+        Tue, 01 Sep 2026 08:50:53 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
 To: linux-alpha@vger.kernel.org,
 	richard.henderson@linaro.org
 Cc: linmag7@gmail.com,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 05/24] alpha: select HAVE_DEBUG_KMEMLEAK
-Date: Tue,  1 Sep 2026 11:50:18 -0400
-Message-ID: <906b726c2f6a84b55365dd78ceb899e2559b76b6.1788277742.git.mattst88@gmail.com>
+Subject: [PATCH 06/24] alpha: select EDAC_SUPPORT
+Date: Tue,  1 Sep 2026 11:50:19 -0400
+Message-ID: <bceafe2ff479886d45eb410d8cd4db0027050bd4.1788277742.git.mattst88@gmail.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <cover.1788277742.git.mattst88@gmail.com>
 References: <cover.1788277742.git.mattst88@gmail.com>
@@ -77,9 +77,10 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Kmemleak needs no architecture support beyond the standard linker script
-symbols for the data and bss sections, which Alpha already provides, and
-a scan of the kernel stacks, which is done generically.
+The EDAC core builds and works on Alpha; it only needs the architecture
+to declare support.  There is no Alpha memory controller driver yet, but
+the core is what a future driver, or the existing machine check error
+decoding in err_ev6.c and err_ev7.c, would report through.
 
 Assisted-by: Claude:claude-opus-5
 Signed-off-by: Matt Turner <mattst88@gmail.com>
@@ -88,17 +89,17 @@ Signed-off-by: Matt Turner <mattst88@gmail.com>
  1 file changed, 1 insertion(+)
 
 diff --git ./arch/alpha/Kconfig ./arch/alpha/Kconfig
-index a6024590ea6e..a435b71203f0 100644
+index a435b71203f0..d2f9ef592f78 100644
 --- ./arch/alpha/Kconfig
 +++ ./arch/alpha/Kconfig
-@@ -17,6 +17,7 @@ config ALPHA
- 	select PCI_DOMAINS if PCI
- 	select PCI_SYSCALL if PCI
- 	select HAVE_ASM_MODVERSIONS
-+	select HAVE_DEBUG_KMEMLEAK
- 	select HAVE_PAGE_SIZE_8KB
- 	select HAVE_PCSPKR_PLATFORM
- 	select HAVE_PERF_EVENTS
+@@ -30,6 +30,7 @@ config ALPHA
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+ 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+ 	select AUDIT_ARCH
++	select EDAC_SUPPORT
+ 	select GENERIC_CPU_VULNERABILITIES
+ 	select GENERIC_SMP_IDLE_THREAD
+ 	select HAS_IOPORT
 -- 
 2.54.0
 
