@@ -1,122 +1,147 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 708183845DC
-	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 23:18:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC9773845DC
+	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 23:20:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.49
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788304683; cv=pass; b=Cv0uBYL2Wz6bQPGSBoyJhCCxzEmOTwVL8JQn7KedshGH1fZy4ckK6AjbJ3soL741UmLkLxMT4tULsexHZm4WZY+ATrgswZ02O2VpcH3xJOWpdQ5kWkneKBZ3nppOBH4+ve9+6dKL3jTRTfG+2udScH1uS9pyzJZQ6iA3avy4fRE=
+	t=1788304855; cv=pass; b=hrY/amrcUafDQyutjBEFg5NOT7AQaYA2+yOFhpRwvi6pqPX8MCnWwaeODCDtFWB4XpJ7c1u+KFnZO3fRKKJxLjjQeJHnDGKyguLptMyhMCTQCl+QvG/AMNQcndh1q/hlpX/E53+v2+SlKA6QmeY8WnDsm/zABZscnDd3gya506I=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788304683; c=relaxed/simple;
-	bh=UyC4TmoiMCI58j6Mo9O0xej2YXLg+tRwPll9c4knmbA=;
+	s=arc-20240116; t=1788304855; c=relaxed/simple;
+	bh=m4WYWmpto9XzX3GRSm05r54OR/qeUwP6VipL3NxPpQM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UUuF0+zPyxBuB+erBtLPz2DmmE1vfHkD3j1eR2QIEruo0qOTNv+xSVTYTylipwmUBvVQG0InoRqJ3LFHmo5pkCTQ+l8GndWxjaWIAYnt9Vmh3r58J6CmtO2UR/OmcU/WWSxGI3Iyl0m+4z2yEUP3vDa6f6Cwuh8CArVsARKgudg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SFREzumn; arc=pass smtp.client-ip=209.85.208.48
+	 To:Cc:Content-Type; b=sWO4PVGd6PkD5kAbJPrIsvydmSjsLfl/R5aqKzzqTndgCAmcJbWFHVeH97Ts9sff401SFskFeCfbt3EelXy0GB6I0NiLYNsUBrKdK4E+appIi6AMg9VwXXAdHzIrOV35Sf5AIXMrlRRRF1dQt+OEDW2tz6y00z5+Ekjei1srILA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fcG4cOl+; arc=pass smtp.client-ip=209.85.208.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SFREzumn"
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6a5f968ada7so876665a12.0
-        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 16:18:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788304680; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fcG4cOl+"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-6a18840e2abso691079a12.0
+        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 16:20:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788304852; cv=none;
         d=google.com; s=arc-20260327;
-        b=a4kHAMV6ek3E/VAUt3SYfzNEnQQMhZPeZNRjlsxoaNDRLumWW3AcA13JOAmVIOfyGz
-         5jOUwpsviyk2Z/wu6fOHzThxDwEA62NKmcomec9ZWRpjnf9E3s98/D0syPen1rkrGdMX
-         5rCQPiYeYpuT0UYOEOsTPtm6m3mtC0QN1zD66kGQIZmkfYtOiqzMvQ6VFd1Y63e6jTyt
-         kFOq8EjQ/87D14WT0MmYyEqb+fg+pWxE/90jTD90fGdQHB27X8EfjwvAUxCgek7gaRSN
-         vdz7SgCSIHzvwah1CVqGI6z2rtax6oyg73dWH/f6xwZS6OmLH6nP1to3Nyoy5FMMDq9+
-         TbUw==
+        b=bKu/K55GyQohwrf6hvkWinL0+3aHkT8BGI/YBTkmI4ZqoZIvGvhP7mqIsXljfBqloY
+         sNZ/613KPz4hsFw10LXPw+7oQtcjq1hO3nrWaUCskpiSC0BRfh2IIvz+7NGcWs2l9iSc
+         eBSYyDgyQsYUraUwqOLRyHha4jM9sqLCr/Uwp8+jMonS+r36T/T1ee4csEWTLm8COcuR
+         lZ8nK4LPNxZwavLKEu8bCCe8iPmOWnZ1RpPaoDPTvUgEKCmalnYAlStURLgkqp5e8z8j
+         OI5TYmgawPf8T/rP5HkExm85XwbOdYNksPeONrorV7rc2DLjR9FawUSh0LazSOJIukU3
+         CoMA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=v1NUNpozkrWM9J4tTdSVIJ0LhMAIputYc/5EJgCm5FE=;
+        bh=hTDDNvmuJ7sxDXiEKyMab4jWJTRs9ZKSqT7pTFye/Cg=;
         fh=bLXUq4zKMKoVtr4en67hBbn5AghZJydmSMAYDJEBeBg=;
-        b=sgXhgncm30whMakgbhTqEKv0feF88OVXRe7Jjmq9LnjNaPtuSBR6lX5DLRhipiQOxz
-         xeOZ7fEH/O2dKlztB74dQXUcm4zV2tofzZR7IgLTXT2ze7qUAyB73+1Xq0FlX0bxirMr
-         7mLb+gUsa0ES27xsoEiTO0C2I3z6XgTyxhYb3VVY29MuxjXVAyfroa4tIqasN4cWXNys
-         IPFOdZb9+K7wdFMvxGwx1KldG5qJ6hVzFgidHYeFwDsP8w/icn+Vv1r8MOSYPnkbptRc
-         v0n4TYuBAW19lNi+QuyXkzSaBcJikyRwBpwSPR5q+5rbhCGVHFiVHyKYmrBDqwzoAHc/
-         Opfg==;
+        b=f4DBUkPUPOnWijSmcGjYLxbJ04n74gnb/rv68MTWt8Na/k8bTneNlS1uX34yVk/eHO
+         2dhEh8TQat9eKnRDCn7AQNDIDEEXVHsWtP6rFujSXeg0UNRCH47sJlhSJhbxCZD/7lJQ
+         bBmG3udXGJw3Q12JqnqoCJwzalTk0hakR6Nea1W+dCie82ON2S/mmh2lKSCyB+t/iHYs
+         vO5ZjuFIOCQ/e5Vt8C8mw9BE32BXzcqSwps9wVtXysgqETa2nRhnBwW2FbwOsgg3/Tcq
+         ShUTyRJ6hePewzNvfo0IVbvNkz6ua0rTveejqBxmJXjbmFh6h/692+/RYcL3omzEPxxL
+         lnsg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788304680; x=1788909480; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788304852; x=1788909652; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=v1NUNpozkrWM9J4tTdSVIJ0LhMAIputYc/5EJgCm5FE=;
-        b=SFREzumncTogcz30kj/2AolpAkBQoj0T906I+BPA0nKYSlurOrTu1q3BwR/HbqFKsV
-         0Gdxqrf02kr2qXWC8jwJQZ1OkTIqG7rxZ4xU3MAnXArsXB4HPjDvkWnGXZM1iGzd0Lzo
-         bprtS0nl9rhIsM+ZNqB7R+zQh0wHGHYT9Do/JVf9bbhtiw2Wm4PNmA5wekJJZ0EuEMM+
-         p9kZL16LcQqZrWTApWqr1JuNE971EwNvtIct4zJSIPQjZIdGbjZl8lw0QsvrGQClKH2Z
-         +HRS7Xy20Eu3dbx2jtKClWDneJ8n1doBbknulO9hpM4HqOJW6V3+xfOL10WRPkmRlZPr
-         8L7w==
+        bh=hTDDNvmuJ7sxDXiEKyMab4jWJTRs9ZKSqT7pTFye/Cg=;
+        b=fcG4cOl+BTuOxWFDa7lDEgvqmlx9O8lNZYWAb11N6OgCCrc2EwCswyBJEPl9CgSuzO
+         sUF3qwwAsqtE87f0hIcmBc/CFVqJ/gB3aji0yYLg/YtAyp/2WQj935ecfdzwL0lVa+rH
+         NfchWt1D8b/HpuYzVb3Ynhc9h2eGbbWpiQXLjC1nngownefDiGxneyAgY6sQW4LBlpQ3
+         kmrKV3eq5tRRXUD1sOQZdBzJxKKWuR1uRVKXLBHnKTrAOfCCA4VIDqrn0iOq8np31jIT
+         2tOne0H0Jlu8kFqTyRmwDTR0BlsNkJIqilZofe0hxU1v+3VfOtnc6k6Je70OmZ3IXb+8
+         dPZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788304680; x=1788909480;
+        d=1e100.net; s=20251104; t=1788304852; x=1788909652;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=v1NUNpozkrWM9J4tTdSVIJ0LhMAIputYc/5EJgCm5FE=;
-        b=pr1WhVPmbKudaLZaZxKg7l5/xnZQJKBfb6tQS36DlSNfkIXfWf2xzu3WHbnFFXYRm/
-         +LMoBZqQIgQf2JNFq6BqiynwUo3cMMcRBrgUaBxQUOSfnsfnqdweimC0wuQsDZthP0xi
-         SlK9hPKdlptgpVpCooHsAgbmG4vBTv85bpum8t0e+XiEqL/dETe/EzrDbNQDTxVtKa7B
-         D49Wx61gty/ChcljM4J7Nqg7+zzkDZKjpEberRZsoS2bdsu79kAhGuzaFUsDJWYw384n
-         JHLYX8wDbE0OUvPfMd6K/7VN+FwYq1IrEqN+nf6R6WwZVWw4y3mJIA29eOkA2ikUvVwD
-         sEWg==
-X-Gm-Message-State: AFuF++kXgzMcW8VqB7fhCtDrkTXZDs0HQ14H2929M2lBBaPtZMa4IXcx
-	nOx/q+on2BMEH5VZb+HF1E6qt+gOYURK25ODhgAGveWPYaTMwATxebwORzn0lz056stVsoW9kLr
-	8DXVmJxKIM7P3H86XPKFmOJed0DIMs3A=
-X-Gm-Gg: AYBFou3EpgZSS/d+nvpwzi1TxDoAgzofVB6UMgSkj0EUzVSx31u/+Y98l9iS4SqKCiI
-	9tkjGh61pm6K8LYEBNo9i2rO95coxHqp5BW6cBc9dpDsmFT+23Pjxv2tHuA+fLy0OmXK/7EIT3x
-	0gNLeUieFiHdhehIQLM4uNTwFBEGeb+CffcxMYhkGdtiZSiuvknl8+Wb4Fwu6JB5iJamcTdO4wY
-	ufnW6quqI3g/XBg+5nWb/W0ZUllg+yZ7Nf391+XV+DLNnLqO1nGU7oqYj9tIxnkkymSa12FSP0F
-	rUju6ouSCw7xRo/YNJu8l+sNiAltOR/+2u4rbBZdhGoVTnbv+D8sCbDR4XoePfV1MB+BjA2sgP7
-	A7hLqkWnNgAEDVPIBvia720xNymRYyNo=
-X-Received: by 2002:a05:6402:428e:b0:6a6:32e3:9bb with SMTP id
- 4fb4d7f45d1cf-6a685355737mr219693a12.11.1788304680434; Tue, 01 Sep 2026
- 16:18:00 -0700 (PDT)
+        bh=hTDDNvmuJ7sxDXiEKyMab4jWJTRs9ZKSqT7pTFye/Cg=;
+        b=nYWmReAy7AgQFDZuEURgL6ZCoR4RZxEx1Np1muXLZAlZKi0i3eZM84cMOLY6ERv7jD
+         tljfQQh2PC3Zvl94UqJrqzA0ROaympTJsLwsKYYftOTWoEeKv8IxTasESYwu0H4PhW7W
+         gXnl2pWmiWgD+56s0BoUJ7FH8W9UxDIhJD5uvWwpcr0m44b9njajnVjpNM4pWTmMCFcI
+         PcBk6xtzUZm3eTbqC2iFLw5dyVBezvEihT1vKiacImix5A1o88KyyRXjRmoiIxtRcbxm
+         YF/IXuONM8FCUarulsiPeL+xObQHN7sO6b+dx+45ZcVmB89iFnYLFKWPFJ3TQKv5q9kl
+         dSMA==
+X-Gm-Message-State: AFuF++nW/DJlnBJ1v3Ve3GRMaXo+hAl0+nKhKsRNUg+OTdsfC9wL9YrV
+	Gu3ZUnyr/q2dnarSx68c58fIEzFY1F2B/vP57BtbdP7Y9vsVl5aABu+N0Uw07JqpZSTUWodvrDG
+	YJ1HQdGVxEyXn/X3DCc8okKnfjL0YS9g=
+X-Gm-Gg: AYBFou16QsHvtldZMC1tt1dFXz7irMfGgn5H3GGEQtO5TOmjC1LKhmdgowWmQfujkC3
+	tM2v5KJAgeJFlOvqJ7RzwG6UScO+wgkPo/6ISmhEs9zz6Lr7wPHyPHnIr4KWSFUuO+huvQThDtT
+	2kkQjGF+z9J8laYaH9AgNl8/rJ6Y8WR4WoEhygcA75MtWE/J72cWTPqJXEibcplvorwLrGZeukA
+	G0doF1RPPXhJ4Qge5CDsrtT0pVNLvQiZzkvsd2MLBakXzvPcDR8xSAuzSssvofV5WzYB4yjZj2Q
+	cMjX3aYEbCY8ku3ZnIF2HP6buVqR927YSh9M7on1PrO/Kx1HdTpTpj4XpJwQLNEHcKgH0dF0iX5
+	pCPco2mjV3Z6UPkD8fz4tGA/8AiZUfmY=
+X-Received: by 2002:a05:6402:454c:b0:6a1:b515:d2b9 with SMTP id
+ 4fb4d7f45d1cf-6a6831cf33cmr484617a12.14.1788304851925; Tue, 01 Sep 2026
+ 16:20:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788277742.git.mattst88@gmail.com> <bceafe2ff479886d45eb410d8cd4db0027050bd4.1788277742.git.mattst88@gmail.com>
-In-Reply-To: <bceafe2ff479886d45eb410d8cd4db0027050bd4.1788277742.git.mattst88@gmail.com>
+References: <cover.1788277742.git.mattst88@gmail.com> <50d449ba9c3d1f6b694fafd82f2b3f72db63d202.1788277742.git.mattst88@gmail.com>
+In-Reply-To: <50d449ba9c3d1f6b694fafd82f2b3f72db63d202.1788277742.git.mattst88@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 2 Sep 2026 01:17:48 +0200
-X-Gm-Features: AcwNN1X_Iv9XjGSFQ8VW6iWQHe9ti3jzAg9aVEBv_Kn7TDfBYPU8baP1_PNzJSM
-Message-ID: <CA+=Fv5Sp89A1RMBi_oJ6evVVRdHQ3NmoqJ6=4oq2u1kQsESgjA@mail.gmail.com>
-Subject: Re: [PATCH 06/24] alpha: select EDAC_SUPPORT
+Date: Wed, 2 Sep 2026 01:20:39 +0200
+X-Gm-Features: AcwNN1V9d1XOE1ZXjAbtGAPkVmsAORaeREbPjoWNQZgz231Ab7OUnZnXsiGjBRo
+Message-ID: <CA+=Fv5Rr-6VR=L3s8PcK3ogVUMhBLmVyRBqukR6A4cUeGGLL3A@mail.gmail.com>
+Subject: Re: [PATCH 01/24] alpha: fix arch_irqs_disabled_flags() to treat any
+ raised IPL as disabled
 To: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org, richard.henderson@linaro.org, 
 	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Matt,
+Hi, Matt
 
-On Tue, Sep 1, 2026 at 5:51=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
+On Tue, Sep 1, 2026 at 5:50=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
 te:
 >
-> The EDAC core builds and works on Alpha; it only needs the architecture
-> to declare support.  There is no Alpha memory controller driver yet, but
-> the core is what a future driver, or the existing machine check error
-> decoding in err_ev6.c and err_ev7.c, would report through.
+> arch_irqs_disabled_flags() only reported interrupts as disabled at
+> IPL_MAX, but the kernel is not the only thing that sets the IPL.  PALcode
+> raises PS.IPL to the level of the interrupt being delivered before
+> entering the handler, so a handler entered for a device interrupt runs at
+> IPL_DEV0 or IPL_DEV1, and the timer at IPL_TIMER.  Interrupts at and
+> below that level are blocked, but arch_irqs_disabled() answered that
+> interrupts were enabled.
 >
-I tested this on an AlphaServer ES40 with CONFIG_RAS=3Dy and
-CONFIG_EDAC=3Dy. The kernel built and booted successfully, and the
-generic EDAC sysfs hierarchy was created under
-/sys/devices/system/edac/mc.
+> Treat any IPL above IPL_MIN, the level arch_local_irq_enable() restores,
+> as interrupts disabled.  This matters as soon as lockdep is asked to
+> track hardirq state, where irqs_disabled() is expected to be true inside
+> an interrupt handler.
+>
 
-Possibly we could adapt this to have EDAC support, I know it was
-mentioned on the list:
+Hi Matt,
 
-https://lore.kernel.org/linux-alpha/20251125224352.32034-1-linmag7@gmail.co=
-m/
+Thanks for the explanation, but I still do not think that treating every
+raised IPL as "IRQs disabled" is correct.
 
-Either way, this looks good to me,
+The Alpha Architecture Reference Manual, Section 19.1.2, says that an
+interrupt is delivered when its IPL is greater than the IPL in the
+current PS. Table 19-1 in Section 19.2 documents the OSF PAL IPL range
+from 0 to 7. An intermediate IPL therefore masks only interrupts at or
+below that priority; higher-priority interrupts remain enabled. Only
+IPL 7 masks all OS-visible interrupt levels.
 
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+The 21164 Hardware Reference Manual, Section 4.15.3, states the same
+rule: an interrupt is enabled when the current IPL is less than the
+interrupt's target IPL.
+
+Thus, IPL_MIN means interrupts are enabled, an intermediate IPL is only
+a partial mask, and IPL_MAX masks all interrupt levels.
+
+I therefore think arch_irqs_disabled_flags() should retain the meaning
+of fully disabled local IRQs:
+
+        return (flags & 7) =3D=3D IPL_MAX;
+
+If lockdep or generic entry requires IRQs to be disabled on entry, I
+think the entry code should first raise the live IPL to IPL_MAX, rather
+than report an intermediate IPL as fully disabled.
+
+Regards,
+Magnus
