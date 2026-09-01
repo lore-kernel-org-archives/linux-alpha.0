@@ -1,71 +1,71 @@
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+Received: from mail-yx1-f42.google.com (mail-yx1-f42.google.com [74.125.224.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86FCF47D950
-	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 15:51:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D75ED43E095
+	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 15:51:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788277867; cv=none; b=UYYmrzVUQDa7o+uyb7gEJeC0J0n9rp+baadub7jK/x0PXlWsdPkdzrkeT9Za1G/ksR5Cset9iam5daB+oZmJjrAoZ8Xf3TrLbWWl0ARm5OTFaDE2Lj9/miRO21WNufvh7oglSW2j1AuHdsZHfZ2FNi7TpakFiyJtrXM+J+Q+dq8=
+	t=1788277877; cv=none; b=KJnKZpRKbyNSSh0DI8/yXyT86WES3AwLpVPehaktocAJB+D0STg951V4LqjxseWETlCj4oFKYLPEHF/B8jRNTKD0XGLMhnyRL+sPZ+k4zZFm7CEBMV4tDaBkXIU9RNL9a1mUjGrsYTnyuCf5LA/NtwO7t4YCi2Du3yNo9kVfWPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788277867; c=relaxed/simple;
-	bh=3kOUWWtBBmwf+li85oj2v2OxavPEuTRBsORhRX7hhGU=;
+	s=arc-20240116; t=1788277877; c=relaxed/simple;
+	bh=gWl8UAp4D/Q44Xa4Mz5S7pR77pfMBUcuHztcdAp5g74=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=lAoY/MvEW3olkWGm07ok9L3hzlQBbZO+G2BukEbPKv54uiCck8LwMNRTqR4Qw8Hn13W1Q7hdTIpLr7mI68apQlKalMCFNqrHDzK6m14oHLLlTCHr/4vLNJ2wxh5GhWl9oiOj2itd8dXxzdwEOGsjWdTBVtGo3R5KHQFcz5T2h+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hAcE0Hma; arc=none smtp.client-ip=209.85.128.171
+	 MIME-Version; b=YIumQd22priGsJKun1L2MrHP2v5kkoiCQ5hqu3On1xhHmNPoYYUU3ZId0EjgaE5dEABAu9wdwYT1A8fPrKjVnjcBStzw5hszbNToB0q4AIO6LkTqYeuXPamUfDhjyhN/vEam8zqXEPKRMS4zML7oeBSdAREDMTsotwk80AkF6yo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eiaRjVDg; arc=none smtp.client-ip=74.125.224.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hAcE0Hma"
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-836c8bde2dcso1363687b3.0
-        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 08:51:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eiaRjVDg"
+Received: by mail-yx1-f42.google.com with SMTP id 956f58d0204a3-66c7e3a2332so1287352d50.2
+        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 08:51:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788277865; x=1788882665; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788277875; x=1788882675; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=lYiHbFA5Y7ECy72GJRw1PyiPsplnk66cj7FgDlBc2Jc=;
-        b=hAcE0HmauAqj0W3zx65PJ+nKuSUnJwnnrEwSJHsLiR+pPYJzE5kvRaBuvs3Hu6Tduu
-         eAAAJashUAuAvEQS1A0tyq2Qk67U/WJejeIgeUK5lRufUA+XA4LKqLM5F/n5trq7F0cy
-         oXe/kd7hbPtiAX85K4/HsM6Fqk/MUEwOJUX4RO12LN0PiP+LmkS4avv4MubfxHgCJ377
-         Kui1mZpGOsbDnIvcMCQuBkHiTraDkijTZbHl8o7PI2Uv+joJufOMJA54VHTtstf6+k5Q
-         TnQosLtGdeK2rzRIG3FYWPhoqSwf2r5k3LRGq9v6gYZYulvGU7Hp6GY4alfk6b+jdQOf
-         R6fA==
+        bh=H+VVH9rviPSHZpvcgAfOoqFaCYd5x2tmRedDz8qXvDg=;
+        b=eiaRjVDg/r0F34dY3aunl42adU9UzmeclE59xxv1JoGRgZWVUjRAqlKtL49RrnbHu9
+         TvtbiPL1dtDBVg09ZDEg0UPoUtKq/To+HU58iRceqVM8RMSu8Dju2Li8gdlaL+uUUCJK
+         iL7o7r3avQREC7yK/eea0Z25FxGWHfeUZVxkQtUbNtHD/FrL7boE8BHi1hOD7fGLA5fL
+         A2dJ7CsMsjIhbArnKxQYr8JTW7ipTAouFpKRZeEnoujzSvZL4ysJ5Ls4GSIAMB8HOPD/
+         b1umItHQgitTlCHOlPVHGWwYvhp7okc7Gn4PmL2zjMoxoULzDRH3zi4QQMwUNH+wrmjf
+         ZZaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788277865; x=1788882665;
+        d=1e100.net; s=20251104; t=1788277875; x=1788882675;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=lYiHbFA5Y7ECy72GJRw1PyiPsplnk66cj7FgDlBc2Jc=;
-        b=E8pUnIv59hP5yiwv0eOwmX9dAfIA4ajRuswhB8HjXchLBwQXeFkUxMXQEZQJr9MxhU
-         1uAm+XE6SHlUmylxA9HA0In679Kyz3/Noi89PLxFj27zIDrVLhO4tX0S3W41Vo95CM1L
-         lDVx/q8Z3YsCHGb95xc397KNpIFrKAyGYnU2DzaVRo8twramRbgkVSQeXyu90SXwBxXX
-         ZEDyInRFeeX1B56WEp8ZCbQjCEp9Zrk5xkxG31EWqZsAlfuwrtK+RrsdPLnMY9jdCBe1
-         x90oJni31zTpC9mT90X+WiDr+t8uVGuu4oMFp5uoKzWufemIk1BGqAXNrZrZ6U2iISTt
-         vh9g==
-X-Gm-Message-State: AFuF++lZZrCgmj2yojBxL36dMXzu696hNcLJRE31RGt/CRaX5MoiSvfa
-	5Wsyli/Jz4uFVqVQQwmLuopeR/UHeNrj3e1nHm+jUDtzzhUSFGhVzaDn1nNHjg==
-X-Gm-Gg: AYBFou3gAF5tAQVJ0MWGNaKSMX6vCT4itCdpZYTSJ67czw83G5pdNdLVONVBQRWHcxk
-	iEOhaGmpS0dch+JBsy2AI56zsW4hDuL/vMZuSL5dw5SoPxOxjUuNwpBc9zGrCnk2AHAcvMVCaTW
-	tScznNdEGkHdnzwgS1WvOYGME4e3CXmn6vWHbz5uz240LjyZQVU2ZEG1rWb6iCOe32WWX3/b96o
-	d00NAT4bXaDDpO5oRnba46ZdyD2LgUnPXCgjrHTFvOc9W3B7am6CiHfTgtLoJJZbx+ADDyJaYfJ
-	Fvn1bsuUGYD6ZJNl1uS+5P3O38VuiCgAp0jpsxv6EM6w1QNvRKEIb7ftQJd+Gu+wjGLSnUy0Avk
-	dzeHwf6YnzOxjR0Eg5MugeWR9xD3AwSy5fr/3q8YTCVj0/sjlUd3MYwDAM1W1eDDlSw/yNsF6ek
-	Mj40GDkFtVbWvvxYymJn7mzx07whFxrQxREj+czPUqbw1r+7k0IEiFpRrbv214cJWhygjWyHIZC
-	DPauPq96kNjE5j5cr0fQKN8s3OKNNeqjH+XABZ3
-X-Received: by 2002:a05:690e:128b:b0:66d:1f6b:3a84 with SMTP id 956f58d0204a3-66e4c719ad4mr10426597d50.36.1788277865287;
-        Tue, 01 Sep 2026 08:51:05 -0700 (PDT)
+        bh=H+VVH9rviPSHZpvcgAfOoqFaCYd5x2tmRedDz8qXvDg=;
+        b=fsuok6ZeuCOuEAYH7V5ClaBaM5zrXyW38dURtUB5WIEdz3KWug9dlgCMq4ieKsQS6g
+         STAbhsjTiuuwly7XZo5RwuZ6Xp9eL5pze1YDG7uqH+7EqdRHNIcu3zD8jvpU8/pXa0qf
+         NmVhN/aTvgZ9oT5UyNqaP4x3djZCANH6JPNYXnNhI1Cwdzsph9Ldiop2V/aeVEqGwuyH
+         Du5Pa/la9vxKkg3N0Ocx/9EpdAWB8iuOCensQ7gSic8hOuekKtHYTzcZlOKgVUxuTJ/m
+         ooIjX5engFhQGZ38fpZUwHHhTbclkcidC3CS4tUbmLaMRH1e8xJw1Bla+n5WDQOqWHNI
+         M8Yg==
+X-Gm-Message-State: AFuF++l3su/RR/OsKA2oteejLH9pBy97z1g9CgdXJwmXd9cDzDQ68E2Y
+	zpFvBbwaRsT8hbi++0pbaa+H6JxUY2vDo8YJJwFhXnOpEVddGAs5IKHyi4wwFg==
+X-Gm-Gg: AYBFou10W7ZnB95Yig5AzQyK+AgkE/lVbMikEnBldFLPYWpvTh7R2kxX+huPG4qXdjA
+	SkVd/sDARQem7IYWp4WsnXgvQDD/2RreslOekjfQZybW6MjSzYCPemRTauEN4Fzvi0Vt0wEnXej
+	ORkZM4EfyvEzBdW8jMvgAEyN2NkgTPgMVKe6TlnraOAksx5ynNabrn6Iau0bZNmwJWfWL90ulkW
+	9EfZJ/eRfUj0x0T9wH18g8s4N8s6KXETWY0enJGXjUtpH3AeRRzAQDXKf5grofgbLRbBO+6YE6W
+	HuDJ8sCsgfzjHjrmihkcnRbjixp8ZUaUF7zv0SkNizJQWFMCNt4EwD0+6bX/SFi84PqIhgZZ3gc
+	0JpmiFfT7dUKRFSNZyhXnFcwfM2u4bR2B3ITIgks0ycXGRVnImgIC5NpUobg+w8c3gW0vwaB8cP
+	+f1j5nUD1+pU8rzcwD1nkOCuxkTdecMLSIVWm4CJY8Yy+3qPLu2ORPLWQSfJ1oid5Klq579yt6N
+	zy5JF06bwGY1XbuSc1ou1mZX25KIwToJSeP2SNB
+X-Received: by 2002:a05:690e:4193:b0:66b:14e5:d226 with SMTP id 956f58d0204a3-66e557ba52emr8644017d50.34.1788277874782;
+        Tue, 01 Sep 2026 08:51:14 -0700 (PDT)
 Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66e4eb3df27sm8636777d50.2.2026.09.01.08.51.02
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66e4ed2a78bsm8600862d50.20.2026.09.01.08.51.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2026 08:51:02 -0700 (PDT)
+        Tue, 01 Sep 2026 08:51:05 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
 To: linux-alpha@vger.kernel.org,
 	richard.henderson@linaro.org
 Cc: linmag7@gmail.com,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 08/24] alpha: select ARCH_HAS_FAST_MULTIPLIER
-Date: Tue,  1 Sep 2026 11:50:21 -0400
-Message-ID: <a328908c6591b0be86d25a64c543e15911239b3a.1788277742.git.mattst88@gmail.com>
+Subject: [PATCH 09/24] alpha: select ARCH_SUPPORTS_INT128
+Date: Tue,  1 Sep 2026 11:50:22 -0400
+Message-ID: <526219643312193e0705586965703d16a6d4b60e.1788277742.git.mattst88@gmail.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <cover.1788277742.git.mattst88@gmail.com>
 References: <cover.1788277742.git.mattst88@gmail.com>
@@ -77,30 +77,30 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-All Alpha CPUs have hardware integer multiply (MULL/MULQ). EV4 and EV5
-implement it in microcode; EV56 and later have fast single-cycle
-multiply. Since no EV4 system is likely to run a modern kernel, select
-this unconditionally to enable multiply-based fast paths in hweight and
-string routines.
+gcc supports __int128 on Alpha, and the 64x64 to 128-bit multiply that
+the users in the scheduler and in lib/ care about maps onto mulq/umulh
+rather than an out-of-line libgcc helper.
 
-Assisted-by: Claude:claude-opus-4-6
+Gate the select on CC_HAS_INT128 as the other 64-bit architectures do.
+
+Assisted-by: Claude:claude-opus-5
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
  arch/alpha/Kconfig | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git ./arch/alpha/Kconfig ./arch/alpha/Kconfig
-index 0655e36608cc..9e8e571949c4 100644
+index 9e8e571949c4..00365031ea6e 100644
 --- ./arch/alpha/Kconfig
 +++ ./arch/alpha/Kconfig
-@@ -5,6 +5,7 @@ config ALPHA
- 	select ARCH_32BIT_USTAT_F_TINODE
- 	select ARCH_HAS_CURRENT_STACK_POINTER
- 	select ARCH_HAS_DMA_OPS if PCI
-+	select ARCH_HAS_FAST_MULTIPLIER
- 	select ARCH_HAS_GCOV_PROFILE_ALL
- 	select ARCH_HAS_UBSAN
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
+@@ -14,6 +14,7 @@ config ALPHA
+ 	select ARCH_NO_PREEMPT
+ 	select ARCH_NO_SG_CHAIN
+ 	select ARCH_SUPPORTS_ATOMIC_RMW
++	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
+ 	select ARCH_USE_CMPXCHG_LOCKREF
+ 	select FORCE_PCI
+ 	select PCI_DOMAINS if PCI
 -- 
 2.54.0
 
