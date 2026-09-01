@@ -1,71 +1,71 @@
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C5E147F2EE
-	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 15:51:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BD7D47F768
+	for <linux-alpha@vger.kernel.org>; Tue,  1 Sep 2026 15:51:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788277894; cv=none; b=Q5H05dzsiUSVlcRWhrdt2hCZ6b7iWcwPXY3V/xcPkovUr5hgPu887quCOvA7vitC/hC1cZgZ5RyX84wHJb9koFRZ84l10VxWoBZ4VT5y31HCzOiZGHeuKlkeAF5N26//MJB8RvS39abp8O++rTY8xquWA/6lFfX8La8Pu5sYM6Q=
+	t=1788277896; cv=none; b=a76i3JyH9GHqjZUi/eKW3zVwD0X7Vn+daBMDyiszN9c1BFjuKqH7b9V9fdHGiPdmALA4nf1Mt0yOrv7mV4sYBtqpZUwlmH2LGnVVX4dLHy8IrzYu2sOk2+A00Y7GV/wcnzAOlisqd0wOXvU92vz6l1RZukYw2dbG1JPrYjBXLRc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788277894; c=relaxed/simple;
-	bh=9Xg1mYTY71JWy+0ejzUul8PAG4NMQUH60bKlfKZvQtY=;
+	s=arc-20240116; t=1788277896; c=relaxed/simple;
+	bh=58EUbAW1MNlu65urN1g3z4QEvq46rAoNGdbCLIjROg4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Vc2ctU7Pk96BCOQ/LMRFyTNuPpsUpAcYWG+YdOy3+vW8tU/rsI2aItvXeqN2o0+fNzy4zR18vsOfYL0D/NWYR6CuYz+O4+KvMCE/7DbXrVmjUptZ0APsXPO80pCAUwWVV0uF19sJVnZtKktZq4JfZa8QGw0W3qnEQfg4Pkr3TB8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=T88+v90i; arc=none smtp.client-ip=209.85.128.181
+	 MIME-Version; b=GHy70OaxA8W8m0tj/96sO+j5UNQFjXka7ZAFl1xxy2uCrwKn644zg4R5/Ze7feMsZTJD8JJn46sjRZtTj7UobvjeMYQsmqLa3Sr2TJnRoEaIk1tcLlEwmPYtmvGltEJBPjw+ZGJiIR578pkESZffh/eWSlpVn7H8jMlkv20yAYQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hKmxo5qQ; arc=none smtp.client-ip=209.85.128.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T88+v90i"
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-861145fc841so946387b3.3
-        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 08:51:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hKmxo5qQ"
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-855a66e5b5dso1220717b3.0
+        for <linux-alpha@vger.kernel.org>; Tue, 01 Sep 2026 08:51:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788277892; x=1788882692; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788277894; x=1788882694; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=3WrIjHrUzfeSmnNpoFpFwykQuRi2himcgHlf8T243BI=;
-        b=T88+v90iMt24UotLanPg1Pjx4M2Sb6LNhxSA3n2vDSYDv+8Y27+IBOwEVnsqFkJ02o
-         PRlo5yFA8hWxl9rJks4ITDa/en8cBGSnpat1KMPg1N2PPfEivI2JhMtzAXETLFSeJQf3
-         AL2lGU6q52hes9SDMHld3Y7kPNKkYL8i8rmjo42CRTtBwyqI9KC90RZAgH9fWL1Qhi+I
-         6Cy1k+9Z0xtD96Jo7JAAdy3aiLc9Lfhp7Rlsw7gTfPxRajkTZN5U4W8Ujpz1Johir7xi
-         kmtjwxflnuphU2KOeB7ykIqDL5SSQmNDLAfNoS/UaLgVIENO+PnbIVppsYDRAANyTKkA
-         QgjA==
+        bh=zYpd3WpmV0q83zuG4LlVB9ab5azMP3BGi9fjKDmK0RQ=;
+        b=hKmxo5qQ1oCxcOVtPc7yeIRj64krfGmwQYtEEyplnYsAX7Kq67Qd/VGNBQpgXAX5Uk
+         lOiTJgQGPWZy4Oiq95BdHvHuMbUwimRLoQhlz8lruJs/vVeLLz0cekdhCYevD/XYx8kH
+         Ijg3xPZ7VwfxARSVap096knQUMDvdyvOuaDbh2a4YNs8PEsJ6p4lshLTc8jZ+xqtoUUb
+         5Q/ibAIhtrNLbscExBMvcbXr66Lp6uCf4FeAuammY2Lwxw2NWaGOk24DdBX2Da5DW0vU
+         yo0afHqCyks1/IH7hlub57NedLMBgNZSxsO73wSO94ctYXGLAY+gOgonVeDySkM13qjJ
+         XBQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788277892; x=1788882692;
+        d=1e100.net; s=20251104; t=1788277894; x=1788882694;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=3WrIjHrUzfeSmnNpoFpFwykQuRi2himcgHlf8T243BI=;
-        b=OuJR7SFWJ3cAWekQr7apwQVvjOWwRaV8yvBVnysGikqu1Rprac+VfIodMWXhoBamnu
-         KzpDeEYmKvfgPl3E8+QgF4clEwT3BzjMmDeio+vuq6PmbLdTRfgmIJEgmQ0fgbpdn+PI
-         roT0mtm2uvXZTtXKzr9ZmJ2cL/NdFHBvtclgtBtD75J7JDgA6tKeP/svTV5ChpRMMI5T
-         N67ltlG+H4SvwCXa02HqzMH0YAX3gHalua5ADXJtqasWJfDJZNW9NcByBmuXepuUKjtz
-         Q/61iCCy+2iSHgl/jI/hwiXSDxrITNQLxxcMmD6UBR+hyGHdHm06sYCRxrFrpySXqt05
-         XCcQ==
-X-Gm-Message-State: AFuF++lkE/4njZ9cgtciTDTvlgwIe5wDVoIKAXIBzoY6a3/KQYXvp79r
-	lzvDM+GXWaQg/6xj6Y5yN7FQH78FaPNLAKE6Kfyi0EWGAQatXWHTP2YXhNUlwg==
-X-Gm-Gg: AYBFou1Gv/4yHFi8wvQpAVrQqV1Be6ADBltmlkm0a3hBiRpOlvAofmW6UedTq3lD9uE
-	HtAwleRj5a7Q8iThr7Dy8i7ikhF7b6RC2QxsE92LtcmZEyfH+iAm24cMwnO6YkTHBLx+vkjbz6O
-	DM5vChxdkFUU7lTX06JzqunCiZKl+kE2M1dEvAIIPaidtQeEoc1k0aWufaONOD23Hkx7Xidt9cH
-	Qd//bDoWmzTknc0Cp6/9dJcrCa3zRFJMWUo1cZT/lUNDmJM0X74x4zE4c6ZT4bZNBXpUn55LXh1
-	QXo0+5JaVmE5VFhZ4NpVu9apRyWxghvSkdXRCWY59j295mD15RMzYcNMf1T/oo/xOg+zq8Lu8eU
-	aogeSVM1HB2mQ+MWrwUyZqelkgU9isZUztXkgVpt2jeMqI2gkEthm7C0mZFnEAkSpM6iiwhN2Yp
-	8Uw+R+eYWEU72oROFphYwqLzbshVSCj5V0ffeZwzcwcZVIf5IVT8/jym/3hE80N27TV2VUeQMVa
-	6F699Om9QHYfy1Mnu+XN9P+4tI9x6whQV+V2FUI
-X-Received: by 2002:a05:690c:60c1:b0:81e:695b:585c with SMTP id 00721157ae682-868701f7a41mr40689507b3.4.1788277891125;
-        Tue, 01 Sep 2026 08:51:31 -0700 (PDT)
+        bh=zYpd3WpmV0q83zuG4LlVB9ab5azMP3BGi9fjKDmK0RQ=;
+        b=AnvKO/u8/+DgtUsHEuvv+vQ47+Cq9PFqHUsL7/J9oY8u22luTPV3TlCgqM2diO8uGw
+         PREU9d8Sr3Mu5Guek6VjxF+hMzh6Lf5Cr9kaqMU+lJzgYzDAafI67KGx0A9OKcWq4sXJ
+         Iv+r1LruFu61YH1Ckm2G67gqVfnk350YCrxvt7WPmknj97BYDYZ+4kphyciK7si43Bzf
+         AvDPU0fRDuAntbRb91R/Mv63rjKCMbdFrGaTRvBFefmW2EGVKqWEMp90YdO72NVPhwml
+         5DY1VMVF+6cIk/S/ry9yXvjf/4nJFAvAckF4JBzYKPxh3HH4U7rsr8r27Pa0/JuNyuqt
+         ix9A==
+X-Gm-Message-State: AFuF++kykWip14CyH+gL6DRmJ7YzU+FSZfLdRQDUEghdU7oQ0L+gODSr
+	zALTlPok9WN6HxIrb2+STCa9sTfcNepMAICEgeYiyZlDypHVutjTEh0NW/OfiQ==
+X-Gm-Gg: AYBFou1X/YumbrJPD8DIIMNMuM6g7mgdGsEigvIWJlsjDktyWdKXTaQZghAzHOCBUM+
+	bK9bP8jrsPAuHzU97zDBqSgQ9abjQcLuAgdArxAXKdIc2dVgn73rwtpBCQl2w6EbXPAFJcSYtTq
+	GaRdOz4qPZ/b6XkNOWLghYa2ksp2evVuCZcuQt7vSQbCWgeidhrEhioAXgq3vL5SqlXKf9a7/Eg
+	CU/Zfm/2zdrrKPJCwqUW8G5VIa5NGXXwodnK3i5eOrsrfTlVp0JBrPa2RG9IwQ88SeyQ0pJbeir
+	NHelVcG+sOKVh6mQ/Yuvack2ZuVDptPOGduGFa+Qv4TORRx3eLEEGNnogOHmghpxcM8CaNpeiYe
+	YDLK7Y/oQxYQHKArsJvYZsxdUNVKsxeOVSiagkS6dQDtfGnjydu0GWGqzsrtXA1GCBEtFZTt9np
+	RqXMjeLXL5hGH62KhqrX6/s0kSAOtvgvRBNxkTSyMeKhXRupcKE00PiJCC046aXVIRVcu121hat
+	01CIb+jXSr9FM8ENwwIK4/sgpgauPB+f8l2HFWM
+X-Received: by 2002:a05:690c:e154:b0:820:1143:c024 with SMTP id 00721157ae682-8686ed6c46bmr39459937b3.4.1788277894091;
+        Tue, 01 Sep 2026 08:51:34 -0700 (PDT)
 Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-85e5ed1cd5bsm76405047b3.17.2026.09.01.08.51.28
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-85e66abb13asm76676017b3.36.2026.09.01.08.51.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2026 08:51:29 -0700 (PDT)
+        Tue, 01 Sep 2026 08:51:32 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
 To: linux-alpha@vger.kernel.org,
 	richard.henderson@linaro.org
 Cc: linmag7@gmail.com,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 14/24] alpha: add ARCH_SUPPORTS_PAGE_TABLE_CHECK support
-Date: Tue,  1 Sep 2026 11:50:27 -0400
-Message-ID: <5ad0fa4995f9b0e6aa4af672e987a9b9ee43645d.1788277742.git.mattst88@gmail.com>
+Subject: [PATCH 15/24] alpha: select ARCH_HAS_DEBUG_VM_PGTABLE
+Date: Tue,  1 Sep 2026 11:50:28 -0400
+Message-ID: <c3f15d6aa4553dca5c79a4c587c7df0da6cc95b2.1788277742.git.mattst88@gmail.com>
 X-Mailer: git-send-email 2.54.0
 In-Reply-To: <cover.1788277742.git.mattst88@gmail.com>
 References: <cover.1788277742.git.mattst88@gmail.com>
@@ -77,59 +77,30 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the page table check helpers needed for CONFIG_PAGE_TABLE_CHECK
-and select ARCH_SUPPORTS_PAGE_TABLE_CHECK in Kconfig.
+CONFIG_DEBUG_VM_PGTABLE runs a boot-time self test over the page table
+helpers: the protection bit accessors, pte_modify(), the swap entry
+encoding including the exclusive marker, and, where the architecture
+supports them, the huge page helpers.  Alpha implements everything the
+test needs for a three-level page table without huge page support.
 
-Alpha does not support huge pages, so pmd_user_accessible_page() and
-pud_user_accessible_page() always return false. pte_user_accessible_page()
-checks for present PTEs with user read access (_PAGE_URE).
-
-Assisted-by: Claude:claude-opus-4-6
+Assisted-by: Claude:claude-opus-5
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- arch/alpha/Kconfig               |  1 +
- arch/alpha/include/asm/pgtable.h | 16 ++++++++++++++++
- 2 files changed, 17 insertions(+)
+ arch/alpha/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git ./arch/alpha/Kconfig ./arch/alpha/Kconfig
-index 4c38405cd6cd..d7e2859aaedb 100644
+index d7e2859aaedb..87fe81bc4709 100644
 --- ./arch/alpha/Kconfig
 +++ ./arch/alpha/Kconfig
-@@ -17,6 +17,7 @@ config ALPHA
- 	select ARCH_NO_SG_CHAIN
- 	select ARCH_SUPPORTS_ATOMIC_RMW
- 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
-+	select ARCH_SUPPORTS_PAGE_TABLE_CHECK
- 	select ARCH_USE_CMPXCHG_LOCKREF
- 	select FORCE_PCI
- 	select PCI_DOMAINS if PCI
-diff --git ./arch/alpha/include/asm/pgtable.h ./arch/alpha/include/asm/pgtable.h
-index bdff33b505bc..310361920a1f 100644
---- ./arch/alpha/include/asm/pgtable.h
-+++ ./arch/alpha/include/asm/pgtable.h
-@@ -232,6 +232,22 @@ extern inline void pud_clear(pud_t * pudp)	{ pud_val(*pudp) = 0; }
- extern inline int pte_write(pte_t pte)		{ return !(pte_val(pte) & _PAGE_FOW); }
- extern inline int pte_dirty(pte_t pte)		{ return pte_val(pte) & _PAGE_DIRTY; }
- extern inline int pte_young(pte_t pte)		{ return pte_val(pte) & _PAGE_ACCESSED; }
-+extern inline int pte_user(pte_t pte)		{ return pte_val(pte) & _PAGE_URE; }
-+
-+static inline bool pte_user_accessible_page(pte_t pte, unsigned long addr)
-+{
-+	return pte_present(pte) && pte_user(pte);
-+}
-+
-+static inline bool pmd_user_accessible_page(pmd_t pmd, unsigned long addr)
-+{
-+	return false;
-+}
-+
-+static inline bool pud_user_accessible_page(pud_t pud, unsigned long addr)
-+{
-+	return false;
-+}
- 
- extern inline pte_t pte_wrprotect(pte_t pte)	{ pte_val(pte) |= _PAGE_FOW; return pte; }
- extern inline pte_t pte_mkclean(pte_t pte)	{ pte_val(pte) &= ~(__DIRTY_BITS); return pte; }
+@@ -4,6 +4,7 @@ config ALPHA
+ 	default y
+ 	select ARCH_32BIT_USTAT_F_TINODE
+ 	select ARCH_HAS_CURRENT_STACK_POINTER
++	select ARCH_HAS_DEBUG_VM_PGTABLE
+ 	select ARCH_HAS_DMA_OPS if PCI
+ 	select ARCH_HAS_FAST_MULTIPLIER
+ 	select ARCH_HAS_GCOV_PROFILE_ALL
 -- 
 2.54.0
 
