@@ -1,94 +1,94 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A569741F5F5
-	for <linux-alpha@vger.kernel.org>; Wed,  2 Sep 2026 09:35:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 223763EE1D3
+	for <linux-alpha@vger.kernel.org>; Wed,  2 Sep 2026 09:42:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.46
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788341718; cv=pass; b=kmfALHOylxkE+fmrJOxF8DJfwE1gkLXSaLbFD59eTEOVrK0h6CpS6BBNaPjumDhAn1frwlGqTWrfV8THycnEmBpb6HdLgnFvMrei3m2/G8Gv0JxH8XFFyX/TWs1tvFH13r7zc5IJIj+1UyDsKcezGNRsbMmuRbTEM215C8eK6Z0=
+	t=1788342146; cv=pass; b=iE/VAb9o2PToJFzI0tFQVjaOBHbJrrrfHohLzJVQrm6kuXk8WuNdnureAasWRPgJXwFVsO20ky90TMTjNkdrfjV+cSMxqUHOZESDsxcP0tmm+vJYeulXmC9vgc62Ee3XvngZAMTj8TOiQsB1WHX1SQPtfyAiN0OlZp3I5sqNTAA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788341718; c=relaxed/simple;
-	bh=v5zSRZRbdwZ7opwlCrgpYqe35WmIs4diO7N/mAvW1iw=;
+	s=arc-20240116; t=1788342146; c=relaxed/simple;
+	bh=TZPdm3JlsBSyBiqpPl8P3NLVGhX7z88eUZs7iLPLnDo=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FsRe3KyMyyEme5vTi5qV7QY1HB+k6uGVZPPB5QmaN4+qu75/d7+FgHchrz1OBO5fPg+aAJJ4iCJbWX2EXJ9OjK9I477BbZ7L6htCus3H6PsvsxIMdmzUTCSne+wvkbM2TSh77Yzxjbt009SgY2Ot5O1aEA4vsxek14O+1oER6gs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=tA3jtNX8; arc=pass smtp.client-ip=209.85.208.47
+	 To:Cc:Content-Type; b=CsJiuUED3kvzN/VwTB+eEc1vKeDYymvX6a6BL0YnTjqKl9ZEMNRLCGf+rIcKMBvHfKn5Mk/zjeas9ABIaF0t1jB54MbNYiFItB7SSQTYTt9QLBEyG0MAynnW2KuwD7qVZopXzsnVEqz3DUIZmlxW3u4+f03aPaKc4UsClMX4ODo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rcX9zH2I; arc=pass smtp.client-ip=209.85.208.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tA3jtNX8"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6a601ba6870so1491744a12.0
-        for <linux-alpha@vger.kernel.org>; Wed, 02 Sep 2026 02:35:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788341715; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rcX9zH2I"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-6a6868f18aeso762148a12.0
+        for <linux-alpha@vger.kernel.org>; Wed, 02 Sep 2026 02:42:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788342143; cv=none;
         d=google.com; s=arc-20260327;
-        b=rHj78nRRD61F9yfklchfCdxd6X/MYem0yPjT+RN4OTs40Aeziw+TlwDj0Yr3a8fBdF
-         RYhOdN/gRkQ/c9giXSzft2ikXndhivVBVM73E4tbaZBqyMmJzWwwAEASLKuzS8DuXGa0
-         LbpKGGznh9XAHMUdxXqk/Mt1uo5TB+GEox6nuy94T0i1QgLpHZP0xOHXWSwuVsFYs5T2
-         YNVuF8UGYLIzjGKeuvGRMXVLRQ/XwEc3soqneI7CXu+EyAqTv/e5wIDg4bb+SGvqScX7
-         sUhx1wKbipjOWPQzBWY+FWeR0qTgA284z90QWDJeSBfW2E4mzmLMuOE68hhOoAe+BEqU
-         8xUg==
+        b=VkMs6J2hOmu8Nt17jjn9lUkDhJFw/4fZZvLPZ0MeZEs3LeC/m+JMzpMe6hrO9UKxUV
+         I/2Y6KoCdfiirEAR/5bPXrUpZcI2bDUQbKhtkCsUv0CEpb6RB7ugD5rS5yJTffSiEYLQ
+         4jWphpAhQkkiaSAxYd04yqRCQYc28Z2SMwXbBYJtP0IdZJdXVdwPf4ELVBbxt+eSaSVn
+         QcgQ525aCOCJ0gJWIJRKRRPY+L4LOFNlzfZ+X3DP5O/R556IhhDmFHqkQQylV8i2vISe
+         uCBLFlu2d7kxzD13h0sg97fB6nrRb0VLc8z9oizjdSnyDAIgBl2IknOxcEBf8AoPfC/K
+         qDVw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=jnX+ks6JV1XrtihYjiUlRtYYBl1wxqA6B4mBRtQH3z4=;
+        bh=TZPdm3JlsBSyBiqpPl8P3NLVGhX7z88eUZs7iLPLnDo=;
         fh=bLXUq4zKMKoVtr4en67hBbn5AghZJydmSMAYDJEBeBg=;
-        b=Cv+9pfPvsWdqNpFKl7TftfbQiSastVL+OGn+4yJMmvL/TIOhG7s4Z32pP5uS7DOjxn
-         x7OGB1nMDacJ+TivP847/Xfz5wROklrnfC1k+Ta5GrRpWJMRX0nDIYhfMhpEFOMZhPOK
-         clmU4tWdnhX6V3RIJtMXhWESAdThY2qrK95POo9N+Rehz3Ra7z0hpktaZWg5kED8cXS+
-         VB9+GREzBAdN9ot6ttrCIU+SGmPYHJhI2YY723XWlV+M1SJVhFqHSRgJZLMjjHwk3ILG
-         yAmfnI9WHZ0vRlzPYvV0r3FYDV1mUoVvXctWdrfmw6bT37sdjxq4WYAel/WnjGIC5D1A
-         Gf8g==;
+        b=Zss4mav4ETvW2Iny49N+ralaMLF1sLppkbJcjbvFc2w4tqKCXX+o7ZEINOdoJrsfgL
+         8+6JcfWsSPE4858TT8RDa+Tip6L46lsIpSUonrpQqgj9EO1BDMrG8FFEmGOrwOPUJJfv
+         bdUW4VH1vQ28zFnCca9tawG2A4TxdkF6i06RK7slWPeGQ07YEvHrbKsfpjvqWafiGAtP
+         iPXPiC/lVKj1eBaRKbOvrMdNUTzARXahSk9uR4ixZKA0sliwRdYYVgNWc4a+p+ruVUtY
+         w8RKxEzweP7mpnSxBYlox01ZoGOuo7sIx1vfGy61duidNfD0D4Tx+GYrZrCdV5OUONzu
+         SFpw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788341715; x=1788946515; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788342143; x=1788946943; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=jnX+ks6JV1XrtihYjiUlRtYYBl1wxqA6B4mBRtQH3z4=;
-        b=tA3jtNX8gSD7orD5aTrz36YKCEv5dp3euL9HeG2ZTKztScGcLM1vAtEkBwn1oQx1mK
-         ITWrhn3rfPT2FGHX6+BzDvrmZE1Yx6lq3/YQmVMFUrgh29AfeIhWYLtUeyCWYCBekyhH
-         AM5WZX6kD9UwowYvPLn7cCVu31cCXzVRZ3b7jJg7PJ9kgzXhZLIuBeL0v1ct6B5XeiR0
-         F0ndwqRg05BfVyR0TyBXO8O0TsBh6PAsLXMWquiV/yq6Hw0cd9y89zL7BAguSCzoFvUZ
-         KN40pa1gZdqxQBcH19JpSVXv97Ywuc2ADNd6NODS5UXMD+Ut3LR9QaJ/feU7KC9SfVbs
-         BPyg==
+        bh=TZPdm3JlsBSyBiqpPl8P3NLVGhX7z88eUZs7iLPLnDo=;
+        b=rcX9zH2Ifeuk3ERm+Cu9uR2vE+z+gkZJ+VPYM4C5hSit4LJaW2BUYXBRhax1dXPU9Z
+         5L6S699yxyKkIsdQSKjyB6qDkATkJogANVwsGMCp6bzDkOVsFhpSVl4bSQDMWowwF50x
+         F6P2hhJ91V9x7Tg0RstiJ+l/Qyu+fvOl3GLAEv3Vlflfzkvn6y9Gxne2knmOxgej1U0J
+         w5RbGdQQznSCrDeiy/FsrY5SgxTw4A1mkV89X1T6fPhVqr6wGhF2CTwwqZxJH+ifKADg
+         JgtwKEKx3gIutTWEj/6ieV8Y+baKj49w50+fzLletTp80xL65L3/a7Nr0P/+jAY9I499
+         SENw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788341715; x=1788946515;
+        d=1e100.net; s=20251104; t=1788342143; x=1788946943;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=jnX+ks6JV1XrtihYjiUlRtYYBl1wxqA6B4mBRtQH3z4=;
-        b=iPguF/t/KQxRMHtxCO2rjgR71qE8k2ZEnktyqUiPNUx2Y8aNDjHa+GE8Vbch1KdxbA
-         lMacnTUWR9iNkRVnSRh2m6sR96pSXL5D+GKtFeFhxDYi5+nuIw7LNr5gNIgBebdk82vi
-         VVG7CyzTs7ATq1kwzS31R3Hn9d7WKyZjvulGlLITfjHVShUYkzojtVerbYvUkW9yY/YY
-         oZgHTQMG7LHj165R8bPFAN2KYc5F2Xsu94NgZupjOH1Pg5FEoBJfqW/34s7ghWRKhqT0
-         Ly83zyCwaycbLZPiMX1oEsl19rOmASArJ255fy03jx4CtlPiZpXXlnuxDGnHlo+kBL7y
-         8XuA==
-X-Gm-Message-State: AFuF++l9UJ9qcS+DimicnykGZhcOX76JkfDMtTf1DDbxSsLILDfDFuoG
-	myuLwYDFJX13AtjiNngcFBonNh+eWnK/7pIw6lUM0WZf2Tb2BhWu47zDMIquySdaYi1OEZQQdkZ
-	Xpy50hfjc5FkrqvzyAA6I5xiebR3zz0M=
-X-Gm-Gg: AYBFou1W09qYbl59NcKZjrQDZcPkc/H+5rUxyvix4x/AEjvUk7Rq19yI3iZPpivF3qt
-	SCjlR8WbolOK2mMN/RBL7OyrAGXYvH55dsv6nDtoHWqnvWNoRNmaplHVs10OvNYf53bjVr+PW5a
-	lWCqOgP0a7s2Y2aqb/lVUhiNqbjTLhDImdqpdS5nIzRU3MpEm+BqTuUdiZDBxQ6RQ75jF7+RVrf
-	eBpkiB6GB+z2sWlsffqoPZ+P0JRQ/aatSksoTzwTri/ja1Vzamx62AExOvHVyprvGOQXNi01TGi
-	SSi82aq4yvwff1ylPJU/fYMLGywcF3K9ISKEDdfIOdhOHd4KjnAgPtxXmG0gzccZ45bme2z2rTZ
-	yjx3h5zvytxfzc9VKy8Wlbx1tE4vrXt89b8NxDjHScw==
-X-Received: by 2002:a05:6402:4493:b0:6a5:ed9e:b490 with SMTP id
- 4fb4d7f45d1cf-6a6827997b6mr2384818a12.14.1788341714731; Wed, 02 Sep 2026
- 02:35:14 -0700 (PDT)
+        bh=TZPdm3JlsBSyBiqpPl8P3NLVGhX7z88eUZs7iLPLnDo=;
+        b=dl8giN5uzYtmpfcN5YZnjMDLL5Re47HmG8fBb485SfkkWCxhsvZzyS8My/8xu7T1DC
+         sShYTJxsJ42uwIbVpXJfP0fcYqql1gNMJuuhSZ7SU+AORhkWMxT2+Qk4LS4buQ6he0lo
+         qZfGvsUIx36owo2JhyROawEbUNAtjNybHaS0y+XD+zoaHHzCZ0RfBhiPhq40gqZMI4ju
+         lPUi3zvOiUiomjR2Gqn5EjntXRFOUBv/Mxuk2GUAbuW+Je2YnslcVM3CNGpzGAIDOi0s
+         /5+rPC/vdYM0bhRYOoGSodM9ikgUA/dVtWqHbjKtOng0h1L0MhT8QLtayI3/k8tp8sxR
+         lhRQ==
+X-Gm-Message-State: AFuF++modlbg7Ga5y7PXnxVx66u79265laRR0KurU0kelxc2Q7xyTnro
+	ag0rvzcevmK8TvgIY/pe98bRUyfPTbMONjMz3McCgOk5jz0O9xOeFf7q41h7DIer1otQexeD8Ry
+	4CeUDE5E5T5wrZDT1BYL7GLpYaDxVYLTy3AzP
+X-Gm-Gg: AYBFou0oD2UAeGYHoN9PVwoi0gRMRTuv736JXW0CwKPoszhIpFS7pTqCDCHMQomhdax
+	b+p5nSERCXzicMj7iUblqTLcJ5Ec/BOnRSl9Ik/7XHHmEkxwM5h0+Lpb2E8QeqmCpKAmLLCqgML
+	5SDmMcZW1ycVAYGPXz1o7OScXDp5QQK0VODeUZ9nFjh4mWj8eUT1ZO/i4oQr2PX+nelx5MO9qNq
+	f/ZLElBnko3ILe5mlqlHCGLrpouSkpYVenqmcvShrshMgbY8G4yKqTp/twuCjH9ab20Ndidh/86
+	/lCGelMubbl1xlQWTXg7jJHCF6Br0MDlobc9C72vc3Ycd7+D1dzYzUA0Ldjow8IsKMEEBKT3pOX
+	pqCKD4Y+oMxNSOf+iH1BzY56hoSRTZ0A=
+X-Received: by 2002:a05:6402:52c9:b0:6a5:ed9e:b4a1 with SMTP id
+ 4fb4d7f45d1cf-6a6829ad89fmr2344805a12.13.1788342143147; Wed, 02 Sep 2026
+ 02:42:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788277742.git.mattst88@gmail.com> <4524c04f1bc23f244650c7054ee449b6af054b86.1788277742.git.mattst88@gmail.com>
-In-Reply-To: <4524c04f1bc23f244650c7054ee449b6af054b86.1788277742.git.mattst88@gmail.com>
+References: <cover.1788277742.git.mattst88@gmail.com> <802e4076e332cb82fcca73d8e22e0a591e44ab45.1788277742.git.mattst88@gmail.com>
+In-Reply-To: <802e4076e332cb82fcca73d8e22e0a591e44ab45.1788277742.git.mattst88@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 2 Sep 2026 11:35:01 +0200
-X-Gm-Features: AcwNN1WCrBpqyHs5YZzs-iDskP2UNe4cTrLl_49Ymgyr1yqF1dJ58tr_0kgjpAE
-Message-ID: <CA+=Fv5ROhLgZ0DmZekFWnW=H50n++-jeH7W+dgrk7N50hKi_+w@mail.gmail.com>
-Subject: Re: [PATCH 12/24] alpha: add HAVE_ARCH_THREAD_STRUCT_WHITELIST support
+Date: Wed, 2 Sep 2026 11:42:11 +0200
+X-Gm-Features: AcwNN1WeQg8auXTfAiPp9obWnMyCg_-UrnnazrrKK9k8O-gQb7ik0Xi3Zc4DBbc
+Message-ID: <CA+=Fv5QcmifCM7gm18z5sYvZcaexqXsiGQfygTt0=srKhSmPqw@mail.gmail.com>
+Subject: Re: [PATCH 13/24] alpha: add ARCH_HAS_PTE_SPECIAL support
 To: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org, richard.henderson@linaro.org, 
 	linux-kernel@vger.kernel.org
@@ -100,28 +100,26 @@ Hi Matt,
 On Tue, Sep 1, 2026 at 5:51=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
 te:
 >
-> Alpha's thread_struct is empty (all per-thread state lives in
-> thread_info), so the whitelist is trivially empty. This is more
-> explicit than the generic fallback, which computes the full
-> thread_struct size as copyable.
+> Add _PAGE_SPECIAL using bit 19 (0x80000), which is unused in the Alpha
+> PTE layout. This enables pte_special()/pte_mkspecial() for marking PTEs
+> that are not backed by struct page (VDSO mappings, zero page,
+> io_remap_pfn_range, etc.).
+>
+> Include _PAGE_SPECIAL in _PAGE_CHG_MASK so it is preserved across
+> pte_modify() calls.
 >
 > Assisted-by: Claude:claude-opus-4-6
 > Signed-off-by: Matt Turner <mattst88@gmail.com>
 
-
 I tested this on an AlphaServer ES40 with
-CONFIG_HARDENED_USERCOPY=3Dy.
+CONFIG_ARCH_HAS_PTE_SPECIAL=3Dy.
 
-The task_struct slab reports a zero-sized usercopy region, as expected
-for Alpha's empty thread_struct:
+A focused anonymous-memory test faulted in 256 shared zero pages,
+changed their protections from read-write to read-only and back, and
+then wrote to every page to trigger replacement with private COW pages.
 
-  $ cat /sys/kernel/slab/task_struct/usersize
-  0
-
-The usercopy KUnit suite also passed all tests:
-
-  # usercopy: pass:4 fail:0 skip:0 total:4
-  ok 1 usercopy
+The test completed successfully, all data checks passed, and no
+page-table or bad-PTE warnings appeared in dmesg.
 
 Tested-by: Magnus Lindholm <linmag7@gmail.com>
 Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
