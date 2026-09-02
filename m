@@ -1,129 +1,127 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF6DF367280
-	for <linux-alpha@vger.kernel.org>; Wed,  2 Sep 2026 21:09:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 332D4411FA1
+	for <linux-alpha@vger.kernel.org>; Wed,  2 Sep 2026 21:56:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.53
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788383356; cv=pass; b=VTZd1Q+Zin+L6+AAA3Iinjcf23pVAPlGswQj/+b+4WLPwWB11gbAH8ScLeceLMjKQnDAon1gNdT0UZDWltmibcCLMdOwo/Jsn5+S7dcV3vF/ERVLOtwmMo1A3JG75z6wS1sblUaXxDKMOGpFASuhe1jyR5qyiUyEluTMyoWCVfw=
+	t=1788386196; cv=pass; b=MuBFABIjqgZFmWdSHXGUq+4Qa4D2bQntJJFTwsQiGF4yir3j0NNxImM+qlpplKd6E8Q2/XJLv6R/oJWJ3aPJI2v+LK3jIuv7EoenFumHiubU8H3spA/WBVQgzhP8TMiGbj5BiPvU0o6jVboCmFR0WS5mGTQegoEqah1PlvRHSrA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788383356; c=relaxed/simple;
-	bh=6LAkCHWQ+Xh6b/xHtFhNwl5IQ0yXktFR8/LntIm839Y=;
+	s=arc-20240116; t=1788386196; c=relaxed/simple;
+	bh=21/nJ2JG86ZmyudvdGJFQmlHwpTTr1KQYUF2u8EakGo=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=s1h0MnwUMqHOrlyXyqi4om5oRZFKEvIZ/kRy0bo3A8q2M/1B9piWLIds6sh9jn62/AMaY0YZFE7KSAtdcpDj4FuZQmRUTYQp0mwUNDtG2lVRWBxk3c0S2572VLRp5yQ+t00CPmfB6fVG77DG/CI8xNAK+tK+uedd8UrQyTvUYbA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iBl4TCqs; arc=pass smtp.client-ip=209.85.208.41
+	 To:Cc:Content-Type; b=NyEjMVtvAzwa2SdcYvLNQhfGCBIKfuGlMYxFEjH0izU7bM5Y6krbVsfyvNFi677k1mR76HjQZGr2bgnl8S091tMVegN2mwVVb86WXCTPSPjbxV0yoeGK4NYATFoMNHNcKw1Nv2/iecaW3JLlUsCG4SYIGs4FwRJgN11mSMds1Ig=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eObhKXzc; arc=pass smtp.client-ip=209.85.208.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iBl4TCqs"
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6a5e392b2b3so2584297a12.1
-        for <linux-alpha@vger.kernel.org>; Wed, 02 Sep 2026 14:09:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788383353; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eObhKXzc"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-69fab5a852cso2635753a12.0
+        for <linux-alpha@vger.kernel.org>; Wed, 02 Sep 2026 14:56:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788386189; cv=none;
         d=google.com; s=arc-20260327;
-        b=boouZ6/Li8l55XtR2bChdR7TV1Zz9dRBWfr3tnrJMCFss7yWRGRtVi9FD0+vEezVdu
-         Us7M2r957XyvNcV/tsgd+WFTKkJ+t4PKYQ20dt1upZTTVKFKxS6+568ljTj9cOOOKxrH
-         2Z4L5d5dxc2dw50ZFALoLFUnW3sqIQFl/287z8d5xxzxSqXAsOOJ50rlEEU7EnnlmjHi
-         ZdvcqfZFBgQDnzOUXQJRElaH56PMdE4zUfjDyyl5JM2SZ5cWEiEMykvRFk5LVOOCVPyt
-         NuauCn/v1gQ72LOzo2W0R0DMXdsMcYrf7lQyFuIQlsYEoctjlA7ovAmTwH7ug22PdkDW
-         hbJA==
+        b=K716lzOWM6oyRA33lxTGv14BBptOo+5v+aK+Bg4v+rKlcYRIaTYaPnf5kO4RPCpyfa
+         fYU7piXUq7RS8VsaoRdavGvH+DvIV4jvsqNVwPI+uAdDYgB3vMKtEh5a2+fEfwQ0nc0N
+         zcF4i0mPe9rccv70qxV6W9grbUSTzOnRsR4ctrAt24oJNXwankyt4jlrxLQg767sg3BF
+         wBpL3OhNt1K/vSHm71HmAnR5cYyJUKUZ4XPFO0QD2ho9IjemZIYAkdNLaTfQkwgok1et
+         cMwoOfdzotOpwKRo21jGvEqGbIRx/fV5qVErn7f+1m2EPSkaGXHakIsDQ+VhFJJXdSQV
+         1Wog==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=ITS+WCs3MQ+DxFTvKg1KfeLAgxV5qMgoTbk5uHwFoBM=;
+        bh=lcF/ULVELGwtuvOq9i4Lf+ITn8c75wezBXYyv+4wehA=;
         fh=bLXUq4zKMKoVtr4en67hBbn5AghZJydmSMAYDJEBeBg=;
-        b=YRsXVMSvIU1PwCGi5+Gx0DlWvaw7xnBMKgbysg9J78O1HqZXiI4Gw8dKGVZRl9b5I0
-         cs1y3lKdeZ94jT/jLJ+/S1bMBFxIC+Bq91x2up3Lz3qMBH3yEkUZWYdL5ABt4/WX8gd1
-         zRjwAEvo1yyAxpk5oizioSXkrPtOn3AQn0nsSBDQUvL3Wv//s4FByQQZnfBLLfcLk4zA
-         b+9WFQXLvRbUz29Jae/TGKpDtYTLC/H2Czi+v+uRDSH1WJw/xSc1laEOjsIBeu22rNME
-         CKE/RwM5WE29bnrC5RItjeNycnhS+Vpyik2PZjT5OsPFHjUD0Eziqudi7VTuDK5f5dz0
-         dBdg==;
+        b=YvYwPL05DNHf4UtC4XNSqSj2RADN5usoSWsvyVxCO3BybMf0/b3Vo4szkdXc9NSboP
+         z76+hiKRWQ2Zr7vtrHd2uZnKx4dShcRl6w7gkFeSs1Xy4yyH1pn7z2dJVUD0aUYmm8av
+         Er58k1fkt6nHW7/EKsvaPiciiaU+YKxmrcU71Gol9WyaCSrwVSEtSDnvUA6KEOzB+dcL
+         qYXvZ10iGJxlE76VbSnQaBBLB7Wagrkedu+Z1Y19eRbenI/eqKXgNR/zLAOALGIyQ8Wy
+         Xn0ImURYQ4djsUsngzB8ugZ9tIjK+ZmbzF6GIj9+qiCoSxjwcGBA9nDxaFDkm6T0GjQz
+         I5jQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788383353; x=1788988153; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788386189; x=1788990989; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ITS+WCs3MQ+DxFTvKg1KfeLAgxV5qMgoTbk5uHwFoBM=;
-        b=iBl4TCqsWtNlLuYkGp4RYBv1wcu+8ol6hSmA3mas7QmVEkztcygaUgW6gitn+zt0R/
-         zV4lLIC1tGkdMrVm30eV2QTtx1aBu+7LSJ09k7Xf5pBIgcV5xXGiGLoa043bbytU7ZAW
-         wXBVMNnNTDkT23ZNbcLli+yhEdZ1JasrywTo/DVwfG9CsI6TrNnNVBbVlMZuMCE6PRwn
-         lLGhUBkBwhBKcAfLvckVr/V7DNfsKg9N4qj6YxfwCJA4hpPEif2QC/6A3n+Pzfhv6N/k
-         7xtMjYUqnThEpcFTgSTCNs+qEk9ttOzhop97G9ve65l2zLk7QEFBNvS0bpYuOYMfNEVu
-         Po6g==
+        bh=lcF/ULVELGwtuvOq9i4Lf+ITn8c75wezBXYyv+4wehA=;
+        b=eObhKXzcfiSaSbeB0/f2H2ZtvP4+jCVvM9EG+w0o424e21gOheXiA46MQq48SXYNHZ
+         4/zc4Y8v+LY5Ri/Ks2GhCXQf3ExMK7MQT5xNtGGy+z9Rfm6XzXzqmAS+vkZbTMQFY2ig
+         rU7nFo/9pO5nFrPhXw4DL9/DAF+uqSeZK7KaJc/mri597WzbuPCKPRaoo5jm4I+Cu8to
+         b8Jd7yWlp+76Wm2Ayjjg/5IsfHopIeHg00rIJlIzr8BAypJXQj8i5sTEu3CZyiDp1p+b
+         lIeZfpJbz+68BnLxGWhdRrYkGURwxye1zcsOpASLxVyO82QFg8kSSvTYuyatd51Lts/G
+         Ad2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788383353; x=1788988153;
+        d=1e100.net; s=20251104; t=1788386189; x=1788990989;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ITS+WCs3MQ+DxFTvKg1KfeLAgxV5qMgoTbk5uHwFoBM=;
-        b=AFMBznt/J7F9oYys/eL4JDVfejkfECE04V0ReHC8UkfBNZj0nG1nWLuUORELuHkYU+
-         uIsgFu1dNhOBpJqCQLqJnpr5kH8UtoFvAsy+wzDVaSopbe9vj9ZKlCYrNusAmBub8fgV
-         G/hm8ehkYwYklvwmen/6QpDEQUd5LCILu/knZtqPcItbTgh3EvfnC3V7jjg3MbLS8gz6
-         EmlrZuFqIjTvPWP86D52KKe+YYKKcKJ+zzpFvJw5nemePQpnAALpV718/A1GHrvvlB3z
-         7cZdd4dQNPYG+3xufuRyS6fgzuL0hpAnblNXPkfT5Y0b87rzvI+rhwMDnJoEhdSe/MoR
-         jh8w==
-X-Gm-Message-State: AFuF++kFkbe6BxgHZ6DyfZP+ia1Eajfb9AKKjo5smj3QHpNTv8dRUJWR
-	a9aKDvfxPvfOaeb2SVX9PSYFF+0cu1pem7pHXFvxqnuexALdJL3BGOwrdJDB/KH9Rze1ZGEdimS
-	CmZi9DAjAyu7OUK8O1x6kCaoC2TU8eQFBA5ErcJM=
-X-Gm-Gg: AYBFou11UjSHRwH5350KT8opCnP81CTQLGI09Tq5tpgKY28RpAG5PnrW3pZ0qiD89a0
-	PgT+2579qfTRh/UPXxXg6vIGSgVsxY3kGxGZAaAPT7SbIREKrTQxChmTY7+ZHbu+bUqfS75nSW1
-	oM6K89DLeR+N/9zRnCVeQIrPxk1kt+Lm2FTOEIff4tqPWl3lNBAxfmBJ4RCOukNby3KkHKUbmrM
-	/oCpz8SQ7xZS2XsvEQk4iw+AV1VBY0iL5LSzb4AcsIYMjXMt0VMymYJd3fIINEJstVZLx0Prc0d
-	s+urdAELsflV6uJGUSy7rD8+YcUGMnWmZkgsxWZpaAQ56MbcM17LEBDkZ7l4L5c6UHMMqeeaQe6
-	8CGSdAqofKsO5JKmj32S5OoCjb1PC3zZx
-X-Received: by 2002:a05:6402:52c9:b0:6a5:f203:ba4b with SMTP id
- 4fb4d7f45d1cf-6a6832e4e4fmr5407484a12.16.1788383352594; Wed, 02 Sep 2026
- 14:09:12 -0700 (PDT)
+        bh=lcF/ULVELGwtuvOq9i4Lf+ITn8c75wezBXYyv+4wehA=;
+        b=HMRl210L59CHdDTWjjlyZ5FC4qLGb6O11IaGMcCEQd0OL0fAqKgW/R+LDO/3Ozj7sk
+         FUDWjJlT0vwjT+Q84odsgb5uAeP1AM3qhYxAelnKi89090jgc7PGyOC61P+K9qdbcFPJ
+         xbuWC0aOuc0PusLn6MrHUL2Q6RMhlxRn80aptZKgkTQnSeXbUNpZxJyD8w634NAEPPzb
+         TaXTK4y0x089aX3VoKywyfZwgSBaDlqre5thrK3srCvIhBP+DX44qkyXVjn08HTjgZEm
+         CTR8sGRcRs4bB/fV+tDk860e6MConZCVokad14TGCb6y1/Vf2TdBal7JXZlkqm/oyFE7
+         OGVQ==
+X-Gm-Message-State: AFuF++lFf6gOtPqmdiOQzRddu3BaIRiwC1Ip3+++HCp0PWfCAVrWvAz9
+	B483cMiB/gDw0btwZ89pAGbYSQ9YlMKkeDrwbOaUJUFcvRy19dE2O+spFiEPxIyXqX8UM9HcvXh
+	55oUK7xbQ63SjJ62ztrhHUc49X4nqkmE=
+X-Gm-Gg: AYBFou31xCbIcBhVJDk3CgGTuh3ssMnXFZQQzu4k5aMvYrU7OfLaO8BAORcTaREQF2w
+	IJh2yRRpqKOUGtlpjhVOc4/5E8YmgUw7tyyiuVYNNOOBQeJCgp+NQxwpSNVo7tMLkCHfaWTGhv3
+	iUHlA68hu3C9RiEqkV4v9GnNJL3gu4SXBZKKT92LVn6zJ1ksPtbeMTFStHvF6fnZybaWKCWRLYV
+	PIh/rioy+Jylsvq3FmhQnDkhTg2tkVOSzuLQLSazyvhPohivSH3zll5MAEnaET01fBqW8vOuEIF
+	W/tpYlnHmMBAjGAD3nzLeTvMx8J38VOP1u9R2QfGSAzxabwl+q3LoExXuy6/EjazQiCfc/Ztz5m
+	oQvrAUzjXasH2yA7cuxXYC0MuUuYYz8c1KiZDSJQPIX8=
+X-Received: by 2002:a05:6402:46c5:b0:6a6:4004:4ae6 with SMTP id
+ 4fb4d7f45d1cf-6a682566eb2mr5060996a12.5.1788386189035; Wed, 02 Sep 2026
+ 14:56:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788277742.git.mattst88@gmail.com> <96d45353c7c29cc3aaa3234bd960f38d2ed8889f.1788277742.git.mattst88@gmail.com>
-In-Reply-To: <96d45353c7c29cc3aaa3234bd960f38d2ed8889f.1788277742.git.mattst88@gmail.com>
+References: <cover.1788277742.git.mattst88@gmail.com> <21e157eb4865cb6d2d9388941d5d1dfa2e0fc42c.1788277742.git.mattst88@gmail.com>
+In-Reply-To: <21e157eb4865cb6d2d9388941d5d1dfa2e0fc42c.1788277742.git.mattst88@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 2 Sep 2026 23:09:00 +0200
-X-Gm-Features: AcwNN1Vnd5jJKP2ps-BJtZ3f17q-K909CEW1Vx1QOhe1D2REOQkwE3-6KhQqV3s
-Message-ID: <CA+=Fv5Q_=BTtgA7Ypq4fE+cu+5Ui_BKAgC4cW38CR-Owqwtd_g@mail.gmail.com>
-Subject: Re: [PATCH 16/24] alpha: select HAVE_GUP_FAST
+Date: Wed, 2 Sep 2026 23:56:17 +0200
+X-Gm-Features: AcwNN1VjYq87qITE7Acw5kFbCny_dOG0XnyqA8y65CBq98Ml7GCwlC7kFUqBG_g
+Message-ID: <CA+=Fv5TY5x0e+NMaYWV1u7=Xb2fZELQ2AjMXv9a8E842orTPCw@mail.gmail.com>
+Subject: Re: [PATCH 17/24] alpha: select ARCH_USE_MEMTEST
 To: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org, richard.henderson@linaro.org, 
 	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Matt,
-
 On Tue, Sep 1, 2026 at 5:51=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
 te:
 >
-> The lockless GUP fast path needs the architecture to distinguish PTEs
-> with no struct page behind them and to keep page table pages alive while
-> a walker holds no lock.  Alpha now has ARCH_HAS_PTE_SPECIAL, and it has
-> selected MMU_GATHER_RCU_TABLE_FREE for a long time, so both requirements
-> are met.
+> Wire up the generic early memtest from arch_mm_preinit(), which runs
+> after parse_early_param() has picked up the memtest=3D command line optio=
+n
+> and before memblock_free_all() hands the memory to the buddy allocator.
+> paging_init() would be the natural place, but Alpha calls it from
+> setup_arch(), before the option is parsed, so the test would never run.
 >
-> PTEs are a single 64-bit word on Alpha, so the lockless reads that the
-> generic walker performs cannot tear, and no arch-specific
-> gup_fast_permitted() or ptep_get_lockless() is needed.
+> The test range starts at the first DRAM address rather than physical zero
+> because low memory on Alpha is owned by the console and PALcode.
+>
+> Tested under QEMU with memtest=3D4: all four patterns pass over the free
+> memblock ranges, with no bad memory reserved.
 >
 > Assisted-by: Claude:claude-opus-5
 > Signed-off-by: Matt Turner <mattst88@gmail.com>
 
 
-I tested this on an Alpha UP2000 with CONFIG_HAVE_GUP_FAST=3Dy,
-CONFIG_ARCH_HAS_PTE_SPECIAL=3Dy, and
-CONFIG_MMU_GATHER_RCU_TABLE_FREE=3Dy.
+I tested this on an Alpha UP2000 with CONFIG_MEMTEST=3Dy and memtest=3D4.
+The early memory test completed successfully and reported:
 
-The in-tree gup_test completed the get_user_pages_fast() and
-pin_user_pages_fast() benchmarks with both read-only and writable pins.
-Each case ran ten iterations over a 16 MiB mapping, fetching 123 pages
-per call.
+  EarlyMemtestBad:       0 kB
 
-All four cases completed with ioctl status 0 and no failures.
+It would also be useful to add ALPHA to the memtest=3D architecture list
+in Documentation/admin-guide/kernel-parameters.txt.
 
 Tested-by: Magnus Lindholm <linmag7@gmail.com>
 Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
