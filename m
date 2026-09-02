@@ -1,94 +1,94 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E532C40912B
-	for <linux-alpha@vger.kernel.org>; Wed,  2 Sep 2026 09:12:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 672D941684A
+	for <linux-alpha@vger.kernel.org>; Wed,  2 Sep 2026 09:26:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.51
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788340324; cv=pass; b=clZMau9t/CxOQ/HNBl16xoqEWNvVvZYcXySlZmXHWOWVzzpp2afxtgafTmEHLDoMQO8aE3qQ4c78gCdLGDnCUtR5X02i6MYS49ncgrm1665+QNkQkqGl0nDl5YQ4Bp7J0RzUskZloDkodL07tt8RTjT8BHSt14zJc0XtjsHi3vY=
+	t=1788341165; cv=pass; b=Y0HrK2R5WYleGConHhmBqkYJBbr8WhElbMoklW3VeWEEqrkrjPX61uu97ys62tp5CIsHf56WN4lH4uZSNGd+cP+Aae/4JNsW5ZyWCudkoXO0pqupEsaO/T6fzh+/zQCJ2XWJvSP2J5/K71BQWPE674AJ6xpTRWJEPgAzTMos3JY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788340324; c=relaxed/simple;
-	bh=zPIeU2nyncnp4qwag62RzVvPwiBDgS0DFxIK2uUgu98=;
+	s=arc-20240116; t=1788341165; c=relaxed/simple;
+	bh=cCUWfn06UMRU6TRNAb8tmxA0a3adzcLoZTCZNoCsaoA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OjMVjp9xvbrCGeeWlUF5D/4ju6LPrUA2Bbs1yuHAN36IF3Z54EzEGEEivhLxVfueW33hw591ov221TMUx9A2gIOBe9f+5hu/4X1M/Ut/tO1u1A27BdIgCH78sPTfWfspOy5rGhmoj6NJkvYe8G0apG6LBBip8/jvxRi65b8hf9s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KE/lWrTh; arc=pass smtp.client-ip=209.85.208.46
+	 To:Cc:Content-Type; b=YPr2Sh5r1JB7nAPPXeNxnUDFzUdOqqZJ1IeIU2c42S0GbIzsxRFYFZznPcHM9ibRsgpWv7R9qYuzsU2BXGhUsT63vJNq+CO0iNqHymSNcGGZnBshH1nAzNHLsN8pA50kpg6MQhFsYg/nrMxTZbQA3VdNdQD6L1ylTKRll5xh9co=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=tJTy3tKf; arc=pass smtp.client-ip=209.85.208.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KE/lWrTh"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-6a18e24ad25so1158560a12.1
-        for <linux-alpha@vger.kernel.org>; Wed, 02 Sep 2026 02:12:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788340321; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tJTy3tKf"
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6a642495d81so1409118a12.2
+        for <linux-alpha@vger.kernel.org>; Wed, 02 Sep 2026 02:26:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788341161; cv=none;
         d=google.com; s=arc-20260327;
-        b=KmXKBUkvOgG9IoRzKD0u2bNUqZoBR583ezsKh3lJHNAH/rYrDBIFR3zC+lF0HBZ4KI
-         iSA4f3XnXQy3fnBI3ejC7oO9sIwYej534TzfVCQdmfg8zTdeXDvWwpNiTKnds7CNlewx
-         Dd8NbGpXxA2yfQHqj22hzxYdWDT7/2iKpNSAnG2ZZqP/cd+P3qYhgziDOlwzYCfioCrt
-         wW/KQ++g1CUagP61zeWffJPtflGazcYmyXVZGKln0hHpSoKu0LNzh2QwPOZZ4t82vuPx
-         daCRJ8A7colBaTA5WQxLlv7SBE9tOi5/LUdWVK/zPWz1o0Rkvcj889/nfQV2+BEIo5f3
-         s24A==
+        b=grXzOEISlpy5ZPrGY2AwCoHHiotrNFV0Wl+G0pEAgTZSOkZeMoTtLkhMnfMoB277Q9
+         rWcbsjR++g9PiEqti6x1Ds6zJu2AYxtUtAjTu8VDB+bVww6TkBpxjwZtmruAnUqpImLO
+         9BxzbVzrtb2leEvyDPNy/1sGyEaaMWYsz3BV8GkJ2ZArD6jz+9qZYfKs46JEEU23c1qK
+         YmATzg8PgA1ds3qicMiE3n6yRbFgqC6WNooE1ikmCbE8jL3b/KnGiaXLGzXCMtwtUg5Q
+         jWdgES9/vugEtCKY5sUQXbptG/hKjM5M0oJI37tjGbrYju45I3iOauMlwSScw/GdCIt0
+         aNFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=w6ZzURnfoAOg1rVh3HCbKIn42FKY1C5XP5qqd+lFbxk=;
+        bh=Hle8i6U5Zki0AeMEcz+0X3ReRhMA1qAerae52zLL4jU=;
         fh=bLXUq4zKMKoVtr4en67hBbn5AghZJydmSMAYDJEBeBg=;
-        b=ldCzydGA486FXpBIOa9jraBY8sfOI1w/LTz1ACrLp6P2I6bNHwm+xOs8ohaHFaQpLi
-         Mr2RR+znKL0Hx47W/aHlXt5yLxP2CJxXeAXfeiVe9qtlaRauPFqivv3vNa39VnSdsgAg
-         4aWcxld11YPfxrCUUemcCKU3BKpTZag3QadP0ynV0T+uD7pGKAYXDG/YA5UudIkTYiJS
-         V2aSP5h95mOD1A/oWlK0i16y/zFLWx0wQUGorDnLLZVJoV+WvrkqL94O3sYYGmCskCzs
-         O5h0zc2TSrVk3fKpMLSxXbTYKnQlzYcpnJo+qSJ1aAgU0r6TGfHqjQpfo6b3B14Lj7qx
-         x6HQ==;
+        b=iJd22jprhRV5gCwu8OQ1DkZsrk0Ld/3Qemf/eiwwm5dIJjyhwAES6uPHCeYoiv+PVm
+         lsImWiK5t7Zl0cQaGtCNcRlextcxhMjHSCxUK+tBT9G9D4xyNE6a6PJ/P36rmikZmNfB
+         1FOj4Yf3KdqHNqrREwghsenBz4W2XCAF2i+2mGkIY6lhdAVwQRaKImfjbuamRLjaXmVC
+         CYaF0CAlAHu5FpKfBbRWBxLzTiivQ2PRo9VP0Vz48D7OUh8A87PxqOK1vVrhtyG1gmQL
+         3gNZxE1KCMmJJp1QpTPhThma539o3TxKVqZImRKZS7QQsF81SkJ4WKJSOPZ4zz9w21pV
+         FTkw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788340321; x=1788945121; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788341161; x=1788945961; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=w6ZzURnfoAOg1rVh3HCbKIn42FKY1C5XP5qqd+lFbxk=;
-        b=KE/lWrThBxJyVm4GN2jHMT81bex6vHo4GDXQnYEtBkeJrtnwvydRcItsnXnWoblue+
-         rpKH43hSbly4WZT+MjqghRwu4tzjoEbvW0FVmmrd6Waxd/A/0JR/f5HbjYVmlUUspWsr
-         RKaKKHJIG0EiSP1j4VtolYUf0tyNPvxCmB60H+rlgWkhCL1fmKNOounegBlMeUTL7O67
-         ldnfRDgbzu5+NihF5FxFDDo/lBPFqpE5/nCPl/Fqfen0jbqs73P6X+qCRDHnVChx2EzT
-         +f7K+U9ZYis2e5xPUiiONchedxEK2KPiHj29m/4HiFukUhKmUXPyjgHIpCpG+yeR1SM9
-         8H4Q==
+        bh=Hle8i6U5Zki0AeMEcz+0X3ReRhMA1qAerae52zLL4jU=;
+        b=tJTy3tKfo6CdOzYaFoRb8dtOF4vPhSskwFJf6NiD/oPdgvNaUoOeluD2V7ee1sMRJI
+         b5g1zx3sgptRSd6f5473Xd4bJFfrSveSKYVcTvQ8pIPju0sbsDOm0zy45hiUC4h+RBJr
+         zJKiC2XrXYEi3GrsBphYSKyDrbIZURCq13NEVxG8w6tJmgAjdWOxJ30jwT4cFT/RG4aQ
+         13sYqKivNDP5lsD5kesfrKcBQWQAIPoi//d60YqkvVHZnRW6Lkem8dx8j/aj2IfqR+qZ
+         WO5ZgeTi+ESIVmaGs4tM+snI6o8qGcoMdAurqpDh5gfBUvaKDthYYNEvts91qu9Zyjka
+         rrwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788340321; x=1788945121;
+        d=1e100.net; s=20251104; t=1788341161; x=1788945961;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=w6ZzURnfoAOg1rVh3HCbKIn42FKY1C5XP5qqd+lFbxk=;
-        b=qGypj9G2KFfixtdAQTDMfO7UZUzYqmwVnMxSO68nbuXlCGxmovBIzvzBE6zwyFaSy3
-         waOQYdkWA/EsvtuPK8dfqgVbv0a1CLG/DM3eU8W8G72S6dx8q3/SO2y7zwj6Y5eZLaqm
-         ABubRw0slBvaSrI8tDOI76FrBvSHTnuZOrn8wFqHxCRCJEK/cMYWGkZwos4GIncqJK8a
-         x40Mb/ljRjIdX/Q5Cgsb0V6cExgPc14V0G2g5pQ/3/LFWVcV0oTKkAvzhufK3gD/GbeA
-         STUfcyRlTJamph1t68gCuj8LSPw+5BDyJrkth5CWJuTRgEfMSZ7msr/jgRq4SL6lmdKz
-         D4rA==
-X-Gm-Message-State: AFuF++lHpq5qaN1uPVArA7R8D3UZ1emnWoi/WSZqUW5XlOAO8UBmKjQK
-	BMVCQ7mW5pmbBRAj+Hco/UOho4mb6cJkZEcgIqY5Od4LtsV3ZR+sl9+IzuehaMYhARWldpD4Z9k
-	OMiZE4liTUdr7wwfDCB2tT9rd3/OVCS8=
-X-Gm-Gg: AYBFou1n7iKvfu5wOGaCiEMuLjdPk90fzL8jKQ2zbdlad62r7lCjksW3FhtdLnLp8M+
-	qGh4Kp+CraXfnf7vPGnEi/5jURp0eYVr1zhQCmFT6DZY6BsVaegifMWcIERgrqd3/hzSMcXnHdo
-	gTzeoEsOPaSQY4gRuvsJQ2K2dJ4KmdryR4+b+zmoD8B2qfGQz6TQH/6Yg+zt8+RByF4zC98CNsr
-	OQdO+fhpBiF/bJxJYDrLjdldxqFrO7a63HtaQRsABwih8QgE+rXezbM1+r1pMXCC1dqt86qQQ1n
-	zlvCGzktTiShHXfpba5SE9GUaM2kn/YmoMfz2oWS2aSLCsk2SNruX4jK31+m8LzpZS427mzpopK
-	F9bPFvJW6hB4bPPtCucSEHkz/LejESu4=
-X-Received: by 2002:a05:6402:21d4:b0:6a3:f63a:4997 with SMTP id
- 4fb4d7f45d1cf-6a682567131mr2177249a12.3.1788340320712; Wed, 02 Sep 2026
- 02:12:00 -0700 (PDT)
+        bh=Hle8i6U5Zki0AeMEcz+0X3ReRhMA1qAerae52zLL4jU=;
+        b=Dsx9C8n9QFU2aVesPfdb8kOp5W2+YN/uuP9se8CwoI1CDHb0g8Z+HLEf3Ufvy7zLIM
+         5lFAHmL9wbcm5LJNvs0cRjoydb+QwxLCwrOahK40nLp9ccuAoIgmOlJiwc6hFx69Jym8
+         /sPMMa80M2d6KnkUd1KZTEdsTwJEZZeFaF7nbLF3cXzMeBApKF8raLNZAUi90Ny0jwES
+         rU/dAkuuUfdIyJDoqiBb362Tt2pY2UjCu0ulJqtkBqio1zFs+l0fQqXtNPXHQBf/u8SE
+         ktuH+BO2miEj+bZn6xS8W+z6RgaCXNwTTMlB+K8pxJERoEt6C1V+4lvKybhiJG1Cfapp
+         myYw==
+X-Gm-Message-State: AFuF++mtgdxNE4Vxoyl8n8YL+VdJdc2oSgb9Y2q9jSBY0zYXVIe/iHXB
+	Et3WaxfbyqJLOYCXsudhSh4DnWVg1XrfRjVuLwil6Vn8Z6rHENAQjFDERFty3Cp4wcGhPF7wpOu
+	aKLMlwI96fhJjMc3efWCi+8MNVjuIcHs=
+X-Gm-Gg: AYBFou2orudJkXDnKg1eRociuIn4M8lTTTVeJAOGJUNMkgBxzArj6OxC64syZL61LUQ
+	K6A/6oUlN1RjVZhfgQllQrgnKgGduaN1qyMVjvR7zKjZCj+5nueAR3vlYRY/JhVukfOhg/yyhbq
+	U79pVba8LD5/CsmRvxxJjkADZ0RNGW/oiaVdpia/ezbSi5shiOyRVkZNh8VuDSx+yLFxI01oWpo
+	q/zfy868GVTR87HnLsIvmuJizUsEue6g4SHKsYTgRKRkZCSVvp3LZqoQXIzvfA3SaJ6EkHYhVVc
+	fofs6vqOrvEKwHnfqWocKwBksn1jWE4LdCk6MCQfMWMpj7RLP86BSY/rL4jJtLZoA73uWAlbsJ+
+	nMXK71dTeJfAAFCQkcmmLaP3JKaNjfXE=
+X-Received: by 2002:a05:6402:44db:b0:6a6:6346:af03 with SMTP id
+ 4fb4d7f45d1cf-6a68234c350mr2119123a12.5.1788341161195; Wed, 02 Sep 2026
+ 02:26:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788277742.git.mattst88@gmail.com> <dc9ec3ff88fd895cc4daf846bdebe9ed2a58d507.1788277742.git.mattst88@gmail.com>
-In-Reply-To: <dc9ec3ff88fd895cc4daf846bdebe9ed2a58d507.1788277742.git.mattst88@gmail.com>
+References: <cover.1788277742.git.mattst88@gmail.com> <a24c28c35c32335822ceb977dc3e860609c50ca7.1788277742.git.mattst88@gmail.com>
+In-Reply-To: <a24c28c35c32335822ceb977dc3e860609c50ca7.1788277742.git.mattst88@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 2 Sep 2026 11:11:49 +0200
-X-Gm-Features: AcwNN1W-bysK_UU6D1gNJGL4hkeLn89fMcgmtQ7gQeFBsPWL2yf6N6O3MoMWeZ8
-Message-ID: <CA+=Fv5S=N849_UN2AS-Q1aY-34wvVaY56gWY1ULG8hpNV1kuVg@mail.gmail.com>
-Subject: Re: [PATCH 10/24] alpha: select HAVE_ARCH_COMPILER_H
+Date: Wed, 2 Sep 2026 11:25:48 +0200
+X-Gm-Features: AcwNN1VHt8YKe3SoQU8DzJLTk-9J9GLSJswVYEvwz3fWJMFoEX6-Et02RNfO27A
+Message-ID: <CA+=Fv5SbH+Qtr9R7O7ujth3pYQp4W6x9ZOX15Sf96rRYUT=wYg@mail.gmail.com>
+Subject: Re: [PATCH 11/24] alpha: select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
 To: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org, richard.henderson@linaro.org, 
 	linux-kernel@vger.kernel.org
@@ -100,41 +100,28 @@ Hi Matt,
 On Tue, Sep 1, 2026 at 5:51=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
 te:
 >
-> Alpha already provides asm/compiler.h (wrapping uapi/asm/compiler.h)
-> which defines architecture-specific compiler intrinsics like
-> __kernel_cmpbge, __kernel_cttz, __kernel_ctlz, and __kernel_ctpop.
+> Alpha has a clean split between user and kernel address spaces: user
+> space occupies 0x0000000000000000-0x000003ffffffffff (TASK_SIZE), while
+> kernel space uses KSEG and vmalloc regions near the top of the 64-bit
+> address space. These are strictly non-overlapping.
 >
-> Selecting HAVE_ARCH_COMPILER_H causes linux/compiler_types.h to include
-> asm/compiler.h, making these definitions available consistently.
-
+> This enables optimizations in BPF and tracing that can skip address
+> range checks when user and kernel pointers are distinguishable by
+> address alone.
+>
 
 I tested this on an AlphaServer ES40. The kernel built and booted
-successfully with CONFIG_HAVE_ARCH_COMPILER_H=3Dy, and the in-tree
-test_bitops module completed without errors.
+successfully with CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE=3Dy.
 
-While testing this patch, the FFS KUnit suite exposed a separate,
-pre-existing issue in the EV67 Alpha fls64() implementation. The
-zero-input tests failed with the contradictory diagnostic:
+I verified that userspace mappings were below TASK_SIZE
+(0x0000040000000000), while the kernel text was in the high Alpha
+kernel address range:
 
-  Expected fls64(input) =3D=3D 0, but
-      fls64(input) =3D=3D 0 (0x0)
+  0x000002000025a000  highest observed userspace mapping
+  0xfffffc0000310000  _stext
 
-The EV67 implementation passes zero to __kernel_ctlz(), which GCC maps
-to __builtin_clzl(). The result of __builtin_clzl(0) is undefined, so
-the compiler can optimize the comparison inconsistently with the value
-returned by the Alpha ctlz instruction.
-
-I verified the diagnosis by changing fls64() to handle zero explicitly:
-
-  return word ? 64 - __kernel_ctlz(word) : 0;
-
-With that change, the FFS KUnit result improved from 8/9 to 9/9 tests
-passing.
-
-This appears unrelated to this patch, since asm/bitops.h already
-included asm/compiler.h directly before HAVE_ARCH_COMPILER_H was
-selected. I am mentioning it here since this patch led to the issue
-being discovered.
+This confirms that the observed user and kernel virtual address ranges
+are non-overlapping.
 
 Tested-by: Magnus Lindholm <linmag7@gmail.com>
 Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
