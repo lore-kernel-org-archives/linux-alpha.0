@@ -1,125 +1,194 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 223763EE1D3
-	for <linux-alpha@vger.kernel.org>; Wed,  2 Sep 2026 09:42:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788342146; cv=pass; b=iE/VAb9o2PToJFzI0tFQVjaOBHbJrrrfHohLzJVQrm6kuXk8WuNdnureAasWRPgJXwFVsO20ky90TMTjNkdrfjV+cSMxqUHOZESDsxcP0tmm+vJYeulXmC9vgc62Ee3XvngZAMTj8TOiQsB1WHX1SQPtfyAiN0OlZp3I5sqNTAA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788342146; c=relaxed/simple;
-	bh=TZPdm3JlsBSyBiqpPl8P3NLVGhX7z88eUZs7iLPLnDo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CsJiuUED3kvzN/VwTB+eEc1vKeDYymvX6a6BL0YnTjqKl9ZEMNRLCGf+rIcKMBvHfKn5Mk/zjeas9ABIaF0t1jB54MbNYiFItB7SSQTYTt9QLBEyG0MAynnW2KuwD7qVZopXzsnVEqz3DUIZmlxW3u4+f03aPaKc4UsClMX4ODo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rcX9zH2I; arc=pass smtp.client-ip=209.85.208.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C76E441625
+	for <linux-alpha@vger.kernel.org>; Wed,  2 Sep 2026 14:44:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788360267; cv=none; b=LylysNLZ4OzoNGEG2yXBUOBgKM1w6bHmVRkm7qvW1NMTeGMW0yeQaPO2zIijSsbpj943OgVUsm5rqcwelPUsEEyu6/Y5y5+ieNM2cdZJJglmwPFbqNTzC3WPl82dxuuXwhFXULX90ec3np4KX+dcQRnBTypuBhYXXlNT5ACYvzc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788360267; c=relaxed/simple;
+	bh=PUzYQPg358Fw+8vCplV+Vd9W8fGaaTeSWjRuWnfZwLo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qwWnFlYNgQ71XJNTgbQHPK9mnuGWUa0jm1y4DMjxPM+/DYFw+d5EUhbxFfesps8Z8E/Bb0WQXVTsVZCuOENnmWm4r5fxPVRcouJ/ICfqd86c+WoBidKJ1kFCUGrRdHAVTKiE3GrltgOt3WBBkMc238oXv7OzAC9VmDsKZbeltcQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Y9leQ1yD; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rcX9zH2I"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-6a6868f18aeso762148a12.0
-        for <linux-alpha@vger.kernel.org>; Wed, 02 Sep 2026 02:42:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788342143; cv=none;
-        d=google.com; s=arc-20260327;
-        b=VkMs6J2hOmu8Nt17jjn9lUkDhJFw/4fZZvLPZ0MeZEs3LeC/m+JMzpMe6hrO9UKxUV
-         I/2Y6KoCdfiirEAR/5bPXrUpZcI2bDUQbKhtkCsUv0CEpb6RB7ugD5rS5yJTffSiEYLQ
-         4jWphpAhQkkiaSAxYd04yqRCQYc28Z2SMwXbBYJtP0IdZJdXVdwPf4ELVBbxt+eSaSVn
-         QcgQ525aCOCJ0gJWIJRKRRPY+L4LOFNlzfZ+X3DP5O/R556IhhDmFHqkQQylV8i2vISe
-         uCBLFlu2d7kxzD13h0sg97fB6nrRb0VLc8z9oizjdSnyDAIgBl2IknOxcEBf8AoPfC/K
-         qDVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=TZPdm3JlsBSyBiqpPl8P3NLVGhX7z88eUZs7iLPLnDo=;
-        fh=bLXUq4zKMKoVtr4en67hBbn5AghZJydmSMAYDJEBeBg=;
-        b=Zss4mav4ETvW2Iny49N+ralaMLF1sLppkbJcjbvFc2w4tqKCXX+o7ZEINOdoJrsfgL
-         8+6JcfWsSPE4858TT8RDa+Tip6L46lsIpSUonrpQqgj9EO1BDMrG8FFEmGOrwOPUJJfv
-         bdUW4VH1vQ28zFnCca9tawG2A4TxdkF6i06RK7slWPeGQ07YEvHrbKsfpjvqWafiGAtP
-         iPXPiC/lVKj1eBaRKbOvrMdNUTzARXahSk9uR4ixZKA0sliwRdYYVgNWc4a+p+ruVUtY
-         w8RKxEzweP7mpnSxBYlox01ZoGOuo7sIx1vfGy61duidNfD0D4Tx+GYrZrCdV5OUONzu
-         SFpw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788342143; x=1788946943; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=TZPdm3JlsBSyBiqpPl8P3NLVGhX7z88eUZs7iLPLnDo=;
-        b=rcX9zH2Ifeuk3ERm+Cu9uR2vE+z+gkZJ+VPYM4C5hSit4LJaW2BUYXBRhax1dXPU9Z
-         5L6S699yxyKkIsdQSKjyB6qDkATkJogANVwsGMCp6bzDkOVsFhpSVl4bSQDMWowwF50x
-         F6P2hhJ91V9x7Tg0RstiJ+l/Qyu+fvOl3GLAEv3Vlflfzkvn6y9Gxne2knmOxgej1U0J
-         w5RbGdQQznSCrDeiy/FsrY5SgxTw4A1mkV89X1T6fPhVqr6wGhF2CTwwqZxJH+ifKADg
-         JgtwKEKx3gIutTWEj/6ieV8Y+baKj49w50+fzLletTp80xL65L3/a7Nr0P/+jAY9I499
-         SENw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788342143; x=1788946943;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=TZPdm3JlsBSyBiqpPl8P3NLVGhX7z88eUZs7iLPLnDo=;
-        b=dl8giN5uzYtmpfcN5YZnjMDLL5Re47HmG8fBb485SfkkWCxhsvZzyS8My/8xu7T1DC
-         sShYTJxsJ42uwIbVpXJfP0fcYqql1gNMJuuhSZ7SU+AORhkWMxT2+Qk4LS4buQ6he0lo
-         qZfGvsUIx36owo2JhyROawEbUNAtjNybHaS0y+XD+zoaHHzCZ0RfBhiPhq40gqZMI4ju
-         lPUi3zvOiUiomjR2Gqn5EjntXRFOUBv/Mxuk2GUAbuW+Je2YnslcVM3CNGpzGAIDOi0s
-         /5+rPC/vdYM0bhRYOoGSodM9ikgUA/dVtWqHbjKtOng0h1L0MhT8QLtayI3/k8tp8sxR
-         lhRQ==
-X-Gm-Message-State: AFuF++modlbg7Ga5y7PXnxVx66u79265laRR0KurU0kelxc2Q7xyTnro
-	ag0rvzcevmK8TvgIY/pe98bRUyfPTbMONjMz3McCgOk5jz0O9xOeFf7q41h7DIer1otQexeD8Ry
-	4CeUDE5E5T5wrZDT1BYL7GLpYaDxVYLTy3AzP
-X-Gm-Gg: AYBFou0oD2UAeGYHoN9PVwoi0gRMRTuv736JXW0CwKPoszhIpFS7pTqCDCHMQomhdax
-	b+p5nSERCXzicMj7iUblqTLcJ5Ec/BOnRSl9Ik/7XHHmEkxwM5h0+Lpb2E8QeqmCpKAmLLCqgML
-	5SDmMcZW1ycVAYGPXz1o7OScXDp5QQK0VODeUZ9nFjh4mWj8eUT1ZO/i4oQr2PX+nelx5MO9qNq
-	f/ZLElBnko3ILe5mlqlHCGLrpouSkpYVenqmcvShrshMgbY8G4yKqTp/twuCjH9ab20Ndidh/86
-	/lCGelMubbl1xlQWTXg7jJHCF6Br0MDlobc9C72vc3Ycd7+D1dzYzUA0Ldjow8IsKMEEBKT3pOX
-	pqCKD4Y+oMxNSOf+iH1BzY56hoSRTZ0A=
-X-Received: by 2002:a05:6402:52c9:b0:6a5:ed9e:b4a1 with SMTP id
- 4fb4d7f45d1cf-6a6829ad89fmr2344805a12.13.1788342143147; Wed, 02 Sep 2026
- 02:42:23 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Y9leQ1yD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1788360264;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=U+aXXTqCSMT4v6m94l8wWsE7+DIKM+xtaz3ODxXPycs=;
+	b=Y9leQ1yDg2P2qQve7SQRCrOnFQ2IevjZoTyAdlKBO/j1srQWFq+WbdcbAkuRU5VOwISeod
+	W4kmSXwGNp0UotAfGTgTdEpXrmTdJcCHsMsFMHkxn8p+SIakx5vK+y+dpuwceHtdSgfI7+
+	XThQnwH2rRmZrK3njU+tQgJ5JS6bq+M=
+Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-554-iOdmff8TMlenYO4gBNmrnQ-1; Wed,
+ 02 Sep 2026 10:44:19 -0400
+X-MC-Unique: iOdmff8TMlenYO4gBNmrnQ-1
+X-Mimecast-MFC-AGG-ID: iOdmff8TMlenYO4gBNmrnQ_1788360253
+Received: from mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.111])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 9DB891945CB6;
+	Wed,  2 Sep 2026 14:44:09 +0000 (UTC)
+Received: from wsxc.redhat.com (unknown [10.96.134.11])
+	by mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 070E21800641;
+	Wed,  2 Sep 2026 14:43:53 +0000 (UTC)
+From: Ricardo Robaina <rrobaina@redhat.com>
+To: audit@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-csky@vger.kernel.org,
+	linux-mips@vger.kernel.org,
+	linux-openrisc@vger.kernel.org,
+	linux-parisc@vger.kernel.org,
+	linux-sh@vger.kernel.org,
+	sparclinux@vger.kernel.org,
+	linux-um@lists.infradead.org,
+	bpf@vger.kernel.org
+Cc: paul@paul-moore.com,
+	eparis@redhat.com,
+	sgrubb@redhat.com,
+	oleg@redhat.com,
+	richard.henderson@linaro.org,
+	mattst88@gmail.com,
+	linmag7@gmail.com,
+	linux@armlinux.org.uk,
+	catalin.marinas@arm.com,
+	will@kernel.org,
+	guoren@kernel.org,
+	monstr@monstr.eu,
+	tsbogend@alpha.franken.de,
+	jonas@southpole.se,
+	stefan.kristiansson@saunalahti.fi,
+	shorne@gmail.com,
+	James.Bottomley@HansenPartnership.com,
+	deller@gmx.de,
+	ysato@users.sourceforge.jp,
+	dalias@libc.org,
+	glaubitz@physik.fu-berlin.de,
+	davem@davemloft.net,
+	andreas@gaisler.com,
+	richard@nod.at,
+	anton.ivanov@cambridgegreys.com,
+	johannes@sipsolutions.net,
+	chris@zankel.net,
+	jcmvbkbc@gmail.com,
+	tglx@kernel.org,
+	peterz@infradead.org,
+	luto@kernel.org,
+	Ricardo Robaina <rrobaina@redhat.com>
+Subject: [PATCH v2 00/13] audit: log all six syscall arguments in the SYSCALL record
+Date: Wed,  2 Sep 2026 11:43:33 -0300
+Message-ID: <cover.1788351089.git.rrobaina@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788277742.git.mattst88@gmail.com> <802e4076e332cb82fcca73d8e22e0a591e44ab45.1788277742.git.mattst88@gmail.com>
-In-Reply-To: <802e4076e332cb82fcca73d8e22e0a591e44ab45.1788277742.git.mattst88@gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 2 Sep 2026 11:42:11 +0200
-X-Gm-Features: AcwNN1WeQg8auXTfAiPp9obWnMyCg_-UrnnazrrKK9k8O-gQb7ik0Xi3Zc4DBbc
-Message-ID: <CA+=Fv5QcmifCM7gm18z5sYvZcaexqXsiGQfygTt0=srKhSmPqw@mail.gmail.com>
-Subject: Re: [PATCH 13/24] alpha: add ARCH_HAS_PTE_SPECIAL support
-To: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org, richard.henderson@linaro.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.111
 
-Hi Matt,
+The SYSCALL record currently logs only four of the six syscall
+arguments (a0-a3), silently discarding the remaining two. This
+leads to the need for auxiliary records when audit-relevant
+data lands in the 5th or 6th argument of a syscall.
 
-On Tue, Sep 1, 2026 at 5:51=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
-te:
->
-> Add _PAGE_SPECIAL using bit 19 (0x80000), which is unused in the Alpha
-> PTE layout. This enables pte_special()/pte_mkspecial() for marking PTEs
-> that are not backed by struct page (VDSO mappings, zero page,
-> io_remap_pfn_range, etc.).
->
-> Include _PAGE_SPECIAL in _PAGE_CHG_MASK so it is preserved across
-> pte_modify() calls.
->
-> Assisted-by: Claude:claude-opus-4-6
-> Signed-off-by: Matt Turner <mattst88@gmail.com>
+This series extends the SYSCALL record to log all six arguments,
+by adding arguments a4 and a5 inline within the existing record.
 
-I tested this on an AlphaServer ES40 with
-CONFIG_ARCH_HAS_PTE_SPECIAL=3Dy.
+The audit testsuite runs successfully:
 
-A focused anonymous-memory test faulted in 256 shared zero pages,
-changed their protections from read-write to read-only and back, and
-then wrote to every page to trigger replacement with private COW pages.
+ # make test
+ make -C tests test
+ Running as   user    root
+        with context unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+        on   system  Fedora
 
-The test completed successfully, all data checks passed, and no
-page-table or bad-PTE warnings appeared in dmesg.
+ amcast_joinpart/test ................. ok
+ backlog_wait_time_actual_reset/test .. ok
+ bpf/test ............................. ok
+ coredump/test ........................ ok
+ exec_execve/test ..................... ok
+ exec_name/test ....................... ok
+ fanotify/test ........................ ok
+ field_compare/test ................... ok
+ file_create/test ..................... ok
+ file_delete/test ..................... ok
+ file_permission/test ................. ok
+ file_rename/test ..................... ok
+ filter_device/test ................... ok
+ filter_exclude/test .................. ok
+ filter_exit/test ..................... ok
+ filter_inode/test .................... ok
+ filter_saddr_fam/test ................ ok
+ filter_sessionid/test ................ ok
+ io_uring/test ........................ ok
+ login_tty/test ....................... ok
+ lost_reset/test ...................... ok
+ netfilter_pkt/test ................... ok
+ signal/test .......................... ok
+ syscalls_file/test ................... ok
+ syscall_module/test .................. ok
+ syscall_socketcall/test .............. ok
+ time_change/test ..................... ok
+ user_msg/test ........................ ok
+ All tests successful.
+ Result: PASS
 
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+Changes in v2:
+ - Rework the core change per Will Deacon's suggestion: instead of
+   plumbing all six arguments through every architecture's syscall
+   entry path, __audit_syscall_entry() now takes a struct pt_regs *
+   and retrieves the arguments itself via syscall_get_arguments().
+ - Per-arch patches now simply pass regs instead of the individual
+   argument registers.
+ - Fetch the arguments directly into context->argv, dropping the
+   temporary array.
+
+Ricardo Robaina (13):
+  audit: log all six syscall arguments in the SYSCALL record
+  alpha: pass pt_regs to audit_syscall_entry()
+  arm: pass pt_regs to audit_syscall_entry()
+  arm64: pass pt_regs to audit_syscall_entry()
+  csky: pass pt_regs to audit_syscall_entry()
+  microblaze: pass pt_regs to audit_syscall_entry()
+  mips: pass pt_regs to audit_syscall_entry()
+  openrisc: pass pt_regs to audit_syscall_entry()
+  parisc: pass pt_regs to audit_syscall_entry()
+  sh: pass pt_regs to audit_syscall_entry()
+  sparc64: pass pt_regs to audit_syscall_entry()
+  um: pass pt_regs to audit_syscall_entry()
+  xtensa: pass pt_regs to audit_syscall_entry()
+
+ arch/alpha/kernel/ptrace.c      |  3 +--
+ arch/arm/kernel/ptrace.c        |  3 +--
+ arch/arm64/kernel/ptrace.c      |  3 +--
+ arch/csky/kernel/ptrace.c       |  2 +-
+ arch/microblaze/kernel/ptrace.c |  2 +-
+ arch/mips/kernel/ptrace.c       |  4 +---
+ arch/openrisc/kernel/ptrace.c   |  3 +--
+ arch/parisc/kernel/ptrace.c     |  9 ++-------
+ arch/sh/kernel/ptrace_32.c      |  3 +--
+ arch/sparc/kernel/ptrace_64.c   |  4 +---
+ arch/um/kernel/ptrace.c         |  6 +-----
+ arch/xtensa/kernel/ptrace.c     |  4 +---
+ include/linux/audit.h           | 13 ++++---------
+ include/uapi/linux/audit.h      |  2 ++
+ kernel/audit.h                  |  2 +-
+ kernel/auditfilter.c            |  2 ++
+ kernel/auditsc.c                | 19 ++++++++-----------
+ kernel/entry/syscall-common.c   |  4 +---
+ 18 files changed, 31 insertions(+), 57 deletions(-)
+
+-- 
+2.55.0
+
