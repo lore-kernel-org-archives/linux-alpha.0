@@ -1,94 +1,94 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 672D941684A
-	for <linux-alpha@vger.kernel.org>; Wed,  2 Sep 2026 09:26:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A569741F5F5
+	for <linux-alpha@vger.kernel.org>; Wed,  2 Sep 2026 09:35:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.47
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788341165; cv=pass; b=Y0HrK2R5WYleGConHhmBqkYJBbr8WhElbMoklW3VeWEEqrkrjPX61uu97ys62tp5CIsHf56WN4lH4uZSNGd+cP+Aae/4JNsW5ZyWCudkoXO0pqupEsaO/T6fzh+/zQCJ2XWJvSP2J5/K71BQWPE674AJ6xpTRWJEPgAzTMos3JY=
+	t=1788341718; cv=pass; b=kmfALHOylxkE+fmrJOxF8DJfwE1gkLXSaLbFD59eTEOVrK0h6CpS6BBNaPjumDhAn1frwlGqTWrfV8THycnEmBpb6HdLgnFvMrei3m2/G8Gv0JxH8XFFyX/TWs1tvFH13r7zc5IJIj+1UyDsKcezGNRsbMmuRbTEM215C8eK6Z0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788341165; c=relaxed/simple;
-	bh=cCUWfn06UMRU6TRNAb8tmxA0a3adzcLoZTCZNoCsaoA=;
+	s=arc-20240116; t=1788341718; c=relaxed/simple;
+	bh=v5zSRZRbdwZ7opwlCrgpYqe35WmIs4diO7N/mAvW1iw=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YPr2Sh5r1JB7nAPPXeNxnUDFzUdOqqZJ1IeIU2c42S0GbIzsxRFYFZznPcHM9ibRsgpWv7R9qYuzsU2BXGhUsT63vJNq+CO0iNqHymSNcGGZnBshH1nAzNHLsN8pA50kpg6MQhFsYg/nrMxTZbQA3VdNdQD6L1ylTKRll5xh9co=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=tJTy3tKf; arc=pass smtp.client-ip=209.85.208.51
+	 To:Cc:Content-Type; b=FsRe3KyMyyEme5vTi5qV7QY1HB+k6uGVZPPB5QmaN4+qu75/d7+FgHchrz1OBO5fPg+aAJJ4iCJbWX2EXJ9OjK9I477BbZ7L6htCus3H6PsvsxIMdmzUTCSne+wvkbM2TSh77Yzxjbt009SgY2Ot5O1aEA4vsxek14O+1oER6gs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=tA3jtNX8; arc=pass smtp.client-ip=209.85.208.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tJTy3tKf"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6a642495d81so1409118a12.2
-        for <linux-alpha@vger.kernel.org>; Wed, 02 Sep 2026 02:26:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788341161; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tA3jtNX8"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-6a601ba6870so1491744a12.0
+        for <linux-alpha@vger.kernel.org>; Wed, 02 Sep 2026 02:35:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788341715; cv=none;
         d=google.com; s=arc-20260327;
-        b=grXzOEISlpy5ZPrGY2AwCoHHiotrNFV0Wl+G0pEAgTZSOkZeMoTtLkhMnfMoB277Q9
-         rWcbsjR++g9PiEqti6x1Ds6zJu2AYxtUtAjTu8VDB+bVww6TkBpxjwZtmruAnUqpImLO
-         9BxzbVzrtb2leEvyDPNy/1sGyEaaMWYsz3BV8GkJ2ZArD6jz+9qZYfKs46JEEU23c1qK
-         YmATzg8PgA1ds3qicMiE3n6yRbFgqC6WNooE1ikmCbE8jL3b/KnGiaXLGzXCMtwtUg5Q
-         jWdgES9/vugEtCKY5sUQXbptG/hKjM5M0oJI37tjGbrYju45I3iOauMlwSScw/GdCIt0
-         aNFA==
+        b=rHj78nRRD61F9yfklchfCdxd6X/MYem0yPjT+RN4OTs40Aeziw+TlwDj0Yr3a8fBdF
+         RYhOdN/gRkQ/c9giXSzft2ikXndhivVBVM73E4tbaZBqyMmJzWwwAEASLKuzS8DuXGa0
+         LbpKGGznh9XAHMUdxXqk/Mt1uo5TB+GEox6nuy94T0i1QgLpHZP0xOHXWSwuVsFYs5T2
+         YNVuF8UGYLIzjGKeuvGRMXVLRQ/XwEc3soqneI7CXu+EyAqTv/e5wIDg4bb+SGvqScX7
+         sUhx1wKbipjOWPQzBWY+FWeR0qTgA284z90QWDJeSBfW2E4mzmLMuOE68hhOoAe+BEqU
+         8xUg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=Hle8i6U5Zki0AeMEcz+0X3ReRhMA1qAerae52zLL4jU=;
+        bh=jnX+ks6JV1XrtihYjiUlRtYYBl1wxqA6B4mBRtQH3z4=;
         fh=bLXUq4zKMKoVtr4en67hBbn5AghZJydmSMAYDJEBeBg=;
-        b=iJd22jprhRV5gCwu8OQ1DkZsrk0Ld/3Qemf/eiwwm5dIJjyhwAES6uPHCeYoiv+PVm
-         lsImWiK5t7Zl0cQaGtCNcRlextcxhMjHSCxUK+tBT9G9D4xyNE6a6PJ/P36rmikZmNfB
-         1FOj4Yf3KdqHNqrREwghsenBz4W2XCAF2i+2mGkIY6lhdAVwQRaKImfjbuamRLjaXmVC
-         CYaF0CAlAHu5FpKfBbRWBxLzTiivQ2PRo9VP0Vz48D7OUh8A87PxqOK1vVrhtyG1gmQL
-         3gNZxE1KCMmJJp1QpTPhThma539o3TxKVqZImRKZS7QQsF81SkJ4WKJSOPZ4zz9w21pV
-         FTkw==;
+        b=Cv+9pfPvsWdqNpFKl7TftfbQiSastVL+OGn+4yJMmvL/TIOhG7s4Z32pP5uS7DOjxn
+         x7OGB1nMDacJ+TivP847/Xfz5wROklrnfC1k+Ta5GrRpWJMRX0nDIYhfMhpEFOMZhPOK
+         clmU4tWdnhX6V3RIJtMXhWESAdThY2qrK95POo9N+Rehz3Ra7z0hpktaZWg5kED8cXS+
+         VB9+GREzBAdN9ot6ttrCIU+SGmPYHJhI2YY723XWlV+M1SJVhFqHSRgJZLMjjHwk3ILG
+         yAmfnI9WHZ0vRlzPYvV0r3FYDV1mUoVvXctWdrfmw6bT37sdjxq4WYAel/WnjGIC5D1A
+         Gf8g==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788341161; x=1788945961; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788341715; x=1788946515; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=Hle8i6U5Zki0AeMEcz+0X3ReRhMA1qAerae52zLL4jU=;
-        b=tJTy3tKfo6CdOzYaFoRb8dtOF4vPhSskwFJf6NiD/oPdgvNaUoOeluD2V7ee1sMRJI
-         b5g1zx3sgptRSd6f5473Xd4bJFfrSveSKYVcTvQ8pIPju0sbsDOm0zy45hiUC4h+RBJr
-         zJKiC2XrXYEi3GrsBphYSKyDrbIZURCq13NEVxG8w6tJmgAjdWOxJ30jwT4cFT/RG4aQ
-         13sYqKivNDP5lsD5kesfrKcBQWQAIPoi//d60YqkvVHZnRW6Lkem8dx8j/aj2IfqR+qZ
-         WO5ZgeTi+ESIVmaGs4tM+snI6o8qGcoMdAurqpDh5gfBUvaKDthYYNEvts91qu9Zyjka
-         rrwg==
+        bh=jnX+ks6JV1XrtihYjiUlRtYYBl1wxqA6B4mBRtQH3z4=;
+        b=tA3jtNX8gSD7orD5aTrz36YKCEv5dp3euL9HeG2ZTKztScGcLM1vAtEkBwn1oQx1mK
+         ITWrhn3rfPT2FGHX6+BzDvrmZE1Yx6lq3/YQmVMFUrgh29AfeIhWYLtUeyCWYCBekyhH
+         AM5WZX6kD9UwowYvPLn7cCVu31cCXzVRZ3b7jJg7PJ9kgzXhZLIuBeL0v1ct6B5XeiR0
+         F0ndwqRg05BfVyR0TyBXO8O0TsBh6PAsLXMWquiV/yq6Hw0cd9y89zL7BAguSCzoFvUZ
+         KN40pa1gZdqxQBcH19JpSVXv97Ywuc2ADNd6NODS5UXMD+Ut3LR9QaJ/feU7KC9SfVbs
+         BPyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788341161; x=1788945961;
+        d=1e100.net; s=20251104; t=1788341715; x=1788946515;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Hle8i6U5Zki0AeMEcz+0X3ReRhMA1qAerae52zLL4jU=;
-        b=Dsx9C8n9QFU2aVesPfdb8kOp5W2+YN/uuP9se8CwoI1CDHb0g8Z+HLEf3Ufvy7zLIM
-         5lFAHmL9wbcm5LJNvs0cRjoydb+QwxLCwrOahK40nLp9ccuAoIgmOlJiwc6hFx69Jym8
-         /sPMMa80M2d6KnkUd1KZTEdsTwJEZZeFaF7nbLF3cXzMeBApKF8raLNZAUi90Ny0jwES
-         rU/dAkuuUfdIyJDoqiBb362Tt2pY2UjCu0ulJqtkBqio1zFs+l0fQqXtNPXHQBf/u8SE
-         ktuH+BO2miEj+bZn6xS8W+z6RgaCXNwTTMlB+K8pxJERoEt6C1V+4lvKybhiJG1Cfapp
-         myYw==
-X-Gm-Message-State: AFuF++mtgdxNE4Vxoyl8n8YL+VdJdc2oSgb9Y2q9jSBY0zYXVIe/iHXB
-	Et3WaxfbyqJLOYCXsudhSh4DnWVg1XrfRjVuLwil6Vn8Z6rHENAQjFDERFty3Cp4wcGhPF7wpOu
-	aKLMlwI96fhJjMc3efWCi+8MNVjuIcHs=
-X-Gm-Gg: AYBFou2orudJkXDnKg1eRociuIn4M8lTTTVeJAOGJUNMkgBxzArj6OxC64syZL61LUQ
-	K6A/6oUlN1RjVZhfgQllQrgnKgGduaN1qyMVjvR7zKjZCj+5nueAR3vlYRY/JhVukfOhg/yyhbq
-	U79pVba8LD5/CsmRvxxJjkADZ0RNGW/oiaVdpia/ezbSi5shiOyRVkZNh8VuDSx+yLFxI01oWpo
-	q/zfy868GVTR87HnLsIvmuJizUsEue6g4SHKsYTgRKRkZCSVvp3LZqoQXIzvfA3SaJ6EkHYhVVc
-	fofs6vqOrvEKwHnfqWocKwBksn1jWE4LdCk6MCQfMWMpj7RLP86BSY/rL4jJtLZoA73uWAlbsJ+
-	nMXK71dTeJfAAFCQkcmmLaP3JKaNjfXE=
-X-Received: by 2002:a05:6402:44db:b0:6a6:6346:af03 with SMTP id
- 4fb4d7f45d1cf-6a68234c350mr2119123a12.5.1788341161195; Wed, 02 Sep 2026
- 02:26:01 -0700 (PDT)
+        bh=jnX+ks6JV1XrtihYjiUlRtYYBl1wxqA6B4mBRtQH3z4=;
+        b=iPguF/t/KQxRMHtxCO2rjgR71qE8k2ZEnktyqUiPNUx2Y8aNDjHa+GE8Vbch1KdxbA
+         lMacnTUWR9iNkRVnSRh2m6sR96pSXL5D+GKtFeFhxDYi5+nuIw7LNr5gNIgBebdk82vi
+         VVG7CyzTs7ATq1kwzS31R3Hn9d7WKyZjvulGlLITfjHVShUYkzojtVerbYvUkW9yY/YY
+         oZgHTQMG7LHj165R8bPFAN2KYc5F2Xsu94NgZupjOH1Pg5FEoBJfqW/34s7ghWRKhqT0
+         Ly83zyCwaycbLZPiMX1oEsl19rOmASArJ255fy03jx4CtlPiZpXXlnuxDGnHlo+kBL7y
+         8XuA==
+X-Gm-Message-State: AFuF++l9UJ9qcS+DimicnykGZhcOX76JkfDMtTf1DDbxSsLILDfDFuoG
+	myuLwYDFJX13AtjiNngcFBonNh+eWnK/7pIw6lUM0WZf2Tb2BhWu47zDMIquySdaYi1OEZQQdkZ
+	Xpy50hfjc5FkrqvzyAA6I5xiebR3zz0M=
+X-Gm-Gg: AYBFou1W09qYbl59NcKZjrQDZcPkc/H+5rUxyvix4x/AEjvUk7Rq19yI3iZPpivF3qt
+	SCjlR8WbolOK2mMN/RBL7OyrAGXYvH55dsv6nDtoHWqnvWNoRNmaplHVs10OvNYf53bjVr+PW5a
+	lWCqOgP0a7s2Y2aqb/lVUhiNqbjTLhDImdqpdS5nIzRU3MpEm+BqTuUdiZDBxQ6RQ75jF7+RVrf
+	eBpkiB6GB+z2sWlsffqoPZ+P0JRQ/aatSksoTzwTri/ja1Vzamx62AExOvHVyprvGOQXNi01TGi
+	SSi82aq4yvwff1ylPJU/fYMLGywcF3K9ISKEDdfIOdhOHd4KjnAgPtxXmG0gzccZ45bme2z2rTZ
+	yjx3h5zvytxfzc9VKy8Wlbx1tE4vrXt89b8NxDjHScw==
+X-Received: by 2002:a05:6402:4493:b0:6a5:ed9e:b490 with SMTP id
+ 4fb4d7f45d1cf-6a6827997b6mr2384818a12.14.1788341714731; Wed, 02 Sep 2026
+ 02:35:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788277742.git.mattst88@gmail.com> <a24c28c35c32335822ceb977dc3e860609c50ca7.1788277742.git.mattst88@gmail.com>
-In-Reply-To: <a24c28c35c32335822ceb977dc3e860609c50ca7.1788277742.git.mattst88@gmail.com>
+References: <cover.1788277742.git.mattst88@gmail.com> <4524c04f1bc23f244650c7054ee449b6af054b86.1788277742.git.mattst88@gmail.com>
+In-Reply-To: <4524c04f1bc23f244650c7054ee449b6af054b86.1788277742.git.mattst88@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 2 Sep 2026 11:25:48 +0200
-X-Gm-Features: AcwNN1VHt8YKe3SoQU8DzJLTk-9J9GLSJswVYEvwz3fWJMFoEX6-Et02RNfO27A
-Message-ID: <CA+=Fv5SbH+Qtr9R7O7ujth3pYQp4W6x9ZOX15Sf96rRYUT=wYg@mail.gmail.com>
-Subject: Re: [PATCH 11/24] alpha: select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+Date: Wed, 2 Sep 2026 11:35:01 +0200
+X-Gm-Features: AcwNN1WCrBpqyHs5YZzs-iDskP2UNe4cTrLl_49Ymgyr1yqF1dJ58tr_0kgjpAE
+Message-ID: <CA+=Fv5ROhLgZ0DmZekFWnW=H50n++-jeH7W+dgrk7N50hKi_+w@mail.gmail.com>
+Subject: Re: [PATCH 12/24] alpha: add HAVE_ARCH_THREAD_STRUCT_WHITELIST support
 To: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org, richard.henderson@linaro.org, 
 	linux-kernel@vger.kernel.org
@@ -100,28 +100,28 @@ Hi Matt,
 On Tue, Sep 1, 2026 at 5:51=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
 te:
 >
-> Alpha has a clean split between user and kernel address spaces: user
-> space occupies 0x0000000000000000-0x000003ffffffffff (TASK_SIZE), while
-> kernel space uses KSEG and vmalloc regions near the top of the 64-bit
-> address space. These are strictly non-overlapping.
+> Alpha's thread_struct is empty (all per-thread state lives in
+> thread_info), so the whitelist is trivially empty. This is more
+> explicit than the generic fallback, which computes the full
+> thread_struct size as copyable.
 >
-> This enables optimizations in BPF and tracing that can skip address
-> range checks when user and kernel pointers are distinguishable by
-> address alone.
->
+> Assisted-by: Claude:claude-opus-4-6
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
 
-I tested this on an AlphaServer ES40. The kernel built and booted
-successfully with CONFIG_ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE=3Dy.
 
-I verified that userspace mappings were below TASK_SIZE
-(0x0000040000000000), while the kernel text was in the high Alpha
-kernel address range:
+I tested this on an AlphaServer ES40 with
+CONFIG_HARDENED_USERCOPY=3Dy.
 
-  0x000002000025a000  highest observed userspace mapping
-  0xfffffc0000310000  _stext
+The task_struct slab reports a zero-sized usercopy region, as expected
+for Alpha's empty thread_struct:
 
-This confirms that the observed user and kernel virtual address ranges
-are non-overlapping.
+  $ cat /sys/kernel/slab/task_struct/usersize
+  0
+
+The usercopy KUnit suite also passed all tests:
+
+  # usercopy: pass:4 fail:0 skip:0 total:4
+  ok 1 usercopy
 
 Tested-by: Magnus Lindholm <linmag7@gmail.com>
 Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
