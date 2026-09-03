@@ -1,94 +1,95 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 003F537DEAA
-	for <linux-alpha@vger.kernel.org>; Thu,  3 Sep 2026 21:26:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 001D13C7DEB
+	for <linux-alpha@vger.kernel.org>; Thu,  3 Sep 2026 22:07:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.53
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788470794; cv=pass; b=SOuy/ayPyKDxJcqK8KNneFJBbZlxc4CPpaKClLvXDIsTaRC3sxR+GEj7sGc2SXO/m8l/fYV04yVAOTBl9VbKPt47lsccAU+Cd8/pcwwuebxS2oqBABXzitvHiaL5xtrmE6sp/urjxVrTFSc26w3oH5NFtuO1ZsyCtIv6K1sLo3E=
+	t=1788473251; cv=pass; b=HwIiN2HEcLG7VQNIh2TDDUVbrkxFkXrmTGYdy2Mj+xbpCymfjP5unbr7xlLq0jrvuxJANvu0pFfnuOZbNVS2e2ouwhTkNTDx2noqxrjmNT3aWQaFyTYKOgoFTQLv+DNgLps40wTG2/orEsta5K76NDhRO8d9/lSRcuSox3isIJE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788470794; c=relaxed/simple;
-	bh=unUAuMwyR9D1haWKkId+4CIztodX4xmcY9SrOCNP38A=;
+	s=arc-20240116; t=1788473251; c=relaxed/simple;
+	bh=LiLYBE1PYGUlNN4KNgnkrklkSF2SW4ookbN2idghnLE=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DL5Hf0ZofbxM9b/KKP/faquLPp7CTX8f64NAqFKYuVAbh9/z9FTTYWG7wjdqQh5QKupD6qHIBer5YLd7P+20uIGkSqGXB4pfSZYJXYmEVDfJhgF+vpSBLlyxU1hz73wBo7+6z9IMwVqfqKmJp/Dg8K3ZD33ThBP/HMEncEvBom4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BnCg5u/Z; arc=pass smtp.client-ip=209.85.208.45
+	 To:Cc:Content-Type; b=dszE9DuBCege989+bFxspdKlP0UeGFfwmhtJTnZ9tzoNuLxTlWdb9b92fHbuPQawnr2qvweL2dNbWFQ4nnCTEWzav6huj9sYiX0VurCduk8HoQ5O5Br0r/3RegFlU0wow3QMjbrrNRuUNX6/CLSLOgVhR1ZcZ6e1GD6ZcXQUXtI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c98fek23; arc=pass smtp.client-ip=209.85.208.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BnCg5u/Z"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6a601ba6870so409053a12.0
-        for <linux-alpha@vger.kernel.org>; Thu, 03 Sep 2026 14:26:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788470791; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c98fek23"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6a600a1caf8so405458a12.2
+        for <linux-alpha@vger.kernel.org>; Thu, 03 Sep 2026 15:07:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788473248; cv=none;
         d=google.com; s=arc-20260327;
-        b=TD7T6KhnEfG7B60Gsls3tuHoBfnCMik38CL+yc/JBklXYZjvXaT3Lo+DupKjwSye2S
-         N9GjsYksSu5ZFSQYBK9RCfAR+rGwmY4ZTHIGOQYBZ+vdjRQcDy7QzcNBQ/7MJpV3ABSG
-         XQ1uhjOh6Qmhwf5mfd7+NThgjhUigyHGGiqmYO4QMS8bWDnHtJAyAB91ZF4nU/IQK+F1
-         096s9gXbg25Fnxb+G6ei0q2g/+HUnTaOPIN/HwsbQ992DFuU9GLl+p8u0OBriFZLTwil
-         arcPzUKnq1apqFFw+tFQ4p6fL4d+Z0n1yWG/2b1yVqnG1xyvwDAuXpAwPIxVxKtzWGSG
-         7l7A==
+        b=UcwuuNglnSLmHgn+Swxak2ghzZBmCKm82wQoNoooOfhuHRJRDJnnUqSfGBsk7ot+SM
+         3UksbuVX5PdK5y2AeGoKYeBw30bRmZyXtKrB4YypublXvQyyqSaNddZOBn5PU+/5Ts7W
+         7Pue6KfoqKUoSzRWG3+U5eRTI+QdVsO655yD7vWHbosjtIpYSluasnHaWSzKjPXrdR+d
+         SIdAty7yZQ6XDzxmNP9I31QYw5WBvBjexMcjPs0RrLfuo1E+eQ3btUdjn1hJ7so4HTVP
+         SArtzgdOqZTzwNOt/bvhsupUcCble7kxoKW3AbqnEmA/uq3I6S+z8BSWrgffFLgnDOfG
+         31zw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=i8S5ooVnhB3GMHix7Xt1yk3iIO8ygQJRzi4O8FDpif8=;
+        bh=FNOnUP8DP8sduXUGrn2sIbhDUJ8SR/EkVRSFhfIKvhM=;
         fh=bLXUq4zKMKoVtr4en67hBbn5AghZJydmSMAYDJEBeBg=;
-        b=lx5DyhMGOeeh6z7hOh20RC5CyB75TKEjUPOSjEoR0rIoYLpQsSYMjJAsa7v9fKgZMy
-         5gPfdslNQc0U1EHHjbo3dk0fy9PnD02qc8W32k+CtdtfmTf4bUkHmpFl/f9EwIA6REu9
-         +dgDHSinDixY0ccJHUz/ap4AiXKJfsoeRDNPvwyiAzCu5c40EIN1jSsMKRZOwIJcY6YF
-         LJI5iHMmGE8rTcSPPfdm2cBg4VWV9IQTFQ4dIaSYA09I/531B3KY9cOCx+VBTi4/BGJ/
-         MlKPAINyMtEgjFULFC0ZKOp1QJkFvHEDzdlalcSeRveU9KAgcIhbA1jxuadWwrVcjgUd
-         S8FA==;
+        b=NCZjZamnb57/Ke8Y7soOwbOkA85TM0eEMhJYQbQnDYsEPBUAt5I0V06HCIYT153pYq
+         +xqh5hlQiF3mnes0szFMFLHjEF80uEKoe614zCCVCD1H7hP9vzLbknFhHfwe27vtLlXn
+         TKBT/SieP/kOXnKYZPU4SHvHKZnXzTAYaE126Fusz/vyMNkwphJbEmw4LDHSq2l50DR7
+         EgIiJCZsgpXlA124ib7W5Mhn9MLCWMvwFsgk+kXW1frhA0hKbg7t+8sX4Mp8X2ukEvCD
+         J5KwgAy2WpmH4h0xogzgOFORREcZAWt1XpQZsuEU3VuBP9pb4SfuR3CDBI5v9Yl2bS5n
+         1sew==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788470791; x=1789075591; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788473248; x=1789078048; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=i8S5ooVnhB3GMHix7Xt1yk3iIO8ygQJRzi4O8FDpif8=;
-        b=BnCg5u/ZOTCbuAkqRURzuJ8iSedhuWRNnfmlUQYE9X9A7UXJN8eXFtE1uch49/Xtt1
-         lCPqDp4JqMLOJDfkH2R4XZ8CNfBu4VCNGmcDIJuol3eiCOv5H6dggKh5YnReiLx+D6YZ
-         zPg/Noxht9EyrqP7Cn/GKmuyJqKTvYR6UlWvzXge6i8mnmQm8TP2V38XD1CqpPkTBDOo
-         5jfwFQpNXS0mZGKrIj313ZNmuEbDXnI9c/usklz23XAQkWlE20aeTvorxH94rp7J4QMc
-         5Huj/V3lyLyIFhf3zCA1nOmkhA6AlXBR3vxfEMsJ0av4alH1v1b53T3cga0wS5IReA0g
-         T3NA==
+        bh=FNOnUP8DP8sduXUGrn2sIbhDUJ8SR/EkVRSFhfIKvhM=;
+        b=c98fek23aH1r0iVSV7szZjSuYS6yaA9mSy9VsFT3Ey6/AMUiVaKq4+p6SbB6XBeK18
+         qf73zgKV9ymNHQo4/YQ6HuStsQEbWYmTcl82xs/I3KZeqWBsH7U27yyejtAjyjsTPX5C
+         IcDbILfOQMlae9au5loSbmy+H9zzEqUnc2R0MF0dv6QtdwDdpTM7fHP0byDrDITm0vo7
+         flBRx7P4lricscl82LmiJ+jx7Rk7iCDvQNTXFdM2yMH+eS3sYNelwz0Tvvt5L5MyIMOq
+         GIssZRlcAkP2XetbEwpFNDZsIhrsjjjU9ceN82G1pZ+tkRsDsQ1Svu7JXLz5ElDOlINM
+         MfjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788470791; x=1789075591;
+        d=1e100.net; s=20251104; t=1788473248; x=1789078048;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=i8S5ooVnhB3GMHix7Xt1yk3iIO8ygQJRzi4O8FDpif8=;
-        b=GS9LMUV3BDkQxSOu1NYEBG0f6HYGgxgEAvctXPfhOZdw3400qpe3szfrv6Zf7Pp/DG
-         k+ihlmyH4vaAojt8VNgjIgxPJ8zjPzT7JiosUTpqMRZ6lbrrH4EeLNT/GAMrVQTZ9wdM
-         tgakoXkyt00dPbV4cO4on20x/M1ANh1nCJ25fGhXFAKJk7VilffuUMHeYdSrNcE1lr/2
-         VJ5nj/CHD4/bt6+C/hrnKyK6mVOO6+d+/IYjJP2kBQAroLQJFswsohSq5lbsMrDZvKTg
-         D1xklfc/O4dCvRlesVq3vJOEDYrO2KwDRE9ONc0TXqJNj5dql5eNV93SbELLTe4vcdkm
-         2dtQ==
-X-Gm-Message-State: AFuF++l+3GzQJTXxKNskylKJe2XFS6vYhlx8IIrgO3c/aIsRIAHcBrDw
-	mEDbUnIn9Bi2gsI+2eXxE/uHM8QJ2dSNAfz63eJplxUDNRKuob8Yi6rIUY8v9tnaiDR57I38TZW
-	UJZOeEBMF6pKw7+63tu95QFz1z8klAMY=
-X-Gm-Gg: AYBFou0W8zTRM0sVCa7/zLfEddhNiZFDkOdKmNn2I8ZLsiyo4oz5uU82OaKpaprHIgr
-	5qYsntUb4lpmbsageFR/OGibesaN9Q8lHJW3rzsb2sTIu5sFq4eNeL0y6v/slj1XrbKOve1/Jtm
-	t5jhwUAJIgazY91syBM62MC02NVJ0NBy3EoGBwAeeM8rgg6m/eh1UxETew2qk7hhekr2mxvHNDh
-	T9q2b+xCj5p2fzqJJ+JH/WA3Gk4JlrquahguwZVr8WxnTkBAs9meLAzMyRPoRmo+lr362y3z97/
-	hzgNQAbNLmq+UME1/tvfqN2MqkumurygWpWk2LdVFWsxJrBp/3GV+Om4YR9r5a1ICzmBeGSiBjt
-	wk+hEEassI4le4Waf8lH4qzXJ34McVmwyCiScVj3UYQ==
-X-Received: by 2002:a05:6402:2549:b0:6a6:1c30:bc4c with SMTP id
- 4fb4d7f45d1cf-6a7e8d25de8mr442689a12.5.1788470790663; Thu, 03 Sep 2026
- 14:26:30 -0700 (PDT)
+        bh=FNOnUP8DP8sduXUGrn2sIbhDUJ8SR/EkVRSFhfIKvhM=;
+        b=XCmtN+J2tP07oJW7A2rnsyv88KMRApXbuA9mx+w/gDLgD/vHj1OiaQNnMwERSInJf6
+         jnX7wsXGmlgnXMkKnkTpB4rGVplelbcFEkaSdzn7h+KiQDyyWrS3Nk9xgfmhY2j5R6QG
+         v9Nyu/QCg2z6hVqdOjwhUNifIBGeHy2ud6jmVJB+6uU95lStHsQbWDsno9WkLyNw8b05
+         5lueQr/NTmcIPUqRqKOWICq6rUGIpCzdJZli94pWCeO8PUVWffR5k3KYozCCkm7S3mWo
+         3ty8gZezR8D7AjNjRJF7nmaRj0KmiMU4mN4CXEtBq0DJcsIgFUB9mY1EDb8eZ4Vu5vJ4
+         9PAQ==
+X-Gm-Message-State: AFuF++lvuocaAzJv8lXQ/6VGtxL8UKSmTLZozwSO+kEtXZyc9ma2BQRB
+	G3OQNmXMBrubUzxwbpWW1Qe+eM44+xWDzc2xo5/q86es6SwZoxhLclVk4hUnXguecUJADGvCmGl
+	id1GJ2g4wlI0Add/TO+ws6PfhKlMSfcF03Iku
+X-Gm-Gg: AYBFou0tn+8Qo3S+SJLL3j5914eArUzwtYImCVWOXwydhtD3D60slO4vXGVdmWn1Clp
+	+Dt1faHXrlairTNEtPerlKfB4ier94+qLIuejPbfjhjBYgkkAAVFsRAoGUPC3QZfPFdaVJNc+WC
+	Qrt92vzN2p5e8v+Dgmw8cU7bwTUcPdj6FOqSKY3k2Hk3dLF7QkPoOGOQTSJNMlE+VyFkCmYrkOX
+	I5F+zCsoKiKspuDlynJZRKKP+PaFfegGxNL682UKMjqas52uqCw6m1F/NyDzyrDebPMMLY0RzRI
+	KB472FEAF5vCWXmnwKpF6JWUo/2oCrwuaggmjxU5QZ2PLRoOiEwUyzLfrM1MqOUHGmPEM29CHnM
+	P9cKmX8Lq8b59LtLrrJj7kBn5s1DQRW4=
+X-Received: by 2002:a05:6402:434a:b0:6a6:32f6:c with SMTP id
+ 4fb4d7f45d1cf-6a7e8e9db23mr603446a12.18.1788473247803; Thu, 03 Sep 2026
+ 15:07:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788277742.git.mattst88@gmail.com> <def73d988ac3cee7f6454637902a296648c25d0b.1788277742.git.mattst88@gmail.com>
-In-Reply-To: <def73d988ac3cee7f6454637902a296648c25d0b.1788277742.git.mattst88@gmail.com>
+References: <cover.1788277742.git.mattst88@gmail.com> <3c54e7e410438437640d56501a7a46fb0443427d.1788277742.git.mattst88@gmail.com>
+In-Reply-To: <3c54e7e410438437640d56501a7a46fb0443427d.1788277742.git.mattst88@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Thu, 3 Sep 2026 23:26:17 +0200
-X-Gm-Features: AcwNN1WrLaaTmggLPXFT6Qwv6G9ImfH2P137GVtKWBCi3FUkfl9jBwEDIvceqDU
-Message-ID: <CA+=Fv5Tjts1TYzErVRkMSOk_MjShAMefB6MPejsmbRnHJn7TAg@mail.gmail.com>
-Subject: Re: [PATCH 23/24] alpha: select SPARSE_IRQ
+Date: Fri, 4 Sep 2026 00:07:12 +0200
+X-Gm-Features: AcwNN1WMq5mdDlXQs8EsasWZKrYa3OFQJ6aOJB_7FN9FlqYZuSSL9vPQwudNh4U
+Message-ID: <CA+=Fv5Rr-Zqs_nfssP0LsZd3x-=hCVybxXtOETDvR=1RGZTnLg@mail.gmail.com>
+Subject: Re: [PATCH 02/24] alpha: enter hardirq context before looking up the
+ irq descriptor
 To: Matt Turner <mattst88@gmail.com>
 Cc: linux-alpha@vger.kernel.org, richard.henderson@linaro.org, 
 	linux-kernel@vger.kernel.org
@@ -97,46 +98,80 @@ Content-Transfer-Encoding: quoted-printable
 
 Hi Matt,
 
-On Tue, Sep 1, 2026 at 5:52=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
+On Tue, Sep 1, 2026 at 5:50=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
 te:
 >
-> NR_IRQS on Alpha is sized for the largest configuration each platform
-> supports, and for Marvel that is 32 PIDs, or 32784 interrupts.  Without
-> SPARSE_IRQ that becomes a static irq_desc[] array of 12.6 MB in .data,
-> carried by every Marvel and every generic kernel regardless of how many
-> interrupts the machine actually has.  A real ES47 uses 87 of them.
+> handle_irq() called irq_to_desc() before irq_enter(), so that lookup ran
+> with the preempt count still saying task context and with RCU not yet
+> watching.  Generic code called from an interrupt handler should see
+> hardirq context, and irq_to_desc() is more than an array index once
+> SPARSE_IRQ is in use.
 >
-> That is not just wasted memory, it constrains where the kernel can be
-> loaded.  The image links at a fixed 0xfffffc0001010000, just above the
-> console's low memory reservation, and with memory striping enabled the
-> console leaves only about 16 MB of usable low memory before the rest is
-> relocated to an interleaved aperture.  A 12.6 MB array of mostly unused
-> interrupt descriptors is the difference between fitting and not.
+> Move irq_enter() to the top of the function and add the matching
+> irq_exit() to the invalid interrupt path.
 >
-> Alpha already goes through irq_to_desc() rather than indexing irq_desc[]
-> directly, so nothing stands in the way.  The platforms do wire up their
-> interrupts by number, though, which needs the descriptors to exist by
-> then, so provide arch_probe_nr_irqs() returning the machine vector's
-> count instead of taking the NR_IRQS_LEGACY default.  Without it every
-> interrupt above 15 would have no descriptor and the handler setup would
-> be silently dropped.
->
-> Tested on an ES47 (Marvel, 2 EV7z): boots with all device interrupts
-> working, and .data drops by 12.6 MB, from 15.7 MB to 3.1 MB.
+> Assisted-by: Claude:claude-opus-5
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
 > ---
->  arch/alpha/Kconfig            |  1 +
->  arch/alpha/kernel/irq_alpha.c | 13 +++++++++++++
->  2 files changed, 14 insertions(+)
+>  arch/alpha/kernel/irq.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+>
+> diff --git ./arch/alpha/kernel/irq.c ./arch/alpha/kernel/irq.c
+> index 4a6a8b1d5a8b..5867a1655045 100644
+> --- ./arch/alpha/kernel/irq.c
+> +++ ./arch/alpha/kernel/irq.c
+> @@ -107,18 +107,21 @@ handle_irq(int irq)
+>          * handled by some other CPU. (or is disabled)
+>          */
+>         static unsigned int illegal_count=3D0;
+> -       struct irq_desc *desc =3D irq_to_desc(irq);
+> -
+> +       struct irq_desc *desc;
+> +
+> +       irq_enter();
+> +
+> +       desc =3D irq_to_desc(irq);
+>         if (!desc || ((unsigned) irq > ACTUAL_NR_IRQS &&
+>             illegal_count < MAX_ILLEGAL_IRQS)) {
+>                 irq_err_count++;
+>                 illegal_count++;
+>                 printk(KERN_CRIT "device_interrupt: invalid interrupt %d\=
+n",
+>                        irq);
+> +               irq_exit();
+>                 return;
+>         }
+>
+> -       irq_enter();
+>         generic_handle_irq_desc(desc);
+>         irq_exit();
+>  }
+> --
+> 2.54.0
 >
 
-This patch appears to be missing your Signed-off-by tag.
+Going over this code again, I noticed what may be redundant hardirq
+accounting in the existing device-interrupt path.
 
-Tested on a two-CPU UP2000 with CONFIG_SPARSE_IRQ=3Dy. The kernel booted
-successfully and created IRQ descriptors 0 through 63. SCSI devices on
-IRQs 19 and 27 and Ethernet on IRQ 43 operated normally, with their
-interrupt counts increasing. I observed no IRQ setup failures or other
-IRQ-related warnings.
+For type 3 interrupts, do_entInt() already wraps
+alpha_mv.device_interrupt() in irq_enter()/irq_exit(). The platform
+dispatcher then calls handle_irq(), which enters and exits hardirq
+context again. Therefore, irq_to_desc() is already reached in hardirq
+context before this patch. The patch moves it from nesting level one
+to level two rather than from task context to hardirq context.
+
+The RTC path does not have the outer irq_enter(), so the change is
+needed there.
+
+Would it be cleaner for do_entInt() to own the hardirq context for
+both paths and remove the pair from handle_irq()? Or is there another
+caller which requires handle_irq() to manage it itself?
+
+I tested the patch on a two-CPU UP2000 with lockdep, IRQ flag tracing,
+and sparse IRQs enabled. SCSI and network interrupts operated normally,
+I observed no lockdep or IRQ-related warnings, and debug_locks remained
+enabled in /proc/lockdep_stats.
+
 
 Regards
-
 Magnus
