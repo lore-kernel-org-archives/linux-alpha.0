@@ -1,122 +1,131 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF28A41A517
-	for <linux-alpha@vger.kernel.org>; Fri,  4 Sep 2026 06:13:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788502440; cv=pass; b=R6BYVaDd8BP+qBqvtcMGb7uPZdvL93zEKTZK/HLqEm8gaGsEzhdg5ZTklNOtIaN1HI35LlH/REphgiGVozTBHPZAIiHOiWza2xIeK7GSL0yw+UICScXBDokOYC8OPglJeshheezTwMeTR0jyMkwHyQFJ+psN2Kppb++j+zEIjVo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788502440; c=relaxed/simple;
-	bh=4dOgcAQlgO1QoOYmAB+wFP5Ip8y+D8KPjRKJ5U4MjNU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jlpVjWwEmd0gQF+XgP9t3EkNiEvxLiG3f6LOo0uj8PfZqSBsRLAp2lGytWuTYbG0RPe3zjB7A8w8yhlJZd1xUHU7YX/cXqtJ6j31gDzn6EjfAnHx4PKJpSD9SBcRXunJKIEbpsMh6mlutLYxm/oXiFe1/M8fXDjVcqv958c+h7w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jdml6mr3; arc=pass smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C8D137106D
+	for <linux-alpha@vger.kernel.org>; Fri,  4 Sep 2026 12:34:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788525295; cv=none; b=SP2jVjJiIPD5c275UdleO+l6buGzmSEzjKoPkWjZr1+HIjsGUkSGqt5kxapqzL0TqdssgcTs6uEUhhatGfElMA88IitqK3O8CFp0HZaSivP5N4vfZ9d30C3XKbxQT4sv0JOtK8zK89c7hGh2PvrhiFO96wiJVaXKwyaOA9FZhXI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788525295; c=relaxed/simple;
+	bh=a7Enk69Gb9qnY0DHihsQKRbXaroF1zh7gwuihVPwej0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=faT0wwl8wwPKDh5y5diJzBq5GOWylHnbYPxyjcBD54LZHr0Zdm0Wgxn6gfR/S670VN2NBngwMpkLIWUV6SnV0VSae5B1fNrhpUsCGZ4DrVKVt9Gb7x/Nu7Pqou+6EWEembN2qbt4jvTFh1qhJ1PA7lIwohgNVSPKtGBIXqKH2a0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CppMXi/l; arc=none smtp.client-ip=209.85.215.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jdml6mr3"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6a68ca482e2so751610a12.0
-        for <linux-alpha@vger.kernel.org>; Thu, 03 Sep 2026 23:13:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788502436; cv=none;
-        d=google.com; s=arc-20260327;
-        b=rk2Y27cKSn4c0oqdcMXyJVqsCagIOYMdVychzvpo/CPn9hBcmGn72PoV1rmABOMpmp
-         sIwf0nWibVibAq40SyB9HGS/MXI8W+aD3n0d3iYG74CA+Cd5hL5lYoh2UkHcc8zk3+9T
-         PpHgGa3PEkXYQyK/DeRF2M14OHe+hP7TpbLDDdZBGBgjHCWiT/K2w7OhbZpLusDAeHWG
-         Tc/TtlnOJQZhohWOyodCQ71uspTyB+mTqbc/CZ8/354wFAZmJ1J6bK7nDMGMrCSag4FB
-         IOe5Q1bGnlBG5nyF9DrciGNNWwMZiIeEbMqvsj40j61/rVoT4337mCKtVl92OwNEMmJh
-         h0Cw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=4dOgcAQlgO1QoOYmAB+wFP5Ip8y+D8KPjRKJ5U4MjNU=;
-        fh=7mP/IbwOeYCFfhDDUceH0C47baZdL7VO7ycUeK1PZIw=;
-        b=LNj0wrZjrTeuk1PySU2quzpTjpSVQU0JlyjvaTU9iXrmXbiaUMIg9Cmf8rECShAPLu
-         7kqI6bQ96UoYh1g5k8LvarsRjCNRRIJe5RBdaDuQMTR0Q9Hc+INDWG01+94OYZLu1biP
-         YsWON5/0C5COBD6iyV7WffVPTBdLf2Ol9nwEeboVZ77jKAt7MYMuOQ4VIQNhrsgPa2wG
-         n1vxWKITiRj8hAxxGlC96Wx3u6DkIHFz/17T0fZTo8F2VCah/onV82Q02fZIgrspQgz4
-         /1+niEbcRvKBlyRz3N21CRzX8A0EfTr4WxY6ZziQzzsh7f+eXNmj0Epz/4tIYK1+beE/
-         sWsw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CppMXi/l"
+Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-ca80d708489so714607a12.1
+        for <linux-alpha@vger.kernel.org>; Fri, 04 Sep 2026 05:34:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788502436; x=1789107236; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=4dOgcAQlgO1QoOYmAB+wFP5Ip8y+D8KPjRKJ5U4MjNU=;
-        b=Jdml6mr3zaJdqdlBLmwY4XR3DyaMt6UVj+RrpvUccUAgAhxLkAJrowYyrxRQFhIoI4
-         SFMo9P6pmG/zs5G0i4r06tFu7OzCsJNsjtIovofmLTCa1ETNmq1ySaCoppH9xw7+jRO5
-         kpa+4BFPGENcquNHvcWbiFezTJ7t+UPQTVZ8szMSKH5imCpPBYDpGeJ8oC47XpX6Pc2l
-         tOm73krqlGnR5/rddSkj8pDV59Ur+mb8k/X5yfB9bOLqjbCYAbPr8LlREHKCQPjWpHwI
-         TaGy6n4nCeZ87ZF8OVjnT3VRS2LFuvBDh+W0zWOjb3AHCngRjwHDiGeXMuAzRIRJxfsy
-         xEWA==
+        d=gmail.com; s=20251104; t=1788525294; x=1789130094; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=0h8prBNmCcbgcEQm3o7dPvrnfCWXGWTDKECfff92L9Y=;
+        b=CppMXi/leJ913tr9oSINZAsnvfD8H1KIE8b9bE/x3s4xCRgLtor5WgDM68K/tRc++e
+         OMz12lBqE+uigmDwBSoEq32s/yo7rMwmgAmNjaS8AEtieljOd8SX7ke+Tp8Nq4XN9GWb
+         94zIXFyyBOhJkCKAjR71VdEpLaqC3afplNA6XXWGk5sE1LW6nBd153JpBi1SjvYcwnMp
+         LFqMZ3EqXY3/SpEGs9PuBUrB5b9iMM+McrgAgGPNyKaizvKwy0N+8JQdFQmbIBC/LS2D
+         HBr8QCCCPQEHZy9hKuTMBKCUQWAItDc9CYuv6ndalvCZ9nRP1qfFguQTouDwXKlRyBWP
+         lI7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788502436; x=1789107236;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=4dOgcAQlgO1QoOYmAB+wFP5Ip8y+D8KPjRKJ5U4MjNU=;
-        b=OU1wdJc0Rle4r/Fwy54wsifjYT1Q8phROWDkGjMNASbJ/6v9bJIkgDtfZBvqpwapbP
-         TEMgoWKJxuCdsB7SYONeb/odN6QZY2l7YYr8lHVrMXegcEnDM1zOuafhGcqUFBhIo4uU
-         UB80dlnFSz7KkzVm014EOyrXxF8pbDtEgBZrpkgXGN+N1ECGDlwNmjTyFTreECrPxuf5
-         OBT/WjHJVU9INdcpdtDrSrRoQvEfIRPwQ8sJt9AbDsXySxprjCh8c3evwgCoPsmqfQIE
-         5XFpYQ13k6OLcA8xhjWekPN+lLZuqR1ycmBmrHAogZd+4HZK9+kzT3dasFnfoTtPleRh
-         lE1A==
-X-Forwarded-Encrypted: i=1; AKwUvBxssk3IOgo5ccNlfIfa9+IcJBlHxl2DOgA8asFJnYrkf1u87wCnrOhdxif3Avtt1yhByvVO/Spd9J2tEQ==@vger.kernel.org
-X-Gm-Message-State: AFuF++kFhcUa+dCee+HMmdQXGoTHmpWve9E1UrBdMHyitpolaYPFKHHH
-	hL0d8SyFg0qkzpYxAIomHwQQyv5tR8LHG6ChI+rO47T55R5584i46bSMNpv3k7VFc1G/k0U4ky0
-	99GxquDoWy843b5RCExmL0x1OmXI2pLE=
-X-Gm-Gg: AYBFou2Ytc93EeU7OppTcTGlPSlQ+5N8jogEb0h7bvvOBt9NMdLZtwnZ+qjLggTJOy5
-	039/YyXwknyU87tz7W/lY5ygL7V1ThlwzbxKuHbn10OK8sUFHgAOINdlvVec3WMWeZOEqDonwRl
-	7b7lHKAOsvFpAPNwpwtan6xA8NWZhFu1p9LiLuBCAB3CWzweVVSYkHD3Bw92V06CKb9FK/hxQE+
-	9CQfm+ou0nZGmvdMIw5vp/5NPSeoLFh+cQOg7jKiPTLTmySWeKXGWxhgt9ffr/vkq0V9tA3YObU
-	Bz7kWcu4j8lq16ddxLJQkvrUuv5eWdoevfc4wglVqWUdhm/VFKFnSOgGQ7hChF5fXeCecmtT7k+
-	6s8Ew4WS4wXd+aVraOTWcawBMTuStQUc=
-X-Received: by 2002:a05:6402:46d0:b0:6a5:f44e:a009 with SMTP id
- 4fb4d7f45d1cf-6a7e8d5a9f1mr1690015a12.7.1788502435914; Thu, 03 Sep 2026
- 23:13:55 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1788525294; x=1789130094;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=0h8prBNmCcbgcEQm3o7dPvrnfCWXGWTDKECfff92L9Y=;
+        b=BZyiG4IUy2ucJnI20JrnnbZekdy65NJ8+HvhqUxjZi3VjSZmDie21WX7QswxMgR9oF
+         65YG8EeA4aaFZP75VvOjgLu8eDplfMh1qCZoGC9PLQSXg01/3hLFQN1iKhyOkYbzmWLs
+         P6KpLcg3RyihHA+eKmJXIhs+xbIUtd8Pu9SI3KSdK/aBHEaRqKM3KGNppCJVvkEmQzum
+         JxtyaPQfY+R/T1uupwLYH40MAp5n7G3XGB4gErZiUOcHSFGaC0MP274apypPGqHXtoq/
+         WhqcxaRFsmVyJzjQvD81RA9qIbDGvgJxPv06/Kyf+ItE8a77pYyrc2lkYeRoG0tcLULl
+         BoUA==
+X-Forwarded-Encrypted: i=1; AKwUvByiHlYcY737g2FuRQ1mneLTLH/fYyNoTKP0dlMdCju9qNVMqlmzVjrhjPrTADVUdQ0P3LxQpsuBkqWScQ==@vger.kernel.org
+X-Gm-Message-State: AFuF++lgW61UAznRkpkWzjsbTSjbx+DEfygTLtLlIaTjQoK7Q6nqiY2f
+	ZOF0PMoMXQ1G3AiNtZbqDsONujEUGinfuCECP7GNyT0zwBzvkDiF+/JQxobIewxp7v8=
+X-Gm-Gg: AYBFou3eXSxWA9Hn1IEW9N6Ghuynq8hyvlHXMbcUV4dRWOqUcAOrbrzDrjkn/fDp6pb
+	MuUY2xGcPmI21ydVQZCT7kXS+JIjrmvNRPJqCYRsyKdqFRvqQwXKSxEd3D4IVn93aq9NMszk6VL
+	DIhhmuYIcHQ06vFSLVRxq7Pff4W0/NehyZYa1F74Zx+tVAnRUilWmRx14lHK7caCj6kCyvitCZg
+	Ow+QSOj4NeqG7FFj4V/wdMAy7VtEBOAV99d18FteE5WqcqKv6PNiRb3Hjsjum6OTrGuQU37APHv
+	dhx+5eUQMwNi0stLioyIA+yiIfJcVGtG/nO869SwMHsD3k2YqqZVq9Yww3bjOZa9yFGCK3Xhy6k
+	SQoLGHoTvqJuZj1MEtL+R/AYFqCm47A71WTqaCMnMVUgN4DFeRUYyLzujuyuTQuOt/CwRURNGpt
+	j+DmAmVSfmswupsbinLa8cFWIBxFwHBtcnI5jLSCXLha2plwigcOO+qK5FV+g/rVKJzelT0WQXX
+	c2rgRllydm8I/PSL+MwrvyndM4=
+X-Received: by 2002:a17:90a:d64d:b0:394:ed5c:ff9f with SMTP id 98e67ed59e1d1-39b086549c0mr15480843a91.17.1788525293769;
+        Fri, 04 Sep 2026 05:34:53 -0700 (PDT)
+Received: from volcano9f6e-hostos.amd.com ([165.204.217.251])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3339885ca07sm7522735eec.1.2026.09.04.05.34.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Sep 2026 05:34:53 -0700 (PDT)
+From: Hemanth Selam <hemanth.selam@gmail.com>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>
+Cc: linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org
+Subject: [PATCH] alpha: fix typos in comments
+Date: Fri,  4 Sep 2026 18:04:47 +0530
+Message-ID: <20260904123448.38021-1-hemanth.selam@gmail.com>
+X-Mailer: git-send-email 2.48.1
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260803-alpha-fp-exceptions-v1-0-c99d75608e60@gmail.com>
- <20260803-alpha-fp-exceptions-v1-3-c99d75608e60@gmail.com> <CA+=Fv5QUxT-T0XgXccAF=1_6Dz=nCpY=NQu=ruOrYjbB+q7YCA@mail.gmail.com>
-In-Reply-To: <CA+=Fv5QUxT-T0XgXccAF=1_6Dz=nCpY=NQu=ruOrYjbB+q7YCA@mail.gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Fri, 4 Sep 2026 08:13:44 +0200
-X-Gm-Features: AcwNN1VrnhEuSNjXaQkRHQ6SzaIw81uvdMaGdmatxDoxs1iIKPoZwAWCS6BhE2g
-Message-ID: <CA+=Fv5S_ZrHedEVPR9Oet2Egg2hwy33pEqEXaQa0zGdQdNjWRg@mail.gmail.com>
-Subject: Re: [PATCH 3/3] alpha: determine tininess after rounding in the FP emulation
-To: Matt Turner <mattst88@gmail.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, 
-	"David S. Miller" <davem@davemloft.net>, Andreas Larsson <andreas@gaisler.com>, stable@vger.kernel.org, 
-	Michael Ellerman <mpe@ellerman.id.au>, Yoshinori Sato <ysato@users.sourceforge.jp>, dalias@libc.org, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hi everyone,
+Fix typos in comments, reported by scripts/checkpatch.pl using the
+misspelling list in scripts/spelling.txt.  Only touches comments, no code
+changes.
 
-Adding Michael, Yoshinori, Rich and Adrian directly, although this
-is an alpha series, patch 3/3 also touches the shared soft-fp code in
-include/math-emu/ (op-common.h, soft-fp.h), which your architectures
-build against too (confirmed by grepping arch/{powerpc,sh,sparc} for
-includes of those headers; parisc/m68k/mips/x86 have their own
-separate math-emu and aren't touched).
-The new _FP_TININESS_AFTER_ROUNDING macro defaults to 0, so the
-intent is no behavioural change on your side. The new guard it adds
-in op-common.h is a regular runtime `if` rather than `#if` though, so
-it still gets compiled against your macro instantiations even if it
-should dead-code-eliminate at -O.
-No action needed if it builds fine for you, just flagging since it's
-tagged for stable. Let us know if it causes any problems, or feel
-free to ack if you're happy with it.
-I've reviewed and tested patch 3/3 on alpha already (Reviewed-by/
-Tested-by posted).
+Assisted-by: Cursor:claude-opus-5
+Signed-off-by: Hemanth Selam <hemanth.selam@gmail.com>
+---
+ arch/alpha/boot/bootpz.c           | 2 +-
+ arch/alpha/include/uapi/asm/mman.h | 2 +-
+ arch/alpha/kernel/pci_iommu.c      | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-Thanks,
-Magnus
+diff --git a/arch/alpha/boot/bootpz.c b/arch/alpha/boot/bootpz.c
+index c6079308eab3..85ccfae58960 100644
+--- a/arch/alpha/boot/bootpz.c
++++ b/arch/alpha/boot/bootpz.c
+@@ -456,7 +456,7 @@ start_kernel(void)
+ #ifdef DEBUG_LAST_STEPS
+ 	srm_printk("Preparing INITRD info...\n");
+ #endif
+-	/* Finally, set the INITRD paramenters for the kernel. */
++	/* Finally, set the INITRD parameters for the kernel. */
+ 	((long *)(ZERO_PGE+256))[0] = initrd_image_start;
+ 	((long *)(ZERO_PGE+256))[1] = INITRD_IMAGE_SIZE;
+ 
+diff --git a/arch/alpha/include/uapi/asm/mman.h b/arch/alpha/include/uapi/asm/mman.h
+index 1e700468a685..6b98bd3e7df6 100644
+--- a/arch/alpha/include/uapi/asm/mman.h
++++ b/arch/alpha/include/uapi/asm/mman.h
+@@ -61,7 +61,7 @@
+ #define MADV_HUGEPAGE	14		/* Worth backing with hugepages */
+ #define MADV_NOHUGEPAGE	15		/* Not worth backing with hugepages */
+ 
+-#define MADV_DONTDUMP   16		/* Explicity exclude from the core dump,
++#define MADV_DONTDUMP   16		/* Explicitly exclude from the core dump,
+ 					   overrides the coredump filter bits */
+ #define MADV_DODUMP	17		/* Clear the MADV_NODUMP flag */
+ 
+diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
+index 955b6ca61627..093a265adcbf 100644
+--- a/arch/alpha/kernel/pci_iommu.c
++++ b/arch/alpha/kernel/pci_iommu.c
+@@ -466,7 +466,7 @@ static void alpha_pci_free_coherent(struct device *dev, size_t size,
+ 	-1  : Not leader, physically adjacent to previous.
+ 	-2  : Not leader, virtually adjacent to previous.
+    Write dma_length of each leader with the combined lengths of
+-   the mergable followers.  */
++   the mergeable followers.  */
+ 
+ #define SG_ENT_VIRT_ADDRESS(SG) (sg_virt((SG)))
+ #define SG_ENT_PHYS_ADDRESS(SG) __pa(SG_ENT_VIRT_ADDRESS(SG))
+-- 
+2.48.1
+
