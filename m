@@ -1,164 +1,106 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp-1.orcon.net.nz (smtp-1.orcon.net.nz [60.234.4.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67879511E9A
-	for <linux-alpha@vger.kernel.org>; Fri,  4 Sep 2026 17:21:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788542483; cv=pass; b=s7/YopmusLwNgzsWJDsbRWYK0RcORGvV1Rc4gzHD8U4JPEvKU0eS3YqY3gJ9RWwkBkHS8Nfetgb2XuLvrgjGYvfvlaV/N1TOGbMykmQ+JkoTfOLN2sPVCC+TI/sTV6ErZ5Xtbawe1XkmgU5QMsrorgpLnERHpQlYB14tnquWnRE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788542483; c=relaxed/simple;
-	bh=AFNBiWCRpUcEoXNChHss1VconiHm4hB8qaeZxdrK+Dg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=AoKadHeCu3dKqD0o1ySfBucVLfF/z0EJkj7vSmKFgEEUZVD7Luvz+XzDa32V4TH16lZf1eP8GYy+wjY9lJf0HPRKmaZq8AMKgitn78gJpSu0P+mmQkLzYxaI9vi4P+Vmw6sY/HRXMLcRa82lDtjEy9RwBA/Un5ZWm4qdjm78L14=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S+5ZMHHh; arc=pass smtp.client-ip=209.85.208.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05FC13EB0E1;
+	Fri,  4 Sep 2026 20:50:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.234.4.34
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788555015; cv=none; b=njPfpsJQy8dxJfEHuWtK+NBgPDSXSJlqv5uOaE/jGLng8JQZYdshceXEmbNZFTkcIzG4Ur+0rDGkLqV4Ch1DyTh3UTp19f4Qz7leO47O2YZa8XgoUV6AAdIUq0FM8CT0GyVSFpHwxbyadqUjM+U7Fq3EWQ6sieL/81cv2Byq3F8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788555015; c=relaxed/simple;
+	bh=q3sT/7NLYSK+YosKu0lwb3CCp5iGf9nPr9gV2Dx4RhU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UdqIPT/CjuQqLGatHihLT9U83KhZB0P/8VrpEtWNsv5IAPq+iAod8wZhc5vUiTIfih6+LFDKz8Xlt1UkB7QF48WqWKfzQsBhogT54jYD/rjcBXu32ukUCnqd18zNk8PS/nARgWX7Fbag5xUYnh27H6tIfISKEawDaLcs7CHd4ws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=orcon.net.nz; spf=pass smtp.mailfrom=orcon.net.nz; dkim=pass (2048-bit key) header.d=orcon.net.nz header.i=@orcon.net.nz header.b=myFvLMK2; arc=none smtp.client-ip=60.234.4.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=orcon.net.nz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=orcon.net.nz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S+5ZMHHh"
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6a5ebf75d62so1912101a12.1
-        for <linux-alpha@vger.kernel.org>; Fri, 04 Sep 2026 10:21:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788542480; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Ii4hKACZnJNlZVQ4QcCwmBFtrq3SntcObsBJMop0DdfUhlJO4RTpcBGnItlq2+ldUi
-         +sSLwTfn87qfax/hZvX7gnEB8WO2XouFhMwGU7q++M24tTTfXzLCweewp5kmp2S6kAME
-         Sl7mLCW/kxQfj2ujBpXTCC6ph6xY96QTA3FvvoE8wGvdYpFhSaRAa9URz7F0cRLGEf6d
-         HS15Wk8TG1quuKjJFnIR4LCHrfRQYJSXYg7Dj3ItDRIr5V0Cn9dXstJcZCSbNO64BOfi
-         ZHWFgcH51U3rZzUiel+LZ/EIo80QVkKVRPXLJUw3MgDHayRh0rAVTVfbn5r4W8E+iccP
-         pvKA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=xbP84TB5YSyUcPTlSRXVzwOJ5KiLCluO2L3qZFE4rqU=;
-        fh=d8LoDq2aI4zSy6hzKqL1jp9lGzdhrYfJ0gxgyeyBHPA=;
-        b=RjkCtRDikfBJ23GS9nHlWXqwzKphb5x/Dr3yd5PzrjbPggPWj/1+BV3O3oGlH66yU3
-         FpjBAzjXL8f33XdFgHyi5tQWsoLtg5MX1B+ejb0nozxniDsLax2iXzHGRhSDHGcou7ml
-         0ygIQIoyWlR/0oaB535sIrLRzOSAU1YZTxb2ASU1wz88ABCrhiG6usDde4/LpOHX+/pG
-         x95WXh+qTjA4LZjhzE14B6Q0TDndyREMEey+Fn+o0hPCLkBt9ZfuD+JrfEL64LgQyvvO
-         sabhndf/sCMyTriDGb4pGHiw6YZXAFPG87W71zQFs2k7FH9PBPGZfqNnb9GElOcdjyhD
-         IOpg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788542480; x=1789147280; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=xbP84TB5YSyUcPTlSRXVzwOJ5KiLCluO2L3qZFE4rqU=;
-        b=S+5ZMHHhfGjA+IdWmeugDDHgBwHG5bBYSPYfCEow+5chkn8MQle82UmWyVbxLiEN7d
-         ijcv6053WNTu2RqyJ6VR+Q1MSk4Vxz4n7ZKFRrjYrPqEbaWeUeae4OgCiLykWRLNUDRA
-         ZH/X93kZSKA1/wbKpcmxavHteq0Ow+JKUXYEkMsejbWI7AKmmLzp7rDEpD05dDMzdu05
-         qx2RS3AgstzLvoN8v5AUqAPOvMKc+nz/J8n2Lte3Wf5wq5bPQVeGs2cRbGv15hnp0TgY
-         EW5NlkkUE9iLPQcY1GiopKTuEm/IxQzvNCCThYHaycwvH5N4Y2kyLdCZ7Tyzs3tF5f6h
-         EH1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788542480; x=1789147280;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=xbP84TB5YSyUcPTlSRXVzwOJ5KiLCluO2L3qZFE4rqU=;
-        b=tV1YslSZRQkjPFOistmGJj7G1vNLcFnIYoLkA6MokyERTU9P4VP2wuLn9Rh9ktl/2y
-         ee7VYia46CH/6N/jKyPhUexUvFKkk9gb9aItdajX01vXYneRtSofQUug6xzWZIjiGqtz
-         dRJYUR85e6tPidE1+0fP0KZxzqn/VGFN3DdWL+sR6afsr1RtSvrag/wGQua0DeiHemzf
-         7oD6Vb5ratIAZoHL8k7ByPuEJLydLZyzOIptgFAGIKNgAEHV9fgiHtbpTbEINQPvgf8W
-         LIjjiBx6VZ+Edh59wnpsqE1Z5KnjcQx5Mbt/+Yp+he4toS8Ublnj1Ct6wSfmkpXSig2J
-         PXJA==
-X-Forwarded-Encrypted: i=1; AKwUvByHjTfQmT2mpoOQWO8Y6kpg2g+i1UYKjQ6HTTpbojaIU+GI2YYG9T9sxEY77JDx/NNEAadsFnQSWbt39w==@vger.kernel.org
-X-Gm-Message-State: AFuF++nDaGmzvCQQV1oRiL9TqjqgtKz85KXOJuYW7eD3jOQVQXb9DODt
-	omMDl+Muuz0leTA77fsqxLX9nHjA5hBCGLnSXITZ4t92I5YR2q7AXHeYhVduWWDC6cm1EYtMFJa
-	BtKkIJnUE+gZSDI+Cb2ow17kDDMOSOqY=
-X-Gm-Gg: AYBFou351IBHyiqId+GHfYh13RRJGhCP6AJh4ie80Z4OmXu/+BXMCqEdxOngNhrDH3y
-	yUjn2JJfznz735dIpoQzeut24QpGVCRx2yl0jnw67zOpU6tZuBJZVZx7BZT01c/rvjTM71HZGUX
-	H2u39qwbga+tTG/tp0JvePQvQWqqsXPVWywiIAuvzZEm3mXG7vHqpUcd7qEIyLzZJJp62Y4p5un
-	vTpZZsp5OnPzk5xWJqUoJCrS8LF1SIWS0UIO4xPie7EhWNIZ+9xv6m/tdGny1QxxAOo1IIMxjhx
-	8UU9kNdnD0PAGYTfD1BagRuSAz9EMrRju0VewMQHR6iSYsMmkstnb62f8kD4v9426UO/oeF4bVm
-	w1MtxCPLYV3tsMNyy29NtEPXJiP1fYzo=
-X-Received: by 2002:a05:6402:a252:20b0:6a6:9368:73a0 with SMTP id
- 4fb4d7f45d1cf-6a696a73aa1mr4363499a12.6.1788542479338; Fri, 04 Sep 2026
- 10:21:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=orcon.net.nz header.i=@orcon.net.nz header.b="myFvLMK2"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=orcon.net.nz; s=s1; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:
+	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=aucmUszGhwmkxiVnJXHQpW3iZUeWbNF56eQvXm/0nwE=; b=myFvLMK2N/QSJKZLcMpFUxdxMP
+	K47tzFSkq1OKyEDNWyWAPBNLyx0xSH0IYD5hAfxcucvKZInSn5OCN1lD5zoWYOlfyHQ/HG3uqb6xX
+	gC2VZNp6IcSvHZMggzyacfbAXVR/XkUfM5yWjBKSNlnbFhlmBZTld4fT7HCUF9Yl6Ukfa0YmP09Gj
+	yeNUEJMq3Zt9gx1lpdtgLfnkfKXgLEX/Wq8qWTHQYK6+aFF82hG8zUhPsmzR9IoWJdropavu2rFLl
+	ND38FvpjJfuwdkFasY8hyy3ywjBr04+2cYkqOG0yZA7HTuof5HPyLfQbvTZ5B+4noyUH/Jh3sPtoO
+	bejMkbOQ==;
+Received: from [121.99.247.178] (port=30429 helo=creeky)
+	by smtp-1.orcon.net.nz with esmtpa (Exim 4.90_1)
+	(envelope-from <mcree@orcon.net.nz>)
+	id 1x2aZJ-0002HX-TQ; Sat, 05 Sep 2026 08:31:26 +1200
+Date: Sat, 5 Sep 2026 08:31:20 +1200
+From: Michael Cree <mcree@orcon.net.nz>
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
+	richard.henderson@linaro.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/24] alpha: select ARCH_HAS_UBSAN
+Message-ID: <apsqmKw1pLmOXVgg@creeky>
+Mail-Followup-To: Michael Cree <mcree@orcon.net.nz>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
+	richard.henderson@linaro.org, linux-kernel@vger.kernel.org
+References: <cover.1788277742.git.mattst88@gmail.com>
+ <61175f9015771b6a6d78624579ecc180f57d17e9.1788277742.git.mattst88@gmail.com>
+ <CA+=Fv5TYnwcDLPvwScOcGq-7CUSs2bDMqrYEj-Lhf4XfQ=yTzA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788351089.git.rrobaina@redhat.com> <4ada9fcbb93af8d5c1c9bfe2c83d94fc10bfe327.1788351089.git.rrobaina@redhat.com>
-In-Reply-To: <4ada9fcbb93af8d5c1c9bfe2c83d94fc10bfe327.1788351089.git.rrobaina@redhat.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Fri, 4 Sep 2026 19:21:07 +0200
-X-Gm-Features: AcwNN1WpEQ0Y6eKbtA6wNzDHeYOBs1Tconhq7C15XjRhFKDXvjk4jMYrR9OFExk
-Message-ID: <CA+=Fv5T4826T2sd0Gbh-nfZsqcWK_phdBKy4BLWOvDTt92t5Eg@mail.gmail.com>
-Subject: Re: [PATCH v2 02/13] alpha: pass pt_regs to audit_syscall_entry()
-To: Ricardo Robaina <rrobaina@redhat.com>
-Cc: audit@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-csky@vger.kernel.org, linux-mips@vger.kernel.org, 
-	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linux-um@lists.infradead.org, bpf@vger.kernel.org, paul@paul-moore.com, 
-	eparis@redhat.com, sgrubb@redhat.com, oleg@redhat.com, 
-	richard.henderson@linaro.org, mattst88@gmail.com, linux@armlinux.org.uk, 
-	catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, monstr@monstr.eu, 
-	tsbogend@alpha.franken.de, jonas@southpole.se, 
-	stefan.kristiansson@saunalahti.fi, shorne@gmail.com, 
-	James.Bottomley@hansenpartnership.com, deller@gmx.de, 
-	ysato@users.sourceforge.jp, dalias@libc.org, glaubitz@physik.fu-berlin.de, 
-	davem@davemloft.net, andreas@gaisler.com, richard@nod.at, 
-	anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net, chris@zankel.net, 
-	jcmvbkbc@gmail.com, tglx@kernel.org, peterz@infradead.org, luto@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+=Fv5TYnwcDLPvwScOcGq-7CUSs2bDMqrYEj-Lhf4XfQ=yTzA@mail.gmail.com>
+X-GeoIP: NZ
+X-Spam_score: -2.9
+X-Spam_score_int: -28
+X-Spam_bar: --
 
-Hi Ricardo,
+On Wed, Sep 02, 2026 at 12:34:50AM +0200, Magnus Lindholm wrote:
+> On Tue, Sep 1, 2026 at 5:50 PM Matt Turner <mattst88@gmail.com> wrote:
+> >
+> > GCC's undefined behavior sanitizer has no architecture-specific runtime
+> > requirements. Enable it for Alpha to allow UBSAN instrumentation of the
+> > kernel.
+> >
+> I tested this patch on top of my rebased Alpha GENERIC_ENTRY patch on an
+> AlphaServer ES40. The kernel built and booted successfully with
+> CONFIG_UBSAN=y, and the UBSAN instrumentation is active.
 
-On Wed, Sep 2, 2026 at 4:44=E2=80=AFPM Ricardo Robaina <rrobaina@redhat.com=
-> wrote:
->
-> audit_syscall_entry() now takes a pointer to pt_regs and extracts
-> the syscall arguments itself via syscall_get_arguments(). Drop the
-> individual argument registers from the call and pass regs instead.
->
-> Signed-off-by: Ricardo Robaina <rrobaina@redhat.com>
-> ---
->  arch/alpha/kernel/ptrace.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/arch/alpha/kernel/ptrace.c b/arch/alpha/kernel/ptrace.c
-> index fc8f6cedbb28..8a39c0473297 100644
-> --- a/arch/alpha/kernel/ptrace.c
-> +++ b/arch/alpha/kernel/ptrace.c
-> @@ -496,8 +496,7 @@ asmlinkage unsigned long syscall_trace_enter(void)
->         }
->
->  #ifdef CONFIG_AUDITSYSCALL
-> -       audit_syscall_entry(syscall_get_nr(current, regs),
-> -               regs->r16, regs->r17, regs->r18, regs->r19);
-> +       audit_syscall_entry(syscall_get_nr(current, regs), regs);
->  #endif
->         return syscall_get_nr(current, regs);
->  }
-> --
-> 2.55.0
->
-This doesn't apply on top of my "alpha: enable GENERIC_ENTRY" series
+So have I, on an XP1000 and ES45.
 
-https://lore.kernel.org/linux-alpha/20260902184058.198679-1-linmag7@gmail.c=
-om/T/#t
+> CONFIG_UBSAN_ALIGNMENT did expose a misaligned struct bucket_table
+> allocation in lib/rhashtable.c. This appears to be a generic rhashtable
+> allocation-alignment issue rather than an Alpha UBSAN problem.
 
-That series moves alpha's syscall entry onto the generic entry
-framework and removes syscall_trace_enter() and its direct
-audit_syscall_entry() call entirely - verified with git am against
-GENERIC_ENTRY applied, it fails at exactly this hunk.
-You don't need a replacement alpha patch, though. Once GENERIC_ENTRY
-lands, alpha's syscall entry goes through
-syscall_enter_from_user_mode_randomize_stack(), which already calls
-syscall_enter_audit() as part of the shared entry helpers
-(include/linux/entry-common.h). I applied patch 1/13 alone on top of
-GENERIC_ENTRY and confirmed alpha's entry path already routes through
-the updated __audit_syscall_entry() - no alpha-specific code needed.
-So for alpha, you can drop this patch in the next revision rather
-than rebase it.
+But in my case the kernel vomited copious misaligned access reports,
+so many that it took quite a few minutes to boot and I lost much of
+the kernel log before disks were mounted.  A few examples that
+were recorded later in the boot on the ES45:
 
-Regards
-Magnus
+Sep 03 21:12:36 electro kernel: UBSAN: misaligned-access in net/core/dev.c:1401:2
+Sep 03 21:12:36 electro kernel: member access within misaligned address (____ptrval____) for type 'struct net_device'
+Sep 03 21:12:36 electro kernel: which requires 64 byte alignment
+
+Sep 03 21:12:36 electro kernel: UBSAN: misaligned-access in kernel/signal.c:4362:4
+Sep 03 21:12:36 electro kernel: member access within misaligned address 0000000058e1e939 for type 'struct task_struct'
+Sep 03 21:12:36 electro kernel: which requires 64 byte alignment
+
+Sep 03 21:13:04 electro kernel: UBSAN: misaligned-access in drivers/net/ethernet/intel/e100.c:1941:36
+Sep 03 21:13:04 electro kernel: member access within misaligned address 000000001c866fa6 for type 'struct rfd'
+Sep 03 21:13:04 electro kernel: which requires 4 byte alignment
+
+Interestingly "kernel unaligned acc" in /proc/cpuinfo remained at
+zero, which really makes me wonder whether these reports are all
+false-positives.
+
+This kernel was cross-compiled with: "alpha-linux-gnu-gcc (Debian
+14.2.0-19)"
+
+Cheers,
+Michael.
