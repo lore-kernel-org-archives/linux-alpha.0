@@ -1,146 +1,122 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C76834E74D
-	for <linux-alpha@vger.kernel.org>; Thu,  3 Sep 2026 22:58:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF28A41A517
+	for <linux-alpha@vger.kernel.org>; Fri,  4 Sep 2026 06:13:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.45
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788476318; cv=pass; b=oAxO3xyTpwntW8JF5POQw9QnE6uUkL3W8v+w6HoqOQyDy8ipMR17SixSiH2dMPNDn+hEF4pWZgVJ/HAAHSfgnpKnTvJGZVZSNSUnfne/HciiVcM63zM/axNj23MidEx5Ky6vlC/HU2Jhnlabx4RdVZ7Fp2GA18Hpxdi1Ge5abRk=
+	t=1788502440; cv=pass; b=R6BYVaDd8BP+qBqvtcMGb7uPZdvL93zEKTZK/HLqEm8gaGsEzhdg5ZTklNOtIaN1HI35LlH/REphgiGVozTBHPZAIiHOiWza2xIeK7GSL0yw+UICScXBDokOYC8OPglJeshheezTwMeTR0jyMkwHyQFJ+psN2Kppb++j+zEIjVo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788476318; c=relaxed/simple;
-	bh=Udt8tF9PQ+yaWtM/r1qdypPjIYTzftQh1II2bNtHw+w=;
+	s=arc-20240116; t=1788502440; c=relaxed/simple;
+	bh=4dOgcAQlgO1QoOYmAB+wFP5Ip8y+D8KPjRKJ5U4MjNU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FvyQHFq7Gt1kCoIl1wfaXJ5Z3l60JQ05Ri0+C+UDHpwSEHNyVZ9O2gYqXhU5K1mNblxkq6h1biDumoFCt+BNuVD/wQpw950TuhlBndpVzfn0z0QOSllpi276CcmE3u5yzbS7409hPlh/iOML2at/ZqaT/EdZG88VNvXZkDVEMn4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hfmYtY0V; arc=pass smtp.client-ip=209.85.208.51
+	 To:Cc:Content-Type; b=jlpVjWwEmd0gQF+XgP9t3EkNiEvxLiG3f6LOo0uj8PfZqSBsRLAp2lGytWuTYbG0RPe3zjB7A8w8yhlJZd1xUHU7YX/cXqtJ6j31gDzn6EjfAnHx4PKJpSD9SBcRXunJKIEbpsMh6mlutLYxm/oXiFe1/M8fXDjVcqv958c+h7w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jdml6mr3; arc=pass smtp.client-ip=209.85.208.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hfmYtY0V"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6a63667b78aso469023a12.3
-        for <linux-alpha@vger.kernel.org>; Thu, 03 Sep 2026 15:58:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788476315; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jdml6mr3"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6a68ca482e2so751610a12.0
+        for <linux-alpha@vger.kernel.org>; Thu, 03 Sep 2026 23:13:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788502436; cv=none;
         d=google.com; s=arc-20260327;
-        b=RWfGWmewZQ0x5OP57lq9e2Tf0FLeOQaDdA/IZ52Hxe8WOix5TYipgMAo50dsdk67ks
-         L8ySfHV8ubbbUGNv+HdR0LWJI2zlelr490xp4LFc1hjlSNwMARByN8T35xCuU4jJuNef
-         NhnISae9I2+qoizG7fg88ypGO+QxnQv0L0HOyC2ToFTIwKfWYN2n/fm8VwRZ5vC2mTFS
-         DjuiWS8cXL3w3gnLfuLjqnLPGfq8JDqmlQQQ1mV3ZfVCMaPZbGxcEPMw9W9h6j5wSKAs
-         HqHWbQoG7lyoXof+gPvaPcXbeyboW6gc14Gr9ZfO5vO2gi417dpW7wTfGjCQlpQ0xMSC
-         yYIg==
+        b=rk2Y27cKSn4c0oqdcMXyJVqsCagIOYMdVychzvpo/CPn9hBcmGn72PoV1rmABOMpmp
+         sIwf0nWibVibAq40SyB9HGS/MXI8W+aD3n0d3iYG74CA+Cd5hL5lYoh2UkHcc8zk3+9T
+         PpHgGa3PEkXYQyK/DeRF2M14OHe+hP7TpbLDDdZBGBgjHCWiT/K2w7OhbZpLusDAeHWG
+         Tc/TtlnOJQZhohWOyodCQ71uspTyB+mTqbc/CZ8/354wFAZmJ1J6bK7nDMGMrCSag4FB
+         IOe5Q1bGnlBG5nyF9DrciGNNWwMZiIeEbMqvsj40j61/rVoT4337mCKtVl92OwNEMmJh
+         h0Cw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=F5jtNNir4UNaJAkjh5s2D29poa0W8o8SXRWJxMp3EFk=;
-        fh=bLXUq4zKMKoVtr4en67hBbn5AghZJydmSMAYDJEBeBg=;
-        b=mTWkFB1x6/j7Gyh01my9ALYXUGDPH3WOLIDADkMFk6ENLLK6MZniynI9z5Lv6H7Xfd
-         88a2Ex+uUq+vC7DRxjS9yIuX8tcwX5M7x15x6GZ2+AOkDUXut2Mz9SMupq+jMa0ha9qm
-         xYVfz0CULiBnu8sud9dxhIewYYv0IXmLgdNRJTMFxqHyB0cdCf5hHQBJxsFnsUAnsJTv
-         vGtUufZpU9RiSeulSYoZQQZHn/xYlhRZKSu4oxYsXkbfJFrQ36GeDS4x2b2XWdywK6Qf
-         ClQ4rMgL116DcO6wwa+hKAQFMROKtB1sktv3qWpQsXUG8bNgwtNEguVnEDhaxOOPE4Y/
-         T7Yg==;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=4dOgcAQlgO1QoOYmAB+wFP5Ip8y+D8KPjRKJ5U4MjNU=;
+        fh=7mP/IbwOeYCFfhDDUceH0C47baZdL7VO7ycUeK1PZIw=;
+        b=LNj0wrZjrTeuk1PySU2quzpTjpSVQU0JlyjvaTU9iXrmXbiaUMIg9Cmf8rECShAPLu
+         7kqI6bQ96UoYh1g5k8LvarsRjCNRRIJe5RBdaDuQMTR0Q9Hc+INDWG01+94OYZLu1biP
+         YsWON5/0C5COBD6iyV7WffVPTBdLf2Ol9nwEeboVZ77jKAt7MYMuOQ4VIQNhrsgPa2wG
+         n1vxWKITiRj8hAxxGlC96Wx3u6DkIHFz/17T0fZTo8F2VCah/onV82Q02fZIgrspQgz4
+         /1+niEbcRvKBlyRz3N21CRzX8A0EfTr4WxY6ZziQzzsh7f+eXNmj0Epz/4tIYK1+beE/
+         sWsw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788476315; x=1789081115; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=F5jtNNir4UNaJAkjh5s2D29poa0W8o8SXRWJxMp3EFk=;
-        b=hfmYtY0VCh9H3768rMxZDyDU+copxDcPC0XFg3uCTvhVWNTCW7RUEzn1/m5msXeCkr
-         4WZ15CngMgC4Hr44RJ9GbUuStvSJIj88LrFEA8OvGHELdfNmUGh8t1Tkl3hNIaTNysT5
-         JZH1Pk9+cyPE6qpWqPpTKxIKE5+R/VdtpKoa1eM1PmO91Zr7j2TIAxs0V+xEpHRysSWd
-         ukZ3/PjpPWbZfUpKdc6/wApX+BUbZx+PuYOR9F8GPYOlzoAz7HJ4Pl4TPVJYd2vr33+h
-         HVcz1biMu4eAu2qt/db4cgmTWrdfjock3KrSmDXTQcS8uGhtbS2X1ttdkflB+A4p5tIx
-         FvBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788476315; x=1789081115;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=gmail.com; s=20251104; t=1788502436; x=1789107236; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=F5jtNNir4UNaJAkjh5s2D29poa0W8o8SXRWJxMp3EFk=;
-        b=QetBY2GM6wm2yToZ5JoD1KPAn5R2kI2iheZcnqZl8aNYHWI4cHz+w5k5l0Z8boUdMt
-         Om341qV512tfzeWkRHMcUIYWuc3y5/DsVVpUJt5hzBgtZXaDxISrM7vSZf9nLIRgL61R
-         1b7b4X+GazLkP/XFmKsZdFGmW5/j5Hv8vo1IYHZtVkiXJMuQDvibeZNfsRRQFgWuvzbz
-         DLjmOfmaKSNuFLgLNU/pAOSYBQnAVZcm3rBT9EvyS/FZJXa/rwvXDJ+ANW0GYhOQsY66
-         Ilzo7W0e6yXXDR//k+DX+iUsJpP+SfUFbu26pDCVeaA4reO6Fnrx0XWLqZDyMkfbqNQs
-         HB5w==
-X-Gm-Message-State: AFuF++mspuAWVXtIKf2fcEg9/UEpZdB1LSQCGcxQma2q4k/7oOiG4NQE
-	HdUWloPijv0ul/pHjK6Xt+1oQ1PMkdfqvpOZzgBLqdFP9FpwoFbbpISupRxD61fqhklqhp9m923
-	cCIbi8s3NnqqbOpe4PvGX2Tl2Yju1chw=
-X-Gm-Gg: AYBFou0bw22GT2CXSIYUCWkdCLIHFMn62mBnBwepfzE2FH15C4tMOMA32stUioPUPv3
-	MPFJ8yH2qkqBpftTntcJrRUK3WuMR9/pZL+MNZYAJTN7QoFDMatiIX+BV1LzucSenL1pswyFRWw
-	ZE8PwILzVnV+smxEw8HM9o4SIwpKnbAZJSudOHiWRbz6kLUiUCixM9iQ4A4lZJ1FhrIc5kjiABg
-	eYDN5dOY9v3m/MVZJcrNFbPLkAjjarMn3YeqjZiyacqGSRjmZOmF/Ktw1zSYRF1EfWXpe4T3fgz
-	7zadYIUrb6gYp4gaSJZg74tc1Qk9dST+fPxtbVU742RhVtcDZfW9VonB7LRrb/PhwcnS3PesRKm
-	MhL2Nm4YrVDeqQt6FcMC6phCZaZMDk+E=
-X-Received: by 2002:a05:6402:450a:b0:6a6:32f5:ff40 with SMTP id
- 4fb4d7f45d1cf-6a7e8f99b8amr748145a12.20.1788476315331; Thu, 03 Sep 2026
- 15:58:35 -0700 (PDT)
+        bh=4dOgcAQlgO1QoOYmAB+wFP5Ip8y+D8KPjRKJ5U4MjNU=;
+        b=Jdml6mr3zaJdqdlBLmwY4XR3DyaMt6UVj+RrpvUccUAgAhxLkAJrowYyrxRQFhIoI4
+         SFMo9P6pmG/zs5G0i4r06tFu7OzCsJNsjtIovofmLTCa1ETNmq1ySaCoppH9xw7+jRO5
+         kpa+4BFPGENcquNHvcWbiFezTJ7t+UPQTVZ8szMSKH5imCpPBYDpGeJ8oC47XpX6Pc2l
+         tOm73krqlGnR5/rddSkj8pDV59Ur+mb8k/X5yfB9bOLqjbCYAbPr8LlREHKCQPjWpHwI
+         TaGy6n4nCeZ87ZF8OVjnT3VRS2LFuvBDh+W0zWOjb3AHCngRjwHDiGeXMuAzRIRJxfsy
+         xEWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788502436; x=1789107236;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=4dOgcAQlgO1QoOYmAB+wFP5Ip8y+D8KPjRKJ5U4MjNU=;
+        b=OU1wdJc0Rle4r/Fwy54wsifjYT1Q8phROWDkGjMNASbJ/6v9bJIkgDtfZBvqpwapbP
+         TEMgoWKJxuCdsB7SYONeb/odN6QZY2l7YYr8lHVrMXegcEnDM1zOuafhGcqUFBhIo4uU
+         UB80dlnFSz7KkzVm014EOyrXxF8pbDtEgBZrpkgXGN+N1ECGDlwNmjTyFTreECrPxuf5
+         OBT/WjHJVU9INdcpdtDrSrRoQvEfIRPwQ8sJt9AbDsXySxprjCh8c3evwgCoPsmqfQIE
+         5XFpYQ13k6OLcA8xhjWekPN+lLZuqR1ycmBmrHAogZd+4HZK9+kzT3dasFnfoTtPleRh
+         lE1A==
+X-Forwarded-Encrypted: i=1; AKwUvBxssk3IOgo5ccNlfIfa9+IcJBlHxl2DOgA8asFJnYrkf1u87wCnrOhdxif3Avtt1yhByvVO/Spd9J2tEQ==@vger.kernel.org
+X-Gm-Message-State: AFuF++kFhcUa+dCee+HMmdQXGoTHmpWve9E1UrBdMHyitpolaYPFKHHH
+	hL0d8SyFg0qkzpYxAIomHwQQyv5tR8LHG6ChI+rO47T55R5584i46bSMNpv3k7VFc1G/k0U4ky0
+	99GxquDoWy843b5RCExmL0x1OmXI2pLE=
+X-Gm-Gg: AYBFou2Ytc93EeU7OppTcTGlPSlQ+5N8jogEb0h7bvvOBt9NMdLZtwnZ+qjLggTJOy5
+	039/YyXwknyU87tz7W/lY5ygL7V1ThlwzbxKuHbn10OK8sUFHgAOINdlvVec3WMWeZOEqDonwRl
+	7b7lHKAOsvFpAPNwpwtan6xA8NWZhFu1p9LiLuBCAB3CWzweVVSYkHD3Bw92V06CKb9FK/hxQE+
+	9CQfm+ou0nZGmvdMIw5vp/5NPSeoLFh+cQOg7jKiPTLTmySWeKXGWxhgt9ffr/vkq0V9tA3YObU
+	Bz7kWcu4j8lq16ddxLJQkvrUuv5eWdoevfc4wglVqWUdhm/VFKFnSOgGQ7hChF5fXeCecmtT7k+
+	6s8Ew4WS4wXd+aVraOTWcawBMTuStQUc=
+X-Received: by 2002:a05:6402:46d0:b0:6a5:f44e:a009 with SMTP id
+ 4fb4d7f45d1cf-6a7e8d5a9f1mr1690015a12.7.1788502435914; Thu, 03 Sep 2026
+ 23:13:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788277742.git.mattst88@gmail.com> <b71c51ff7ca699ca6e667a55d9ebce58ef092c77.1788277742.git.mattst88@gmail.com>
-In-Reply-To: <b71c51ff7ca699ca6e667a55d9ebce58ef092c77.1788277742.git.mattst88@gmail.com>
+References: <20260803-alpha-fp-exceptions-v1-0-c99d75608e60@gmail.com>
+ <20260803-alpha-fp-exceptions-v1-3-c99d75608e60@gmail.com> <CA+=Fv5QUxT-T0XgXccAF=1_6Dz=nCpY=NQu=ruOrYjbB+q7YCA@mail.gmail.com>
+In-Reply-To: <CA+=Fv5QUxT-T0XgXccAF=1_6Dz=nCpY=NQu=ruOrYjbB+q7YCA@mail.gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Fri, 4 Sep 2026 00:58:23 +0200
-X-Gm-Features: AcwNN1UOei2zgDUxSPJuNJC6Z9fZXmj2Wvlgh4vJndJcYJdyLsVtnIJfNuyE9QQ
-Message-ID: <CA+=Fv5Q4iCnvTqLdHAdXA1ahdPLBJ5nZcdWXc3pki=T6P76Mnw@mail.gmail.com>
-Subject: Re: [PATCH 24/24] alpha: add TRACE_IRQFLAGS_SUPPORT
+Date: Fri, 4 Sep 2026 08:13:44 +0200
+X-Gm-Features: AcwNN1VrnhEuSNjXaQkRHQ6SzaIw81uvdMaGdmatxDoxs1iIKPoZwAWCS6BhE2g
+Message-ID: <CA+=Fv5S_ZrHedEVPR9Oet2Egg2hwy33pEqEXaQa0zGdQdNjWRg@mail.gmail.com>
+Subject: Re: [PATCH 3/3] alpha: determine tininess after rounding in the FP emulation
 To: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org, richard.henderson@linaro.org, 
-	linux-kernel@vger.kernel.org
+Cc: Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org, 
+	"David S. Miller" <davem@davemloft.net>, Andreas Larsson <andreas@gaisler.com>, stable@vger.kernel.org, 
+	Michael Ellerman <mpe@ellerman.id.au>, Yoshinori Sato <ysato@users.sourceforge.jp>, dalias@libc.org, 
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Hi Matt,
+Hi everyone,
 
-On Tue, Sep 1, 2026 at 5:52=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
-te:
->
-> Instrument the entry/exit assembly to track hardirq state for lockdep.
->
-> TRACE_IRQS_OFF is called after SAVE_ALL at each exception/interrupt
-> entry point and at syscall entry.  TRACE_IRQS_ON is called at
-> restore_all before returning to userspace, where PAL_rti will restore
-> the user IPL (re-enabling interrupts).
->
-> The function call clobbers caller-saved registers, so the
-> TRACE_IRQS_OFF macro reloads $0 and $16-$18 from the pt_regs frame.
-> $8 (current_thread_info) is preserved because it is declared as a
-> global register variable.
->
-> Together with the previously added STACKTRACE_SUPPORT and
-> LOCKDEP_SUPPORT, this enables LOCK_DEBUGGING_SUPPORT on Alpha.
->
-> Assisted-by: Claude:claude-opus-4-6
-> Signed-off-by: Matt Turner <mattst88@gmail.com>
+Adding Michael, Yoshinori, Rich and Adrian directly, although this
+is an alpha series, patch 3/3 also touches the shared soft-fp code in
+include/math-emu/ (op-common.h, soft-fp.h), which your architectures
+build against too (confirmed by grepping arch/{powerpc,sh,sparc} for
+includes of those headers; parisc/m68k/mips/x86 have their own
+separate math-emu and aren't touched).
+The new _FP_TININESS_AFTER_ROUNDING macro defaults to 0, so the
+intent is no behavioural change on your side. The new guard it adds
+in op-common.h is a regular runtime `if` rather than `#if` though, so
+it still gets compiled against your macro instantiations even if it
+should dead-code-eliminate at -O.
+No action needed if it builds fine for you, just flagging since it's
+tagged for stable. Let us know if it causes any problems, or feel
+free to ack if you're happy with it.
+I've reviewed and tested patch 3/3 on alpha already (Reviewed-by/
+Tested-by posted).
 
-I think this patch needs to be rebased on top of Alpha GENERIC_ENTRY
-v5. Both patches are based on entry.S blob 9f2608de2544 and modify the
-same entry and return paths, so they cannot currently be applied in
-either order.
-
-With GENERIC_ENTRY, the syscall IRQ-state transitions are already
-handled by syscall_enter_from_user_mode_randomize_stack() and
-syscall_exit_to_user_mode(). Non-syscall user returns go through
-exit_to_user_mode(), which also performs the final hardirqs-on
-transition.
-
-The interrupt path already calls raw_local_irq_disable() and updates
-the lockdep state in do_entInt(), while kernel-mode PAL returns retain
-the Alpha-specific lockdep_on_restore() handling.
-
-Adding TRACE_IRQS_OFF to entSys and TRACE_IRQS_ON to restore_all would
-therefore duplicate the generic-entry transitions. I think the patch
-should instead be rebased and limited to any entry paths which remain
-uncovered after GENERIC_ENTRY v5 is applied.
-
-Keeping these transitions in the generic C entry helpers where
-possible would also avoid additional register-save and restore logic
-in entry.S.
-
-Regards,
+Thanks,
 Magnus
