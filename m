@@ -1,67 +1,66 @@
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22D403BF676
-	for <linux-alpha@vger.kernel.org>; Sat,  5 Sep 2026 19:30:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C425F3C09ED
+	for <linux-alpha@vger.kernel.org>; Sat,  5 Sep 2026 19:30:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788636614; cv=none; b=Ehj+A6cHjhidrH9mqbOPIoiZVmbebqdQbosTHH0enp8rTuQ5x2KDkzsbUulNs/K0mVVfnMO2ulf0lV61SKUFx5Os9gyIR39P1iHhdeJMKcgZjd10gP3sajOEriDc4Hs6A3fV5GL2EYiAU9NtuZ4CO5SJRAQ4WC7GqkLp0QABCdY=
+	t=1788636619; cv=none; b=BRvfjUxtjUTEZeb+NIf92MJTH8QBdxJL+2qFq/HYxfwKPhDNTpl4ahSD/wc3s+BT7RsohTdavPxB6O2RbfMusOnd3XuWuO1/OcGurX+7apgQ+IZCy0GpMhxyjcs/kma+4OrY0mJEEbD+Wwfnx12U1GI9r0YAU91aqqmFpiT5324=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788636614; c=relaxed/simple;
-	bh=MZK3QK2j5JUtPqxqzEPthxsogVOYlIL8h+3CiJ37erU=;
+	s=arc-20240116; t=1788636619; c=relaxed/simple;
+	bh=9kl8Y4vXW7mpcYtSnyY94BwJEUxoog49+h/hz2eg8PE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=qGcdkh1BogjK+OGqmdztZrWJBLt9Y2DHPW1pRdzsFq9lCuZE6o+WwSIgp0DytboW600m836DxFP5D6l69Fum/ATRYVPQSSi98b8j81imvBIQ6xWsLpM/h+wmXD7fpY313Q8Qa6HIy2Ne9gh9dOsclR7ycoV6ge/ao92bTRsEXPA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MHEcaqKy; arc=none smtp.client-ip=209.85.128.174
+	 In-Reply-To:To:Cc; b=G/Rn5ooyOMBNXh3EhHWZ7TlOIabDZoVMd5DOgfcqGcJsb43U282c1yNpB72kV9OfUZtjebSlwSjuCSut9CADL4YGcq7Cds3UdlbDZrF5WyGx2nBfCVkZOZ7HbIp4dOerz89nhSVpqSqfvx/DFQyB5dhv7/gxAYRR6coP8/kjLUE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kVbmw/zN; arc=none smtp.client-ip=209.85.128.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MHEcaqKy"
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-86e7f44b773so24209017b3.2
-        for <linux-alpha@vger.kernel.org>; Sat, 05 Sep 2026 12:30:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kVbmw/zN"
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-861feb6d61bso21523667b3.2
+        for <linux-alpha@vger.kernel.org>; Sat, 05 Sep 2026 12:30:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788636612; x=1789241412; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788636616; x=1789241416; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=CclPpvJafyHODPlkrBmq/rpYZnB66QkkB/IorS7mXH4=;
-        b=MHEcaqKyWqLer9aHxCs+TU10SDbRmmEhPApM8zoCHqt58il4hd+bLvKbl9LGw+ZdCE
-         rzeVEyFfL5aJdN971qjlQAw/yO8QLSL5TfooX/G3WWba7EfmxF5TcjQ5PSD6xG+L4VLy
-         CXmMLu0TuyZEmVBWaCz+7qic4n8IGdxyqm5tSpDLxYZQcnilIdLu/4BteQLkpYMNrPq2
-         i0czKgUuRee57S9vlHiXF2/zorkepe7yaHRUvQFnPVpMcUgIkWH56ZsG2lfbnlFLlN4W
-         qUP9oBAFYFXRRJDaFGSA3QhkGrWOUPC70LznAjZbiMD1vQ3jPfdIr6ypWpnJTkuRoonv
-         wUjw==
+        bh=h/GbBOFsbRaUEtva+q/Brm1zRmQM42j0+LGr/vouMN8=;
+        b=kVbmw/zNA55pCQkMY5CKimyQLwiVpEmquXuGvVBuWsEwm/QBdVzq7yphIXBACucWoD
+         z1XqqADYPIYEt8wo9FIyFJGaM5bGsGwfTFPSwhOfVjv/PgKc6juOHGDfi2E12ajhxlCU
+         /IlETlz2G6CCu3Y6NkXypIkOimZiJiea6nUTw4ShqyC9SELum00hcvIsd9I8dCQ2tRmN
+         OmGMBB/uNJuGPE38puLnLL15WFLREnyBho0lUUMalQePdaiPI0nnK+pVNLbttOFboCXT
+         Lu1U0I8VGJPQRx9AhWE7XDbIP3K2MRemkIEqXV05cuq4UTCh7zWBGpiEhmHejkRXF1B5
+         CGQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788636612; x=1789241412;
+        d=1e100.net; s=20251104; t=1788636616; x=1789241416;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=CclPpvJafyHODPlkrBmq/rpYZnB66QkkB/IorS7mXH4=;
-        b=YqOqRKCSkDoKfw/SkCqOg6+Tiu656KBsPKGZN7fFP2GFxSCz6RuITpUfYsfz6yN1lN
-         WLKoTf/pn/jjQvxmJ8cAxMgrpCCpBi5BH3OAbMpkaUaKbx7vC9dUYkvkGR0xhVo5I4wp
-         bCvtcP758qb0DxVAB/mdo24fsaIF7o7roeAOPxi3Gw1n+Sn6nMfpaHWUvGe2Gpf+Xx3k
-         DwOBTDMr+97d/9sv79q+yecRManuN8hxiI2VqDeoeNh1OQwgo4a8G+1Yk2aYOQvZ9um1
-         BaAGtTL/ZN5yJ9hZ2oAoO8ZlpskqfsPlaJExgOG2Zn42Xh0NrfyfcVSpUQO47aL67pjn
-         jdNg==
-X-Gm-Message-State: AFuF++kX/bINKmUto/+JLPTTzQTm+uYMRiPRi3fXdt/YtiUSP6f4dbI3
-	9bz1sxGs750I/SAhrENNPl+bYJ535I4JhozEmi9i2Cej40mGBO3AFYK5
-X-Gm-Gg: AYBFou2FpKVGvLXMtUmSPiIuUmwLoKhTKm1QcgpN/A54bBQDnAvYeYwUmD2oYJbdRpr
-	D94ncrsDgx6g0akVsKD2XVl8ph/6HGVKjXWSc1UqGH7aaVtAr4wdDyZSypvWgoJZKzI6JnqLTKh
-	NdUD3jbdhYaj008/vXRsiv+e7PdWDQFM5ijaoEwaoadAu2xmgtSq/wUJAagtQPpgaAU7KrKiIq0
-	h5N/gzu5Dx8DVpf2FUoiEWyshROCurDc1LdF70wNYm7RxMp8a6O7fRUu6N5w0R7m0yl9uUkzj06
-	LJOZwW+PqPdzs8HvvoHCbTy4O2hFW6X89sqvwA26fv8dyWm9bIpd9J57vRqo7J33iKVRbuiqZK/
-	PVs5jVILbi60iQq1O2T9+Ush3O9x5fsSzc1Eqxv9UwuS9+N8Wxgu+RqRvpKtKcptYpRLs1YPMM9
-	0POtJ/NxTZl/psV3G/nmnK2OjrrtvjzpoUJ+Dwuxqolj9l0dPaRyuDnn++fuOt
-X-Received: by 2002:a05:690c:e3e8:b0:81e:9826:942c with SMTP id 00721157ae682-8711c7488c4mr59517817b3.0.1788636611935;
-        Sat, 05 Sep 2026 12:30:11 -0700 (PDT)
+        bh=h/GbBOFsbRaUEtva+q/Brm1zRmQM42j0+LGr/vouMN8=;
+        b=OZINv+KwOBIohdSNOeOqQX+ZjyHvHln+OGGPCk1Vwe1JgwthrZ8dA4SrX8RQnDWgbP
+         B4e4ULj0GpZoDZS2R+YzvnD65XXgC5PKkKQUkYA6K+aV+B3OHFw87vgnbQixYWzMkx0/
+         AFtFPzfad1VjqZ6CJBljwBCH2vlOUFh/23czRnZahI5OIyNrzk4nyF+BTQotPzBb1Fz2
+         lcMIirH31qMOHWUwpiq+pQyblYm+HuvjzWd45mOXXHIPj2znB8mlme/+mgxJSpVNreAE
+         eklGqPXWDEoJwJ5phj1T65P36N3p+JUsIMcTdR5IsremakBs9wrC9NUjqE1Qp606yQCJ
+         tUdA==
+X-Gm-Message-State: AFuF++lKrkJXUKZTYD5sZlvthZPKnfVwdafMXxgXTqNiCV7SHYbksQYF
+	hNZmrAhEENOM4kOKfbKbB2/7iyCliGtWkLApQU8AE56j3V4S2FUP0HAy
+X-Gm-Gg: AYBFou07+8U0hXDvBLIPoG1GkQh18bfapfsxyMoxaWNwo5hEC8Hw7TMdtXif448cLqu
+	tMnUB7ziSTQmumA6nxFF2jOcBLexXhPQVVBGSxtjkDPTBy3VazcP8UFCNHQP6VEECDvBRklWTYR
+	EcQCsd4z08voEx0E/hoUL3jRmCFJI+K8tnPpbfKfzOxrfLz8L68nlziOEI97tLQtfNKnrUIiWBG
+	pwyy1zHIy1GUvBlDmQfb8+meGVaslyDwnkpkUQyhAwwA8gB/oQxA/9QD+utWgv5H/iq//gb/+Rc
+	8ftOgTZj7f+DYjW3Nawl92LUuCwECCiO54Aysfl2nASEY8pGRe/hmkrKYIOW2HkwCvCiH0sWliW
+	ZmzFUnC54f0Q/zOohZp5lrp2lmWxXWw4vOs4H7rdDPRb6hrhLklriIe5haCH7GlpgW1J2oCEUg5
+	GtBSI260re/uVm2cTnVKJ+kfiXAEDIRYLeesXr6sKpUl0bKLYoqC++7x0jfojmnR3v8uqOC18=
+X-Received: by 2002:a05:690e:4401:b0:66e:5123:8e91 with SMTP id 956f58d0204a3-66fc1be2bbemr1785122d50.40.1788636615624;
+        Sat, 05 Sep 2026 12:30:15 -0700 (PDT)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-871439c54e4sm43587167b3.6.2026.09.05.12.30.10
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66fb48b374bsm5071393d50.3.2026.09.05.12.30.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Sep 2026 12:30:10 -0700 (PDT)
+        Sat, 05 Sep 2026 12:30:13 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
-Date: Sat, 05 Sep 2026 15:29:42 -0400
-Subject: [PATCH v2 21/22] alpha: add HAVE_PERF_REGS and
- HAVE_PERF_USER_STACK_DUMP support
+Date: Sat, 05 Sep 2026 15:29:43 -0400
+Subject: [PATCH v2 22/22] alpha: select SPARSE_IRQ
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -70,7 +69,7 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260905-arch-kconfig-options-v2-v2-21-83e8245761a2@gmail.com>
+Message-Id: <20260905-arch-kconfig-options-v2-v2-22-83e8245761a2@gmail.com>
 References: <20260905-arch-kconfig-options-v2-v2-0-83e8245761a2@gmail.com>
 In-Reply-To: <20260905-arch-kconfig-options-v2-v2-0-83e8245761a2@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -83,209 +82,85 @@ Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
  kasan-dev@googlegroups.com, linux-hardening@vger.kernel.org, 
  linux-doc@vger.kernel.org, Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5469; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=MZK3QK2j5JUtPqxqzEPthxsogVOYlIL8h+3CiJ37erU=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLm5E4p5Nmhx6GzdT53t4DkxT0pgp0TWiL/GJmHL19Qf
- +Fi3Iacjo8sDGJcDDPFFFni1iuyzGrbsdTntPQvmDmsTCBDpEUaGICAhYEvNzGv1EjHSM9U21DP
- EMjQMYqHyOkxaGQWF5emFummFRQ55OWXJJZk5ucV6+UXpOYVpBfopWWmlWRk5BcVpwKN0MtLLTF
- 1dXQzMjQwsXS0MHOycDQ1cXZ2MnRyc3R0dnUysjQ3MXC2dDRxtTRn4OIUgLlmwgJGhgm5u82uvX
- E5nnRBz+i470OxDvvFv9rt1onv2bhnnQSrnSnDX8FPi4y+corY9a4xl45L7H8v89blnsXbv3WZx
- 9puudYyMwMA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2841; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=9kl8Y4vXW7mpcYtSnyY94BwJEUxoog49+h/hz2eg8PE=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLm5E7Z/VGjNvWDkNLMcMfspqrPuR3JkysU9s1eEnrO0
+ 4lRm5G94yMLgxgXw0wxRZa49Yoss9p2LPU5Lf0LZg4rE8gQaZEGBiBgYeDLTcwrNdIx0jPVNtQz
+ BDJ0jOIhcnoMGpnFxaWpRbppBUUOefkliSWZ+XnFevkFqXkF6QV6aZlpJRkZ+UXFqUAj9PJSS0x
+ dHd2MDA1MLB0tzJwsHE1NnJ2dDJ3cHB2dXZ2MLM1NDJwtHU1cLc0ZuDgFYK5ZGszwz/5u4I1MDY
+ OzIWs3n9wufsWl7rL8oT+Fcg3fO7KneU47XcHwv2quW4PA6a8r310vfNKWvkeB4+RuLtfeo8lva
+ 6bs2V+YwAcA
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-Implement the perf register sampling interface for Alpha. This enables
-perf to capture register state and user stack dumps with samples,
-supporting --call-graph dwarf.
+NR_IRQS on Alpha is sized for the largest configuration each platform
+supports, and for Marvel that is 32 PIDs, or 32784 interrupts.  Without
+SPARSE_IRQ that becomes a static irq_desc[] array of 12.6 MB in .data,
+carried by every Marvel and every generic kernel regardless of how many
+interrupts the machine actually has.  A real ES47 uses 87 of them.
 
-The perf_regs enum exposes the registers available in pt_regs: r0-r8,
-r16-r28, gp, pc, and ps. Registers r9-r15 are callee-saved and live
-in switch_stack, not pt_regs, so they are not included.
+That is not just wasted memory, it constrains where the kernel can be
+loaded.  The image links at a fixed 0xfffffc0001010000, just above the
+console's low memory reservation, and with memory striping enabled the
+console leaves only about 16 MB of usable low memory before the rest is
+relocated to an interleaved aperture.  A 12.6 MB array of mostly unused
+interrupt descriptors is the difference between fitting and not.
 
-A switch statement maps perf register indices to pt_regs fields since
-Alpha's pt_regs layout is non-contiguous (unlike architectures where
-direct array indexing works).
+Alpha already goes through irq_to_desc() rather than indexing irq_desc[]
+directly, so nothing stands in the way.  The platforms do wire up their
+interrupts by number, though, which needs the descriptors to exist by
+then, so provide arch_probe_nr_irqs() returning the machine vector's
+count instead of taking the NR_IRQS_LEGACY default.  Without it every
+interrupt above 15 would have no descriptor and the handler setup would
+be silently dropped.
 
-Assisted-by: Claude:claude-opus-4-6
+Tested on an ES47 (Marvel, 2 EV7z): boots with all device interrupts
+working, and .data drops by 12.6 MB, from 15.7 MB to 3.1 MB.
+
 Signed-off-by: Matt Turner <mattst88@gmail.com>
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/alpha/Kconfig                      |  2 +
- arch/alpha/include/asm/perf_regs.h      |  7 +++
- arch/alpha/include/uapi/asm/perf_regs.h | 34 +++++++++++++
- arch/alpha/kernel/Makefile              |  1 +
- arch/alpha/kernel/perf_regs.c           | 86 +++++++++++++++++++++++++++++++++
- 5 files changed, 130 insertions(+)
+ arch/alpha/Kconfig            |  1 +
+ arch/alpha/kernel/irq_alpha.c | 13 +++++++++++++
+ 2 files changed, 14 insertions(+)
 
 diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index e5611766b6d6..96b38d320eb8 100644
+index 96b38d320eb8..8efb2da3246f 100644
 --- a/arch/alpha/Kconfig
 +++ b/arch/alpha/Kconfig
-@@ -33,6 +33,8 @@ config ALPHA
- 	select HAVE_PAGE_SIZE_8KB
- 	select HAVE_PCSPKR_PLATFORM
- 	select HAVE_PERF_EVENTS
-+	select HAVE_PERF_REGS
-+	select HAVE_PERF_USER_STACK_DUMP
- 	select NEED_DMA_MAP_STATE
- 	select NEED_SG_DMA_LENGTH
- 	select GENERIC_IRQ_PROBE
-diff --git a/arch/alpha/include/asm/perf_regs.h b/arch/alpha/include/asm/perf_regs.h
-new file mode 100644
-index 000000000000..6045da1a2a4f
---- /dev/null
-+++ b/arch/alpha/include/asm/perf_regs.h
-@@ -0,0 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_ALPHA_PERF_REGS_H
-+#define _ASM_ALPHA_PERF_REGS_H
-+
-+#include <uapi/asm/perf_regs.h>
-+
-+#endif /* _ASM_ALPHA_PERF_REGS_H */
-diff --git a/arch/alpha/include/uapi/asm/perf_regs.h b/arch/alpha/include/uapi/asm/perf_regs.h
-new file mode 100644
-index 000000000000..afeb6a1584cd
---- /dev/null
-+++ b/arch/alpha/include/uapi/asm/perf_regs.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+#ifndef _UAPI_ASM_ALPHA_PERF_REGS_H
-+#define _UAPI_ASM_ALPHA_PERF_REGS_H
-+
-+enum perf_event_alpha_regs {
-+	PERF_REG_ALPHA_R0,
-+	PERF_REG_ALPHA_R1,
-+	PERF_REG_ALPHA_R2,
-+	PERF_REG_ALPHA_R3,
-+	PERF_REG_ALPHA_R4,
-+	PERF_REG_ALPHA_R5,
-+	PERF_REG_ALPHA_R6,
-+	PERF_REG_ALPHA_R7,
-+	PERF_REG_ALPHA_R8,
-+	PERF_REG_ALPHA_R16,
-+	PERF_REG_ALPHA_R17,
-+	PERF_REG_ALPHA_R18,
-+	PERF_REG_ALPHA_R19,
-+	PERF_REG_ALPHA_R20,
-+	PERF_REG_ALPHA_R21,
-+	PERF_REG_ALPHA_R22,
-+	PERF_REG_ALPHA_R23,
-+	PERF_REG_ALPHA_R24,
-+	PERF_REG_ALPHA_R25,
-+	PERF_REG_ALPHA_R26,
-+	PERF_REG_ALPHA_R27,
-+	PERF_REG_ALPHA_R28,
-+	PERF_REG_ALPHA_GP,
-+	PERF_REG_ALPHA_PC,
-+	PERF_REG_ALPHA_PS,
-+	PERF_REG_ALPHA_MAX,
-+};
-+
-+#endif /* _UAPI_ASM_ALPHA_PERF_REGS_H */
-diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
-index 4ea5c189e60e..0c04b89676ed 100644
---- a/arch/alpha/kernel/Makefile
-+++ b/arch/alpha/kernel/Makefile
-@@ -18,6 +18,7 @@ obj-$(CONFIG_PCI)	+= pci.o pci_iommu.o pci-sysfs.o
- obj-$(CONFIG_SRM_ENV)	+= srm_env.o
- obj-$(CONFIG_MODULES)	+= module.o
- obj-$(CONFIG_PERF_EVENTS) += perf_event.o
-+obj-$(CONFIG_HAVE_PERF_REGS) += perf_regs.o
- obj-$(CONFIG_RTC_DRV_ALPHA) += rtc.o
- obj-$(CONFIG_AUDIT)	+= audit.o
+@@ -64,6 +64,7 @@ config ALPHA
+ 	select CPU_NO_EFFICIENT_FFS if !ALPHA_EV67
+ 	select MMU_GATHER_NO_RANGE
+ 	select MMU_GATHER_RCU_TABLE_FREE
++	select SPARSE_IRQ
+ 	select SPARSEMEM_EXTREME if SPARSEMEM
+ 	select SYSCTL_EXCEPTION_TRACE
+ 	select ZONE_DMA
+diff --git a/arch/alpha/kernel/irq_alpha.c b/arch/alpha/kernel/irq_alpha.c
+index f90ff898a71a..8366d6de439d 100644
+--- a/arch/alpha/kernel/irq_alpha.c
++++ b/arch/alpha/kernel/irq_alpha.c
+@@ -152,6 +152,19 @@ common_init_isa_dma(void)
+ 	outb(0, DMA2_CLR_MASK_REG);
+ }
  
-diff --git a/arch/alpha/kernel/perf_regs.c b/arch/alpha/kernel/perf_regs.c
-new file mode 100644
-index 000000000000..e15081ac95e0
---- /dev/null
-+++ b/arch/alpha/kernel/perf_regs.c
-@@ -0,0 +1,86 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/perf_event.h>
-+#include <asm/perf_regs.h>
-+#include <asm/ptrace.h>
-+
-+u64 perf_reg_value(struct pt_regs *regs, int idx)
++/*
++ * The platforms wire up their interrupts by calling into the generic irq
++ * code with fixed interrupt numbers, so the descriptors have to exist by
++ * then.  Preallocate the machine's full complement rather than take the
++ * NR_IRQS_LEGACY default, which would leave everything above IRQ 15
++ * without a descriptor and silently drop the handler setup.
++ */
++int __init
++arch_probe_nr_irqs(void)
 +{
-+	switch (idx) {
-+	case PERF_REG_ALPHA_R0:
-+		return regs->r0;
-+	case PERF_REG_ALPHA_R1:
-+		return regs->r1;
-+	case PERF_REG_ALPHA_R2:
-+		return regs->r2;
-+	case PERF_REG_ALPHA_R3:
-+		return regs->r3;
-+	case PERF_REG_ALPHA_R4:
-+		return regs->r4;
-+	case PERF_REG_ALPHA_R5:
-+		return regs->r5;
-+	case PERF_REG_ALPHA_R6:
-+		return regs->r6;
-+	case PERF_REG_ALPHA_R7:
-+		return regs->r7;
-+	case PERF_REG_ALPHA_R8:
-+		return regs->r8;
-+	case PERF_REG_ALPHA_R16:
-+		return regs->r16;
-+	case PERF_REG_ALPHA_R17:
-+		return regs->r17;
-+	case PERF_REG_ALPHA_R18:
-+		return regs->r18;
-+	case PERF_REG_ALPHA_R19:
-+		return regs->r19;
-+	case PERF_REG_ALPHA_R20:
-+		return regs->r20;
-+	case PERF_REG_ALPHA_R21:
-+		return regs->r21;
-+	case PERF_REG_ALPHA_R22:
-+		return regs->r22;
-+	case PERF_REG_ALPHA_R23:
-+		return regs->r23;
-+	case PERF_REG_ALPHA_R24:
-+		return regs->r24;
-+	case PERF_REG_ALPHA_R25:
-+		return regs->r25;
-+	case PERF_REG_ALPHA_R26:
-+		return regs->r26;
-+	case PERF_REG_ALPHA_R27:
-+		return regs->r27;
-+	case PERF_REG_ALPHA_R28:
-+		return regs->r28;
-+	case PERF_REG_ALPHA_GP:
-+		return regs->gp;
-+	case PERF_REG_ALPHA_PC:
-+		return regs->pc;
-+	case PERF_REG_ALPHA_PS:
-+		return regs->ps;
-+	default:
-+		WARN_ON_ONCE(1);
-+		return 0;
-+	}
++	return alpha_mv.nr_irqs;
 +}
 +
-+#define REG_RESERVED (~((1ULL << PERF_REG_ALPHA_MAX) - 1))
-+
-+int perf_reg_validate(u64 mask)
-+{
-+	if (!mask || mask & REG_RESERVED)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+u64 perf_reg_abi(struct task_struct *task)
-+{
-+	return PERF_SAMPLE_REGS_ABI_64;
-+}
-+
-+void perf_get_regs_user(struct perf_regs *regs_user,
-+			struct pt_regs *regs)
-+{
-+	regs_user->regs = task_pt_regs(current);
-+	regs_user->abi = perf_reg_abi(current);
-+}
+ void __init
+ init_IRQ(void)
+ {
 
 -- 
 2.54.0
