@@ -1,67 +1,66 @@
 Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69D1C33936A
-	for <linux-alpha@vger.kernel.org>; Sat,  5 Sep 2026 19:30:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 242ED3B7749
+	for <linux-alpha@vger.kernel.org>; Sat,  5 Sep 2026 19:30:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788636608; cv=none; b=EyN1+mUGcCL+agwDNQfzERmY5/IyrC2y9pT+TeIMG1ElhNcimtpsWEkgFWMw9HzD2O8A4FhkSoP9WVDKAgXMvKBr6ij768MjOBanC4p4+T86QFCSA0gfWoXq53IW89M/b5CjgK0HsL33GRskSh07OPoDgBv5E34pq0TGcoYMZNM=
+	t=1788636609; cv=none; b=oKuMT2737A/TcwZGHsEuYHBXdgTbr7RXyCDd2H+d2DFGkMTgO1z8Jg2mwOyNskGhrSu+FA31LbOc/4VVk8qTT60a9fGRroHZDmr86ManNafBM6QtkaMYvgpqRV0DOBqjhEK94u69f2FjUatV3+sqg+UaKa2FPp2vFQbCkhduKBk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788636608; c=relaxed/simple;
-	bh=VZR14MCxNh2A4lpCu2ULzsdkJLn38YcLi5GjcKu3bfU=;
+	s=arc-20240116; t=1788636609; c=relaxed/simple;
+	bh=yhM+b63vr5V43kcCXGQ/uSxYgWi4ForYPSYOShFRT2k=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=aoTqD4s3/lr1jUxnhOHpuAe9oZ4N7csPXrCbZGBdz31t9pDkOHRNuTBgSLqJanvZL+s0rhB8+vKzd4HEzNYGoQfl3zNnushvygTegDnZVSRRFnvyYREn5QN3tCXtQnJQ0M0ywPzcnsanwRJa4VnC+GiQPYVzUZ4R4qkFMsEKgSQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JM/qbGKV; arc=none smtp.client-ip=209.85.128.170
+	 In-Reply-To:To:Cc; b=KslBLVju9kKPnkiY9HQuHTiz16DY+w8P6gCHWzjEnzhzvXPqE782E928gdv+jQo6LgXQsl37NVYIWfag9BkaYZ2EUa9IGZpGZm7XBxfqXHPti8o4DDUmTrLjovEKnP8TFkkdsWeWS2IEBQnLRGMUficJPUkjQjOZ351hL1NzMLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TVGkYEd1; arc=none smtp.client-ip=209.85.128.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JM/qbGKV"
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-8588583a7c3so22964197b3.2
-        for <linux-alpha@vger.kernel.org>; Sat, 05 Sep 2026 12:30:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TVGkYEd1"
+Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-861feb6d61bso21522957b3.2
+        for <linux-alpha@vger.kernel.org>; Sat, 05 Sep 2026 12:30:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788636605; x=1789241405; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788636607; x=1789241407; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=9vF0M7iPFxLRTpzLYkvQl+R7kmZssLscv9SjnZJvbD8=;
-        b=JM/qbGKVFwlIBDX4SsLKkZ5DIyVmzEOq4U6llmSrdh2Pn11JHNCg2ufDztkTtF6cwO
-         qWm3lh6uf+uHwcIHKI0dRXswJtNCHCecb4S770BDtWIq32TPogEOxKBOj1ThsEsBuy39
-         HPiOtJZ8g6/ko3tATxQ2vA6CZvgq86iJ0EJvvX/g3wm8MjCOFHaeIsh0MN0nylzUgQIH
-         qYlFn73IepRLFkCfK90bKcVKMH2ZLClNraaEPV/lOtZ6apXlRoW1hCs3mmNBfy5vazah
-         N4DXXHw1PznnXzQW1jrV/65kCkTEiMNyWGY/X75U9JfI0AQF15UMzYPHrtjeCwY0WbPi
-         vjCw==
+        bh=ILXNuL/80wwzYLTSp5b5rT1wBP6MxeRfeIo9FlLJMtI=;
+        b=TVGkYEd19brnXS5SZV1+iCVFC3LoOQP8kcZ6x2qM6uqV51Qcol8l3c9NgiQPEHafoY
+         muqePvEowqz72AYLeMoasq2+c5qhHx0qoQzQfM6v6GFVf6UXkDhZd7Iddx+kOliyJnZY
+         bPSfva1ptxm4GCpL5QeyM+duB7juBta75d8A0fS7/2neNteya4tkYofpdWrLHmZ+tliP
+         /uWOF/2ALfVkaQp6+llSIUB7AHlLgcpJGB2mrQs1ub+bHaL+uXNpblFl6MAfmX8Ogpof
+         PyAigRS6+5Kfm48As4dMywi2R+ec5RGciIsHeIOpaWOUXYI1ZqJeYdR35AvKchQsrxiX
+         YW9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788636605; x=1789241405;
+        d=1e100.net; s=20251104; t=1788636607; x=1789241407;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=9vF0M7iPFxLRTpzLYkvQl+R7kmZssLscv9SjnZJvbD8=;
-        b=Chqe+UnLdhXQ53spkwOKQgElbMZNUuQGxSi9IsrSCllyTmAdYU/6nJDx1CA9g1UwbK
-         m/9QQIcuzuKsnTrO161moQ+c9Qt+z2FG2ylwDrHrF3VHFzy5TzksaJNmW+fgpqmsiEm3
-         HMkEismmNkJ3Q0UMcifKxhEsZZvZMzy3Xjf6QwHjOOZ/z+4x7Y4x4rUHGJKYDGTBIsWC
-         /OO+VdyL1QFhAAUbqTTaMKwqwia+EUet9XgNBOYSHcTogLlCG9eOpH+NnizNIlY23t9d
-         oZppi4S4pkJdC62HNLeL4WHKVrmvO4l3oD9yL82h0VVVC0lDJ/cXUUgOWvnsuMaLDQHX
-         gpdw==
-X-Gm-Message-State: AFuF++lQdmYvjyuFmZs988s7WBSuObO2HzOGCbQeP58pgSn0J68jNXUX
-	piW5mZRhoockXyYq8pKV+idttmYuOG2gGczsOVwibdNN7g/qE5Fo2sJ1dMfAWVyA
-X-Gm-Gg: AYBFou0XkVbog0xzCleGjk3w758eD93YYG8OxoQsrOLQETPT4efFJayYKvYOxMPTzgE
-	hkdFxsmefyR4iNj+/qGABkPfAOeiK6ABzrA2Vv+PvF0xdaOTUFQ36kH7fcGgICMccgsLF/Po+z2
-	Dm9kQihabfw8Tj8RJx+lkAJn5R39lRCQTEFYCxOO5i8zdfGYPUUyU1c6dH+D6jvVvY0EdpM5g4t
-	B2C6CSVA9f3Vrq4H24GFdULs5UuMVArOiCNaRPRECL+V6Wjo0xrVNwFRFeGw5bkE3j8tBp+hcEQ
-	7pQb4iHWAl3LxNVrIi8hTT7QLrRVOsKgLZ6N4tze/TTeLEtZHhdp17Ko2LtwIldRM/kOMkJJwD/
-	VWQYswK4mnokeBJ5ZKV5YT2Bgdoe87DKeHeUO2QkPUMp+8YE6aU3gDCoLXJbEXnWWjK2HZSset1
-	+vT5rkCsih9vh4CtedcRVMffC2n7h3xeWSK4gWcEMFqssgZXEZ0q5eeWAv5XvIAvrapXes25A=
-X-Received: by 2002:a05:690c:6b01:b0:81e:45a6:bd53 with SMTP id 00721157ae682-87123239b60mr53834857b3.8.1788636605315;
-        Sat, 05 Sep 2026 12:30:05 -0700 (PDT)
+        bh=ILXNuL/80wwzYLTSp5b5rT1wBP6MxeRfeIo9FlLJMtI=;
+        b=eDwCediP0ssmhXQ+cxJ1WX0YNwe6qmNV0qJMYdgTp4zj4LkpNQLbuuEI7mmONFJczv
+         KakaOb3skSt+6Q32B4KB9K+uOqe2TgqcHtjfJtnge1i5hONKmC0a0o7pwY5GVMfBsw/Y
+         4JZFqd17V3ukUUHnuZ+bNb/SamfcYN5QTIRU9+pSc4N080NnqnpSJZLA5GuyKLm9ht+5
+         wQsejcovN9U+oFxYm4xbHobn/KE29bm3S4lbcKnf54/or32OJ1Rb2i+dbvc95pUj6eSb
+         hB93aa8Kh+ZL0mxx+Fuel9k25NNH7C1MqlA2XVA5DYymo8u5LDc1cQPwQ8teJYwFeKFM
+         RjoA==
+X-Gm-Message-State: AFuF++nUOp8Mb8gK5FP8p1Rv8nNl7Iu+qZ6q0ebu+o2/6/mGhC3GAb9E
+	JopIKrQ0DLDkkMJiu5DAa5x4YG27xET6/WetUoQroVIMwdc6BSs/96tg
+X-Gm-Gg: AYBFou3H5DGDbnwMHWQw5DxegL2wKF4TwyDDGIeYy1KL78k6/jN6WA/jkPqoisADuaC
+	mM5+6eBaR+uiESg+Lbgggde+weja46u2qtDr5bKd60ODBYS5npGXpINF7sU585/f5u/bmfW4iWs
+	Ilf0FdSZhUeRKkfCu00GKkNN4EV/liwz1gNt1poecCqGZcIizPDKPJn9qAo0SH7IwS1i/mvUhex
+	sWk0y4ui9e0dM4nWek2Y/1wWZ56pYNzKUm753iza8HHnTsM9sD0PJlvsE1gUN190E4RiS81GAFc
+	9M2F07/lh7e0fwIABGUsNioh8b6sR9vQzPRq/CwMxl5kqEJLTEhkF38hSQv1L9Age4iLoL6FElP
+	EEXM+6JIMe/3hyNkHPhcYp9Vt04vRAwXNLmrgolcoSxhbP96qpIRD8Mni6eyctuKa5Ei5iBQ44H
+	PahoseezS7dH1i2rchyED5IMdJyz65JH8uGxRg9A5TiLZZOVf2csHTQpJSuId94D8zYikc//A=
+X-Received: by 2002:a05:690c:6703:b0:81e:f5ac:e40 with SMTP id 00721157ae682-8712938dca2mr61150397b3.20.1788636607152;
+        Sat, 05 Sep 2026 12:30:07 -0700 (PDT)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8714a0b6179sm42966377b3.23.2026.09.05.12.30.04
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8714c0e5c6fsm43788877b3.48.2026.09.05.12.30.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Sep 2026 12:30:04 -0700 (PDT)
+        Sat, 05 Sep 2026 12:30:06 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
-Date: Sat, 05 Sep 2026 15:29:39 -0400
-Subject: [PATCH v2 18/22] alpha: discard .eh_frame and the relocation
- sections
+Date: Sat, 05 Sep 2026 15:29:40 -0400
+Subject: [PATCH v2 19/22] alpha: select ARCH_WANT_LD_ORPHAN_WARN
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -70,7 +69,7 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260905-arch-kconfig-options-v2-v2-18-83e8245761a2@gmail.com>
+Message-Id: <20260905-arch-kconfig-options-v2-v2-19-83e8245761a2@gmail.com>
 References: <20260905-arch-kconfig-options-v2-v2-0-83e8245761a2@gmail.com>
 In-Reply-To: <20260905-arch-kconfig-options-v2-v2-0-83e8245761a2@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -83,58 +82,41 @@ Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
  kasan-dev@googlegroups.com, linux-hardening@vger.kernel.org, 
  linux-doc@vger.kernel.org, Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1438; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=VZR14MCxNh2A4lpCu2ULzsdkJLn38YcLi5GjcKu3bfU=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLm5E553Odw4NJkVYVMma9Km7O/mC25rGjIfixN3PXHg
- 0XRhfVWHR9ZGMS4GGaKKbLErVdkmdW2Y6nPaelfMHNYmUCGSIs0MAABCwNfbmJeqZGOkZ6ptqGe
+X-Developer-Signature: v=1; a=openpgp-sha256; l=828; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=yhM+b63vr5V43kcCXGQ/uSxYgWi4ForYPSYOShFRT2k=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLm5E5xNlpx7GPC4W1WfCLresMqjrzIuT3TKF/17Q93j
+ rg/PtncHR9ZGMS4GGaKKbLErVdkmdW2Y6nPaelfMHNYmUCGSIs0MAABCwNfbmJeqZGOkZ6ptqGe
  IZChYxQPkdNj0MgsLi5NLdJNKyhyyMsvSSzJzM8r1ssvSM0rSC/QS8tMK8nIyC8qTgUaoZeXWmL
- q6uhmZGhgYuloYeZk4Whq4uzsZOjk5ujo7OpkZGluYuBs6WjiamnOwMUpAHPNDhlGht5FVzXXsH
- NM5X91LvRj3PL5c+evD8guYPjqYHL7Y/KxXbsZ/kdMN2aZ355hbS7Y2H7xeG3ukVf5ZQ+/5X18w
- f3BiEnIlhUA
+ q6uhmZGhgYuloYeZk4Whq4uzsZOjk5ujo7OpkZGluYuBs6WjiamnOwMUpAHNNQjQjw/pNljXTw0
+ 71Bc7YvUE4cVPIMuv8Jd6zfawVzKyFZr96u4Lhnw6L3x1vU3UH1mq/xHdX8nLDlltaSn4Uy9+xz
+ /7Das0/fAA=
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-gcc emits .eh_frame for Alpha even though the kernel builds with
--fno-asynchronous-unwind-tables, and nothing in the kernel consumes it:
-the stack trace code scans the stack for text addresses rather than
-unwinding DWARF.  It was allocated in the loaded image, so dropping it
-shrinks vmlinux by about 1.1MB for a Marvel SMP configuration.
-
-The .rela* sections are equally useless, as the kernel image is not
-relocatable.  The linker was already dropping their contents.
-
-Both were being placed as orphan sections, which is what drew attention
-to them.
+With .eh_frame and the relocation sections now placed explicitly, an
+Alpha kernel links with no orphan sections left, so ask the linker to
+warn if new ones appear.
 
 Assisted-by: Claude:claude-opus-5
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 Tested-by: Magnus Lindholm <linmag7@gmail.com>
 Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/alpha/kernel/vmlinux.lds.S | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/alpha/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/alpha/kernel/vmlinux.lds.S b/arch/alpha/kernel/vmlinux.lds.S
-index 95704e64b6a6..c44941d3b874 100644
---- a/arch/alpha/kernel/vmlinux.lds.S
-+++ b/arch/alpha/kernel/vmlinux.lds.S
-@@ -76,5 +76,16 @@ SECTIONS
- 	MODINFO
- 	ELF_DETAILS
- 
-+	/*
-+	 * gcc emits .eh_frame for Alpha even with
-+	 * -fno-asynchronous-unwind-tables, and the kernel has no DWARF
-+	 * unwinder to consume it.  The relocation sections are likewise
-+	 * useless as the kernel image is not relocatable.
-+	 */
-+	/DISCARD/ : {
-+		*(.eh_frame)
-+		*(.rela .rela*)
-+	}
-+
- 	DISCARDS
- }
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index b9ff67370877..33b51bef5139 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -40,6 +40,7 @@ config ALPHA
+ 	select AUTO_IRQ_AFFINITY if SMP
+ 	select GENERIC_IRQ_SHOW
+ 	select ARCH_WANT_IPC_PARSE_VERSION
++	select ARCH_WANT_LD_ORPHAN_WARN
+ 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+ 	select AUDIT_ARCH
+ 	select EDAC_SUPPORT
 
 -- 
 2.54.0
