@@ -1,66 +1,66 @@
-Received: from mail-yx1-f44.google.com (mail-yx1-f44.google.com [74.125.224.44])
+Received: from mail-yx1-f49.google.com (mail-yx1-f49.google.com [74.125.224.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0086439A078
-	for <linux-alpha@vger.kernel.org>; Sat,  5 Sep 2026 19:29:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11E4E39EF20
+	for <linux-alpha@vger.kernel.org>; Sat,  5 Sep 2026 19:29:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788636584; cv=none; b=YYRlS9ju/qg1/HcNEq9E70BWL4iLl8HqeW4BZNUlRrfTZdEIPMS/jdRYWm5RbNbIn3CvSjUpJ4WSq9ra78/tZWwgMcSfY+27mExhSNF7scTQuUG3z/tdzlM8a8BMlMT/1aqCJE6n00jZcO8RbhfnT8J9zKlhs8Rk6fUjQTu9anM=
+	t=1788636588; cv=none; b=uJj/XsxAK/OO36FUE0uHkZ6FVacJ45TttjtKEqYJ400J8Ja8As7/VwjiqmaFoO/vX6sU9mVdqeAZdlenDJZAk/Q341DerOYmbBxvDxKqCu/adhJtZkah8Biqe5pS5pZJRmb9El+CVQxL5T1yW0dgtM5QmEIlzdHcD+mP07T1Snk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788636584; c=relaxed/simple;
-	bh=d64vrkzV8SwOJMlfAMFEdEJjMT39PCBSfivQv0NFu/w=;
+	s=arc-20240116; t=1788636588; c=relaxed/simple;
+	bh=q2x0WUHz2r8ueAKqk8Cn9VqXFBZAzyHK+DfKvxu66yg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=E+AjJFGuXxfPoimHtO8SgJxW96XGasx83Bc28+Y7znmHAdnlCgEr1gLUFR3eyoC+hlKYPx1ImKZQUIgabsi/6JGUMjL0puPOuL/3HNOrzvxpK1WbULRA8V5YVQY9PNvnGGIGxvDD4xYnlp6yaubrIHieR45jmjWsDok9zGYz9TQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qAxC8DJ1; arc=none smtp.client-ip=74.125.224.44
+	 In-Reply-To:To:Cc; b=PgwfaCarduAp9zbvFAb+7cDIl4A76ccLE70eh9h45QT8nInVV62uW6LXWngDFYy9Im2+moMceBHsWBwejkX1v/C4C4jVruXd1EIDyhDdK4B2dboOjMDIu+/XWVd6+4cQoQ1jywDdjQ96ULnzvfCfx+QAzOpYQPv4gzt14OBbcZA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LSyIAuxL; arc=none smtp.client-ip=74.125.224.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qAxC8DJ1"
-Received: by mail-yx1-f44.google.com with SMTP id 956f58d0204a3-66fcf87897fso239813d50.3
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LSyIAuxL"
+Received: by mail-yx1-f49.google.com with SMTP id 956f58d0204a3-66f79f58123so1874622d50.1
         for <linux-alpha@vger.kernel.org>; Sat, 05 Sep 2026 12:29:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1788636580; x=1789241380; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1788636579; x=1789241379; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=6JdpH8z6Rb7sleDgNsPa+IW/WQmX2mRqnvOWICUv+Ss=;
-        b=qAxC8DJ1oJZprWRGoKUSueX/DlAhcE+NuMXLAsk9BHdRXX8yaVbHQ3MzyRiBMmSimv
-         PkyBxif8MLuX1LP0skZhoucKFX50HDgDZ+S5WkwCoduBxtQHwW0E7ptlG9W/HP5LOH9M
-         5yVeLlE7V8TcPFAj+kbpJDXTfAjWSC/5GDpXO5kIVf6dAxBzOackN3UfgCfINaTTXe/s
-         Gx+juww3HXV5O+jrJLrRpTZ3t125Q3kCnohUHCnRocgel+CcABF7lMb6IEvRK3MTjlyc
-         TIBrzYoY/j/jR9vHiAKtN3SMIR26aFBgO7yzH7R883Hrihl46OlVP5hIgNbNufrEiToP
-         Cmtw==
+        bh=KEzo1WzJ1Uxj/TIFMsQEInVmXuxuHLlSjkdBUICH5gE=;
+        b=LSyIAuxLxlYC9L0DE3AP//fA9jN2EYDhc/0H7nzEkLAnCv/6T7X67Ziuaw/X+UyEcK
+         H35KkuST3e1f+AIyr2I/Ur7xi7Ah3SlkWgogMNwc+ndijxh03aUC9WPmB5D1YH4lxQnA
+         JgrYDZSUOsgIONndh/NWfcaZwZeBWpOoeV65+9bo+u0xjnw3esm+AEZx5OHwdkZBVw/I
+         A+pBNHUqTh/W/WdJJOtbsd1voYjSfw2Kgbm2Jq2aoMlHsr3YrlXBVMy3YK9ve3Gir7lN
+         mPMy2G5MYJGSfEi4S8IiRrIr4/M7kYnxUmFx+8ljy2IiEibAlC1uYsArtbg+RF0dKVNZ
+         RV+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788636580; x=1789241380;
+        d=1e100.net; s=20251104; t=1788636579; x=1789241379;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=6JdpH8z6Rb7sleDgNsPa+IW/WQmX2mRqnvOWICUv+Ss=;
-        b=HnCPAds8cEZKv9FqvqtPcWdtPUfHZUy2Di7Xyi+mWjMOkDY1ge1GRR2k8NG4MUMt7M
-         PXSAWnOAwtV+iy44wFT8Am+97ca9Bcu84EqycQEmdtXLrcEfLp1QXAGBX11Z3XQEtJeq
-         pR1M9yyq22oRVYS4qroaV0k+7OGEz1y1bV3pNdascvf5CfuZwmcPfFst2V7zm9BSp/aO
-         MaVYy2u9r8gF6IM4bmo5onvB5IFNgbPEEaadyPDzpzSZXMyfC26ohwRWO0xn0NHqzg6d
-         hZ5NSW1vmal5BtNGK1xd6jr43BU22GaWf2Umc/6Ky6sb1aJ1JXvY3soKomF+HFhyBgIe
-         cAvA==
-X-Gm-Message-State: AFuF++lzCmHLYjTRU3qB8DCzJa/4CwACY8jXRqUOTfHkRAaPl17hnAxY
-	n6FvUeTC2G6u6dw5+WeuNxrRjQi1SZGI7qHU0yBDwUQDVhzOkNf4+vXL
-X-Gm-Gg: AYBFou2shUWSlE75Qa/iXxp9ejM6J0LTdNwuSOkovKHX9EbixwUBxyCVd2EFV/FCwq+
-	UFrJ/sRlEBYonlL7s8w0X6p7D5XH3ei3F+VxQDS7tY5LRSY6ov0tN/x+Lsap2v8dIToJc651yK3
-	RSr7vxdvwMEMEGEmhqVVWLx2EgFxbW4RrjIuzCl8E5rlI39GTV8tnoGOHw+g9RzG2JeUQzdjyyJ
-	5wXFe6gVpyz+zwsfYvAenWyyKMspqt/t649VI+vQPb9QkXbMHGM4jQ1YT9kOwGjFLVXEtBC0BoI
-	jMNH85REdj70akFuUqv+x6b8WeQeIvMOVkku7pU1F2UwusxhDPZ/yW8X6jMt7U0xoblJIRH7CNB
-	eZnCkw7VDLKlwz4TUvOuMdipTfoUnDOjDdCULX4phRasAd+SqyYOwKRzqu3aU4qTBKvxPYB8/o6
-	sx5FSfpJ29vH8ZiYDZ366T1xR/+8GYNCZ10Eo4Jl3D2ZfQcUy4xAMuCK9vggl+
-X-Received: by 2002:a53:490f:0:b0:66f:c1bc:4094 with SMTP id 956f58d0204a3-66fc1bc485dmr2007771d50.87.1788636580506;
-        Sat, 05 Sep 2026 12:29:40 -0700 (PDT)
+        bh=KEzo1WzJ1Uxj/TIFMsQEInVmXuxuHLlSjkdBUICH5gE=;
+        b=pQ6EDmzHeFdMNtpaZN4y0xp3/DlCEsiMMp3KfeVryjqAg08rvnoLzmu5NFE0SGfuwk
+         h0AMfrOr4ZrwZMD4DiLLjgDpoQ/XHh57fyCiH7ruGaKxyuZkTTQ+Zh/Zpx6UoCpGRzCg
+         FMyOFT99CkJA6cyYz9wQblSEKhcw32a807owCRXnVH8JHl2LslKemK0XUr2sUB2D/WaP
+         XyqNJ0cm/RhC6vQwh/Fg3G2Jp6kl15FrxaHV/TtKaGKh/bQHx7Bd9q1f3Kf7kNTz6vlm
+         SFfBvmvD+i4fPQHENC57Nc/4A8A5Hx7NloY3gvO1Tk/FVMmDvTezTifebEBsiJD5cRUk
+         SfCQ==
+X-Gm-Message-State: AFuF++myh07ETMefBSGpXUf1EwPjfxkHsu7jgQoxZsROZ6XMeexVJjqV
+	x28zyv1egySruhLJjmBCd6wQSxYsqKnYYrYJvB62INPIXdMTMwY+mSbS
+X-Gm-Gg: AYBFou0Ro9YoKvoThi9z0mBbtZ3Wpx6TPxM/VWr/HE1KTHk8xxYmqizKZABqdTSnK9q
+	ueIOD7lWggWF8utHIw3AUcGIps7N+KgCUNC/vwUDJpD8ze4X25TaoEmzOooiTIH88mNEzqIP0ZK
+	PQZ3Z40RiJYcUDNsZihXkUMvDe2yDGJdeltN/1R4d9Tssk1IZSBS+pF9xDfUt+nt+KaRxGcztre
+	GQuT5RFz/KICG64gseALWLrcLsuS78ZOgIlam8HE+5OFGH9rVFB8nzIGq2r8nuL6jEdZ8LboRPC
+	qzHvMeaiZIPGdozFcQnkjUQfDxtiY7nC2TKqn0RREmT+OqOQnTnwfwlWpx3BRb12e6crUXuN7Mz
+	9rTROoDertj1/z4o53GGk3fOaOtjWFBR9NL27+kKw+1W1TJy4JWzpAmgv3l1BH55uIkZh3SJznY
+	VJpNCUhvD3ZpRuSV3dDma1JOLY4xmtPkfiXEXP61fBeb9CsiQUeUTODZxKn/zD
+X-Received: by 2002:a05:690e:14c5:b0:667:5cde:6f36 with SMTP id 956f58d0204a3-66fc1bb8014mr3388782d50.33.1788636578685;
+        Sat, 05 Sep 2026 12:29:38 -0700 (PDT)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66fb48fb6d5sm4938594d50.11.2026.09.05.12.29.39
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-66fb47a8894sm5071491d50.1.2026.09.05.12.29.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Sep 2026 12:29:39 -0700 (PDT)
+        Sat, 05 Sep 2026 12:29:37 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
-Date: Sat, 05 Sep 2026 15:29:28 -0400
-Subject: [PATCH v2 07/22] alpha: select ARCH_HAS_FAST_MULTIPLIER
+Date: Sat, 05 Sep 2026 15:29:27 -0400
+Subject: [PATCH v2 06/22] alpha: select ARCH_SUPPORTS_ATOMIC_RMW
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -69,7 +69,7 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260905-arch-kconfig-options-v2-v2-7-83e8245761a2@gmail.com>
+Message-Id: <20260905-arch-kconfig-options-v2-v2-6-83e8245761a2@gmail.com>
 References: <20260905-arch-kconfig-options-v2-v2-0-83e8245761a2@gmail.com>
 In-Reply-To: <20260905-arch-kconfig-options-v2-v2-0-83e8245761a2@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -82,22 +82,24 @@ Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
  kasan-dev@googlegroups.com, linux-hardening@vger.kernel.org, 
  linux-doc@vger.kernel.org, Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=990; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=d64vrkzV8SwOJMlfAMFEdEJjMT39PCBSfivQv0NFu/w=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLm5E52OS953f6VlMGdbfOOiZqUx+b8/qvsEHX00sZJp
- 28vXqD7v+MjC4MYF8NMMUWWuPWKLLPadiz1OS39C2YOKxPIEGmRBgYgYGHgy03MKzXSMdIz1TbU
- MwQydIziIXJ6DBqZxcWlqUW6aQVFDnn5JYklmfl5xXr5Bal5BekFemmZaSUZGflFxalAI/TyUkt
- MXR3djAwNTCwdLcycLBxNTZydnQyd3BwdnV2djCzNTQycLR1NXC3NGbg4BWCuMVRnZHhVdITDzN
- X1/ZZT7/jk5OsuOnjyCsousnkdKlJ+fmvWU05GhlWLgz6/ueSyxFBtt1aHXZf9g7iqWEbJAzp/n
- s9ceDK2hwUA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1013; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=q2x0WUHz2r8ueAKqk8Cn9VqXFBZAzyHK+DfKvxu66yg=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLm5E6WtGqS3pvKJfx1ye9TR9bu+rTb+tTCMxrC0+Nqr
+ zmERf541/GRhUGMi2GmmCJL3HpFllltO5b6nJb+BTOHlQlkiLRIAwMQsDDw5SbmlRrpGOmZahvq
+ GQIZOkbxEDk9Bo3M4uLS1CLdtIIih7z8ksSSzPy8Yr38gtS8gvQCvbTMtJKMjPyi4lSgEXp5qSW
+ mro5uRoYGJpaOFmZOFo6mJs7OToZObo6Ozq5ORpbmJgbOlo4mrpbmDFycAjDXMB1g+B/0deOFT/
+ cfTA/8meDMFqTk8UHidPbMADf35Qc2X5RSue3EyHD2pv70ieHKQsd6TS+0Cqa5n4zMteB/1iYnt
+ Z49VK/yAgsA
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-All Alpha CPUs have hardware integer multiply (MULL/MULQ). EV4 and EV5
-implement it in microcode; EV56 and later have fast single-cycle
-multiply. Since no EV4 system is likely to run a modern kernel, select
-this unconditionally to enable multiply-based fast paths in hweight and
-string routines.
+Alpha has native LL/SC instructions (LDL_L/STL_C, LDQ_L/STQ_C) that
+provide atomic read-modify-write capability, and already selects
+ARCH_HAVE_NMI_SAFE_CMPXCHG.
+
+Selecting ARCH_SUPPORTS_ATOMIC_RMW enables MUTEX_SPIN_ON_OWNER and
+RWSEM_SPIN_ON_OWNER on SMP, allowing optimistic spinning on contended
+locks rather than immediately sleeping.
 
 Assisted-by: Claude:claude-opus-4-6
 Signed-off-by: Matt Turner <mattst88@gmail.com>
@@ -108,17 +110,17 @@ Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index d039b7135d18..2672971b83f3 100644
+index 032c23f979c4..d039b7135d18 100644
 --- a/arch/alpha/Kconfig
 +++ b/arch/alpha/Kconfig
-@@ -7,6 +7,7 @@ config ALPHA
- 	select ARCH_32BIT_USTAT_F_TINODE
- 	select ARCH_HAS_CURRENT_STACK_POINTER
- 	select ARCH_HAS_DMA_OPS if PCI
-+	select ARCH_HAS_FAST_MULTIPLIER
- 	select ARCH_HAS_GCOV_PROFILE_ALL
- 	select ARCH_HAS_UBSAN
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
+@@ -14,6 +14,7 @@ config ALPHA
+ 	select ARCH_MODULE_NEEDS_WEAK_PER_CPU if SMP
+ 	select ARCH_NO_PREEMPT
+ 	select ARCH_NO_SG_CHAIN
++	select ARCH_SUPPORTS_ATOMIC_RMW
+ 	select ARCH_USE_CMPXCHG_LOCKREF
+ 	select FORCE_PCI
+ 	select PCI_DOMAINS if PCI
 
 -- 
 2.54.0
