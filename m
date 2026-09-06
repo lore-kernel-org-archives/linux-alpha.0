@@ -1,101 +1,165 @@
-Received: from smtp-4.orcon.net.nz (smtp-4.orcon.net.nz [60.234.4.59])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D36E25A655;
-	Sun,  6 Sep 2026 02:17:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.234.4.59
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788661046; cv=none; b=KxR+12x48+fWNvu186VIvpxK+Iw7NQZnRIgk6R59f1arNshGwHDzJ72VhEdGTWpWEM4quOI9BwixAQHmUEogSP81S5hRMeUodg8Q9pRmC94Z0D8lcUmzGKw3VbIzPyW6wvvUY3WL4at+myHC+Vf1D3R36r4f1htcaOedULdgq/w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788661046; c=relaxed/simple;
-	bh=b8TaBa4LiEzekil4Vt4bAoiS0AvQ2Eqv7bIMWRXdG3A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ltVv4woUzeZPUFf1gqUBGUMufsHgejW+Z74FOCJwPbKfM1JHO22fQA3lBH6qSPF9oQyCyuItq2XzvR0QjCx9H1RabkJrPm5EgMIouzsLW3cEBt33cMTmtlcIhoE34xvnZzlvklS3seAwnsnou+ETgfd9gHXalqP3MvAucpfR2Vc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=orcon.net.nz; spf=pass smtp.mailfrom=orcon.net.nz; dkim=pass (2048-bit key) header.d=orcon.net.nz header.i=@orcon.net.nz header.b=sdiIUedM; arc=none smtp.client-ip=60.234.4.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=orcon.net.nz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=orcon.net.nz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F1913375D5
+	for <linux-alpha@vger.kernel.org>; Sun,  6 Sep 2026 08:54:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788684856; cv=pass; b=RMYiX+xtgiUP2xedHTgYLS1RDzeQVWrdLglcn6Ma/qKBVKY8oMB/V4T5tFEQhW7LERdAQCOmEOCYtBNQtQ1GMZbxeV2mnnPFEHdw8rcHW3BX6EZwFCwe4i5oS90Dl3fuSGI/DLDE37FvD1/YELRxQ1V8DYgtFd18QC6lodBhlAQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788684856; c=relaxed/simple;
+	bh=FtMUsQ3c+eU5+RWwNkmgMZ0NRIy/xc4bbMVT5fiF/aA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=PfzMOr30GA9LlPwux6L4QaCmZ3Wr17c8kfzgXLLVd9+aQPhNxbFca6xpBXl3/+UQKWvqR70FDZumW5uJiX4QmLaR6mq+WXVJiTkgKroMy0fEKFtxYjfadK7rGByP+K1rkwGz7wxZxqs13O7LBQOQvQ3K1H2zt/db3uz68j1jlzs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h9TizUcl; arc=pass smtp.client-ip=209.85.208.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=orcon.net.nz header.i=@orcon.net.nz header.b="sdiIUedM"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=orcon.net.nz; s=s1; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=dTU2DK9Ec45Y4m03S6RF2YksWqUEMJXPgQusutCtZ9Q=; b=sdiIUedMNuF+AZGMzAwuYC+/95
-	eCXuJu1un2+1n8Lv0eaDZbuWvoer1+0cZhifuaPo2vlaZwrLnJgfLLIk/+Ua6ulqGc6DihQLEYQM7
-	7pV7IMkwb7B/BV4lVQS2tA4UkSq7HCc1J5buNSNm1x1Szxl6s3tbtE8tRuPqvjDFs4YxKS18ixuQR
-	59PRof384aD3nPFtDjoGdZDvzTEJcTIBFt7HC8XxGZaJMnMo6bnZqxidtriK0K4JFRNVLAtTjblJQ
-	YMFbdHMC+9uUYzZuGAOdMn+rfXNJh6jY5u90TafbDyCRc60yt8BeS/sDlJRX/Tm/hFjDMWRB4aTS3
-	8eoajpMQ==;
-Received: from [121.99.247.178] (port=32811 helo=creeky)
-	by smtp-4.orcon.net.nz with esmtpa (Exim 4.90_1)
-	(envelope-from <mcree@orcon.net.nz>)
-	id 1x321E-0007NA-3e; Sun, 06 Sep 2026 13:50:04 +1200
-Date: Sun, 6 Sep 2026 13:49:59 +1200
-From: Michael Cree <mcree@orcon.net.nz>
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-	richard.henderson@linaro.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/24] alpha: select ARCH_HAS_UBSAN
-Message-ID: <apzGx5Q19wEh0SwP@creeky>
-Mail-Followup-To: Michael Cree <mcree@orcon.net.nz>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org,
-	richard.henderson@linaro.org, linux-kernel@vger.kernel.org
-References: <cover.1788277742.git.mattst88@gmail.com>
- <61175f9015771b6a6d78624579ecc180f57d17e9.1788277742.git.mattst88@gmail.com>
- <CA+=Fv5TYnwcDLPvwScOcGq-7CUSs2bDMqrYEj-Lhf4XfQ=yTzA@mail.gmail.com>
- <apsqmKw1pLmOXVgg@creeky>
- <CA+=Fv5Sg1KjAZZ3X=Yh62hUr=5qeRg_ZVq=A_C4bBovde1MeoA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h9TizUcl"
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6a6868f18aeso3587554a12.0
+        for <linux-alpha@vger.kernel.org>; Sun, 06 Sep 2026 01:54:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788684853; cv=none;
+        d=google.com; s=arc-20260327;
+        b=XE3GcoWb8gJ4iM8oHSQYcCHactgZnSelnp5UWrhdQxsJAEkbKGU0azzPVRgZVxp8gx
+         9M96xLn625VOprREjtRNdDFsovOniiKP7SUHkDsafzyrvs9562CG8HcVki0TAK7ovbTi
+         1nHkoUEumE7/s9uAL084Nxu6gFDlyeZ+cF3cEK1TdP0ZJkPA9TQlMZm2HPVW6i4vRd54
+         6nMLOZrkmK8B+UxQtQ0XN3kmVIo5Y3z25AY50Kit6sCwXvMsXuSNhLBX83mb2kfqz1Wp
+         oVC0ZBa/AVuir8dQkO22WOG8uD2NCKNoYxp4RTAD7rhoOjdzQ1ncZkb5L2qIvx6cix1J
+         go6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=YbwXKI+GsB7CVjJT81Ck70VdlQI8PJuud+2raignSOQ=;
+        fh=De/zvw19JfJyQokh8p9A0zi0F3Ses/csm6CTJcUod0g=;
+        b=KKQlUZft+rcfTWAD6mDoYOZxnrqYkrRrM6EUWjdTA/gAkV7n/RPNC8xs1s0b+cjALr
+         xqDVbn8Uq1en8eqGAYIbTP+4WkPu5d413IHfHaSFr6oCanYmJBBslQFI0QNVfWnp7ZZS
+         +T/aRq6DJDjr690SfFpnzGEFYgM47wggIsYFyjjCqUAJG7VfdGqyYUUS1s7OkQLjArRi
+         9v8j6mb0g1PDkLPGDSQlDnf7jTw6WSPe+y2tq2Iz6BiOkMfGKXu10pCZorAGHrjTCpsy
+         jQP4WYIYZVn2SiV0AVEUixubpjAcUx75bUIrjuwl5D/XwV8DjAo3gFTYrEXuetpH3tD8
+         ZGhQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1788684853; x=1789289653; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=YbwXKI+GsB7CVjJT81Ck70VdlQI8PJuud+2raignSOQ=;
+        b=h9TizUclhnkWlz6L9RI1PZiRuKD2A6UZqzwrBT4mzNeaT+v6QRA7r4RC6B6gZ8t3Wh
+         9VtwOqfAhpgtrz49eF7x0JDQVIA7Y5yAz2EtSNgn7VXyNl7Ae5C/5760Ex+EMEVj5vKT
+         wsqDQbqjCurHiHAJ52WUifBMseVPi8eagaf+HpjFBX66AzHmp+b8jM1HyG/ijV2/r10G
+         G9rOc6T+vGvLQ1Y8VSnBNUwrMJL3dEo8zYURQQcp9Y4fN7DP11TopTJQh+d1vbG/1TDZ
+         3efGsk2hoO7KzAgaVfJfIIUSYqhs1BRoJOXBaEJyDK1QwxjbT4SudYw4FlGDaeBtQng7
+         76eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788684853; x=1789289653;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=YbwXKI+GsB7CVjJT81Ck70VdlQI8PJuud+2raignSOQ=;
+        b=UmOoVYTUtFFwRZC8Jcg1vLFzdx9QMpVKoM2sNgJzLHX/g+T69cQzd+wpfL8KVaQhWL
+         sMORmGmUHPF6e9A/MqGipLyAuyXYZCcsbaWXC1mEe18gX95686fN6mWc/TQzOLC0kD3W
+         dHuFGJOUIdDUuqVzoD5o5zdBWO2JceOemSO0aUmapUM32RfQ0iXx31Arveye5qYdi34Q
+         SQMgRDhTZmgdwxtafp+jLAOrCWzk6bJqjXpn1vut17zCg/FQZiinZBlASzqgd3LRwt7H
+         bKScIjTSKl/CKikkLgGqtfOs/OjzXcp5eY/c2MLOxyISC/owyEF/YMOeb4JJ3rhJOaJ0
+         YpvA==
+X-Forwarded-Encrypted: i=1; AKwUvBzntJ3ko/8VJoGNHjKoTACojftppOIfC5cSLjvgOymiVB/IBAke/NkKtjT2zxXhl2F5ToRAyb2lGqhPrA==@vger.kernel.org
+X-Gm-Message-State: AFuF++kMWJpqUXJHQ18/GzBMFOR+VeyUGyh3/hnQRgUSY8jmKOgV64Qf
+	5dmch28CB/zga+BdNDVL3I080Wg8t3xODfn31XApks50YIWXhDd1/ZbriS96K3RZv31kfyoCMZu
+	m0l2gbevOzIDoqhZTBYutLJzj00T5e+c=
+X-Gm-Gg: AYBFou3FY7eYcV5+ELRV605Ou1nUM9qvGFs/6DausCxbtFdXUkHyq5hHnyMVndL+L0X
+	8xDff35zvPd2g2/lQPLL7UCdBecF5a4ZAdXpiL7cJ5BE/uEI1i0vSPaNrgmS13Ma0sjr+OeEQ6q
+	yNgnS68iKsTYULgIIGQVBqxgtzEPBnxPuKCm5e+C5+/Li2Gqy5YRI2cO6iaNx0Y4EPtwwlPGki6
+	pPKGAuwSSQBoAFh14ATrtP53rZe+FuloKcul9uR4Khm/0BagQEy79SGIWlJfIGG6ol40sJb1fJ7
+	jfXDL+E9GN+oHzq+YtxC1aB02hdNI8y2idiqM56xEJLXNXXaEXBWPDmpdMIhBiUJZTQSi+YXqak
+	V/da3lZFQkkngKoQjHgLZztK0VC7uOjseX216UBD0bg==
+X-Received: by 2002:a05:6402:27ce:b0:6a6:7882:89f2 with SMTP id
+ 4fb4d7f45d1cf-6a7e8f9623cmr5389972a12.17.1788684852982; Sun, 06 Sep 2026
+ 01:54:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+=Fv5Sg1KjAZZ3X=Yh62hUr=5qeRg_ZVq=A_C4bBovde1MeoA@mail.gmail.com>
-X-GeoIP: NZ
-X-Spam_score: -2.9
-X-Spam_score_int: -28
-X-Spam_bar: --
+References: <20260905-arch-kconfig-options-v2-v2-0-83e8245761a2@gmail.com> <20260905-arch-kconfig-options-v2-v2-1-83e8245761a2@gmail.com>
+In-Reply-To: <20260905-arch-kconfig-options-v2-v2-1-83e8245761a2@gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sun, 6 Sep 2026 10:53:59 +0200
+X-Gm-Features: AcwNN1UUMEovJX_eDQLTzWZBni3pDHzUeZjtKQmab2rob-n71CYiUsiteVtNV_I
+Message-ID: <CA+=Fv5SZRccPT=1A39uqucCcCahkMCeecX_FnnCt-q39o=vx5g@mail.gmail.com>
+Subject: Re: [PATCH v2 01/22] alpha: enter hardirq context before looking up
+ the irq descriptor
+To: Matt Turner <mattst88@gmail.com>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Kees Cook <kees@kernel.org>, 
+	Marco Elver <elver@google.com>, Andrey Konovalov <andreyknvl@gmail.com>, 
+	Andrey Ryabinin <ryabinin.a.a@gmail.com>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, 
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	kasan-dev@googlegroups.com, linux-hardening@vger.kernel.org, 
+	linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Magnus,
+Hi Matt,
 
-On Sat, Sep 05, 2026 at 01:15:18AM +0200, Magnus Lindholm wrote:
-> On Fri, Sep 4, 2026 at 10:31 PM Michael Cree <mcree@orcon.net.nz> wrote:
-> > On Wed, Sep 02, 2026 at 12:34:50AM +0200, Magnus Lindholm wrote:
-> > > On Tue, Sep 1, 2026 at 5:50 PM Matt Turner <mattst88@gmail.com> wrote:
-> > > >
-> > > > GCC's undefined behavior sanitizer has no architecture-specific runtime
-> > > > requirements. Enable it for Alpha to allow UBSAN instrumentation of the
-> > > > kernel.
-> > > >
-> > > I tested this patch on top of my rebased Alpha GENERIC_ENTRY patch on an
-> > > AlphaServer ES40. The kernel built and booted successfully with
-> > > CONFIG_UBSAN=y, and the UBSAN instrumentation is active.
-> >
-> > So have I, on an XP1000 and ES45.
-> >
-> > > CONFIG_UBSAN_ALIGNMENT did expose a misaligned struct bucket_table
-> > > allocation in lib/rhashtable.c. This appears to be a generic rhashtable
-> > > allocation-alignment issue rather than an Alpha UBSAN problem.
-> >
-> > But in my case the kernel vomited copious misaligned access reports,
-> >
-> > Interestingly "kernel unaligned acc" in /proc/cpuinfo remained at
-> > zero, which really makes me wonder whether these reports are all
-> > false-positives.
-> >
-> Good question, had to dig deeper here,
-> 
-> Not false positives - real UB, but harmless, and I tracked down why.
+On Sat, Sep 5, 2026 at 9:29=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
+te:
+>
+> handle_irq() called irq_to_desc() before irq_enter(), so that lookup ran
+> with the preempt count still saying task context and with RCU not yet
+> watching.  Generic code called from an interrupt handler should see
+> hardirq context, and irq_to_desc() is more than an array index once
+> SPARSE_IRQ is in use.
+>
+> Move irq_enter() to the top of the function and add the matching
+> irq_exit() to the invalid interrupt path.
+>
+> Assisted-by: Claude:claude-opus-5
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
+> ---
+>  arch/alpha/kernel/irq.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/alpha/kernel/irq.c b/arch/alpha/kernel/irq.c
+> index 4a6a8b1d5a8b..5867a1655045 100644
+> --- a/arch/alpha/kernel/irq.c
+> +++ b/arch/alpha/kernel/irq.c
+> @@ -107,18 +107,21 @@ handle_irq(int irq)
+>          * handled by some other CPU. (or is disabled)
+>          */
+>         static unsigned int illegal_count=3D0;
+> -       struct irq_desc *desc =3D irq_to_desc(irq);
+> -
+> +       struct irq_desc *desc;
+> +
+> +       irq_enter();
+> +
+> +       desc =3D irq_to_desc(irq);
+>         if (!desc || ((unsigned) irq > ACTUAL_NR_IRQS &&
+>             illegal_count < MAX_ILLEGAL_IRQS)) {
+>                 irq_err_count++;
+>                 illegal_count++;
+>                 printk(KERN_CRIT "device_interrupt: invalid interrupt %d\=
+n",
+>                        irq);
+> +               irq_exit();
+>                 return;
+>         }
+>
+> -       irq_enter();
+>         generic_handle_irq_desc(desc);
+>         irq_exit();
+>  }
+>
 
-Thanks for taking time to find the explanation. So, technical UB
-but no consequence for operation.
+Since this patch is unchanged in v2, and we agreed to handle the
+hardirq-context consolidation as a follow-up, my tags from reviewing
+and testing the current change are:
 
-Cheers,
-Michael.
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+
+Regards,
+Magnus
