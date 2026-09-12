@@ -1,35 +1,66 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx2-f13.google.com (mail-yx2-f13.google.com [74.125.224.141])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E6A04AB1A0;
-	Fri, 11 Sep 2026 19:41:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B536F38F649
+	for <linux-alpha@vger.kernel.org>; Sat, 12 Sep 2026 19:55:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789155733; cv=none; b=jctm52LycoyxZb6YT8Zx7C2SRrpe01fYdK74puzPu387aR4KnGCeJbFQY4UzggyHTwHIg2XNaaBEHTI1bUHccIwXR8lqUVQLAW1bG7sIBTnFD6ud5aI0dGayVFXD2VGEGH+yHr6DYg0kV5Thsj1/B6bOinR7JROAVOm9clPsSbs=
+	t=1789242948; cv=none; b=qJxXvEOeOsxA+A/1yWhD0obxpFrHosyixKY5oAzoB152hS8RMDtXtd4CAaHgNM+jZflLZ6On+v9uO2ImBlDfXN/gojXhl7B5aginB+3MHrBCVfUXyJR0HtaSQA5PJLtXwi21Vo8cwKfQlyaccTo7WD1zvDpIlpqEkxOk/yDM0Ag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789155733; c=relaxed/simple;
-	bh=d4o8BvEhvbpmkAFDsmC7e/OS16AthPkW67coZubsUt0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=jKYBsWIkMs8vqLDfR0l0/ZQwRW+iQw0lhgA5FXBkk2pJia49SAdio/51gWF3WXfV8ogbFhd/wQUN12iGHwiw2epf8AXqA60YhgdnC8UYriXueO6YuXoA8yzpqE4nhEw+0pJ80B1v84h96Yk/6ma8ULrjGTX+T5MZnKt75uFKrOM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b5hZkxPe; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1789242948; c=relaxed/simple;
+	bh=SVClYd+7ea+Qkjn0gT6hYJyaUgyVmTEqLlR7g57fIu4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Cb25NhRqyi4LkGD2shcTK09urVfa92yWDgNH7YgV4j+AeefEHDGB40PjuyEWZZRejyYMnMaO8z+bgoXng8t5A4cmItWty7dHxhg37vXB60aCZ5V3hR2vx8d6MnQ9s44FihF6JeJZ7XLQbl5QBeDZyvqM6y58cb09j60+dy8S2e0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TVc9gQK3; arc=none smtp.client-ip=74.125.224.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b5hZkxPe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE6EE1F00893;
-	Fri, 11 Sep 2026 19:41:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1789155714;
-	bh=M7feebBV+4w0SqCnHHPUA0WnsaaqlXi4RbYO862HspA=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=b5hZkxPeby4ytfMTJauKfEirdwvu+obLbvn3xWPzZcr0wBfX3w+c2kujWFIcDpY9n
-	 25FLBvyf42J+UZUzQbo4EoU7R+DQKAdV1weZ0+5Qm1djVUXn5MsNCrmeyoRpAkTbTJ
-	 siMNDnCxo7ntKpAO1aUHoIFfJkSGnCkmDedyGaQ3sl0jd3SZvqvmObc3YM/xNBonZf
-	 k+LnB3mpReS5jSnuryAr5mgkoBDh+B/eY8XbcD0SZAWiMwiGHobrF0ybz9sq0aO3oR
-	 P9ZtVpQUF5BFr3CO4oSylZnpjSWQo66V0pbELQZm+VUzxOw02NQkviAWzBGK9gChxZ
-	 3WaZrJuQhS4QQ==
-From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
-Date: Fri, 11 Sep 2026 20:36:59 +0100
-Subject: [PATCH v3 12/12] mm: change the contract for free_pgtables(),
- update docs
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TVc9gQK3"
+Received: by mail-yx2-f13.google.com with SMTP id 00721157ae682-85d46e4cdcdso6730247b3.2
+        for <linux-alpha@vger.kernel.org>; Sat, 12 Sep 2026 12:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1789242945; x=1789847745; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=IwFDO8UVJp+G6fJLERJAB4ELtanHIQkmCRixCWeWgXo=;
+        b=TVc9gQK3szzMzJ2YmKUZBBQspY9pZZyTeTCM3/+9z7W/rJE5d80zash0UQjQ3+R0va
+         5Ya/B56siB2aRMHgVGXXQcAUlOziiVa8QO+Mg5DWPKfUs0ZrFsvD1PzjTeWbveIYZriy
+         A85Iyah0N5y4qH23urO7Jkj2UGsMy9834dmOq5cuAgxRtenOSgVq6/79H/ui+dEe+JOm
+         cOU+Il4yLNYymjgebpFwG0o0dHlSKuIRY3r4hbj8p89Ak1F9UzJuApmvqed1fLjekz6x
+         kXgP51bdYNvLrWYOHoe+l/ueywJdWPGpTlMJ+OqIo+VRYzv6U++r7c4MJ6+Q+oMGx0Rj
+         DL7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1789242946; x=1789847746;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=IwFDO8UVJp+G6fJLERJAB4ELtanHIQkmCRixCWeWgXo=;
+        b=isMt6omd80kQV6bVZXbrHnXLhLVl5slslB3LDGUK4UNss1IC6+RxARk/RoPHpOW3B9
+         DMl4Lnhb7r3p4AkAKKGEcWNSKPYnPc6FlEsYsP2RZ9S0m8pR/CKJWFelDswiHEFvJIbD
+         saKQmHjCTQ247zRtOgQOevmmWmrIbgcnaBmIq9/2QJYQuIr6CmZg3S5c0v1HWx2r4sBr
+         cyPvg5ewyaOuIF5sb1I05OZH+cCUjNFolGKNdMP/PSKDOcr8e0+eaRlzNN4GX9qcHN1J
+         HCkdd5dIDOMX57wW6ICvSePu0ibBsN923LO27GrorqnFIscfeYS4PB6TUPlwoKfG/ueK
+         MzRg==
+X-Forwarded-Encrypted: i=1; AKwUvBwXDlxrEjcYnJMhvurV4X1FDZYh3ShP9SoJ9/KArOgnt590oDJgMwcU5+SMCoIlhXDEqaFpIaGR/I52hw==@vger.kernel.org
+X-Gm-Message-State: AFuF++kZEBny9rUNMPCoKKiBX3MStclsF6Q9GAWFCmmn35pFaUvvsGxD
+	lD7xqZF6ee9MDeFI3IgxAsbzL7Kfipsm/Y1XX6d+apNb4Ar2HQlX7/8y
+X-Gm-Gg: AYBFou1FvXwy5kvNhhSd0OppWRCSll1RiCwDpmzKKk4b+TZmfkCQ5Zs9WKWNqoF4ITc
+	+F6MKPJwmt1VTyB4SkanMPGHfofU2uORPciD2Tke73LlhR33jLbGWf7X3v0OgMLc+lDeqtBqItB
+	d6yqDsyUtTimLoP67tJUUaG0So0ax5VIkTm2wAeWI1YRyhN57n86dwZtDlFkRlphfjf2qZCH6kN
+	zXULJFfTdPmEBcTIOAnCuKNYBWweX2irYeZRK4zVvOZDQl5WsLcT2+I/YHuQqzitLZ+ulXcO6S1
+	Mq0/Y8b9xs6USeWSUBSY2wOgl06tPHIEpIF2h73WtQODLXeH8lZvx9Xvnomxh38DegTlO/D01At
+	1pvHB3fbiXEvsXDpve/wh8eE6GJGIr0RxKuoYzGPt5QAJ0UG0/N7x22llcOpU2Im2UCnbC9nVTk
+	riiEhSZ7eKSPVGBfFYFYX7OgJJvwKYgDR990zGdT6Xw9L5iqQ3u5JaBeLY+EpfxHIaf1IT7Ig=
+X-Received: by 2002:a05:690c:d8f:b0:816:b469:ccec with SMTP id 00721157ae682-884b08b6b3cmr45087267b3.15.1789242945467;
+        Sat, 12 Sep 2026 12:55:45 -0700 (PDT)
+Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-88488e28d38sm22394187b3.43.2026.09.12.12.55.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Sep 2026 12:55:44 -0700 (PDT)
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PATCH 0/3] alpha: self-extracting compressed kernel images
+Date: Sat, 12 Sep 2026 15:55:42 -0400
+Message-Id: <20260912-alpha-kernel-compression-v1-0-ce9d55330193@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -38,140 +69,69 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260911-rcu-pagetable-freeing-v3-12-7b8c86103821@kernel.org>
-References: <20260911-rcu-pagetable-freeing-v3-0-7b8c86103821@kernel.org>
-In-Reply-To: <20260911-rcu-pagetable-freeing-v3-0-7b8c86103821@kernel.org>
-To: Andrew Morton <akpm@linux-foundation.org>, 
- David Hildenbrand <david@kernel.org>, Zi Yan <ziy@nvidia.com>, 
- Baolin Wang <baolin.wang@linux.alibaba.com>, 
- "Liam R. Howlett" <liam@infradead.org>, Nico Pache <nico.pache@linux.dev>, 
- Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, 
- Barry Song <baohua@kernel.org>, Lance Yang <lance.yang@linux.dev>, 
- Usama Arif <usama.arif@linux.dev>, Kiryl Shutsemau <kas@kernel.org>, 
- Guo Ren <guoren@kernel.org>, Brian Cain <bcain@kernel.org>, 
- Geert Uytterhoeven <geert@linux-m68k.org>, 
- Dinh Nguyen <dinguyen@kernel.org>, 
- Simon Schuster <schuster.simon@siemens-energy.com>, 
- Jonas Bonn <jonas@southpole.se>, 
- Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, 
- Stafford Horne <shorne@gmail.com>, 
- Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>, 
- John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, 
- Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>, 
- Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, 
- Russell King <linux@armlinux.org.uk>, Vineet Gupta <vgupta@kernel.org>, 
- Michal Simek <monstr@monstr.eu>, Chris Zankel <chris@zankel.net>, 
- Max Filippov <jcmvbkbc@gmail.com>, Will Deacon <will@kernel.org>, 
- "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
- Nick Piggin <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
- "David S. Miller" <davem@davemloft.net>, 
- Andreas Larsson <andreas@gaisler.com>, 
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x2MWw5AMBAAryL7bZMq6nEV8VFs2aCkTUQivbvyO
+ ZnMPODJMXlokwccXez5sBGyNIFx0XYm5CkySCGVaDKJejsXjSs5SxuOx3468l+EUhS5qYUyQ1V
+ CzKMwfP/rrg/hBUamRJ5qAAAA
+X-Change-ID: 20260912-alpha-kernel-compression-2043f806fb75
+To: Lasse Collin <lasse.collin@tukaani.org>, 
  Richard Henderson <richard.henderson@linaro.org>, 
- Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>, 
- Catalin Marinas <catalin.marinas@arm.com>, 
- Mark Rutland <mark.rutland@arm.com>, Huacai Chen <chenhuacai@kernel.org>, 
- WANG Xuerui <kernel@xen0n.name>, 
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
- Helge Deller <deller@gmx.de>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
- Michael Ellerman <mpe@ellerman.id.au>, 
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, 
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
- Alexander Gordeev <agordeev@linux.ibm.com>, 
- Christian Borntraeger <borntraeger@linux.ibm.com>, 
- Sven Schnelle <svens@linux.ibm.com>, Richard Weinberger <richard@nod.at>, 
- Anton Ivanov <anton.ivanov@cambridgegreys.com>, 
- Johannes Berg <johannes@sipsolutions.net>, 
- Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, 
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, 
- x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, 
- Arnd Bergmann <arnd@arndb.de>, Vlastimil Babka <vbabka@kernel.org>, 
- Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
- Michal Hocko <mhocko@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
- John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
- linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, 
- linux-m68k@lists.linux-m68k.org, linux-openrisc@vger.kernel.org, 
- linux-sh@vger.kernel.org, linux-riscv@lists.infradead.org, 
- linux-arm-kernel@lists.infradead.org, linux-snps-arc@lists.infradead.org, 
- linux-arch@vger.kernel.org, sparclinux@vger.kernel.org, 
- linux-alpha@vger.kernel.org, loongarch@lists.linux.dev, 
- linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
- linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, 
- linux-um@lists.infradead.org, Hugh Dickins <hughd@google.com>, 
- Qi Zheng <qi.zheng@linux.dev>, "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+ Magnus Lindholm <linmag7@gmail.com>, Nick Terrell <terrelln@fb.com>, 
+ David Sterba <dsterba@suse.com>
+Cc: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, 
+ Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3290; i=ljs@kernel.org;
- h=from:subject:message-id; bh=d4o8BvEhvbpmkAFDsmC7e/OS16AthPkW67coZubsUt0=;
- b=owGbwMvMwCV2fu7ZrsZH9SKMp9WSGLKWRDRfPca+K1Qt69Vu3RSVu8e9Ur+x7Hbg6r6kKjhjQ
- tW2Xw17OkpZGMS4GGTFFFmefxHfHyQSNq/zgr8bzBxWJpAhDFycAjCRtYKMDKtcrE7Oe/bdKdOw
- QVRKubxP/maw6+Z2i5NRMyQLnn/8n8DIcLLhht/b1oOGNt4zuvVbs+/8t5WS4NfTdnZawiPYtGc
- JEwA=
-X-Developer-Key: i=ljs@kernel.org; a=openpgp;
- fpr=E7F417BF5214569E89D04F46CF9DCD8A81E27F14
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1939; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=SVClYd+7ea+Qkjn0gT6hYJyaUgyVmTEqLlR7g57fIu4=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKWrrOb6SvHxOF89c+qlf/XLPhzXWNlAu+qc7UrFnrYV
+ Uu6qR690PGRhUGMi2GmmCJL3HpFllltO5b6nJb+BTOHlQlkiLRIAwMQsDDw5SbmlRrpGOmZahvq
+ GQIZOkbxEDk9Bo3M4uLS1CLdtIIih7z8ksSSzPy8Yr38gtS8gvQCvbTMtJKMjPyi4lSgEXp5qSW
+ mro5uRoYGJpaOFmZOFo6mJs7OToZObo6Ozq5ORpbmJgbOlo4mrpbmDFycAjDXfHvB8M9+mti7Cm
+ 1my2Cll0KTLnyWlGlbe3fm85ATsawbCpfZqDcwMiwQ5v8VKfc+O8czs7G+umWWg8hn176Jjnym/
+ 3gClj/T4wcA
+X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
+ fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-Now that page tables are freed after an RCU grace period, it is safe for
-read-only page table walkers to walk page table ranges that are being
-concurrently torn down, provided the mm is kept alive via mmgrab().
+Alpha is the last architecture whose boot loader decompresses the kernel
+itself: aboot carries its own inflate code, so vmlinux.gz has always
+been plain gzip, and adding a compression format meant writing a
+decompressor for aboot as well as for the kernel.
 
-It is however unsafe for writers to do so, as they must obtain an
-appropriate lock to do so safely.
+Build a self-extracting image instead, a small ELF stub with the
+compressed vmlinux linked in, which aboot loads and enters like any
+other kernel. The compression format then becomes an ordinary kernel
+Kconfig choice, and all seven formats become available: xz gives the
+smallest image, 5547496 bytes against 7677280 for the equivalent gzip
+one. The build now emits arch/alpha/boot/vmlinuz, since the image is no
+longer gzip data.
 
-Update the pte_offset_map_lock()'s comment block to reflect this.
+The SRM netboot path (bootpz.c) has its own boot protocol and keeps
+using gzip.
 
-Similarly update the process addresses documentation.
-
-Acked-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
-Signed-off-by: Lorenzo Stoakes (ARM) <ljs@kernel.org>
+Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- Documentation/mm/process_addrs.rst |  6 ++++++
- mm/pgtable-generic.c               | 15 +++++++++++----
- 2 files changed, 17 insertions(+), 4 deletions(-)
+Matt Turner (3):
+      xz: add arch-specific tuning for alpha
+      alpha: add self-extracting compressed kernel boot stub
+      alpha: support the remaining kernel compression formats
 
-diff --git a/Documentation/mm/process_addrs.rst b/Documentation/mm/process_addrs.rst
-index a7296f251799..b1f4f44d75eb 100644
---- a/Documentation/mm/process_addrs.rst
-+++ b/Documentation/mm/process_addrs.rst
-@@ -537,6 +537,12 @@ We establish basic locking rules when interacting with page tables:
- * When changing a page table entry the page table lock for that page table
-   **must** be held, except if you can safely assume nobody can access the page
-   tables concurrently (such as on invocation of :c:func:`!free_pgtables`).
-+* Page tables may be *walked* under RCU alone, as page tables are freed only
-+  after an RCU grace period has elapsed. However, any entry found must be
-+  revalidated after the page table lock is taken (such as the
-+  :c:func:`!pmd_same` recheck performed by :c:func:`!pte_offset_map_lock`)
-+  before it is acted upon. Changing an entry requires the page table
-+  lock and one of the locks that excludes teardown (mmap or VMA lock).
- * Reads from and writes to page table entries must be *appropriately*
-   atomic. See the section on atomicity below for details.
- * Populating previously empty entries requires that the mmap or VMA locks are
-diff --git a/mm/pgtable-generic.c b/mm/pgtable-generic.c
-index b91b1a98029c..a127e3e8f9b9 100644
---- a/mm/pgtable-generic.c
-+++ b/mm/pgtable-generic.c
-@@ -385,10 +385,17 @@ pte_t *pte_offset_map_rw_nolock(struct mm_struct *mm, pmd_t *pmd,
-  * Note: "RO" / "RW" expresses the intended semantics, not that the *kmap* will
-  * be read-only/read-write protected.
-  *
-- * Note that free_pgtables(), used after unmapping detached vmas, or when
-- * exiting the whole mm, does not take page table lock before freeing a page
-- * table, and may not use RCU at all: "outsiders" like khugepaged should avoid
-- * pte_offset_map() and co once the vma is detached from mm or mm_users is zero.
-+ * Note that free_pgtables(), used after unmapping detached vmas or when exiting
-+ * the whole mm, does not take a page table lock before freeing a page table.
-+ *
-+ * As page table freeing itself is RCU-safe, page table readers can safely run
-+ * concurrently with page table teardown.
-+ *
-+ * However, writers CANNOT as, without a lock being held, nothing prevents
-+ * concurrent teardown.
-+ *
-+ * Also note that the PGD itself is freed at mmdrop() time, not under RCU - so
-+ * the walker must keep the mm alive either by pinning the mm or the VMA.
-  */
- pte_t *pte_offset_map_lock(struct mm_struct *mm, pmd_t *pmd,
- 			   unsigned long addr, spinlock_t **ptlp)
+ arch/alpha/Kconfig                       |   7 ++
+ arch/alpha/Makefile                      |   6 +-
+ arch/alpha/boot/.gitignore               |   2 +
+ arch/alpha/boot/Makefile                 |  16 ++-
+ arch/alpha/boot/compressed/.gitignore    |   3 +
+ arch/alpha/boot/compressed/Makefile      |  63 ++++++++++
+ arch/alpha/boot/compressed/head.S        |  36 ++++++
+ arch/alpha/boot/compressed/misc.c        | 209 +++++++++++++++++++++++++++++++
+ arch/alpha/boot/compressed/trampoline.S  |  46 +++++++
+ arch/alpha/boot/compressed/vmlinux.lds.S |  83 ++++++++++++
+ arch/alpha/boot/compressed/vmlinux.scr   |  10 ++
+ scripts/xz_wrap.sh                       |   5 +
+ 12 files changed, 478 insertions(+), 8 deletions(-)
+---
+base-commit: 4407825b2f96b0e48a4bd08ab196b50a30eb3aef
+change-id: 20260912-alpha-kernel-compression-2043f806fb75
 
+Best regards,
 -- 
-2.55.0
+Matt Turner <mattst88@gmail.com>
 
