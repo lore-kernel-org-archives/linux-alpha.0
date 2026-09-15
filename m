@@ -1,132 +1,185 @@
-Received: from mail-lf2-f13.google.com (mail-lf2-f13.google.com [74.125.229.205])
+Received: from mail-qk2-f12.google.com (mail-qk2-f12.google.com [74.125.230.204])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C3103C10B4
-	for <linux-alpha@vger.kernel.org>; Tue, 15 Sep 2026 19:17:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.205
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789499837; cv=none; b=KV/2OIeFmz8wub8fzyjK/ZdwhRqrfea7VOPUDJqZAtZOKBAcop51xDgFUCQgYliraqc1CwfacuBpQH/haleMLrL+ey6KiTOP9RYBYVvPOIsShsHtMnwykRfg/zyBefV7ey1T2ochAzTYQYjGxnEuohve8P6FASUWbjwHF+33muw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789499837; c=relaxed/simple;
-	bh=AGk4y8oFpNibhByHKIxcRS7KnQx6z20Q8VC6dFl1tNo=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19B4F44F566
+	for <linux-alpha@vger.kernel.org>; Tue, 15 Sep 2026 21:42:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.230.204
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789508578; cv=pass; b=hc1qjh2ZLLBLO1jrA5R5QHsVIXar7qc6yf/biMWbhcoKGjOF38qLgoq8enMcxs2v82oR+qf0oeQvHk8AKFi24p68Uvlus2etRJERZ/hLTPPvW2Ji3LA7yWSq5hxfGwfWuJrUJIOoPN/uWhyqBMNjWv/iDBBz6hZ/AxYnZ9DFKJk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789508578; c=relaxed/simple;
+	bh=7FPuBKqfc5+V+XudiWfGUwcGgOF3XEWZ0MgBewJ876s=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jtAzE3d2Qp9eWLIFI0xJzW1lo8g3Q/k+jWFySqdcmwPuSlffcUBCcrWyIX3VqXWyPasXOfkupAR1l2a646JfHLplBq9UOTeyD/PdTygYrwoVdBrQ+YWmsJnrZbpz55Ai5qI9AV6EWVu5yg+CzccI2fBm1Jp1a3RU0HrqCQ0xrLM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=A74F3Qaq; arc=none smtp.client-ip=74.125.229.205
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	 To:Cc:Content-Type; b=rsFToTKc6XURWIQIgYLk+3W4of6I/pG5N4vYqJ8RGhHmkLaWIvTo2deInCeXj73Bk/QWnFgyAFo9cFJndJMmxSACY8GrvIlfj7llSOubnO8G/iTtvEF0h5xi1DyIM50jhuB7YLm+gP9aMCgBGmcNO4ZVnQM+hFXwbscdQKa2Aow=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nvjLsVGg; arc=pass smtp.client-ip=74.125.230.204
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="A74F3Qaq"
-Received: by mail-lf2-f13.google.com with SMTP id 2adb3069b0e04-5b5e4f15b7aso109310e87.3
-        for <linux-alpha@vger.kernel.org>; Tue, 15 Sep 2026 12:17:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nvjLsVGg"
+Received: by mail-qk2-f12.google.com with SMTP id d75a77b69052e-5306706e89dso32591cf.1
+        for <linux-alpha@vger.kernel.org>; Tue, 15 Sep 2026 14:42:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1789508576; cv=none;
+        d=google.com; s=arc-20260327;
+        b=oyaxUuTVY5sOM8TmzkfN0SBEd9fCdsEWuDj9x0DRhC1JMxDoAfUqfw1nYwXKeeyFdg
+         gZTOAmbzjlsdIeqO4vJ6/q+KAPnlZtk127iLvj/YhR0WMWvG/JWSfoAVBhLKWtedGaw/
+         SRraInncWNMUgmF1ciGMRhtUefQxPB6Y3myHdC8qwEdSRLKOglXbIiogZtKulqnsrr/z
+         aW8s86/Ciixf0M4dCTgLDg22F1EOkqF13FhpXfvp8CmHx7WOBlgLBtR0y/+uSoleUMtk
+         yPAVnop+pF1KxZRmJNATb+PchjkgZs7UjbGAfk9EWZwFMuW1gAO5t8AfoHwqa9ixD3nj
+         gj7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=aD5DtmrQU1XAAN2n47o7245dkYOoODedHBlENsGW6Jo=;
+        fh=UYY3UC6sYl0b3xrVjid4s70/6thU8QUObL4E+yOC6QY=;
+        b=oYnylchNftj0IcYZmAiiVY7bJMWYyW4k2Sa+pWIe8I0J2em1b90OQ5YgH0cm+nsxiK
+         tnS3609qO47QiQ4So1T/LqxTUBtFxZ8mti8sr5cw3+++6IyDgSd4rA76Uf6lPpkffXbR
+         911f4l62rhKxFRL13cS6rXAMKmSBUnXcHxtW9AGY5AJixnBej+jZeDJQ8tUR/gz9oMxf
+         WYPtcbdJQ6jT8xtU+or8WxQczyIRHV8P4fKGX0j9iBP0rUYajabOfMnhNmkiZxvHxid+
+         jz4u+bn3Ta2y2rwMdEQGqv0Q33vLb818VkreMYM+5o4rbK0XDNeOQkAFdRJ7vMh+MKql
+         9T9A==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1789499833; x=1790104633; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=XFFk9jJtDswBQpA8QWIooO6lLG4HdlvPT/LqykRjG+U=;
-        b=A74F3QaqC98bgAL0vHXyLdDlERt9mODK6YzAPPdU2ue8LKn6nMr0UBSjBdD4UY+ltx
-         mLzvQhqITYetfPdYoDKgEW8kCsT22oeHZA3U0knbNemIDNbrEFfaTFG79CY4o6Jia0lS
-         jNYODv3PRjCa8mW+G3NwhGgt66qAfuTGkhX7g=
+        d=google.com; s=20251104; t=1789508576; x=1790113376; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=aD5DtmrQU1XAAN2n47o7245dkYOoODedHBlENsGW6Jo=;
+        b=nvjLsVGgRj0yMKuH2ZW853ibeWabA+JxD/OqUDRpdbXU8+rvn6D4qQPVdjhzkouMbY
+         wsEIS306ZkSuh6KXf0XQHKsKByyJJfwQJvd8tshcsB9C+3E6+2y07HQvDfwAeu8liueV
+         pm251xUmcAfqM9DldAzZXxASE3N7GSOex7/cE4kXfqSr99Rm7ozyqzsqKFZsLPBNCziZ
+         x49WGmFvduSUAF0fHjYOZI6/RaxcbTJqfhcqtmH+Pjia03Xsr2Yo3IdpnywuyepAVlV8
+         myfW/wFz8QX+I61Q0D2fvcJcxCT3b5DO05GZWvAAbpFlIKesKvO+GBaRkJG+BDKKc51T
+         RBqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789499833; x=1790104633;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=XFFk9jJtDswBQpA8QWIooO6lLG4HdlvPT/LqykRjG+U=;
-        b=lL2IjrzoEzFEr/lGEC9LYjXy3stgKyNktqI5ahgMUo0pZ9QUtG6fjFJ7rN5Gi5863X
-         lmnHxDJ/9nqGawLAxtc3mWbtczTBRubgWAWWNR8pIKMww1uHmZUx3dalMYAIEC1KQh3b
-         tRDCKaKL2dxeFPiAtISpxVdoldKzfoO+L3XKeQIbHxQ8jRtX+5D6PrbHxECOYlE+7CMb
-         y9UofGhiBem4HzpiOcUI2JxK0m6vBjwZNiFHsJGxxBBJiAYPgdAEINLjTVNKh4AP0OqK
-         qDZdkjDZV02Abv0wSooONmDc9qxyPmHZkcI9uXP6GZVzs5El1+Twsdt6rhVnCQQwTJjF
-         K9+Q==
-X-Forwarded-Encrypted: i=1; AKwUvBwuzqotXjjFm5WanV1/8HJJQHuTnsAa784I+QjDBtAchg6EI5+Qe5fzZiBCsERghvb0583U9qPJYwD/rA==@vger.kernel.org
-X-Gm-Message-State: AFuF++kgzUT8geJ/uO3ojUCX6uOogr7qkDUNomGFsQooBcMA0fXmedgl
-	umzxWuFa+WAz68p23kLDusOv/LKuV4fzv+Sbuos/O5XSVbvHXiizjz1VmwaE/cf7zxYWSxg6wwB
-	ZxVqX23tJ3xRV
-X-Gm-Gg: AYBFou3viMR1ArinRTcSUQsto1BaUudyihSpUIJFtFZCXa7tI4EHXMM5/nKgmO+evFA
-	p+wFAELclh4UOBKxtUNwBXmRnGqf1Urgpa/AKfxzKAasLp4HWh4luX8C1mSJmuzokT2ukOvEPtm
-	LMZm9Q1Cj5ObQgj01fi+SXsjtD67pYa6pkcXkfHd9SnOJMphrgKUk3vks9K8hl0P+ipyTVnsxrT
-	ogJlBLK1ZwyCy+YuRZ+VlYRDQQnEe3NsJEiIqeYVSmE5iq812gktVyQ5MpxQo4ZqklfhqVCQt/M
-	phSyVHM9cDMOdQXSqPVthzqLPZEszcw0Le/Vh0oRlQfDgScB/15x5LT3BWtdd/u89GwiExaX1UB
-	HwZNaTZY9+Zo2v8yDbrxxJF4dYT6gBD7mPi+jjIBPE2fi80GnlNUUF5m5lgFa4JRglolO1scaXu
-	25FZ/bhPaKIIijXLAxXCB1WhDJsQGi7CHmcj88eFLzJKg1mjUnv8VZv1zFzB93D7R39ho3Dl9GV
-	PLsB9n5LQtHw5STFZlE0Xj8r0Bzb2WY4UGxqBLc6u+KIltjKg==
-X-Received: by 2002:a05:6512:2256:b0:5b2:a558:b222 with SMTP id 2adb3069b0e04-5b8ae68c48emr5063195e87.10.1789499832871;
-        Tue, 15 Sep 2026 12:17:12 -0700 (PDT)
-Received: from mail-lf2-f13.google.com (mail-lf2-f13.google.com. [74.125.229.205])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b8b57e0bdcsm167367e87.58.2026.09.15.12.17.12
-        for <linux-alpha@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Sep 2026 12:17:12 -0700 (PDT)
-Received: by mail-lf2-f13.google.com with SMTP id 2adb3069b0e04-5b5e4f15b78so95441e87.2
-        for <linux-alpha@vger.kernel.org>; Tue, 15 Sep 2026 12:17:12 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AKwUvBy3OMLthgUlHXE/itkjbRSH+WHLwH2flMhO9a56vQKfG2s/cQp/mbzpfOMjJmj30ymGv9sa+aMn8e0oNg==@vger.kernel.org
-X-Received: by 2002:a17:906:7309:b0:c25:47a4:fedc with SMTP id
- a640c23a62f3a-c29b839a057mr1176039766b.2.1789499355710; Tue, 15 Sep 2026
- 12:09:15 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1789508576; x=1790113376;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=aD5DtmrQU1XAAN2n47o7245dkYOoODedHBlENsGW6Jo=;
+        b=LeWmHXC9Nly6CfbwH37NmZl8nfYxPwwdWFfSyKvwZneweEaeT4XHNDm5xHwwc+e6/Z
+         vaj7MZILBoqNxDyXe7hIILQslwgvJldy0MgPvd0XNZrPkSHR4atn9ug76kFVxFlr3zHO
+         oH9MLar0imd74vcUC2/LGU6R0UYoJJXY+k5C3T0GD+hL8QQgmosjEQhVjyp45uxwaEa8
+         uT2gNJ7TR3mP+OMwC/oSR/4TF5LUpelnXqxkSvc8gSz/C0e8NU0tajTMrLj547tTQ64e
+         dM9Qi0g5sZIEK0Q8Rui0XRqZoqlRg8IqBm/09idwHp0A8drDMoj9cI8HgAhy+9C9MfYz
+         H/og==
+X-Forwarded-Encrypted: i=1; AKwUvBx+057IOelCMjnC0uHhafdaavDLb56EkAIJxOTAvp6ALreqYRSO59ZfT72X/6EfM0bG/KxyMjRk/SQ3Uw==@vger.kernel.org
+X-Gm-Message-State: AFuF++nCplDYKIE0rk1VYrgun26yCyOHA5m3Y1oiawyIltizhko3jm/c
+	03UlX4fey4++aBd+sU8OP/GDzMvTtWIXelZ9vNHMCMBM4LsRDASb9uT5d0vBCA7WwNLAeQlMsdM
+	cnIpLj5bNmo8hOdLC3bM/zeKGAnIN54cAQgJZZ3ez
+X-Gm-Gg: AYBFou13eag8qzVKt+9FG6f01CdfE3dYpp0xnOHOv2K3vUl/YDnzOKixxjH1TT09nUC
+	Qc3sAcqN7Mi9aJV27KqmIwbYOe5cucSJMQDZ9TmdUpuzvaJEg+tXk7D+2VV1trDBdZVRJJmCe0P
+	CZeGAlO2I2BFqqg4mvZAp8ewGwz6s8JThgzpSsu9LNQkGX/3kuVYt1qr5aWwf86Zi8OqouxN9CH
+	1RqDGD1BVXA2GJiyaki/3EMKt+/05ZBTeHFGNRbBBxBvxWmgf69AYFfWDBmSWrPz25A9W7/ZEkQ
+	KyaJKIByIwF9L8KjXFoUbUw4HIyGgLd1hxZMW7e3RaF2kZTZZ1LazprpgL00LaZv1veBFj3FgFb
+	xDYZZpbrNIc00H3auIAacZA==
+X-Received: by 2002:a05:622a:4d8c:b0:531:34b9:2532 with SMTP id
+ d75a77b69052e-5327ed8004emr1067291cf.4.1789508575206; Tue, 15 Sep 2026
+ 14:42:55 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260915-work-fd-reserve-unify-folded-v1-0-4d5217d6b246@kernel.org>
- <CAG48ez1RsdT=O=-0city3vjgWhDvY424KtTmrCJntWy5ds3HBQ@mail.gmail.com>
-In-Reply-To: <CAG48ez1RsdT=O=-0city3vjgWhDvY424KtTmrCJntWy5ds3HBQ@mail.gmail.com>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Tue, 15 Sep 2026 12:08:57 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wi3Kkqgfg6zUTHpQoZNL2VOB4vYqpi6RX0WNO++29UtyQ@mail.gmail.com>
-X-Gm-Features: AcwNN1VCm0LMG7z3Jned014oJh6WBcf4uOx0OBk98_hrtHKbrhcQiMMJ_A-fmB0
-Message-ID: <CAHk-=wi3Kkqgfg6zUTHpQoZNL2VOB4vYqpi6RX0WNO++29UtyQ@mail.gmail.com>
-Subject: Re: [PATCH RFC POC 00/50] file: handle files on syscall exit
-To: Jann Horn <jannh@google.com>
-Cc: Christian Brauner <brauner@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>, Jan Kara <jack@suse.cz>, 
-	Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	Oleg Nesterov <oleg@redhat.com>, linux-alpha@vger.kernel.org, 
-	linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
-	linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, 
-	linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, 
-	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linux-um@lists.infradead.org, Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org, 
-	netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	linux-gpio@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, bpf@vger.kernel.org, 
-	David Airlie <airlied@redhat.com>, virtualization@lists.linux.dev, kvm@vger.kernel.org, 
-	kexec@lists.infradead.org, linux-hyperv@vger.kernel.org
+References: <20260224062531.96304-1-yunbolyu@smu.edu.sg>
+In-Reply-To: <20260224062531.96304-1-yunbolyu@smu.edu.sg>
+From: Ian Rogers <irogers@google.com>
+Date: Tue, 15 Sep 2026 14:42:43 -0700
+X-Gm-Features: AcwNN1UXqi6h2JzlCIpIEM2PA8kElM-vlezQ38Lvvbn2yCoDh4fdAvu3ovmKIo8
+Message-ID: <CAP-5=fWHGZteCwCga6x09hzAECmc8wMWxHbD27pq+vefVCeNgA@mail.gmail.com>
+Subject: Re: [PATCH] alpha/perf: Clean up stale comments referencing old
+ hw_perf_* APIs
+To: Yunbo Lyu <yunbolv@gmail.com>
+Cc: peterz@infradead.org, mingo@redhat.com, acme@kernel.org, 
+	namhyung@kernel.org, richard.henderson@linaro.org, mattst88@gmail.com, 
+	mark.rutland@arm.com, alexander.shishkin@linux.intel.com, jolsa@kernel.org, 
+	adrian.hunter@intel.com, linux-perf-users@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, 
+	julia.lawall@inria.fr, ratnadiraw@smu.edu.sg, xutong.ma@inria.fr, 
+	kexinsun@smail.nju.edu.cn, Yunbo Lyu <yunbolyu@smu.edu.sg>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 15 Sept 2026 at 10:52, Jann Horn <jannh@google.com> wrote:
+On Mon, Feb 23, 2026 at 10:25=E2=80=AFPM Yunbo Lyu <yunbolv@gmail.com> wrot=
+e:
 >
-> Is this mainly about stuff like "we installed a file descriptor and
-> then the following put_user() failed"? Because if so, I think a nicer
-> fix would be to have a policy of "if userspace provides unwritable
-> memory to a syscall, just keep going and pretend the access worked",
-> and maybe have a sysctl that kills the process when this happens to
-> emphasize that userspace should not be doing this.
+> Two outdated comments in arch/alpha/kernel/perf_event.c referred to
+> functions from the deprecated hw_perf_* APIs that were removed more
+> than a decade ago:
+>
+> 1. hw_perf_disable():
+>    This was superseded by per-PMU disable APIs such as
+>    alpha_pmu_disable(), after commit 33696fc0d141 ("perf: Per PMU
+>    disable"). The comment has been updated to reflect the correct
+>    function name.
+>
+> 2. hw_perf_group_sched_in():
+>    This function was removed in commit a13c3afd9b62 ("perf, sparc:
+>    Implement group scheduling transactional APIs"). The corresponding
+>    comment mentioning it has been removed. The if (n_ev =3D=3D 0) check i=
+n
+>    alpha_check_constraints() has also been removed, as this condition is
+>    never true. The alpha_check_constraints() function is only called
+>    from two places:
+>
+>    - alpha_pmu_add(), which calls alpha_check_constraints() with
+>      n0 + 1, where n0 is the number of existing events (>=3D 0).
+>    - __hw_perf_event_init(), which calls it with n + 1, where n is the
+>      number of events in the group (>=3D 0).
+>
+>    In both cases, the n_ev argument is guaranteed to be at least 1.
+>    Therefore, the check is redundant.
+>
+> No functional changes; comments and dead code cleanup.
+>
+> Fixes: 33696fc0d141 ("perf: Per PMU disable")
+> Fixes: a13c3afd9b62 ("perf, sparc: Implement group scheduling transaction=
+al APIs")
+>
+> Signed-off-by: Yunbo Lyu <yunbolyu@smu.edu.sg>
 
-We've done that before, where we just ignore put_user() errors and the
-user gets whatever the user gets.
+Thanks for the cleanup! A nit: the commit message mentions comments
+but there is also the dead code clean up. Someone bisecting may
+struggle to attribute this change if the commit message suggests it
+only impacts comments. Could we either do 2 patches (comments + dead
+code) or change the commit title to mention dead code?
 
-It is maybe not optimal, but it's fine. You can find quite a lot of
-unchecked put_user() calls with a pattern like
+Thanks,
+Ian
 
-        git grep '^[[:space:]]*put_user(.*);'
-
-and some of them are in core code - see the two in kernel/fork.c, for example.
-
-One of them says "if userspace has not set up a proper pointer then
-tough luck". The other one doesn't even bother with a comment.
-
-The scheduler has two cases too, although one of them is admittedly
-for another error case.
-
-So yes, saying "if you pass bogus arguments, you get what you get" is
-a valid model. It's perhaps not the *preferred* model, but it's not
-wrong.
-
-It *would* be wrong to take code that already has error handling and
-remove the error handling, though.
-
-                  Linus
+> ---
+>  arch/alpha/kernel/perf_event.c | 6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
+>
+> diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_even=
+t.c
+> index a3eaab094ece..2f57626ffcfb 100644
+> --- a/arch/alpha/kernel/perf_event.c
+> +++ b/arch/alpha/kernel/perf_event.c
+> @@ -35,7 +35,7 @@ struct cpu_hw_events {
+>         int                     enabled;
+>         /* Number of events scheduled; also number entries valid in array=
+s below. */
+>         int                     n_events;
+> -       /* Number events added since last hw_perf_disable(). */
+> +       /* Number of events added since last alpha_pmu_disable(). */
+>         int                     n_added;
+>         /* Events currently scheduled. */
+>         struct perf_event       *event[MAX_HWEVENTS];
+> @@ -372,10 +372,6 @@ static int alpha_check_constraints(struct perf_event=
+ **events,
+>                                    unsigned long *evtypes, int n_ev)
+>  {
+>
+> -       /* No HW events is possible from hw_perf_group_sched_in(). */
+> -       if (n_ev =3D=3D 0)
+> -               return 0;
+> -
+>         if (n_ev > alpha_pmu->num_pmcs)
+>                 return -1;
+>
+> --
+> 2.25.1
+>
