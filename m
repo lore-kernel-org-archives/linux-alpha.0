@@ -1,132 +1,107 @@
-Received: from mail-pj2-f12.google.com (mail-pj2-f12.google.com [74.125.227.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailscanner07.zoner.fi (mailscanner07.zoner.fi [5.44.246.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 852B943A7E4
-	for <linux-alpha@vger.kernel.org>; Tue, 15 Sep 2026 17:52:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.227.140
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789494729; cv=pass; b=CB8uEJ+RnSG2dhvkqliuRM6NRpEyh69CD22wten6JToB9zgsof8eWkgXicO3k2AQY7Uveh2hO07EIScI+/685yrn+sdT9OFdgGP7BwnqnT8QWOMUn2bOsgHYHuHTHovPTfKVhHM9u2HkYfmV3zEZJGGBJ6Zqm2QmStehCiXsrog=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789494729; c=relaxed/simple;
-	bh=+4G5uXJmB7HF3o1L37WqbjganRxVa3Gn0saA7lTxNiM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Wl7TMPFlJ8PPi2roC3Rx87K2x2ULHTKuVTh1/2F7eAdtQzKN91MOYGVEI6+ciWfY0qSMV8zPH0LB0SGf6FJYrCdCa7br8g10LF84WSzG6QajOQtxLtyLvezMXiU+F1buEcQWd+wXEhJH8Yu1FsOGMxTywxYniILVDPZDD1kY7LY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WPgx9Wh6; arc=pass smtp.client-ip=74.125.227.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC4D04D09ED;
+	Tue, 15 Sep 2026 19:12:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.44.246.16
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789499577; cv=none; b=Dnzp6RHybJTRjaKjlShpTLyOknyhy6cyK/SQ7+lgumlhtBOVq0n+EgTqZ6KuuqqUp4i+TDmHKcUarx8Ku3uLWvRg4iVro+lCITk8kTZTZ4b3ez4jLD6UigTa5iDkBfsLTBzkRiuQwy0o13FW2gVSmQB5IAv/DgF4ghY+LglMNeg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789499577; c=relaxed/simple;
+	bh=UWlvlYA1nQ/Rf0YH3R9YJFbzoMphjZo7hxdgkTD5dRQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=esKSYpldeEHNWVr1hXKbk2EMKnyyl+suhyuOEUDm/BotYDwm5t0iu9gcO/aa2Q3K3sumOHU56B/Ng59heDTW8eoIE18UyBSn+6kHTN0WkbuW2bk9DRXElDNnlsVI21UK8CyIyyhAGlcn5Ti5XpHVyRdoALt6HUab8OKAm+tIYSw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tukaani.org; spf=pass smtp.mailfrom=tukaani.org; dkim=pass (2048-bit key) header.d=tukaani.org header.i=@tukaani.org header.b=Tc02G63x; arc=none smtp.client-ip=5.44.246.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tukaani.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tukaani.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WPgx9Wh6"
-Received: by mail-pj2-f12.google.com with SMTP id d9443c01a7336-2db425c9050so12185ad.0
-        for <linux-alpha@vger.kernel.org>; Tue, 15 Sep 2026 10:52:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1789494727; cv=none;
-        d=google.com; s=arc-20260327;
-        b=lligoRXQvXnHawl3Es4DAscCP/QHBSbMobLTbNDUyimCOg4bnGQ6A2EfU9OVhP6Y9h
-         pEhUY38H7e2BF//sMQzfxEV47TCCphzoUrro8uRCqhCQo3lSgubB1bULIjklR8HEiwW2
-         SK74TmjKh5d4VQM7YHNlpNvFq3fSgYnofFlp+Kho8iKcaGQ3G6aOAQ+DWRnQFNCD062M
-         UCjHptELtSoL2cZyfuz0c0/dC8qn8AKSmpVdrenHktAobJMKLUHKGLXalYkM6SLKTfFn
-         pwWVEXevxuykOcLAWg1O3HNM50WKvvPPM8MXBQ4+6zCkg4U8muLWeSkTj6pKZLWns5t4
-         6tGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=+4G5uXJmB7HF3o1L37WqbjganRxVa3Gn0saA7lTxNiM=;
-        fh=U9a6dQoMnzGkhj1j1HYpLla9gEKj8D8dnty5c8abJWE=;
-        b=E9UwblEYsxfZmXvdW85n/F8xixqqEP398PDHptzvFxe7HGX0OxOvJDrbxq9kHSclN/
-         +zj5LdB0QjZRISruUZBGg8VY8mb9bMdD9WRMWm/6zaVj+sJOxRxFcdeW8vZfDl8yi2jx
-         kVikMFVLUM6rKTT2ORfV7FXysnKlrk7eQF/PKR3iFAvBCKW8cybu1PVFKjGewcalNNJk
-         OjtYlfPKfofbMbK4W4T9LRpd8gsw0g/tF3Y9iAFi0nfOR4Uu9AzlDDTldjfMdhywrONy
-         IX3Vk86AZyLtt+w7oX2wOIdA3DSQMBM1lBAN/WuOuhir2PiP51Mb18W7vBoibLhp12k7
-         Go3Q==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1789494727; x=1790099527; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=+4G5uXJmB7HF3o1L37WqbjganRxVa3Gn0saA7lTxNiM=;
-        b=WPgx9Wh6g8ehXMOaZf8ZSNtevHb9fzr3lXk5INKsJirqC99dpiARLSwTsIwHA4pbMW
-         JbWx8MvBxDUFu6opqA60njTwuSet+XjH0Wga4OKXeEmVhOXoy61UWc3rqiL6EU8/l428
-         EjMY1UqvowxmFEZiD+cpXVE0I3gM0Ssco82ZH8FSIs0h6jzSdSLoGG2b/9Ga+W+7Aup7
-         R3Y2jKX2VRyqaVjVjF8po02JGQLWYioBTM31SQGX//CGOHsZjgwuKy0KaaC3tSzQflwo
-         ISJi8sLOMT0xayOGlmIx3TnuUJAs8/tTEps0xY78QDJPw7a+XDrg4k1OSruo0M4Rr9uE
-         eRpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789494727; x=1790099527;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=+4G5uXJmB7HF3o1L37WqbjganRxVa3Gn0saA7lTxNiM=;
-        b=YHIkojIYjGLX/Uvw/cy/rIKN8Txez0Iisqd8fcx32bQ773hzKaKXKzsE3svn4EXBy5
-         Xmr/AZLGLN9XmwjQ/2Xbch5rEeLPvhvWBWEHwRUt2Z1HT2U9crTti0No3FTPb/LSSWBh
-         BByA4qgukJe9fZ36Kak/vCPYPH7EylHiEb/pPIM/tr/Zgwl4+jUWp91B5LQpFHx4Lf//
-         IhcewoelNlPomwGzPt0XxNP6Qr0TrvSJPeJpkGhMcucKFXl1PPeIF9YotLWsYOZI+JgM
-         UN5TLaohYUEvLiPx0q5mmJt+AtAklypi3Vp3sXPmDguLiEwKO8+E6quhqQaOUqF5RJLw
-         gVmQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwT3eJIEXsNySnEgaQCoWH1Q2slDMCN0irL3qgjVd5yQzWQoUtOF1+sjfkcWHJvNXGnnNh9MUqK/6MJ5g==@vger.kernel.org
-X-Gm-Message-State: AFuF++kS/r0ac64MKb/xUSfBBgxHipL4IhIz05Ii75ns+4Dyy3Semtdk
-	1t7aR54IS4e+TBU8yx1KfKpO6iiNB3sAusuTSaHtaZKMX4eGIYhOiyqtl4Mi9IDo0r2X2qHLCnK
-	JFLDoxrdGFAqMfomgTbxVcvWk/dyVmt1R4cPfzwim
-X-Gm-Gg: AYBFou13o04RXNnmcAFkl907JpObu5VCTb+LpgaEdSH3iyGqraItHb6TbtojKpW9fhi
-	yM+QjQAnabvA8rRmU2p9hcCJoXhQ4bTyqTQiDxG4ym/Li55yAhUVd6mMpXJkFi7TR0/Mv58t8Ku
-	E3jDPDXDIUdYUAltKs8QbCppwVPxazVLC4mDfy/NkQzoWSt22iIflFgN8hW09+S6LMIeiVtHcQE
-	Jy4PhMQR7C0KbtgZ0n5oX9lF8dJ8/0Zeqcfi/hk/o2w0x73K4DgS9ogueoE2Y/8PLaz/t5eW4uF
-	F4AvL8/qq1HWADAwArE1/YQUj7kXlsiGNJT1KLHWyTG50oVjCYwVPi4YY+iHeAb8WabneJDPX4p
-	hr1jSaSx5dUgnDhIEJuDdP8dogqJIt+khVeYGhBu+Mg7fXk7T/DQ=
-X-Received: by 2002:a17:902:f612:b0:2dd:5363:31ec with SMTP id
- d9443c01a7336-2dd89c0c38amr177395ad.14.1789494726332; Tue, 15 Sep 2026
- 10:52:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=tukaani.org header.i=@tukaani.org header.b="Tc02G63x"
+Received: from www25.zoner.fi (www25.zoner.fi [84.34.147.45])
+	by mailscanner07.zoner.fi (Postfix) with ESMTPS id 129EF2124A;
+	Tue, 15 Sep 2026 22:03:02 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tukaani.org
+	; s=x; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
+	In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID:
+	Content-Description; bh=yEadPsKEdUhgtNJN2KJP2KHvipnmPz+ZncI2aR4M8PA=; b=Tc02G
+	63x1K2afvKH0d/VhObYAJOnjulIxKm9MXmPta34CfeukLV4kY5K6+zfENTg/xQWN9vVWKBRkAL2gd
+	GgQjrjAzJwf4WkJAUmCIT2aOnhG3aRN4x0JjqxhcBrkGd33cFB60OvrLM27AybtCayB98KXk+44hL
+	VVON0Z4usZuKfgACNsYCpnMFT1qGVJhcAWYR6l8S3T2k9t3eux3C1Lijj3ZxkH+DQv1dIacdqVWOj
+	tsl76wuwPNTiy/WfEUG+SED5HwxWGKGCqT848SALUpr2gw3qsCTClCJTGBFKhrpDVAmFdD5sP1H6D
+	cgBm8yG953el9t4DstDlUvvfX7C3A==;
+Received: from mail.zoner.fi ([84.34.147.244])
+	by www25.zoner.fi with esmtp (Exim 4.99.5)
+	(envelope-from <lasse.collin@tukaani.org>)
+	id 1x6YQP-000000025G3-0H87;
+	Tue, 15 Sep 2026 22:03:01 +0300
+Date: Tue, 15 Sep 2026 22:03:01 +0300
+From: Lasse Collin <lasse.collin@tukaani.org>
+To: Matt Turner <mattst88@gmail.com>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Magnus Lindholm
+ <linmag7@gmail.com>, Nick Terrell <terrelln@fb.com>, David Sterba
+ <dsterba@suse.com>, linux-kernel@vger.kernel.org,
+ linux-alpha@vger.kernel.org
+Subject: Re: [PATCH 1/3] xz: add arch-specific tuning for alpha
+Message-ID: <20260915220301.64f72f3f.lasse.collin@tukaani.org>
+In-Reply-To: <20260912-alpha-kernel-compression-v1-1-ce9d55330193@gmail.com>
+References: <20260912-alpha-kernel-compression-v1-0-ce9d55330193@gmail.com>
+	<20260912-alpha-kernel-compression-v1-1-ce9d55330193@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260915-work-fd-reserve-unify-folded-v1-0-4d5217d6b246@kernel.org>
-In-Reply-To: <20260915-work-fd-reserve-unify-folded-v1-0-4d5217d6b246@kernel.org>
-From: Jann Horn <jannh@google.com>
-Date: Tue, 15 Sep 2026 19:51:27 +0200
-X-Gm-Features: AcwNN1Vhgv53PI2-XyXtJBbVzCNkGiiWjtvOE2b-8zHim7-UybJ3H2xniPj1VUE
-Message-ID: <CAG48ez1RsdT=O=-0city3vjgWhDvY424KtTmrCJntWy5ds3HBQ@mail.gmail.com>
-Subject: Re: [PATCH RFC POC 00/50] file: handle files on syscall exit
-To: Christian Brauner <brauner@kernel.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-	Jan Kara <jack@suse.cz>, Ingo Molnar <mingo@redhat.com>, Peter Zijlstra <peterz@infradead.org>, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, Oleg Nesterov <oleg@redhat.com>, linux-alpha@vger.kernel.org, 
-	linux-snps-arc@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
-	linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, 
-	linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org, 
-	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linux-um@lists.infradead.org, Jens Axboe <axboe@kernel.dk>, io-uring@vger.kernel.org, 
-	netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	linux-gpio@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, bpf@vger.kernel.org, 
-	David Airlie <airlied@redhat.com>, virtualization@lists.linux.dev, kvm@vger.kernel.org, 
-	kexec@lists.infradead.org, linux-hyperv@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Sep 15, 2026 at 1:31=E2=80=AFPM Christian Brauner <brauner@kernel.o=
-rg> wrote:
-> TL;DR, this lets arch code handle fd install and cleanup. fd_prepare()
-> allocates a descriptor like get_unused_fd_flags() does and records it in
-> a slot on the task. fd_stage() attaches the file to that slot and
-> returns the number.
+On 2026-09-12 Matt Turner wrote:
+> Alpha has fixed-length, 4-byte-aligned instructions and no XZ BCJ
+> filter, so it wants the same LZMA2 settings as the other
+> 4-byte-aligned targets. Without an entry it hits the default case,
+> which warns
+> 
+>   scripts/xz_wrap.sh: Arch-specific tuning is missing for 'alpha'
+> 
+> and conservatively assumes 2-byte alignment. Alpha gains
+> HAVE_KERNEL_XZ later in this series; the correct alignment also
+> shrinks a UP1500 kernel's XZ image from 6469320 to 6448840 bytes.
+> 
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
+> ---
+>  scripts/xz_wrap.sh | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/scripts/xz_wrap.sh b/scripts/xz_wrap.sh
+> index f19369687030..5af0d9045cbc 100755
+> --- a/scripts/xz_wrap.sh
+> +++ b/scripts/xz_wrap.sh
+> @@ -10,6 +10,7 @@
+>  # XZ-compressed kernel isn't currently supported on every listed arch.
+>  #   Arch        Align   Notes
+> +#   alpha         4
+>  #   arm          2/4    ARM and ARM-Thumb2
+>  #   arm64         4
+>  #   csky          2
+> @@ -44,6 +45,10 @@ BCJ=
+>  # Set the BCJ filter if one is available.
+>  # It must match the #ifdef usage in lib/decompress_unxz.c.
+>  case $SRCARCH in
+> +	alpha)
+> +		ALIGN=4
+> +		;;
+> +
+>  	arm)
+>  		if is_enabled CONFIG_THUMB2_KERNEL; then
+>  			ALIGN=2
+> 
 
-I'm not really a fan but I feel like if you want to do this, you
-should be using task_work so you don't have to touch the entry/exit
-paths directly? (And if task_work is too inefficient somehow, you
-could tinker with the task_work implementation.)
+Thanks for Cc'ing me. For this patch:
 
-> When the syscall returns success the exit path installs every staged
-> file. When it returns an error it drops the descriptors and the files.
+Reviewed-by: Lasse Collin <lasse.collin@tukaani.org>
 
-Is this mainly about stuff like "we installed a file descriptor and
-then the following put_user() failed"? Because if so, I think a nicer
-fix would be to have a policy of "if userspace provides unwritable
-memory to a syscall, just keep going and pretend the access worked",
-and maybe have a sysctl that kills the process when this happens to
-emphasize that userspace should not be doing this.
+I looked at the other patches too and didn't see any issues around the
+decompressor usage, but I didn't really review them.
+
+-- 
+Lasse Collin
