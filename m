@@ -1,196 +1,161 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed2-f12.google.com (mail-ed2-f12.google.com [74.125.228.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9044E51FCB3
-	for <linux-alpha@vger.kernel.org>; Thu, 17 Sep 2026 16:47:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A7C44F7CC0
+	for <linux-alpha@vger.kernel.org>; Thu, 17 Sep 2026 17:54:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.76
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789663665; cv=pass; b=UWzPJhJWQoOzv4E+mtAgp5xium6Abze+ykgKaMOVOSuKurRCKlP2oHLBHAwIXOOm1Ik5sufbpguecnaS9CYb16e4/f4ZzJv7BvxzmtvPhsCAPPMKsZtvQR50q6Vqz7EBpSj7I74/Tmn1svbkSeaqXly/92+e6U28ncGagzyNrmU=
+	t=1789667666; cv=pass; b=ZFUVfsoarP7CJGD2x3burheWz93ESWjWthpbEg5km+CZumW7QFa1axtu9T86aTh12MXJG3LSsPaAVsFoH/jGOoS8Wq8pHsDMyHNfG+wdc/7grJsx6+BSYNb4xNGTo1F5CDnLeuM1L/NhEYRReS9dsODQ60+d0Q7WNH3Ex/3jBzo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789663665; c=relaxed/simple;
-	bh=OXoyJpegabl0ocESy43SWOAVnutZsDrl9ix8aJurgKM=;
+	s=arc-20240116; t=1789667666; c=relaxed/simple;
+	bh=lV53x9iap7CWHKayETL36WLG11uBzdsYNl2pBib1Gp8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=lliT5WgNpBM48+Odnzu9aqN0NH7m/5FGGaMQ+mbuAElYpbGAoq+vNUN4o4O7ZmQGxGFfHzL3hD942/SHkFcdvXtR8JpQQo0ejswtd2InLF7xuemRj0i4rgsuDx2/GQih6RBNTIKsNGDDvBRBRRFmghCNvxg5UE02KFgnJKPXa4Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=eATgGJvg; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=dKGKnJD3; arc=pass smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	 To:Cc:Content-Type; b=Dw9D/BD7t3eodcf0Blr4vW5PhA2dOI1Ym18UnPDGYawstHsg7CVmDAFilL4AZ+lPk89J6YGM93cyhDwS0NYpfURmWAchNNSVz2c0E6lZNyNbIZ4lBIqgAyq4p0Z0THzJYmkLS821TyMETEO/foSLMdouC5DBG0Lsw3bMbRCZbJI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mpPSHEmV; arc=pass smtp.client-ip=74.125.228.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="eATgGJvg";
-	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="dKGKnJD3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1789663661;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ghsNMjszr/YVVrzwI9L3VChkEhVa9VAV3CWSeRoOujg=;
-	b=eATgGJvglDB/e/XNDRrzgW5WKOMEpiB7LymnGtDf3t8cuHmDceHF6yh3kS+B4K+hNcO7ms
-	+q7mwqmlMk4xTiF2LCi9CdNZxB2HVauHdvJoBImez5qV++TOb0SpSxrRysTv9oeZ9rPF7n
-	RqubMsnYYyb9IE5olgw4ULYsdRg071o=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-457-2MtAQdPnNNGGNpM5AJOYsw-1; Thu, 17 Sep 2026 12:47:39 -0400
-X-MC-Unique: 2MtAQdPnNNGGNpM5AJOYsw-1
-X-Mimecast-MFC-AGG-ID: 2MtAQdPnNNGGNpM5AJOYsw_1789663658
-Received: by mail-ed1-f70.google.com with SMTP id 4fb4d7f45d1cf-6a615ab0c06so1289994a12.2
-        for <linux-alpha@vger.kernel.org>; Thu, 17 Sep 2026 09:47:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1789663658; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mpPSHEmV"
+Received: by mail-ed2-f12.google.com with SMTP id 4fb4d7f45d1cf-6a98505364aso2021776a12.3
+        for <linux-alpha@vger.kernel.org>; Thu, 17 Sep 2026 10:54:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1789667662; cv=none;
         d=google.com; s=arc-20260327;
-        b=i2C3mku/EH2ILwaq+Zablf3TKYHrAMgCCxUOBz6TSiY5cFrUnioA4SnUOzDWEpmz4x
-         sU1+t4NpTBjaIBXWGyeowLie5l2Kdf6x0z9t2PZx1471BhamMhjRjWZ5Gj3UDu/ffKBQ
-         cGeNlMczU3zCZq3dnDf7seDhcqFQgb0B7TDIKb9wbaMRhJIeB2WsVRNRITY7yoP5YE4p
-         OI2D0whKFyAdCdch9RJESA+UTT9cNnqqDalCLgLuxQ1DMgwg7qP8VyNX5WwQwwu3uwlG
-         7p5tP8O0KcB3vAEu9tpCAXqIoZEA9w3W7PL5EczDRwaeEAFnxg0OAjj6sf1mS9FS9IpU
-         Bn7w==
+        b=mAI50R4sUp0r5NXjvT8POlYH01vXP+A9axLrrqUbnEZpvdUih3sMx8BhmZQIEyjo/W
+         nkhgUWvxgeSAr7A7gweqEbLCxgQMDcy0bdHKeIjw4IGu+y1p3Bo+YrEgJGhRpl83KZoD
+         OTwaXXXjgysyPZpiS9/LXT19ArVs2+OtzJLRt1ymSJqFPof3q2uxIhypxOWGeO+0EC1I
+         wvW0aNJZEHD6i5QiWYXe9hlG/MSNm0RC1cLro5PfnIzuo8QtoDjUtMQWuguIy9ZBEgki
+         2AI+2jnSp/sJr9mMZBoeh7EiA1wOwHEO7Dmv+LCWp/U25nz1nNUWhfnhK4fpbIJODVGX
+         alEA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=ghsNMjszr/YVVrzwI9L3VChkEhVa9VAV3CWSeRoOujg=;
-        fh=DPs8jws2vnsdsQxpgXqgwEabobH01K3nUayUf4sQWlE=;
-        b=hsG+wxM1TDA8RAtEJTJVQbXjX2f+a3DSYOAT5qlhhN0MnFHheGFdeWPEdMGl4OuQ/8
-         NUWA04k4jKr8BTwzIRjjEcLtWDzJu4Y4be9ewj5bnvaKj41h3yBIEdJPp41iW1vmpMA/
-         w3Ga4Q7rvLwY1Pua6MyvFNpz+sIyQ617c54BJE5i0UeoWuGDG3MJ8VWIQXbJt3rIvzOG
-         mGATTEcelCrF0aHCAGAOIkEkMW3PFsmCC2T/YjJAh3Px3w2rnShzaZInOEZhNrl8SJDk
-         n1WWe/IehaTbzD+/OPqRAPC3jdneTv5eJE6zo3MiJJZ/LUvb2s3gEqBOoAE32NVFE5PY
-         64hA==;
+        bh=5Buk1YbOGNfq7p+FGXzo+IE9gOuA+FToX+F15GNq95I=;
+        fh=fCmIkrbDJ7044Iz0lkuyyyQM7BH1gIUAwqjEZRby+l0=;
+        b=UKNMzHATPvn8R3X6cBxiT9282R/yOKkIDaT648fOkewEIQLJynx/gCQjNye4wLuQ2L
+         mI3U7BoQ1cAy4Sq/Ts20/sbfJ31aoctsELT6xwGBLU5r6yoPmCgwlm88FyAg7V9QbE7r
+         ycBkRe+RJrju1PMGSSSNMtKRkYY0i1Fynpm5izUIYTFA86bzJ2pN2eD4eS+qQe/e6dby
+         MJcXpMRbVe0e4w2YmQsGD2iFts8/5SwPtIQpUthGxGaiLWcPeqN9+nT5jbiA8raENuGh
+         fiueplPVpY+Ht2LEt8U6x9WdwTAmUZhkec6ZjNncq+UGGxjO6lGoMBa1p+uIcvg0zRQp
+         o1ZA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=redhat.com; s=google; t=1789663658; x=1790268458; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1789667662; x=1790272462; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ghsNMjszr/YVVrzwI9L3VChkEhVa9VAV3CWSeRoOujg=;
-        b=dKGKnJD38WiZGeDo9G7w61tJE8iA6+vSv3+VhV/+0BSAMznrhvPVqnGGKYQ4PLBA6I
-         0x6n1uxTHhGhrERHIq4n2fwx7oBAGeJ0UH2xKBLCAHlcgYVJbSGdqkRY1bIrFojj6Vu2
-         1xzNeV3ObTyMCYkO5MWwX8CYgFeVi4bWCgXmC4n+onP+bI4+jZOOu0utxMpLFY4bJHAr
-         EnjiwLBgjs87fs6PxCZOmw1IRvyMdPyrIn9tJRRP/SWbFlBMtaD4DAF8BTLubz0gyLzg
-         wVbhbv7VzQr/+jzG98EbBOOsFR5Vdnw7E8gs5KXES7CruX20+ZZXuAPdluYPVbk+dg7Y
-         c55A==
+        bh=5Buk1YbOGNfq7p+FGXzo+IE9gOuA+FToX+F15GNq95I=;
+        b=mpPSHEmVzw3vcv8GfUUr/yPtx9dfgVBoOqkTtcEupeTV/34oICBDbPpiZJ+MyjYeq/
+         zxgG13txuumlE2Q6kcgEjDdWd8e1tHqMBosOpEG6lEzRV+rienp25DkasDniTkhBmSjl
+         XAEPuSF5bgbC7WYZS7lMzL0jFTHg8oUJCKa7FAUOPnGYISmAQvERPdqIWpALrBnrj8kT
+         r9iZbjtvXCJ8VVTMiU67L8scTTHToyNLx6diO/GDBNMLYNpMnaRrpoUXlklDk8rZtgOg
+         So8R6Q087gIi91I7+dt+XxIdHOr+jPAjKbJqofo+sHblWvHUsyiLsapZ0HuaGXy3gTNM
+         6DDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1789663658; x=1790268458;
+        d=1e100.net; s=20260707; t=1789667662; x=1790272462;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ghsNMjszr/YVVrzwI9L3VChkEhVa9VAV3CWSeRoOujg=;
-        b=ik7NZVJBeNu/zetc+PoIZDEzMy8QPfxzDzi6ixzWQMdX6zMlqfe/7BHQXf5lkN+Usg
-         MWwTMUFnlN2KngSuuimMimc9hBKUSG5zCQC5Y/vIvw+5VyEvpxY28RjbO9c9LZ7ku48F
-         9/IfBE/zR1uQcMmDNCW/zQN+FGPH3rEr3GHEKmwrWsvJ+nWIWdubkXijLKTGGKrOEr4w
-         Exwd7eYA0LnsDLEOq/RwI7j9WDDf/IThcE9P3c64BKJYtFcHV4DMP2xOjndKnPpcRrxD
-         6hBydOJ9Qg5G47hd63TrvVdXxZexVGsStHmz5PpDLK9dgnG/aP59ZHxu4SFSiPsF8mDb
-         kgAw==
-X-Forwarded-Encrypted: i=1; AKwUvByxM2NOCoHUXmS9c7QvNDSVTbuVnZlnoOcL159FYwd/1q2WNLajnG95/v7r9WiUnAsxo+/IyGUYtYvGcw==@vger.kernel.org
-X-Gm-Message-State: AFuF++lIs9Z+ZDOd1XhcYLQg5hs6YQCkVUmhWoCAJzyESuzKt1yFPBES
-	idtOkEoDuZo2adDf91oDkB3YaNDtjQKbIw2Iv30VnllBfRiw1m7QN4FVwxsK9FygKWgg786azBT
-	F/f4947RFIZe5tGJnpYsVUyj37x+CGcf//B/GE5eOjnq5mB+SrZ5GZF+ELpWsf4PRRVAxBhQi6q
-	nx6cXRfJ45zzl4e1PYoI3CRO2LbH9ISbrzTur9+QI=
-X-Gm-Gg: AYBFou1Q8LiNjqNe7n6lJi5YK2NzG2qWS6rfO6u3CV/J24/YMJdsbaRvWsoG4Jb9PNL
-	wXMW93MjjYm5ifqY8tPmNnRRJmtCHYvJ3eFdotAP0ueDaxhs3inOaqXDXzwdAcEjXgqTL72cjWS
-	OwRxwFcLzTjtbphJb5yrD9Nf32qD6Z2PNs/i351QE2lpsCCB+8t9MAhUDvGPpJdV+KYyDizgFt3
-	1hDOHxhhqcRvaU3e15nslmd8vop+4GGvorrvHK7JPDx9W8yuBNsPwCxSLYo6RoF7X1zWLOFv6w6
-	mxo=
-X-Received: by 2002:a17:907:1c29:b0:c25:fdbc:52df with SMTP id a640c23a62f3a-c29e5244c19mr627704266b.10.1789663657754;
-        Thu, 17 Sep 2026 09:47:37 -0700 (PDT)
-X-Received: by 2002:a17:907:1c29:b0:c25:fdbc:52df with SMTP id
- a640c23a62f3a-c29e5244c19mr627698766b.10.1789663657315; Thu, 17 Sep 2026
- 09:47:37 -0700 (PDT)
+        bh=5Buk1YbOGNfq7p+FGXzo+IE9gOuA+FToX+F15GNq95I=;
+        b=EoIx/QXKL12S85Gz03DqMx7v7n5vsbYwufkFBNTTqje67I3QoTDmRFCd+PCMZeCJFz
+         MmtS4gMOyGf81lCAoJoTOlkJ4lU/DZwhspAiyBkJZ+sZi6uwa3ytRfF9XAUkxz4kzS30
+         E+mFqf4+rxoA5/YSN9Nax9gfvFc9MiRvPCky0WPLC7LFWlHCdqTSFb5jRrUzBkQbd2nw
+         h6m0WugEgTPrYQtl5lWv1kIEcsotj7pyj7UKD2O1J9c3K2tvBCk6EOgYNEXxsmJK2Uy0
+         T/0W06h304QWsraGS99XAQQbDKRfYMoxkTf4YhhvjVFGWbNQJmOAsHDNy1tB/Pn8gxt6
+         2vDQ==
+X-Forwarded-Encrypted: i=1; AKwUvByXQAyCBNcBMLKkQNnjgQelDFRJtGVxKglefY4wat0B7Hbxl3xccpqkfxI4+MNEln5soeBNj65yjlow6w==@vger.kernel.org
+X-Gm-Message-State: AFuF++lrvIghDfxGKWPfjyJFBK8olfoBGjoSTsoarnY+NvP3Q+TjEOks
+	gkt69CS+3s93jU4TBkA+o+oFHMTWzCtqnWlO0yBFncuRLHGTNIgkb3j9Fi6qlKUnHrsvKqBOeGc
+	N8ai+ibZdTgz2DhjdYJlAbP8Bya4UL/A=
+X-Gm-Gg: AYBFou1U6hcN/uqvcf+bBUTmsDcORdUUHCSQK/uPLgInx+wrKyO6pON8Uko8yRmmFY0
+	o4MMKAjgjX7khoPWBFxwMH7CLWrHiKPHYJMbj5Jwmwp3oPPQIbbv7PzJmn30en7lBjS6jMwiLpW
+	kFYcF5Au5oqlOs8488XPt57upJtB8FprDfaCDIljMHxQpesD5QjrmSM41e0YQR7Nj+1426Qx/eu
+	njoNUoefYn4pK0t+EPWUGuT1YTzfsuxZ/uTalE5cPhGkYMYIxZUQSuowOmXJeMRZ20jt670SCUa
+	WrT+uG5cBkIyesv6ThE92ItcMgMFHnsP3h7BdcGs6B4YodGa0gNCVNPFAX7topPORLpV/hOOprR
+	oUhnFJymvGElKyKfbqSRYMWh4mILfOlWe8DasfqNBAg==
+X-Received: by 2002:a17:907:3e08:b0:c29:6092:39de with SMTP id
+ a640c23a62f3a-c29e5311b55mr533263066b.48.1789667662379; Thu, 17 Sep 2026
+ 10:54:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1788351089.git.rrobaina@redhat.com> <4ada9fcbb93af8d5c1c9bfe2c83d94fc10bfe327.1788351089.git.rrobaina@redhat.com>
- <CA+=Fv5T4826T2sd0Gbh-nfZsqcWK_phdBKy4BLWOvDTt92t5Eg@mail.gmail.com>
-In-Reply-To: <CA+=Fv5T4826T2sd0Gbh-nfZsqcWK_phdBKy4BLWOvDTt92t5Eg@mail.gmail.com>
-From: Ricardo Robaina <rrobaina@redhat.com>
-Date: Thu, 17 Sep 2026 13:47:26 -0300
-X-Gm-Features: AcwNN1UQ-9H3EW5aAPKYI2mYiHxV9kMvBFdM8jP3WAhZbefwH7qcxYHE69PGYDs
-Message-ID: <CAABTaaAUBzp1uaLve2piMhEB1R5po5n5+Sy+U0mbbe70Ak-SUw@mail.gmail.com>
-Subject: Re: [PATCH v2 02/13] alpha: pass pt_regs to audit_syscall_entry()
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: audit@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-csky@vger.kernel.org, linux-mips@vger.kernel.org, 
-	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linux-um@lists.infradead.org, bpf@vger.kernel.org, paul@paul-moore.com, 
-	eparis@redhat.com, sgrubb@redhat.com, oleg@redhat.com, 
-	richard.henderson@linaro.org, mattst88@gmail.com, linux@armlinux.org.uk, 
-	catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, monstr@monstr.eu, 
-	tsbogend@alpha.franken.de, jonas@southpole.se, 
-	stefan.kristiansson@saunalahti.fi, shorne@gmail.com, 
-	James.Bottomley@hansenpartnership.com, deller@gmx.de, 
-	ysato@users.sourceforge.jp, dalias@libc.org, glaubitz@physik.fu-berlin.de, 
-	davem@davemloft.net, andreas@gaisler.com, richard@nod.at, 
-	anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net, chris@zankel.net, 
-	jcmvbkbc@gmail.com, tglx@kernel.org, peterz@infradead.org, luto@kernel.org
+References: <20260912-alpha-kernel-compression-v1-0-ce9d55330193@gmail.com>
+ <20260912-alpha-kernel-compression-v1-1-ce9d55330193@gmail.com> <20260915220301.64f72f3f.lasse.collin@tukaani.org>
+In-Reply-To: <20260915220301.64f72f3f.lasse.collin@tukaani.org>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Thu, 17 Sep 2026 19:54:10 +0200
+X-Gm-Features: AcwNN1XFQaD3-In1KSOuGhL77cLzYksu55zUVpJQR1dIQvXxYtX117DrcpPGuP0
+Message-ID: <CA+=Fv5SSK4CXcHkyZMNyU1DigGzevJHYMR+dKPQZgGKdEeu4dw@mail.gmail.com>
+Subject: Re: [PATCH 1/3] xz: add arch-specific tuning for alpha
+To: Lasse Collin <lasse.collin@tukaani.org>
+Cc: Matt Turner <mattst88@gmail.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	Nick Terrell <terrelln@fb.com>, David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org, 
+	linux-alpha@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 4, 2026 at 2:21=E2=80=AFPM Magnus Lindholm <linmag7@gmail.com> =
-wrote:
+Hi Lasse,
+
+On Tue, Sep 15, 2026 at 9:03=E2=80=AFPM Lasse Collin <lasse.collin@tukaani.=
+org> wrote:
 >
-> Hi Ricardo,
->
-> On Wed, Sep 2, 2026 at 4:44=E2=80=AFPM Ricardo Robaina <rrobaina@redhat.c=
-om> wrote:
+> On 2026-09-12 Matt Turner wrote:
+> > Alpha has fixed-length, 4-byte-aligned instructions and no XZ BCJ
+> > filter, so it wants the same LZMA2 settings as the other
+> > 4-byte-aligned targets. Without an entry it hits the default case,
+> > which warns
 > >
-> > audit_syscall_entry() now takes a pointer to pt_regs and extracts
-> > the syscall arguments itself via syscall_get_arguments(). Drop the
-> > individual argument registers from the call and pass regs instead.
+> >   scripts/xz_wrap.sh: Arch-specific tuning is missing for 'alpha'
 > >
-> > Signed-off-by: Ricardo Robaina <rrobaina@redhat.com>
+> > and conservatively assumes 2-byte alignment. Alpha gains
+> > HAVE_KERNEL_XZ later in this series; the correct alignment also
+> > shrinks a UP1500 kernel's XZ image from 6469320 to 6448840 bytes.
+> >
+> > Signed-off-by: Matt Turner <mattst88@gmail.com>
 > > ---
-> >  arch/alpha/kernel/ptrace.c | 3 +--
-> >  1 file changed, 1 insertion(+), 2 deletions(-)
+> >  scripts/xz_wrap.sh | 5 +++++
+> >  1 file changed, 5 insertions(+)
 > >
-> > diff --git a/arch/alpha/kernel/ptrace.c b/arch/alpha/kernel/ptrace.c
-> > index fc8f6cedbb28..8a39c0473297 100644
-> > --- a/arch/alpha/kernel/ptrace.c
-> > +++ b/arch/alpha/kernel/ptrace.c
-> > @@ -496,8 +496,7 @@ asmlinkage unsigned long syscall_trace_enter(void)
-> >         }
+> > diff --git a/scripts/xz_wrap.sh b/scripts/xz_wrap.sh
+> > index f19369687030..5af0d9045cbc 100755
+> > --- a/scripts/xz_wrap.sh
+> > +++ b/scripts/xz_wrap.sh
+> > @@ -10,6 +10,7 @@
+> >  # XZ-compressed kernel isn't currently supported on every listed arch.
+> >  #   Arch        Align   Notes
+> > +#   alpha         4
+> >  #   arm          2/4    ARM and ARM-Thumb2
+> >  #   arm64         4
+> >  #   csky          2
+> > @@ -44,6 +45,10 @@ BCJ=3D
+> >  # Set the BCJ filter if one is available.
+> >  # It must match the #ifdef usage in lib/decompress_unxz.c.
+> >  case $SRCARCH in
+> > +     alpha)
+> > +             ALIGN=3D4
+> > +             ;;
+> > +
+> >       arm)
+> >               if is_enabled CONFIG_THUMB2_KERNEL; then
+> >                       ALIGN=3D2
 > >
-> >  #ifdef CONFIG_AUDITSYSCALL
-> > -       audit_syscall_entry(syscall_get_nr(current, regs),
-> > -               regs->r16, regs->r17, regs->r18, regs->r19);
-> > +       audit_syscall_entry(syscall_get_nr(current, regs), regs);
-> >  #endif
-> >         return syscall_get_nr(current, regs);
-> >  }
-> > --
-> > 2.55.0
-> >
-> This doesn't apply on top of my "alpha: enable GENERIC_ENTRY" series
 >
-> https://lore.kernel.org/linux-alpha/20260902184058.198679-1-linmag7@gmail=
-.com/T/#t
+> Thanks for Cc'ing me. For this patch:
 >
-> That series moves alpha's syscall entry onto the generic entry
-> framework and removes syscall_trace_enter() and its direct
-> audit_syscall_entry() call entirely - verified with git am against
-> GENERIC_ENTRY applied, it fails at exactly this hunk.
-> You don't need a replacement alpha patch, though. Once GENERIC_ENTRY
-> lands, alpha's syscall entry goes through
-> syscall_enter_from_user_mode_randomize_stack(), which already calls
-> syscall_enter_audit() as part of the shared entry helpers
-> (include/linux/entry-common.h). I applied patch 1/13 alone on top of
-> GENERIC_ENTRY and confirmed alpha's entry path already routes through
-> the updated __audit_syscall_entry() - no alpha-specific code needed.
-> So for alpha, you can drop this patch in the next revision rather
-> than rebase it.
+> Reviewed-by: Lasse Collin <lasse.collin@tukaani.org>
 >
-> Regards
-> Magnus
+> I looked at the other patches too and didn't see any issues around the
+> decompressor usage, but I didn't really review them.
 >
+> --
+> Lasse Collin
 
-Hi Magnus,
+Collected your tag and added this to my for-next.
 
-Thanks for reviewing this patch! Ok, I'll drop this patch from the series.
+Thanks
 
-Thanks!
--Ricardo
-
+Magnus
