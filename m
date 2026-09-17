@@ -1,156 +1,225 @@
-Received: from fout-a2-smtp.messagingengine.com (fout-a2-smtp.messagingengine.com [103.168.172.145])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 154E83812F6;
-	Thu, 17 Sep 2026 05:56:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.145
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789624586; cv=none; b=pNh65hvcceXssJ+MNte2ogsAfoBAjGhSI5wtU5mZyhAYFfwimHjqJMqgPKjInPqBEIeS8TOn6cxrgqG/wPRmw5KnOHtd4+pEDFDm8DLRs6DNnCqwhDQ4RM6PdJWjXaugKK5IptBMYo8/6Fo2DlEFLA9OaQGepG0jUydWb6PABVM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789624586; c=relaxed/simple;
-	bh=Mbwi+hAEJ2TOuE5pCiU68p6QpU+CXNObLTPMmeKgryc=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=IgML+dkT5c5Rt/8s51jUv/A/ov/QBG8mC/dXiRmCJGzMwr8lU7LU0gnfdfmhuASIuUi0EYhvbOpKaTyrm1yZhz8DSQj3hLN9rKCxOPpaFSbKTWXxVYLxG0wEfoM6E1IiWz75FxZWuMjNTeJoD+8y7GCOntIf/4jg8g8NaEuiQSU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=GGbp4G/u; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=eBKaRa1q; arc=none smtp.client-ip=103.168.172.145
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D33C3D75AA
+	for <linux-alpha@vger.kernel.org>; Thu, 17 Sep 2026 16:45:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=170.10.129.124
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1789663545; cv=pass; b=diRh32LOWko4O60K9GMPKGFEsP2ClvP2Nslbq/+T8JjXv8JAEcrUV/iRGKqN5RePstl0Fo9IQHHTi4edA9Fufoiebb+CDNK2vleP/r+5lVLRSkYFC5SLj68J4fXgBSRYmBZ07VIAdk4yqf3WSVh74zwBso+z4eULwGV8PNQNn0U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1789663545; c=relaxed/simple;
+	bh=+630pigSMSS7M9ZUHGZahv99vJocnRD12hmvq4Q58Tc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=d8pss3kGLoPs0hlQ70TG8PRxRgL83Yn4IzAvxGoKUNmxC9zH7KJRHys4ma1ER2TQg5YbpBWzOThXS8Ns7/9H95CNQh/ywDIXw8CkIG7c7w29uMawap2iiqwvtTMD5M3TVALsTjqBVUZHcWD3/udKyUbxFwLxu3xf1jE2lBpRl3U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=CyrM7Ztw; dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b=hW6tdq8K; arc=pass smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="GGbp4G/u";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="eBKaRa1q"
-Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
-	by mailfout.phl.internal (Postfix) with ESMTP id 05937EC0118;
-	Thu, 17 Sep 2026 01:56:21 -0400 (EDT)
-Received: from ams-imap-03 ([10.64.2.23])
-  by ams-compute-02.internal (MEProxy); Thu, 17 Sep 2026 01:56:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1789624581;
-	 x=1789710981; bh=E6Vg3bpUqSz3Pj9xg3oQSweER3Z7QxD7M1oDqjqbTDE=; b=
-	GGbp4G/u+roLCBBW1X5LxaPuo76yNpQDClMQMHkJmJCuirPtxMNGj1jajS/PTGfN
-	JVK1YQbrVgyHcM5r88NM4U1E5do7xAG78NOL+9CDBRjuk4KEDE8BSVNmyWM2arDJ
-	ra6+Btxidwe4vTBDTMhblROGwZLbytUpIx8EtmlM6yA6jtQGaTqKRX4Dcxb4n3au
-	NnEUSdf3EDdHJlXkS0zp+WeWiCdYUBSaP3a2dk6oKO2VhmXUl2wKRWIPoO0ogHee
-	CTESVdKNA7pcf9Jyz9Bi4fAR7ZK+I+rZuCxYMynFJmHpCV8DV2WexIiE75gl9N76
-	+rV/p9tZhFNfaPbak9I0QQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1789624581; x=
-	1789710981; bh=E6Vg3bpUqSz3Pj9xg3oQSweER3Z7QxD7M1oDqjqbTDE=; b=e
-	BKaRa1qijVXP/ajZuMAbyukMZKAFqJbMTTD1l4SzixYv2o9ux9k5SpwWP6shuZi6
-	865rELRDQkGVQ560bbGAEs54IVn96qd4TZC64dVV29s6tGRKoIBB1oCprIIIaEBd
-	R0a7/WhCklnf2k3mcDGVJbRtWfJVKB5iZwosgZAiPT+EpCM7CHbR1Vy+4iS8wX36
-	9LE9fv8WA5KCuoK1eq0iy9Nvfsm/+T+u996e9rpT3cllfrv7U3tMxNRiMsRo48MS
-	Gs8UoeIwlWQsI4PPWOdU3eoVd3Kcq8wnnb8EGn6UcR8ip06o0H13XQAPCaNsXY8a
-	SC8VoEXEyTHTEalfPb/FA==
-X-ME-Sender: <xms:AIGranrIsNzd-n5_Y_lgDm8e4SveGD4WDkkQG1exaPyHNwyfIvTZbA>
-    <xme:AIGrasfLaUOrMTpyOBaiZ89PwG8J6Edhypf-kwZqr_K80-fhGBuGj5T1N5bvggTAM
-    hNpTkii2-BASlIC_B0jMI20PaaeEPo5rxYuOFCVD9hYmZKqVFtADLNk>
-X-ME-Proxy-Cause: dmFkZTFlx2cT7GLNvlNJEzNcY+Amz1Ciq+yjddF3pMcq3/zZLoLLD2H82cYq+2SeOYQV9f
-    vehC8tp9xFp5qadWLjh+qiCAyw47Ch69MWx66qZr1l/WAmg0WrvOpJumDcq+uMYLgMnaui
-    vaVxLdO2W1cWqVPF2UQHOQ36xm/wSftcKi+Ca//GEsMgqK0MrQF4x4me01uH4IRb68jYyZ
-    OJUk4XkunCR4+ds+tTViycw2avGqXhI22CM1Gdy9ZkMp0uMjDt0GHh5BtN/7tM6ztMugOO
-    92nCc5FFXjf//UTJ5Y2mBwu5H/nqaISdKHJ3PiRgUtwGCanRvVJS3KCcsANToDdrbd1uIU
-    UB3LfmT1/5WcpFhho/ss8YDyEuTq93o6YW96Fvy/GopTRZ6mFe/jVCl8NbTSToGxqkDZbs
-    ae8Ec1jmx/4fmaS8R2dq6A2nJe2Bu44omcwh+Uc9+lks0BIAHWfdBfCpP3a9aU9ElZQ42V
-    tzgYuvZzo4kLrFFQuxbRatLhcsKUYLu2bsEuApzGxJOJcwFxJT6tGlg7ICwRL9cxg2d27W
-    PEw7JxMlTUJXiJY/M9hMFCSD+ao51qh4AO9SuMAYNv1dFuqTFP0fTJGZ9uIE1md1Gcy6sP
-    Gu4Im/oJu2smgsG47SdCFaov6IfT7eJU7LO6HoFrSlZ85HOX4lBZdHSlbcXw
-X-ME-Proxy: <xmx:A4GraqsT-7Y_-7Pi_lEQa9ygymHWBMqAV-q_z0fAlD7Xl_MrRPlTuw>
-    <xmx:A4Grav504RveMCKeSbDWGAtYZXxblOBcBDM643TN_YWDjAcwkhNOLA>
-    <xmx:A4Gralh0Ju2t_GxhEHoVaLRYJnMALJOoo5IhfOlSiHGY4nVCRFoeaw>
-    <xmx:A4GrahlpmG0IUBEpT0yA3bHiuuRcQz4vCKr1JaFc3Ko2r-rZJiVgpw>
-    <xmx:BYGrat3f9YzO4JP-AGGLy-4_Rp9eLrex7DBQngPe_b2S_5s8Oivy7jAX>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.ams.internal (Postfix, from userid 501)
-	id A4D9532A0084; Thu, 17 Sep 2026 01:56:16 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CyrM7Ztw";
+	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.b="hW6tdq8K"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1789663542;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=wFVtn7TG6f4mxtK33dq+a4hRgCkKck590tubt0IqX6w=;
+	b=CyrM7ZtwkvEOsH+p+5tNZVf4lxQmhe/Zw0oSBeCOzwA6RnSFkWHUle6ZkCMFZRfcjiCYZZ
+	q2wGn5aGI+i0FtGEjuwu+KVULDhMfz9FAUqvkENziQTsyshUPZuxHIO6t19CytoJN09efY
+	UHH1isDGPCcKRsC79EUNISUZmWJc/Xs=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-387-tSYPR-3JPwKW1T_XiHQEow-1; Thu, 17 Sep 2026 12:45:41 -0400
+X-MC-Unique: tSYPR-3JPwKW1T_XiHQEow-1
+X-Mimecast-MFC-AGG-ID: tSYPR-3JPwKW1T_XiHQEow_1789663540
+Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-c252634bc4dso121168766b.1
+        for <linux-alpha@vger.kernel.org>; Thu, 17 Sep 2026 09:45:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1789663540; cv=none;
+        d=google.com; s=arc-20260327;
+        b=nod46euoS5Ez1/tiMGl/DAVl/Ly8RuDvvbppZa3QYHuVII+4PT0fJLTblkVo9s5b5W
+         Ma0HOFdUG0uzlIx3GkAzEZRsKv2H2vSdgd4cmFLB9hzuQIP+NxrBlgKgL8M7FPr9PP7S
+         LIMlUUuHHQIJgFUx02qiWYfMmeDtCJz50hry66ytOkKiEpdDcc4ZWdEskreykl0SfEul
+         yp/4fuGa8qM3xLFP+k/Y1gJbEzSJXr6H9/VWBE88eBMqIZPo2WYRUJT67c4iV5DRKDZB
+         5+YCAwQcYoPh1CO0WuYwGYltHevzjMPzk1U3TuFTeXoXsvJ57/tKrBZ5FIykqJwZIPbN
+         WFpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=wFVtn7TG6f4mxtK33dq+a4hRgCkKck590tubt0IqX6w=;
+        fh=RyjoX0HS7GFE58wAis5mcxvTZOlBdLx2aCsema8/vRQ=;
+        b=D42HpRKnD34yGeaYmrwj3X3pZS58cpCB7uvJYuGOYlThfdQ8wQe5uXzQ77O5vXUZYT
+         H45Jqmts1ihlqQKuJjLMrNmDTSCKNZ1LsE7/Q9sgpoBFsY6CE0WrRi7ZwJmSiuHzWJzc
+         DDrsr9er4avkLEg2CQbxTJr77/sE5FkSEzYe6QjAMu3pNADa/9q7HNnQiLUxMBA/WQWG
+         NUV3K+sQGBH/cu1zAoK94fXD3qCKGZwaWwqPCP+WPCCsSJuRh2OUwZbeex58Gr9+4G+r
+         OGTr0Etam6PL7kXBoq9N7ZhBh2qzSGUBCQ2+UKhQDm3GPyJY/qPobo3iU8qxy2BG5cu7
+         m8DQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=redhat.com; s=google; t=1789663540; x=1790268340; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=wFVtn7TG6f4mxtK33dq+a4hRgCkKck590tubt0IqX6w=;
+        b=hW6tdq8KsckOOXFZ3k/E2drQgw5YgyNGNgS9EK0lBLJbU0IruzswftOZOrYLPYFyYn
+         rEhqez6IeRramDwS8bPOQbElQjN2wmB1lFDJWfOAqx+Pwn5+GDH+h9JS93nz2T+mdt1K
+         7jxwZtYlIFCs+d+gF0pwIPDas4QKLm+DIPS5W++Ww6AtIrGmfmKSlupZO4hfg7EJj+0V
+         z0NgL3jWvPbMLn/qXcC0gPNXwTXS+lgxXxEZ2rx8/Mj2Egz9tQRmnI8O22RhEDMZE/Jp
+         Qc3nFM1IAQ7K7cD3J3Fb1km/BOGrZkZYVrhYutcn/sturJ+PDV0Dp7fNDdCiBWz1FQsj
+         Mtfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1789663540; x=1790268340;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wFVtn7TG6f4mxtK33dq+a4hRgCkKck590tubt0IqX6w=;
+        b=Z2qgC4hH6XFCLGAWdXh9X1am8D0PCu/vBK2yOmXIsM2CML4N0qS7BaaHLQZd0VE5f+
+         lrqJA2OUNAIkaDRTmtLW9+W8l5aoXcDQiKA7l/Ym7FMR6WUXJ3zLTE/RucP3So58gv2X
+         K60WUSegM/dOppnzZiYVgCBXD1EYXDyjh2sZgWfFIbP4ftgg7VQRTWgyD5Vitia80SVz
+         kLQlvnvSXWlG5g3sVYx6Z4AFT0VUVt7fBKLDPP6mxinl3/eV/3x/5esrILgfk/eZQJfm
+         jP7RNEH/kvA0Lt96F+x9MYSkSQBntAkSHlMyeqVhlfGdztScOTQYQ2KbiN99c1SCD40o
+         JAFw==
+X-Forwarded-Encrypted: i=1; AKwUvBxMIhkpHMuzNQd70KlnRTmEz+Mxss/eBV8deoi3lPQfbs5z/Q9j9Dh2ItcClrxHKH9nEsyaB7CeCncQRg==@vger.kernel.org
+X-Gm-Message-State: AFuF++krvlVARGj111iWnUOJa2mBAg4lcRl6xP4DA/PwOTl7/aBFQi0j
+	vGsuDtnSwsoWDmrVDVT0Wgw0ui5y0+89C7V+POp8t8AMxYLRWhpu6r9u8oOyItU5hSSVJQDaqh5
+	eoDQnAA6Dz6ywl2oal15cL8A2Ha3y7ayxaccjfpuQtY6Mosnbdaqsa2kPjTIgnnDwNumwi/DgbY
+	XkFgLgBvcYf40P0cdKE/T1CFL2eGpR5iXqrosPoT4=
+X-Gm-Gg: AYBFou31lm4Vn9gfIl3NMz6FyDNLUwIsVCw7c6HGlCCbW0yZ47CCmZlZy42RLes079f
+	uxO6kadngvlEjGN2xx5VOzKE90h3Xy2xRWtUBUibWGw4i/FYqw55LIsFv/Al5nJdFPtqk8RKCAY
+	ERwdzHBGl8mT28t/JZjobc6PkZXVnEKdrViQQHsuBKlhlYZylwMxhebT4lzm96cEy9ut8WxjKlh
+	QofLCMvwUxwee2gkmNcOSZr+DrNBLhqiypT1P6n8kvAYSi9fiOrEW4gHJt4xcmOOxl5Lt754L0m
+	QDo=
+X-Received: by 2002:a17:907:9603:b0:c29:f5d5:5a9b with SMTP id a640c23a62f3a-c29f5d56177mr278873166b.37.1789663539840;
+        Thu, 17 Sep 2026 09:45:39 -0700 (PDT)
+X-Received: by 2002:a17:907:9603:b0:c29:f5d5:5a9b with SMTP id
+ a640c23a62f3a-c29f5d56177mr278866966b.37.1789663539386; Thu, 17 Sep 2026
+ 09:45:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: AA0MNwphKERR
-Date: Thu, 17 Sep 2026 07:55:56 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
-Cc: "Christian Brauner" <brauner@kernel.org>, linux-kernel@vger.kernel.org,
- linux-kbuild@vger.kernel.org, kernel-dev@igalia.com,
- "Masami Hiramatsu" <mhiramat@kernel.org>,
- "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>,
- linux-alpha@vger.kernel.org, linux-s390@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, soc@lists.linux.dev,
- linux-mips@vger.kernel.org, sparclinux@vger.kernel.org
-Message-Id: <5aedf90f-d30d-4f55-b066-dd8fdf3ff8f9@app.fastmail.com>
-In-Reply-To: <6fa4e1e3-c023-465c-9490-ce2f18ffaa91@igalia.com>
-References: <20260828-tonyk-syscall_table-v6-0-fdd358456cf1@igalia.com>
- <95b693c0-ca51-4355-99ba-2b37a1ab2169@app.fastmail.com>
- <6fa4e1e3-c023-465c-9490-ce2f18ffaa91@igalia.com>
-Subject: Re: [PATCH v6 00/13] syscalls: Add a shared table for all archs
-Content-Type: text/plain; charset=utf-8
+References: <cover.1788351089.git.rrobaina@redhat.com> <b30076994d49fa393251c836b5a57a725f218572.1788351089.git.rrobaina@redhat.com>
+ <apkuGoWQwLJ7AcUC@willie-the-truck>
+In-Reply-To: <apkuGoWQwLJ7AcUC@willie-the-truck>
+From: Ricardo Robaina <rrobaina@redhat.com>
+Date: Thu, 17 Sep 2026 13:45:27 -0300
+X-Gm-Features: AcwNN1VE92GuCfaSbB45oDCoyv2ZqeewbUd4A5IjqOoYsq0pANwtPdd_-Sv6Jfw
+Message-ID: <CAABTaaA7ZbfLxaQvTegaE9prKUPAu5fbfVt5wiaSZK=ohhjL1Q@mail.gmail.com>
+Subject: Re: [PATCH v2 01/13] audit: log all six syscall arguments in the
+ SYSCALL record
+To: Will Deacon <will@kernel.org>
+Cc: audit@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-csky@vger.kernel.org, linux-mips@vger.kernel.org, 
+	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, 
+	linux-um@lists.infradead.org, bpf@vger.kernel.org, paul@paul-moore.com, 
+	eparis@redhat.com, sgrubb@redhat.com, oleg@redhat.com, 
+	richard.henderson@linaro.org, mattst88@gmail.com, linmag7@gmail.com, 
+	linux@armlinux.org.uk, catalin.marinas@arm.com, guoren@kernel.org, 
+	monstr@monstr.eu, tsbogend@alpha.franken.de, jonas@southpole.se, 
+	stefan.kristiansson@saunalahti.fi, shorne@gmail.com, 
+	James.Bottomley@hansenpartnership.com, deller@gmx.de, 
+	ysato@users.sourceforge.jp, dalias@libc.org, glaubitz@physik.fu-berlin.de, 
+	davem@davemloft.net, andreas@gaisler.com, richard@nod.at, 
+	anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net, chris@zankel.net, 
+	jcmvbkbc@gmail.com, tglx@kernel.org, peterz@infradead.org, luto@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 17, 2026, at 00:19, Andr=C3=A9 Almeida wrote:
-> Em 15/09/2026 04:45, Arnd Bergmann escreveu:
->> On Sat, Aug 29, 2026, at 01:19, Andr=C3=A9 Almeida wrote:
+On Thu, Sep 3, 2026 at 5:22=E2=80=AFAM Will Deacon <will@kernel.org> wrote:
 >
-> Thanks for testing! I believe I found a simple solution for this. I=20
-> modified syscall_o32.tbl and can confirm it triggers a rebuild now:
+> On Wed, Sep 02, 2026 at 11:43:34AM -0300, Ricardo Robaina wrote:
+> > The SYSCALL record currently logs only four of the six syscall
+> > arguments (a0-a3). The remaining two are captured but silently
+> > discarded before reaching the audit context. This leads to the
+> > need for auxiliary records when audit-relevant data lands in the
+> > 5th or 6th argument of a syscall.
+> >
+> > Extend the SYSCALL record to log all six arguments, by adding
+> > arguments a4 and a5 (5th and 6th syscall arguments respectively)
+> > inline within the existing record. Also add the two new args to
+> > the audit rules switch case, so audit rules can filter on them.
+> >
+> > Rather than plumbing two more register arguments through every
+> > architecture's syscall entry path, change __audit_syscall_entry()
+> > to take a pointer to pt_regs and use syscall_get_arguments() to
+> > retrieve all six arguments.
+> >
+> >  audit-testsuite# make test
+> >  audit-testsuite# ausearch -i -m SYSCALL
+> >  ...
+> >  type=3DSYSCALL ... syscall=3Dsendto success=3Dyes exit=3D1088 a0=3D0x4
+> >   a1=3D0x7ffe43518b60 a2=3D0x440 a3=3D0x0 a4=3D7ffe43518b4c a5=3Dc
+> >  type=3DSYSCALL ... syscall=3Dopenat2 success=3Dyes exit=3D4 a0=3D0x3
+> >   a1=3D0x7fffc74692c8 a2=3D0x7fffc7467390 a3=3D0x18 a4=3D0 a5=3D7fffc74=
+674f8
+> >  type=3DSYSCALL ... syscall=3Dopenat success=3Dyes exit=3D3 a0=3DAT_FDC=
+WD
+> >   a1=3D0x557ced4141a2 a2=3DO_RDWR|O_NONBLOCK a3=3D0x0 a4=3D0 a5=3D0
+> >  ...
+> >
+> > Suggested-by: Will Deacon <will@kernel.org>
+> > Link: https://lore.kernel.org/audit/CAHC9VhSjEt_-Bsra4AEqWv+Daw5Ff=3Dgq=
+y7dX4Ah11RVhdyCBUQ@mail.gmail.com/T/#t
+> > Signed-off-by: Ricardo Robaina <rrobaina@redhat.com>
+> > ---
+> >  include/linux/audit.h         | 13 ++++---------
+> >  include/uapi/linux/audit.h    |  2 ++
+> >  kernel/audit.h                |  2 +-
+> >  kernel/auditfilter.c          |  2 ++
+> >  kernel/auditsc.c              | 19 ++++++++-----------
+> >  kernel/entry/syscall-common.c |  4 +---
+> >  6 files changed, 18 insertions(+), 24 deletions(-)
+> >
+> > diff --git a/include/linux/audit.h b/include/linux/audit.h
+> > index 45abb3722d30..9ce5962bc537 100644
+> > --- a/include/linux/audit.h
+> > +++ b/include/linux/audit.h
+> > @@ -323,8 +323,7 @@ extern int  audit_alloc(struct task_struct *task);
+> >  extern void __audit_free(struct task_struct *task);
+> >  extern void __audit_uring_entry(u8 op);
+> >  extern void __audit_uring_exit(int success, long code);
+> > -extern void __audit_syscall_entry(int major, unsigned long a0, unsigne=
+d long a1,
+> > -                               unsigned long a2, unsigned long a3);
+> > +extern void __audit_syscall_entry(int major, struct pt_regs *regs);
+> >  extern void __audit_syscall_exit(int ret_success, long ret_value);
+> >  extern void __audit_getname(struct filename *name);
+> >  extern void __audit_inode(struct filename *name, const struct dentry *=
+dentry,
+> > @@ -373,12 +372,10 @@ static inline void audit_uring_exit(int success, =
+long code)
+> >       if (unlikely(audit_context()))
+> >               __audit_uring_exit(success, code);
+> >  }
+> > -static inline void audit_syscall_entry(int major, unsigned long a0,
+> > -                                    unsigned long a1, unsigned long a2=
+,
+> > -                                    unsigned long a3)
+> > +static inline void audit_syscall_entry(int major, struct pt_regs *regs=
+)
+> >  {
+> >       if (unlikely(audit_context()))
+> > -             __audit_syscall_entry(major, a0, a1, a2, a3);
+> > +             __audit_syscall_entry(major, regs);
+> >  }
 >
-> diff --git a/arch/mips/kernel/syscalls/Makefile=20
-> b/arch/mips/kernel/syscalls/Makefile
-> index aaa5443ea906..9e31d1ce5015 100644
-> --- a/arch/mips/kernel/syscalls/Makefile
-> +++ b/arch/mips/kernel/syscalls/Makefile
-> @@ -40,10 +40,10 @@ src_n32 :=3D $(src)/syscall_n.tbl
->   src_n64 :=3D $(src)/syscall_n.tbl
->   src_o32 :=3D $(src)/syscall_o32.tbl
+> Won't this (temporarily) break the build? Maybe you need to introduce a
+> new helper e.g. audit_syscall_entry_regs(), then convert everybody over
+> to that, then rename it to audit_syscall_entry() at the end to keep the
+> series bisectable.
 >
-> -$(kapi)/unistd_nr_%.h: $(systbl_common) $(sysnr) FORCE
-> +$(kapi)/unistd_nr_%.h: $(systbl_common) $(src_%) $(sysnr) FORCE
->          $(call if_changed,sysnr)
+> Will
 >
-> -$(kapi)/syscall_table_%.h: $(systbl) $(systbl_common) FORCE
-> +$(kapi)/syscall_table_%.h: $(systbl) $(systbl_common) $(src_%) FORCE
->          $(call if_changed,systbl)
 
-I had tried the same thing already, but in my testing, it did
-not rebuild after changing the syscall_n.tbl file, only the=20
-syscall_o32.tbl file. Can you verify that your change rebuilds
-all nine files in the correct cases?
+Yes, you're right Will. Thanks for your suggestion I'll do that in the
+next version.
 
->> The rt_sigtimedwait and ustat entries had a typo that caused a link
->> error, but I did not check if there were any additional mistakes that
->> caused incorrect output data without causing a link failure.
->>=20
->
-> Ops, my bad. I had another round comparing the tables, and I found=20
-> another case that needed a fix:
->
-> diff --git a/arch/mips/kernel/syscalls/syscall_n.tbl=20
-> b/arch/mips/kernel/syscalls/syscall_n.tbl
-> index e3d278f715b7..1882527053af 100644
-> --- a/arch/mips/kernel/syscalls/syscall_n.tbl
-> +++ b/arch/mips/kernel/syscalls/syscall_n.tbl
-> @@ -43,7 +43,7 @@
->   33     common  pause                           sys_pause
->   34     common  nanosleep                       sys_nanosleep=20
-> sys_nanosleep_time32
->   35     common  getitimer                       sys_getitimer=20
-> compat_sys_getitimer
-> -36     common  setitimer                       sys_setitimer=20
-> compat_setitimer
-> +36     common  setitimer                       sys_setitimer=20
-> compat_sys_setitimer
->   37     common  alarm                           sys_alarm
->   38     common  getpid                          sys_getpid
->   39     common  sendfile                        sys_sendfile64=20
-> compat_sys_sendfile
+Thanks!
+-Ricardo
 
-Looks good, thanks for checking this one.
-
-    Arnd
