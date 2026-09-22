@@ -1,115 +1,134 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx2-f42.google.com (mail-yx2-f42.google.com [74.125.224.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22186576ECF;
-	Tue, 22 Sep 2026 17:22:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2B8D3BED59
+	for <linux-alpha@vger.kernel.org>; Tue, 22 Sep 2026 17:56:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790097760; cv=none; b=SOTLpooKItpBkAnzoknjMc/4jJDbojORtztu1HA/AS1A+yZjCiIc/4dGeqfSeMjyYeABv7jx69vH28ZOnb3ujLAdMEug5O945+7uMfqE6bDtxu4HpQzRItyViz14PIl6/ng0F8iF39NkC9dzokg6BTAGrAJhyiluR2FlvQcLsvU=
+	t=1790099797; cv=none; b=pVZyLX+BT77BOFgbTnwG0o0oF73oDVUv8TCeXEGryEUjJWZIi+4ByFo6pHeK2XxTmYoM4IDN+V2gMHBRu9b3nnSYlerrbE7CuyLGWTqRbcFN40EI9SGHTRMnVk0my3D9ePkdrE0/eGch2umI1mSXQWoACc2GB7tO066lquaNQhk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790097760; c=relaxed/simple;
-	bh=ykI6bqtAnan0fCwbd3pxLqU3hmd3EO2QMgG3+lJljBA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Rewz76oSQUhK9nCr7nCOtqHAT+mY8thdl3CR8IY9CNIL+jIbF7JZ6D+yznecVBA9/yAaMAKPwKITxRGfs++wCi1/LVaW2Q8xtEgBhDLHcnf0MfzHSfPpd2YqmbEWXy81uqb24GeEYehQAUyyT2bfK1UCM0v4dMDsiqMf5UTQ/I8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=F9l/h2sg; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790099797; c=relaxed/simple;
+	bh=BOF+Q2WGCVwN/AhlACP5VDw/3HTadZkPsI1wpeTFoTI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=TmhD37b7dkN3VueO0tJDlgD1C6R0mCwX6yTbz++tt2Erm6FNT0QOJ7T4atI9y4AlNH4JhzZbTVKYRC5QSyDmZSdjNSAs6YpQ6dhEAUimB51wvND2i1arIy3dCu8JTFtWpOnQIMd1+PdoRmMacFIq16ch0rSa9/0YUj+U+n1F0XM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=sURcIMO7; arc=none smtp.client-ip=74.125.224.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="F9l/h2sg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04DCD1F000FF;
-	Tue, 22 Sep 2026 17:22:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790097759;
-	bh=UNh8IajC2C7W4xAVN/5A4Te3DbNvUnFRUUUmja4mmRU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=F9l/h2sgeG6pItIpsl4UOUD5LPuOPYalAOj3lX7iN1SKQRQx/7vSe8Y8wJYuJaFa9
-	 tegjTwQVFA9hXGIt+1oJvFwKspvEmTZEeRl/rL3Z+1/vMB7N90Y9ljH8EiqVFiWGMa
-	 llb7G+u8p4G82Y3NfZpa4T6VyMnit/o1genoOGjAzyku0OZj1fvAIP0nPa5BRjaZ1s
-	 0LsiYA1bWAjQ698sUHV9gBhPhcHOkUs5jCvX2Aqi8QkSHyLlAciZyH7C9FEowKSWF8
-	 GvrRJLzG6nhqL2FhCQxRW0vNDBGCdIskECu8iSBeB5zhpcl0fRPI9Q5+bVasWrDLde
-	 t0gfKdsjFaNOA==
-Date: Tue, 22 Sep 2026 18:22:15 +0100
-From: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
-To: Matthew Wilcox <willy@infradead.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, 
-	David Hildenbrand <david@kernel.org>, Zi Yan <ziy@nvidia.com>, 
-	Baolin Wang <baolin.wang@linux.alibaba.com>, "Liam R. Howlett" <liam@infradead.org>, 
-	Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, 
-	Barry Song <baohua@kernel.org>, Lance Yang <lance.yang@linux.dev>, 
-	Usama Arif <usama.arif@linux.dev>, Kiryl Shutsemau <kas@kernel.org>, Guo Ren <guoren@kernel.org>, 
-	Brian Cain <bcain@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, 
-	Dinh Nguyen <dinguyen@kernel.org>, Simon Schuster <schuster.simon@siemens-energy.com>, 
-	Jonas Bonn <jonas@southpole.se>, Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>, 
-	Stafford Horne <shorne@gmail.com>, Rich Felker <dalias@libc.org>, 
-	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>, Paul Walmsley <pjw@kernel.org>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	Alexandre Ghiti <alex@ghiti.fr>, Russell King <linux@armlinux.org.uk>, 
-	Vineet Gupta <vgupta@kernel.org>, Michal Simek <monstr@monstr.eu>, Chris Zankel <chris@zankel.net>, 
-	Max Filippov <jcmvbkbc@gmail.com>, Will Deacon <will@kernel.org>, 
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin <npiggin@gmail.com>, 
-	Peter Zijlstra <peterz@infradead.org>, "David S. Miller" <davem@davemloft.net>, 
-	Andreas Larsson <andreas@gaisler.com>, Richard Henderson <richard.henderson@linaro.org>, 
-	Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Mark Rutland <mark.rutland@arm.com>, 
-	Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
-	Helge Deller <deller@gmx.de>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, 
-	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
-	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
-	Sven Schnelle <svens@linux.ibm.com>, Richard Weinberger <richard@nod.at>, 
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes Berg <johannes@sipsolutions.net>, 
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>, 
-	Arnd Bergmann <arnd@arndb.de>, Vlastimil Babka <vbabka@kernel.org>, 
-	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
-	Michal Hocko <mhocko@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>, 
-	Yoshinori Sato <ysato@users.sourceforge.jp>, Shakeel Butt <shakeel.butt@linux.dev>, 
-	Jonathan Corbet <corbet@lwn.net>, Randy Dunlap <rdunlap@infradead.org>, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org, 
-	linux-m68k@lists.linux-m68k.org, linux-openrisc@vger.kernel.org, linux-sh@vger.kernel.org, 
-	linux-riscv@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
-	linux-snps-arc@lists.infradead.org, linux-arch@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, 
-	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org, 
-	linux-um@lists.infradead.org, Hugh Dickins <hughd@google.com>, Qi Zheng <qi.zheng@linux.dev>, 
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v4 00/12] mm: make userland page table freeing RCU-safe
-Message-ID: <arK4XnDTuFpwPV38@gremlin>
-References: <20260922-rcu-pagetable-freeing-v4-0-fe1ad1f1e303@kernel.org>
- <arKv4qbF04KB2WxQ@casper.infradead.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sURcIMO7"
+Received: by mail-yx2-f42.google.com with SMTP id 00721157ae682-8a45b788a71so1216447b3.0
+        for <linux-alpha@vger.kernel.org>; Tue, 22 Sep 2026 10:56:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790099794; x=1790704594; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=tjIySXoeEgAof9kECbTnLoFPnxFlcyYEVgGtFZYUNok=;
+        b=sURcIMO7wa7a5/nQjFbxCLMtBlNtfnavc0qF3H/iUKwM88e6tFvUhbWklq0e8ME/xB
+         chG3Ndh025sfG0ENrEcmOw4a5MAQFDnECBkw6x4L45pb4sR4208Rakkl1WJlPA07qxam
+         ECKTZ0hf6vJzjps1bCsvuDV73yggtxngbivhmfylWdZtDOz3qP1bAnVygzZEY1lKij5z
+         cAV8v+ATuMXfqsPhbCwNa3lzJgvv6PQUvsnBe9MG0V8qG6vW/gnB1eMpmP71DP3hCvkZ
+         NWjeImT2fb1dW3w0Dy/7ZQXapjGtqiUrFP1YLO/Up/nRY7seeDGTtcrg/2tQvpNZXYJf
+         /AyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790099794; x=1790704594;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=tjIySXoeEgAof9kECbTnLoFPnxFlcyYEVgGtFZYUNok=;
+        b=zRI7noet6mRiYd+I16a3QT1XW2GfX98moCs2jqYFal1D2ovjYAfUDgQzYsLfEyfTkF
+         Ul8KMXRD9ZnKDya/IG5d5jlqw0lW+L3T2157uzAajEkfOIdVYrd2Ev8McPx6cWgwOZy/
+         hq+3wTpT1OiWmotEmUXgk1LFlykdOCRoc0YfJj2sk1UWRVekm0clNtpeh4IDqyk2r2VF
+         BY8R2Qd37LcAJP/H8ATI3eU0Lnu3qXT0J4xGZjtjopupOh4JzVsEsczlnwiD++9e9ThQ
+         BNeQN0iO13X7l0kQRGv/3HqNeEKAYg/lXJBvqO8nhtNL2+FklgCkj/3wqpdh/AMCoTXu
+         W6BA==
+X-Gm-Message-State: AFuF++lJ8CCOqWSi1N6w03+8tdTF4tMDWWjq6PvJKdZ9rwtmdcttxHVR
+	Es59AdST7r2e45GVS+zjKVf302JHbh3t/Rs7CqkU9Il/reE4mgSAEEyzXhJYpKg9
+X-Gm-Gg: AYBFou0PXAVAgtiaE6sBJpEEM+UCODIvMs/TYyk5OAwITZNDEgZ6DHWy6EsRGpRPxkm
+	TvppbogKC/ZQxGNMyLygSR98jbKfdjnVvtjYqk/FgAuAEoKrjPt9P66mUjyXJipOeX+VBB2YnFP
+	01txBFg65XCHFB53L5MPORe184WufRvSE2Mkk/PYfGE44/AZJHJsCWS2wvxIptKInRpeNcXCN0g
+	JTQifOavhapc8zCJnVUEfJESihOnAxaQnuCb+863YWWhCY5XUjTsDp7DpKadZgdV18cFMsH0I9Y
+	IikScpD/hJ9fqwCigO7NZ48ojSVTXNZgHS7K6Q7OLYuQrF1kgp8TVwMlkz2piwLxa1TQW32q0oc
+	7BIok0lmbAvSX+pmPpUW6e5njQMysjB0np2F8XCFodX01ZCt0Aaynl2EkS8MfAA7dI0f8rIEWwZ
+	loYm2GvGrV29ZFvfYHoG41cR0tl3awoU+ddFtsetYhdFFW3UExGdV7D7cR7NLph7XWpx1H3pA=
+X-Received: by 2002:a53:b16b:0:b0:671:5543:52a9 with SMTP id 956f58d0204a3-672d58b093amr158591d50.50.1790099794096;
+        Tue, 22 Sep 2026 10:56:34 -0700 (PDT)
+Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-672d60a2d52sm44743d50.16.2026.09.22.10.56.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Sep 2026 10:56:33 -0700 (PDT)
+From: Matt Turner <mattst88@gmail.com>
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: linux-alpha@vger.kernel.org
+Subject: Re: [PATCH v2 0/7] alpha: fix stale TLB translations breaking copy-on-write and writeback
+Date: Tue, 22 Sep 2026 13:56:31 -0400
+Message-ID: <20260922175631.1022886-1-mattst88@gmail.com>
+X-Mailer: git-send-email 2.54.0
+In-Reply-To: <20260810193902.3286353-1-linmag7@gmail.com>
+References: 
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <arKv4qbF04KB2WxQ@casper.infradead.org>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Sep 22, 2026 at 05:42:10PM +0100, Matthew Wilcox wrote:
-> On Tue, Sep 22, 2026 at 04:35:31PM +0100, Lorenzo Stoakes (ARM) wrote:
-> > m68k-motorola required the biggest change - since RCU page table freeing
-> > uses call_rcu(), this means page table freeing can arise from softirq
-> > context.
-> >
-> > This was fixed with an IRQ-safe spin lock used in both get_pointer_table()
-> > and free_pointer_table().
->
-> You don't need to use an irq-safe spinlock for softirqs.  It does work,
-> but it's overkill since it disables hardirqs.  If you use spin_lock_bh(),
-> only softirqs are prevented from running (and it's safe to call
-> spin_lock_bh() when in softirq context, just like it's safe to call
-> spin_lock_irqsave() in hardirq or softirq context).
+On Mon, Aug 10, 2026 at 09:34:51PM +0200, Magnus Lindholm wrote:
+>   mkclean4.c covers patches 3 and 5 (needs root), and fails on both SMP and
+>   UP. A single thread writes a small MAP_SHARED file while background
+>   writeback cleans it, and the file is then compared against the mapping;
+>   every round loses data.
 
-Right yup, I know _bh() is fine for softirq, I think this was being overly
-cautious (for sparc32 you do actually need irq saving).
+I wrote something along those lines and could not get it to fail on EV7,
+on v7.3-rc1 without the series, with and without CONFIG_COMPACTION, on
+both an SMP-enabled and a CONFIG_SMP=n kernel. Only one CPU was online
+throughout, so none of this exercises the multi-CPU paths. Writeback was
+running underneath: 850 to 1700 pages written back per run.
 
-But this is m68k :) functionally there's really not that much difference, and
-it's over very few instrucitons so the delta here is likely to be functionally
-little to nothing.
+The path is reached, though. With counters in flush_tlb_page() on the
+unpatched kernel:
 
-If I need to respin again I'll fix it up!
+    ftp: cur=77824 lazy=324 other=466
+    ftp lazy: loaded asn=0 mm asn=79 pid=12 comm=kworker/u4:0
+    ftp lazy: loaded asn=0 mm asn=138 pid=12 comm=kworker/u4:0
 
---
-Cheers, Lorenzo
+so the flusher does issue the targeted tbi() with ASN 0 loaded against an
+mm whose ASN is 79, a few hundred times per run, exactly as you describe.
+The writer keeps faulting afterwards and the page keeps being redirtied,
+so nothing is lost.
+
+The reading that fits is that the EV7 PALcode invalidates by VA without
+matching the ASN, which would make this unobservable here and observable
+on your EV68. If you have a way to distinguish that from the console I am
+happy to run it. Either way the test is wrong by the architecture, so the
+patches stand on their own.
+
+One thing that confused me for a while, and may be worth a line in the
+changelog: since dd5712f3379c ("alpha: fix user-space corruption during
+memory compaction") alpha overrides ptep_clear_flush() to call
+migrate_flush_tlb_page(), and that override is inside #ifdef
+CONFIG_COMPACTION in asm/pgtable.h. With COMPACTION=y, folio_mkclean()
+never reaches flush_tlb_page() at all, so mkclean4 should pass there
+whether or not this series is applied. I take it your failing runs are the
+COMPACTION=n ones. That also raises the question of why the correct
+flushing in ptep_clear_flush() is conditional on COMPACTION in the first
+place, but that is not this series.
+
+On patch 1: alpha selects ARCH_NO_PREEMPT, so unless something drags in
+PREEMPT_COUNT (DEBUG_ATOMIC_SLEEP, say) preemptible() is 0 and the hook
+always runs, including after kthread_use_mm(). The changelog says the hook
+does nothing there and that the later patches rely on asn_lock staying
+set, which is then only true for PREEMPT_COUNT=y builds. Since patches 2
+and 3 lean on that window, it would help to say so.
+
+On the changes since v1: dropping the check_mmu_context() call from
+switch_to() means the bookkeeping now runs after finish_lock_switch() has
+re-enabled interrupts, rather than with them still off. I convinced myself
+that window is harmless, since the CPU is in kernel code throughout and
+the case that matters sets need_new_asn, but "no functional change from
+v1" undersells it.
+
+For what it is worth on EV7 with one CPU, with the series applied: no
+regressions in a gdb breakpoint exerciser, a fork/COW check, or the
+writeback test above, on either kernel.
