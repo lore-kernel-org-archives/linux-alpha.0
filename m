@@ -1,137 +1,134 @@
-Received: from mail-yx2-f12.google.com (mail-yx2-f12.google.com [74.125.224.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78997568525
-	for <linux-alpha@vger.kernel.org>; Tue, 22 Sep 2026 16:38:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9538A55C33F;
+	Tue, 22 Sep 2026 16:43:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790095121; cv=none; b=cjamtGyc/QHhMBTDahCzFzFE8w/FdqnKMcaF4gCL7uCQvs1dcySB6HAwF3+9A7ovjbQJbaWvmqxpJNdrcyfmcWYVwt1t4sZaC7969O/iRtYKBL7pAZ9OnJRWeaxx8BIGctT2JYVw1H+VAWX6m950ntuAn0UMXgLNVlDsDSPioqI=
+	t=1790095388; cv=none; b=ZDgn5xjvnpsUHPkt2RC7VwBEw3Pz5LZ+zMAD8JF9sY3hu8gzvXQaLUv8I6Ba9OK+G31Fjwo6dhXxo6wuZCVtIT87A+dvRRLMNpDN6Z/Mvhs1jot3txgsCwQ0OXK79fbCjbJic9dZWjjwZsZXgHT4ukhwm+SIJzrlWsc7e/16sMM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790095121; c=relaxed/simple;
-	bh=fkoF7CQj50sZ4obBMqZ7KYkylTsTeYMyQdL2owgmFkQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Nso8SLpOwM956qLmmGUYNC9p06OIQ4bN9XcfKhUHevfoz45Gk6gaxY4UdVWnXt3ZOfjskzz5EKJp9naaHm/kI3bcB1mmFnjmZ4ITh0/unQkHsHkLgCV8hfr+UM7n7U5f1YmFOCOjO2Nua2jLKX1Auu/8uO79R8GcXhYWKMgmVXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B6fr6TBN; arc=none smtp.client-ip=74.125.224.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790095388; c=relaxed/simple;
+	bh=14Jwv5SqG/STLi+i1lVISv+YxviZldN+nSDRF/nZ4aI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YT6QyjWIa6M8H72XjgrlOtJIXFsrvMW6Tk4uRNyl5P7DoDUTwViIM+pJoqN/VqUKh7avusm3rgoHezEe/WZ+Ku89SA2IKsUODzdI/flH/mtbg7kEFZbnJb+JT2cSt19gn92WwlGaIpvWBZsgg7qcLUVYu23MTMqfWLMmTx7gLCE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=pass smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=DXSA/Gcd; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B6fr6TBN"
-Received: by mail-yx2-f12.google.com with SMTP id 00721157ae682-85d43daa8f4so1664337b3.3
-        for <linux-alpha@vger.kernel.org>; Tue, 22 Sep 2026 09:38:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790095113; x=1790699913; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=7I5T7fwcWZlSrGfPPvkZcX4vNhqGwcWuSt39ScHxYHk=;
-        b=B6fr6TBNMztt+tblw9PrfLmE0TWh37ad/z2lR++pcoTl78QZUiNJ6Zk/A0BxX/Yw7u
-         exhRewgqQ5deCoelvTpJFlahYXSyeUwAFRWIARNchCP8n4rb+pwrrnOAK0JRuIZL/fT3
-         eNgFew5bxlxMk2sxHDtsQ5ZIn9+DBLwrFI5EvFMGIsfrJe/AbKBHycQ5gr7+Q0dUjAsz
-         lHJ4rZT6Ky/KNdSyFmPEwMxonSxRd/g0PkjFSQGcHIri6Rm0LZHF+5mv8lAH30EEBdoX
-         eszeTwgItt5reb8t4vM7J9/eas5LXHjdWETmvxHnkdQ90rOAjnx+8UGj+2YRQ1xFnSQJ
-         +CGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790095113; x=1790699913;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=7I5T7fwcWZlSrGfPPvkZcX4vNhqGwcWuSt39ScHxYHk=;
-        b=IdXOaLxHogZBwJuocKeYjLD+kE2y2Gp5ZKqYXspTO7fR+H6WaP09m5bDeRIfrb8PLK
-         UJKxKCr7LF46L3eOF/74urM3C+jfqlqZR3IfhMrG1QLX8XGofeyQPFpe7EABn5QvTXzd
-         C+SSCoCmy+I7bTfRR17QEpYmLVXADAtu4vhAsq+8XU2NDz5aRzMQtzrM9ExqO6CPXft4
-         PSnLkZYat2OKJGMh+pLPZ0JJ612DxhXI5/vwW5f8nlDdo2Xxa8rKFglqD2THqPtdaQHC
-         IKOmuxKHhaHa7X7JBp8WsIYSZZg3Gp0XrZTUXZaAw2GATQID4/vcm2+IFXH7TBoThQE0
-         cfAQ==
-X-Gm-Message-State: AFuF++mzQJoFj6VOIieUaK4VJJvZmyCaC+/k4tsTG1UTvsnkmIdIYyJ5
-	Rp9it80M+mvbRP114oDI35JusAhc1iOriS8j9GiUV9W9lTmGTlOYwwcs
-X-Gm-Gg: AYBFou0y4sIyrCpt/e53ht/ReGcwH5u8AV7Pf+t+I/xAc6D35XgBfOfqdS7kKFP4Lqp
-	2oL12zQOzAF0IzgijB1msL0q4JfVtYZTLhT8Yz6ibG/bUywYOCAptaa4M+/3DMrEQEPCr3XlJa2
-	8mT7LQlJ/icdkGmOr6tStKD880tklTyllTz7TI5PbLWzaSyA8jYf8meBqPrk69XqieDDyhD2R80
-	28UL+KzeoW9jMl6/CYR3nDlyi3vYGbiEOxboqvN+TD1KbwsAAqGP2274fNVCGE9VR+mRH34dJml
-	h6NUYJnUa4lNJDOR+D1RPOmGs/efzAfNSzKcNTfLB0lp587zdNuvzn8+UG5ODyOvgJorsMfbuNB
-	sFcyTTUKzH8JHMr30M3FC0hBJdQlV+RSnCWvrap9fDie60GktrRUj8s7d5VdgxJbBd+KnAstRas
-	twhIMHcov/YdXjFaRP0wQ+C4dF65IAXd/sbMeLaoC+wT7njF6sQ3J5nUzmQF6C/8p2j6hKbxI=
-X-Received: by 2002:a05:690c:47c8:b0:88e:3683:6ae7 with SMTP id 00721157ae682-8a45b593061mr250727b3.50.1790095113064;
-        Tue, 22 Sep 2026 09:38:33 -0700 (PDT)
-Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8a2c1b02abdsm8519727b3.17.2026.09.22.09.38.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2026 09:38:32 -0700 (PDT)
-From: Matt Turner <mattst88@gmail.com>
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Subject: Re: [PATCH 0/3] alpha: load the MMU context on a direct mm switch
-Date: Tue, 22 Sep 2026 12:38:30 -0400
-Message-ID: <20260922163830.820433-1-mattst88@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260904162424.376504-1-linmag7@gmail.com>
-References: 
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="DXSA/Gcd"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=acmbGOYX6e5b9nsGkh+Evf65NkqvOdBjs0iMPuA3tME=; b=DXSA/GcdR6HXs2iM/AY4Vz+edJ
+	kA/NioItpmK4uLBa+N+yBYGy/TG5czyqFC4qExUiAy7txhD2ZetX+uytMySoVkb7vf95MpnQHobXs
+	5nj+vhS0PUVYU2/JaoirFCdNajGdEWvlQ4wdWlfiL1oP8Yf0G8zCFuk5lYCptlXSEaQ0KOZm+zJN+
+	NG7W2GGIrdOancjdcnpkIbZqCN7FFw8zwNf+GSbFUdO+K8gp+sYxBhPsjldvrqJGrSpLKHYWgpKte
+	3kxOzApBvbjROOxG3nl5IbBdc+LakvvRp2Rg1UGqSPeIiJ9mKJOUkUI2TQFNOzS2neJmoa4FFivIy
+	UMSxC1qg==;
+Received: from willy by casper.infradead.org with local (Exim 4.99.1 #2 (Red Hat Linux))
+	id 1x93ZL-00000009bF8-0eHw;
+	Tue, 22 Sep 2026 16:42:11 +0000
+Date: Tue, 22 Sep 2026 17:42:10 +0100
+From: Matthew Wilcox <willy@infradead.org>
+To: "Lorenzo Stoakes (ARM)" <ljs@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+	David Hildenbrand <david@kernel.org>, Zi Yan <ziy@nvidia.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Nico Pache <nico.pache@linux.dev>,
+	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>,
+	Barry Song <baohua@kernel.org>, Lance Yang <lance.yang@linux.dev>,
+	Usama Arif <usama.arif@linux.dev>, Kiryl Shutsemau <kas@kernel.org>,
+	Guo Ren <guoren@kernel.org>, Brian Cain <bcain@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Simon Schuster <schuster.simon@siemens-energy.com>,
+	Jonas Bonn <jonas@southpole.se>,
+	Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+	Stafford Horne <shorne@gmail.com>, Rich Felker <dalias@libc.org>,
+	John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Russell King <linux@armlinux.org.uk>,
+	Vineet Gupta <vgupta@kernel.org>, Michal Simek <monstr@monstr.eu>,
+	Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>,
+	Will Deacon <will@kernel.org>,
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+	Nick Piggin <npiggin@gmail.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Helge Deller <deller@gmx.de>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>, Arnd Bergmann <arnd@arndb.de>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Mike Rapoport <rppt@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	John Hubbard <jhubbard@nvidia.com>, Peter Xu <peterx@redhat.com>,
+	Yoshinori Sato <ysato@users.sourceforge.jp>,
+	Shakeel Butt <shakeel.butt@linux.dev>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Randy Dunlap <rdunlap@infradead.org>, linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org,
+	linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+	linux-openrisc@vger.kernel.org, linux-sh@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-snps-arc@lists.infradead.org, linux-arch@vger.kernel.org,
+	sparclinux@vger.kernel.org, linux-alpha@vger.kernel.org,
+	loongarch@lists.linux.dev, linux-mips@vger.kernel.org,
+	linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org, linux-um@lists.infradead.org,
+	Hugh Dickins <hughd@google.com>, Qi Zheng <qi.zheng@linux.dev>,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v4 00/12] mm: make userland page table freeing RCU-safe
+Message-ID: <arKv4qbF04KB2WxQ@casper.infradead.org>
+References: <20260922-rcu-pagetable-freeing-v4-0-fe1ad1f1e303@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260922-rcu-pagetable-freeing-v4-0-fe1ad1f1e303@kernel.org>
 
-On Fri, Sep 04, 2026 at 06:23:28PM +0200, Magnus Lindholm wrote:
-> Reproducing it. A KUnit test was written for patch 3; source can be made
-> available on request. It uses kunit_attach_mm(), which calls
-> kthread_use_mm(), and then compares the loaded context against current->mm:
+On Tue, Sep 22, 2026 at 04:35:31PM +0100, Lorenzo Stoakes (ARM) wrote:
+> m68k-motorola required the biggest change - since RCU page table freeing
+> uses call_rcu(), this means page table freeing can arise from softirq
+> context.
+> 
+> This was fixed with an IRQ-safe spin lock used in both get_pointer_table()
+> and free_pointer_table().
 
-I wrote a similar one and ran it on an ES47 (EV7), on v7.3-rc1 with
-the v2 stale-TLB series applied, with and without this series. Only
-one CPU was online, so patch 2's shortcut never had another CPU to
-look at.
+You don't need to use an irq-safe spinlock for softirqs.  It does work,
+but it's overkill since it disables hardirqs.  If you use spin_lock_bh(),
+only softirqs are prevented from running (and it's safe to call
+spin_lock_bh() when in softirq context, just like it's safe to call
+spin_lock_irqsave() in hardirq or softirq context).
 
-Without the series the ptbr check fails. With it the test passes
-(3/3, including user accesses before and after sleeping), and so do
-usercopy_kunit (4/4) and kunit_iov_iter (17/17). A fork/COW check
-running under continuous compact_memory showed no corruption, and
-fork throughput was unchanged.
-
-One difference from what you saw: the stale ptbr here was not
-swapper_pg_dir.
-
-    Expected pcb->ptbr == mm_ptbr(current->mm), but
-        pcb->ptbr == 44986 (0xafba)
-        mm_ptbr(current->mm) == 42112 (0xa480)
-
-swapper_pg_dir is PFN 0x800 on this kernel, so 0xafba is the page
-table of whatever user process ran on that CPU last. The kthread then
-reads and writes that process's memory at any address mapped in both,
-and TLB fills made that way get tagged with the borrowed mm's ASN.
-That is worse than a fault loop.
-
-> Patches 2 and 3 have no Cc: stable: kthread_use_mm() is the only
-> reachable caller on alpha through KUnit's kunit_attach_mm():
-
-I don't think that holds. vhost still has a kthread worker mode
-(vhost_run_work_kthread_list()) that calls kthread_use_mm().
-VHOST_ENABLE_FORK_OWNER_CONTROL defaults to y, and userspace can pick
-that mode with VHOST_SET_FORK_FROM_OWNER or fork_from_owner_default=0.
-The USB gadget f_fs and gadgetfs AIO paths call it too, and dummy_hcd
-works on any architecture. vdpa_sim is another. Given that the failure
-is cross-process memory access, I'd add Cc: stable to 3, and to 2,
-which fixes the missed shootdowns for the same borrowed mms.
-
-Two notes on the patches themselves.
-
-In patch 2, it would help to say in the commit message why keeping
-stale slots is cheap: the IPI makes each remote CPU that isn't running
-the mm clear its own slot in flush_tlb_other(), so a process that
-migrated once pays one extra round of IPIs and then goes back to the
-shortcut. That was the first question I had reading it, and the answer
-is only implicit in the cover letter's fork numbers.
-
-In patch 3, the next == current test is fine, but the comment could
-name kthread_use_mm() and sched_force_init_mm() so the next person
-knows why the scheduler never takes that branch.
-
-For patch 3:
-
-Tested-by: Matt Turner <mattst88@gmail.com>
-
-Patches 1 and 2 only matter with more than one CPU, and with one
-online neither the removed loop nor the new check has anything to
-look at, so no tags on those until I can test on SMP.
