@@ -1,49 +1,49 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79A5949EC5D
-	for <linux-alpha@vger.kernel.org>; Wed, 23 Sep 2026 11:30:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4FBA4A091D
+	for <linux-alpha@vger.kernel.org>; Wed, 23 Sep 2026 11:30:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790163014; cv=none; b=egmJXXNg+30kQ2soaSLYSKaRllxEUiWpoG9nti8KP+nuE3V/ytUOiLQvAxNqIoqaeoe9QwmDFcedLRsxKyXsU3YTbEiwmGmVgTygd/smaI6sSpUHkxKL0CZVE8u1ZvYzG/uO5EBysudSYIQj8O8q1hghp9tlV1BRY8r0PzzCw/8=
+	t=1790163053; cv=none; b=Om0qYgweK5T/5PhFFGXDTJeiMjpH5goZq4WIzVG0LndL7ewSS2GSNn2womTk1LxQXKuVbgN90ZN8DCXVJBl1BMvpXFeotHNUm0udEzvozjnd1IY0JYmAKC/6if/k8xZ1iJjz5jUcGSWiX/D95HQte72K2OruxPF+NrLMOK/QwR4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790163014; c=relaxed/simple;
-	bh=AYhacAIOU9DfNtEKQcLBl4WUi74t7QonBaw7zJRbTMw=;
+	s=arc-20240116; t=1790163053; c=relaxed/simple;
+	bh=xqQ+NYvyXWCfjlyvjvxmg1kCwOY0kqb1jeO3C2JsWsM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JPiotduUJkkjkHvl9VEdY5bVxRsqKoQrRodX9oUpDDkTxEMfdW3m/7r2vt2RCeBQ4BQ5i6w2fOnElC4/zjee9FzH2SvFDthyPOcWcxxNqUZI4zI78TCIXwG3pvCIowqgp1emR8ufzQnA9DbqhxWgP7kxsONfvATsCUdZO8+FTsc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=HXDKeglL; arc=none smtp.client-ip=170.10.129.124
+	 Content-Type:Content-Disposition:In-Reply-To; b=fStpQK9FhxDp7ZFrMsdFUKlvjbV0rAXr8AmAdHs7S6MA4xOcNXDC4jh5QkmYn2aW07yBNOeNpWuYBIzSczmdqtEPm4sqWgm2RoFq2r0wANOIreyMRFqk3DpB+LcsMPyPeKmsIrlT0zWMeqrTFvrUZC91h/2zSe+CaS+Nwkcx+0o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ONLQ3MUc; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="HXDKeglL"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ONLQ3MUc"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1790162998;
+	s=mimecast20190719; t=1790163036;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=AYhacAIOU9DfNtEKQcLBl4WUi74t7QonBaw7zJRbTMw=;
-	b=HXDKeglL/ABhVbbrlO2al1me9RLO3cr/8aWuTQrQZvd4GQC9uVrfExqKhNn169oxIlD/zU
-	AdCe4EES/nGs4i3WjYNFJaggLtOfn2V1MrNQTNgNviqqqssl3vy7n9mRWDtgnOQ5B0O3vg
-	tz8NBrZXUezMXWxF6GIYt9uX+2kiSbU=
-Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
+	bh=xqQ+NYvyXWCfjlyvjvxmg1kCwOY0kqb1jeO3C2JsWsM=;
+	b=ONLQ3MUccFs6W48DHwtV5gbE7/Y6/5bDAstmWak8alaYCtBviLi20JWEh+J6oKOnj4JSpz
+	LDtSlv9sAZstRJiuaasDqRjOzLIN4SiwiGY2EZF/oTuW75YwfKE9zEIyE0yr6Y/mD5FDRc
+	903W6Lo3n82GUgR/Cj9+JXRun4igceg=
+Received: from mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com
  (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-363-gooFaoLZMMuKAK_dogOFiQ-1; Wed,
- 23 Sep 2026 07:29:53 -0400
-X-MC-Unique: gooFaoLZMMuKAK_dogOFiQ-1
-X-Mimecast-MFC-AGG-ID: gooFaoLZMMuKAK_dogOFiQ_1790162988
-Received: from mx-prod-int-10.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-10.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.95])
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-330-hU8g012GMpKeOZhxZhxwBw-1; Wed,
+ 23 Sep 2026 07:30:34 -0400
+X-MC-Unique: hU8g012GMpKeOZhxZhxwBw-1
+X-Mimecast-MFC-AGG-ID: hU8g012GMpKeOZhxZhxwBw_1790163029
+Received: from mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.93])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 8D61E1955F14;
-	Wed, 23 Sep 2026 11:29:44 +0000 (UTC)
+	by mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id D1EA81955E8C;
+	Wed, 23 Sep 2026 11:30:26 +0000 (UTC)
 Received: from fedora (headnet05.pony-001.prod.iad2.dc.redhat.com [10.2.32.117])
-	by mx-prod-int-10.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with SMTP id 27F2A418;
-	Wed, 23 Sep 2026 11:29:29 +0000 (UTC)
+	by mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with SMTP id 9573118002B6;
+	Wed, 23 Sep 2026 11:30:13 +0000 (UTC)
 Received: by fedora (nbSMTP-1.00) for uid 1000
-	oleg@redhat.com; Wed, 23 Sep 2026 13:29:44 +0200 (CEST)
-Date: Wed, 23 Sep 2026 13:29:28 +0200
+	oleg@redhat.com; Wed, 23 Sep 2026 13:30:26 +0200 (CEST)
+Date: Wed, 23 Sep 2026 13:30:12 +0200
 From: Oleg Nesterov <oleg@redhat.com>
 To: Ricardo Robaina <rrobaina@redhat.com>
 Cc: audit@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -64,11 +64,11 @@ Cc: audit@vger.kernel.org, linux-kernel@vger.kernel.org,
 	anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
 	chris@zankel.net, jcmvbkbc@gmail.com, tglx@kernel.org,
 	peterz@infradead.org, luto@kernel.org
-Subject: Re: [PATCH v3 01/14] audit: log all six syscall arguments in the
- SYSCALL record
-Message-ID: <arO4GNT_5wNEYsCO@redhat.com>
+Subject: Re: [PATCH v3 14/14] audit: rename audit_syscall_entry_regs() to
+ audit_syscall_entry()
+Message-ID: <arO4RArEfB5HJqR-@redhat.com>
 References: <cover.1790088067.git.rrobaina@redhat.com>
- <855572d1b7461e7f258547be0f11c74029755110.1790088067.git.rrobaina@redhat.com>
+ <0bb32d256099870f3f9ca2632cccf58538f882ed.1790088067.git.rrobaina@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -77,31 +77,28 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <855572d1b7461e7f258547be0f11c74029755110.1790088067.git.rrobaina@redhat.com>
-X-Scanned-By: MIMEDefang 3.6 on 10.30.177.95
+In-Reply-To: <0bb32d256099870f3f9ca2632cccf58538f882ed.1790088067.git.rrobaina@redhat.com>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.93
 
 On 09/22, Ricardo Robaina wrote:
 >
-> The SYSCALL record currently logs only four of the six syscall
-> arguments (a0-a3). The remaining two are captured but silently
-> discarded before reaching the audit context. This leads to the
-> need for auxiliary records when audit-relevant data lands in the
-> 5th or 6th argument of a syscall.
+> Now that every architecture has been converted to the pt_regs-based
+> audit_syscall_entry_regs(), the legacy audit_syscall_entry() and
+> __audit_syscall_entry() helpers that took the individual syscall
+> argument registers (a0-a3) no longer have any callers.
 >
-> Extend the SYSCALL record to log all six arguments, by adding
-> arguments a4 and a5 (5th and 6th syscall arguments respectively)
-> inline within the existing record. Also add the two new args to
-> the audit rules switch case, so audit rules can filter on them.
+> Remove those legacy helpers and rename audit_syscall_entry_regs() and
+> __audit_syscall_entry_regs() back to audit_syscall_entry() and
+> __audit_syscall_entry(), restoring the original naming.
 >
-> Rather than plumbing two more register arguments through every
-> architecture's syscall entry path, retrieve the arguments from
-> pt_regs via syscall_get_arguments(). To keep the series bisectable,
-> add new helpers audit_syscall_entry_regs() and
-> __audit_syscall_entry_regs() that take a pointer to pt_regs, rather
-> than modifying the existing ones in place. Later patches convert
-> each architecture over to the new helpers, and a final patch removes
-> the legacy helpers and renames the new ones back to the original
-> naming.
+> The _regs variants were introduced separately, and the architectures
+> converted one per patch, specifically so this final rename is the only
+> step that removes the old prototype. That keeps the series bisectable:
+> every commit builds, and no caller is ever left referencing a helper
+> that has been removed.
+>
+> Suggested-by: Will Deacon <will@kernel.org>
+> Signed-off-by: Ricardo Robaina <rrobaina@redhat.com>
 
 Reviewed-by: Oleg Nesterov <oleg@redhat.com>
 
