@@ -1,128 +1,212 @@
-Received: from mail-ej2-f12.google.com (mail-ej2-f12.google.com [74.125.228.140])
+Received: from mta1.migadu.com (out-139.mta1.migadu.com [95.215.58.139])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBD4A45D910
-	for <linux-alpha@vger.kernel.org>; Wed, 23 Sep 2026 07:49:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.228.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92132469826
+	for <linux-alpha@vger.kernel.org>; Wed, 23 Sep 2026 08:05:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790149783; cv=none; b=K+5FA1YeT3AJ24KAOeXC7ov4lv/0mjPJroJnssLUE13Qbf/UUEPZ58yd4yiqpQEl0gvu20uwBnnNrfqisMpcrKkKaIkVUpj/maJzy4tdDM5xo8f7TJ6jYNpr764nH6y5lnIXVoBEzlNP+f8iBvs60Is2CmXgCCKIIXoY1iyQvF8=
+	t=1790150751; cv=none; b=KKyWdFObgAatcEbAjB+lu5nxrP1Y4JuNYxLq4CIo7VRnZnpVVEoWkYGSkKPDVjrhLkoQ6YusGLISpvL4Qv7lwxlLPGYWQI/kv1US+foEUIaPXlsGhL723GiMMvT3OC6782rF/7etlZDOPneVQwWFPlJvyCDzCpFbOSgtplQwJTU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790149783; c=relaxed/simple;
-	bh=x1EO1t+RhKNeTSsJq6ZLnxGbgzYj7ObuT+4PdV8PdPs=;
+	s=arc-20240116; t=1790150751; c=relaxed/simple;
+	bh=5BGZTHY8kFe6g0IgkeIcnp2oHzMTIKE0zyxoC0cn6HM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=YMdo8hKvM5d6+D6ZBNrBT4Q9b0uV2P4fr6+SBXExxvbO9+ljXdBfoU6mf+qgg2q1V+GV+hRUr4Ht9482xEcpUIB2luEvlWAIlte6/WHPP0n+cfh2ZD5chJULuDgJx7020IE1NvIKyHUx7OrDLRTdSSvH1psUMvk0k6waV6Ctxhc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=E1Ao9z2v; arc=none smtp.client-ip=74.125.228.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 MIME-Version:Content-Type; b=BCmHbG1wBo/jRaxWwyezCX8UD7UAwzj/wjeKx2Vh8PSM5AzoCStYpy2qA6OJDoQO784I8jx/kvCzhVqz5KPA0bkVevO3T2YOba2Gcl4n1VgKUBta6cUwXRNdTqKKZuXMX69itI0lxccJWo7e+c+S1srC7Hs8XBe8klrIB2v5pFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=WWzI1t7T; arc=none smtp.client-ip=95.215.58.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E1Ao9z2v"
-Received: by mail-ej2-f12.google.com with SMTP id a640c23a62f3a-c2940ef15d3so77357366b.2
-        for <linux-alpha@vger.kernel.org>; Wed, 23 Sep 2026 00:49:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790149776; x=1790754576; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Jgp+ZrcyR2hZuyp2AvG7ZUXVguQdflnbvJs857sicKc=;
-        b=E1Ao9z2vHp1r7M2uqh+YkOjFPoiVDGg18ym4TRyYXszviGJuWGRj/PFG56sP5OpEmA
-         RjDE2Hha1XGocy69q414mvVmsl+j3E3+fiImx/UjYwDC2KNGn5TyC6w1X8TwstfoeG8T
-         2YdAV7IdBK2Mzr4D28bnksiMqXLl1gGey8AGpaKBdwqD4FKXQBVQNIEjnlv+geAOmWl8
-         zqGp/cZcx1EChlOMGEYISVJ3J2StBqZ1V0gPfhFeAhSAOvSQxbTHE7qY6ONOwHOuNWBX
-         Nh0ZNNF/Jf/W+J8hE9UE0ywqJtSdpkfUz70AxryVc/cVHOZAsB2r00PwoGfXqS/VrrYp
-         wtUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790149776; x=1790754576;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Jgp+ZrcyR2hZuyp2AvG7ZUXVguQdflnbvJs857sicKc=;
-        b=t2eJ8B/g0lqtWrLYc7Jaz/MZz95l4tSleR1x908pWbsu8IlYwlWU+rYOkD5r+DwHZu
-         SrnqDK3eLORhFY90KXJBD6gq3nDL+PlO8A8dibx6U66YBuuM7Luy5/SmVRefsernk2kt
-         bjq8OSL+RMiVFq0X459VSpQLDJFfRBJUvuvxDQJM6cguecbSU0x/lwuERPVduy3iTFX8
-         G3ndu7xubI2U5+SiO3ext3quogojq54Dd/05SXgRteyfeAYxhLa0FlRbCir79CLLDxFY
-         Efaptt/9/jL7UQJ6j/Q7fxD/1F9xoow3JUFbYPAvuiDS6JOJR74X6ZPtazrXXLDsnm5S
-         lj7g==
-X-Forwarded-Encrypted: i=1; AKwUvBwG9CG2ICBvFXjRY2C0asHdkiXn6yuA5rqVm/t+SbEGBly8gOb21zliUVEfsoDGj8SKFVfZdfKlLXVKrQ==@vger.kernel.org
-X-Gm-Message-State: AFuF++n1BxBEXrkfpLGsi8IGX/s+GV3KrZbZjMfRE/nxDrXdEGaxB6I2
-	97+deANmW28RMBORRG1tGhrcZf8g5JqOK6stu/qfEhScNkLzyOOH0qSe
-X-Gm-Gg: AYBFou3JbNJib/+dsnUij7/CGOr8rOczVaHxHt7+Nh8JzJY2SN5dCai7fozvKpgrx3I
-	2QjfNmlrGH+2cFYgghW6dS0qZSQ/JlNX+CGBLVBliQI8NvX4/4tLXeg1JdKEyaH45pryUl+qBRs
-	CN5Y8nrNofacdNhg/IuC15SLFSBf0YKDaT6PnzzLNvoHGdH0p3MRMiO0GmXyDg/CS51tMLEMzfY
-	x7ip5x9IOXElJYGwq6wZFH4VZgWZdgXE4P/TXHUCSHe+AVdG0PA41MFcTP54jD7Lx/+t6cWKEsI
-	t7nCaigylnbTcHECOxprqcllkN0YrsyfNC1EiEuB7/0DmFKMhQ+TRQjorR8jTTrVn6FYHm/gNeX
-	hRQeakeZFgmVZ6W9yNL6SmQT2UnuAkW+fHeSnPsXnxg8Xt1HetCjLjojI9e4w9TqucWW5nG70X5
-	Nyu3/xpHtWNGR6XlBCrKx0WSZ/VcxhMV5Oj8jPAftEbeAd20fi+rov1dPMBlvmFkOt3ofKC1CY2
-	r4IQz20JbRf0VkStHhUpOIsnUR7TAb7K+9trbXW
-X-Received: by 2002:a17:907:3e8c:b0:c29:f5d5:5a96 with SMTP id a640c23a62f3a-c2aae1d27damr126462866b.32.1790149776099;
-        Wed, 23 Sep 2026 00:49:36 -0700 (PDT)
-Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c2aae5c6f5asm64951366b.15.2026.09.23.00.49.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Sep 2026 00:49:35 -0700 (PDT)
-From: Magnus Lindholm <linmag7@gmail.com>
-To: richard.henderson@linaro.org,
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="WWzI1t7T"
+X-Envelope-To: linux-alpha@vger.kernel.org
+DKIM-Signature: a=rsa-sha256; bh=5BGZTHY8kFe6g0IgkeIcnp2oHzMTIKE0zyxoC0cn6HM=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1790150746; v=1; x=1790755546;
+ b=WWzI1t7TTqFw2wr0jDkPbtN7TwQkuQvfOO3Aoft9mKRYRiQ8BJkP6zHsQzDXqVepu6W5cjvb
+ tfHsZBOIWQv3UyolWYXTaga2Up9GF8hClSUeIYphsrLfUFaHgusY8nU/X1vFS5NizsI0/JMz8p6
+ fN5aMOPIlrRM1utL1VgA1DNQ=
+X-Envelope-To: linux-alpha@vger.kernel.org
+Received: by smtp.migadu.com with ESMTPS id 0dc515f7c86dd02d;
+	Wed, 23 Sep 2026 08:05:34 +0000
+X-Mizu-Trace-ID: 0dc515f7c86dd02d
+X-Migadu-Flow: FLOW_OUT
+From: Lance Yang <lance.yang@linux.dev>
+To: ljs@kernel.org
+Cc: akpm@linux-foundation.org,
+	david@kernel.org,
+	ziy@nvidia.com,
+	baolin.wang@linux.alibaba.com,
+	liam@infradead.org,
+	nico.pache@linux.dev,
+	ryan.roberts@arm.com,
+	dev.jain@arm.com,
+	baohua@kernel.org,
+	lance.yang@linux.dev,
+	usama.arif@linux.dev,
+	kas@kernel.org,
+	guoren@kernel.org,
+	bcain@kernel.org,
+	geert@linux-m68k.org,
+	dinguyen@kernel.org,
+	schuster.simon@siemens-energy.com,
+	jonas@southpole.se,
+	stefan.kristiansson@saunalahti.fi,
+	shorne@gmail.com,
+	dalias@libc.org,
+	glaubitz@physik.fu-berlin.de,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	linux@armlinux.org.uk,
+	vgupta@kernel.org,
+	monstr@monstr.eu,
+	chris@zankel.net,
+	jcmvbkbc@gmail.com,
+	will@kernel.org,
+	aneesh.kumar@kernel.org,
+	npiggin@gmail.com,
+	peterz@infradead.org,
+	davem@davemloft.net,
+	andreas@gaisler.com,
+	richard.henderson@linaro.org,
 	mattst88@gmail.com,
+	linmag7@gmail.com,
+	catalin.marinas@arm.com,
+	mark.rutland@arm.com,
+	chenhuacai@kernel.org,
+	kernel@xen0n.name,
+	tsbogend@alpha.franken.de,
+	James.Bottomley@HansenPartnership.com,
+	deller@gmx.de,
+	maddy@linux.ibm.com,
+	mpe@ellerman.id.au,
+	chleroy@kernel.org,
+	hca@linux.ibm.com,
+	gor@linux.ibm.com,
+	agordeev@linux.ibm.com,
+	borntraeger@linux.ibm.com,
+	svens@linux.ibm.com,
+	richard@nod.at,
+	anton.ivanov@cambridgegreys.com,
+	johannes@sipsolutions.net,
+	tglx@kernel.org,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	hpa@zytor.com,
+	arnd@arndb.de,
+	vbabka@kernel.org,
+	rppt@kernel.org,
+	surenb@google.com,
+	mhocko@suse.com,
+	jgg@ziepe.ca,
+	jhubbard@nvidia.com,
+	peterx@redhat.com,
+	ysato@users.sourceforge.jp,
+	shakeel.butt@linux.dev,
+	corbet@lwn.net,
+	rdunlap@infradead.org,
+	linux-mm@kvack.org,
 	linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org
-Cc: linmag7@gmail.com,
-	stable@vger.kernel.org
-Subject: [PATCH v3 7/7] alpha: invalidate the local context in flush_icache_user_page()
-Date: Wed, 23 Sep 2026 09:47:50 +0200
-Message-ID: <20260923074903.862898-8-linmag7@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260923074903.862898-1-linmag7@gmail.com>
-References: <20260923074903.862898-1-linmag7@gmail.com>
+	linux-csky@vger.kernel.org,
+	linux-hexagon@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-openrisc@vger.kernel.org,
+	linux-sh@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-snps-arc@lists.infradead.org,
+	linux-arch@vger.kernel.org,
+	sparclinux@vger.kernel.org,
+	linux-alpha@vger.kernel.org,
+	loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org,
+	linux-parisc@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	linux-um@lists.infradead.org,
+	hughd@google.com,
+	qi.zheng@linux.dev,
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v4 04/12] mm: enable MMU_GATHER_RCU_TABLE_FREE for MMU arm
+Date: Wed, 23 Sep 2026 16:05:23 +0800
+Message-ID: <20260923080523.9480-1-lance.yang@linux.dev>
+X-Mailer: git-send-email 2.49.0
+In-Reply-To: <20260922-rcu-pagetable-freeing-v4-4-fe1ad1f1e303@kernel.org>
+References: <20260922-rcu-pagetable-freeing-v4-4-fe1ad1f1e303@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-flush_icache_user_page() has the same caller-CPU omission that the
-previous patch fixed in flush_tlb_mm(): when the target mm is not the
-calling CPU's active_mm nothing happens locally, and smp_call_function()
-handles only the other CPUs, so this CPU may later reuse the old ASN
-together with the translations it still holds.
 
-This matters here in particular because the function exists for
-operating on another process's mappings: the comment above it describes
-setting breakpoints through ptrace, and access_remote_vm() reaches it
-through copy_to_user_page(). The calling CPU is therefore often running
-something other than the target mm.
+On Tue, Sep 22, 2026 at 04:35:35PM +0100, Lorenzo Stoakes (ARM) wrote:
+>Commit a0ad5496b2b3 ("arm: mm: enable HAVE_RCU_TABLE_FREE logic") enabled
+>CONFIG_MMU_GATHER_RCU_TABLE_FREE (then named HAVE_RCU_TABLE_FREE) for SMP
+>arm architectures with LPAE enabled.
+>
+>Regardless of whether CONFIG_ARM_LPAE is enabled or not, the same page
+>table freeing functions __pte_free_tlb() and __pmd_free_tlb() are used.
+>
+>Non-LPAE PMD page tables are folded into the PGD and freed by
+>pgd_free() (PGD freeing is not part of mmu_gather page table freeing in any
+>case), so this is a noop in this case.
+>
+>Since commit 358d1c39c82a ("arm: convert various functions to use ptdescs")
+>both LPAE and non-LPAE PTE page table freeing uses tlb_remove_ptdesc().
+>
+>Thus all page table freeing is performed under RCU with
+>CONFIG_MMU_GATHER_RCU_TABLE_FREE enabled for LPAE and non-LPAE and thus it
+>need not be gated on LPAE.
+>
+>A UP arm system can set CONFIG_PREEMPT_RCU, so a future pure RCU page
+>table walker requires MMU_GATHER_RCU_TABLE_FREE to be enabled on UP as
+>well, even if concurrent GUP fast is not possible there.
+>
+>Therefore, it is both safe and desirable to set
+>CONFIG_MMU_GATHER_RCU_TABLE_FREE for all MMU arm architectures (nommu does
+>not perform mmu_gather operations).
+>
+>This forms part of an overall effort to switch every architecture to this
+>mode.
+>
+>Acked-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
+>Signed-off-by: Lorenzo Stoakes (ARM) <ljs@kernel.org>
+>---
 
-As in flush_tlb_mm(), the uniprocessor implementation in
-asm/cacheflush.h already has the missing case.
+Tested under heavy page-table teardown load on qemu-system-arm,
+with and without ARM_LPAE. No issues seen :D
 
-No imb() is needed, here or in ipi_flush_icache_page(). Alpha's
-user-space I-cache flush works by allocating a new ASN rather than by
-invalidating the I-cache: the entries stay, but they are tagged with the
-old ASN and can no longer match. An imb() is only required when the ASN
-space wraps and numbers are reused, and __get_new_mm_context() already
-does one in that case.
+Tested-by: Lance Yang <lance.yang@linux.dev>
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
----
- arch/alpha/kernel/smp.c | 3 +++
- 1 file changed, 3 insertions(+)
+Also, feel free to add:
 
-diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index 988e397b0b8a..e21bc3920bec 100644
---- a/arch/alpha/kernel/smp.c
-+++ b/arch/alpha/kernel/smp.c
-@@ -758,6 +758,9 @@ flush_icache_user_page(struct vm_area_struct *vma, struct page *page,
- 			preempt_enable();
- 			return;
- 		}
-+	} else {
-+		/* smp_call_function() does not call back into this CPU.  */
-+		flush_tlb_other(mm);
- 	}
- 
- 	smp_call_function(ipi_flush_icache_page, mm, 1);
--- 
-2.43.0
+Acked-by: Lance Yang <lance.yang@linux.dev>
 
+
+> arch/arm/Kconfig | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+>diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+>index 408aa58a2a5b..72b9afc6ae10 100644
+>--- a/arch/arm/Kconfig
+>+++ b/arch/arm/Kconfig
+>@@ -134,7 +134,7 @@ config ARM
+> 	select HAVE_PERF_REGS
+> 	select HAVE_PERF_USER_STACK_DUMP
+> 	select HAVE_POSIX_CPU_TIMERS_TASK_WORK
+>-	select MMU_GATHER_RCU_TABLE_FREE if SMP && ARM_LPAE
+>+	select MMU_GATHER_RCU_TABLE_FREE if MMU
+> 	select HAVE_REGS_AND_STACK_ACCESS_API
+> 	select HAVE_RSEQ
+> 	select HAVE_RUST if CPU_LITTLE_ENDIAN && CPU_32v7 && !KASAN
+>
+>-- 
+>2.55.0
+>
+>
