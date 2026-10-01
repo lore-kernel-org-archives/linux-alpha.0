@@ -1,105 +1,160 @@
-Received: from mail-yx2-f39.google.com (mail-yx2-f39.google.com [74.125.224.167])
+Received: from mail-pz2-f41.google.com (mail-pz2-f41.google.com [74.125.228.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72AAB3E40E4
-	for <linux-alpha@vger.kernel.org>; Thu,  1 Oct 2026 16:50:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.167
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790873440; cv=none; b=cQE55iKvngx0BmJ8v/VaoaEdpU1tcAMZv8LtdYl8AXG5Ej8efvx8SvCcQ+f+wZ5BLqBaGF6jy0mUq7Imkan7GUNoxUVz64b8wli3x4SZKl+qsDCXz8mFuFqGZEFy5slAQFP0KUH13xZofiEG79YSIqMFjnP9hw4uFRy0Xtn6egI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790873440; c=relaxed/simple;
-	bh=bfDmBqDj0trYBMNSpDSBhSDsHUJ1O+BMBVzB461qpOk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gOxxyq9d7ErFgf6RgsZz1JzOqbo6cbkx5zWAO8AgH/HbB7Ak7uqcj1sAqgzkqi4yETICPrDRFcJ4JJKzme6CHCDtYmqHf9jTjuJInEAGgPfpgBtuCaZxwRjvOG9OihVTL1ZARHLOALBeMk1H5xofVAiA+gfQ56N/agwMKL9yUyE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=oAjMpB12; arc=none smtp.client-ip=74.125.224.167
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23C375328C8
+	for <linux-alpha@vger.kernel.org>; Thu,  1 Oct 2026 21:06:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790888770; cv=pass; b=cKObq/0wIf/ZzWWEeHFOeLFkg5Ex7tSi2mfK5UjrerDRxDc4WJISz64Hu2DBwReEnKMgFxFnc7YwWbqeu++DV+vvB/puZK6zjdZxfmz72OkxqTOsVevwf7ehQbiQRdT8Byd72MRx3CP/OW+nYtUjDECmjDBi/QhlwmvPfcYdnTs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790888770; c=relaxed/simple;
+	bh=xN21QYy0yGgz2sHT1nXnC/21nVEwjhkQB04Hg4E+rW8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=gS1vU7pgRkPlQNV8/g8Hmv+5eixlw8nyt6qDEmTV5ldFfn0yYKOT05YGnCzKE9IzeUMTjuHDMo4yDTMPztYzHtdX/eIl663LxKVW2F9vw+xxtqZEyFZNjBEtMt842/uyeW3n4J9t/yZURdnlfZ0LMj4i8HHq83Za9SQnbaNucW4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com; spf=pass smtp.mailfrom=paul-moore.com; dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b=CAwV36pr; arc=pass smtp.client-ip=74.125.228.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=paul-moore.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oAjMpB12"
-Received: by mail-yx2-f39.google.com with SMTP id 00721157ae682-8ad0c8eac08so8805437b3.1
-        for <linux-alpha@vger.kernel.org>; Thu, 01 Oct 2026 09:50:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b="CAwV36pr"
+Received: by mail-pz2-f41.google.com with SMTP id d2e1a72fcca58-86efece610cso3472111b3a.0
+        for <linux-alpha@vger.kernel.org>; Thu, 01 Oct 2026 14:06:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790888767; cv=none;
+        d=google.com; s=arc-20260327;
+        b=kEKynnUss7cg2a5JKYLPKvk6JcwmSBIOYozwbX74XjGzXG1Fn/SHOjU7lmRElSxrhP
+         5vsPRryoGnB0Ral/f/LjEy2gh8nobzYjbvbFfjuvhA0Bpb3ufCuVrt5zfD98rCK8KWdm
+         qApq2hBmMfidLf9gf/QNobsAuKCym2mjDWBe8sgD35CvyU1KQ+rTqwma7oJnnJLNZNGA
+         T5D3H5QXWpaEEyWR7dNBvkS6K4WMahWADOMaDp4I26WSQ1CrJApT+6rVL4LO5t5jdPyZ
+         kujh13Yoqtb2WiYQKfrnLIqqwt3hRhNQrU4y81K0cvJR+bGXhl556csS3KP5yDqT+f+U
+         gB4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=zQjpYhlPNUCc8b2PKOBh4ENa5gh7HULkWsy4SYnLXSM=;
+        fh=T9VRJw5MDOXMo2bvVwCnnWPQTGxk5fFkPUtUeOSzuBo=;
+        b=LGzTkmB6+HwPYHPH7cxHwMw95BX1+owKT0D2KRflDXOAsUYNqRS5Ai9VO/PTCsu4JE
+         JywN3I+X8JfOVnBqvMTFp9UA8TCDv2tSMuoaanO4tRzx46bqSxfR7Wyl9Ag75Neo+WnT
+         d4oLgS/JArbZGrYVhXLT6KzxMBxR3lQ8zqkiaI8mc5GEuoA+QQze5X7dMgpkyqSuTZyH
+         Kvq60yqMPT27zxGVgzYZ1P7TOQB5FrioyZy96uzWwQZQ6jlUmvWbOgATemk7DViSDCLT
+         lLuuIHNqhOunoN9+NKkMWsYOSaLmtom+fHpbLOIDJt8BMTAmGh6+W4MQpW+JgYinfK3p
+         9TDA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790873433; x=1791478233; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=szcjPGieXEfqhKINUtFT84K24oT0iMiw2DuJ+a0prBk=;
-        b=oAjMpB12L5xqS+xT5ewSNdk4W7LUo4T9/AeyMkXGNOKg0dcJhlrcA3QqmlrAU0/2P2
-         TT0Rbs44Htvnxwx9Ti4p+QSTdNqd5qQW2szXvJGWyucNnfijQwgBj13xZvdaV3DhA6y+
-         mRPPq+yabPRh2MZf9+h2249NKEtkOZAOe3B8kaHL0EXzo17PNLUdcEigWtnISO6YoxYn
-         UqvZh3lg65klszwe3xBdRIQFdIfUq6pevCL45cG+D/wQbvadM30xPbf1V2GkRAJnesqW
-         ggnMraoLGTNdq6AGUFbePytKJe7WW7r6fM8K1A6mOHzrJV73FVjGxkutIXbeWPFU8Gnz
-         eCVA==
+        d=paul-moore.com; s=google; t=1790888767; x=1791493567; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=zQjpYhlPNUCc8b2PKOBh4ENa5gh7HULkWsy4SYnLXSM=;
+        b=CAwV36prXHOZw2NRE+aSACbPdDsBf2SHqbBYA6oNTHRxcIGcOyC/CJqkRH7LJRevOZ
+         ClcJMU2t93f7XmqqwruK0c5ZXJiXQfI/+n+w9nHyb4EcEh0EZTu11pUBC9xzrVuOqKBT
+         YsV75j7RrnJU55Z+JqH44vXWfdCbI4I+NCB8980IdTgu7vzPMxHvgU+uCw/+FxPpgY0h
+         63X1M3w+g/hILuWVI8qWSFmlSwv2NKZwGdJ2DwWfYsxtFTA/lG+C3YADiA4myoIGj7HP
+         Z1Ev8yhuTUNqN+BrgGDh8F6GLVD0gbmqkkcnf9FOFy5sLyuxAa1XjcNkIrhbHMfk8YG5
+         z0BA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790873433; x=1791478233;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=szcjPGieXEfqhKINUtFT84K24oT0iMiw2DuJ+a0prBk=;
-        b=JWyHrmwrpcCO+fT2udglxkwVNdoDSmpOqdQC+DhkFigY5LHR8mniPa8rYsDAAlMv7Z
-         6ijrdZj/8dHaLzxUPm0aEobe0P3CPOf4Gyq6NOf8Qb2Rk4pHt01Ro4+7nNiCes7lPxzs
-         UfqGNXpN/mG7q6RhrE5cerQBMjd2ZE8trpPqeKjK7kBpoJrxqGMmkwwROBXzXva7PtZf
-         gm22Q8OYU4Zx2OC+GxsZQb0bUwHb6cU2G+IHP/Yt8EZiXWyhNCONh2f3OfZRLshgcul9
-         /KfHFycHqm+aktIHsk7Ktf4EjWxe93ml2acw/SDo2nfnzlTmY49uMCk1mTC72HxMjrtv
-         iVTQ==
-X-Gm-Message-State: AFq9FYKGiMuDuQeSo2dOV0yuMy30xlT2fhSzJ6LYRAFFcYQ0u+MC/l9h
-	y40Pckzj1tbl6rfMfPvwDGXvdrzS/MrLZSL+ZolDO6Y5uEpY+bBCH4YaefGXOg==
-X-Gm-Gg: AYBFou0uMLExhulkoJ7E8iKgEFQpmudHmzimxTN2iLIwp+r0HSFqo9LhKSUyhXwBGWv
-	cZMWvLQQy4Z1sSeOvyV0LSoo8+bttbd9wtb4hjRGOOS/OB/Q0OciSv1OVtbgQgZokIKF1oGkoKw
-	Yr7a6+dHz8kKENlbqDlGCS40u2WzMhHpQ1hVFWNjTliJ65nl1TpL95LZTr2jnBbYEiYy6qPlfA0
-	HuoO76ms7SOOBkYl39sjJrTj9jFOCtkt+E2E5/L2tsdnHVh7aKcuDEGOchqPdrSYdYTEIw+Hn+F
-	1860w3wOQkJIxP6rC5ge+gbDrNMNfqKcgkUYPZ6FxBxrvJ/zgnk4zxDD19twrh3KfHixWetI44Y
-	zVNPFAvv5Uw0wQBQVIPMN5TzguOpsJrcIDoOmqVR7CbkmZbKHdJitIbi9GCuzCtNvEH0AV1Tnu5
-	LhO59h9sFU5fA0hXXAEyspg+kvwBLY16+l1Dan1kYIm7AIvS26+4BeDrxh4hc1jQsD1sy42KE=
-X-Received: by 2002:a05:690c:6907:b0:8ab:4b1b:fb27 with SMTP id 00721157ae682-8ac9342129emr21793467b3.23.1790873433102;
-        Thu, 01 Oct 2026 09:50:33 -0700 (PDT)
-Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8acdac9c648sm13789557b3.14.2026.10.01.09.50.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2026 09:50:32 -0700 (PDT)
-From: Matt Turner <mattst88@gmail.com>
-To: linux-alpha@vger.kernel.org
-Cc: Magnus Lindholm <linmag7@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	Matt Turner <mattst88@gmail.com>
-Subject: [PATCH 4/4] alpha: default NR_CPUS to 32 for Wildfire
-Date: Thu,  1 Oct 2026 12:50:18 -0400
-Message-ID: <20261001165018.415526-4-mattst88@gmail.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20261001165018.415526-1-mattst88@gmail.com>
-References: <20261001165018.415526-1-mattst88@gmail.com>
+        d=1e100.net; s=20260707; t=1790888767; x=1791493567;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=zQjpYhlPNUCc8b2PKOBh4ENa5gh7HULkWsy4SYnLXSM=;
+        b=Rq/CHSrcXiMrlRdfBuGRxDxKw+cDHhbj/MQrAcIq6HXS8peyb/vjoWHMUv2gpjm/u1
+         VyU9k4q6S4mU8UgYPy+9ExeBqdKDHmjefGyXgT3NFk7+QMe5L6DbwwuIQRf5AW9BcoKx
+         l2d35wFGG/W1CYG5bUOgPu1ELscYLZlngikez8pOznPw/1WwSY+dXei0wntaTNgMYyQw
+         /Z6nt5Om4IDkTO6cp9bns5JlvQgmFoeB8OyhG/PMVyNRdE270A/iKkz6XFQTNVXEhiyu
+         lJJf98uh06N5OXHcpoT+Al4AUKhKCqHITuI8VBFm8Zjb9p2+SlmHKwz500Q+OTqStVom
+         dGrw==
+X-Forwarded-Encrypted: i=1; AKwUvBzVjOrTS55IDmFPgD68jT2fNp71kSuITE3K3uxrplAioBVdU4K01wAR4tkDOrBmGUge8CM0pIlwvNhZrQ==@vger.kernel.org
+X-Gm-Message-State: AFuF++mbpR8yStBuUGwrvfx7nfxvWnFjIQeLml6bTdwyc0zRuHUcJJrR
+	Q5J9AWLK7Ldu5So7WpNWtzXlUgsoQVt4hwYgfcaBA5x7YTxfemYFMfevbLkqdACiwDhXUiAZwaQ
+	KQ8UDZj79U6ornqcaKVz2B/Yht2zcuGiizF+qhaMH
+X-Gm-Gg: AYBFou0uT9ohJNCKobdKyJEromevpqx/VSoC51y2edxTHebC2hylz396xarevyf4e8H
+	eI2tzQag50/cu8LURFjhNF3+AfwpI+ExvscC9tdlAGJQmvy7M1GKLpngJ34LzVd/Uk2K6LJrcdL
+	hB8ATisvrjkm2/MDnNDzASTuh2bC+cEA9yQIsiG1+0wtXUQ5O/+5scqTDK2/TvlX9ngDOcfxnVU
+	NlEW+oXZH6Z4FwkEOsQw0UXt0odo14dGQGjwzfP5yn58pyN0IsScWNFQUkEikKJBalMSGdcyQan
+	kGaBD0deHQXKhYbB+lC06/91HUx/th3pAnCOezC4FzKt72wDGNd3XU4ZUB+iH/55Bx7ScRvyYOy
+	mw744D5iL6/pU
+X-Received: by 2002:a05:6a00:1254:b0:881:5dcb:400e with SMTP id
+ d2e1a72fcca58-88af6d24f34mr727169b3a.56.1790888767004; Thu, 01 Oct 2026
+ 14:06:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1790088067.git.rrobaina@redhat.com>
+In-Reply-To: <cover.1790088067.git.rrobaina@redhat.com>
+From: Paul Moore <paul@paul-moore.com>
+Date: Thu, 1 Oct 2026 17:05:54 -0400
+X-Gm-Features: AclHuK923qNeclwyxHc-N96rTW9f--kU_8IWc_3FVDcJfFTXqnWMr4asd_Mjppw
+Message-ID: <CAHC9VhQ=FFYVNmQdiMsqg+5KDDrSC3SZS+H2=r_GkhfwQox8tg@mail.gmail.com>
+Subject: Re: [PATCH v3 00/14] audit: log all six syscall arguments in the
+ SYSCALL record
+To: Ricardo Robaina <rrobaina@redhat.com>
+Cc: audit@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-csky@vger.kernel.org, linux-mips@vger.kernel.org, 
+	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, 
+	linux-um@lists.infradead.org, bpf@vger.kernel.org, eparis@redhat.com, 
+	sgrubb@redhat.com, oleg@redhat.com, richard.henderson@linaro.org, 
+	mattst88@gmail.com, linmag7@gmail.com, linux@armlinux.org.uk, 
+	catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, monstr@monstr.eu, 
+	tsbogend@alpha.franken.de, jonas@southpole.se, 
+	stefan.kristiansson@saunalahti.fi, shorne@gmail.com, 
+	James.Bottomley@hansenpartnership.com, deller@gmx.de, 
+	ysato@users.sourceforge.jp, dalias@libc.org, glaubitz@physik.fu-berlin.de, 
+	davem@davemloft.net, andreas@gaisler.com, richard@nod.at, 
+	anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net, chris@zankel.net, 
+	jcmvbkbc@gmail.com, tglx@kernel.org, peterz@infradead.org, luto@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The AlphaServer GS320 has up to 32 CPUs and the Wildfire code handles
-all eight QBBs, but a Wildfire-only kernel defaults to NR_CPUS=4 and
-ignores the rest unless the user raises it by hand.
+On Tue, Sep 22, 2026 at 3:21=E2=80=AFPM Ricardo Robaina <rrobaina@redhat.co=
+m> wrote:
+>
+> The SYSCALL record currently logs only four of the six syscall
+> arguments (a0-a3), silently discarding the remaining two. This
+> leads to the need for auxiliary records when audit-relevant
+> data lands in the 5th or 6th argument of a syscall.
+>
+> This series extends the SYSCALL record to log all six arguments,
+> by adding arguments a4 and a5 inline within the existing record.
 
-Signed-off-by: Matt Turner <mattst88@gmail.com>
----
- arch/alpha/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks Ricardo, this looks great!
 
-diff --git ./arch/alpha/Kconfig ./arch/alpha/Kconfig
-index 0fc61d986a7d..b5b02bb42aca 100644
---- ./arch/alpha/Kconfig
-+++ ./arch/alpha/Kconfig
-@@ -483,8 +483,8 @@ config NR_CPUS
- 	int "Maximum number of CPUs (2-32)"
- 	range 2 32
- 	depends on SMP
--	default "32" if ALPHA_GENERIC || ALPHA_MARVEL
--	default "4" if !ALPHA_GENERIC && !ALPHA_MARVEL
-+	default "32" if ALPHA_GENERIC || ALPHA_MARVEL || ALPHA_WILDFIRE
-+	default "4"
- 	help
- 	  The kernel supports at most 32 CPUs. Only Marvel and Wildfire
- 	  systems have more than 4.
--- 
-2.54.0
+There are a few things in some of the individual patches which I reply
+to in a minute, but there are a couple of "global" things that I
+wanted to mention:
 
+* As pointed out by Sashiko, when you were converting all of the
+arches, it looks like you missed alpha.  I took a quick look and it
+appears that it should be a pretty straightforward conversion like
+most of the others.
+
+* We need to get ACKs from all the various arch maintainers.  Aside
+from the parisc changes all of your arch specific patches are trivial
+(and cleaner than the existing code IMO) so I don't expect anyone to
+complain, but getting ACKs will likely take some time.  Even the
+parisc patches aren't that bad, and arguably they fix a problem for
+seccomp so that should make asking for ACKs easier :)
+
+Since I expect chasing down all the various maintainers for ACKs will
+take a little while, and I'd like to start getting this patchset some
+basic testing, I'm going to merge it into dev-staging now.  While the
+dev-staging branch doesn't feed into linux-next (this isn't likely to
+land in the next merge window) it is one of the branches that gets
+tested automatically and included in my kernel-secnext RPM builds.
+This also means you won't need to worry about keeping this patchset
+up-to-date with rebasing, as I rebase dev-staging as needed (it
+intentionally isn't a stable branch).  Going forward, if there are any
+minor changes to this patchset, e.g. a few line change in one of two
+patches, please just send a fixup patchset based against
+audit/dev-staging and I'll squash it into the relevant patch in the
+series.  However, in the unlikely event that a major rewrite is
+needed, just send a new patchset ... but I'll be very surprised if
+that happens here :)
+
+--=20
+paul-moore.com
