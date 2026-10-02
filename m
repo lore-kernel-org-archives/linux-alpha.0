@@ -1,160 +1,193 @@
-Received: from mail-pz2-f41.google.com (mail-pz2-f41.google.com [74.125.228.41])
+Received: from mail-ed2-f31.google.com (mail-ed2-f31.google.com [74.125.228.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23C375328C8
-	for <linux-alpha@vger.kernel.org>; Thu,  1 Oct 2026 21:06:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6D033B83F9
+	for <linux-alpha@vger.kernel.org>; Fri,  2 Oct 2026 09:53:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.95
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790888770; cv=pass; b=cKObq/0wIf/ZzWWEeHFOeLFkg5Ex7tSi2mfK5UjrerDRxDc4WJISz64Hu2DBwReEnKMgFxFnc7YwWbqeu++DV+vvB/puZK6zjdZxfmz72OkxqTOsVevwf7ehQbiQRdT8Byd72MRx3CP/OW+nYtUjDECmjDBi/QhlwmvPfcYdnTs=
+	t=1790934794; cv=pass; b=EGtFxZb9M+18oLyzHKCNJmwjc6v7+w7/b9C/PosOjGJUg8ZpMAqmcMU4yoqzugTMvoI+UgLAyw4khgLS5vyc8xbLHHSApwQH+mAhyfGUBt6Y1ZK69OwVRr1vpOotlJekBWfU05NO9q0QqJqymDPHDaZ4yd3QUn5S6Fa9U1NgCJw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790888770; c=relaxed/simple;
-	bh=xN21QYy0yGgz2sHT1nXnC/21nVEwjhkQB04Hg4E+rW8=;
+	s=arc-20240116; t=1790934794; c=relaxed/simple;
+	bh=I2iVAnQjuB2efbREqOoIFm3u1ZAEbnkLwA/mRmKPRhA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gS1vU7pgRkPlQNV8/g8Hmv+5eixlw8nyt6qDEmTV5ldFfn0yYKOT05YGnCzKE9IzeUMTjuHDMo4yDTMPztYzHtdX/eIl663LxKVW2F9vw+xxtqZEyFZNjBEtMt842/uyeW3n4J9t/yZURdnlfZ0LMj4i8HHq83Za9SQnbaNucW4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com; spf=pass smtp.mailfrom=paul-moore.com; dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b=CAwV36pr; arc=pass smtp.client-ip=74.125.228.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=paul-moore.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=paul-moore.com
+	 To:Cc:Content-Type; b=rR2U8dXccA7TXEz2CCIgqR0zYuuETYEu5yZOUW4E4xKeT5/IIhOSRV+sTy8qSHu0K/ehIXPWQp6Hnntn2PXveAj0F47xCxZjmiqF7tnFB04DOkKI/WBCt540hxEcnzGpG0OdH9TLA7UacH/Bja0znG4abUXmmeGhrVx6ciqkzPM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iUMCz4qm; arc=pass smtp.client-ip=74.125.228.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=paul-moore.com header.i=@paul-moore.com header.b="CAwV36pr"
-Received: by mail-pz2-f41.google.com with SMTP id d2e1a72fcca58-86efece610cso3472111b3a.0
-        for <linux-alpha@vger.kernel.org>; Thu, 01 Oct 2026 14:06:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790888767; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iUMCz4qm"
+Received: by mail-ed2-f31.google.com with SMTP id 4fb4d7f45d1cf-6afa5b9150eso368847a12.0
+        for <linux-alpha@vger.kernel.org>; Fri, 02 Oct 2026 02:53:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790934790; cv=none;
         d=google.com; s=arc-20260327;
-        b=kEKynnUss7cg2a5JKYLPKvk6JcwmSBIOYozwbX74XjGzXG1Fn/SHOjU7lmRElSxrhP
-         5vsPRryoGnB0Ral/f/LjEy2gh8nobzYjbvbFfjuvhA0Bpb3ufCuVrt5zfD98rCK8KWdm
-         qApq2hBmMfidLf9gf/QNobsAuKCym2mjDWBe8sgD35CvyU1KQ+rTqwma7oJnnJLNZNGA
-         T5D3H5QXWpaEEyWR7dNBvkS6K4WMahWADOMaDp4I26WSQ1CrJApT+6rVL4LO5t5jdPyZ
-         kujh13Yoqtb2WiYQKfrnLIqqwt3hRhNQrU4y81K0cvJR+bGXhl556csS3KP5yDqT+f+U
-         gB4w==
+        b=lkNowFyRt7VhlzyDW/EBb8oNs6+7ugIXFTMjXlHg1zv/BLit88pV1yTcil+XutMOZj
+         C2J94lEpy6BvUwUFzogk/EH7h4FpbC02KLTW1eiwY/3VFzhzZ/y7EHK1fCOZgL6e6sA9
+         Kr9hAyuVOGCerfBBgR+oTKtJ5g2oKG2pnWvWm9zqL2ErFgVlEfVFoURBqLX8n7tRu5sp
+         8ReVdrYIu/du5+0PS8Zj1JFMESd54Pm8M9/0YZOHfCzjT5WkiQiS2bZPF0Qu4hylHePQ
+         h5NuDlDceNMmfYHIrTq7PJlZ8woFz2I40MWSzdXw/hMW+Q1BQ19EBT8qkg/Ug7LhqehL
+         3log==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=zQjpYhlPNUCc8b2PKOBh4ENa5gh7HULkWsy4SYnLXSM=;
-        fh=T9VRJw5MDOXMo2bvVwCnnWPQTGxk5fFkPUtUeOSzuBo=;
-        b=LGzTkmB6+HwPYHPH7cxHwMw95BX1+owKT0D2KRflDXOAsUYNqRS5Ai9VO/PTCsu4JE
-         JywN3I+X8JfOVnBqvMTFp9UA8TCDv2tSMuoaanO4tRzx46bqSxfR7Wyl9Ag75Neo+WnT
-         d4oLgS/JArbZGrYVhXLT6KzxMBxR3lQ8zqkiaI8mc5GEuoA+QQze5X7dMgpkyqSuTZyH
-         Kvq60yqMPT27zxGVgzYZ1P7TOQB5FrioyZy96uzWwQZQ6jlUmvWbOgATemk7DViSDCLT
-         lLuuIHNqhOunoN9+NKkMWsYOSaLmtom+fHpbLOIDJt8BMTAmGh6+W4MQpW+JgYinfK3p
-         9TDA==;
+        bh=4arSkmG1a9JYvWYFRd6H2E/qKnzAPGl35h03AYNFrrI=;
+        fh=ViAatGiZ05dh3a394EUid4cQpUnAI/U35CAucij+cuk=;
+        b=oLPSI6zUI0W4wgjCe1hKyEyMMkhPLDjmGfuDblBB9npD6oATQcHnerO2+uF1+/z9DJ
+         68rad89RCUw3wHWqDunCKpTB5ae3bHWz/J2OpMby72OYDWG9UkubBlkBRjp5xoSGD+w7
+         FJmJOrXAgD4WW1l6SeJbReqcCWoBQ17m2cIK6SD4tVlcz64xAVzkOie0aMpEu1B22pGq
+         JPx6xHAFVRViIPxhv8w9oVEZmg4cePMjzXUgevmMrTOXEHsLc6/nuCiClFTMDFdRzu9Y
+         OCC1E1/DWpoHQRkQwAwBR9yFG3uvEnnT3sC6PdzAj4vNXN8gTBRMSThOoowoWUMkqlEw
+         fs1w==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore.com; s=google; t=1790888767; x=1791493567; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1790934790; x=1791539590; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=zQjpYhlPNUCc8b2PKOBh4ENa5gh7HULkWsy4SYnLXSM=;
-        b=CAwV36prXHOZw2NRE+aSACbPdDsBf2SHqbBYA6oNTHRxcIGcOyC/CJqkRH7LJRevOZ
-         ClcJMU2t93f7XmqqwruK0c5ZXJiXQfI/+n+w9nHyb4EcEh0EZTu11pUBC9xzrVuOqKBT
-         YsV75j7RrnJU55Z+JqH44vXWfdCbI4I+NCB8980IdTgu7vzPMxHvgU+uCw/+FxPpgY0h
-         63X1M3w+g/hILuWVI8qWSFmlSwv2NKZwGdJ2DwWfYsxtFTA/lG+C3YADiA4myoIGj7HP
-         Z1Ev8yhuTUNqN+BrgGDh8F6GLVD0gbmqkkcnf9FOFy5sLyuxAa1XjcNkIrhbHMfk8YG5
-         z0BA==
+        bh=4arSkmG1a9JYvWYFRd6H2E/qKnzAPGl35h03AYNFrrI=;
+        b=iUMCz4qmERGAlenNan6CUNOieacNgnSjS8mHjPiYzXWcLS1E32pe3W3AsKwPpGRlpL
+         lf9hvXbQkeBLQCRc/gvTsb1hIpXnEKTqW/W4Vyv0pI9ewAb4uGLFRTGaw+NK9zkBhnt1
+         1U2wUwC/IR4H812RxRukMhNzOPzsiBpcuC15NMPEsTR5LgpoMKdqgBc6WIkXbKkAysDF
+         jK+4+eQWAt+wCOxR3IsjIvsrC+sw+97G55N6mHHK6586adrnKWvrc6+aPLJVhyP1r1Qd
+         odISBgTUAjpmhJu1wmXSlfw+Uue0GUraOhPoS2tA2kJ6xiXKdSE9EgeVIs+Ly4GQFCaX
+         FS7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790888767; x=1791493567;
+        d=1e100.net; s=20260707; t=1790934790; x=1791539590;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=zQjpYhlPNUCc8b2PKOBh4ENa5gh7HULkWsy4SYnLXSM=;
-        b=Rq/CHSrcXiMrlRdfBuGRxDxKw+cDHhbj/MQrAcIq6HXS8peyb/vjoWHMUv2gpjm/u1
-         VyU9k4q6S4mU8UgYPy+9ExeBqdKDHmjefGyXgT3NFk7+QMe5L6DbwwuIQRf5AW9BcoKx
-         l2d35wFGG/W1CYG5bUOgPu1ELscYLZlngikez8pOznPw/1WwSY+dXei0wntaTNgMYyQw
-         /Z6nt5Om4IDkTO6cp9bns5JlvQgmFoeB8OyhG/PMVyNRdE270A/iKkz6XFQTNVXEhiyu
-         lJJf98uh06N5OXHcpoT+Al4AUKhKCqHITuI8VBFm8Zjb9p2+SlmHKwz500Q+OTqStVom
-         dGrw==
-X-Forwarded-Encrypted: i=1; AKwUvBzVjOrTS55IDmFPgD68jT2fNp71kSuITE3K3uxrplAioBVdU4K01wAR4tkDOrBmGUge8CM0pIlwvNhZrQ==@vger.kernel.org
-X-Gm-Message-State: AFuF++mbpR8yStBuUGwrvfx7nfxvWnFjIQeLml6bTdwyc0zRuHUcJJrR
-	Q5J9AWLK7Ldu5So7WpNWtzXlUgsoQVt4hwYgfcaBA5x7YTxfemYFMfevbLkqdACiwDhXUiAZwaQ
-	KQ8UDZj79U6ornqcaKVz2B/Yht2zcuGiizF+qhaMH
-X-Gm-Gg: AYBFou0uT9ohJNCKobdKyJEromevpqx/VSoC51y2edxTHebC2hylz396xarevyf4e8H
-	eI2tzQag50/cu8LURFjhNF3+AfwpI+ExvscC9tdlAGJQmvy7M1GKLpngJ34LzVd/Uk2K6LJrcdL
-	hB8ATisvrjkm2/MDnNDzASTuh2bC+cEA9yQIsiG1+0wtXUQ5O/+5scqTDK2/TvlX9ngDOcfxnVU
-	NlEW+oXZH6Z4FwkEOsQw0UXt0odo14dGQGjwzfP5yn58pyN0IsScWNFQUkEikKJBalMSGdcyQan
-	kGaBD0deHQXKhYbB+lC06/91HUx/th3pAnCOezC4FzKt72wDGNd3XU4ZUB+iH/55Bx7ScRvyYOy
-	mw744D5iL6/pU
-X-Received: by 2002:a05:6a00:1254:b0:881:5dcb:400e with SMTP id
- d2e1a72fcca58-88af6d24f34mr727169b3a.56.1790888767004; Thu, 01 Oct 2026
- 14:06:07 -0700 (PDT)
+        bh=4arSkmG1a9JYvWYFRd6H2E/qKnzAPGl35h03AYNFrrI=;
+        b=EdgAKXXau3wY3Z8qPuyxgz5H6n2718P4jNAgoqibsEnVGh+yTbAZCtZvpedEJSMLLa
+         0F8KNG3p86LbPE39st4YMZeF1mgTTrmPitNn+hsTTvdTuhIjHWQuRF3BH/X11Vpbc9yb
+         HkmkzhHzDTlQw0C9r7dB2uMNEiUcPuXuha3sa8x4OLhMbgUP8o2Rjf6qKMgVESPGC/ny
+         5Y20eYG3OSluimukokrbYyJioSzclUK4ENWyh0fd8U5k8Q0LIciz8vl6DPHNuXmvVb+Z
+         NgZbun8r7MFUe4ygHeppnnl/22oMXmF1BQDo5zrRFHKNhxBPQZSyyXAa3FLFu7jyTbNi
+         9u6w==
+X-Gm-Message-State: AFq9FYLoZUDnelXZyt5CtOk/wTf/TIkhFB0zwQkq9h9qr3Y3YNzyMMYo
+	6AQ3psFtYsL4xjfsn5uDZv70O0yY6cLd1W7IZ59VYDe8jDqVm1V5N6FEE+GNxEZq1az7RYL+1vj
+	qL+fAY1HciVe5UHaQWTkD+CUujv7MgFY=
+X-Gm-Gg: AYBFou1P2bToqaLfFZScau2Q0jh9ZwyAuTNSNq8kYcK4I0FvHpByV/NjRzVra3bI8yb
+	UPq5wKwoyPT5CtZKR8B04UTQJMDEmZkiXt9x7dUzOWL0/UzZX0HMRG7CFitrGhN8mv8GdHrkJZZ
+	8OSbYDzN+hvio1dzkZEulsJCKkJLy8VIPawg7rIkh5SdL/jnnBMKXZZ2hqdYjZzI1KFl2tXBQC4
+	suFn4mvw3+hFflbgojSWugxysAfCwXtSGGa/vaQFNosQBsGC772ceWaMf/JsJouq0sqwjZ/Tynl
+	DFt4x0RsRrdomkDtKrAZLjJz/p2FGaEoFjYGfJH5HUg6tqWpPDz/eKv2D7g4U4Se4cX/L9al8Xe
+	Oe4BdRhSK/ZwYyrk4WnlwSpv7J1EYT7xHWjAfROIvvCQ=
+X-Received: by 2002:a05:6402:401b:b0:6ab:eb3e:ef50 with SMTP id
+ 4fb4d7f45d1cf-6af9e31f56dmr1449604a12.36.1790934789894; Fri, 02 Oct 2026
+ 02:53:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1790088067.git.rrobaina@redhat.com>
-In-Reply-To: <cover.1790088067.git.rrobaina@redhat.com>
-From: Paul Moore <paul@paul-moore.com>
-Date: Thu, 1 Oct 2026 17:05:54 -0400
-X-Gm-Features: AclHuK923qNeclwyxHc-N96rTW9f--kU_8IWc_3FVDcJfFTXqnWMr4asd_Mjppw
-Message-ID: <CAHC9VhQ=FFYVNmQdiMsqg+5KDDrSC3SZS+H2=r_GkhfwQox8tg@mail.gmail.com>
-Subject: Re: [PATCH v3 00/14] audit: log all six syscall arguments in the
- SYSCALL record
-To: Ricardo Robaina <rrobaina@redhat.com>
-Cc: audit@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-csky@vger.kernel.org, linux-mips@vger.kernel.org, 
-	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linux-um@lists.infradead.org, bpf@vger.kernel.org, eparis@redhat.com, 
-	sgrubb@redhat.com, oleg@redhat.com, richard.henderson@linaro.org, 
-	mattst88@gmail.com, linmag7@gmail.com, linux@armlinux.org.uk, 
-	catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, monstr@monstr.eu, 
-	tsbogend@alpha.franken.de, jonas@southpole.se, 
-	stefan.kristiansson@saunalahti.fi, shorne@gmail.com, 
-	James.Bottomley@hansenpartnership.com, deller@gmx.de, 
-	ysato@users.sourceforge.jp, dalias@libc.org, glaubitz@physik.fu-berlin.de, 
-	davem@davemloft.net, andreas@gaisler.com, richard@nod.at, 
-	anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net, chris@zankel.net, 
-	jcmvbkbc@gmail.com, tglx@kernel.org, peterz@infradead.org, luto@kernel.org
+References: <20261001165018.415526-1-mattst88@gmail.com>
+In-Reply-To: <20261001165018.415526-1-mattst88@gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Fri, 2 Oct 2026 11:52:58 +0200
+X-Gm-Features: AclHuK_05I1u_F6UhWNrqTl3drg919aiOwzfaMNOjFx2ztu5WOZ_5uYX6J9Ws-s
+Message-ID: <CA+=Fv5Rznjz2qYiM4rtFs8iB3PefHJ4CdJxS7O+DcStWbS4kQw@mail.gmail.com>
+Subject: Re: [PATCH 1/4] alpha: replace dead links in Kconfig help text
+To: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 22, 2026 at 3:21=E2=80=AFPM Ricardo Robaina <rrobaina@redhat.co=
-m> wrote:
+Hi Matt,
+
+On Thu, Oct 1, 2026 at 6:50=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
+te:
 >
-> The SYSCALL record currently logs only four of the six syscall
-> arguments (a0-a3), silently discarding the remaining two. This
-> leads to the need for auxiliary records when audit-relevant
-> data lands in the 5th or 6th argument of a syscall.
+> The Linux/Alpha FAQ, the unix-ag LX164 overview, the Rawhide install
+> HOWTO and the Ruffian FAQ are all gone. Point the "Alpha system type"
+> help at the system and motherboard lists on the alphalinux.org wiki
+> instead, give LX164 a one-line description in place of its link, and
+> drop the others.
 >
-> This series extends the SYSCALL record to log all six arguments,
-> by adding arguments a4 and a5 inline within the existing record.
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
+> ---
+>  arch/alpha/Kconfig | 20 ++++++++------------
+>  1 file changed, 8 insertions(+), 12 deletions(-)
+>
+> diff --git ./arch/alpha/Kconfig ./arch/alpha/Kconfig
+> index 92cc7bb8d29a..7c1cc676ddfe 100644
+> --- ./arch/alpha/Kconfig
+> +++ ./arch/alpha/Kconfig
+> @@ -127,9 +127,10 @@ choice
+>           run on any supported Alpha system. However, if you configure a
+>           kernel for your specific system, it will be faster and smaller.
+>
+> -         To find out what type of Alpha system you have, you may want to
+> -         check out the Linux/Alpha FAQ, accessible on the WWW from
+> -         <http://www.alphalinux.org/>. In summary:
+> +         To find out what type of Alpha system you have, see the system =
+and
+> +         motherboard lists at
+> +         <https://alphalinux.org/wiki/hardware:systems> and
+> +         <https://alphalinux.org/wiki/hardware:motherboards>. In summary=
+:
+>
+>           Alcor/Alpha-XLT     AS 600, AS 500, XL-300, XL-366
+>           DP264               DP264 / DS20 / ES40 / DS10 / DS10L
+> @@ -184,8 +185,8 @@ config ALPHA_EIGER
+>  config ALPHA_LX164
+>         bool "LX164"
+>         help
+> -         A technical overview of this board is available at
+> -         <http://www.unix-ag.org/Linux-Alpha/Architectures/LX164.html>.
+> +         AlphaPC164-LX, a 21164A-based single-board computer using the
+> +         Pyxis chipset.
+>
+>  config ALPHA_MARVEL
+>         bool "Marvel"
+> @@ -224,14 +225,11 @@ config ALPHA_RAWHIDE
+>         select HAVE_EISA
+>         help
+>           AlphaServer 1200, AlphaServer 4000 and AlphaServer 4100 machine=
+s.
+> -         See HOWTO at
+> -         <http://www.alphalinux.org/docs/rawhide/4100_install.shtml>.
+>
+>  config ALPHA_RUFFIAN
+>         bool "Ruffian"
+>         help
+> -         Samsung APC164UX.  There is a page on known problems and workar=
+ounds
+> -         at <http://www.alphalinux.org/faq/FAQ-11.html>.
+> +         Samsung APC164UX.
+>
+>  config ALPHA_RX164
+>         bool "RX164"
+> @@ -372,9 +370,7 @@ config ALPHA_SRM
+>         help
+>           There are two different types of booting firmware on Alphas: SR=
+M,
+>           which is command line driven, and ARC, which uses menus and arr=
+ow
+> -         keys. Details about the Linux/Alpha booting process are contain=
+ed in
+> -         the Linux/Alpha FAQ, accessible on the WWW from
+> -         <http://www.alphalinux.org/>.
+> +         keys.
+>
+>           The usual way to load Linux on an Alpha machine is to use MILO
+>           (a bootloader that lets you pass command line parameters to the
+> --
+> 2.54.0
+>
+Nice cleanup work!
 
-Thanks Ricardo, this looks great!
+I applied the series cleanly to my for-next branch and build-tested
+every commit with the Alpha defconfig. I also built the final tree
+with these configurations:
 
-There are a few things in some of the individual patches which I reply
-to in a minute, but there are a couple of "global" things that I
-wanted to mention:
+  Generic SMP, NR_CPUS=3D32
+  Wildfire SMP, NR_CPUS=3D32
+  Wildfire SMP, explicit NR_CPUS=3D4
+  Wildfire with SMP disabled
+  Marvel SMP, NR_CPUS=3D32
+  DP264 SMP, NR_CPUS=3D4
 
-* As pointed out by Sashiko, when you were converting all of the
-arches, it looks like you missed alpha.  I took a quick look and it
-appears that it should be a pretty straightforward conversion like
-most of the others.
-
-* We need to get ACKs from all the various arch maintainers.  Aside
-from the parisc changes all of your arch specific patches are trivial
-(and cleaner than the existing code IMO) so I don't expect anyone to
-complain, but getting ACKs will likely take some time.  Even the
-parisc patches aren't that bad, and arguably they fix a problem for
-seccomp so that should make asking for ACKs easier :)
-
-Since I expect chasing down all the various maintainers for ACKs will
-take a little while, and I'd like to start getting this patchset some
-basic testing, I'm going to merge it into dev-staging now.  While the
-dev-staging branch doesn't feed into linux-next (this isn't likely to
-land in the next merge window) it is one of the branches that gets
-tested automatically and included in my kernel-secnext RPM builds.
-This also means you won't need to worry about keeping this patchset
-up-to-date with rebasing, as I rebase dev-staging as needed (it
-intentionally isn't a stable branch).  Going forward, if there are any
-minor changes to this patchset, e.g. a few line change in one of two
-patches, please just send a fixup patchset based against
-audit/dev-staging and I'll squash it into the relevant patch in the
-series.  However, in the unlikely event that a major rewrite is
-needed, just send a new patchset ... but I'll be very surprised if
-that happens here :)
-
---=20
-paul-moore.com
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
