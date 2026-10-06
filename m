@@ -1,68 +1,66 @@
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DFBC20E023
-	for <linux-alpha@vger.kernel.org>; Tue,  6 Oct 2026 14:04:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D1C146C826
+	for <linux-alpha@vger.kernel.org>; Tue,  6 Oct 2026 14:04:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791295462; cv=none; b=k8wBooQHX+EXQ1yJbjiNv2Mv4RFtkvptN158eFUfx8cA8Gh1JaiQTlAEL3lxW8vr029vg8WKVHWhsjfgJMSJDqyvAlYYBCZrASZUOfzjUKBinY6QVk7XG4W60thBTcm4Twggc8QzBaUHeVYog6lwaApJVa4E9JMC8U58X9Wzu6o=
+	t=1791295465; cv=none; b=XlobtBklWkzPXRYooKTqZeqryza2aALJ/o222Zn28GLp7uuCf877oNHTLYhT07hIy5YmyQMuS+ejZnSA5JXFVM2IwkNIkEl4XLHXB+7cU75TCimc8/Y88Upnk9Yi6OYA+isEM7U4hD6zby9zezKJ1SuCwbJ0gQ10uF4Kvv+FcBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791295462; c=relaxed/simple;
-	bh=MZykUui1Wig1GtAKfx2ri2KqKibPxVefrQgVM77LKsQ=;
+	s=arc-20240116; t=1791295465; c=relaxed/simple;
+	bh=IZZtRHJr+e42CAizBt8VTtUypllcIwka88XR1oYPtDs=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=N7NlU8kI6S5w4Fv+q5UYS5/f3js7i9cCOLa0mQHYYHb5nDIJYEE3crQM6shJfKn/xlOmFPR5Jr/jkjr3/bw74pZgSw1hUb75b4R3eiQsgeavHYeVJgVX41rtjBu0rEDRFqBuSS79WzUW81GrKX0Ufnox+v97STcoCGo6+QmACRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z3/8d8FE; arc=none smtp.client-ip=209.85.128.180
+	 In-Reply-To:To:Cc; b=NVn0QYCjOP/O9J5Gxr2mGeWPyn73DFhz59N0JjcVd7Hw44WN8SgygjAD1jZxXhBTic0wA6XEFp4hS2dFQKYy5xOJE46hNobb7m9A0W5A4nTwoiwt+73VrgRH0lMkl3CHwVJBX4zo/zk1lhXMTdSCZEQrPtYOKPPZxqjDTVJQ0SY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XpqNEVxE; arc=none smtp.client-ip=209.85.128.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z3/8d8FE"
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-888cbacf70eso10904267b3.1
-        for <linux-alpha@vger.kernel.org>; Tue, 06 Oct 2026 07:04:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XpqNEVxE"
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-8565d77c277so8050447b3.0
+        for <linux-alpha@vger.kernel.org>; Tue, 06 Oct 2026 07:04:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791295460; x=1791900260; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791295462; x=1791900262; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=itwBqHZFCzsIQDL+h8XDZePWzl6bxkrL0a9ivscfpCM=;
-        b=Z3/8d8FEBXDl0GCDpqHLl7HokmJBwC1JEZW/RX/eNgXEUmmFLhXq23+lKWfp9SLYrj
-         ogTukbm2BuS8p7Wv9WJoRv1eiC5S+WsYepIuADMyiLwlTfT6liKqehtandrIi4qp+y4P
-         MlOQTYqddkLSXe8JAM9t5lwoa5hxWRdRmlEH8Odjvh40ncVjgZgaCTC65OBl1krKyKEP
-         n60alpMZ6EoNCjlNdHqeQwUO8/uLOkwOMP8AXfVF27MxxaOildrxgwK2YuLzvOI3YrUM
-         gQXB30y3pi/0BIFZsiv8DZQ8hwoA0GocMpbYH6Zg4QWaI94xVdmU+eIR0lfMgOwmvUqL
-         XkIg==
+        bh=3S0guEw597JkjZhCyocLM7RkGqnoXsc1m6z3K9esQi4=;
+        b=XpqNEVxEfzTWdjLdbszXKW7xPbdBcSqBWHy/bRDr72bhAbh/8QZuE3nhm/Gp6bixao
+         ZNdT4bEc5o02ZszHUD9qCceq9XD8CPvL2uEa5JhUXnbWrHxEvqY2rAUKLb4XvhvAsfdQ
+         jM5zlpar/rDEdrpCdwjDpa4/VdpYpWUeTWO70oUswNhG5Q9QH2uATj59I5F8UEygHyO8
+         KHAv94cRhk7FMljgxF/zSbMXe1PSb7TL02zWThp0VgO1Qm5WfNkxFf65LpOTsuqdyYrG
+         5BQ1Nnjuje+B9y3/kKhkZ6jZ0vmEWN4XmxaVPV6avueyD4hYj53xseuDPvsDM85i6iOh
+         /6yQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791295460; x=1791900260;
+        d=1e100.net; s=20260707; t=1791295462; x=1791900262;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=itwBqHZFCzsIQDL+h8XDZePWzl6bxkrL0a9ivscfpCM=;
-        b=nOd6RSmuuRPIfZ9J8QpS7eeGOFcb8NEF9inKr2j+WOz1YYUgDqqJ77W3FPvDxp4w24
-         ixSGD+94O7tzSz6VOIDp2tFpOeTU4Anh2SmfYiHIe/oPPjpDXFzu3FDOFZEELYHXfaX8
-         IU8ziclYirJwX+ZyUDyOZISy4zoHz2AckBfX+3WOP7ZVe/IRuFx7QawAwCVLgGNuyee4
-         rnDK1nlQrnnEU+r1D7rLH/l96kf5vaU8Uw7mAdVc9qYlLPAr5td1al7BbeuA2Zuifzmh
-         6u/FzKsfB8dI+zodwpCYGKJ4o+AMKy7Tpt2wE4aPb88pDD4yWm46nhpMOKK7w1Goo1XF
-         AQJg==
-X-Gm-Message-State: AFq9FYLtDIwnJXnY4ohFM4wKeR0NcE9DRyYsbQ1pyA2M0GDfYb5qJULF
-	r0hRLCWTBeiGYZpmPC3rC0R2YpigMcDsFotzCHd7mBnNw397Rzi5vhDd
-X-Gm-Gg: AYBFou3sxAlOrELYWbSu7dRU+siH7vi2FhZvnZl4GanI6bqI7ACKm6SusUgqqu9eWXl
-	oP5Fo9bKeMowCpjYV2Wtvm2ZGGgeKVlYOT7jnvHkM5fbaccO9PD5F0HgF1lbFCWgN0IuuYLeTeZ
-	wnS+pVZJc/AB1QEcgR0KS59iaC5MP4yapjMGP4Fd+GmrmGSiCJ8B8O+5lWszg8kWVKb425bc/gQ
-	NknreNPyYPjoaKS05PHZl/6MmuDcNq597Pbd3vDL388e1/y4ogGCd0Q7JPBQywVIxLEYkOz1Sm2
-	17cQm7J1xBR/y5/68GS0T3zUMvemQ0xXPsmDLXTtOX1JtzQgVdB9j5ftvwy4uGX6NyoCdG5Xw0j
-	OApXwWiWFJu2ynKF19r9Mqqbog1fwRYnClhxzrnvDlOH/EQy6USDbhIWZZkhcSonY7dcTM1R3nz
-	dzHoB18lpm3XI0qxb50peCK1U0B/XCpBic9g4oGBwN9WXS4xi4XJOo6ZKYxsDELARxEsqVdWgaL
-	26ldFkrVA==
-X-Received: by 2002:a05:690c:e3eb:b0:871:bc3:9856 with SMTP id 00721157ae682-8b04f40b287mr5784777b3.33.1791295459692;
-        Tue, 06 Oct 2026 07:04:19 -0700 (PDT)
+        bh=3S0guEw597JkjZhCyocLM7RkGqnoXsc1m6z3K9esQi4=;
+        b=YLoGi00LaDKN4C+59x0eRG6UCYdiuzTV4+ml4aEBsQUR602xiBWpb9lAeqWJPfrl8F
+         hAWZeoMoygaQYXTrdS5fB4LnDeGq1Zmrbm38xtS6zeomN9lco7F9tCwhWj09ZBCUYNd3
+         EZNvLLHWyR3PE02pu5Zg7PEDfincqQFItqfemrureeQSMfCYmOt5dgUylb7GPKdaYuh2
+         xS5GuZ/klhorG5vTvKeqO3nt312+NnLdc0212EiwVsw+FDiMuIOhnbrdukvhhm1e6NwJ
+         FByFGvXmHKgT7DRr/H2I/4LPH/8wBnWxxoosIuDT0Evq+Hay7J6lEq0BFp46vFS8p7E7
+         fJ8A==
+X-Gm-Message-State: AFq9FYLg4p7+9l3Y6M/fS0QOiV7XLK2kkBdTuaDph7HyVQgKI6tTDrjd
+	uXfhydEcvNBkwzpuzRc1TTUJku7+Nk4tWdFhf4psO6yosDxpKasLXa2G
+X-Gm-Gg: AYBFou3gyej22S821hBKLN/y5nK7RX40ZLvSqgaMyKzeY+a339iZJiKXhhlDQzIHcrF
+	BOcyKo73D6R/V/EsYYBqh9L1Uh76Fhmgx+YqKz/rl7/dIBn30d5Luu3z6FICGlykE0cvYQNZaox
+	z6hXytociaCgAAVRBcfY0OAR7bbq6z8/lZLenEugQ7Db39u5GigtNL4TmK8ORRe6Wst+0BZtYyT
+	3HHAHIS6gCW7ezm9GAKL0fIFJXqnQyhcIcylv8L6+7Ywb+eJfsBPuC77dcKIOLckGwt1IuGtV9Q
+	SFZrgw8z4C+YWLLOLEV9y/YGiWA19BREwgDU4OD3UBeBoIrnfZ2gnmmUMEb3aPCYZC9hF5eDAr0
+	qx9R8grT+0CzZtVNgXchqOrox2VCCkHhwhCyrVbGC74oHrFLnIaWNe3zMjr51J/w5heONjqaUMV
+	a95j13jIJ5v+7xDpRzRqDVFJmGIeUaV/x5eTaoPyuNSn4ABlRhBOnu2jZvXud+B0YODrWMozc=
+X-Received: by 2002:a05:690c:d8a:b0:88f:df4:1c7d with SMTP id 00721157ae682-8b04f3b5c59mr5561367b3.14.1791295462208;
+        Tue, 06 Oct 2026 07:04:22 -0700 (PDT)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8ae333e9a0bsm50497047b3.36.2026.10.06.07.04.17
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8af19328814sm29028457b3.13.2026.10.06.07.04.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2026 07:04:17 -0700 (PDT)
+        Tue, 06 Oct 2026 07:04:20 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
-Date: Tue, 06 Oct 2026 10:04:13 -0400
-Subject: [PATCH 1/6] alpha: add missing page_table_check_pte_clear() to
- ptep_get_and_clear()
+Date: Tue, 06 Oct 2026 10:04:14 -0400
+Subject: [PATCH 2/6] alpha: handle VM_FAULT_HWPOISON in do_page_fault()
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -71,7 +69,7 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261006-alpha-hugepages-v1-1-a673a18aaa70@gmail.com>
+Message-Id: <20261006-alpha-hugepages-v1-2-a673a18aaa70@gmail.com>
 References: <20261006-alpha-hugepages-v1-0-a673a18aaa70@gmail.com>
 In-Reply-To: <20261006-alpha-hugepages-v1-0-a673a18aaa70@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -79,51 +77,106 @@ To: Richard Henderson <richard.henderson@linaro.org>,
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1295; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=MZykUui1Wig1GtAKfx2ri2KqKibPxVefrQgVM77LKsQ=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKO/L+7Uz6ryELzRe4hhyqX4NZvOzwutptsL/+56afBV
- V2jueUKHR9ZGMS4GGaKKbLErVdkmdW2Y6nPaelfMHNYmUCGSIs0MAABCwNfbmJeqZGOkZ6ptqGe
- IZChYxQPkdNj0MgsLi5NLdJNKyhyyMsvSSzJzM8r1ssvSM0rSC/QS8tMK8nIyC8qTgUaoZeXWmL
- q6uhmZGhgYuloYeZk4Whq4uzsZOjk5ujo7OpkZGluYuBs6WjiamnOwMUpAHPNyuMMv1l/WIrVTr
- q9LDTJaYG/lm2c+dkTKd8eNN5szXV/r/ZKrY/hf4q8UdC29ewVh9f4vJ3f+21KyJG0/oiFEpHOW
- fKOqcmrGQA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3262; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=IZZtRHJr+e42CAizBt8VTtUypllcIwka88XR1oYPtDs=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKO/L/L+Tl41dkdz29cFficvi7IyMzWa8qt/Uca5K9c/
+ rNG0ep5b8dHFgYxLoaZYooscesVWWa17Vjqc1r6F8wcViaQIdIiDQxAwMLAl5uYV2qkY6Rnqm2o
+ Zwhk6BjFQ+T0GDQyi4tLU4t00wqKHPLySxJLMvPzivXyC1LzCtIL9NIy00oyMvKLilOBRujlpZa
+ Yujq6GRkamFg6Wpg5WTiamjg7Oxk6uTk6Ors6GVmamxg4WzqauFqaM3BxCsBcs3oaI8O0bS+E81
+ lLzwXPmH/zehqjOXvFzbOrzO5WCR9ZsUxJxnMVw/+6E5WSa26mztW/uYx3X5aA+rxpfi5Sxus++
+ NgnenlEtzICAA==
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-Alpha's CONFIG_COMPACTION-gated ptep_get_and_clear() overrides the
-generic version in include/linux/pgtable.h but omits its
-page_table_check_pte_clear() call. With CONFIG_PAGE_TABLE_CHECK=y the
-map count taken by set_ptes() is therefore never dropped when a PTE is
-cleared through this path.
+do_page_fault() handles VM_FAULT_OOM, VM_FAULT_SIGSEGV and
+VM_FAULT_SIGBUS and then falls into BUG() for anything else in
+VM_FAULT_ERROR. VM_FAULT_HWPOISON and VM_FAULT_HWPOISON_LARGE are in
+that set, so a fault on a poisoned page takes down the kernel instead of
+delivering a signal.
 
-Add the missing call, and drop the now-duplicate one in
-ptep_clear_flush(), which already goes through ptep_get_and_clear().
+Alpha does not select ARCH_SUPPORTS_MEMORY_FAILURE, so the machine check
+paths cannot produce these. UFFDIO_POISON can: it installs a poison PTE
+marker without any memory failure support, and a subsequent access
+returns VM_FAULT_HWPOISON. Registering an anonymous range with
+userfaultfd, poisoning it and reading it back reliably hits the BUG():
 
+  Kernel bug at arch/alpha/mm/fault.c:188
+  poison(50809): Kernel Bug 1
+  pc is at do_page_fault+0x4e8/0x550
+  ra is at do_page_fault+0xfc/0x550
+
+The BUG() fires with mmap_read_lock() still held, so the faulting task is left
+unkillable in D state holding the lock, and shutdown stalls behind it.
+
+Deliver SIGBUS with BUS_MCEERR_AR instead, reporting the size of the
+poisoned area, as the other architectures do. That is the huge page size
+for VM_FAULT_HWPOISON_LARGE, which becomes reachable once alpha
+implements huge pages.
+
+Tested on an UP1500 (EV68AL): the reproducer above now takes a SIGBUS
+and the kernel logs
+
+  poison[373]: hardware memory error at 0000020000030000 pc 00000200010007ec
+
+with no oops, no wedged task and no taint.
+
+Fixes: fc71884a5f59 ("mm: userfaultfd: add new UFFDIO_POISON ioctl")
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- arch/alpha/include/asm/pgtable.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/alpha/mm/fault.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
-index 6ebdd90f3035..8a175e0c2b42 100644
---- a/arch/alpha/include/asm/pgtable.h
-+++ b/arch/alpha/include/asm/pgtable.h
-@@ -305,6 +305,7 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
- 	pte_t pte = READ_ONCE(*ptep);
+diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
+index dfe427d93072..24408b53197c 100644
+--- a/arch/alpha/mm/fault.c
++++ b/arch/alpha/mm/fault.c
+@@ -8,6 +8,7 @@
+ #include <linux/sched/signal.h>
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
++#include <linux/hugetlb.h>
+ #include <asm/io.h>
  
- 	pte_clear(mm, address, ptep);
-+	page_table_check_pte_clear(mm, address, pte);
- 	return pte;
- }
+ #define __EXTERN_INLINE inline
+@@ -113,6 +114,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 	struct mm_struct *mm = current->mm;
+ 	const struct exception_table_entry *fixup;
+ 	int si_code = SEGV_MAPERR;
++	unsigned int lsb;
+ 	vm_fault_t fault;
+ 	unsigned int flags = FAULT_FLAG_DEFAULT;
  
-@@ -316,7 +317,6 @@ static inline pte_t ptep_clear_flush(struct vm_area_struct *vma,
- 	struct mm_struct *mm = vma->vm_mm;
- 	pte_t pte = ptep_get_and_clear(mm, addr, ptep);
+@@ -185,6 +187,8 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 			goto bad_area;
+ 		else if (fault & VM_FAULT_SIGBUS)
+ 			goto do_sigbus;
++		else if (fault & (VM_FAULT_HWPOISON | VM_FAULT_HWPOISON_LARGE))
++			goto do_sigbus_mceerr;
+ 		BUG();
+ 	}
  
--	page_table_check_pte_clear(mm, addr, pte);
- 	migrate_flush_tlb_page(vma, addr);
- 	return pte;
- }
+@@ -248,6 +252,21 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
+ 		goto no_context;
+ 	return;
+ 
++ do_sigbus_mceerr:
++	mmap_read_unlock(mm);
++	if (!user_mode(regs))
++		goto no_context;
++	/*
++	 * Report the size of the poisoned area, which for a hugetlb fault
++	 * is the size of the huge page that could not be mapped.
++	 */
++	lsb = PAGE_SHIFT;
++	if (fault & VM_FAULT_HWPOISON_LARGE)
++		lsb = hstate_index_to_shift(VM_FAULT_GET_HINDEX(fault));
++	show_signal_msg(regs, address, SIGBUS, "hardware memory error");
++	force_sig_mceerr(BUS_MCEERR_AR, (void __user *) address, lsb);
++	return;
++
+  do_sigsegv:
+ 	show_signal_msg(regs, address, SIGSEGV,
+ 			si_code == SEGV_MAPERR ? "unmapped access"
 
 -- 
 2.54.0
