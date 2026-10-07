@@ -1,95 +1,95 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 916B244D01F
-	for <linux-alpha@vger.kernel.org>; Wed,  7 Oct 2026 22:23:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6868B36F41C
+	for <linux-alpha@vger.kernel.org>; Wed,  7 Oct 2026 22:46:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.179
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791411808; cv=pass; b=ijxZIb0oZNY1g9QXs09p8KEnl0sF1gGFYjAndtEBlRgCBPIGOZgQlwQ+BnMNTK8n4NrZv0j2sj74tH7F5FFXzjPWe9HfnRsRY2A0qYVCY6yKYHvlIj7WGgbIE/bXV4YzUstRJ6MbUXDoR7z3cjrJ7OL7qjhoiqxFzBeatGfvl5E=
+	t=1791413187; cv=pass; b=GmGIMhu+wMdZUc4a4vtd8HKqY01XFPxldu7IlKO4+u6nAwBaznuAHYU9sZWgCmhdPdROwWWfagU0ypP1ZTY/GD1UXGRmScu3fQXpi0GP8HFO2lyPlVYi3rnFoX8LGQP7IzsIu0IT2zLFVvzho0TAoNC1MmYw+suxhej32vWfIq4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791411808; c=relaxed/simple;
-	bh=r/scJDi45bklCSq9TBEb4q2VtzZiGQt4iCmWvyVtvns=;
+	s=arc-20240116; t=1791413187; c=relaxed/simple;
+	bh=bB4dnxpnMeVzUDLA9nUrJaWQKL4gFOLEEBvhFlUWXIU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rBUcnJ2zHcUgTx/10mugE+1QFG5OAdK+AMkYgwBJ7OR6AjLipS7gBfceMQC0Wg5OiNMcrAsuWocezdyOMy7wu1fDAMxSegsOWKITXlRBsJJuNc9mEd3Q0Zz1/210dJt7OGJpeO8GH+eRYw/aS1cJmStdt4CF9C9vfo5AaBqP+Lg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UjH0YSOT; arc=pass smtp.client-ip=209.85.208.51
+	 To:Cc:Content-Type; b=dF8bi5a8bmKKphJpo4V6+mGNzOdgMnhifwNdkb806DQt1e2NYAdFvnYrm4VAaV1LGT0fmwdTQn9/yzeoXzeSczgmZEOmm2RfuSzXMk1Xm3DDGQE/r0XBP/mk1lCQ6GysAXeZQH7SWnsPtkhzWPgUoC5xyhNHOntWobnS7lKSVks=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jX800J8R; arc=pass smtp.client-ip=209.85.128.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UjH0YSOT"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6ae27f06c2fso7328396a12.3
-        for <linux-alpha@vger.kernel.org>; Wed, 07 Oct 2026 15:23:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791411801; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jX800J8R"
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-8b05bf699easo16123477b3.2
+        for <linux-alpha@vger.kernel.org>; Wed, 07 Oct 2026 15:46:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791413185; cv=none;
         d=google.com; s=arc-20260327;
-        b=Ld/BMN1yEDl9VqbXga5Sntq7GFICRdy48hqvulNiHDgG1yLOsgkloMWKjMPKojKhHC
-         cZTHWhK8Kh0aKffO+pUI/RWmOHltZkoErx2iHUwuAzjIMnONn4NvJVclkiiFOMsukBlm
-         +2y1DbrY0z6jH/1o58IW0hSxT6Hn6a8xN3fsqGfjh8GF2o97Gkvz9VEymGdrezg2fghF
-         I5SPoHSlj4vkVNJP/7wm341SdmQR3o8BWDIHhgUy4zzSzf1Sb4pHu7UO9+454EBtBTWo
-         srEEq1LX5+nJ642eRGtxAoHz2CilsuKFe6FG8gUgySeVEBMaSmN1t1BdYlLjWgn1+P/T
-         pb2A==
+        b=jDxdcKRe7XCWTIGFTTRQYInKQ2H7oOqMRJZ66DhzRqsu/xto1nExNzcbfUcCpMhGX8
+         loJvzgzitl9XtQEBAeF4A5/JuePLs92xhIcpylnvcMMx9eqg9AohPAmwDxd699JfhuzP
+         I15ffmVRM2XZnzCabGCsSr4ZwHtmzYPd7DrYqEYhuq6cyhFJLFlBga44TlniP0I21vPe
+         PPO8WtfBdRrqkT5Gp0q+tIx+jqI1pamU3jk0dqmFbFyCf6Eur+OKOTsoKpk4kFoVhHNf
+         3MBbVQAL5RqyhcEsSDrHT0MNVdxS4qn640Jap1wZshZZXJU7ynwx7Dp7fv8bLh+owIri
+         oUMA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=5aRE08CbX0yzAOgxe3Lj0nCfmywYioqb7WZQDcZ+WLY=;
-        fh=yLj9zZODNXin/tar100WweHvczUnk9cqubaZUmfghb4=;
-        b=gUCr9G3OknKSkicidIhWOU0eYemMVZ09JokcBFePAwzUpMWFcldJ/U5lfstg2y20K0
-         v6qjIXw1JeXMnWj7WVlpc+PmiqYrtNZOpZ/4RcQvbxVmhZP2RN8Z19rYjkYmsuoeeAA8
-         rJDWFahCWXIebzrVZ8NzBEHeDXvkRDb/F3xTwT460LFD/o1nxslCsTO6WQoKLDCGlWHR
-         P6+Ba2y2HtOk4rti39Lf3frWt8fVe92cThN/n0ukaf/YdN43j1MD1/bqf8+krlb/HQJR
-         ikXFZLfR+IK3KfdGFvq5CpHCHf12K0amr/9fCF4Gu6Kk7eplG2P8nnk+w5aGqPiWamay
-         rCNQ==;
+        bh=yz22l6+7GmF/BYpQ70lHqScFsr3i0zQEuhiHfwUKd5s=;
+        fh=86UXGONJNLvXqE2m7WELEudZBh0jt4b3WGxDesLSj6M=;
+        b=gr9IcROAhtocqpVmFpHTL7avSvJerEb3wJowqtfZtlKT0h8udA2N2LqLAES1Dvl1AC
+         tq6wRFqF/EXiWna8usXKyd1G5d/qbX41J0xeMJvuBb37qlcSB7TaPY6Jpr+qcY433GOC
+         eAoME52cDXTLMUBe0M6MTqKT5ooKuZJMPfi7cgMz1UcE7IHupYs6sC32cfR6mLgMnNDx
+         xuiQhclQ5l9vQkYyiZ+swAu/5U+GmWadt6E3shyIZNVoP+OLxNWcDOu+1H2LMnqIyl2v
+         rOlDJXLxJTXKuPECAPyrUxLnVi5heIQM3dbp42K/bJA4xxwZcerIin27eXEIwn3bZaDq
+         DeSg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791411801; x=1792016601; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791413185; x=1792017985; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=5aRE08CbX0yzAOgxe3Lj0nCfmywYioqb7WZQDcZ+WLY=;
-        b=UjH0YSOTo3SD4vZGI7NS1wSSbo9rD7nkldzIewURuvtFOCZYMf90FxWN2NZBXeryvp
-         9l13qDj5GJ2nyGDVrnhdMTewfS/EFDLwgW9LMnWmcOtGxjUkUtiCVq9IfcCm8QLhq3dg
-         JgFK4V62laEE+masRP3KrqNDc/wYRZYaVSCC0EMsrZ0XjR8807nPYn9qS4Bsx56MRMv4
-         wIWhLMw/SSWYKanf778Y7pM/FjG5Sm/mlk0vOHqXKpeyHrDyXpBYlnPvYKkYARs1UJ4w
-         oisC3uR4cbNvhQxoXpKlbnm17dGA8usfuBRODYzwVQon9Uh2u2bLzAZvQAYtcI1wORR5
-         h4Mw==
+        bh=yz22l6+7GmF/BYpQ70lHqScFsr3i0zQEuhiHfwUKd5s=;
+        b=jX800J8RKDkaBXFrFgcCyN+PytsImIcc4YRHjjuD5NPxmIm9fqIk4M2Ml1LQPkRvkU
+         jXxRsYF25b3XK+lF5/K5l7w9kzGFh0yb8pLcZ+H3wCmGLpVcpuQXfRTe/rtlLtOFWgHr
+         WBS/Tv+CYfcm7Y2dOPDGPjxwQ07vx0yBC4Yubuq6cigcN1KXgg4V8LgVOAjSSF9mBPxF
+         S9+UFQdjrKiaQYqI51ie8S3t8wB5IgdAXguPeuI8Z4CMCshqVea/Ce+UTTyHkSVuMvoo
+         Hhkbg9uKKagKsj4TvKVH1w+KOOOV4l8IPOP/uNfJo0f6L8OkaHv6UO0TG8gOTjy4uyzp
+         gZFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791411801; x=1792016601;
+        d=1e100.net; s=20260707; t=1791413185; x=1792017985;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=5aRE08CbX0yzAOgxe3Lj0nCfmywYioqb7WZQDcZ+WLY=;
-        b=d1js1OhaFWLm944lO51THnp0DP8fjRMxdGpR8tfx1+J6AOowysOaU8ZPfT70hU+jL2
-         WYNbWeCUmFDlrRLJ7HewEEUdLhOd1n3miPkQjkzdpJ+MWjTDk4/BBlRGRzRgUpryU8A7
-         62tBa4UCWDgQ0aCr8tUYK+8I87UKr4BH68aRa9capknqd4XLxBR5M04ni8rjTwLbpBzp
-         Y0RkFdImoV9zweb/RffCAE48E0qVKOWKojOv6Ma0tMCGbUEMcaxfnq9YwKI7J0JzhIf7
-         yxpAOG6HQ0LmwTQQDtNilgVn0mC+3R+/ER7E2nqRr9FZ37IHXJNgwtShW74mKB8ew221
-         nisw==
-X-Forwarded-Encrypted: i=1; AKwUvBw0yc27sM1fq3w3EaYVBmJfAPzwpMrcVuky/15EyvpSwvYLCiToLieSftSspOnq1dacuBfY15J9v8647Q==@vger.kernel.org
-X-Gm-Message-State: AFq9FYKkPfOuqhDjdGr2Y9wYfVrOIB3LlBOliUCHBkAwerjiLWYyGT50
-	K31dCRqyLdhVvjHhLjLusqb9k5oN3a6rtCpKFukNEpqy8YM7DyQ9pFctb5Q2gk4wEJ++ifGv2OS
-	IK8oshqL9SAca/TGHOpX5Wv7ZMtP2ozU00O9+KCk=
-X-Gm-Gg: AYBFou2WUF5H/1YXmMiTuX/qAVE8VBhcGkLZYx4yWvHeHw3sTVv4NafJQq60KJ/RHEn
-	9NvUfxEKfTlZa2dADxsNup/qPAZ+uB1UbRIHxMDS1/LzO67PfXnVii+yjWv1UNDZiFgdNR/fBR3
-	r3lPlkM+QNZmKt28Rqik1Ik6lWLsMabKCL7ivq1ZaYDlagGd1U68qbagU3YC1bWJx1d04gryojH
-	OhOSuPWTgwV37ItEyvEkkldJYkUuaVUGy4HiswJ/fSgrs1cnDiy38UyOTYSZUC2NXgqJOivawds
-	YbXGP7MYLfg/36ggl0zSKizL58BgaNVXJXS4odrljVpLUGvxu4YJAaeJfijVjlaXeOoNLCdWiWF
-	3JkBmjYso6IvH8/6+36xnzHx3PoSKDF+wZsvAN7vmWg==
-X-Received: by 2002:a05:6402:254d:b0:6ac:8730:71e with SMTP id
- 4fb4d7f45d1cf-6aff45a77ccmr3491985a12.29.1791411801222; Wed, 07 Oct 2026
- 15:23:21 -0700 (PDT)
+        bh=yz22l6+7GmF/BYpQ70lHqScFsr3i0zQEuhiHfwUKd5s=;
+        b=LEuUK5an9fX2e99BUNIk0QrRpuPekSHZ+TDZI2ymBreB7JdBj1XxZyESbnrSngf+Yx
+         tw2seQdLF9PBPvE1BRZLbW+wDBLNyCNOCq3dcy6d3jQq12GqkMdZ+zgvVLumQw6t9tTl
+         HV1HuhFCzMj3u0//YFFttagN7Bh0MEfNNvZTY2t7ga3m3wp6s5cpijLtJpvaIW5ZL6+f
+         37+7e4uw4wM+wV4gk5JRb5g3PSg7aSkR7dBZwzY35eIHlBgTYj4/IUKLJrWcI7+PbRg3
+         9smlFXN+XlnnRUihB7pOy8EvBXRR/NhQb54UMU7FGW9jRxnSabZmG/9Sz8XSVqJ+htfz
+         AV3w==
+X-Forwarded-Encrypted: i=1; AKwUvBwS4+oeyThZbJOjL0/Xr418gcaIh4ijhZiIK4FHE3bNy4QaVqoZbICoF6Ao4uLfAVgM4s+gtuHxNPn9MQ==@vger.kernel.org
+X-Gm-Message-State: AFq9FYLHJF9+lGd5gF9LuLEzPwnpBOn0Qf37pLwhkHNiUuIOjbTBcBcG
+	T+E9uIiDeeGGeezMIIaVcTKVHzxrj4DtFNFW3yH5nHfJEQkYJ71iEtB5IH7vz1+cn8hZ9vd9/ZY
+	msRMNb4ZBK/gdIy/NtNByDAGjQ3iIiaA=
+X-Gm-Gg: AYBFou1KWvaZZTziWlNEg0RYH/sxRdSHq+r53C2NGZ2iANt6x+xqop8aJSCOKsQBYCt
+	Ofgs8ZoTMNhmbhpElsRIYlSryNEoQdwHZHrfeQpUhDJ93hWDtir0FpZyZAMhB6nuX9jSM+yLr3d
+	uQ5REJfmjAJtRpzC5r4T1vgE004YoZOQckMl16oswI0nxjQp7tr6KMC/MnvsMloVTbrPH8PRBXx
+	Alqi3GDnr6BZk3SOHcEdgqZgRUNnaz4tCHXAylbSa2EJ/bzsOUDm3LHMnMr3mPFPZ3DmpHsWO9t
+	STpR69WaC7KI+RGoMxmGwm+FDJ1bWRQoH2Bmat87ToNqAxix8Hk+tbBOsc6yx+eGebKfPsRJRg7
+	R8v03RL6FrNqLSp4sEXq47zTESAFHhTI6qmDqb0poTA==
+X-Received: by 2002:a05:690e:16a0:b0:676:8665:d26f with SMTP id
+ 956f58d0204a3-6790a4e72afmr1974142d50.129.1791413185103; Wed, 07 Oct 2026
+ 15:46:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261006-alpha-hugepages-v1-0-a673a18aaa70@gmail.com> <20261006-alpha-hugepages-v1-6-a673a18aaa70@gmail.com>
-In-Reply-To: <20261006-alpha-hugepages-v1-6-a673a18aaa70@gmail.com>
+References: <20261006-alpha-hugepages-v1-0-a673a18aaa70@gmail.com>
+In-Reply-To: <20261006-alpha-hugepages-v1-0-a673a18aaa70@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Thu, 8 Oct 2026 00:23:09 +0200
-X-Gm-Features: AclHuK_iL9wbXmrjid5JxUEBtaokBbm5_UQSO6pDz8320KhjF23UG3KKQNRNcYw
-Message-ID: <CA+=Fv5TY-Bchkza4D_RnKb5J-eSDYd2g3xAMS-ggSgXHsJq9QA@mail.gmail.com>
-Subject: Re: [PATCH 6/6] alpha: implement hugetlb support
+Date: Thu, 8 Oct 2026 00:46:11 +0200
+X-Gm-Features: AclHuK9KYZUiJmmm2EQmaVn9h8dFFdx_V-4eFazKEEm8BWdo0Odf5JkJDem3PCU
+Message-ID: <CA+=Fv5SZ+NLSCU_7kNSZYtu0_h_OUuDYnHW54D2eb=X-ysw9dw@mail.gmail.com>
+Subject: Re: [PATCH 0/6] alpha: hugetlb support using granularity hints
 To: Matt Turner <mattst88@gmail.com>
 Cc: Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
 	linux-kernel@vger.kernel.org
@@ -98,515 +98,180 @@ Content-Transfer-Encoding: quoted-printable
 
 Hi Matt,
 
+First, thanks alot for taking the time to do this.
+
 On Tue, Oct 6, 2026 at 4:04=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
 te:
 >
-> Alpha has no leaf entry above the last page table level, so the only
-> huge pages it can offer are granularity hint blocks: 64KB, 512KB and 4MB
-> with 8KB pages. Register all three as hstates, with 4MB as the default.
-> There is no PMD sized huge page, hence no transparent huge pages, no PMD
-> page table sharing and no gigantic pages.
+> Alpha has no leaf entry above the last page table level, so the usual
+> PMD sized huge page is not available to it. What it does have is the
+> granularity hint, bits <6:5> of the PTE, described in Table 17-3 of the
+> Alpha Architecture Reference Manual: a hint of order N marks a PTE as
+> one of 8^N physically contiguous, naturally aligned pages that the
+> translation buffer is permitted to map with a single entry. With 8KB
+> pages that gives 64KB, 512KB and 4MB blocks, and this series registers
+> all three as hstates.
 >
-> As with arm64's contiguous PTEs, each PTE of a block keeps the frame
-> number of its own page, so a block is written with set_ptes(). Each
-> hstate's buddy order is its hint order, so a hugetlb folio is always
-> naturally aligned physically, as the hint requires, including after a
-> demote.
+> This works like arm64's contiguous PTE support rather than RISC-V's
+> NAPOT: every PTE of a block keeps the frame number of its own page, so a
+> block is written with set_ptes() and the frame number advances across
+> it. There is no PMD sized huge page, and hence no transparent huge
+> pages, no PMD page table sharing and no gigantic pages.
 >
-> All PTEs of a block must agree in bits <15:0>, and both __ACCESS_BITS
-> and __DIRTY_BITS reach into that range, so every update rewrites the
-> whole block and huge_ptep_get() merges the young and dirty state back
-> together. Changes to a valid block go through break before make, as
-> section 11.6.1 of the architecture manual requires.
+> The architecture requires all PTEs of a block to agree in bits <15:0>,
+> and both __ACCESS_BITS and __DIRTY_BITS reach into that range, so every
+> update rewrites the whole block and huge_ptep_get() merges the young and
+> dirty state back together. Changes to a valid block go through break
+> before make, as section 11.6.1 requires; the invalidate there has to
+> assume the hint is zero and so must cover every page of the block, which
+> flush_tlb_range() on alpha already exceeds, since it rolls the address
+> space number.
+>
+> The hint is advisory. An implementation that ignores it still translates
+> correctly through the individual PTEs, so this is safe on every Alpha,
+> and gup_fast needs no changes. The console block that would report which
+> hint sizes the translation buffer implements was never filled in by any
+> console through EV7, so which sizes an implementation honors can only be
+> established by measuring, as the last section does for EV7.
+>
+> Patches 1 and 2 are independent fixes. Patch 1 adds a
+> page_table_check_pte_clear() call missing from alpha's
+> ptep_get_and_clear(). Patch 2 fixes a BUG() that testing this series
+> turned up: do_page_fault() fell through to BUG() on VM_FAULT_HWPOISON,
+> reachable through UFFDIO_POISON without any memory failure support.
+> Patch 3 documents that the bits Linux calls _PAGE_URE and _PAGE_UWE are
+> the architecture's ERE and EWE, which matters when reading PTE layout
+> tables alongside this code. Patches 4 and 5 are groundwork and patch 6
+> is the implementation.
+>
+> Testing
+> =3D=3D=3D=3D=3D=3D=3D
+>
+> Tested on megalith (EV7 Marvel, 8GB), with two CPUs and again with one,
+> cross-built with alpha-unknown-linux-gnu-gcc, with CONFIG_DEBUG_VM=3Dy,
+> CONFIG_DEBUG_VM_PGTABLE=3Dy, CONFIG_PAGE_TABLE_CHECK_ENFORCED=3Dy and
+> CONFIG_CGROUP_HUGETLB=3Dy. All three hint sizes register as hstates.
+>
+> mm selftests, the same in both configurations: hugetlb 10/10,
+> userfaultfd and cow 7 pass 1 skip (uffd-wp-mremap), 0 fail, including
+> uffd-stress hugetlb and hugetlb-private at 128MB/32 threads.
+> debug_vm_pgtable validates clean at boot. No page_table_check reports
+> and no DEBUG_VM splats in any run.
+>
+> Ad hoc tests written for this series also pass at all three sizes: dense
+> per-base-page write and read back across a block, which catches a wrong
+> frame number inside a block that a strided pattern would alias over;
+> mprotect down to PROT_READ and back, including a middle-block-only case,
+> exercising break before make; fork COW; hugetlbfs shared mappings
+> checked through pread and through a second independent mapping; hole
+> punch of a middle block with both neighbors and the refaulted hole
+> checked; ftruncate down and back up; and the 4MB -> 512KB -> 64KB demote
+> chain with exact count checks. All of it again with four concurrent
+> copies, and the whole suite ten times in a row.
+>
+> An earlier revision of the series was also tested on up1500 (EV68AL
+> Nautilus, UP, 4GB) with CONFIG_DEBUG_VM=3Dy and
+> CONFIG_PAGE_TABLE_CHECK_ENFORCED=3Dy. That machine has not been retested
+> with this revision.
+>
+> Magnus Lindholm also tested the series on SMP, on a UP2000+ (2x EV68AL
+> 833 MHz), including a multithreaded stress test. It found that
+> huge_ptep_set_access_flags() broke and rewrote a block on every fault,
+> so two threads on different CPUs could keep each other faulting: 17,316
+> faults in 6 seconds after one permission change on a 4MB page. With the
+> check now in patch 6 the same change causes one fault. No writes were
+> lost with or without it.
+>
 
-ARM 11.6.1 (4th ed.) is in the OpenVMS part; the Alpha Linux part only
-asks for a TB invalidate after the change (ARM 22.4.1, 22.7). What
-makes break before make necessary here is note 2 of ARM Table 22-3 (all
-PTEs of a block agree in bits <15:0>), so I'd cite that as the reason,
-and 11.6.1 as the procedure followed, both here and in the comment in
-set_huge_pte_at(), which also says 11.6.1 "requires" it.
+I've now run this revision on the UP2000+, both as posted and on top of
+my TLB shootdown series [1]: run-ghtests.sh 200 times, the hugetlb,
+userfaultfd and cow selftests (17 pass, 1 skip), and the stress test at
+all three sizes, with no lost writes and at most one fault after a
+permission change on either kernel.
 
-> huge_ptep_set_access_flags() skips the break when no entry would change:
-> hugetlb_fault() calls it on every fault on a present entry, and breaking
-> an unchanged block makes threads on other CPUs refault and break it
-> again.
+That doesn't make [1] optional. The stress test flushes only from
+threads of the process itself, and its threads keep writing, which
+hides stale translations (see [1]'s cover letter); [1] fixes flushes
+that miss a CPU after fork, under lazy TLB, or on the calling CPU.
+Break before make on SMP needs flush_tlb_mm() to reach every CPU.
+
+EV68AL also honors all three hint sizes: retired instructions per
+access, which include the PALcode DTB fill, drop to the no-miss level
+exactly where each size fits the 128-entry DTB, whose entries can each
+map 1, 8, 64 or 512 pages (21264/EV67 HRM section 2.1.6.4).
+
+[1] https://lore.kernel.org/linux-alpha/20260923074903.862898-1-linmag7@gma=
+il.com/T/#t
+
+> Hugepage migration is not enabled. It has no test coverage: the
+> migration, rmap and ksm selftests do not cross-build for want of libnuma
+> in the alpha sysroot, and neither machine is multi-node.
 >
-> The hint is advisory, so this is safe on implementations that ignore it,
-> and gup_fast needs no changes since it walks the individual PTEs.
+> Does the hint do anything?
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
 >
-> Enabling CONFIG_HUGETLB_PAGE derives pageblock_order from
-> HUGETLB_PAGE_ORDER, which lowers it from 10 to 9 and so halves the
-> anti-fragmentation and compaction granularity from 8MB to 4MB.
+> On EV7, yes. Since the hint is advisory there is no way to ask the
+> hardware whether it implements one, and the console block that would
+> report it was never filled in, so the only way to find out is to
+> measure.
 >
-> Hugepage migration is left disabled, since it has not been tested.
+> Comparing the three hint sizes against each other rather than against
+> normal pages avoids the hugetlb-versus-anonymous confound. A random
+> pointer chase touches one cache line per 8KB base page, with the
+> permutation seeded only from the page count, so every backing walks an
+> identical sequence over an identical footprint and the only variable is
+> how many DTB entries the working set needs. EV6 and EV7 have a 128 entry
+> fully associative DTB, so coverage is 128 times the page size: 1MB with
+> base pages, 8MB at 64KB, 64MB at 512KB, 512MB at 4MB.
 >
-> Co-developed-by: Magnus Lindholm <linmag7@gmail.com>
-> Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+> Nanoseconds per access on megalith with one CPU, 8,000,000 accesses per
+> pass. Each figure is the best of ten runs, every run on freshly
+> allocated memory: single runs differ by 40% or more from one allocation
+> to the next, at every page size including base pages, so the best run is
+> the one to compare.
+>
+>      size      base(8KB)       64KB      512KB     4096KB
+>       1 MB          11.24      11.11      15.02      11.72
+>       4 MB         155.47     104.54     105.03     104.17
+>      16 MB         156.69     127.50     109.55     105.52
+>      64 MB         154.61     146.79     110.16     105.76
+>     256 MB         172.56     171.34     175.74     107.47
+>    1024 MB         232.40     230.08     222.15     190.03
+>
+> Each size keeps its advantage until the working set passes its own
+> coverage and then converges on the base page column: 64KB is useful to
+> about 8MB, 512KB to about 64MB, 4MB to about 512MB.
+>
 > Signed-off-by: Matt Turner <mattst88@gmail.com>
-
-checkpatch warns about the ordering of tags ("Co-developed-by and
-Signed-off-by: name/email do not match"). Should it be (see
-Documentation/process/submitting-patches.rst):
-
-Co-developed-by: Magnus Lindholm <linmag7@gmail.com>
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
-Signed-off-by: Matt Turner <mattst88@gmail.com>
-
-If the other comments lead to a v2, could you fix it there? Otherwise
-I can fix it up when applying.
-
-
 > ---
+> Matt Turner (6):
+>       alpha: add missing page_table_check_pte_clear() to ptep_get_and_cle=
+ar()
+>       alpha: handle VM_FAULT_HWPOISON in do_page_fault()
+>       alpha: clarify that _PAGE_URE and _PAGE_UWE are the Executive bits
+>       alpha: define granularity hint PTE bits
+>       alpha: align hugetlb mappings in arch_get_unmapped_area()
+>       alpha: implement hugetlb support
+>
 >  arch/alpha/Kconfig               |   1 +
 >  arch/alpha/include/asm/hugetlb.h |  43 ++++++
 >  arch/alpha/include/asm/page.h    |  13 ++
+>  arch/alpha/include/asm/pgtable.h |  69 ++++++++-
+>  arch/alpha/kernel/osf_sys.c      |  14 +-
 >  arch/alpha/mm/Makefile           |   2 +
+>  arch/alpha/mm/fault.c            |  19 +++
 >  arch/alpha/mm/hugetlbpage.c      | 306 +++++++++++++++++++++++++++++++++=
 ++++++
->  5 files changed, 365 insertions(+)
+>  8 files changed, 456 insertions(+), 11 deletions(-)
+> ---
+> base-commit: e946efcc89066c5d80acbae42d015a4da33a11de
+> change-id: 20260912-alpha-hugepages-0c6cb6c0995d
 >
-> diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-> index b5b02bb42aca..b2c359b947f6 100644
-> --- a/arch/alpha/Kconfig
-> +++ b/arch/alpha/Kconfig
-> @@ -19,6 +19,7 @@ config ALPHA
->         select ARCH_NO_PREEMPT
->         select ARCH_NO_SG_CHAIN
->         select ARCH_SUPPORTS_ATOMIC_RMW
-> +       select ARCH_SUPPORTS_HUGETLBFS
->         select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
->         select ARCH_SUPPORTS_PAGE_TABLE_CHECK
->         select ARCH_USE_CMPXCHG_LOCKREF
-> diff --git a/arch/alpha/include/asm/hugetlb.h b/arch/alpha/include/asm/hu=
-getlb.h
-> new file mode 100644
-> index 000000000000..ff69e24c775d
-> --- /dev/null
-> +++ b/arch/alpha/include/asm/hugetlb.h
-> @@ -0,0 +1,43 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _ALPHA_HUGETLB_H
-> +#define _ALPHA_HUGETLB_H
-> +
-> +#include <asm/page.h>
-> +
-> +pte_t arch_make_huge_pte(pte_t entry, unsigned int shift, vm_flags_t fla=
-gs);
-> +#define arch_make_huge_pte arch_make_huge_pte
-> +
-> +#define __HAVE_ARCH_HUGE_PTEP_GET
-> +extern pte_t huge_ptep_get(struct mm_struct *mm, unsigned long addr,
-> +                          pte_t *ptep);
-> +#define __HAVE_ARCH_HUGE_SET_HUGE_PTE_AT
-> +extern void set_huge_pte_at(struct mm_struct *mm, unsigned long addr,
-> +                           pte_t *ptep, pte_t pte, unsigned long sz);
-> +#define __HAVE_ARCH_HUGE_PTEP_GET_AND_CLEAR
-> +extern pte_t huge_ptep_get_and_clear(struct mm_struct *mm, unsigned long=
- addr,
-> +                                    pte_t *ptep, unsigned long sz);
-> +#define __HAVE_ARCH_HUGE_PTEP_CLEAR_FLUSH
-> +extern pte_t huge_ptep_clear_flush(struct vm_area_struct *vma,
-> +                                  unsigned long addr, pte_t *ptep);
-> +#define __HAVE_ARCH_HUGE_PTEP_SET_WRPROTECT
-> +extern void huge_ptep_set_wrprotect(struct mm_struct *mm, unsigned long =
-addr,
-> +                                   pte_t *ptep);
-> +#define __HAVE_ARCH_HUGE_PTEP_SET_ACCESS_FLAGS
-> +extern int huge_ptep_set_access_flags(struct vm_area_struct *vma,
-> +                                     unsigned long addr, pte_t *ptep,
-> +                                     pte_t pte, int dirty);
-> +#define __HAVE_ARCH_HUGE_PTE_CLEAR
-> +extern void huge_pte_clear(struct mm_struct *mm, unsigned long addr,
-> +                          pte_t *ptep, unsigned long sz);
-> +
-> +/*
-> + * The generic version does not flush, which would leave the old transla=
-tion
-> + * live across a restrictive change to PTE bits <15:0>.
-> + */
-> +#define huge_ptep_modify_prot_start huge_ptep_modify_prot_start
-> +extern pte_t huge_ptep_modify_prot_start(struct vm_area_struct *vma,
-> +                                        unsigned long addr, pte_t *ptep)=
-;
-> +
-> +#include <asm-generic/hugetlb.h>
-> +
-> +#endif /* _ALPHA_HUGETLB_H */
-> diff --git a/arch/alpha/include/asm/page.h b/arch/alpha/include/asm/page.=
-h
-> index 59d01f9b77f6..67053c52953f 100644
-> --- a/arch/alpha/include/asm/page.h
-> +++ b/arch/alpha/include/asm/page.h
-> @@ -6,6 +6,19 @@
->  #include <asm/pal.h>
->  #include <vdso/page.h>
->
-> +#ifdef CONFIG_HUGETLB_PAGE
-> +/*
-> + * The default huge page is the largest granularity hint block, 4MB. All
-> + * three hint sizes are registered as hstates, hence HUGE_MAX_HSTATE, wh=
-ich
-> + * linux/hugetlb.h needs before it includes asm/hugetlb.h.
-> + */
-> +#define HPAGE_SHIFT            22
-> +#define HPAGE_SIZE             (_AC(1, UL) << HPAGE_SHIFT)
-> +#define HPAGE_MASK             (~(HPAGE_SIZE - 1))
-> +#define HUGETLB_PAGE_ORDER     (HPAGE_SHIFT - PAGE_SHIFT)
-> +#define HUGE_MAX_HSTATE                3
-> +#endif
-> +
->  #ifndef __ASSEMBLER__
->
->  #define STRICT_MM_TYPECHECKS
-> diff --git a/arch/alpha/mm/Makefile b/arch/alpha/mm/Makefile
-> index 2d05664058f6..c022e55f231a 100644
-> --- a/arch/alpha/mm/Makefile
-> +++ b/arch/alpha/mm/Makefile
-> @@ -4,3 +4,5 @@
->  #
->
->  obj-y  :=3D init.o fault.o tlbflush.o
-> +
-> +obj-$(CONFIG_HUGETLB_PAGE) +=3D hugetlbpage.o
-> diff --git a/arch/alpha/mm/hugetlbpage.c b/arch/alpha/mm/hugetlbpage.c
-> new file mode 100644
-> index 000000000000..94b02de4b370
-> --- /dev/null
-> +++ b/arch/alpha/mm/hugetlbpage.c
-> @@ -0,0 +1,306 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Alpha huge page support, built on the page table entry granularity hi=
-nt
-> + * described in asm/pgtable.h. All PTEs of a block have to agree in bits
-> + * <15:0>, so every update below rewrites the whole block.
-> + */
-> +
-> +#include <linux/hugetlb.h>
-> +#include <linux/mm.h>
-> +#include <linux/pgtable.h>
-> +
-> +#include <asm/tlbflush.h>
-> +
-> +/*
-> + * Every hint size is smaller than PMD_SIZE, so a block always fits insi=
-de a
-> + * single last level page table and its entry count is just its page cou=
-nt.
-> + */
-> +static inline unsigned long num_contig_ptes(unsigned long sz)
-> +{
-> +       return sz >> PAGE_SHIFT;
-> +}
-> +
-> +/* Hint order that maps @sz, or 0 if @sz is not a hint size. */
-> +static unsigned int gh_order_from_size(unsigned long sz)
-> +{
-> +       unsigned int order;
-> +
-> +       for_each_gh_order(order)
-> +               if (gh_cont_size(order) =3D=3D sz)
-> +                       return order;
-> +
-> +       return 0;
-> +}
-> +
-> +pte_t *huge_pte_alloc(struct mm_struct *mm, struct vm_area_struct *vma,
-> +                     unsigned long addr, unsigned long sz)
-> +{
-> +       unsigned int order =3D gh_order_from_size(sz);
-> +       pgd_t *pgd;
-> +       p4d_t *p4d;
-> +       pud_t *pud;
-> +       pmd_t *pmd;
-> +
-> +       if (!order)
-> +               return NULL;
-> +
-> +       pgd =3D pgd_offset(mm, addr);
-> +       p4d =3D p4d_alloc(mm, pgd, addr);
-> +       if (!p4d)
-> +               return NULL;
-> +
-> +       pud =3D pud_alloc(mm, p4d, addr);
-> +       if (!pud)
-> +               return NULL;
-> +
-> +       pmd =3D pmd_alloc(mm, pud, addr);
-> +       if (!pmd)
-> +               return NULL;
-> +
-> +       return pte_alloc_huge(mm, pmd, addr & gh_cont_mask(order));
-> +}
-> +
-> +pte_t *huge_pte_offset(struct mm_struct *mm, unsigned long addr,
-> +                      unsigned long sz)
-> +{
-> +       unsigned int order =3D gh_order_from_size(sz);
-> +       pgd_t *pgd;
-> +       p4d_t *p4d;
-> +       pud_t *pud;
-> +       pmd_t *pmd;
-> +
-> +       if (!order)
-> +               return NULL;
-> +
-> +       pgd =3D pgd_offset(mm, addr);
-> +       if (!pgd_present(pgdp_get(pgd)))
-> +               return NULL;
-> +
-> +       p4d =3D p4d_offset(pgd, addr);
-> +       if (!p4d_present(p4dp_get(p4d)))
-> +               return NULL;
-> +
-> +       pud =3D pud_offset(p4d, addr);
-> +       if (!pud_present(pudp_get(pud)))
-> +               return NULL;
-> +
-> +       pmd =3D pmd_offset(pud, addr);
-> +       if (!pmd_present(pmdp_get(pmd)))
-> +               return NULL;
-> +
-> +       return pte_offset_huge(pmd, addr & gh_cont_mask(order));
-> +}
-> +
-> +/*
-> + * A block is only as large as its own hint, so the walk can skip to the=
- end of
-> + * the containing last level page table but no further.
-> + */
-> +unsigned long hugetlb_mask_last_page(struct hstate *h)
-> +{
-> +       return PMD_SIZE - huge_page_size(h);
-> +}
-> +
-> +pte_t huge_ptep_get(struct mm_struct *mm, unsigned long addr, pte_t *pte=
-p)
-> +{
-> +       pte_t orig_pte =3D ptep_get(ptep);
-> +       unsigned long i, ncontig;
-> +
-> +       /* Swap, migration and marker entries carry no hint. */
-> +       if (!pte_huge(orig_pte))
-> +               return orig_pte;
-> +
-> +       ncontig =3D gh_pte_num(pte_gh_order(orig_pte));
-> +
-> +       for (i =3D 0; i < ncontig; i++, ptep++) {
-> +               pte_t pte =3D ptep_get(ptep);
-> +
-> +               if (pte_dirty(pte))
-> +                       orig_pte =3D pte_mkdirty(orig_pte);
-> +               if (pte_young(pte))
-> +                       orig_pte =3D pte_mkyoung(orig_pte);
-> +       }
-> +
-> +       return orig_pte;
-> +}
-> +
-> +static pte_t get_clear_contig(struct mm_struct *mm, unsigned long addr,
-> +                             pte_t *ptep, unsigned long ncontig)
-> +{
-> +       pte_t pte =3D ptep_get_and_clear(mm, addr, ptep);
-> +       bool present =3D pte_present(pte);
-> +
-> +       while (--ncontig) {
-> +               pte_t tmp_pte;
-> +
-> +               ptep++;
-> +               addr +=3D PAGE_SIZE;
-> +               tmp_pte =3D ptep_get_and_clear(mm, addr, ptep);
-> +               if (present) {
-> +                       if (pte_dirty(tmp_pte))
-> +                               pte =3D pte_mkdirty(pte);
-> +                       if (pte_young(tmp_pte))
-> +                               pte =3D pte_mkyoung(pte);
-> +               }
-> +       }
-> +
-> +       return pte;
-> +}
-> +
-> +static pte_t get_clear_contig_flush(struct mm_struct *mm, unsigned long =
-addr,
-> +                                   pte_t *ptep, unsigned long ncontig)
-> +{
-> +       pte_t orig_pte =3D get_clear_contig(mm, addr, ptep, ncontig);
-> +       struct vm_area_struct vma =3D TLB_FLUSH_VMA(mm, 0);
-> +
-> +       if (!pte_none(orig_pte))
-> +               flush_tlb_range(&vma, addr, addr + ncontig * PAGE_SIZE);
-> +
-> +       return orig_pte;
-> +}
-> +
-> +pte_t arch_make_huge_pte(pte_t entry, unsigned int shift, vm_flags_t fla=
-gs)
-> +{
-> +       unsigned int order =3D gh_order_from_size(1UL << shift);
-> +
-> +       /*
-> +        * Not every caller asks for a size Alpha can hint; mm/debug_vm_p=
-gtable.c
-> +        * probes with PMD_SHIFT. Leave the entry alone rather than compl=
-aining.
-> +        */
-> +       if (order)
-> +               entry =3D pte_mkgh(entry, order);
-> +
-> +       return entry;
-> +}
-> +
-> +void set_huge_pte_at(struct mm_struct *mm, unsigned long addr, pte_t *pt=
-ep,
-> +                    pte_t pte, unsigned long sz)
-> +{
-> +       unsigned long i, ncontig =3D num_contig_ptes(sz);
-> +
-> +       /* The hint requires the block to be naturally aligned in the VA =
-too. */
-> +       VM_WARN_ON_ONCE(addr & (sz - 1));
-> +
-> +       if (!pte_present(pte)) {
-> +               /*
-> +                * Swap, migration and marker entries hold no frame numbe=
-r, so
-> +                * every slot gets the same value.
-> +                */
-> +               for (i =3D 0; i < ncontig; i++, ptep++, addr +=3D PAGE_SI=
-ZE)
-> +                       set_ptes(mm, addr, ptep, pte, 1);
-> +               return;
-> +       }
-> +
-> +       /*
-> +        * ARM 11.6.1 requires an already valid entry to be invalidated
-> +        * everywhere before it is rewritten, and the invalidate has to a=
-ssume
-> +        * the hint is zero, so it must cover every page of the block.
-> +        */
-> +       if (pte_present(ptep_get(ptep)))
-> +               get_clear_contig_flush(mm, addr, ptep, ncontig);
-> +
-> +       /* set_ptes() advances the frame number for each entry. */
-> +       set_ptes(mm, addr, ptep, pte, ncontig);
-> +}
-> +
-> +pte_t huge_ptep_get_and_clear(struct mm_struct *mm, unsigned long addr,
-> +                             pte_t *ptep, unsigned long sz)
-> +{
-> +       return get_clear_contig(mm, addr, ptep, num_contig_ptes(sz));
-> +}
-> +
-> +/*
-> + * The block size comes from the hstate rather than from the entry, beca=
-use
-> + * this is also reached for non-present entries, which carry no hint.
-> + */
-> +pte_t huge_ptep_clear_flush(struct vm_area_struct *vma, unsigned long ad=
-dr,
-> +                           pte_t *ptep)
-> +{
-> +       unsigned long sz =3D huge_page_size(hstate_vma(vma));
-> +
-> +       return get_clear_contig_flush(vma->vm_mm, addr, ptep,
-> +                                     num_contig_ptes(sz));
-> +}
-> +
-> +pte_t huge_ptep_modify_prot_start(struct vm_area_struct *vma, unsigned l=
-ong addr,
-> +                                 pte_t *ptep)
-> +{
-> +       return huge_ptep_clear_flush(vma, addr, ptep);
-> +}
-> +
-> +/* True if any entry of the block differs from @pte outside the frame nu=
-mber. */
-> +static bool gh_access_flags_changed(pte_t *ptep, pte_t pte,
-> +                                   unsigned long ncontig)
-> +{
-> +       unsigned long i;
-> +
-> +       for (i =3D 0; i < ncontig; i++)
-> +               if ((pte_val(ptep_get(ptep + i)) ^ pte_val(pte)) & ~_PFN_=
-MASK)
-> +                       return true;
-> +
-> +       return false;
-> +}
-> +
-> +int huge_ptep_set_access_flags(struct vm_area_struct *vma, unsigned long=
- addr,
-> +                              pte_t *ptep, pte_t pte, int dirty)
-> +{
-> +       struct mm_struct *mm =3D vma->vm_mm;
-> +       unsigned long sz =3D huge_page_size(hstate_vma(vma));
-> +       unsigned long ncontig =3D num_contig_ptes(sz);
-> +       pte_t orig_pte =3D huge_ptep_get(mm, addr, ptep);
-> +
-> +       /* Keep the young and dirty state the block already has. */
-> +       if (pte_dirty(orig_pte))
-> +               pte =3D pte_mkdirty(pte);
-> +       if (pte_young(orig_pte))
-> +               pte =3D pte_mkyoung(pte);
-> +
-> +       /* Breaking an unchanged block only makes concurrent touchers ref=
-ault. */
-> +       if (!gh_access_flags_changed(ptep, pte, ncontig))
-> +               return 0;
-> +
-> +       get_clear_contig_flush(mm, addr, ptep, ncontig);
-> +       set_ptes(mm, addr, ptep, pte, ncontig);
-> +
-> +       return 1;
-> +}
-> +
-> +void huge_ptep_set_wrprotect(struct mm_struct *mm, unsigned long addr,
-> +                            pte_t *ptep)
-> +{
-> +       pte_t pte =3D ptep_get(ptep);
-> +       unsigned long ncontig =3D gh_pte_num(pte_gh_order(pte));
-> +
-> +       VM_WARN_ON_ONCE(!pte_huge(pte));
-> +
-> +       /*
-> +        * pte_wrprotect() sets _PAGE_FOW, which lives in the bits the wh=
-ole
-> +        * block must agree on, so this takes the break before make path.
-> +        */
-> +       pte =3D pte_wrprotect(get_clear_contig_flush(mm, addr, ptep, ncon=
-tig));
-> +       set_ptes(mm, addr, ptep, pte, ncontig);
-> +}
-> +
-> +void huge_pte_clear(struct mm_struct *mm, unsigned long addr, pte_t *pte=
-p,
-> +                   unsigned long sz)
-> +{
-> +       unsigned long i, ncontig =3D num_contig_ptes(sz);
-> +
-> +       for (i =3D 0; i < ncontig; i++, addr +=3D PAGE_SIZE, ptep++)
-> +               pte_clear(mm, addr, ptep);
-> +}
-> +
-> +bool __init arch_hugetlb_valid_size(unsigned long size)
-> +{
-> +       return gh_order_from_size(size) !=3D 0;
-> +}
-> +
-> +static __init int alpha_hugetlbpage_init(void)
-> +{
-> +       unsigned int order;
-> +
-> +       for_each_gh_order(order)
-> +               hugetlb_add_hstate(gh_cont_shift(order) - PAGE_SHIFT);
-> +
-> +       return 0;
-> +}
-> +arch_initcall(alpha_hugetlbpage_init);
->
+> Best regards,
 > --
-> 2.54.0
+> Matt Turner <mattst88@gmail.com>
 >
 
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
+
+Magnus
