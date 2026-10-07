@@ -1,95 +1,95 @@
 Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D04741D10D
-	for <linux-alpha@vger.kernel.org>; Wed,  7 Oct 2026 21:39:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCE6D37BE6F
+	for <linux-alpha@vger.kernel.org>; Wed,  7 Oct 2026 21:57:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.48
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791409186; cv=pass; b=ArjTgPRUIRi6+Rdkuv8XUJmYgKPVry/QKsB7HEyhK8axxrBUxLYVD/PsIOEojq0Y0X8Lr4jNYb+6Fol84GE13C7hCULntzZo0Vbm4hnc4b+v3/8fIOHgO3FiO+BPHerJhPBrZJ3psVjkKQNJMzY4LBHY1sCkuP/mHugaMu16eKE=
+	t=1791410271; cv=pass; b=Cp+jP03gtZsshfDWpgA667qmEl6Nzn0EGqUFD4Qd9YqrCKmeQ/mVYqF+Nhaz9Gy6q0czsu4cPhhp4BIbGvyBW5VnLqOIOOKKvIedUaq4jkUAYhDqS/Zhs6V6T6Pt0gqk/69GSQ5ceupFlV4MGgizKvEoXxedD+8FUmnipV2ZrNg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791409186; c=relaxed/simple;
-	bh=JWyzPvpHBQXTzwd806QqR5HZOKZL3EpwVaQS4P551iQ=;
+	s=arc-20240116; t=1791410271; c=relaxed/simple;
+	bh=jQIxQoCC1UvWTnm6K9i7NwsQ4oX20QZNx7RCZxsnUqc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FBlSv8EFsyTfb0hA5sTW4Z2fxu+HZ6HG7uvKuKTUemK00vBVhvlTYWemofv5jHtyPGvNIKI7cAZBCh2zhR8l33nld9MgrA+clOUI6LchhKE0mZjj0brKFxqazRVSnUCo6/fB+l4KInrRCWYJwN9xW59Z5rJMQrlkn35Z4KwFx/k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lyItYuDf; arc=pass smtp.client-ip=209.85.208.48
+	 To:Cc:Content-Type; b=M7KpNGfAg06at63gSBkI86gn0vdWRvj656IHLVfwPql2PVccQgR66Gm0dHJm/uQMapRaSgDf1WwRqyMW//ejZGPOuwtwZSFbE5nOSZs6k7In6TEIGdAJlb984UnIsttxucYL8Lin3FUTXYxn4x5Df0661FYdQ+Pd84G0VI2M59c=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RMqWumMS; arc=pass smtp.client-ip=209.85.208.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lyItYuDf"
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6aaebeadf3cso4305651a12.3
-        for <linux-alpha@vger.kernel.org>; Wed, 07 Oct 2026 14:39:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791409183; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RMqWumMS"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6afafc89b48so3650903a12.2
+        for <linux-alpha@vger.kernel.org>; Wed, 07 Oct 2026 14:57:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791410267; cv=none;
         d=google.com; s=arc-20260327;
-        b=XeJ9qUUjIXAsffCM7b8sUmhMceD7RdCw8Bs8wTLpVouShi9dXMBFyH/PQ0QcGIEyhI
-         BYVbCnMXKF8lWUJDAab/nK2KhzTorYHBRPIdRwvgia6deUTrGt+rnuWwmmQNkAEkoeXk
-         Bg9pq1zMZfmNKHrkwlqAenknWvIkdN3qAownE6IygALriiG1e83um26BHicLsd9gMv5K
-         BFiHr+W8mZ+JvNSCs1t0Mts00K49dLS6rgF+0jV/Dnnmj18FuYcRnif/QetuVc9hjJ0p
-         gVdapCSukHnEkxo8/PfUGI+X7zF2/OYwFKogYfNEM4/d2gSqsGiA2i2O80rAxMGy4B3U
-         lJ2Q==
+        b=SKNnUg7dM/gOq4+pGGi5BZ4c8CUUQ+oNJsLb4QdXs7U3YXCtRIPg+Y6bgaudq2upAl
+         NmXIcgo7aibflHY+M97F78cv5VLrAYg5HLsLUdrk3JwdZk75x/Lj2fjx3nJ4sTLTRZZP
+         wC3oymDjIKigJi6P/7wumiVxvlt7+lizAhhfR4zmmCyOh4tbI7rbB/thWyZcVKn8XKJd
+         5L25v2QiYJUBtS0Oc5AmugADneUVJaUiGz5dDGhYuIGyksulPOhZMyPy7gNv/2g2L18B
+         ckK/zdH+iZzjFRFXjWZ7sabhjUpb3554BTNem4PaOSjDFZitKNtvzcmac6TUHXD0tfRN
+         E4yw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=/Wx3j8s7em4It+YW2aPLKaUN9j3qGpzQEd9/wpoKXk0=;
-        fh=PwQNmA70pCG5EEIXGURevXabYU8/mWe8mZ9rS3jQ3yw=;
-        b=lOxMvqPNr96AU8NkoL7xzn6uKcWDe4PXhwVjZshIiBp4qiVzvoreXwrOtDsdO6ZE5I
-         0m7zh2ON+f5ESR/iheQSDSmdbd0VPeAjRe/5o3JWes6tNlPEXTldtFMnWEQ35/xq0+gy
-         maFXncXtMXVbKT5HeoC6pTEZHeXYU3PDO7KKC9cSq6tq4MsMEkCjhfJK0A0yvL2GAPCp
-         HlSaKy+3Cps/FpbqC8gNUMpP0P9VArpcxNsy/yAQMf4oHthacyjMjrIduP7qm8efE8hH
-         xjRzaoSdVTTmYaRImoE/7eW/JzEjpvMijMchh45JgfGtDtG/i5VtPif3471KIVeS5ULw
-         70EA==;
+        bh=4/EBKnunRvRh/CO8BlBy/8L1IN1ViY1vUrolg/MNJ6c=;
+        fh=R5+zZ6Itp+9l7w5cPrrxk3gAhi7sHq08vLOJvRgPEzM=;
+        b=iEJeNDbs2ejCvyK81d8q6xEP4ysybwcG2eb0jEB0pZrEz8h5hSjx/LQWIz+3o8S02f
+         LfDFXzhma2DO6B+B5RESedclXHEP18LZa5hTmkvr8zoiD+IdA6r+ESYWJDflTOmKH9YN
+         kvXajUtZrBhRvd2OKeQZyB+uGV3/U2iIPkRveKWB1FdEJUNJQld7n7ElwZWOPWE2Gg84
+         efLUo9OZvmmgRL2FryhVbVVE1+j2Orf9dKPpXqHT4suQ2xFHcCbtBIX7Rc+4gjdeDDvY
+         eh1K916Bq77cIydJKw2aKkP3ncoLVjBqJ+1Sj0aeJouJZAxEJDJNs9x1o/msBl+PtxEz
+         FjEg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791409183; x=1792013983; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791410267; x=1792015067; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=/Wx3j8s7em4It+YW2aPLKaUN9j3qGpzQEd9/wpoKXk0=;
-        b=lyItYuDfZEizGw12eTzsXvcr3yjV2dsXijbNh6XIvNbuajd6cJ95NxEFJPKgsB7iUS
-         uKZjNLgsx2sahJFPVMvm2Vg7pPmmqGfhx3Ve0BuQEFZ+qmAB/oV9bLqMkz3RclDtaUb0
-         Rul/GBAJyq4t42Tl1wUO3JQLLbMDnhddeMrnfncCKDQ85XhGDiIjCFwWIs5lbsvsck5G
-         P52b5rZh5pvDK6c84PJ04KC76QFWyJrJbDuMlBZYyUhlF7FWWy5HuxICIuJOv3KcWPrm
-         21Uxjp0fG8XwOcqRaFGXyhpxoo6UgVv45TuIsHhfGmwtedMTNWK2Phy4q2/LpGrgp8c0
-         wRYQ==
+        bh=4/EBKnunRvRh/CO8BlBy/8L1IN1ViY1vUrolg/MNJ6c=;
+        b=RMqWumMSX7VswfE5np8HHb2rkTIIwLlAdwau7THDKOntyEqWqjqlFp+eJUSmwPZynh
+         rqxTzQOgfuvPP9YzNHj9dB2+N3XO/Pc3HOGxd+dU+z2aHheHGqzgx0wA8/DVU+TTdI2H
+         jOIemkjCRJtU3GFEzzmUnp5kCKBXO5HIHxcldTsIdmZHTR2gZGXx8Y5caBDEpGTdx0Wl
+         zYg1hBG1VTluuPTKnTH2UzAkJG3tZyQxm/W3bTEvhs1rokkzwO5hSsGFG52oLn2TXiQ4
+         e2aBgYlPuphxk/WZ/GwqhHO12CmyfdciEbAspaS+Gu6Ib7YAgwFwZNUakj72bqw3gkv+
+         f8pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791409183; x=1792013983;
+        d=1e100.net; s=20260707; t=1791410267; x=1792015067;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=/Wx3j8s7em4It+YW2aPLKaUN9j3qGpzQEd9/wpoKXk0=;
-        b=KCEpRX1C/FTwsbw9GGx1uWjPghps6XJKTnjnXAE/ot8hYUsD3gC6AM/GEipKdVpkuJ
-         Qz/jj2LJkcczA8cfwJspcNntFXGiYyHlaFUtGn+EppakCfzYVEEOGPX3hyDQ6mrm8vA1
-         1YaFPFPfqeaH/SjAgsc2RWmXkalvjvpMdCDHSmeWiSrh5OqNiGZrrinmSINua+WCuVfN
-         K/eAUXkPnWNVnj4277FyHanTBnetnSTdi7vhKKRyNWnAxeGxAMMRj3ZGW6wZIKYhxWxG
-         e5wodP7M2sxblXpHbPL/tWLUaeUQwppvG8BsAokrz/y0ute+e1IipsOmIU6sIox64Kvf
-         FlPA==
-X-Forwarded-Encrypted: i=1; AKwUvBwTCxikyb1CFMG9cu8yB2fB3nN7zOOZlLmsaenNzavncV1y59exfnGXbe/WiuenQ2urMjXQnspQUw4dRA==@vger.kernel.org
-X-Gm-Message-State: AFq9FYLAYkX1jxO1YK2FzdnLjlAqqp+b2wmm2SwDstxHV/qJqPc65Tb9
-	qzksSxEsNEFZiIdsp92Z1QzIqI6oaLzWG9e+xWejQ3AjikP75tpXdQhurcKnej20+NTrqe44yAn
-	nzMcU8uZvZqbQi065uLf/w4de5grfu4Y=
-X-Gm-Gg: AYBFou0YS6yzBbkQcLT0G9KqT1SbBmGhOmoEnCS3nc1lHOrQdpuaDo5MMcKod2UGnxe
-	bd9JHMxwqtxFIqgYoGndgDLl7Df6YFPKoIw0uRj+tXGyOn5LhemPvg042TC3BaG7/FaNBp12RIC
-	X313U8I/WaAEDg3rc4eVbu2EvEGDdYIfv6jm/paQfzG33CqoA6yFHT69p77E6lix29ChZ++VqBR
-	awQf/ck4MIRCXyRPxFkq5SgCAFOCFhZs6zVdU8T99TJ93Jn1zoQtB8ADI9nhAovXD0ppI9pIjbd
-	8Fvv4zpYeRMJBq+yuXyMQSLMaukOGTPkds0ATvtKe7BuiLvWYXoohvKLqTbkQdEEWwNYvqN2E11
-	d93he301318FZBl1P1p2nH439cKcgWnlXMaXsPJvQbjHBNtxkYN4e
-X-Received: by 2002:a05:6402:4488:b0:6aa:ff76:3076 with SMTP id
- 4fb4d7f45d1cf-6aff47a80f9mr3341037a12.32.1791409182860; Wed, 07 Oct 2026
- 14:39:42 -0700 (PDT)
+        bh=4/EBKnunRvRh/CO8BlBy/8L1IN1ViY1vUrolg/MNJ6c=;
+        b=LP17blp9J9wmuCPc+OvIl0cCVgnjS6ahBhXyO6ie9Kc+Y14cjp7cbKpNognZWJrnY2
+         cegr1vq4dxLVHCV/G4tUC/76UHKnR2DJhlwsFP7A+2lxt/yHejiiY8/vfeAKP7jvWvqP
+         56R9wAiaeeKpHw/6yLzL/5ZqWEiUGcsglKp0Fa/ZC16mLNS8PTIauU98T9LxD/v+XPnk
+         dkn7gfzPBsDjnaST3wL2Ui/WLlvODiscH1uRNC4t28ILWCqTtbXGImHSnGuuLl+e9qWA
+         RjkCukUzM0JVuIgkOLNgNWOIrkncRPa3UqVDZCLyh1rcRXcPFfUKRCJAr5ZABco1bexg
+         xj+w==
+X-Forwarded-Encrypted: i=1; AKwUvBwXjLmriOgHEy1xRC+kPwjq8AF0LDL72hKOOLlHGdc2Yy4K8WmvGDcn1vlVAfq8FffZ6EDE5QTckkZsSg==@vger.kernel.org
+X-Gm-Message-State: AFq9FYKSkdMqbY2DM7Dtc6rRvKiZcXPwIygeS2u5v1C8REZxPuKlUjwJ
+	taaRSMqBAW5rmKg+/2GhTBREzAgD5F/v2x93TpVF/cEGkrk4as3P8LYcLiGJ/hhyVpO6a2KzT9J
+	JJcpuO3mkMdqpUGIqzDdWhA22aEfCJxM=
+X-Gm-Gg: AYBFou3W7r2lVpSuoi9XK4U1uCWmPBjAbwso55Mb6cl1JZMNb49If0F9vFSeEyf4TNm
+	4Sxb9l/z7U+GB/a66f/QaEhWmPTeof7UZOAkJqv9RueTZsSFlg26/IPtG8ybRetNoJAUmw0bLu9
+	6pOhXWnl4aJz21DFn9jPMAL6ePEcJVDh0evnrGTJQPXrYY3yY3UMM9A4ED3exafBkpwAX26ds9j
+	UE4MFEZRzEXyapkuIHWhNDfybiRSpPh9KRIqfBz+F+B1ZNaqlKWonULZ9Tuw+WjAkQG0MWWI/k1
+	dJvzBTgEJDmxGgrMOvpTdTvVGp1tdncrNKoAFtcxjbxzmSon06ledPTzGzYhCCVlzZHXhXr5obw
+	CR8Ql3Z9r8dURJpwJS1rFbQdeFx1LsquLJT7FfeIk2g==
+X-Received: by 2002:a05:6402:2790:b0:6ac:70ce:ba8 with SMTP id
+ 4fb4d7f45d1cf-6aff454cb04mr3301679a12.35.1791410266690; Wed, 07 Oct 2026
+ 14:57:46 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261006-alpha-hugepages-v1-0-a673a18aaa70@gmail.com> <20261006-alpha-hugepages-v1-4-a673a18aaa70@gmail.com>
-In-Reply-To: <20261006-alpha-hugepages-v1-4-a673a18aaa70@gmail.com>
+References: <20261006-alpha-hugepages-v1-0-a673a18aaa70@gmail.com> <20261006-alpha-hugepages-v1-5-a673a18aaa70@gmail.com>
+In-Reply-To: <20261006-alpha-hugepages-v1-5-a673a18aaa70@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 7 Oct 2026 23:39:30 +0200
-X-Gm-Features: AclHuK8vegbe0yGNt0PdkgPJ1Zuj7G3aOsGulVX-hIw4x7EklG3ldXU5N1EvPa0
-Message-ID: <CA+=Fv5SC4byEbdap5NpoqBgD7ZutMV8DTR3h5h8Pxv_jVOdB_Q@mail.gmail.com>
-Subject: Re: [PATCH 4/6] alpha: define granularity hint PTE bits
+Date: Wed, 7 Oct 2026 23:57:34 +0200
+X-Gm-Features: AclHuK-ikuydpyluMIED3CI-KY7xgeSn3P1vkTE8gwFcrFveOlA32P7iSrQWfvg
+Message-ID: <CA+=Fv5RQXOQML5UTcWMpz9WNqHjEVN59jDaX2QhLs7cUhgOb7Q@mail.gmail.com>
+Subject: Re: [PATCH 5/6] alpha: align hugetlb mappings in arch_get_unmapped_area()
 To: Matt Turner <mattst88@gmail.com>
 Cc: Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
 	linux-kernel@vger.kernel.org
@@ -101,127 +101,102 @@ Hi Matt,
 On Tue, Oct 6, 2026 at 4:04=E2=80=AFPM Matt Turner <mattst88@gmail.com> wro=
 te:
 >
-> Bits <6:5> of the Alpha PTE are the granularity hint, described in Table
-> 17-3 of the Alpha Architecture Reference Manual. A hint of N marks the
-> PTE as one of a block of 8^N physically contiguous, naturally aligned
-> pages that the translation buffer may map with a single entry. With 8KB
-> pages that gives 64KB, 512KB and 4MB blocks.
+> hugetlb_get_unmapped_area() does not align the address itself; it
+> delegates to mm_get_unmapped_area_vmaflags(), and the huge page
+> alignment is applied by generic_get_unmapped_area() and
+> generic_get_unmapped_area_topdown() via info.align_mask.
 >
-> Define the field and the helpers to encode and decode it. Nothing sets a
-> non-zero hint yet.
+> Alpha defines HAVE_ARCH_UNMAPPED_AREA and supplies its own
+> arch_get_unmapped_area(), which never sets align_mask. An
+> mmap(MAP_HUGETLB) with no address hint would therefore return a merely
+> page-aligned address.
 >
-> Add the hint to _PAGE_CHG_MASK so that pte_modify() preserves it. Swap
-> PTEs leave bits <31:0> clear, so pte_huge() is false on swap, migration
-> and marker entries, and page table entries above the last level keep a
-> zero hint where pmd_bad() would reject anything else.
+> Pass the file down to arch_get_unmapped_area_1() and set align_mask for
+> hugetlbfs mappings, as x86, s390, sparc and loongarch already do. This
+> is a no-op until alpha gains hugetlb support.
 >
 > Signed-off-by: Matt Turner <mattst88@gmail.com>
 > ---
->  arch/alpha/include/asm/pgtable.h | 51 ++++++++++++++++++++++++++++++++++=
-+++++-
->  1 file changed, 50 insertions(+), 1 deletion(-)
+>  arch/alpha/kernel/osf_sys.c | 14 +++++++++-----
+>  1 file changed, 9 insertions(+), 5 deletions(-)
 >
-> diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pg=
-table.h
-> index d123fd0d4091..605b82f73a98 100644
-> --- a/arch/alpha/include/asm/pgtable.h
-> +++ b/arch/alpha/include/asm/pgtable.h
-> @@ -65,6 +65,8 @@ struct vm_area_struct;
->  #define _PAGE_FOW      0x0004  /* used for page protection (fault on wri=
-te) */
->  #define _PAGE_FOE      0x0008  /* used for page protection (fault on exe=
-c) */
->  #define _PAGE_ASM      0x0010
-> +#define _PAGE_GH_MASK  0x0060  /* granularity hint, PTE<6:5> */
-> +#define _PAGE_GH_SHIFT 5
->  /*
->   * The Alpha AXP ARM defines 8 protection bits in PTE[15:8]: KRE, ERE, S=
-RE,
->   * URE, KWE, EWE, SWE, UWE (Kernel/Executive/Supervisor/User Read/Write
-> @@ -103,7 +105,36 @@ struct vm_area_struct;
->  #define _PFN_MASK      0xFFFFFFFF00000000UL
+> diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+> index 7b6543d2cca3..61d806176213 100644
+> --- a/arch/alpha/kernel/osf_sys.c
+> +++ b/arch/alpha/kernel/osf_sys.c
+> @@ -38,6 +38,7 @@
+>  #include <linux/namei.h>
+>  #include <linux/mount.h>
+>  #include <linux/uio.h>
+> +#include <linux/hugetlb.h>
+>  #include <linux/vfs.h>
+>  #include <linux/rcupdate.h>
+>  #include <linux/slab.h>
+> @@ -1201,14 +1202,16 @@ SYSCALL_DEFINE1(old_adjtimex, struct timex32 __us=
+er *, txc_p)
+>  /* Get an address range which is currently unmapped. */
 >
->  #define _PAGE_TABLE    (_PAGE_VALID | __DIRTY_BITS | __ACCESS_BITS)
-> -#define _PAGE_CHG_MASK (_PFN_MASK | __DIRTY_BITS | __ACCESS_BITS | _PAGE=
-_SPECIAL)
-> +/*
-> + * pte_modify() must preserve the granularity hint, or
-> + * hugetlb_change_protection() would turn a block into single-page PTEs.
-> + */
-> +#define _PAGE_CHG_MASK (_PFN_MASK | __DIRTY_BITS | __ACCESS_BITS | \
-> +                        _PAGE_GH_MASK | _PAGE_SPECIAL)
-> +
-> +/*
-> + * Granularity hints. A PTE with hint order N is one of a block of 8^N
-> + * physically contiguous pages, naturally aligned both virtually and
-> + * physically, that the TB may map with a single entry. With 8KB pages t=
-he
-> + * four encodings give 8KB, 64KB, 512KB and 4MB.
-> + *
-> + * Every PTE of a block must still carry the PFN of its own page, and al=
-l of
-> + * them must agree in bits <15:0>: the protection, fault, hint and valid=
- bits.
-> + * __ACCESS_BITS and __DIRTY_BITS reach into that range, so young and di=
-rty
-> + * updates have to be applied to the whole block too.
-> + *
-> + * The hint is advisory: an implementation that ignores it still transla=
-tes
-> + * correctly through the individual PTEs, so it is safe to set on any Al=
-pha.
-> + */
-> +#define GH_ORDER_MAX   4                       /* hint orders 0..3 */
-> +
-> +#define gh_cont_shift(order)   (PAGE_SHIFT + 3 * (order))
-> +#define gh_cont_size(order)    (1UL << gh_cont_shift(order))
-> +#define gh_cont_mask(order)    (~(gh_cont_size(order) - 1))
-> +#define gh_pte_num(order)      (1UL << (3 * (order)))
-> +
-> +#define for_each_gh_order(order) \
-> +       for ((order) =3D 1; (order) < GH_ORDER_MAX; (order)++)
+>  static unsigned long
+> -arch_get_unmapped_area_1(unsigned long addr, unsigned long len,
+> -                        unsigned long limit)
+> +arch_get_unmapped_area_1(struct file *filp, unsigned long addr,
+> +                        unsigned long len, unsigned long limit)
+>  {
+>         struct vm_unmapped_area_info info =3D {};
 >
->  /*
->   * All the normal masks have the "page accessed" bits on, as any time th=
-ey are used,
-> @@ -269,6 +300,24 @@ extern inline pte_t pte_mkyoung(pte_t pte) { pte_val=
-(pte) |=3D __ACCESS_BITS; retu
->  extern inline int pte_special(pte_t pte)       { return pte_val(pte) & _=
-PAGE_SPECIAL; }
->  extern inline pte_t pte_mkspecial(pte_t pte)   { pte_val(pte) |=3D _PAGE=
-_SPECIAL; return pte; }
+>         info.length =3D len;
+>         info.low_limit =3D addr;
+>         info.high_limit =3D limit;
+> +       if (filp && is_file_hugepages(filp))
+> +               info.align_mask =3D huge_page_mask_align(filp);
+>         return vm_unmapped_area(&info);
+>  }
 >
-> +extern inline unsigned int pte_gh_order(pte_t pte)
-> +{
-> +       return (pte_val(pte) & _PAGE_GH_MASK) >> _PAGE_GH_SHIFT;
-> +}
-> +
-> +extern inline pte_t pte_mkgh(pte_t pte, unsigned int order)
-> +{
-> +       pte_val(pte) &=3D ~_PAGE_GH_MASK;
-> +       pte_val(pte) |=3D (unsigned long)order << _PAGE_GH_SHIFT;
-> +       return pte;
-> +}
-> +
-> +/*
-> + * Swap PTEs leave bits <31:0> clear, so this is false for every swap,
-> + * migration and marker entry, not just for ordinary small pages.
-> + */
-> +extern inline int pte_huge(pte_t pte)          { return pte_val(pte) & _=
-PAGE_GH_MASK; }
-> +
->  /*
->   * The smp_rmb() in the following functions are required to order the lo=
-ad of
->   * *dir (the pointer in the top level page table) with any subsequent lo=
-ad of
+> @@ -1236,19 +1239,20 @@ arch_get_unmapped_area(struct file *filp, unsigne=
+d long addr,
+>            this feature should be incorporated into all ports?  */
+>
+>         if (addr) {
+> -               addr =3D arch_get_unmapped_area_1 (PAGE_ALIGN(addr), len,=
+ limit);
+> +               addr =3D arch_get_unmapped_area_1 (filp, PAGE_ALIGN(addr)=
+, len,
+> +                                                limit);
+>                 if (addr !=3D (unsigned long) -ENOMEM)
+>                         return addr;
+>         }
+>
+>         /* Next, try allocating at TASK_UNMAPPED_BASE.  */
+> -       addr =3D arch_get_unmapped_area_1 (PAGE_ALIGN(TASK_UNMAPPED_BASE)=
+,
+> +       addr =3D arch_get_unmapped_area_1 (filp, PAGE_ALIGN(TASK_UNMAPPED=
+_BASE),
+>                                          len, limit);
+>         if (addr !=3D (unsigned long) -ENOMEM)
+>                 return addr;
+>
+>         /* Finally, try allocating in low memory.  */
+> -       addr =3D arch_get_unmapped_area_1 (PAGE_SIZE, len, limit);
+> +       addr =3D arch_get_unmapped_area_1 (filp, PAGE_SIZE, len, limit);
+>
+>         return addr;
+>  }
 >
 > --
 > 2.54.0
 >
 
-This looks good to me,
+I tracked this down and I think Alpha needs this since 7bd3f1e1a9ae
+("mm: make hugetlb mappings go through mm_get_unmapped_area_vmflags"),
+v6.13; the same series did the equivalent for the generic code
+(7f24cbc9c4d4) and for x86, s390, sparc and powerpc. LoongArch, which
+also has its own arch_get_unmapped_area(), missed it and hit a BUG in
+LTP hugefork02 until 3109d5ff484b ("LoongArch: Set hugetlb mmap base
+address aligned with pmd size"). Maybe worth naming in the changelog,
+either way nice fix!
 
+On the UP2000+, MAP_HUGETLB mappings without an address hint come back
+aligned to 64KB, 512KB and 4MB.
 
 Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
 Tested-by: Magnus Lindholm <linmag7@gmail.com>
