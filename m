@@ -1,66 +1,66 @@
-Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com [74.125.224.52])
+Received: from mail-yx1-f44.google.com (mail-yx1-f44.google.com [74.125.224.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CB073ACEF8
-	for <linux-alpha@vger.kernel.org>; Thu,  8 Oct 2026 03:24:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B79213AEB29
+	for <linux-alpha@vger.kernel.org>; Thu,  8 Oct 2026 03:24:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791429857; cv=none; b=IbiuRYrbarfyVZMNbQYcC/Svb+PgWZOb1prhszKyl3vHmqUKZx/El1K3zjzRN4EaXQKJx0ZYXYomffdnP9tQSRPvHdaElK5gA9/lLTcASSLeQ6/d3aMCqLlQ/IQgjalLZv+fj5Fp0gV2H9oM4xHvhfRpwYij091IOI1iNCelEno=
+	t=1791429859; cv=none; b=oESmxVkHMXQ20K4w+YMCiCG1nH/u+RIWrgGMHrqiXBE48QifQM/WDpbMDeJ0XqnRuy4qzk6yi5VmPZl1jowr87TFHa9Tht41Wegfu1K/GQ4vY5SfZK8SUPmwCAihiyvQAGB1uSHR0RBxmDv+NlxCt1YAXCnc+jaQEug9o0AtHBk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791429857; c=relaxed/simple;
-	bh=Vwd3NDOYwIA5ZKS8UloQMBBYOUW6GUnZ5tUj1OSdmgk=;
+	s=arc-20240116; t=1791429859; c=relaxed/simple;
+	bh=V0j0CtHFz14eefLCzb5WnjuHMOvELhvyZG5FMWdbC7w=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=HSG/LBqvhcvMzdaYKJYG/5Xwgc1UpzLGV4bmTEva3Dxi8FZGeB0M44DrDZCR4FWQqBKiC2a22il5YwQmKffYH82mQ7PPFlbcRCbgTuAbVKYQfY/DXafho5AphTAg/qj6+KcZ4p+hifblzozU/8iGDXdmI3EDxK9rP0vxaDEyHKE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HFez1ho1; arc=none smtp.client-ip=74.125.224.52
+	 In-Reply-To:To:Cc; b=KlXXx/q7VmPfsRLoneeyinjP7c3oWRXnZcvqH+X8lAeP+mjW5fs1mXrJQ9QKaWeJBAvHYoV+RtrIhgcSc9Ft2UeqdQ+TehkkCJyppSELs6eIu9gd+HM/A/6rJTKyW97nimyI7n6BsUy1erLspx+Gp5RWVGb1pcZbTvYz5zn5YHc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gTgva39x; arc=none smtp.client-ip=74.125.224.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HFez1ho1"
-Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-6768403e9bbso2823116d50.1
-        for <linux-alpha@vger.kernel.org>; Wed, 07 Oct 2026 20:24:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gTgva39x"
+Received: by mail-yx1-f44.google.com with SMTP id 956f58d0204a3-677b5148acaso2503059d50.0
+        for <linux-alpha@vger.kernel.org>; Wed, 07 Oct 2026 20:24:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791429854; x=1792034654; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791429856; x=1792034656; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=1KnRD+HklADwPSgL/qWcGHWiK0RgAbbE22jyJCxAFIs=;
-        b=HFez1ho11ECjpaK/iIT/dtHGe9wBvKUJ372klAem7VCQKq6tfJgE5QyJSDwE+21kQk
-         RUrxl7aztFx52xrKXqsR0aSe4szr0JTjt4GS415xJJOFIHOQYolSCgQgte3gQE9nzXXL
-         JGmzfbRItNv+7Zq4d/Mt3d0S+X9XfUa1ERgXfU08fKXmx4Pax0EMsXp3IlCamMjO0xe8
-         2FvHv6faTWdyJDhS3Q5J7YG1Yz4Q4YPO0gzm0OrnzO771O2Ke3BXiUJvcQDuGlnKxvqm
-         gBvS5dq9By1zLAj1nFow0uQHY78LgFKCY/UET0ZUhJAPSZwzv1pT4UGDTOjXUGffRn66
-         eiRw==
+        bh=MriHKHAtVmYbxeM3VmClVTN8DjjmybwnnSYqZ6iKPxg=;
+        b=gTgva39xVjhw+WoFtBkTT6j+o9VRnBEUpO86VNKJNQi4347Ff7iVETALKA3SOicUwD
+         VduU3LHrYH4PuWALsRU62mKoGGbHciLQUjACI5PT0X2AAO6nXmm2VHGv2C/t4v+1/YRj
+         p1HBpfkjzbmypvSgeWrqaU3d6D/rMCMv1XetcYK2WEHM8DyyOxhcvSjQ8hugNfKlDNLg
+         pFunD39CZR3WN1W4WJZ8wSSAc/c9+qxcUf30sPwY9mBlqDdOwuNb1kxfM+ui0DcptP5E
+         s4tZ7R09z2aMlDHU2PBN+8SXiqZk3yeAhIUDe5obAxbiGsxkLQen9FhTX4jX2vWvQYNB
+         342w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791429854; x=1792034654;
+        d=1e100.net; s=20260707; t=1791429856; x=1792034656;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=1KnRD+HklADwPSgL/qWcGHWiK0RgAbbE22jyJCxAFIs=;
-        b=IPhF2NSxo1bjcTTEPgAWlba+pFcEUsiJ6idcexeDcgj+PUw3NCU2Afo8XvxpXu2ywi
-         8IOy2lJeQuHs9Ha7YDMIa/YX+iaoK5kfX1if+r5h0fvK1UhY+Nz2TZ8rHkD6iH7U2I+z
-         fZF9kUuMnrgBYU23eEGEVbRw34tf50dfLA/TfkuK/yAgReUOqtx3Vun9aUmABJEC/Cup
-         hZ4CaVipXGaENsQ4AJJtxYs+4RqmoeVX36LM0UH7S26xb3gc16Wy6afAH5p5Xt2fOjK0
-         KvuwRsCOzMn7MepinRS7QLn/ROpZXAMBGqo5gXPdI58/OI/3UGDWKTFzd1Ew8wWyv0zC
-         BLLQ==
-X-Gm-Message-State: AFq9FYLQ8yh8Jy0nENFlpd5pgfYfU4wCE+U4TXGYV/OXeDy0bX/yLISa
-	Q9zy2GTzDG/xpDHo37viJa2bpjTP3s32zESqnkDIGUO2EN/m2Mg4URSt
-X-Gm-Gg: AYBFou1Nlq9ioPoZkbKxotF8r+4luW8p5ckB7VofbAuSnur4hgc18KEV0hoCMU0lVOh
-	YhK/SeQVx7GhryaLWLY8ICXcJmbsiOWlx+4EIIVyabEc3dSkudFSX+PdH3AyvXX847JvWMGscKO
-	5L3dmfT9uD4NYVCSqFGhJgfMlModEWRFuobAc03v6ZOOe0p3aYo/TeH6PXO5WZtyX0B+eFbP62i
-	okMUf9LofvRy7V6DtksJ9QVuxt69ZFwR1KWjnA87PTZt29X8h5bxGNPq3s7KU10Ll4WL+Y48Vc/
-	AlXflAkKxmtRrAGvxFHkbsyB1VR2xgz+d/Z34oNSUTGV3iF97hm6kmYgP7GcHaVPHiBxe1HYffq
-	mRHOiGzLzl78lIdUifBVQ4jdJRWpq4dAnX+/36ChrS4bwjW+1lh1roQuDjBOoXJNPXxfJ09XgMO
-	z59DSPXJe4H5I+e6s6e5t/PO6nfEUSn23Pjbcj2BD2nuYAlnEzZjmu3CRBhiTqE1p4HtJPtQM=
-X-Received: by 2002:a05:690e:150d:b0:677:c303:464a with SMTP id 956f58d0204a3-6790a288da1mr2647635d50.91.1791429854418;
-        Wed, 07 Oct 2026 20:24:14 -0700 (PDT)
+        bh=MriHKHAtVmYbxeM3VmClVTN8DjjmybwnnSYqZ6iKPxg=;
+        b=sXfGnn77v7x7UbzhCWhGNxlcFvrGFXvIW/VA/JV+UJkM2H3sL3vGawDCyRMnmMzQO3
+         NuDMX+xevK9YmLFN/fc4vhCzAa9+/An2WFTsPjR5U0L+yo0m+7ZUQ7fQL9SXqc9UPAa9
+         XYbPaiePvHDMZupKRVnSu6im/TfmcXMm3Zp85VNfeUXmIhm97zWraDakl5/2+mX+9zKV
+         4JTzBEkrTQ/pW+4tzQfgg2GDvIB1xQqDH8sLsxzI2cBU0o9TTjAGFifdu3nD7EW37eRr
+         vGq3pIh9G4kMT1AnOb7oFunVee6gfiX6BlvIRqO4sPaB/G+fWDJU4EA/0X3kVCDmxOOn
+         Hs3g==
+X-Gm-Message-State: AFq9FYJmlydYMan9b1UThOMCuVVr9mxI1JCqLSCq/Z6Y6Bzw4CfuH5zH
+	j1FZc4A8gGTLNFQC4vJV2a0RoTH6lMj6qvXdG0fbVhE5Ss9Lq0TAxsau
+X-Gm-Gg: AYBFou2qwsD7YMetAya0LbniqpO6UUrGbbPhpv/UfdSjwllBwTRIwPt6VjAgcTh4T1f
+	QmArftlamAavbOvXrcOe72Wa4AbwRjpy+vP3MZVi1dkudbwWapDmw/MDCDfl0ZuMyhYis5WTMic
+	+LtxMEIHfgsNsZ+jUDoo38Sl9UxOghVzLdjBa/eAN8ywOxTxArqmeue5jLjogwir/YK5Lz8cDRJ
+	RfxN2HFwAE+lJGmY3FlWZU0HewsMOvKEq+8isyZZIq9lyD+s1pRLorT0XSXgdjrAKjrzdbtSwr0
+	ixXY5UIdFv+4v3SEH+2fwV4kSD4oMOh1VCet5GzTsKGA0DLOvilEnL4rQljKMaHQgv/6koLw5r+
+	n+zfXhgFSmMcCKa/LynmZMHTuM66RAh58blG1hIJmdPXMe87jjxyd3sqDM7y0tKya1tDPGhsWQa
+	KGk5b7YOXLA6Lu65SyEijvpCXYhE4gqjyBACLRFagsc/FNvnDIhGfZINhKMT/9PEo0v++QbzA=
+X-Received: by 2002:a05:690e:4393:b0:672:99e1:11ce with SMTP id 956f58d0204a3-6790a3f2c99mr1216790d50.107.1791429856466;
+        Wed, 07 Oct 2026 20:24:16 -0700 (PDT)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-6791b22d0dbsm719263d50.21.2026.10.07.20.24.12
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-6791afa71ddsm748900d50.4.2026.10.07.20.24.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Oct 2026 20:24:13 -0700 (PDT)
+        Wed, 07 Oct 2026 20:24:15 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
-Date: Wed, 07 Oct 2026 23:24:05 -0400
-Subject: [PATCH v2 2/6] alpha: handle VM_FAULT_HWPOISON in do_page_fault()
+Date: Wed, 07 Oct 2026 23:24:06 -0400
+Subject: [PATCH v2 3/6] alpha: describe the PTE read and write enable bits
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -69,7 +69,7 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261007-alpha-hugepages-v2-2-8e108af2d961@gmail.com>
+Message-Id: <20261007-alpha-hugepages-v2-3-8e108af2d961@gmail.com>
 References: <20261007-alpha-hugepages-v2-0-8e108af2d961@gmail.com>
 In-Reply-To: <20261007-alpha-hugepages-v2-0-8e108af2d961@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -77,117 +77,63 @@ To: Richard Henderson <richard.henderson@linaro.org>,
  Axel Rasmussen <axelrasmussen@google.com>, 
  Andrew Morton <akpm@linux-foundation.org>, Peter Xu <peterx@redhat.com>
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Matt Turner <mattst88@gmail.com>, stable@vger.kernel.org
+ Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3631; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=Vwd3NDOYwIA5ZKS8UloQMBBYOUW6GUnZ5tUj1OSdmgk=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKO81zpf/Mr+U3/vi8Gcz78vZGmJOQ0h/di2+Q43Y/Bu
- f0Mfpk8HR9ZGMS4GGaKKbLErVdkmdW2Y6nPaelfMHNYmUCGSIs0MAABCwNfbmJeqZGOkZ6ptqGe
- IZChYxQPkdNj0MgsLi5NLdJNKyhyyMsvSSzJzM8r1ssvSM0rSC/QS8tMK8nIyC8qTgUaoZeXWmL
- q6uhmZGhgYuloYeZk4Whq4uzsZOjk5ujo7OpkZGluYuBs6WjiamnOwMUpAHPNRmOGf2ZPbAy//Z
- 7usStMMvh8zbL9oq1yzr1ivJ3v3NNWZH4/XcTwT2mvlPRzU+MN3Wd6M1bMs/Z5yVLf0vFoqdg2Y
- Zn4OUck+AA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2280; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=V0j0CtHFz14eefLCzb5WnjuHMOvELhvyZG5FMWdbC7w=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKO81xp2W+T/zp93iuFqknnOELzavhWrbYrC9yzprL1V
+ OtJeU2Bjo8sDGJcDDPFFFni1iuyzGrbsdTntPQvmDmsTCBDpEUaGICAhYEvNzGv1EjHSM9U21DP
+ EMjQMYqHyOkxaGQWF5emFummFRQ55OWXJJZk5ucV6+UXpOYVpBfopWWmlWRk5BcVpwKN0MtLLTF
+ 1dXQzMjQwsXS0MHOycDQ1cXZ2MnRyc3R0dnUysjQ3MXC2dDRxtTRn4OIUgLlG2Zvhf0SiBfsqkx
+ nTXnOd73uqYj1vmkTkHNOKV1WHWMpOt0/J6mH4p391xmmV/l05WRERtlMPK2U4LfPc2fnpWoecd
+ FD0xMo2LgA=
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-do_page_fault() handles VM_FAULT_OOM, VM_FAULT_SIGSEGV and
-VM_FAULT_SIGBUS and then falls into BUG() for anything else in
-VM_FAULT_ERROR. VM_FAULT_HWPOISON and VM_FAULT_HWPOISON_LARGE are in
-that set, so a fault on a poisoned page takes down the kernel instead of
-delivering a signal.
+The comments on _PAGE_KRE and _PAGE_URE said only "xxx". Describe the
+four enable bits as the Alpha Linux PTE defines them, in Table 22-3 of
+the Alpha Architecture Reference Manual: kernel and user read enable in
+bits 8 and 9, kernel and user write enable in bits 12 and 13, with bits
+<11:10> and <15:14> reserved. There are only two processor modes, user
+and kernel (section 22.5.1). Linux uses the read enables as its accessed
+bit and the write enables as its dirty bit, so say which of
+__ACCESS_BITS and __DIRTY_BITS each one belongs to.
 
-Alpha does not select ARCH_SUPPORTS_MEMORY_FAILURE, so the machine check
-paths cannot produce these. UFFDIO_POISON can: it installs a poison PTE
-marker without any memory failure support, and a subsequent access
-returns VM_FAULT_HWPOISON. Registering an anonymous range with
-userfaultfd, poisoning it and reading it back reliably hits the BUG():
+The names differ from what the hardware calls those bits on the 21264.
+Its PALcode loads the PTE unchanged into DTB_PTE (21264/EV67 Hardware
+Reference Manual, section 6.9), where bits 9 and 13 are the Executive
+read and write enables (Figure 5-27), Executive being mode 1 of the four
+the processor implements (Table 5-5). That is a detail below the PALcode
+interface, and it is also the layout of the OpenVMS PTE in Table 11-2,
+which is not the one Linux uses.
 
-  Kernel bug at arch/alpha/mm/fault.c:188
-  poison(50809): Kernel Bug 1
-  pc is at do_page_fault+0x4e8/0x550
-  ra is at do_page_fault+0xfc/0x550
+No functional change.
 
-The BUG() fires with mmap_read_lock() still held, so the faulting task
-is left unkillable in D state holding the lock, and shutdown stalls
-behind it. A UFFD_USER_MODE_ONLY userfaultfd is always allowed, so any
-local user can do this.
-
-Deliver SIGBUS with BUS_MCEERR_AR instead, reporting the size of the
-poisoned area, as the other architectures do. That is the huge page size
-for VM_FAULT_HWPOISON_LARGE, which becomes reachable once alpha
-implements huge pages.
-
-Tested on an UP1500 (EV68AL): the reproducer above now takes a SIGBUS
-and the kernel logs
-
-  poison[373]: hardware memory error at 0000020000030000 pc 00000200010007ec
-
-with no oops, no wedged task and no taint.
-
-A backport needs the show_signal_msg() call dropped, since alpha only
-has it since commit 9ca6af1aac40 ("alpha: select
-SYSCTL_EXCEPTION_TRACE").
-
-Fixes: fc71884a5f59 ("mm: userfaultfd: add new UFFDIO_POISON ioctl")
-Cc: stable@vger.kernel.org # 6.6+
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
+Suggested-by: Magnus Lindholm <linmag7@gmail.com>
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- arch/alpha/mm/fault.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ arch/alpha/include/asm/pgtable.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index dfe427d93072..24408b53197c 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -8,6 +8,7 @@
- #include <linux/sched/signal.h>
- #include <linux/kernel.h>
- #include <linux/mm.h>
-+#include <linux/hugetlb.h>
- #include <asm/io.h>
+diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
+index 8a175e0c2b42..d22e28b956fb 100644
+--- a/arch/alpha/include/asm/pgtable.h
++++ b/arch/alpha/include/asm/pgtable.h
+@@ -65,10 +65,10 @@ struct vm_area_struct;
+ #define _PAGE_FOW	0x0004	/* used for page protection (fault on write) */
+ #define _PAGE_FOE	0x0008	/* used for page protection (fault on exec) */
+ #define _PAGE_ASM	0x0010
+-#define _PAGE_KRE	0x0100	/* xxx - see below on the "accessed" bit */
+-#define _PAGE_URE	0x0200	/* xxx */
+-#define _PAGE_KWE	0x1000	/* used to do the dirty bit in software */
+-#define _PAGE_UWE	0x2000	/* used to do the dirty bit in software */
++#define _PAGE_KRE	0x0100	/* kernel read enable, in __ACCESS_BITS */
++#define _PAGE_URE	0x0200	/* user read enable, in __ACCESS_BITS */
++#define _PAGE_KWE	0x1000	/* kernel write enable, in __DIRTY_BITS */
++#define _PAGE_UWE	0x2000	/* user write enable, in __DIRTY_BITS */
  
- #define __EXTERN_INLINE inline
-@@ -113,6 +114,7 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 	struct mm_struct *mm = current->mm;
- 	const struct exception_table_entry *fixup;
- 	int si_code = SEGV_MAPERR;
-+	unsigned int lsb;
- 	vm_fault_t fault;
- 	unsigned int flags = FAULT_FLAG_DEFAULT;
- 
-@@ -185,6 +187,8 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 			goto bad_area;
- 		else if (fault & VM_FAULT_SIGBUS)
- 			goto do_sigbus;
-+		else if (fault & (VM_FAULT_HWPOISON | VM_FAULT_HWPOISON_LARGE))
-+			goto do_sigbus_mceerr;
- 		BUG();
- 	}
- 
-@@ -248,6 +252,21 @@ do_page_fault(unsigned long address, unsigned long mmcsr,
- 		goto no_context;
- 	return;
- 
-+ do_sigbus_mceerr:
-+	mmap_read_unlock(mm);
-+	if (!user_mode(regs))
-+		goto no_context;
-+	/*
-+	 * Report the size of the poisoned area, which for a hugetlb fault
-+	 * is the size of the huge page that could not be mapped.
-+	 */
-+	lsb = PAGE_SHIFT;
-+	if (fault & VM_FAULT_HWPOISON_LARGE)
-+		lsb = hstate_index_to_shift(VM_FAULT_GET_HINDEX(fault));
-+	show_signal_msg(regs, address, SIGBUS, "hardware memory error");
-+	force_sig_mceerr(BUS_MCEERR_AR, (void __user *) address, lsb);
-+	return;
-+
-  do_sigsegv:
- 	show_signal_msg(regs, address, SIGSEGV,
- 			si_code == SEGV_MAPERR ? "unmapped access"
+ /* .. and these are ours ... */
+ #define _PAGE_DIRTY	0x20000
 
 -- 
 2.55.0
