@@ -1,155 +1,176 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19C6C3C5848
-	for <linux-alpha@vger.kernel.org>; Thu,  8 Oct 2026 20:49:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8D703CA497
+	for <linux-alpha@vger.kernel.org>; Thu,  8 Oct 2026 20:50:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.178
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791492568; cv=pass; b=ACjCZLXQ/XZsL8x+4Pa+TGoNkVAf/zUp7VXI7wpNXjnCRIEosU43RbgN4W9BQA+g6IRxslYO5kA7qMFIio/cRx20Fg2r6eHRtlH2l2q0YjXXwJau8ImGoiKjsUL0zEE0dsmo1UtANU6WDWxyuEho45oZekIG9M4hdHEzSM76s+Q=
+	t=1791492620; cv=pass; b=uNPT/NXKc+bXiYiRdiu0lh3Syc2MVXI90mzPakXvN2omViIbzK037RBVge+nM7HrLs26ku8RKHbq/MVavpwTZAojIi5avNIRoGL/fNHd7XTcFJ+suxP90PhyKcB6HfOVIZCeN/sVI08uXt9snaozlGBkTIGk0lR+xc3DYNwiRqY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791492568; c=relaxed/simple;
-	bh=Ga599ZX3Mr76ihAc61srmvnaS4ilVrwnaph9aVtQkFc=;
+	s=arc-20240116; t=1791492620; c=relaxed/simple;
+	bh=+Ky5C/6RCYoPAglvjbSy+TobFX5nuSe8Upk7a3uWfI0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=IxDEN55S+ayIpnBXVWgBg2Q3nwNK2KNFBhOv/wZRq1ofZRJeDJrRk7NNg9EZB/YFC5+6EjE2noAnnUpPNRAWXw8pJAEqNnNmHCr/2UXje/9zTJqByLcWk2rUFaydpaz5t4b4OThMMD8f3O1osrpEUsMBSzxqVHf4OKlnUb3TuYI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c3QA0cX6; arc=pass smtp.client-ip=209.85.167.48
+	 To:Cc:Content-Type; b=kMUBEAnkpuWS6CmRoIvxgK4/ZLSSjlSbkQu7e8zqm+4bXAcw8G/TBpn+TZKuykfd3wbFu3SRKtrxTZWtJ1Hzkc6VOlUk4BSsMpCGS9tuyu01b9+BPZCKQ/2GMfhC/hVObDCAc694rmPqRhNa5xygNuWAh8N1nbTRn4Bbi3dBqGs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HstwHEgx; arc=pass smtp.client-ip=209.85.208.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c3QA0cX6"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5bc18f54abbso1490368e87.1
-        for <linux-alpha@vger.kernel.org>; Thu, 08 Oct 2026 13:49:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791492565; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HstwHEgx"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-3a6313cb899so26353831fa.0
+        for <linux-alpha@vger.kernel.org>; Thu, 08 Oct 2026 13:50:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791492617; cv=none;
         d=google.com; s=arc-20260327;
-        b=bzjcsd0oJCqqhFmSLgvU8IO4pBVDSXLHpW5VTmDPmMCUauz8QFLRLvVYMT1paeQgFC
-         3Kuq/A9NgqEIQG9sZvpS+Aal+au5NQf4jjFPVsZN40Vi6PJ0/hfaOG7qr61YWfRS1ckY
-         u27GU8wnm+pxex9A5Jrln1DJMdRlxcpEKw7+ITaf4fx9i0eSpiYC5sqF4bkI6nr5EC+t
-         koga1bxQ9HLQRvMePNkER4sJkrJ0Ae59ekCtZznxSR2DEjxfYrLMQsPr76cg//NrwFwV
-         OQJrlL1xlJus9aWFFBFVKxHZGPK1tbbBKijtOLAPhyH6Vy04XpJ9g5zZiI1FEcj+LwiB
-         Y5Uw==
+        b=W6aV5IWse7v+VzMHtsO69uLwCt1WHAyD7tOTGkPmIDqIQmbyyjh3gh/NJNH4ATL5RY
+         GqvahVcZ8V60bIuWll/NPQJt4sZp7u45ZWNOxvqwyROU1jFImExc6WbnmektjmHtVARA
+         8FoV627F6qVzUg5hovKkrVZjEHFOzqdDY+vSKfkZ9V2SxnHkL0j6oCzc98SazIcvni62
+         HbRkWlVgUhlenGY+FQC1ICuZWxoC3zvHSio4lHdr5SIZC9I2+HY+q/v1HUeM9HfoRqgA
+         N43A96akoDl8zdNAjEKqAOfK7BeyhI7KQ8wJcfpV0ec0bTVMNbOLUFUR34xSa2Vr1fft
+         3b2Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=wf9eR6XwQKqDw7hx5JDyY1pAL9RLJYxNR29Noi0v2B8=;
-        fh=JU6kmNSW9X7K4DWG44Kkz5eTDOoCYxmiI+AR6+yOEwc=;
-        b=sx6tRaQywTs55IPVkPRjFfz4l1SHyPtmuLKXZh0IRmDjIJx6gPAuNdme9aJOmBonTN
-         v8G8bkP8Plsjlez5llshF+Al1PlPOKVH4PWrd3Fujl5Yz7IxeWUJX1yAjA5LNx26RgEB
-         UUGQG2hm6GroPsS0bIljcSUQrn98oHd8Kb+aM/VZKlSqaTQtSxpQ0sHxIUSxgEG9yVog
-         /Zky0TyPqYdMvAu3FrNTvdgm+LzRfNjZx7+9+tJNWklzXvjZh8wzRKjqUGSIdjwnZaK8
-         zgE1xqPjQ0NLz/1JvC0xunTgF3+NxS1Gkdphza4AmcY3BdAqn+5eWHlS/CioJIDBp7CP
-         Sutw==;
+        bh=7Y+mfJq2Q8N5+Mak2eVOy9R5CAvJC/TP33cET0RSU8E=;
+        fh=ahY6shnoRAs1B4pxiRB+Zco3+D/81Y0G20kTJh86ou8=;
+        b=hwKP4I6x2tmylZi2rt4c9WPTaUuw1nA2MpMIvf13rJPvs4h7XEnpiHJRbpohRC1ywp
+         aRNMcdThhf+TDMog+wXxjI5UsW9uQOrLGNK+M9T64AmDUi2RhBLuUPXJj8IrvZ8Xg3zt
+         cRYDha4UyEhymMaqNW2URgtjJHuTgTiD5qMPrpeq0cUgptT7kmPZmuDMBCxaQoEyznTT
+         bJXqdyKEYW6YMOs9Tba6f3j3UUpy1q+ZuHStlJrQ8LfQiWssnfG+XPle/3lqOYcQixUW
+         6epG7ny4TL/DEUwiSB4TduWvVXXtb9PjC4GLE8ycMnKCB3JuE1L9pQyw2TXIYvGOOs3U
+         Ifrw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791492565; x=1792097365; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791492617; x=1792097417; darn=vger.kernel.org;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=wf9eR6XwQKqDw7hx5JDyY1pAL9RLJYxNR29Noi0v2B8=;
-        b=c3QA0cX612HlJvtnCqhM4+5CuqbY8IhawoA+JrZHPhFofIWdZFzL0cJ4Hh6yVdc9dE
-         txXhqBNBBPGjB+aoUZ20DrSfZgVvX4xbhhdnpRPcoQiab8CDrRMdbsMuUHWY5WlQN+8c
-         VS7kAhqM0sUfsZ/q21jdnhLVjEwoyvM6KRsJx/Stv4dNieTAljyL/6H0N00x8GHNJp6n
-         g25KA8Ue357QXI9e6d/w+oOcxEGMQEZIcJKkARD21QxQeSFcF+bM04V3Y/3dkKKluwt/
-         lExA+zpa4Q4hE2mbD9Eh72UzIVenPrmtrbPbuH8j3oqx0aOx+VAv4Y8RVSMWIrnzPKXH
-         b1aA==
+        bh=7Y+mfJq2Q8N5+Mak2eVOy9R5CAvJC/TP33cET0RSU8E=;
+        b=HstwHEgxtpn/54POm9e8WYzlRdPWAaKusJFF2/MrbEcRB6RvM+STnbNmPlCwM5Os91
+         uQRIfUYMVTawq0UckIhH/IBi1YBNEociVs154LcRs2ey+jwoMaPS++RT7KAAImxIR1Vc
+         fF8oddW0pfH04D+xrwTcRePA2foc/g1eulEIv+FYO2nJ4eCqR/Xo4zwcLmbNQka0DR9w
+         1mvPyNkHgDam5AcxuYQczmcgAvflL5u7Dp45ea9qwPlvMIWJRgcmPZ3R5pMAHCy/j4Va
+         wLNh9kepgHLlS3JkY2dvX9VDCu36GOg/tAHtp/LRYIu4NVTBtPCsB8oHyD0ms3rYv0+F
+         kPVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791492565; x=1792097365;
+        d=1e100.net; s=20260707; t=1791492617; x=1792097417;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=wf9eR6XwQKqDw7hx5JDyY1pAL9RLJYxNR29Noi0v2B8=;
-        b=iuMm3PNc0K1Q5mwc5iTKyZWO1b1ZbWcckipeStVNJ2D1rAw6a+ymgcM4HUlVen8ka8
-         rCfANL157gmhAYSnL5S3KC2eLXmRlOriQpnhzoTdSQYoMyUiMyYXPNaXDZXZnMWh1zUr
-         LU1dNY+9OfuQlUj7Gsse/sOLLEb6Man69aON6eRbrSAksXGQU2Mw4dQVD7JJa3i5bli0
-         4vEUIiVcyldLK6XvVhGp0QUjPCKKKQgK5eFdFHRRAbCzNrz6JLRBanGbiOqjfYfMDf69
-         KiuYceDxZW3yrkugLeGKmdcBNypG15b0vYrvDg/GuIQiEhsc8uFT7c6FbekMtaBxvRZW
-         83EQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzTPHLsJLyNN6R2I2QVZKmnUUo0TVqhlSVwlAU54rmptzwvmOcjsUMJycfSBTMIJgMpMSr9QDwbvYoMhA==@vger.kernel.org
-X-Gm-Message-State: AFq9FYLtQSMxkKHFgtPFAETY243ggGWgc1Guep1+yha8Wr2+cZ/xanDJ
-	+fdHlaiLMQB8qKpuXCqyjJSZg/r80FJNGbwrynVLpVjwQMSbTJIGbCVAtW4Ea6ECZpJCtob+Ug/
-	pqPlr5HkoNVhfRA2pMkmq+TGMGVioQeg=
-X-Gm-Gg: AYBFou1FI1eGsA1jOhx3R1dWM3qsup7bUrTEh9jLZ924laQCSekhLE+86wMv2Ek+zIj
-	ivBGmrVAb7nnxivFGeOw5U0n3LhMAcq18AFhpGJ/x+g/Rg3NbDDx8RBIbASBw2yIKb2ftmQ9jpO
-	gZNIVmOm+CeahTKkIRF0Ui2/Ft29k9F+wMDWaXPMtFKSUKGWrVo64LO5LcWjxiG7fdBLN0VGq1C
-	ReP8Wz8LYQn8zmqa00rDLJsc2Y9OQK/p/mtuTi0JPwW9Am0OyDMwXyAawU2qrQoArxRv6mexW5A
-	jZfJsbaW3uSFMdC6726qFntrSGGyIB4PaeO/z7Yji4Ez6/0v11kW/Yxgaol426eHSFkJ5P6uXiV
-	Colgqq18hiyBGUw==
-X-Received: by 2002:a05:6512:2245:b0:5bb:42a2:31fa with SMTP id
- 2adb3069b0e04-5bcd0743f51mr2355277e87.60.1791492564814; Thu, 08 Oct 2026
- 13:49:24 -0700 (PDT)
+        bh=7Y+mfJq2Q8N5+Mak2eVOy9R5CAvJC/TP33cET0RSU8E=;
+        b=w0u88c522sArLyC0+saDDzi48fnQQj5+DB6JoT/neb12RJXYFolOUkfdVN6TysA97I
+         hyFXGfTvluJr6iXoYVWp5YJkwZ0iB3eym3b8VJ+nJQNepoJxHbKmVGcq0WHypCxlTbhy
+         u0Chut5Qtfyzcvc8YSvG4+w+C+ECUP3N+c3LrcH4HSfRySW2AIJ37zyVJApwpgrBty57
+         emWmXBXlrGLPjHYBA/z/CjpIidy3OZvD+QRTUu26Aa3jF0Yb0cn4ngbMex6LwtbfFl/w
+         M4zfQXATMVPkC+OwFa+hBdVJuZonFQZMZJy6BMnMbYYdthiz1Enn4imst543Pn3Ni9WV
+         71Rg==
+X-Forwarded-Encrypted: i=1; AKwUvBzy3qoIzmaoqpp5/rUVGB3tX5rofRZbkQ0aK0yYoR5aF4P3uMKuKWxvmmUrcQG1mF/6LWG/wKn2JCiDcQ==@vger.kernel.org
+X-Gm-Message-State: AFq9FYJApqGMr3XjtUfc6OcFvqXmnkub/Ykfa1Wiyp4yVvn5zgq+AFy8
+	oRV4SR+TA+3oG2IR42i1nfX+0ol95UQOR0rQyzGBaJMD1a0TYTQzI3DP9sMQ65ecjJY5wsujxY8
+	I79Lipw9UfHL4lho/nmEi6UMYLM6rRSM=
+X-Gm-Gg: AYBFou0XdlO4qNJfHw+E97b7HpoB7n0mBVmQfGC7iW8fwGvIrpfugVlzuvqSX4/n7vo
+	qQu5kn7KYN3gpwrg4xn9VRwYynYksCNtK+g+BfWHqVjPxwLHsM1ulMQAuUE0svBrAlm0Jf/rk68
+	H3NDq2oa00thBrTGpXq8531FGAErWlrHC4n5+Cz0A4YvepSuEETJUoNwxfknI7LPQL2ri7sdEuc
+	JGgA+22UES1Q/cW08+dVwxX3J9YfVfUHH68niaKqzdBseHta1XGtV/BjkXw7Tbp5TbtjXd+c3Fl
+	SE/9fdWnomChYeEluxrDhVcU0/vRNgyoIz7BgW/0WH/Gobu+BGDx9flhhSMNiMsP+csHXeHyoTE
+	KAzW96hS7uBndrw==
+X-Received: by 2002:a05:651c:54f:b0:3a9:7b12:b35b with SMTP id
+ 38308e7fff4ca-3a9a2cdce44mr16039891fa.12.1791492616403; Thu, 08 Oct 2026
+ 13:50:16 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260225110548.31431-1-linmag7@gmail.com> <20260225110548.31431-2-linmag7@gmail.com>
-In-Reply-To: <20260225110548.31431-2-linmag7@gmail.com>
+References: <20260219205514.4434-1-linmag7@gmail.com> <20260219205514.4434-2-linmag7@gmail.com>
+In-Reply-To: <20260219205514.4434-2-linmag7@gmail.com>
 From: Matt Turner <mattst88@gmail.com>
-Date: Thu, 8 Oct 2026 16:49:12 -0400
-X-Gm-Features: AclHuK8_vOoVjkuMythyEP1pi3zO_VYWRP3KEuAAd4ZRgtZfVlu8c9OpH9_kgB8
-Message-ID: <CAEdQ38F7RstggOKabd80tr2gofrMMAT0N1agN-RBeybxxJWDVw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] alpha: Add support for HAVE_ARCH_JUMP_LABEL
+Date: Thu, 8 Oct 2026 16:50:04 -0400
+X-Gm-Features: AclHuK9UPXD6K5FX9DY4hrF5YfgulYHlXuNIz0cKjHqwtO0P0ypylPhzs_uPvgs
+Message-ID: <CAEdQ38EQ_yoSHEKF12bfwmQpxDaU76YzKgUw5ipHz=Ux_bB09A@mail.gmail.com>
+Subject: Re: [PATCH 1/1] alpha: enable DMA CMA support (HAVE_DMA_CONTIGUOUS)
 To: Magnus Lindholm <linmag7@gmail.com>
 Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, skhan@linuxfoundation.org, chenmiao.ku@gmail.com, 
-	shorne@gmail.com, corbet@lwn.net, glaubitz@physik.fu-berlin.de, 
-	macro@orcam.me.uk, macro@redhat.com, mcree@orcon.net.nz, ink@unseen.parts
+	linux-alpha@vger.kernel.org, corbet@lwn.net, skhan@linuxfoundation.org, 
+	linux-doc@vger.kernel.org, glaubitz@physik.fu-berlin.de, macro@orcam.me.uk, 
+	macro@redhat.com, mcree@orcon.net.nz, ink@unseen.parts
 Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Feb 25, 2026 at 12:02 PM Magnus Lindholm <linmag7@gmail.com> wrote:
-> Implement static key (jump label) support for Alpha.
+On Thu, Feb 19, 2026 at 9:53 PM Magnus Lindholm <linmag7@gmail.com> wrote:
+> +           if (IS_ENABLED(CONFIG_DMA_CMA)) {
+> +                   cma_page = dma_alloc_from_contiguous(dev, count, order, gfp);
 
-Sorry for the slow review. This looks correct to me. I applied it to
-your for-next (the arch/alpha/Kconfig hunk needs a trivial rebase) and
-it builds cleanly with W=1, CONFIG_JUMP_LABEL=y and
-CONFIG_STATIC_KEYS_SELFTEST=y. I have not booted it. A few comments,
-none of them blocking:
+Two problems here.
 
-> +   select HAVE_ARCH_JUMP_LABEL
+cma_alloc() can sleep, and alpha_pci_alloc_coherent() is called with
+GFP_ATOMIC by some drivers. This needs a gfpflags_allow_blocking(gfp)
+check before going to CMA.
 
-Please keep the select list sorted.
+The fourth argument of dma_alloc_from_contiguous() is "bool no_warn",
+not a gfp mask, so passing gfp makes it always true.
 
-> +static inline void alpha_patch_text(u32 *site, u32 insn)
-> +{
-> +   WRITE_ONCE(*site, insn);
-> +   flush_icache_range((unsigned long)site, (unsigned long)site + sizeof(*site));
+Also, because the buddy allocator is tried first without __GFP_NOWARN,
+a large allocation that then succeeds from CMA still produces a page
+allocation failure splat.
 
-On SMP flush_icache_range() is smp_imb(), so this is one
-on_each_cpu() IPI round per patched site. A key with many sites, or
-a module load, turns into that many broadcasts. That is fine as a
-first version, but it would be worth a follow-up that implements
-arch_jump_label_transform_queue()/_apply() (HAVE_JUMP_LABEL_BATCH)
-so that a key update does a single imb at the end.
+I think all three go away, and the patch gets a lot smaller, if you
+use the helpers dma-direct uses:
 
-> +   if (disp < -(1L << 20) || disp > ((1L << 20) - 1)) {
-> +           WARN_ON_ONCE(1);
-> +           disp = 0;
-> +   }
+      page = dma_alloc_contiguous(dev, size, gfp);
+      if (!page)
+              page = alloc_pages(gfp | __GFP_ZERO, order);
+      ...
+      dma_free_contiguous(dev, virt_to_page(cpu_addr), size);
 
-With disp = 0 we write a branch to the next instruction, so the site
-silently behaves as a NOP. I would rather return without patching (or
-BUG) than install something that looks valid. The comment about what
-other architectures do can go.
+dma_alloc_contiguous() already refuses non-blocking callers, and
+dma_free_contiguous() already falls back to __free_pages() when the
+page is not in a CMA area. That removes the hand-rolled
+release-or-free logic and both gotos.
 
-> +struct jump_entry {
-> +   jump_label_t code;
-> +   jump_label_t target;
-> +   jump_label_t key;
-> +};
+> +                           cpu_addr = page_address(cma_page);
+> +                           if (!cpu_addr) {
 
-Optional: HAVE_ARCH_JUMP_LABEL_RELATIVE would shrink this from 24 to
-16 bytes per entry, and the module loader already handles
-R_ALPHA_SREL32 and R_ALPHA_SREL64. Fine to leave for later.
+There is no highmem on alpha, so this cannot fail. Please drop it.
 
-Small things:
- - <linux/mutex.h> is unused in jump_label.c.
- - JUMP_LABEL_NOP_SIZE is unused.
- - ALPHA_INSN_NOP has two trailing comments.
- - There is a stray double blank line before the include guard.
- - The commit message could note that this relies on kernel and
-   module text being writable (no STRICT_KERNEL_RWX on alpha).
+> +   /* __GFP_ZERO already did this, but keep the old behavior explicit. */
 
-Did you run CONFIG_STATIC_KEYS_SELFTEST, and load and unload a module
-that carries static keys?
+Either drop the redundant memset in a separate patch or leave the line
+alone; the comment does not help.
 
-Reviewed-by: Matt Turner <mattst88@gmail.com>
+> +   parse_early_param();
+
+This moves the point at which every early_param() handler runs on
+alpha, not only "cma=", from start_kernel() to the middle of
+setup_arch(). I think that is fine, but it deserves its own patch and
+changelog. The comment is also misleading: parse_early_param() works
+on its own copy of boot_command_line, so the strsep() damage to
+command_line is not the reason it is needed. It is needed because
+dma_contiguous_reserve() now runs before start_kernel() gets to it.
+
+> +#ifdef CONFIG_CMA
+> +   dma_contiguous_reserve(0);
+> +#endif
+
+The #ifdef is not needed, there is a stub for !CONFIG_DMA_CMA.
+
+About the limit of 0: setup_arch() has already switched memblock to
+bottom-up at this point, so the area ends up low rather than at the
+top of RAM. Where does it land on your machines? Two cases I would
+like to understand:
+
+ - Could a small area (say cma=4M) be placed below 16MB and eat into
+   ZONE_DMA?
+ - On machines without an IOMMU (mv_pci_tbi == NULL) the area has to
+   sit inside the direct-map window to be usable at all. When
+   pci_map_single_1() fails on a CMA page, the GFP_DMA retry will get
+   the same CMA memory back.
+
+Passing an explicit limit, and skipping CMA on the GFP_DMA retry,
+would make both cases well defined.
+
+The Kconfig hunk no longer applies to for-next, and the select should
+go in sorted position.
+
+Side note for the changelog: with CONFIG_DMA_CMA=y the default
+CMA_SIZE_MBYTES is 16, so it is worth saying that 16MB is reserved
+even without "cma=" on the command line.
