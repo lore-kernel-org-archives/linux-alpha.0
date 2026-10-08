@@ -1,248 +1,155 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3343C3C8700
-	for <linux-alpha@vger.kernel.org>; Thu,  8 Oct 2026 19:56:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791489390; cv=none; b=U8rOw5Ue8KS4vjiqDG7xK25HWrtN5fVZKK6Gf5injxNRlIYTjBG9gbVToLnee0A3iVe+wvtabk9cr9T52GQre8gza4oNXyKfGbYt4RdiVk1agL5QioPM0eqRVdzcbb2usSK7dv+PJkMFbjhJEZm0t+McJwYXA2z+2Ug0ss2948w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791489390; c=relaxed/simple;
-	bh=9OvVOTmJE4Jfv3W+sVgQR3lslJm4kXRW8G06vKiuz5k=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=YyhQ+OA9F+4JzIGjIarGlRKNmc1ieWByP5D/m0iJ3yZi50Y//InI5a1CiFiWFzE6XgKQIXrculNxosczXxfOuBEEy2g1QLtwhI6GH6C4y/6pMPqatNbZLQz9Qx0eu0MT2y5KEhodooQMPUJWUL99rGO4/b+X4XnT6eW5SbKN038=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=o/TVvyaj; arc=none smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19C6C3C5848
+	for <linux-alpha@vger.kernel.org>; Thu,  8 Oct 2026 20:49:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791492568; cv=pass; b=ACjCZLXQ/XZsL8x+4Pa+TGoNkVAf/zUp7VXI7wpNXjnCRIEosU43RbgN4W9BQA+g6IRxslYO5kA7qMFIio/cRx20Fg2r6eHRtlH2l2q0YjXXwJau8ImGoiKjsUL0zEE0dsmo1UtANU6WDWxyuEho45oZekIG9M4hdHEzSM76s+Q=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791492568; c=relaxed/simple;
+	bh=Ga599ZX3Mr76ihAc61srmvnaS4ilVrwnaph9aVtQkFc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IxDEN55S+ayIpnBXVWgBg2Q3nwNK2KNFBhOv/wZRq1ofZRJeDJrRk7NNg9EZB/YFC5+6EjE2noAnnUpPNRAWXw8pJAEqNnNmHCr/2UXje/9zTJqByLcWk2rUFaydpaz5t4b4OThMMD8f3O1osrpEUsMBSzxqVHf4OKlnUb3TuYI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c3QA0cX6; arc=pass smtp.client-ip=209.85.167.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="o/TVvyaj"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-c2dc8cb0decso578225066b.2
-        for <linux-alpha@vger.kernel.org>; Thu, 08 Oct 2026 12:56:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c3QA0cX6"
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5bc18f54abbso1490368e87.1
+        for <linux-alpha@vger.kernel.org>; Thu, 08 Oct 2026 13:49:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791492565; cv=none;
+        d=google.com; s=arc-20260327;
+        b=bzjcsd0oJCqqhFmSLgvU8IO4pBVDSXLHpW5VTmDPmMCUauz8QFLRLvVYMT1paeQgFC
+         3Kuq/A9NgqEIQG9sZvpS+Aal+au5NQf4jjFPVsZN40Vi6PJ0/hfaOG7qr61YWfRS1ckY
+         u27GU8wnm+pxex9A5Jrln1DJMdRlxcpEKw7+ITaf4fx9i0eSpiYC5sqF4bkI6nr5EC+t
+         koga1bxQ9HLQRvMePNkER4sJkrJ0Ae59ekCtZznxSR2DEjxfYrLMQsPr76cg//NrwFwV
+         OQJrlL1xlJus9aWFFBFVKxHZGPK1tbbBKijtOLAPhyH6Vy04XpJ9g5zZiI1FEcj+LwiB
+         Y5Uw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=wf9eR6XwQKqDw7hx5JDyY1pAL9RLJYxNR29Noi0v2B8=;
+        fh=JU6kmNSW9X7K4DWG44Kkz5eTDOoCYxmiI+AR6+yOEwc=;
+        b=sx6tRaQywTs55IPVkPRjFfz4l1SHyPtmuLKXZh0IRmDjIJx6gPAuNdme9aJOmBonTN
+         v8G8bkP8Plsjlez5llshF+Al1PlPOKVH4PWrd3Fujl5Yz7IxeWUJX1yAjA5LNx26RgEB
+         UUGQG2hm6GroPsS0bIljcSUQrn98oHd8Kb+aM/VZKlSqaTQtSxpQ0sHxIUSxgEG9yVog
+         /Zky0TyPqYdMvAu3FrNTvdgm+LzRfNjZx7+9+tJNWklzXvjZh8wzRKjqUGSIdjwnZaK8
+         zgE1xqPjQ0NLz/1JvC0xunTgF3+NxS1Gkdphza4AmcY3BdAqn+5eWHlS/CioJIDBp7CP
+         Sutw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791489385; x=1792094185; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Ez/BXjLJiek5uaxQe0RG/fa1yVbHE8qAgeJCa3EFBfg=;
-        b=o/TVvyajYJ7F1lQoCJuGqHdtGBkdeePJfevCilc/XgXCqoe0IwUzQIJAROsi3vqUmn
-         PxCP1GPnJ4jyRdAgxCMqrokq9Hibv9mI1LIgU/FE22ImHO5CVfUvoXF3M7GFJdogiqUM
-         PD6XxohrMz4SIWSDteEb/LqZXb9MX/xSSnT0MvUubaqmtSVk6cCz/WuJrWIUSCuD3tk6
-         JmfqfiHr9rGzN8TuzJv2rUK+MO9oXuieY3TyisfUHPOiD/k+ER2BMdZeaG5vBULaHcbT
-         n7FbnIF40eoNad2aYXAZAdx+xsOQf0rSc4bMyW1hPAlKstRwGbnSrxVqjT7ywP1AsIwu
-         /lRg==
+        d=gmail.com; s=20251104; t=1791492565; x=1792097365; darn=vger.kernel.org;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wf9eR6XwQKqDw7hx5JDyY1pAL9RLJYxNR29Noi0v2B8=;
+        b=c3QA0cX612HlJvtnCqhM4+5CuqbY8IhawoA+JrZHPhFofIWdZFzL0cJ4Hh6yVdc9dE
+         txXhqBNBBPGjB+aoUZ20DrSfZgVvX4xbhhdnpRPcoQiab8CDrRMdbsMuUHWY5WlQN+8c
+         VS7kAhqM0sUfsZ/q21jdnhLVjEwoyvM6KRsJx/Stv4dNieTAljyL/6H0N00x8GHNJp6n
+         g25KA8Ue357QXI9e6d/w+oOcxEGMQEZIcJKkARD21QxQeSFcF+bM04V3Y/3dkKKluwt/
+         lExA+zpa4Q4hE2mbD9Eh72UzIVenPrmtrbPbuH8j3oqx0aOx+VAv4Y8RVSMWIrnzPKXH
+         b1aA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791489385; x=1792094185;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Ez/BXjLJiek5uaxQe0RG/fa1yVbHE8qAgeJCa3EFBfg=;
-        b=ZWezziERtuK2l/+is6ULli9sV/7XL3VzDnqIdYHCsznDOQ9sKo2lT+ygGJmRENDK74
-         cEIl93c3IxsAK1bviy5492jcfGnYWydOQitWTOUV9cii9WNUv6PADEP1vHfjW/ehuFVA
-         5Ox28SvuMXG7t1kb2KsPolZthY/vAd6DCmf3cqpsG9V5V8So+cQtidKPIk2gSiP6/+zX
-         +bsGwlKMFpiev5aVMaGiJ0ROxW0vYkNFExMTnmJZlID7pYqmxBfCRZCzTXqnJFQdja1U
-         +xLC6RPXjIVne65sfl8zghqECydhFPhxZfZ+aIlzLa1V3LMmSbhYcbugZDeGEJ857owG
-         Qggw==
-X-Forwarded-Encrypted: i=1; AKwUvBw6EdRXu2O0TgpSRSdjaUYzHMXmZj5RW65Om+LvN3rVg+eqdfkZ8p8xwSCnddox092PhF+zT3LVh88Omw==@vger.kernel.org
-X-Gm-Message-State: AFuF++mqu4mF2kns31EOxAkdCpr4cIiRvRV0XajjnoCl68hDGLFkL9M9
-	wo/IczVl+9VXOodl5wbCRiZqiYV+4CaHp4Zr0I2lzpS/x48wqGOGiceQ
-X-Gm-Gg: AYBFou3hgl03hFgqW9nI34A3oDbbR7rRREcWFzrqzUTlnOY+fopq7tuQ9gaPo5/DxLm
-	DKH+mz4eSTOVZRiYAuWoIpmtFk7qh3UswwFu5uX1B44W/fnhnxL64N2OSSXXDhEEUiaiNye3iMk
-	dxN7hDBH7J6sQliTe2VK607k0zrFVddqq4q7JZtB3iHHkgKPBLH1bkQvmu+RIWd+hFpEWZ1lFIc
-	GGM2TS9jQcK5YvmK47qjNwUKkwtn29REVRbyjB73DwB0D0DHsUNrQyuNpTiup+ZRKM9yc9+/Pdd
-	W2AVcIh66WgA8LQ41fy5tGb0RnRbwsQJE6on8yILA+WRsxiPpN1GbdgXvPxkby51nA3K69ZdjLZ
-	/WLq5+fw1nXCRNSTtH0hFrcpfDQig4/Vo0aki7tysmlOC+ORXibVzhQPzkanGWDs/wquVO3HJ3x
-	uV4rQRqUpfpAn8gk6nlM2IEQRwT8+EdtXL2R5dKD9yW0PG8q48c0HJ7H9srhjBEVhHNB3ODguC6
-	+M7LaGoAblm/LOqOkXx5W0LyB6QvDrD6B+xrKlG
-X-Received: by 2002:a17:907:60d0:b0:c2e:4652:852f with SMTP id a640c23a62f3a-c317c1773efmr648677466b.47.1791489385260;
-        Thu, 08 Oct 2026 12:56:25 -0700 (PDT)
-Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c31a4d0c2efsm9906266b.26.2026.10.08.12.56.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2026 12:56:24 -0700 (PDT)
-From: Magnus Lindholm <linmag7@gmail.com>
-To: richard.henderson@linaro.org,
-	mattst88@gmail.com,
-	linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org
-Cc: linmag7@gmail.com,
-	stable@vger.kernel.org
-Subject: [PATCH v2 3/3] alpha: do not skip TLB shootdown IPIs for kthread-borrowed mms
-Date: Thu,  8 Oct 2026 21:55:18 +0200
-Message-ID: <20261008195608.965266-4-linmag7@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261008195608.965266-1-linmag7@gmail.com>
-References: <20261008195608.965266-1-linmag7@gmail.com>
+        d=1e100.net; s=20260707; t=1791492565; x=1792097365;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=wf9eR6XwQKqDw7hx5JDyY1pAL9RLJYxNR29Noi0v2B8=;
+        b=iuMm3PNc0K1Q5mwc5iTKyZWO1b1ZbWcckipeStVNJ2D1rAw6a+ymgcM4HUlVen8ka8
+         rCfANL157gmhAYSnL5S3KC2eLXmRlOriQpnhzoTdSQYoMyUiMyYXPNaXDZXZnMWh1zUr
+         LU1dNY+9OfuQlUj7Gsse/sOLLEb6Man69aON6eRbrSAksXGQU2Mw4dQVD7JJa3i5bli0
+         4vEUIiVcyldLK6XvVhGp0QUjPCKKKQgK5eFdFHRRAbCzNrz6JLRBanGbiOqjfYfMDf69
+         KiuYceDxZW3yrkugLeGKmdcBNypG15b0vYrvDg/GuIQiEhsc8uFT7c6FbekMtaBxvRZW
+         83EQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzTPHLsJLyNN6R2I2QVZKmnUUo0TVqhlSVwlAU54rmptzwvmOcjsUMJycfSBTMIJgMpMSr9QDwbvYoMhA==@vger.kernel.org
+X-Gm-Message-State: AFq9FYLtQSMxkKHFgtPFAETY243ggGWgc1Guep1+yha8Wr2+cZ/xanDJ
+	+fdHlaiLMQB8qKpuXCqyjJSZg/r80FJNGbwrynVLpVjwQMSbTJIGbCVAtW4Ea6ECZpJCtob+Ug/
+	pqPlr5HkoNVhfRA2pMkmq+TGMGVioQeg=
+X-Gm-Gg: AYBFou1FI1eGsA1jOhx3R1dWM3qsup7bUrTEh9jLZ924laQCSekhLE+86wMv2Ek+zIj
+	ivBGmrVAb7nnxivFGeOw5U0n3LhMAcq18AFhpGJ/x+g/Rg3NbDDx8RBIbASBw2yIKb2ftmQ9jpO
+	gZNIVmOm+CeahTKkIRF0Ui2/Ft29k9F+wMDWaXPMtFKSUKGWrVo64LO5LcWjxiG7fdBLN0VGq1C
+	ReP8Wz8LYQn8zmqa00rDLJsc2Y9OQK/p/mtuTi0JPwW9Am0OyDMwXyAawU2qrQoArxRv6mexW5A
+	jZfJsbaW3uSFMdC6726qFntrSGGyIB4PaeO/z7Yji4Ez6/0v11kW/Yxgaol426eHSFkJ5P6uXiV
+	Colgqq18hiyBGUw==
+X-Received: by 2002:a05:6512:2245:b0:5bb:42a2:31fa with SMTP id
+ 2adb3069b0e04-5bcd0743f51mr2355277e87.60.1791492564814; Thu, 08 Oct 2026
+ 13:49:24 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260225110548.31431-1-linmag7@gmail.com> <20260225110548.31431-2-linmag7@gmail.com>
+In-Reply-To: <20260225110548.31431-2-linmag7@gmail.com>
+From: Matt Turner <mattst88@gmail.com>
+Date: Thu, 8 Oct 2026 16:49:12 -0400
+X-Gm-Features: AclHuK8_vOoVjkuMythyEP1pi3zO_VYWRP3KEuAAd4ZRgtZfVlu8c9OpH9_kgB8
+Message-ID: <CAEdQ38F7RstggOKabd80tr2gofrMMAT0N1agN-RBeybxxJWDVw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] alpha: Add support for HAVE_ARCH_JUMP_LABEL
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
+	linux-alpha@vger.kernel.org, skhan@linuxfoundation.org, chenmiao.ku@gmail.com, 
+	shorne@gmail.com, corbet@lwn.net, glaubitz@physik.fu-berlin.de, 
+	macro@orcam.me.uk, macro@redhat.com, mcree@orcon.net.nz, ink@unseen.parts
+Content-Type: text/plain; charset="UTF-8"
 
-flush_tlb_mm(), flush_tlb_page() and flush_icache_user_page() skip the
-shootdown IPI when mm_users <= 1, on the assumption that no other CPU can
-be running the mm. A task that borrows an mm through kthread_use_mm()
-takes mmgrab() rather than mmget(), so it never appears in mm_users, and
-kthread_use_mm() may be handed an mm that is already the caller's
-active_mm and loaded on that CPU. Such a CPU was not only left without
-an IPI, its mm->context[cpu] was cleared from under it.
+On Wed, Feb 25, 2026 at 12:02 PM Magnus Lindholm <linmag7@gmail.com> wrote:
+> Implement static key (jump label) support for Alpha.
 
-mm->context[cpu] is already the record of which CPUs hold an ASN for the
-mm. Test it rather than clearing it: take the shortcut only when no
-other CPU has one, and otherwise fall through to the IPI, which
-invalidates those CPUs properly. A CPU that merely ran the mm in the
-past also holds a context and now costs an IPI, which errs in the safe
-direction.
+Sorry for the slow review. This looks correct to me. I applied it to
+your for-next (the arch/alpha/Kconfig hunk needs a trivial rebase) and
+it builds cleanly with W=1, CONFIG_JUMP_LABEL=y and
+CONFIG_STATIC_KEYS_SELFTEST=y. I have not booted it. A few comments,
+none of them blocking:
 
-Those historical contexts do not cost an IPI forever. When the shootdown
-reaches a CPU that no longer has the mm active, ipi_flush_tlb_mm() takes
-the flush_tlb_other() path, which clears that CPU's own slot. Once the
-stale slots are gone the shortcut is available again, as long as mm_users
-stays at most one and no other CPU has since taken or kept a context.  A
-CPU that does have the mm active keeps its slot, and that is the CPU the
-IPI is there for.
+> +   select HAVE_ARCH_JUMP_LABEL
 
-Together with the preceding patch, dropping these clearing loops leaves
-every runtime write to mm->context[] targeting the writing CPU's own slot,
-so the array becomes a lockless publication of which CPUs may be using the
-mm, with a single writer per slot. Mark the two stores that are now
-observed from other CPUs; flush_tlb_other() already uses WRITE_ONCE().
-The uniprocessor flush_icache_user_page() is left alone, as nothing reads
-another CPU's slot there, and init_new_context() runs before the mm is
-shared.
+Please keep the select list sorted.
 
-The reads also need ordering against the changes that led to the flush.
-A CPU that publishes a context is in turn ordered before it goes on to
-access the mm, by two different barriers: kthread_use_mm() issues one
-through mmdrop_lazy_tlb() for the initial direct switch, and if the task
-later migrates, the context published from ev5_switch_mm() is followed by
-the scheduler's post-switch barrier, on alpha the mb() in
-arch_spin_unlock() from finish_lock_switch(), as described in
-Documentation/scheduler/membarrier.rst. So a CPU either already holds a
-context and is seen here, or it allocates a fresh one before going on to
-use the mm, and a fresh ASN carries nothing over from the previous
-context.
+> +static inline void alpha_patch_text(u32 *site, u32 insn)
+> +{
+> +   WRITE_ONCE(*site, insn);
+> +   flush_icache_range((unsigned long)site, (unsigned long)site + sizeof(*site));
 
-This depends on the preceding patch: while migrate_flush_tlb_page() still
-zeroes remote slots, a CPU running a borrowed mm can be cleared out of the
-array and skipped by exactly the test added here.
+On SMP flush_icache_range() is smp_imb(), so this is one
+on_each_cpu() IPI round per patched site. A key with many sites, or
+a module load, turns into that many broadcasts. That is fine as a
+first version, but it would be worth a follow-up that implements
+arch_jump_label_transform_queue()/_apply() (HAVE_JUMP_LABEL_BATCH)
+so that a key update does a single imb at the end.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
----
- arch/alpha/include/asm/mmu_context.h |  2 +-
- arch/alpha/kernel/smp.c              | 48 ++++++++++++++--------------
- arch/alpha/mm/fault.c                |  2 +-
- 3 files changed, 26 insertions(+), 26 deletions(-)
+> +   if (disp < -(1L << 20) || disp > ((1L << 20) - 1)) {
+> +           WARN_ON_ONCE(1);
+> +           disp = 0;
+> +   }
 
-diff --git a/arch/alpha/include/asm/mmu_context.h b/arch/alpha/include/asm/mmu_context.h
-index 6ecc8a0676cb..9cbcc4aa62e3 100644
---- a/arch/alpha/include/asm/mmu_context.h
-+++ b/arch/alpha/include/asm/mmu_context.h
-@@ -158,7 +158,7 @@ ev5_switch_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm,
- 	mmc = next_mm->context[cpu];
- 	if ((mmc ^ asn) & ~HARDWARE_ASN_MASK) {
- 		mmc = __get_new_mm_context(next_mm, cpu);
--		next_mm->context[cpu] = mmc;
-+		WRITE_ONCE(next_mm->context[cpu], mmc);
- 	}
- #ifdef CONFIG_SMP
- 	else
-diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index e21bc3920bec..c4d12d8312a7 100644
---- a/arch/alpha/kernel/smp.c
-+++ b/arch/alpha/kernel/smp.c
-@@ -631,6 +631,24 @@ ipi_flush_tlb_mm(void *x)
- 		flush_tlb_other(mm);
- }
- 
-+/* True if a CPU other than this one holds an ASN for MM.  */
-+static bool
-+mm_context_elsewhere(struct mm_struct *mm)
-+{
-+	int cpu, this_cpu = smp_processor_id();
-+
-+	/* Pairs with the barrier the publishing CPU issues before using MM.  */
-+	smp_mb();
-+
-+	for_each_online_cpu(cpu) {
-+		if (cpu == this_cpu)
-+			continue;
-+		if (READ_ONCE(mm->context[cpu]))
-+			return true;
-+	}
-+	return false;
-+}
-+
- void
- flush_tlb_mm(struct mm_struct *mm)
- {
-@@ -638,14 +656,8 @@ flush_tlb_mm(struct mm_struct *mm)
- 
- 	if (mm == current->active_mm) {
- 		flush_tlb_current(mm);
--		if (atomic_read(&mm->mm_users) <= 1) {
--			int cpu, this_cpu = smp_processor_id();
--			for (cpu = 0; cpu < NR_CPUS; cpu++) {
--				if (!cpu_online(cpu) || cpu == this_cpu)
--					continue;
--				if (mm->context[cpu])
--					mm->context[cpu] = 0;
--			}
-+		if (atomic_read(&mm->mm_users) <= 1 &&
-+		    !mm_context_elsewhere(mm)) {
- 			preempt_enable();
- 			return;
- 		}
-@@ -690,14 +702,8 @@ flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
- 	/* As in ipi_flush_tlb_page(): a targeted tbi() needs MM current.  */
- 	if (mm == current->mm) {
- 		flush_tlb_current_page(mm, vma, addr);
--		if (atomic_read(&mm->mm_users) <= 1) {
--			int cpu, this_cpu = smp_processor_id();
--			for (cpu = 0; cpu < NR_CPUS; cpu++) {
--				if (!cpu_online(cpu) || cpu == this_cpu)
--					continue;
--				if (mm->context[cpu])
--					mm->context[cpu] = 0;
--			}
-+		if (atomic_read(&mm->mm_users) <= 1 &&
-+		    !mm_context_elsewhere(mm)) {
- 			preempt_enable();
- 			return;
- 		}
-@@ -747,14 +753,8 @@ flush_icache_user_page(struct vm_area_struct *vma, struct page *page,
- 
- 	if (mm == current->active_mm) {
- 		__load_new_mm_context(mm);
--		if (atomic_read(&mm->mm_users) <= 1) {
--			int cpu, this_cpu = smp_processor_id();
--			for (cpu = 0; cpu < NR_CPUS; cpu++) {
--				if (!cpu_online(cpu) || cpu == this_cpu)
--					continue;
--				if (mm->context[cpu])
--					mm->context[cpu] = 0;
--			}
-+		if (atomic_read(&mm->mm_users) <= 1 &&
-+		    !mm_context_elsewhere(mm)) {
- 			preempt_enable();
- 			return;
- 		}
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index a9816bbc9f34..7bbba9010dac 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -45,7 +45,7 @@ __load_new_mm_context(struct mm_struct *next_mm)
- 	struct pcb_struct *pcb;
- 
- 	mmc = __get_new_mm_context(next_mm, smp_processor_id());
--	next_mm->context[smp_processor_id()] = mmc;
-+	WRITE_ONCE(next_mm->context[smp_processor_id()], mmc);
- 
- 	pcb = &current_thread_info()->pcb;
- 	pcb->asn = mmc & HARDWARE_ASN_MASK;
--- 
-2.43.0
+With disp = 0 we write a branch to the next instruction, so the site
+silently behaves as a NOP. I would rather return without patching (or
+BUG) than install something that looks valid. The comment about what
+other architectures do can go.
 
+> +struct jump_entry {
+> +   jump_label_t code;
+> +   jump_label_t target;
+> +   jump_label_t key;
+> +};
+
+Optional: HAVE_ARCH_JUMP_LABEL_RELATIVE would shrink this from 24 to
+16 bytes per entry, and the module loader already handles
+R_ALPHA_SREL32 and R_ALPHA_SREL64. Fine to leave for later.
+
+Small things:
+ - <linux/mutex.h> is unused in jump_label.c.
+ - JUMP_LABEL_NOP_SIZE is unused.
+ - ALPHA_INSN_NOP has two trailing comments.
+ - There is a stray double blank line before the include guard.
+ - The commit message could note that this relies on kernel and
+   module text being writable (no STRICT_KERNEL_RWX on alpha).
+
+Did you run CONFIG_STATIC_KEYS_SELFTEST, and load and unload a module
+that carries static keys?
+
+Reviewed-by: Matt Turner <mattst88@gmail.com>
