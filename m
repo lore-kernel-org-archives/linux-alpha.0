@@ -1,67 +1,65 @@
-Received: from mail-yx1-f43.google.com (mail-yx1-f43.google.com [74.125.224.43])
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 307273A48C8
-	for <linux-alpha@vger.kernel.org>; Thu,  8 Oct 2026 03:24:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2976437F32C
+	for <linux-alpha@vger.kernel.org>; Thu,  8 Oct 2026 03:24:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791429855; cv=none; b=md5PGYxnvZVWQ4DpaOy0Aypo+jYqgfC2PLbmjr6tPfqOrDgNtM0NeJZIpAHVc5d/nRBi9xI7+DKS2ecNA5s3P3GT14nkn3KdwJW4PU3khB3a/hxqNow33s0jiVv1mxHn0aWd65NO2TZpIVTIyKzy7iqV8rXtoAwMG2/tIj6xPGY=
+	t=1791429855; cv=none; b=sEgbJuLIUDvkD1qGhGjVo7TDv1KVrffQmQbRVm3laYKQ0rGegr/GmLCHrGJaJ1HtxVmjm0S/leffpOPpQzwL9EVzYC+HfDxrLVT38c7M72OS9hIyCThDXYYSvEhH28gKm0qAt6T3FZ5TggCRY/T5djgJH0SG4s0SwHscTFPZjS8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1791429855; c=relaxed/simple;
-	bh=wgVHbY7No0GMVPffT/l8AhfdwKs5R3SUfGvDNMQlP2w=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=cedtIaxUa7BjST37MiiHrj4IR8RGdopaPFT4oOLxdlIFbwxS3MaL7XLlWKKrqXvHRPPxBD8OPz0w6krROjONu3DklK/s+FhOn5IRUxXunBMChqwyKY5Kc0TDHav5S3MHdQGgoMQ3l2MK0/cjfx72Tnc2gStAkMNr1ApN3bOr0s8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eaZkjExL; arc=none smtp.client-ip=74.125.224.43
+	bh=Vq5SK1jm4LUuxhcXSRHThL4R5vnxbBTVBbTUFu6uFxg=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=idvPuxBLH6U87Qeklz6g5tRxWTQkXlEuuU8MLCXpfXy0nmpzqWpAmumNpIlHffxEX3EkPqSnahZrX6x4SIxCFMeQxSEe9M4zzbCVMN3zkNS+TEjmDB0VQmC1kuChCBshXJ64Ux1MdurmlfSGRpHW8KqPM+i8Y/+7ybxnajvn5is=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DkpwR9IL; arc=none smtp.client-ip=209.85.128.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eaZkjExL"
-Received: by mail-yx1-f43.google.com with SMTP id 956f58d0204a3-6776efd4ff1so2839455d50.1
-        for <linux-alpha@vger.kernel.org>; Wed, 07 Oct 2026 20:24:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DkpwR9IL"
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-8ac4806e210so26656267b3.1
+        for <linux-alpha@vger.kernel.org>; Wed, 07 Oct 2026 20:24:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791429852; x=1792034652; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=tR3C2GCMjY5EQ/GRIJNrCAmZ4Khbdwy4MDPpQDotXuE=;
-        b=eaZkjExLgY6GVYfbminE38kdBeAIq/LxkGnsYUedIWDrWgpBF33sKvMgJD2AzV0b2N
-         BdpOb5ZVjpzCtnE5IMHLkvymA3hJ6O7NXPgzlS3/EfOTzIHvjs7QLhnXOtEf6LYm1xus
-         TKG7gtyIWC3Sfy7NFLQD9CIJkYvbsCnsdmgK2gjWYiLAxwG58l3vM0BiQIw0wypzgg8M
-         GaisKVcPu5SqRdE5E7tA2tTLSPcwVkt30lL6t1/CZ4KgXC8eoEB6hvGfa5af3ml0zz4J
-         51K5f0mw8AUnix1hJGxrlUbGDHu8uyh2ADOZMnSi3P/57IKFBb848/vpKVwWIqJ0CEY/
-         nNRQ==
+        d=gmail.com; s=20251104; t=1791429849; x=1792034649; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=1QjFS0BxgyDFuUgadRLhJBbfGMZmEd0oyJgkkp9HNNU=;
+        b=DkpwR9ILKL8MSypskQDOBIFo3qZ3cpIsPD9rOlsQ9nTKXe5ZclURjbcRNvJG+wjskx
+         mHmaWwfcs/ff5OlnItlL6YZdujTv31iA4t4y/9XBDqYS2UEc61krssErpktFCQA88CC7
+         zrV9lRl80gAmDnOMCp3s/ioD8SWYdXWXyWQkK/erKQEk1wn32mmLs8N4Uia/XKWFO9BO
+         Hv1ZeOY8y3/ruhT9G83trLRSLKAHIvHT7Fg8c5sh7Sc7OE2uglQx6bScJVrXcfMsmXe/
+         bVL4c9Jr2ZA35jD+82QntGbxKTnjB/EVyyVf6/ohNfjP0fyAkDpP8kQLv88maPZstAUp
+         fA6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791429852; x=1792034652;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=tR3C2GCMjY5EQ/GRIJNrCAmZ4Khbdwy4MDPpQDotXuE=;
-        b=fj4jT7KZ7vXjVa9wcgk4c7cE7ft3STkQLCVzLXJdcnVnbGk35JlnpSP+ORP9mv2jr/
-         qhyUfDHLJ1tZPNpGcE0d2oc7h9FC7n/Mq9XLc3STmzXnQwvcR5emmmRyn8CCfS48rX7v
-         n0FZ1GnNjFteEtWopLHZonv8GvkhJxAC96KPSHTWJs+qJh86r2fnXfa5HtpXBpUJNbNe
-         n7+lTzW4x0yXRRokU4Dke/xWg1506q8pEQ0fvIqlvoHaDXUu1wSX/eTirh+YgLIMTqnq
-         Bs404oKpGXYwWeYa69ua6RQzfxAqUSZCqOEa5iwfZFr8+CpCwLOYaiIkOVJ5ice7DrlO
-         0QTQ==
-X-Gm-Message-State: AFq9FYKeSOrFZhdOXku5Fz22/OjWMy94RMw3TbxbJ6l4FK75T7eVdcAF
-	VroBoj0CbpNBXqFDnt1cyFs92Q3pgqluTSKi2Q9eyUoLBs6fi2A2WpWj
-X-Gm-Gg: AYBFou11NIF97crwuYCM7FSIHxEsZ+/G3EsVmxWFxcu2l3YywfX3buXw2rsWcsXJ9R6
-	boyZ6laVFCc99uy9tLSvjvRDzdvqZ8I0wpaclT4Se8BPcTKvqo+6IAUeCbg2CQNd1HrsSJPc1yQ
-	oBO7W/MK0eeFD6Wzm4wngNfx8mwvvZbJA4J8ihHkkEjlTU500tqj/SwjY2Ri/D+appOUTcV5qvQ
-	KCTn7VlvmoFbOlygKtC6+2ATKguXSOgIxaitsiJnaZJH/FoVQ/l7vdBQ4sBbjzMf4H3IGYErCh9
-	dELeV+FnheBFBvd8q/RmgDrr67zecjUrYv1jRMbKxbFFS/eC5n6Djpwcn5zVEbeIbeYiwAciRLY
-	aP0NyHafH08KTtUKCwKekO0U9fDleMySt3/udjVjjroE489TrX2S3doQhQgDLv2U10ewlRO8Q3t
-	XtF532DVsEG1GnDQZJLIbqrraqqm2WCOrHQ1Eg0Ab0jLXFx/Ak6PlreR5QX9JoGDq2bktIfJY=
-X-Received: by 2002:a05:690e:1508:b0:677:cb43:4b30 with SMTP id 956f58d0204a3-6790a4f7395mr1985554d50.97.1791429851759;
-        Wed, 07 Oct 2026 20:24:11 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1791429849; x=1792034649;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=1QjFS0BxgyDFuUgadRLhJBbfGMZmEd0oyJgkkp9HNNU=;
+        b=gACasAbJ2MH7a8tDyAqBlupmzy60z47KoihgIx+O3t6yc2BAo4F5s/nHthhGyLz/6U
+         wgOc2Vp2ACtRg+Y1VzRF6sxAVTIkqBCtVSBdhl5QJMbQ5uoCCfKlMUlwhbDPCL00qfbC
+         ZUcTCkRB2Z8rE0eQABSbDvhbvDChGI9+h34OxPBxrasKEtBsiUuLdkBmOqxuujyDT/Ir
+         v02AjmcPV0doXa8VisiYnIchHUaDL2pZuERDDC0iMiRhVv8x0BOdIemeoLxDYudaLlcn
+         EO9O1nVoR082rhgV1MnOMFPYJ5En61rVZeMye2UePyWPx4yN/k/VVSmyLrR6M8ERzSIK
+         9mGQ==
+X-Gm-Message-State: AFq9FYKHWDuS1HsOTY18pjLGjeMk0cfJ6ETDl97j6Fqt5YhQIWq/y2xx
+	qaJhKd6BVdXj3Jywh7zhgqsx+IE21qURzGFrU+W8ld7JTpuapv4cXJXvB7gkrA==
+X-Gm-Gg: AYBFou2ueGODfN+fDIYSBaAahwmupDZF7yjNRdcWsijR3kXKpxLr58nSSdEapcn3crk
+	csJRkwzNc5Kn9Xb8IOVMMwF1WYGvwTpw1k86yMgl9VARleFPGLs0HAv3stnKe2v/INkw/sfzpWk
+	ri210te1td+TH931ewEUXRJKTb09OFyjOPnEKnkbF+K1dSvjXVV6LNxtRedEXXyOYh3ww0WG4jd
+	bH6q5OXM7ifomLPkZw3hjnOmkItWWn8cQ5h8OOtREulSlWgohP3D6Wox5NkYONuXemM90ob/ZU0
+	eUYdbQu+D8rRTlTnOeHvFAL9/pBlzlnvSt4r5iQ9MxTxmKhHbk0YkjDcE+vBXbv8KU73za9nScl
+	Ab3D9F482Th2uyu/90YZTftc/cqWJTvekNoYXRH7FtV3g1PpnMyYDWr6hdWygoPILMTe9B7lF5B
+	7cC5qOIYJGGXKEIebeykoNREaXchz0XIq01oQOS0xte56U+rbslEMMDYYF0QBvJk+fbCIfo/w=
+X-Received: by 2002:a05:690e:bc7:b0:677:d93e:edfc with SMTP id 956f58d0204a3-6790a2e3740mr2705585d50.44.1791429848543;
+        Wed, 07 Oct 2026 20:24:08 -0700 (PDT)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-6791ad6d3d2sm734693d50.1.2026.10.07.20.24.09
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-6791b0beed8sm702875d50.17.2026.10.07.20.24.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Oct 2026 20:24:10 -0700 (PDT)
+        Wed, 07 Oct 2026 20:24:06 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
-Date: Wed, 07 Oct 2026 23:24:04 -0400
-Subject: [PATCH v2 1/6] alpha: add missing page_table_check_pte_clear() to
- ptep_get_and_clear()
+Subject: [PATCH v2 0/6] alpha: hugetlb support using granularity hints
+Date: Wed, 07 Oct 2026 23:24:03 -0400
+Message-Id: <20261007-alpha-hugepages-v2-0-8e108af2d961@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -70,71 +68,210 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261007-alpha-hugepages-v2-1-8e108af2d961@gmail.com>
-References: <20261007-alpha-hugepages-v2-0-8e108af2d961@gmail.com>
-In-Reply-To: <20261007-alpha-hugepages-v2-0-8e108af2d961@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/2WNywrCMBBFf6XM2sgkYmpd9T+kizEdk4E+QqJFK
+ f13Y7cuz4F77gqZk3CGa7VC4kWyzFMBc6jABZo8K+kLg0FjsdFG0RADqfDyHMlzVuisu1uHTXP
+ uoaxi4oe89+KtKxwkP+f02Q8W/bN7SyPav9aiFSqy9Yn0hYhqbP1IMhzdPEK3bdsXpGK8e64AA
+ AA=
+X-Change-ID: 20260912-alpha-hugepages-0c6cb6c0995d
 To: Richard Henderson <richard.henderson@linaro.org>, 
  Magnus Lindholm <linmag7@gmail.com>, 
  Axel Rasmussen <axelrasmussen@google.com>, 
  Andrew Morton <akpm@linux-foundation.org>, Peter Xu <peterx@redhat.com>
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Matt Turner <mattst88@gmail.com>
+ Matt Turner <mattst88@gmail.com>, stable@vger.kernel.org
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1790; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=wgVHbY7No0GMVPffT/l8AhfdwKs5R3SUfGvDNMQlP2w=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKO81zJbrz4vOLjdusfjj9k9nQvmT5Psttf88/vN5aFy
- 7TW9Yc1dXxkYRDjYpgppsgSt16RZVbbjqU+p6V/wcxhZQIZIi3SwAAELAx8uYl5pUY6Rnqm2oZ6
- hkCGjlE8RE6PQSOzuLg0tUg3raDIIS+/JLEkMz+vWC+/IDWvIL1ALy0zrSQjI7+oOBVohF5eaom
- pq6ObkaGBiaWjhZmThaOpibOzk6GTm6Ojs6uTkaW5iYGzpaOJq6U5AxenAMw1ZlIM/3TnVj6w3y
- /gv/721tffVzHtcihc+PNj7V6HG8/4OWZsErFj+KftdiTnXGey+yP7pMp554zXdh7kfBs8m6vJX
- on3Yu2sq4wA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=9515; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=Vq5SK1jm4LUuxhcXSRHThL4R5vnxbBTVBbTUFu6uFxg=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKO81wRf92mEGobuXJJq47dHXWrasZwKZ/Uxd1JJ78ru
+ bPdM43u+MjCIMbFMFNMkSVuvSLLrLYdS31OS/+CmcPKBDJEWqSBAQhYGPhyE/NKjXSM9Ey1DfUM
+ gQwdo3iInB6DRmZxcWlqkW5aQZFDXn5JYklmfl6xXn5Bal5BeoFeWmZaSUZGflFxKtAIvbzUElN
+ XRzcjQwMTS0cLMycLR1MTZ2cnQyc3R0dnVycjS3MTA2dLRxNXS3MGLk4BmGvWX2D4nyi09GA88/
+ nyFS93Oezd6buSfT8/S8T+irq7WXO3RC+S9mBkuHph7rSFT/bc+n7cf+2Lq0/5r9polzSU2Bdz6
+ txcw3sriBkA
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-Alpha's CONFIG_COMPACTION-gated ptep_get_and_clear() overrides the
-generic version in include/linux/pgtable.h but omits its
-page_table_check_pte_clear() call. With CONFIG_PAGE_TABLE_CHECK=y the
-map count taken by set_ptes() is therefore never dropped when a PTE is
-cleared through this path. zap_pte_range() clears PTEs this way, so the
-first page freed after it hits the BUG_ON() in
-__page_table_check_zero().
+Alpha has no leaf entry above the last page table level, so the usual
+PMD sized huge page is not available to it. What it does have is the
+granularity hint, bits <6:5> of the PTE, described in Table 22-3 of the
+Alpha Architecture Reference Manual: a hint of order N marks a PTE as
+one of 8^N physically contiguous, naturally aligned pages that the
+translation buffer is permitted to map with a single entry. With 8KB
+pages that gives 64KB, 512KB and 4MB blocks, and this series registers
+all three as hstates.
 
-The call was instead placed in ptep_clear_flush() by commit dd5712f3379c
-("alpha: fix user-space corruption during memory compaction"), where it
-was harmless until alpha enabled page table check.
+This works like arm64's contiguous PTE support rather than RISC-V's
+NAPOT: every PTE of a block keeps the frame number of its own page, so a
+block is written with set_ptes() and the frame number advances across
+it. There is no PMD sized huge page, and hence no transparent huge
+pages, no PMD page table sharing and no gigantic pages.
 
-Add the missing call, and drop the now-duplicate one in
-ptep_clear_flush(), which already goes through ptep_get_and_clear().
+The architecture requires all PTEs of a block to agree in bits <15:0>
+(note 2 of Table 22-3), and both __ACCESS_BITS and __DIRTY_BITS reach
+into that range, so every update rewrites the whole block and
+huge_ptep_get() merges the young and dirty state back together.
+Rewriting a valid block in place would leave its PTEs disagreeing part
+way through, so changes to a valid block go through break before make,
+following the procedure in section 11.6.1. The invalidate there has to
+assume the hint is zero and so must cover every page of the block, which
+flush_tlb_range() on alpha already exceeds, since it rolls the address
+space number.
 
-Fixes: e761b6fe4085 ("alpha: add ARCH_SUPPORTS_PAGE_TABLE_CHECK support")
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
+On SMP, break before make is only as good as the flush: flush_tlb_mm()
+has to reach every CPU that may hold a translation. Magnus Lindholm's
+TLB shootdown series [1] fixes flushes that miss a CPU after fork, under
+lazy TLB, or on the calling CPU, and this series depends on it there.
+
+[1] https://lore.kernel.org/linux-alpha/20260923074903.862898-1-linmag7@gmail.com/
+
+The hint is advisory. An implementation that ignores it still translates
+correctly through the individual PTEs, so this is safe on every Alpha,
+and gup_fast needs no changes. The console block that would report which
+hint sizes the translation buffer implements was never filled in by any
+console through EV7, so which sizes an implementation honors can only be
+established by measuring, as the last section does for EV7.
+
+Patches 1 and 2 are independent fixes. Patch 1 adds a
+page_table_check_pte_clear() call missing from alpha's
+ptep_get_and_clear(). Patch 2 fixes a BUG() that testing this series
+turned up: do_page_fault() fell through to BUG() on VM_FAULT_HWPOISON,
+reachable through UFFDIO_POISON without any memory failure support.
+Patch 3 replaces the "xxx" comments on the PTE read and write enable
+bits with their descriptions from Table 22-3. Patches 4 and 5 are
+groundwork and patch 6 is the implementation.
+
+Testing
+=======
+
+Tested on megalith (EV7 Marvel, 8GB), with two CPUs and again with one,
+cross-built with alpha-unknown-linux-gnu-gcc, with CONFIG_DEBUG_VM=y,
+CONFIG_DEBUG_VM_PGTABLE=y, CONFIG_PAGE_TABLE_CHECK_ENFORCED=y and
+CONFIG_CGROUP_HUGETLB=y. All three hint sizes register as hstates.
+
+mm selftests, the same in both configurations: hugetlb 10/10,
+userfaultfd and cow 7 pass 1 skip (uffd-wp-mremap), 0 fail, including
+uffd-stress hugetlb and hugetlb-private at 128MB/32 threads.
+debug_vm_pgtable validates clean at boot. No page_table_check reports
+and no DEBUG_VM splats in any run.
+
+Ad hoc tests written for this series also pass at all three sizes: dense
+per-base-page write and read back across a block, which catches a wrong
+frame number inside a block that a strided pattern would alias over;
+mprotect down to PROT_READ and back, including a middle-block-only case,
+exercising break before make; fork COW; hugetlbfs shared mappings
+checked through pread and through a second independent mapping; hole
+punch of a middle block with both neighbors and the refaulted hole
+checked; ftruncate down and back up; and the 4MB -> 512KB -> 64KB demote
+chain with exact count checks. All of it again with four concurrent
+copies, and the whole suite ten times in a row.
+
+An earlier revision of the series was also tested on up1500 (EV68AL
+Nautilus, UP, 4GB) with CONFIG_DEBUG_VM=y and
+CONFIG_PAGE_TABLE_CHECK_ENFORCED=y. That machine has not been retested
+with this revision.
+
+Magnus Lindholm also tested the series on SMP, on a UP2000+ (2x EV68AL
+833 MHz), including a multithreaded stress test. It found that
+huge_ptep_set_access_flags() broke and rewrote a block on every fault,
+so two threads on different CPUs could keep each other faulting: 17,316
+faults in 6 seconds after one permission change on a 4MB page. With the
+check now in patch 6 the same change causes one fault. No writes were
+lost with or without it.
+
+Magnus has since run v1 on the UP2000+ again, both as posted and on top
+of [1]: his test script 200 times, the hugetlb, userfaultfd and cow
+selftests (17 pass, 1 skip) and the stress test at all three sizes, with
+no lost writes and at most one fault after a permission change on either
+kernel. v2 changes only comments and changelogs; the code is unchanged.
+
+Hugepage migration is not enabled. It has no test coverage: the
+migration, rmap and ksm selftests do not cross-build for want of libnuma
+in the alpha sysroot, and neither machine is multi-node.
+
+Does the hint do anything?
+==========================
+
+On EV7, yes. Since the hint is advisory there is no way to ask the
+hardware whether it implements one, and the console block that would
+report it was never filled in, so the only way to find out is to
+measure.
+
+Comparing the three hint sizes against each other rather than against
+normal pages avoids the hugetlb-versus-anonymous confound. A random
+pointer chase touches one cache line per 8KB base page, with the
+permutation seeded only from the page count, so every backing walks an
+identical sequence over an identical footprint and the only variable is
+how many DTB entries the working set needs. EV6 and EV7 have a 128 entry
+fully associative DTB, so coverage is 128 times the page size: 1MB with
+base pages, 8MB at 64KB, 64MB at 512KB, 512MB at 4MB.
+
+Nanoseconds per access on megalith with one CPU, 8,000,000 accesses per
+pass. Each figure is the best of ten runs, every run on freshly
+allocated memory: single runs differ by 40% or more from one allocation
+to the next, at every page size including base pages, so the best run is
+the one to compare.
+
+     size      base(8KB)       64KB      512KB     4096KB
+      1 MB          11.24      11.11      15.02      11.72
+      4 MB         155.47     104.54     105.03     104.17
+     16 MB         156.69     127.50     109.55     105.52
+     64 MB         154.61     146.79     110.16     105.76
+    256 MB         172.56     171.34     175.74     107.47
+   1024 MB         232.40     230.08     222.15     190.03
+
+Each size keeps its advantage until the working set passes its own
+coverage and then converges on the base page column: 64KB is useful to
+about 8MB, 512KB to about 64MB, 4MB to about 512MB.
+
+Magnus Lindholm reports that EV68AL honors all three hint sizes too. On
+the UP2000+, retired instructions per access, which include the PALcode
+DTB fill, drop to the no-miss level exactly where each size fits the 128
+entry DTB, whose entries can each map 1, 8, 64 or 512 pages (21264/EV67
+Hardware Reference Manual, section 2.1.6.4).
+
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- arch/alpha/include/asm/pgtable.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v2:
+- Collect Reviewed-by and Tested-by tags from Magnus Lindholm.
+- Patch 1: say which BUG_ON() the missing call leads to, add Fixes.
+- Patch 2: Cc stable, note that any local user can reach the BUG() and
+  what a backport has to drop.
+- Patch 3: describe the enable bits as the Alpha Linux PTE (Table 22-3)
+  defines them rather than the OpenVMS one, move the 21264 Executive
+  mode detail to the changelog, and retitle to match (Magnus).
+- Patch 4: cite Table 22-3 rather than its Tru64 twin, Table 17-3.
+- Patch 5: name the commits that made the alignment the architecture's
+  job (Magnus).
+- Patch 6: cite note 2 of Table 22-3 as the reason for break before
+  make and section 11.6.1 as the procedure followed, in the changelog
+  and in set_huge_pte_at() (Magnus).
+- Cover letter: state the SMP dependency on the TLB shootdown series,
+  add the UP2000+ results for v1 and the EV68AL hint measurement.
+- Link to v1: https://lore.kernel.org/r/20261006-alpha-hugepages-v1-0-a673a18aaa70@gmail.com
 
-diff --git a/arch/alpha/include/asm/pgtable.h b/arch/alpha/include/asm/pgtable.h
-index 6ebdd90f3035..8a175e0c2b42 100644
---- a/arch/alpha/include/asm/pgtable.h
-+++ b/arch/alpha/include/asm/pgtable.h
-@@ -305,6 +305,7 @@ static inline pte_t ptep_get_and_clear(struct mm_struct *mm,
- 	pte_t pte = READ_ONCE(*ptep);
- 
- 	pte_clear(mm, address, ptep);
-+	page_table_check_pte_clear(mm, address, pte);
- 	return pte;
- }
- 
-@@ -316,7 +317,6 @@ static inline pte_t ptep_clear_flush(struct vm_area_struct *vma,
- 	struct mm_struct *mm = vma->vm_mm;
- 	pte_t pte = ptep_get_and_clear(mm, addr, ptep);
- 
--	page_table_check_pte_clear(mm, addr, pte);
- 	migrate_flush_tlb_page(vma, addr);
- 	return pte;
- }
+---
+Matt Turner (6):
+      alpha: add missing page_table_check_pte_clear() to ptep_get_and_clear()
+      alpha: handle VM_FAULT_HWPOISON in do_page_fault()
+      alpha: describe the PTE read and write enable bits
+      alpha: define granularity hint PTE bits
+      alpha: align hugetlb mappings in arch_get_unmapped_area()
+      alpha: implement hugetlb support
 
+ arch/alpha/Kconfig               |   1 +
+ arch/alpha/include/asm/hugetlb.h |  43 ++++++
+ arch/alpha/include/asm/page.h    |  13 ++
+ arch/alpha/include/asm/pgtable.h |  61 +++++++-
+ arch/alpha/kernel/osf_sys.c      |  14 +-
+ arch/alpha/mm/Makefile           |   2 +
+ arch/alpha/mm/fault.c            |  19 +++
+ arch/alpha/mm/hugetlbpage.c      | 308 +++++++++++++++++++++++++++++++++++++++
+ 8 files changed, 450 insertions(+), 11 deletions(-)
+---
+base-commit: e946efcc89066c5d80acbae42d015a4da33a11de
+change-id: 20260912-alpha-hugepages-0c6cb6c0995d
+
+Best regards,
 -- 
-2.55.0
+Matt Turner <mattst88@gmail.com>
 
