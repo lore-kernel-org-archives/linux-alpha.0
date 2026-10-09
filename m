@@ -1,72 +1,76 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 844884D7D59
-	for <linux-alpha@vger.kernel.org>; Fri,  9 Oct 2026 11:58:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B40874D489F
+	for <linux-alpha@vger.kernel.org>; Fri,  9 Oct 2026 11:58:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791547091; cv=none; b=gwAf+6+9DoA5XoxQW+BS2pAsbUZgunaS+Gn9GOfSeybqakAfbMwE5iT6/sKF4Hm5Y360ZA9xffqVHBdW3r4N4KrZUNnN4S3bH4behrIjnKauFEHOKFW9Qnbgfv+GQVS5ZjB62vkf2+iikppswpSGli9zziFf2LqBlhHbYcoacd0=
+	t=1791547093; cv=none; b=lgf+nMBgi2LBZdK6JfrJ0Bfq6jrj9u7tUdwE35wbpJfPVdUqhUiMxyT0uj+5WVR+36kpoedVJuE8ZAaMKZSC19bOyLSme9S7ayWJ9pqfuCP1rYLZ5+tME6Qg+25Gxh8hM2v5/3ddu7H8HkV/jeG9H17X09EqqYfLT+D+7OA3F9w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791547091; c=relaxed/simple;
-	bh=OruZtNbHtR05YCmmNQ9tLKLY1cIMhQDt5/6DFqmzrbA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=aB6pezhm/6OR2QhhR7fVeuhE9gAn78oRkO/3iuyD5E1/pzpXTXeSL01cmB5xr3CzEGmVARa7uc+Zz6xgR+0KQu0z6DzwtsERfZcBBQrAQcJH4Og13zTh4+KxGPMFe67tTUdMltLm4Tv4uctC/amRYo9oiKf88sANNeEqHoeZgLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gprRH0cv; arc=none smtp.client-ip=209.85.218.42
+	s=arc-20240116; t=1791547093; c=relaxed/simple;
+	bh=ba/owViX072n4tsnMkLV1IOZ/Gn35sGABf1QJjT8nH4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=VUL5z/Q261+Em9TEdUedtIcEuJyYEa17uoutIIHLxbLW+AUhmEjfCUIWGYYria70sGarkKEDJEn/gqel+qiz3hMdzpHM3nMwKJELRdXTL1IEChA3kFybt/dnJWRtlFuLqewiQx2tGJCIf1mZI8LsXxbDCDtuPecitblVgOP1YvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CZ6bTqNC; arc=none smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gprRH0cv"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-c263415982eso563037966b.0
-        for <linux-alpha@vger.kernel.org>; Fri, 09 Oct 2026 04:58:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CZ6bTqNC"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-c20ce3c118aso352871466b.0
+        for <linux-alpha@vger.kernel.org>; Fri, 09 Oct 2026 04:58:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791547083; x=1792151883; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=JYMkoC21oZgVXLIM4qYI/k3O6A//pWisuhHGLwsZoZc=;
-        b=gprRH0cvqw5mor4cepLSadwVa5vt9BEef5OY+/uPjOJvC7T7vOt3v2ZKz3O1a0yGcB
-         QKGOeNBdTdAgUUV1R6zyJllUYFD4wXTqobzTcKWDcFHb95Dmkz1EkTaBEryPzOwLVp/v
-         OGGLTWJ0qGhYxGedfqcl1+dUGGI4rRMntW7u7TlX7oclh5sHlaKgKxIQHjUDItdUtQ7n
-         MDHwuuFnsOv6qH8TTdQVLZjIPV5oeUpG5TlcyNtEgaeRlEVaUymPoO3E0eLO/5XQqHZe
-         4QKLYqWoUi3NXOdGdO4wv/S5JMMcN6TS7afAARjMXbwJNd3qyCeTmEKqjMrHYtEQjKcE
-         3cTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791547083; x=1792151883;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1791547087; x=1792151887; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=JYMkoC21oZgVXLIM4qYI/k3O6A//pWisuhHGLwsZoZc=;
-        b=X4qSBU9w78Fu2hGi5PJZyOfcr62pBN18MbnvhMpMB+iJvjb0i6XIjcZyrP56pdQ0yX
-         IsQrzdwmfjWk6NT4ID5HEs+bY9cmtjtyb3R7h2sy3bFRMGrIvQeNBz18dDs4PXbLj9mR
-         QSPiwHnVO7WpNToby4ihUUinRRcVqSS4Iri6jZG9Rfdcu+GbHkYArbLTq3+kvEwvbMDC
-         QOqIjIqdfyQO551eHTQied22j/9g2TyVmYC5wg3nnReLY35Gl0HILuP+lIK6AWNnH0FQ
-         /u0J6pvRNrWh0ONOJ+ILaMAfs3BE3Hv8fQRXnb/c39FpQbtEXidxWimf+O7uQqYp+fRM
-         GZmQ==
-X-Forwarded-Encrypted: i=1; AKwUvBybqs5ud+tFb43h27STmNn590uMLDu6CVDhlEbiSrjRmT7HGSmozSp4vT8sac25Eh+A9Rnzg0pkcrZsjw==@vger.kernel.org
-X-Gm-Message-State: AFq9FYLJ+gazVzOh4s68p0Zx0bl1txtzsy9ygAIAhDJ8Nc635T4rhyPO
-	mKUfrcBKKAD9y7RzzZCi4yeWmgls/8H20GFoUDo6W7Dmv+nvT27v+Grh
-X-Gm-Gg: AYBFou29LwGO0Fg2a8d0eQdyzBC9PnYwFs0+VvlbZifQbaOWd8Yxee7Vtf2pOhCduK5
-	nqMnJqQ2csHk65RmEfbvlVPlfiCQi/VbLocag/fv+plnp0dGfvKGEwHgdTtB9Bx/k4EsKmPU3/B
-	IYHSKamoF1OEjZVFQyjeTMtOv1YnRs+U91J5pmYznkzrqTziYncHEQnyqaIIB8fvwBVBFW+UaWh
-	kMTyx23h+ojLKXZN5ydD24IIHiWCcaJ0Yc/VcjjN1Qa5PZMQxDN+Ad8zrrtcTU6HT1Sxpv0lUGE
-	sawUA9ok7+6x6ifrdIdWzcNljP6BerOKIsce321L4b4m7ig8JsxHYd7pWAH9Oep5NpLYO2hCAC1
-	uVKbT14+GrszWB9+qytFdPC4j0WRWcoFnzrfIGfbb/jPeWdfkC2Vs6rPUrBUucLnKTwU1GBPinU
-	Vbkn9D5lk5hZIgAjaIzGbOndFFO4ODex7ZxpwLHqWSfjpD9fCdJH6p02p59y1gNQ8icOAKgA8kW
-	i8MB3NUER5Z9IcRXG5ZX3C/ba22FQ0KPRg9x5GD
-X-Received: by 2002:a17:907:6e9f:b0:c29:f5d5:5a9b with SMTP id a640c23a62f3a-c31aa085ddfmr166792066b.37.1791547083353;
-        Fri, 09 Oct 2026 04:58:03 -0700 (PDT)
+        bh=0bX5Ir7ruoqJsWc6Yw4x1v0FegL07a55+YRf7Y1SRcs=;
+        b=CZ6bTqNCNFOAZcDWtON4bHHJiOsrNkhJeUJmmegnP9Oj6PZZsEZQ2FlmUk26rTO/h1
+         L2/4sy1KryDEJxhI2Wq5wiN8o5ohEZ30avIWg277rfTew3DYltYcI2RU4B3nA3hy8H1N
+         kPr3lrTHhCGCNWbmrDkNeO42LDuwrOkiC6HVJsD/QJSCWFrPLUZZbPf5zgUfncIfT/ZZ
+         gC2jQULZPQmLUc6Hnun2aczvwoFTHPzzetgZG1EodWQ3zrGBlR3/Yo7LR2NxP+KV89hQ
+         XGqMDHA/Eby5Dh1Vv/1jmHeB6Q2uK+vE/NBr9DdvO11RKYUGcieLcgClRb/EVN76j7LJ
+         CTxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791547087; x=1792151887;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=0bX5Ir7ruoqJsWc6Yw4x1v0FegL07a55+YRf7Y1SRcs=;
+        b=YjGX3YC1dZ70yXMNpeC1Ey7f2uohIuM3e1EurvULR9ftdWhqy9hXJz9doALlIIOKXG
+         rSvu06ije5OlPCUnCTar5+iDUctFIvZ1H8jFpQqchLa0YOX/AKZ9csQHI6jKtyD3mv5r
+         9jFDp4JrOc+qIAcp9GFG3OgFdhZO7eYcqeZHi3cm/HguOZD0rWCxQHGhL8C87+kUfPiK
+         LJ4ZVTcGuAdZTF0XGnEZNLTjDR5wWtLlFyFJ/dqyeFOSr+rSH4MEHm5zOzHNenD1cJr2
+         pa2a5LpjHMgAyJVccn2syKMzAiIj966esO6ElVuetRts2weePil3u+8jyfbcrGZ5JUc+
+         Rx5A==
+X-Forwarded-Encrypted: i=1; AKwUvBx9/0tO47GHwdUIEMPuh9LoicpR1+qV5trneNwyWU+n9NHpovg+5tEn8dwcLGXxaAZUeoofvwxBAqgA5Q==@vger.kernel.org
+X-Gm-Message-State: AFq9FYJpQgvUMmDGbuIAYieIgD3ZgYGru1WiSkx9t7vhWKclVuTGfVfn
+	+xPj+GJOlAxXDTRdHdmA2iqwA65BaojXhmeEcP7oSS5QzBUFs/VoFoYy
+X-Gm-Gg: AYBFou1XPjEQfPRxyvnq2dvledow7XZeudRDA8H/RMT3SBK414v7ngZdCfrXT4PedsK
+	MPDcfmW33IaOJwOgcolKN0hmCzSBpLL0UBCSE0/9OfTcL9+hbRpmva00FNdXsi062OJ7B+LYrcu
+	BLoKsh2LJtPmxDWM9QogjGxlYfolHlHfQswzWeeY7vxkovxr9AOLoNtKGVQpBF88hMLLEOyZBpp
+	q6viDStKCwLa5JwY8yRurzrSgXGQQwE301Oh43cmCvrxw4ct3bg5YdK1oqPT8ZxT2BsA1DP14me
+	++AgEF0NJmfO7RPER7IdrcqW2kAHmuiSWfyPobpi7ArnA9HMRP07/KYvB7TPDHVC+OAUIljBdxb
+	rRQ324UWeWSZ47DZowNTxZPnKNwevWNCaUpKHGoqZWdnhdT8631urM0n/YGMX9qWGGFe0I4kwYP
+	xmHUGBhRcGKaJj1zx1wlZIUPdakMxaBMs7KItH4gf6ULCyGWwMjBvpMMErnhq7TLMwedhQrH7n5
+	3ts0mMgZ4tjqtvjYD0XDVUd3JWMvtamUOhU1Vm6
+X-Received: by 2002:a17:906:7943:b0:c2a:4847:231b with SMTP id a640c23a62f3a-c31aa03cd06mr180613666b.24.1791547086710;
+        Fri, 09 Oct 2026 04:58:06 -0700 (PDT)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c31aa825e4bsm78525966b.9.2026.10.09.04.58.02
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c31aa825e4bsm78525966b.9.2026.10.09.04.58.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2026 04:58:02 -0700 (PDT)
+        Fri, 09 Oct 2026 04:58:06 -0700 (PDT)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: richard.henderson@linaro.org,
 	mattst88@gmail.com,
 	linux-kernel@vger.kernel.org,
 	linux-alpha@vger.kernel.org
 Cc: linmag7@gmail.com
-Subject: [PATCH v5 0/5] alpha: improve Tsunami machine check reporting
-Date: Fri,  9 Oct 2026 13:54:36 +0200
-Message-ID: <20261009115627.969047-1-linmag7@gmail.com>
+Subject: [PATCH v5 3/5] alpha: bound EV6 logout decoding by the processor area
+Date: Fri,  9 Oct 2026 13:54:39 +0200
+Message-ID: <20261009115627.969047-4-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261009115627.969047-1-linmag7@gmail.com>
+References: <20261009115627.969047-1-linmag7@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -75,94 +79,74 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series adds system-error diagnostics for Tsunami/Typhoon and live
-ES40 environmental diagnostics for Clipper. It applies to v7.3-rc1
-on the Alpha for-next branch (33465f6ab697).
+The ES40 correctable logout frame has only the common CPU registers before
+its system area at offset 0x58. The EV6 decoder treats those system words
+as extra CPU registers and reads beyond the 0x80-byte frame.
 
-The first two patches move the existing handler unchanged and describe
-the system logout frame. A separate EV6 prerequisite handles the short
-correctable CPU frame safely. The final two patches add Tsunami system
-handling, Clipper live environmental decoding and console-log reporting.
+Validate the CPU and system boundaries before decoding or dumping data.
+Print the additional CPU registers only when the processor area contains
+them. This also rejects truncated processor frames passed by console-log
+handlers. See the ES40 Service Guide EK-ES240-SV A01, Table D-19.
 
-PERRMASK is left as configured by firmware. Enabling more checking needs
-separate justification and hardware testing. Inverted SMIR halt/reset
-signals remain undecoded; PSU tests do not establish their polarity.
+Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+---
+ arch/alpha/kernel/err_ev6.c | 36 ++++++++++++++++++++++++++----------
+ 1 file changed, 26 insertions(+), 10 deletions(-)
 
-ES40 Service Guide Table D-18 gives sys_offset=0x20 in its console header,
-but places the summary at frame+0x18. Console environmental packets are
-therefore printed raw until an actual SRM record can resolve the layout.
-Live environmental decoding follows Tables D-20 and D-21; QW8 is not used.
-
-Changes since v4:
-- Split the implementation into five patches; build error objects for
-  CONFIG_ALPHA_TSUNAMI, covering non-generic Shark, DP264 and Eiger.
-- Correct PCI/system addresses, ECC commands and syndrome, INV/SERR
-  handling, DAC/MWIN selection, and SGE page granularity.
-- Remove the unsupported Titan master-abort dismissal policy and leave
-  PERRMASK as configured by firmware.
-- Snapshot each live PERROR and MISC before acknowledging defined W1C
-  bits; report additional live status without combining transaction fields.
-- Check saved and live UECC/PERR before expected-probe dismissal and panic
-  on either; retain expected NXM probe handling.
-- Add an EV6 prerequisite to validate CPU-area bounds, including short
-  correctable frames, before decoding extended registers.
-- Restrict ES40 environmental decoding to Clipper; fix masks, fan input,
-  print suppression, context-only status, and PSU warning source.
-- Leave inverted SMIR halt/reset bits undecoded pending polarity checks.
-- Preserve console environmental packets as raw data pending verification.
-- Register console handling on all Tsunami boards; bound subpacket decode
-  and terminate extended-register annotation arrays.
-- Remove duplicate definitions and the private header; use shared IDs.
-
-Link to v4
-https://lore.kernel.org/linux-alpha/20251125224352.32034-1-linmag7@gmail.com/
-
-Validation:
-- Fresh vmlinux builds for minimal GENERIC, SHARK, DP264 and EIGER
-  configurations, using GCC 15.0.1.
-- Native ASan/UBSan tests of the actual EV6/Tsunami handlers, console
-  dispatch and raw-dump helpers, including short/truncated frames, saved
-  fatal errors during expected probes, and separate live snapshots.
-- git am of the five exported patches on the base produces the exact
-  branch tree; git diff --check passes.
-- checkpatch reports zero errors. Its remaining warnings include the
-  Alpha err_print_prefix convention, existing split printk strings,
-  moved barrier code and the new-file MAINTAINERS prompt.
-
-This version was boot-tested on an AlphaServer ES40 using my ES40
-configuration. Unplugging and reconnecting a PSU power cable produced
-correctable environmental events (code 206): PSU 0 was reported failed,
-then enabled again with its individual failure indication cleared. SMIR
-bit 0 remained set in all three reports; this does not establish whether
-it describes current status or a latched event.
-
-Earlier v4 testing was on the same ES40, using PSU power-cable changes,
-opened hatches and a CALLSYS-based software trigger with modified
-handling. PALcode clearing behavior and halt/reset polarity remain
-unverified.
-
-Magnus Lindholm (5):
-  alpha: move Tsunami machine check handling to err_tsunami.c
-  alpha: describe the Tsunami system machine check frame
-  alpha: bound EV6 logout decoding by the processor area
-  alpha: decode and acknowledge Tsunami system machine checks
-  alpha: decode Clipper environmental events and retain Tsunami console
-    logs
-
- arch/alpha/include/asm/core_tsunami.h |   5 +
- arch/alpha/include/asm/err_common.h   |   2 +
- arch/alpha/kernel/Makefile            |   4 +-
- arch/alpha/kernel/core_tsunami.c      |  34 --
- arch/alpha/kernel/err_ev6.c           |  36 +-
- arch/alpha/kernel/err_tsunami.c       | 595 ++++++++++++++++++++++++++
- arch/alpha/kernel/proto.h             |   2 +
- arch/alpha/kernel/sys_dp264.c         |  12 +-
- arch/alpha/kernel/sys_eiger.c         |   2 +-
- 9 files changed, 640 insertions(+), 52 deletions(-)
- create mode 100644 arch/alpha/kernel/err_tsunami.c
-
-
-base-commit: 33465f6ab697abceafd9a340067a544d551c4412
+diff --git a/arch/alpha/kernel/err_ev6.c b/arch/alpha/kernel/err_ev6.c
+index 8144f2045b5b..ec0b63b0f377 100644
+--- a/arch/alpha/kernel/err_ev6.c
++++ b/arch/alpha/kernel/err_ev6.c
+@@ -190,6 +190,23 @@ ev6_process_logout_frame(struct el_common *mchk_header, int print)
+ 		(struct el_common_EV6_mcheck *)mchk_header;
+ 	int status = MCHK_DISPOSITION_UNKNOWN_ERROR;
+ 
++	/*
++	 * ES40 correctable frames end the CPU area before EXC_ADDR (Table
++	 * D-19). Validate both regions before decoding or dumping any data.
++	 */
++	if (mchk_header->proc_offset != offsetof(struct el_common_EV6_mcheck,
++					       I_STAT) ||
++	    mchk_header->sys_offset < offsetof(struct el_common_EV6_mcheck,
++					      EXC_ADDR) ||
++	    mchk_header->sys_offset > mchk_header->size ||
++	    ((mchk_header->sys_offset | mchk_header->size) & 7)) {
++		if (print)
++			printk("%s    Invalid EV6 logout frame: size %x, CPU %x, system %x\n",
++			       err_print_prefix, mchk_header->size,
++			       mchk_header->proc_offset, mchk_header->sys_offset);
++		return MCHK_DISPOSITION_UNKNOWN_ERROR;
++	}
++
+ 	status |= ev6_parse_ibox(ev6mchk->I_STAT, print);
+ 	status |= ev6_parse_mbox(ev6mchk->MM_STAT, ev6mchk->DC_STAT, 
+ 				 ev6mchk->C_STAT, print);
+@@ -203,16 +220,15 @@ ev6_process_logout_frame(struct el_common *mchk_header, int print)
+ 	if (status != MCHK_DISPOSITION_DISMISS) {
+ 		char *saved_err_prefix = err_print_prefix;
+ 
+-		/*
+-		 * Dump some additional information from the frame
+-		 */
+-		printk("%s    EXC_ADDR: 0x%016lx   IER_CM: 0x%016lx"
+-		            "   ISUM: 0x%016lx\n"
+-		         "    PAL_BASE: 0x%016lx   I_CTL:  0x%016lx"
+-		            "   PCTX: 0x%016lx\n",
+-		       err_print_prefix,
+-		       ev6mchk->EXC_ADDR, ev6mchk->IER_CM, ev6mchk->ISUM,
+-		       ev6mchk->PAL_BASE, ev6mchk->I_CTL, ev6mchk->PCTX);
++		/* These registers are absent from short correctable frames. */
++		if (mchk_header->sys_offset >= sizeof(*ev6mchk))
++			printk("%s    EXC_ADDR: 0x%016lx   IER_CM: 0x%016lx"
++			       "   ISUM: 0x%016lx\n"
++			       "    PAL_BASE: 0x%016lx   I_CTL:  0x%016lx"
++			       "   PCTX: 0x%016lx\n",
++			       err_print_prefix,
++			       ev6mchk->EXC_ADDR, ev6mchk->IER_CM, ev6mchk->ISUM,
++			       ev6mchk->PAL_BASE, ev6mchk->I_CTL, ev6mchk->PCTX);
+ 
+ 		if (status == MCHK_DISPOSITION_UNKNOWN_ERROR) {
+ 			printk("%s    UNKNOWN error, frame follows:\n",
 -- 
 2.43.0
 
