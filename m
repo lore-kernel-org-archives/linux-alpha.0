@@ -1,125 +1,141 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C264B42050
-	for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 23:33:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46A111D7E5C
+	for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 23:34:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.176
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791675231; cv=pass; b=W53MHFfMJXlHL7yy7oA4/u9rjnTmOhyFCoXaJA0JO94EuNUWB2jjE+Vo90cPqjLGmkI9/atM+ejnCkpnAxTFZCc5eCp6QHns2x4/t8Ca0fgOa5vwJU2OdUcXT/TZN50ayurnTnsxfEI9vXBvNHgjS429OK74D45aMYz+lTUiHRM=
+	t=1791675285; cv=pass; b=NaB5NErLVSyd+0vwG14zyIGGax7w6Gz0Eis3d32AQ1/M1gdjeurjQPonbxo+hqN8NYWc+48J1u7BtTuz3XEWJjYhLnxRrV+PZ5ySHDy2pTBwmmbg03SQdMI7A23tDq4TpkpDsWXhM/IRsIyNGX+7gC6agp2kREQ4S4VGcIajm/g=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791675231; c=relaxed/simple;
-	bh=8FrkyLXgZ5G0GaTgVylroaVCXzg1tp/UUKvMV38p9V8=;
+	s=arc-20240116; t=1791675285; c=relaxed/simple;
+	bh=cKoxBc8OwSXHhNz7B2JU/p9iKVamOJWx79yNaew5iLc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jEGiJ3qtZccRfTwxmDfYr5YEjdFGzsnguLrEZxw/INxtmRTtFiXLyzsO6DK+B2OuCer1TpHofZgy4zavKVqfLF9ZVNTLFC01xe1xWiUvHUaIoQsIheT7LS9/QqS0GRQgyMe+4ubMjt+zLtVqpomDzPHjrXOI3+raqY0FGrJHX1c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=s7ryLHYz; arc=pass smtp.client-ip=209.85.167.54
+	 To:Cc:Content-Type; b=RSK5w0ZSrge0kmRUbXgdkl1gVpOgHOukCAZlWz5hmoYGMKU3G0zkAB7A6Mhu3Cqex8cLiU1okbblt22WXRm4ABtdAPg0LrPuZcxMdgf/MYgEPjsoO0G8We/GibKKzQ2XcndvDzweYYo7Vo2Dkg/x6PnIXwsJ1AQqeW9wxWt9K0U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bmHL4DSg; arc=pass smtp.client-ip=209.85.208.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s7ryLHYz"
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5ba3ac592faso904633e87.0
-        for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 16:33:49 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791675228; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bmHL4DSg"
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-3a98fcbfb1dso6295401fa.1
+        for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 16:34:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791675282; cv=none;
         d=google.com; s=arc-20260327;
-        b=m0REfUyE4PNJaZQNRa9Yu3YRaAbCQGo8Yn+9gco/cT/mVvOz61MgLLTlPSYfdBQOYK
-         erlzeS0QfQ1Xk7cNEshUioXuT+TOnJ5fmqEoSn3p3i9tzBnGLRmrFacqHqKCXqLY7TX3
-         dx0RjSecd+heNatge5WNbxtJtLa/vbNx50mTRWWEsZMy20w8bXBHDwtLYF5DMFT18c8i
-         8iasKWi/RKGtZPkKvuwaagbNRGS65oV8IXwQ3B4z3Y/vBaIQiijCB05tXkQxVCwA3jEA
-         VyKRtZZcvlLwEB988hyB5ih36az/0/BVKpPIfKp+l3FppSiSleLDqnnseyJmG6B8A4rn
-         BWmw==
+        b=Aa4xetw1bhNDnRn6DZc+nb1DRMwOwviHyt9GVuAhDw21v5GcQT/IgYjk3tTIH5zhXS
+         NDGl8OXHo8rVHOBINktlVLXDEhNTf1Y7UrwtWlcLjMsqw2d59vIT4mDM5g0ssDnbv2FG
+         s4bVGIXkDHjd/mq2mhQPHZ9ZZpTwe3bjLmvg+lxY+PqY/zNANY44FTJQIyO9zvJviQ2d
+         5D2qW8Oqkp1x+N3R/wI1gYL9hkN7UBtw6kyx8CAKeZ0yax1Q+ur/Lk9KKfbR+pX5E+tU
+         ytW4CEpRBEqoC1IU1lkD8ZcQoW2zatb5czkJdnxkFZTAXCJf+Zv0SsDvBZMpXnyz292m
+         I92A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=8FrkyLXgZ5G0GaTgVylroaVCXzg1tp/UUKvMV38p9V8=;
-        fh=b9uTMCmM2x65kX1YEiH2p+xo5pDGCp7sowYQhTn/k3g=;
-        b=sH+uOjbyLkby4DhQzDk6MSejo6LCSkS5jY1q5X18UUv2/knTP+bQoBfTFbpa1e3uG9
-         b3FL2UQrG0BmYlp7rHEqKaQdnX3fiG8oqDhfwsN+AKsQpSu8caWrqVsAjsVic2gEofwi
-         P8rjT4DzJUdc4dIndW+9UUwOXx6tKhBbH56KqFsd550SE8Y9/MfpYgkJoGSjhB1YJLjj
-         FE6XxTS/2WChBxKmPremtl5Z8XqgwtDGdY4AlRjqM87E6oZXaJGyeecP27dTQrUQDQy3
-         j7uXaZuxgp+cxgQUjEou0g0GFknvPFmKZxM+o5bPmTK/ikX0FRJQ0dYULb459M7cRFqz
-         gazA==;
+        bh=feaWuaZZCYs3rhB8MCR/+Wo/5xzqgKKqMklPyeWAgMw=;
+        fh=Hfe5woDkZZncwB4MoSYn6AR6AIZrYFEzrDltWyUiSZI=;
+        b=FtW8TSrlblnR6EnbN9WxC/nj3F8c5NzMfVRoAWfyZOrSxl5FpmKDPfvJpX99qSwcYu
+         o06NiiAuPDL7cXpPVKKlw8jnKYgnPiNJ+3pkrNqItmIdhj8hQKzNgw614m1QYOkrhjqC
+         UBTIpljEI5NplS2f+LwEBAGZ2aW/Ih0TDyyiVJrhnD77JKhWelFMo6c/f6541EdMIsXF
+         Li347izvijLLQb0LzAMUM61gWIuXmy3ijRzf9x5UqfRpwdXcCtfC1vpCdvFf4GjG0S3L
+         0coWwRkLV31utLV58HMXzcX/9wUMSKCA5xpctBMg2kWAtdbw/Td0JLLd7FLpnswKozdb
+         m1Cw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791675228; x=1792280028; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791675282; x=1792280082; darn=vger.kernel.org;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=8FrkyLXgZ5G0GaTgVylroaVCXzg1tp/UUKvMV38p9V8=;
-        b=s7ryLHYzJDdUyioofoZmnKcvWkpEQw6om8V2CilIkHDWfXHS7ggq6Vklq1hwhWfyIo
-         M93PSo0K0W1GZhsPtNYdjOiopCOfO3nSOluOUdaUmhqevye9nUPbJbYaUDKvz806L7Kc
-         WAYe5xnnKun65EsqRmHoi0Bz3hfDNcQf0YwH8+OzIWbOiekYlyTYepYnyx2QSLZ95dg4
-         e1gaM+VIOx0T/TDAyLMMaTH4tzldt39+GrTFFUfdBg2QCmGc7PuV9JDz+CZGrtefFrIs
-         kpAauDPej3qwcdIj7OZeQMTw+D1oftGf/q69FLQfaWSLODVm2WD3PIyHzunUa77tP3sD
-         KfjQ==
+        bh=feaWuaZZCYs3rhB8MCR/+Wo/5xzqgKKqMklPyeWAgMw=;
+        b=bmHL4DSghHuZ7XQ3jdECRR+i9hdWexkN9bDtZu10oph5xghouphz2KaEgyEKcVH59V
+         s7JD81NzNxhhPKujC+E/lYkm7dRQXoXMkTYAphaOTqWjfzud3675t5JWvPZKNjgrOsUb
+         iWevaTvrt50eHtVfWYvXnbSaVpm+ZMH2qZIIhdG+FjO9GB8sLjcmx45VnWeYlRvkWuaR
+         gitlYeSEzo6g3AN7lRfSekMqLew9fSX+83+PyeMH4ms5W73ZgTPk0v7Iap5I3/OVMFYX
+         ZrqusnoAw+PwrfADMcUdbwSbFwA1OoMWuuvaKX9ZVN5wjFcghO1RxRQDzpoQhyAIr0+k
+         nb0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791675228; x=1792280028;
+        d=1e100.net; s=20260707; t=1791675282; x=1792280082;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=8FrkyLXgZ5G0GaTgVylroaVCXzg1tp/UUKvMV38p9V8=;
-        b=oyP06aj4RoYr3m4tM8AN9kwkflJ1N87Azmf9uu61GSNxRitQZbDI1GYUvF2Zj+kIb6
-         y5p6AxBquFXV6NzneIt+D3ZNKAqSpIqE6BSIbUTvjGWlLVgR0pfa/m9SaO/BI+uT2eGs
-         nCUCPrCQ6Y4Juq7lTo71Ed9GrQ0cUuPXmabnQI2Ia9ElKghY+JRgTK8F/zBzFYnCfq84
-         GJn5yjkINHNkylEERegteOQL5CGU5V8MRk93//Xqdf1Sk5n3X7ZuPum8Z4YjySYX1MSs
-         wsN9Jwr9HGoCqnW3JSLIds/p7L4dG03C7iE/T/BpEckECZpdiYcesfkDv6uAbPK0lC70
-         G3nw==
-X-Forwarded-Encrypted: i=1; AKwUvBwU30kmTp4P65TlJI916uhSZEkPp8DdOsOUqo+ftqn+2uYeGmSDZL25Fkji7luE5Dph+u7h6zimGc91Kg==@vger.kernel.org
-X-Gm-Message-State: AFq9FYLy2K84/GuQHTqutIXYrGUNvrVPVOB9RvAvyKr/XISNH372bsNj
-	7tSG0QjnNDuHFGSdA0tA9plOl/cZ+13NFV5WDYM4NzeZAn7aci8veETXzWSDSIGhkDjRyEZvCMU
-	63D5/w6jeXnocT0R4mgbBh8mlyX0WK1nf3FANrEc=
-X-Gm-Gg: AYBFou0IwX/j0redmw0hzi6lca8mwSodnFi1Xf0I4pHk9b42kO6SVD40OoP5I6fEttw
-	1alBR/BDq9kXnAVYwGcwmgXSz1ZdTT9yntSmQPUMAlojy9LqTYUIrfbGVZVbHk7oXrYjBNJQQWQ
-	gsBgVLuN6LURvKK1m5qKUTQdm/9UbQYE0wClmDTcAO73bnyYMDa6HcAKp+thQf3QEM9P3l4kM4B
-	J6+k8R3WdKcblN11xHprZ+ogKgOjapskJ6HPISz2M7ZPM6gNz7jX8tFt0uE0fm8vdgDk1350EDX
-	CNUZ4i9eVXDe15M5Q3K5H/e/khXsauvMuh+79hSeE6gw41WZPd8eZaZoNkTQxQikSgX/0HnyXs7
-	W1/IPwCznPw1vhC1NGzowCjvsWznYbrT+YxV+6RrecmnMkVnJgB30bbmKTJtmV1o+p6Rt00w=
-X-Received: by 2002:a05:6512:2305:b0:5ba:418e:9913 with SMTP id
- 2adb3069b0e04-5bcde8d8363mr1735148e87.62.1791675227528; Sat, 10 Oct 2026
- 16:33:47 -0700 (PDT)
+        bh=feaWuaZZCYs3rhB8MCR/+Wo/5xzqgKKqMklPyeWAgMw=;
+        b=h4jGCzNVIetGoXlmtplpGBMkUNR19VXTOiznI3AwviTN3NyQspb3LLnmqj4vm/GDnh
+         vx2jjP4qo3JX0UEJ8sjJpWVd9iFJbr0D86jtrvVKlslw8yVW6IXzk3t2Bmez4GnB+Okl
+         31ykn5u3wZ17EBZgvHEEc4af+mH9v7fA9j9xq6iVoNdUo3JlFa2IBHYKSoV1Dt2652xD
+         WZdKQ6M4WZdNHsmhVEOzQCCdLmLpLJvJFtE8dh6MijqYLDb+5GgYGKerkhsAColfElTo
+         IBGu80XtCXCBKf4jC3vx5Gg37s3bF0Z+IlPxClGA/0Krs9bbZytG65I8uaeMnLwXHloB
+         illg==
+X-Forwarded-Encrypted: i=1; AKwUvBx8JxoMumERrM9zsKwLiW1hXJ6r73u5p+eBuT1LZjQ1f3bVx0b9791y3pCIEtZUT7CCNbxksp1wR+8GPw==@vger.kernel.org
+X-Gm-Message-State: AFq9FYLQ0AJc+iuqWFJJ8oho7JdNpOzrDailUz/aN5GPEteMmvK6WNTN
+	EaoVr71cG9GK5zx7GxDGDzgUNH6LdwyHUKg3uJmncBUdePh5v6nKdeydp9tRjTuEyW7PbQGuqTZ
+	R13ykugMdPmNXGFXv0y5DlgPNmCo+cS0=
+X-Gm-Gg: AYBFou0Kl2f8+XuXSoqZldJEl7qUTMjaNnd4DllWTb6XJsH/B7TF38okp9cBDIXFccY
+	UTBH8KlJ0EJynI3b/9zH4nC7zKeYXngc+6bwlyxBIP9ZmVEc40Okndnm7bK9+mJBzb6MYzcekzP
+	MMGQcWQE7xJc6ZWWiczylp0QpthSQZyU3iQshYKTlcKzHeRd57lOcZaN8nTIM7gvPTSZ0Ry+gIj
+	U3/5sQpkv7oVaQI/0NWapZlyA0PX0PQrpLUYphaNId7jb7unbojlsagtJ6QjiVtY5QjsyWc9yjb
+	JHN8/LCDXDQnVD/U5Ur0D856KEqDIeaN2pmY8NXsnxdvxvJRRpRhZ8SH4tvUR04RlqRODJgD04N
+	cbvrPk37PIu/CnFc42U4UCuB5167z+nk/TI+w5LA12T9DyVEkpxEIAQQAZsEe/yCCN5ak9dM=
+X-Received: by 2002:a05:651c:31c4:b0:3a7:713b:245b with SMTP id
+ 38308e7fff4ca-3a9c53852b2mr14841731fa.18.1791675282027; Sat, 10 Oct 2026
+ 16:34:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261010144621.974850-1-linmag7@gmail.com>
-In-Reply-To: <20261010144621.974850-1-linmag7@gmail.com>
+References: <20261010144621.974850-1-linmag7@gmail.com> <20261010144621.974850-3-linmag7@gmail.com>
+In-Reply-To: <20261010144621.974850-3-linmag7@gmail.com>
 From: Matt Turner <mattst88@gmail.com>
-Date: Sat, 10 Oct 2026 19:33:35 -0400
-X-Gm-Features: AclHuK_hLuowc_DKwILHBXlzx8Yc5uOUD_EuiTSAw_i_NewrbdFnoYRkbLyriZg
-Message-ID: <CAEdQ38H2vCGo6EHqSJwQdNNdKuMHvTKyDWrey9vxvg-K6BnGbA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/2] alpha: complete the direct-mm shootdown fixes
+Date: Sat, 10 Oct 2026 19:34:29 -0400
+X-Gm-Features: AclHuK_YN5BbixM1IaQoBobT0UPvBKLfq6NBtNaSR9PNTTL89qZ7WbJcHOjtcBg
+Message-ID: <CAEdQ38Hqj9+5vui4j6s2-5OihgtiQGSM9L93RTYdp-PfGK0_mQ@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] alpha: do not skip TLB shootdown IPIs for
+ kthread-borrowed mms
 To: Magnus Lindholm <linmag7@gmail.com>
 Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org
+	linux-alpha@vger.kernel.org, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
 On Sat, Oct 10, 2026 at 16:33 +0200, Magnus Lindholm wrote:
-> This is the second of two series. Apply all eight patches of "alpha: fix
-> stale TLB translations breaking copy-on-write and writeback" v4 first,
-> then these two patches. The base-commit and prerequisite-patch-id lines
-> below describe that ordering from for-next at 33465f6ab697.
+> This requires the preceding removal of remote slot clearing from
+> migrate_flush_tlb_page(). It also requires the stale-TLB series to set
+> need_new_asn on both the reused and newly allocated ASN paths.
+[...]
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Cc: stable@vger.kernel.org
 
-The first two prerequisite-patch-id lines (d194ee1170a4, 17df30a2da26) do
-not match what is in for-next. for-next carries the v5 versions of "load
-the MMU context when switch_mm() switches the current task" and "run
-check_mmu_context() from finish_arch_post_lock_switch()". The other six
-match, and both patches here apply unchanged on top, so this only matters
-to someone following the cover letter literally.
+With that Fixes tag this will be tried on every stable tree, and the
+dependency is only in the prose. The hunk context includes comments the
+stale-TLB series adds, so it will fail to apply rather than misapply,
+which is the safe outcome. Naming the prerequisites on the Cc: stable
+line would still save a round of FAILED mails.
 
-> Fresh fork-throughput measurements and an SMP run under compaction are
-> still pending for this revision. Targeted Alpha SMP, UP and SMP with
-> compaction builds passed, as did a full ES40 CONFIG_COMPACTION=y build.
+> +             /*
+> +              * Ordered before any use of the mm by the mb() in
+> +              * arch_spin_unlock(), when finish_lock_switch() drops
+> +              * the rq lock.
+> +              */
+> +             WRITE_ONCE(next_mm->context[cpu], mmc);
 
-Thanks for being explicit about this. The current->mm test in
-ipi_flush_mm_and_page() is the one change in v4 that no run has
-exercised, and the series is in for-next already. I would like to see an
-SMP soak with CONFIG_COMPACTION=y and compaction actually triggered
-before this goes further.
+"Any use of the mm" is slightly too strong: swpctx loads the new ptbr
+and ASN in switch_to(), before the unlock. What the ordering has to
+precede is the first TLB fill for a user address, so maybe:
 
-I went through v4 again and both tags stand. In particular I checked
-that the only caller reaching the ev5_switch_mm() store is
-context_switch(); kthread_use_mm(), sched_force_init_mm() and
-idle_task_exit() all pass current and take the __load_new_mm_context()
-branch, so the arch_spin_unlock() argument covers every publication from
-that store. Two small comments on patch 2.
+                /*
+                 * Ordered before any user access through the mm by the
+                 * mb() in arch_spin_unlock(), when finish_lock_switch()
+                 * drops the rq lock.
+                 */
+
+Fine as a fixup, no need for a v5 on my account.
+
+> +             if (atomic_read(&mm->mm_users) <= 1 &&
+> +                 !mm_context_elsewhere(mm)) {
+
+Not for this series: once every slot has a single writer, I think the
+slot test is sufficient by itself and mm_users only narrows the
+shortcut. Dropping it later would extend the shortcut to a
+multithreaded process whose threads all sit on one CPU. Worth a look
+after this has had some soak time.
+
+Nit: the changelog paragraph starting "Order the slot reads" has a short
+line at "Also issue smp_mb() after" that wants refilling.
