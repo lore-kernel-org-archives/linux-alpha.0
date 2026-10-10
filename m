@@ -1,116 +1,108 @@
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D124E2F12DA
-	for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 23:32:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EBE1231829
+	for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 23:32:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.177
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791675145; cv=pass; b=kYOKMxH6W+sQ02np3lImopG/IjcpDc6fHQUxnqHPbmjDI8GfSdxGH7697t9hA8iaSnGKEIWXgbOphJsga6T7hPCvTUkBgON/l0TTkxICatWZBPKKsk6uilpi9X2Mj2XjOgYwIZewRPnvaTljm2KILdlfrQMoWIVOAg/kmF8Uuuo=
+	t=1791675164; cv=pass; b=ef3DaCKWPn1/V/1sfBnmkMOIK4t9f0ZpoPv6gCj2B+UcOtBMsuRzxdo6z53xHfVs5ayE9wZ1nHr4IuOO87kn6sQ38ToKfU6Ri2VEyVrACUQBirg6cZ8r0qq+NxRy70jFfi429HSpMG28uApZuF72JdkGXjnZ1crfnufNl/Fd8qU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791675145; c=relaxed/simple;
-	bh=qflQkqQeHmD36iK16xGfjqsB6XTM4Xa1UP5Z+sLs1ts=;
+	s=arc-20240116; t=1791675164; c=relaxed/simple;
+	bh=yDUlUZyOjDuadO25mlevewbZFqk4aFcZYwXrs7HXeXA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fv8r8n9jyzsQ8ORhQbt6SOpzn49q2myhvr92UHqd7eKwMjfZpY+hDVUQ2kJjqZYfV4aS6WvRJleZ/qpsR32RlOvMnP73eo1phpqDx4jYZSmWqz2YRZr0FspV1W/mhsAeCoG6hiHOmelaB5N2wU07HJxfkIzrM4V6PH/yI/DQU/o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FVgMzDrp; arc=pass smtp.client-ip=209.85.208.174
+	 To:Cc:Content-Type; b=NI4ho0dalVruYJBhqE6vw52d/6PoSr+PRf3/Uj7GoWMTtdLz7qtbgMhQy4fWzTXHOi21hRTWl3oB+T6NshHG0xwoIb7ETQQ4CZTWAA70Bf35RpRg24nrZfxdD6OUHsZ68Fa8KMceSigXP7OfRJ8BuTmErnmIQi4osmpPR0kNoWA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nyHz0up+; arc=pass smtp.client-ip=209.85.208.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FVgMzDrp"
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-3a98fcbfb1dso6289771fa.1
-        for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 16:32:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791675142; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nyHz0up+"
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-3a7858d3a20so7017261fa.0
+        for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 16:32:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791675161; cv=none;
         d=google.com; s=arc-20260327;
-        b=nlJ1MPb841jUwf8D8t88geXoGH1XX67cPyS1avl8vCZUY2DOZcg5YQNUe5xMqOAu4v
-         AIUu5/SN1wIjuSDx72jPKYvDt3mlsZX7zKP4TKkNysuYMpsveaQnRjuSNRj7/LEfHfui
-         xKt2RiPTghJ5WQtZ/iAUk84hEioI4VeLWRnxuAocZGCqJPMp3edI4s97ZBn/cDM/BAGg
-         Gi9nn5RKw0cv4dAz4jY6JYsW94rPYLAKyGak1ZzMmee2VWlb+/pnC3JvtHpZowLCiWKQ
-         vXNv2utZsr7DY3eNxIg+59MDVlArER7eG30RD4wQJ3IJrkYVysXPl68fdqKlgitU92wT
-         gIJQ==
+        b=AhizWWUpDGOgpCPDC6K86RLE99aCYalje1SVcT0Jew2CRKyMOTmk9Zi8iQvCXxq72k
+         h1q2PXJ7DT4sh1HSvSUki5OMpoVEtd6mYULx9WNH0ND0WYU5VdCZoh3U0CjDmEmvXX+C
+         h03m8JPyYR7zZ32ABi7ZHMTYSE+Ru7hnxQEwLFN4sosT1xwXrcFtMvSQVdRC7H+CEX36
+         Q5qjeJdShXLvwaOYSNKQjXE4DwGvw3WqFciU+fptep+rwa/U8DCx0LXSGHl04BiIr86f
+         iYpkmDDEornzrxdghAE8dCkbMtOFIlfSDt6FAy7sFpl4JUMz9a+O0u6bnQODe6EgCnVV
+         jsZw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=qflQkqQeHmD36iK16xGfjqsB6XTM4Xa1UP5Z+sLs1ts=;
-        fh=yLjqhzj7I4nFyzJ3m8mBmOM0/bSkTmfPRyRNmeWHvo8=;
-        b=YKNi/yIPXYI3qnzfS4WXSTXSN9EQVN0OEoEJP8BQIxrn3RNpUAi7bI+dDbEqSCYJh2
-         SSGP+WiSppGeTtfRrSH3N54mWKLkBOzSi7CcA0Opnq3S4IWY7MrVEnNDL7HuaAd7sX6+
-         SfHCp5XLhJVTNAuSddgSxT6iqQ8q9WarQAwH+xAx/lDoqVm4EW7cFlWhjtcAvd/RhcjW
-         ftfI+mk4GISJsM9btSVqWkqKogmm5uGC0kp62wP63mir3N62toDZAHrfP9cz89hVu6Qb
-         cvzkhAgWmqY7S2YFBUU6Dq4FUAY/SkbYXSJYnpZIaJ2XUwljdpMPr6KzDf0SbvHK6xYS
-         8Qiw==;
+        bh=yDUlUZyOjDuadO25mlevewbZFqk4aFcZYwXrs7HXeXA=;
+        fh=VgybUamVPE70DdU21OsayTczQM9wWZjTDIcsEOwM7dE=;
+        b=WAg5ZVNUmFDPmJDhBAMXPX26utdipaWJzJkMpX15cji5L+sBie6gNMy5/nD4KDCm0e
+         QyvTMkxHukGCNn5zZgzVeGpzP+6zzweJ96p5KveRtqraM4+rcvyTlb5zxAwj9iWJIABl
+         u7nVDD4StQucgnyiz9YQsVTGhXEhVPLefUi4F93/D5gGmm1yZ6VfiD1N1Grsn4bMUfEj
+         QmsX3W+bydLZM3zZwFXoSVmjoRYU3T6bmQKWD3i6V9eCX4r4B77lW0/Eg97AMldgm7hw
+         cjpGehkAP1fQUGFafkGCQ52ct+Eo1ArAPxJgEpEJ1+5CYmtq41jx0ri/f3v9nmnS+6PP
+         tnRA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791675142; x=1792279942; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791675161; x=1792279961; darn=vger.kernel.org;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=qflQkqQeHmD36iK16xGfjqsB6XTM4Xa1UP5Z+sLs1ts=;
-        b=FVgMzDrpb/7b8OlWamopi1tfTxES9h3p6GIL81i3K8DEJOc99rMtRP/LO0d6gXigN0
-         VE6Pw2m31J/VhNRNxvAsGqYQU84K1VO+UV1F2lQb1J+VCDMTvgva+ZA0Xl5wN3nxkySg
-         AZmw7kFvwTqMuC3X2y+eow2fIs51MG/rLRJnlG4uCEZ/rFVgSdt7hP2U0Mhj0OA75anj
-         uGN1u5TEgIanXfIY/ahZl0K7+AnpcMjl58fRWU1rkdGmHqRYAxa3Zve1mJU3APOYf3ix
-         E2dCxZ40l/v+cZ9mcEA8jV9PT0W6oibwLWOeGIrC5ZLjA3cWjQCh/6YYdWNLCRZ+SQJb
-         wASA==
+        bh=yDUlUZyOjDuadO25mlevewbZFqk4aFcZYwXrs7HXeXA=;
+        b=nyHz0up+SSnKNt3TULfv1hrau1k+3LTxtrQbO1lvzoOVgqoy7QKpNBBUOvP+DxWOYs
+         1wKRfV62LscPNTsW9858VDdRpyu4BH/+AiBcnZzmwePZqddloB9bJpILa0EDBjW6DkeZ
+         w98n3jI/2QdGWubkTNdpBZnggb/pHz05xh/lWNtUs4fq+Eluhf5Na16Z1NATEDUWnsjU
+         8lFGtM8t0Jk9Mhqio8+1/FRmJV0ZWwmzzKt4f6WehjYJk5ZBMx727h2fKyByW45EVeo0
+         jaAi/OGllP5oHrtbFNa1xfmZB5BxgOCaqIUvSzkqve2uFS7tDq3fJ+7lfssPCVdYepMM
+         6JpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791675142; x=1792279942;
+        d=1e100.net; s=20260707; t=1791675161; x=1792279961;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=qflQkqQeHmD36iK16xGfjqsB6XTM4Xa1UP5Z+sLs1ts=;
-        b=muIDTGewGyM7nXsspzMsSs0cxkctVoSu4COAvgbpptPvM813blkFUyMmYxjoC9qIc1
-         cmwh2mydS4N4ymoWoRujUqTllTX9ysALrtyS8AnlyR5VqIkxlRqkyygk1bNkFi4+cT0t
-         PH2N7zR8jUTyqCJga9rP7eC528j68iEg7ChHWEK9Kmelq+p8XYsz3FmikE7+49Kp9jGx
-         oVQmdy5dMl8+jTkfJsb7X4YFC0aFU/XXuZlIBka4pdxpNl0Rnsasnoorxg9VLY3mFm9U
-         YXEAhBspwLVcC8H3aLssM0NtSaVuTYOjHSrDMVmwhVkLljrpFoT0nEl2C7n7LLPZpItD
-         5TCg==
-X-Forwarded-Encrypted: i=1; AKwUvByrDswKMmyx4kurij67jdNz0u1Yu1FBDLORDzFwaMEqqf1JeMPsSas/gnjQKtvDqTkS08UEZ+IUTkeI7A==@vger.kernel.org
-X-Gm-Message-State: AFq9FYJabcS5vGnuM2Wnyilec4qLCsx+XS68mPd8KKNbRUjMKjrTmZC1
-	uaHXlTYy20CmOLsEq7XnCPVzrCXX7sV9zpYyDjOw9K3evxwTW7QKa6at01N8XjkElIiOi0ED1ee
-	oXzy6sLM9ESmGIubc8aJA0+5wwQH+yDQ=
-X-Gm-Gg: AYBFou1OXSRmTe1QaEtDhigqzu6oS8nLwxRRtXLmucQYaRathwjpio4tTqbO28KmLSF
-	IJmxVnsUu1cSLyOIfqHrhzt6mXW4pLortkQLxXgjrHPjEL47KDzLpYTqvQmTxkrn+y3Pca/g7gr
-	4UPITWH5fgOZPUx3tf8KOqNK5RW6VQ8n9LYtEm2CnOvVRSHzTrcTmDLjebeLuYtLxfer40rf49p
-	GebBJSGD0uva0wjX5ZfHPYUSlxSGBD7xFdW+iV7K7YZmBqL97Ee4noyQbREM+V0HyMah4dfZ2Ah
-	yBUhfYybX24U6Nehi7lmp+yiGaaZQXTEAPF9fp6LxQYLp2XhAsJScGJMqLzsHoHWuH5qX8IwITz
-	VUSlS9vrSokGH22lIzJ3Mxv3kz++AhiLVYfkCZLwsFGJqi4LZbw5SITFF9ZcqNEMy82IXJxndYR
-	EqyYOcTw==
-X-Received: by 2002:a2e:b8cb:0:b0:3a9:c04d:40c3 with SMTP id
- 38308e7fff4ca-3a9c4ebaa9amr12809291fa.1.1791675141422; Sat, 10 Oct 2026
- 16:32:21 -0700 (PDT)
+        bh=yDUlUZyOjDuadO25mlevewbZFqk4aFcZYwXrs7HXeXA=;
+        b=QQRRk8zK4TWpfbRQBlmTqj5nAgypDkjR61daNjwJjsTpz3z4GuTVzA77oX24A3Pof6
+         4rTw6P6uVCwgd089Yq6Jrkxy65fJB6p8ng+/XxvxE15QBxXHKSdkl5en788N6NwJ2ker
+         0EASh579+r0WD79odVurVqeQAgJ150ylWldDG0Ao+4q9ZhYq4nHQ0xWuOVgounnmrhDC
+         WxNEVZiyrbRSw3b4ZSD9lMXIV0d9+XBXlCbRpunXEZzYMztmcXNOfu73cnyu2tglUXcx
+         Cqnq8syHfwl+innXMSwYXhDJsfm5IAPVxkDavaeVp313+k+2pgtUGLtuKfKjec7l1eVd
+         hwrA==
+X-Forwarded-Encrypted: i=1; AKwUvBw1D2ziE7kVt8YrcWYhkusLMP3fxosTARcZMBE2bN/+UxuxXG1RVxS7zr75i1eS9XtsBF35KoCGwv7Tgg==@vger.kernel.org
+X-Gm-Message-State: AFq9FYIbM9mFFUPXvo9EcvRbCiqTxF6lLMbLjv97n1zEqzcaMgjEy1yH
+	NY3gZb6vTPsb6IyCvNFE9dSFTRkzHvjQcBrpcYrdNueH5QzLTfW2KZ2iKAX8CmrH5mWFuuwmf0a
+	H+XZQ+80DeyPvDD5rOr31nVD2eNLI1WI=
+X-Gm-Gg: AYBFou1JdVF/HL0GdGHYRmjRwh7Pkxn26HXy959BjZjQoR4yF3DNt+p8t+Pe/BuKxGD
+	AITGr4OzPu6iMC+t7vaLPxQCyQI8itYjK1Z+3t827nsAfqQQo36FKvkxC5Seufe6XP8j97W9OQB
+	3feddZG/UnBRzVECMUz2ZbYPv/nk8HU4xY3BfNAtj6yHsOV9OkcIk/Z5Er3XyJF3vPTWNwGGqqh
+	qgF+njI5VbNgaxdgb8ZPwyGfHQ7EezLduA6VhPIjvOjjHCavwWnblAvsHSpO6aXSz9u7CeGmHWF
+	Lrp5F+ypK3ovktNJV1lZV4Y2+wqUJWqYeaOCOkjJKA83dsNRu4kCN5ExuzL6qZkIF5WRnQQOCxk
+	Xs6RQbMSWFiHTz4bCvM84f5jd8UplBLtrgtzoY+Uoz/EBjniHVgcfx2mrAAAljn1GQBGRhTc=
+X-Received: by 2002:a2e:bc23:0:b0:3a6:636b:63c5 with SMTP id
+ 38308e7fff4ca-3a9c5384f54mr12392801fa.16.1791675160999; Sat, 10 Oct 2026
+ 16:32:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261010142533.974797-1-linmag7@gmail.com> <20261010142533.974797-2-linmag7@gmail.com>
-In-Reply-To: <20261010142533.974797-2-linmag7@gmail.com>
+References: <20261010142533.974797-1-linmag7@gmail.com> <20261010142533.974797-3-linmag7@gmail.com>
+In-Reply-To: <20261010142533.974797-3-linmag7@gmail.com>
 From: Matt Turner <mattst88@gmail.com>
-Date: Sat, 10 Oct 2026 19:32:09 -0400
-X-Gm-Features: AclHuK-Ff4Cr98p_CB6t_k-bkb71SKuGnXuo7evvdddqXdUWufYMH0X2srMk7xI
-Message-ID: <CAEdQ38GtjhbEipnuTbo1EmzNNAE9=6p3T6MfTnMq-6okmE9-tQ@mail.gmail.com>
-Subject: Re: [PATCH v5 1/8] alpha: load the MMU context when switch_mm()
- switches the current task
+Date: Sat, 10 Oct 2026 19:32:29 -0400
+X-Gm-Features: AclHuK-gvxmspYL8uhJeKZU4XuFs3ltc1WsM9uJrh1XP9y6npltcI5XIXewgq5A
+Message-ID: <CAEdQ38Ep+cu5ssTGtb5OQwHGRB5wz+crTfbV9GM6wVDdoZqfmQ@mail.gmail.com>
+Subject: Re: [PATCH v5 2/8] alpha: run check_mmu_context() from finish_arch_post_lock_switch()
 To: Magnus Lindholm <linmag7@gmail.com>
 Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
 	linux-alpha@vger.kernel.org, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-On Sat, Oct 10, 2026 at 04:24:27PM +0200, Magnus Lindholm wrote:
-> do_shoot_lazy_tlb(), which switches to init_mm from an IPI. None explicitly
-> loads the context, so the task can carry on running
-> under whatever was loaded before while current->mm says otherwise.
+On Sat, Oct 10, 2026 at 04:24:28PM +0200, Magnus Lindholm wrote:
+> code following alpha_switch_to(). New kernel threads take the same
+> path through schedule_tail().
+>
+> asn_lock is left set on that CPU, so the new task can run with
 
-Two small things if you touch this changelog again when applying,
-neither worth a v6.
+I missed this in v4. New kernel threads do take that path, but
+context_switch() does not call switch_mm() for a task without an mm, so
+they never set asn_lock in the first place. Only a new user task leaves
+it set. As written, the two paragraphs read as if both do.
 
-The second line above is short.
-
-"while current->mm says otherwise" only describes kthread_use_mm(). The
-other two callers change active_mm and leave current->mm NULL.
-
-> Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
-> Tested-by: Matt Turner <mattst88@gmail.com>
-> Reviewed-by: Matt Turner <mattst88@gmail.com>
-
-Your Signed-off-by is last on patches 2-8 and first here.
+Changelog only, and not worth a v6. My Reviewed-by stands.
