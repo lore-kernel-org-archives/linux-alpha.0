@@ -1,112 +1,108 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 531FF2BE7DC
-	for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 01:42:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25D462D59E8
+	for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 01:42:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.178
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791596540; cv=pass; b=geB8s7r6/Z0kwIPHGczQaEaGQ10w+d1H++QjheHhPpA4S9TAOPskBDkcHjC6oAhLHmTNcTmjhUG0P5xOADXqknJE2NkEhUjoP1zIuddJ3TYyGXvmYYfrHG4zO9ebjIC2db1rzCSb9MKCoiPTgdI7el7PZNOKdt4d1KT7Auvp9oE=
+	t=1791596574; cv=pass; b=RCKESOlBtxTkUbo2TYF/hhruS7vtPOP5LbRrvR9DmYjpEIUm4rrlk8Er6i5Rk5goC97CuHKyVV1xOxI9PCITvrTCHEnOjaEeTGWtBMjiob73ROTZms0zBDVBVTUBr+Rw4DD0XQVC5AaKWUx89VMzIvvN6qnge5YC84a3oXOC3x0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791596540; c=relaxed/simple;
-	bh=n8K/DO4hWqYm0UUT3df/CyFWPzp5h4xXqc5wMfIgNuo=;
+	s=arc-20240116; t=1791596574; c=relaxed/simple;
+	bh=o+8OqkLCRVEqlAYIJtPEeGd2EGzdU7uZH+zJciEefcs=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=URQQuIaRhdw0xu3xRrSBYcSXwpsRGK/1hsXyTTbHgX0TB7eoPwwQb0OInxVDZrOa7fayCeRUwjZ/+E+3dcRMNTQYk546MaJSXz4ZzYC8+hWKWW0pd3tqzQV/iIl5Y/9P3Y8TrczWUKqaHbVbEVF/LxsuXeZU718CXnrboRZ+Tfk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ptGUc8le; arc=pass smtp.client-ip=209.85.208.179
+	 To:Cc:Content-Type; b=aR0ozmduEahGPgu6JQyeK6UO3SaTS/FSAUi4Wx7ACi+HsOsj2ZvQW3YY9+SrN4Qo8fDDz/BRKxhwBPi5rnv/D6Q1Zp2MAi7s2wJ9U/iuEkNoscxFw62sCQQUf/515lAKZ1y3Etfo19j4JZoliQ4e66UL1R8vtsXCIG2XSP+Ts1M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=djP545OW; arc=pass smtp.client-ip=209.85.208.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ptGUc8le"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3a98f260f85so2995121fa.0
-        for <linux-alpha@vger.kernel.org>; Fri, 09 Oct 2026 18:42:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791596537; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="djP545OW"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-3a9787a156eso3119621fa.3
+        for <linux-alpha@vger.kernel.org>; Fri, 09 Oct 2026 18:42:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791596571; cv=none;
         d=google.com; s=arc-20260327;
-        b=r1Gts25MbCdrO3RLFKdjSB0tOxUGcoUDAtU77oCa90Fd7bInqw/sWmhouonE+AympM
-         y74jm6lwCRUqo/mgJBehNvbzoB4EIWpEBIaSTjnJuTWocWtrthEs8tnG6NIgBuX3DZxc
-         /EbTokq0f51f8o0BbK4uFakgXTvax1et1odBRQFrD8ytrchpnWwrlr6/S3+EKSsB3z54
-         0MA/bvUmccIO8X2c4vz+6KNzaEo0VQkPlOXJ4vQ8g0qMvEbYzNpqk8rsQTHmHGaKDF4a
-         w5RVgh9p2KFxYbn1OHkx38jFtBe4ZvJG/ZU5zyifgOtCrPEuS+lZjf0sQKBDMF8/pXCo
-         95Gg==
+        b=IRp8lLQ6kgu0fB/VeCacsuBlnbtpIXEUjmxfPemmpgAc4k7UMo31Xy+P714KPhOQ0l
+         6SR65g5oIvcI5rXO4SvM2PlvuJGmNaUn3aWmuBON0lG6NLryiXbfMr29Bmra4cod/Rou
+         JrJVkIQ6RqlPP9s/HrlutULk/hi2znwYmflMHahUfyhLA4Wdqi3UNCtIZoS+nsa8c0i8
+         ky+6eSbMpk+bezDBjUu1KqHuCfH9AGBSGKPshz2qHBOI5ngIIxPs6cR7iS/J/7x10DMg
+         tWNEycv8RiZ9qPIiIHWEGnkQWvn8YGRtDmR6C2+FtjSAxQjce2YfpbW7P744AFfcWtXT
+         18xQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=n8K/DO4hWqYm0UUT3df/CyFWPzp5h4xXqc5wMfIgNuo=;
-        fh=XPKbl/h4uf+Yf9gvIdAHRHVl4tJr0MudzZMe5FjyzKw=;
-        b=KSlk1WL3MhWFr3lRO5NVhxjJ+NeoPDmwV/r7rsmhcMkFVH+noAsyAJRkDurl+ksOSN
-         pQw9h90FNYmcR5ssizaPAu+k/sQlWZC33PnCnImQSS3SG/lPN1T6DU+BMuK5SB+GAcmN
-         M9gg6DUWtzo6RqlsE0SOI3y4JNbSrTQ165Tq9YLtP/Dz1Ofjv5xi5LzN1/RIzm/CAdI7
-         SNb/21G4dr9Vzf4mM57YzrNADSJbVBb2xpgCO/yAECiwsj0XWHigdr+JyjPmo4swzkXU
-         ScSS08RrF+v5K95x5VMOaS5czFSu22/DT1f3zudIBoGdvYG8MN0I/OxqWgK2b3thO2jy
-         IC0w==;
+        bh=rU51iSJF6TI/pyu0D7m4lbncGYiHJsMgWbaT+n+hL+Y=;
+        fh=aQQ3/W/QjU+35MS0TCcu4s6JWp742zutMO4WSX4SQYQ=;
+        b=ngwGmWsz4Q3y1JRYJXDURQViO64LcfE2L+KC0dw37thJgCYyWy+kayhlf3suAjAC/X
+         VSRD9BNk9/oMraPDqsT2WdkG++BjHSDsjQqEEKu+xmX0FtB3IlOcID/6vbZ5QeGDFAc4
+         J2fVZJGYqlOBv9FyC9sGWjX3AU1zYVti3MgXJlyTU+t595boCL2MD8efQfCLFIT025cj
+         Q/89TUnEdVQ3hgdJQujSSbWjfS3J8Rjy7e2An9Ub6E3jIGJS7x5iGNVvSovFJkqQ0GEh
+         eWYbQLo9dZtrC5/bPkP86H/NxQO7IaQLgpqjvOsmBDka68/7ydX0n5LlZAJ6zohGk6NA
+         FUTQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791596537; x=1792201337; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791596571; x=1792201371; darn=vger.kernel.org;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=n8K/DO4hWqYm0UUT3df/CyFWPzp5h4xXqc5wMfIgNuo=;
-        b=ptGUc8leSjv8NnQFTNVgVFChYnwOI7do3JYZnUs4lJS18toXvMgDY8VU9ZCdqVIKcS
-         DUC4Hl3II20M7gWastdmX7mwzm2oVRZBqqyn7kyLwC9ElubiSEZuyWFVConkhmrUStzH
-         Y4dgWklE6dxnds61QcASIM1q4n4eivcsLomrNCY812Xr+XXbkOCq52lPV8/SMUApIh00
-         /BGFXUflK7VdKGAVmsxwiZQP0PRwXUecKxwNVaSUZHat7H+SDl4Z0WEnL+92/6TMdUrO
-         MDccsYCr1vSaDiixxYxxf1WoH34KzzRuETNN93x435w1C5N6AEKP8wXGhMHRqXDZcyhZ
-         XRfw==
+        bh=rU51iSJF6TI/pyu0D7m4lbncGYiHJsMgWbaT+n+hL+Y=;
+        b=djP545OWl4i7nLgU35Dy89RAk7/bcAyd3Q7Epu1xORO9XrpGLmUJJ1+ii9VF4y2omp
+         nNJ/t0X9sByrT9wP+GWygkWr3S8qwXqGK0EyZqWjb7S2GlD1jlmOAYlxSzxgGUlpSwkN
+         QH2B8muvwoybYEd5Km1r4iwOjRu2EuFLM3yT7f+QwWe1FbKe7EBGLJYt+VETNY2rebi7
+         145R53Ow3Qr1pRNyhqULzd9kUqqAConh1YIFQBJU6ay9JKpal9WjQRSVO4Cf9oqcU56O
+         EHb4P1o1WnaU89RDV0MWxjn+ynB7CCrIAhNZss513clAcG7fPgsjZQbQmCKB1gE7pOPS
+         qW+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791596537; x=1792201337;
+        d=1e100.net; s=20260707; t=1791596571; x=1792201371;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=n8K/DO4hWqYm0UUT3df/CyFWPzp5h4xXqc5wMfIgNuo=;
-        b=gRihfh/uH7g8pHPETqybQFtU3GbmmPzsVP3lHi7Yhqt3oaD6RMZSJBYHw7KLoNGhex
-         Ze4PBQxaNXCZ/fEaWgcvVyJ0X96PP7P7mIouhXcSYdIwsiR6pO95PIo7smOV0w5T3evP
-         dUpyTNKm6a/V3S2x3kfP7FzKBZcZ3u4NdXSeW3M9LQ7hHXbeNmHIghq1QvasKCuXmYwm
-         KcMfaYPqeZeRpgoKqFj9R5zQ6DU8DTwfxF135eSKBcB+cnpfUeNT90V9BDYB9T31+DSe
-         DJn8o2PI7OTiKhIWycdoVXRZLeNkoDofQoitzJ/GRqUMHKUOzUnCzw0tFATSL+/OOBtw
-         SGdQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwTJQMNeQhPkLUAI+Wc2JBD/1xJoNtuiTyfyGXiM2fCyz2yqffUYUBXK61S4pF3fFIs1pqTh2tTsi+Ivw==@vger.kernel.org
-X-Gm-Message-State: AFq9FYI7qjoVROTkGvBWc1U+eJwcFWajEpFswJAEF3upNxlo+QMSE2Cv
-	WCIBCco38lMFV5xeNdw8WWKgd9BQ7z4NfYaNkhDGCeo9jT9+K+Boocf4I9osjmlHWOoSABM9Dw1
-	4nROlrrPUGnQj+IOgkPb2Pf2qZfQDdKAmYJbN
-X-Gm-Gg: AYBFou0TbOPd1BrLyJdj6uM9VZsnYHwombkBJxljhQlkv0eR52d9Lyu0fSnBbOW+Dvb
-	N+09up+1WhY5dWjfZHTRvxACgjTFXoNZLwCGHsxrR7WdLWUMQDvm5ykFKoXQW3aggX9l6pus8qZ
-	+uPGmJyBBKSjKsDHOlDcpszOegxfe27kpgBOsHLwBm2MgZswgQtdxdF5WQrshUSqFsNI6dm5jc+
-	OAHW1UTxtOoV0PMz+Ovs40Zk+jXUNd+5ZVKqOj0wbYw58q6QH14qCh+u4dH3nU9xtb0cpLUYj8A
-	5Yyu30Gs8APF6U8AelyNN/R1jnwrZAT2b5hQWtGBwQtPOqIdkbV1bFCXznQx6X8wyxIrJbWENJH
-	XFfkIsogoqmuZSN0Gg/Zeb4J+BcDMVjNG3G/ba+vIIxb8WteFKRu+N89B1yCLt0r+G3YgwvY=
-X-Received: by 2002:a2e:bc1b:0:b0:3a6:6831:6e28 with SMTP id
- 38308e7fff4ca-3a9c515cebfmr8095241fa.6.1791596537022; Fri, 09 Oct 2026
- 18:42:17 -0700 (PDT)
+        bh=rU51iSJF6TI/pyu0D7m4lbncGYiHJsMgWbaT+n+hL+Y=;
+        b=FDbXB7z9exz2hiXqYlv/YF5Xl1qcy3stNXtfFTbpGR2hZ0DT8TaCHBTFKNcJ9eKzd6
+         /MVth0Hl2phDE70RGDo5enXCK4N/lTcvidvd9Rfz9HPXN9qCHRpGZEQ4iNwyxKfN13GR
+         wprks6EbPkUdQnKaYgqgQdQB9dJbA7zkwL7vnaLnY4LT41XjVSjZgBzLV+2kSlzh3k8q
+         q3TpvVsFxZyTEWnOu1YLYw2IhL6W1oJM+O0WjKainD/PeDGQRi2NLhoBUgGD9nCn0/al
+         GpstEblh5H0t9B3s9UpzBBOmFRXspOVWHHF9cwwPOMFp3/+gTkhIzmk+Rdw01c5lAE63
+         5Oxw==
+X-Forwarded-Encrypted: i=1; AKwUvBw057ruWTwOu8jALaplwR4xP2L5FHw1M3KdVzMiWghMR2lUDCFusrOAGXzi7BrvUuWLb7HNvyzTy5MmBQ==@vger.kernel.org
+X-Gm-Message-State: AFq9FYJ3Fphb9sWJNY3yC9l5qB6GMW0qi6DF2P7nkcu7IZUjax65+rqy
+	hN9AjWj/PVZ6svjK1O4xnO+z4IjnFD4rACyW8AsPPscILpI1Ny089DtutU/KoggbUGcheSr8UmO
+	5cRx9YpDpMs0s1cllz4zCs++1drt83a8=
+X-Gm-Gg: AYBFou300rB6JbT8IHyuNr9833rDoEH16/MohxzKAzmNsVtDzwtwr+Vu7BKdUgRf9tC
+	3ypHHckBRoN4uTvnHVVJ0WVkHQW/mJoiAWe+dXXLKxSIyAqjvGgfrQCP1R94DnNi674z2kHiqHN
+	EeNiI0aEQ2m6krFkj2jThYbTmG4hcR0JEDZnYEb2ObBmsUdoYJVs3UBS496vpe7msOFov+pgzAI
+	WDW0g2myekGg12FFRzFN7rKwYvtv75YDwYhaIFi1JZbch2nMtaBtLQrxVt6m9au4/vkCeILcM8v
+	bIARv+iE3GGxXootFrUMl+KcwPp5i9c4UNEMIZxcFyvajqPC4kbfiu981Rmr9mlX+7tBKlz0FEw
+	ZhL2TVrrtGpt3KHwwJPLHKdj5NGEGyVnQ5wP+IdoDYgGNvrGrTrLmVZeg8jOAEZGUuPMY2wc=
+X-Received: by 2002:a2e:b019:0:b0:3a6:53b7:65f with SMTP id
+ 38308e7fff4ca-3a9c56e2e18mr5714141fa.24.1791596571086; Fri, 09 Oct 2026
+ 18:42:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261009210449.971057-1-linmag7@gmail.com>
-In-Reply-To: <20261009210449.971057-1-linmag7@gmail.com>
+References: <20261009210449.971057-1-linmag7@gmail.com> <20261009210449.971057-2-linmag7@gmail.com>
+In-Reply-To: <20261009210449.971057-2-linmag7@gmail.com>
 From: Matt Turner <mattst88@gmail.com>
-Date: Fri, 9 Oct 2026 21:42:04 -0400
-X-Gm-Features: AclHuK-lff7CrDPJJPDMcqxzamEqKaH2sh9rsprwt8zwIwnx_tibiaqOsKQY_ic
-Message-ID: <CAEdQ38Enhs7WvUYqVRs1YFc_GHJz7zzgAuh-msgEZ4Rd6UC=Yg@mail.gmail.com>
-Subject: Re: [PATCH v4 0/8] alpha: fix stale TLB translations breaking
- copy-on-write and writeback
+Date: Fri, 9 Oct 2026 21:42:36 -0400
+X-Gm-Features: AclHuK9n3UVIh--yKnm4pNRVW0w9OA63SReP2p5Bgf3nbylkquF3k3WJkqHscfQ
+Message-ID: <CAEdQ38EyiERiwrisqWfV+bSy26Ega2AL6HjtJESEts56sWqjqQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/8] alpha: load the MMU context when switch_mm()
+ switches the current task
 To: Magnus Lindholm <linmag7@gmail.com>
 Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org
+	linux-alpha@vger.kernel.org, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Oct 09, 2026 at 11:03:45PM +0200, Magnus Lindholm wrote:
-> Changes since v3:
+On Fri, Oct 09, 2026 at 11:03:46PM +0200, Magnus Lindholm wrote:
+> +     /*
+> +      * kthread_use_mm() and sched_force_init_mm() switch current's mm
+> +      * without alpha_switch_to(), which is what loads the context.
+> +      */
 
-All three things I asked for in v3 are here. Compile-tested SMP and UP
-at each commit, nothing run on hardware yet.
-
-Patches 1 and 3-8 have a Message-ID: trailer pointing at the previous
-posting, I assume from git am -m. Please drop those when you apply.
-
-Two changelog leftovers, neither worth a v5:
-
-3/8 still says "the prerequisite direct-switch fix". That is patch 1
-of this series now.
-
-4/8 has a short line in the first paragraph ("This CPU may still").
+There is a third one: do_shoot_lazy_tlb() in kernel/fork.c calls
+switch_mm(mm, &init_mm, current) from an IPI. It needs
+MMU_LAZY_TLB_SHOOTDOWN, which alpha does not select, and the
+next == current test handles it the same way. Only the comment and the
+changelog are short by one. My tags stand.
