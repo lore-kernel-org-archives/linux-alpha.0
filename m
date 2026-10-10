@@ -1,300 +1,272 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 243883806B0
-	for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 14:46:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791643590; cv=none; b=W9ngLasnz4wBAmuImxg/faEvgNW/oBBLzkm097GS3apK21KvcA/lXhiQE01rzjVRv+uf6UWV23Z+X0Sc/Q7JXA8BOp3EleTxVPU7p41g/t0tEUXR6PhIuCw9SIB7HPjS45aVfAfc4HZ8tkD+jBUJW9ZFP4M/jAUwNSFo95er+fI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791643590; c=relaxed/simple;
-	bh=u36p8Qyx0nPKavY7M4gB7jej3y+CQzljKWevE2Wr4n8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BKp0Ke5RZiDvZcFJmac4jx2qt/1O+7HvNQ8G0AMM1bwbsCYC6h3yXoz4VTpo7pG5Pq1thMgwP2D5V5uV/shPS4PX4Wt60uG+aMGKdPVAhbxo165RBXIV9hCfrBOarMd95LRrHW6n60F13iqyFmy05c3gvFRcm3kVIGzZSc06uNM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K8JfMzjl; arc=none smtp.client-ip=209.85.218.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3BD83B6377
+	for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 15:56:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791647774; cv=pass; b=AbZeXfxvifM1EYlSwehVYxZH0n61eRTGb0UUgOtx5PrA+apXxUAIPDdtSr7N0OI/99+tA/b417HQc/72H9CoTqbMkykViTcflin9QupGSSciaGESoX7ne5foYkVqYeZyk8A+c8M7okmBTnFb4oSCFdxO4qVp+y79+GBwxzzcBcM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791647774; c=relaxed/simple;
+	bh=1LlNv9iLTw5kz6VsMVqZfAokfIUtc3HuT5Y1+gdSsVs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=mGFWwqHd/dV0ky9PIXoHELAnpoaTIIsQa56a/e8OoJUGVk1uILW5uiDVZcpq4xiPAYjHG5B4+ywP22s5ouw+u36aGIjEV7mhfYTm23Lm+dX6MSnzPZTJciJeZ86tuH4XKXkXQXSu+Wkg8r8r3eLsLUi6j9TNcNrXkrJlzYjJz+4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z4w7wdqI; arc=pass smtp.client-ip=209.85.218.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K8JfMzjl"
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-c2afa22e1dcso113181666b.1
-        for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 07:46:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z4w7wdqI"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-c2e5f8fe879so114486866b.3
+        for <linux-alpha@vger.kernel.org>; Sat, 10 Oct 2026 08:56:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791647771; cv=none;
+        d=google.com; s=arc-20260327;
+        b=hhSHvvlBi8sy8GC2ysdMNbDh9GI/GydQ/NrBOcKOhMMpS7i7QyW1qhAGLhsDiEQhlm
+         ba1QeTuAr/2z/4dCyZHLVna/nnWZVmk15ulDCalF3pP+ehyx6wCYutezWUfb8OGRYAp0
+         cWH03bPF9h4/IG40nG9rf4pjntyuOXEBQiMKzLBml/wc7HgJ4YWUE02XmcQ/dnxtt7Vt
+         H6vmMYWlHtk1q7E3LGfvJePyJ5bMP2TnWNKLuuIJo2/5nvnyCLtJa4c/h4h2TR9eaZ+7
+         YTbf8CBF7Um9PA1Oj7JVAAGqwRnKlyvdgxVmorCYLfy0Ed0Ms9A3X3hSV5PXWYXmN1hW
+         34yQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=UrVuj/KtTic62Eb1wEr1a7bTAGelasNdPgxfdOzKGbI=;
+        fh=U/LNnDXNLJUiJkI9KhCaF7AK8bIgAXPiWgks++bKrY4=;
+        b=Io8dbX9Ef0NUrH5mluxmXSuAO2ifPbZQuNwsfS9wIBs6Qh3sdcus2cMcrnGriPIjsf
+         hP6o3FIAGLQnN9AQnc7DUg5quxoh+KT9ApsP745ZqKWX8Qhxx7HD3SSN1CaEiVBI4E7B
+         iYipTBfFAZ94HO7bSWAdMvnAJs53zMDn36Frf81xe5PFOguvxd51f/P/X83Tu3gdrs9P
+         5hGAu0GQE5gYFheGHWmbJSNrm4Gm1k/yAs8iJSwvuJqtQqMkKkxVSZAu4hC9ALeuOIJ8
+         L1uj0yEOMRvIo1pbmjfBslDsS6ZTT/mLx9c0lwbv0PvU44Hk1+0PVNtgs+ujKglRutpl
+         bIqQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791643587; x=1792248387; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=wO1f3xuv0K+57q0XhGwwYjSiZ9yQpNcC/c9QnqLyCFI=;
-        b=K8JfMzjl4hrGvbOEL8eTNVzmjok0dKFzJ5RU6/nv4ga7B0YwilcqGBBs/vaJL2KpZw
-         oKBFjJ2no9uqIVPhJBPqS7T+yxGcu/VQVLa74eul1VaGDrDZq+MXlWJvlzOphpPfTCyO
-         C9+VXCgSif3Oo3w97m3bDlMm8FgoUe6C1B+A20f0ed4/OS+8wRXu/ZydOjXNLScP8bZi
-         GZVih5OTAorKA9RsY3Pd124/1yfvNsUDBbsJ5poYMeL83BdzXH+9eT8tWWm8vVETgVP6
-         4QqZTaEiKIF9vqY9zHG87GK2Ylaz3Xrx0AXPFrE6pfDYNqfJqwX4OgBrw6ZAVSXBBout
-         75eg==
+        d=gmail.com; s=20251104; t=1791647771; x=1792252571; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=UrVuj/KtTic62Eb1wEr1a7bTAGelasNdPgxfdOzKGbI=;
+        b=Z4w7wdqI2lUBMaIisI/MyWwgO4RBhfg1wt2rPVPDxzkXynA7symJQO9t5864NzWmTN
+         poqXr81KL/g2nWVoHRaV7RsPqkiZlnQAJOMfl3b6ghKCKdWFDSkdFPpRK0ob3IAvi05N
+         7qo1r+Dm0+w9zlyKQ+/KTd21o2fPCGKuKvii1NdlhoGvPBR6/++nT3yQotiVuyb1nMrQ
+         VASox20Vv7HYghKR6QbpZGT2DRD6GaZu939IzbhMA7TBQkqwewXhzmRSg8EACSXE9WI7
+         bkDqkbG7MzZndA2n5ShedFrwJ1fjg06zeCz8ZMD6Pd6L94vMR2ZF4oqFoRqJ4fFJIuvw
+         c7pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791643587; x=1792248387;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=wO1f3xuv0K+57q0XhGwwYjSiZ9yQpNcC/c9QnqLyCFI=;
-        b=bzmdfst659BDxARSCZXGC/N7ppbVJOjEWE5eZWo3d28BHEOKx7T06iY0qMrRJ26top
-         kfB4R8feIqeTyFMJc+utVIyDsg/JD7Z/0wbPVgDYD4E1cI1HJzbOWPfC+bUpPWq/cMmq
-         bXhBm3qcFM5llrd96E6+swISKP5MZWbNF1N7GM+v1mLmtWh0gTd29JlSkTTKsgD9PSM2
-         65LSFFJtVJNrpB3zUxw4Sd9Sypy8XWRtFDTVIP1BFEiIa7FL84QZTAshZenbkQ6cK+cQ
-         e2Lzosq/5jpiYd7ZumlHxe9fbL1p6yxQr8XbZTC+9byHekwJX2nSQMmml4/CGbEpEcBs
-         jJog==
-X-Forwarded-Encrypted: i=1; AKwUvBytB47llev/VMZHJGTBJ10HVmQvXDd0SLlX7rI0K75oGyibTCSvRbFs6Z2E/W96NF4pRsKixkvD6lQL8Q==@vger.kernel.org
-X-Gm-Message-State: AFq9FYLyamx6GabalN7pp+12V5v/05JYG7xt7yNyyVasRLqnFN6jVWLI
-	u7uWgPSfkdVazQ4rMG4+xge4fhVzEUEEg0/Mx3yKy3w9DS8Nw51FjaS2
-X-Gm-Gg: AYBFou2yKm5j68ZVkc02ZF1c3cJR35XYakBWd9mw0mN+BDwwrqmfpZmm5Q5Zk9Zq1gB
-	nMAAFyY7P4goamzf12DWRyxApHyQdqieyw6BFs9vUX6f3m8xb8RhdCnV87nhoKuA0B1BFKVbRtB
-	5hZDjRAhQpMEWrDbvpaNXaChveitk8rcf/x3DZFqzYpzz/KLVuyfwZGvPgEGPU70qdEYYgQOcBf
-	++pVCacE+Fa4zVBhlnfsikljNfynmmjfXdHYExLD2I4SbcG+C8Ko+xxX9KLj4i8sK/ggQTzVU2H
-	jhMB9XPgBCiYrJ3PdcnqM7ePtIVA/34e+B53sbTDxN6dvcmHfmSp+UGcU3E79Dv+9JYB3mdcQcY
-	JR7OXMIPgT4L2Gx3Zllob3dEYpdEN+btPMT12ZP452qeATXlflxK9nuX+QrK2lrF3xF/DFuP4h2
-	8OWUIBwdjImr7lag1ifznd04ECj1BDZFPBcfxtCp6Ra9RimbQTBHRqIV0jO6B59ytpqJ96REjjW
-	pk4CkGbn1jWqCR1/wi0ypuBeWS7Ec339yAL6/No
-X-Received: by 2002:a17:907:3d0b:b0:c31:7495:e5b with SMTP id a640c23a62f3a-c31a9feb26amr528677766b.10.1791643587152;
-        Sat, 10 Oct 2026 07:46:27 -0700 (PDT)
-Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c31a9767227sm247286566b.11.2026.10.10.07.46.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Oct 2026 07:46:26 -0700 (PDT)
-From: Magnus Lindholm <linmag7@gmail.com>
-To: richard.henderson@linaro.org,
-	mattst88@gmail.com,
-	linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org
-Cc: linmag7@gmail.com,
-	stable@vger.kernel.org
-Subject: [PATCH v4 2/2] alpha: do not skip TLB shootdown IPIs for kthread-borrowed mms
-Date: Sat, 10 Oct 2026 16:33:11 +0200
-Message-ID: <20261010144621.974850-3-linmag7@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261010144621.974850-1-linmag7@gmail.com>
-References: <20261010144621.974850-1-linmag7@gmail.com>
+        d=1e100.net; s=20260707; t=1791647771; x=1792252571;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=UrVuj/KtTic62Eb1wEr1a7bTAGelasNdPgxfdOzKGbI=;
+        b=vmwjaLa5j6KR/F5cAxU9O36Pkfwwi8TuNWg0NNrjocexo619eX7CX5pw61xc27KlQ7
+         MuistEbKIGiMw7+jICz6/8zQygPRWA85Xhg5pBZZClIamt0wuEJEu3PqeUcoTFw2QNEm
+         G4yScpPg6Hf+Q/Q7XJB4eS9mBUcTmW4tiYsxLww8glrcZm5e3GsWXs5SzIsDOB6T1UaM
+         r+6DqwJ8A9inI15yJk9Tn+bbIRAfnTvTvXuAprc1g69fppiE6X3ztgqnwIqwwvacmjKO
+         9/rdxZtV6xAXfGofxpeA3D03MTf+zXVuPpdjtw/rvRxXuNIFxgiEGd3znbxyGpTLTWkP
+         7D3w==
+X-Forwarded-Encrypted: i=1; AKwUvBzcxlpxCJskAC53cgLtbvPtONLjnDjQCiiMN2WD5W77nEf+eLWImN2BfccNG8yUGMBNp/YVIC0Ajoi2kw==@vger.kernel.org
+X-Gm-Message-State: AFq9FYLQKhYapo7zcuehPXe4AuUjzsFWhbQOnCsOuEpCRkVVwfTR1hXU
+	io9e/35AIDKq2jp3C7EeUDpFfxbOU17l2P6DOsnSOKs2kFYEaMewtzGO4nZpFt4WW12qBh+SDiy
+	7MIY9uxk1OIQxAR0CWzOWG3LdhqkrV+Z3GLgoXic=
+X-Gm-Gg: AYBFou3NXSQ2vIgGLmxJ6+zWggEZ57VLHDKo260MTmVITWJm1Sgnv+DEy55RCyPuqBD
+	hzioEIhhfappNOKU/IeO0Ls4oTsvKKVhR4V0mRMzvyTqOncAHD2MlJ/ww7tXKtVI8eDnwILqqkl
+	UTHU/95/VKReCqWzzyYuOblpUVOHLnXymwx2W0qBFb8kWkrkq67b6jp7D86l6vAj/25n+nEGrf6
+	rdX+bRhplt/OhAlh1Xc+ywrcyi9aRbgcoS/e2AHezxZCMoBUfuIbsQW9yRniL722XrNWHv0rg1U
+	8BLb/YEftaMXDfklftyfRpynVqmOC4vCV6L5Kqcv5meDDe14UDV7oNU4ugYJYV/cfYTsJLbUTXC
+	ZUZ05b1fwhtIx/B991dGeBwu0o+LJmVhf1hfuRM37Kg==
+X-Received: by 2002:a17:906:7305:b0:c31:866c:9696 with SMTP id
+ a640c23a62f3a-c31aa09edfdmr448825766b.31.1791647770611; Sat, 10 Oct 2026
+ 08:56:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CA+=Fv5RJpeusA2W4rRHOJMPRn8iF=OngRy05X22Myurs0wA-sQ@mail.gmail.com>
+ <20261010022039.1610210-1-mattst88@gmail.com>
+In-Reply-To: <20261010022039.1610210-1-mattst88@gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sat, 10 Oct 2026 17:55:59 +0200
+X-Gm-Features: AclHuK_4R9ladkJBFXKnSPR1Gb2rGeGfvuj5KKc4PC21RA5o7-m4C9wi3sPQdTc
+Message-ID: <CA+=Fv5Q0p+v5dp-P_pQJ6ks3pZXEO3VPB-E+=t8HYRRAypH=yQ@mail.gmail.com>
+Subject: Re: [PATCH] alpha: add 128-bit shift helpers
+To: Matt Turner <mattst88@gmail.com>
+Cc: Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>, oe-kbuild-all@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-flush_tlb_mm(), flush_tlb_page() and flush_icache_user_page() skip the
-shootdown IPI when mm_users <= 1, on the assumption that no other CPU can
-be running the mm. A task that borrows an mm through kthread_use_mm()
-takes mmgrab() rather than mmget(), so it never appears in mm_users, and
-kthread_use_mm() may be handed an mm that is already the caller's
-active_mm and loaded on that CPU. Such a CPU was not only left without
-an IPI, its mm->context[cpu] was cleared from under it.
+Hi Matt,
 
-mm->context[cpu] is already the record of which CPUs hold an ASN for the
-mm. Test it rather than clearing it: take the shortcut only when no
-other CPU has one, and otherwise fall through to the IPI, which
-invalidates those CPUs properly. A CPU that merely ran the mm in the
-past also holds a context and now costs an IPI, which errs in the safe
-direction.
 
-Change ipi_flush_tlb_mm(), ipi_flush_icache_page() and the migration
-callback ipi_flush_mm_and_page() to test current->mm, like
-ipi_flush_tlb_page(). A CPU that only retains the mm lazily then clears
-its own slot through flush_tlb_other(), rather than publishing a new ASN
-on every IPI or migration rendezvous. The migration callback still does
-its per-VA tbi() afterwards. Returning to the mm allocates a fresh ASN
-through ev5_switch_mm(), or through the direct-load path when
-kthread_use_mm() switches current's mm.
+On Sat, Oct 10, 2026 at 4:20=E2=80=AFAM Matt Turner <mattst88@gmail.com> wr=
+ote:
+>
+> Selecting ARCH_SUPPORTS_INT128 lets generic code shift __int128 values by
+> a variable count. gcc open-codes such a shift when optimizing for speed,
+> but with CONFIG_CC_OPTIMIZE_FOR_SIZE=3Dy it calls the libgcc routines
+> __ashlti3, __ashrti3 and __lshrti3 instead. The kernel does not link
+> against libgcc and Alpha does not provide them, so the link fails:
+>
+>   alpha-linux-ld: lib/ubsan.o: in function `get_signed_val':
+>   (.text+0x1c0): undefined reference to `__ashlti3'
+>   (.text+0x1f8): undefined reference to `__ashrti3'
+>   alpha-linux-ld: kernel/time/timekeeping.o: in function `delta_to_ns_saf=
+e':
+>   (.text+0x2ac): undefined reference to `__lshrti3'
+>
+> Provide the three helpers in C, as s390 does, and export them for
+> modules. They are built into the kernel proper rather than lib.a so the
+> exports are present even when nothing built in references them.
+>
+> The 64x64 to 128-bit multiply is always expanded inline with mulq/umulh,
+> so no __multi3 is needed.
+>
+> Fixes: fd04433a5bf3 ("alpha: select ARCH_SUPPORTS_INT128")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Closes: https://lore.kernel.org/oe-kbuild-all/202610090831.DSxrGQRc-lkp@i=
+ntel.com/
+> Assisted-by: Claude:claude-opus-5-5
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
+> ---
+> Magnus, this is an alternative to dropping the select. It applies on top
+> of for-next (496e328c6107). If you would rather drop "alpha: select
+> ARCH_SUPPORTS_INT128" for now, I will resend this without the Fixes tag,
+> followed by the select, as a two-patch series.
+>
 
-Once these historical slots are gone, the shortcut is available again
-if mm_users remains at most one and no other CPU has taken or kept a
-context. An explicit kthread_use_mm() borrower has current->mm set and
-still receives the invalidate it needs.
+I'll apply this on top of my for-next, no need for a separate series
 
-The caller-side tests in flush_tlb_mm() and flush_icache_user_page()
-remain current->active_mm. A kernel thread that flushes its lazily held
-mm can therefore publish its own context slot. Those branches also
-perform the shortcut check, which excludes the calling CPU's slot, so
-leave them unchanged. This is distinct from a remote lazy CPU keeping
-its slot populated through repeated callbacks.
 
-Together with the preceding patch, dropping these clearing loops leaves
-every runtime write to mm->context[] targeting the writing CPU's own slot,
-so the array becomes a lockless publication of which CPUs may be using the
-mm, with a single writer per slot. Mark the two stores that are now
-observed from other CPUs; flush_tlb_other() already uses WRITE_ONCE().
-The uniprocessor flush_icache_user_page() is left alone, as nothing reads
-another CPU's slot there, and init_new_context() runs before the mm is
-shared.
+> Tested with gcc 16: defconfig plus CONFIG_CC_OPTIMIZE_FOR_SIZE=3Dy and
+> CONFIG_UBSAN=3Dy builds and links (vmlinux and modules, W=3D1), and the
+> helpers match the compiler's inline shifts for every count from 0 to 127
+> in a userspace test. Not boot tested.
+>
+>  arch/alpha/include/asm/asm-prototypes.h |  6 +++
+>  arch/alpha/lib/Makefile                 |  2 +
+>  arch/alpha/lib/tishift.c                | 70 +++++++++++++++++++++++++
+>  3 files changed, 78 insertions(+)
+>  create mode 100644 arch/alpha/lib/tishift.c
+>
+> diff --git a/arch/alpha/include/asm/asm-prototypes.h b/arch/alpha/include=
+/asm/asm-prototypes.h
+> index c8ae46fc2e74..672fea15032f 100644
+> --- a/arch/alpha/include/asm/asm-prototypes.h
+> +++ b/arch/alpha/include/asm/asm-prototypes.h
+> @@ -17,3 +17,9 @@ extern void __remlu(void);
+>  extern void __divqu(void);
+>  extern void __remqu(void);
+>  extern unsigned long __udiv_qrnnd(unsigned long *, unsigned long, unsign=
+ed long , unsigned long);
+> +
+> +#ifdef CONFIG_ARCH_SUPPORTS_INT128
+> +extern __int128_t __ashlti3(__int128_t a, int shift);
+> +extern __int128_t __ashrti3(__int128_t a, int shift);
+> +extern __int128_t __lshrti3(__int128_t a, int shift);
+> +#endif
+> diff --git a/arch/alpha/lib/Makefile b/arch/alpha/lib/Makefile
+> index 84046e730e6d..f77d4a46f2e6 100644
+> --- a/arch/alpha/lib/Makefile
+> +++ b/arch/alpha/lib/Makefile
+> @@ -35,6 +35,8 @@ lib-y =3D       __divqu.o __remqu.o __divlu.o __remlu.o=
+ \
+>         callback_srm.o srm_puts.o srm_printk.o \
+>         fls.o
+>
+> +obj-$(CONFIG_ARCH_SUPPORTS_INT128) +=3D tishift.o
+> +
+>  # The division routines are built from single source, with different def=
+ines.
+>  AFLAGS___divqu.o =3D -DDIV
+>  AFLAGS___remqu.o =3D       -DREM
+> diff --git a/arch/alpha/lib/tishift.c b/arch/alpha/lib/tishift.c
+> new file mode 100644
+> index 000000000000..488e1e483d48
+> --- /dev/null
+> +++ b/arch/alpha/lib/tishift.c
+> @@ -0,0 +1,70 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * 128-bit shift helpers.
+> + *
+> + * gcc open-codes a variable 128-bit shift when optimizing for speed, bu=
+t
+> + * calls these libgcc routines when optimizing for size.
+> + */
+> +
+> +#include <linux/export.h>
+> +#include <linux/types.h>
+> +#include <asm/asm-prototypes.h>
+> +
+> +union ti {
+> +       __int128_t val;
+> +       struct {
+> +               u64 low;
+> +               u64 high;
+> +       };
+> +};
+> +
+> +__int128_t __ashlti3(__int128_t a, int shift)
+> +{
+> +       union ti ti =3D { .val =3D a };
+> +
+> +       if (!shift)
+> +               return ti.val;
+> +       if (shift < 64) {
+> +               ti.high =3D (ti.high << shift) | (ti.low >> (64 - shift))=
+;
+> +               ti.low <<=3D shift;
+> +       } else {
+> +               ti.high =3D ti.low << (shift - 64);
+> +               ti.low =3D 0;
+> +       }
+> +       return ti.val;
+> +}
+> +EXPORT_SYMBOL(__ashlti3);
+> +
+> +__int128_t __ashrti3(__int128_t a, int shift)
+> +{
+> +       union ti ti =3D { .val =3D a };
+> +
+> +       if (!shift)
+> +               return ti.val;
+> +       if (shift < 64) {
+> +               ti.low =3D (ti.low >> shift) | (ti.high << (64 - shift));
+> +               ti.high =3D (s64)ti.high >> shift;
+> +       } else {
+> +               ti.low =3D (s64)ti.high >> (shift - 64);
+> +               ti.high =3D (s64)ti.high >> 63;
+> +       }
+> +       return ti.val;
+> +}
+> +EXPORT_SYMBOL(__ashrti3);
+> +
+> +__int128_t __lshrti3(__int128_t a, int shift)
+> +{
+> +       union ti ti =3D { .val =3D a };
+> +
+> +       if (!shift)
+> +               return ti.val;
+> +       if (shift < 64) {
+> +               ti.low =3D (ti.low >> shift) | (ti.high << (64 - shift));
+> +               ti.high >>=3D shift;
+> +       } else {
+> +               ti.low =3D ti.high >> (shift - 64);
+> +               ti.high =3D 0;
+> +       }
+> +       return ti.val;
+> +}
+> +EXPORT_SYMBOL(__lshrti3);
+> --
+> 2.55.0
+>
 
-Order the slot reads after the page-table changes with smp_mb(). On the
-publishing CPU, the store in ev5_switch_mm() precedes the mb() in Alpha's
-arch_spin_unlock(), when finish_lock_switch() drops the rq lock. This
-relies on Alpha's unlock implementation, not a generic scheduler promise
-of a full barrier on unlock; document that reliance at the store.
-Also issue smp_mb() after
-publishing in __load_new_mm_context(), before loading and using the mm.
-This covers every caller, including check_mmu_context(), which can
-publish a replacement after finish_lock_switch() has already run.
+I build-tested this on top of the current Alpha for-next branch with
+CONFIG_CC_OPTIMIZE_FOR_SIZE=3Dy and CONFIG_UBSAN=3Dy. Both vmlinux and the
+configured modules built successfully, with no unresolved references
+to the new 128-bit shift helpers.
 
-This requires the preceding removal of remote slot clearing from
-migrate_flush_tlb_page(). It also requires the stale-TLB series to set
-need_new_asn on both the reused and newly allocated ASN paths. Otherwise
-an IPI between finish_lock_switch() and check_mmu_context() can zero a
-new slot while asn_lock is set, and the task can return to user space
-with a live ASN that the shortcut cannot see.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: stable@vger.kernel.org
-Reviewed-by: Matt Turner <mattst88@gmail.com>
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
----
- arch/alpha/include/asm/mmu_context.h |  7 +++-
- arch/alpha/kernel/smp.c              | 52 ++++++++++++++--------------
- arch/alpha/mm/fault.c                |  4 ++-
- arch/alpha/mm/tlbflush.c             |  2 +-
- 4 files changed, 36 insertions(+), 29 deletions(-)
-
-diff --git a/arch/alpha/include/asm/mmu_context.h b/arch/alpha/include/asm/mmu_context.h
-index e5a5737506db..46b9b82f3895 100644
---- a/arch/alpha/include/asm/mmu_context.h
-+++ b/arch/alpha/include/asm/mmu_context.h
-@@ -158,7 +158,12 @@ ev5_switch_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm,
- 	mmc = next_mm->context[cpu];
- 	if ((mmc ^ asn) & ~HARDWARE_ASN_MASK) {
- 		mmc = __get_new_mm_context(next_mm, cpu);
--		next_mm->context[cpu] = mmc;
-+		/*
-+		 * Ordered before any use of the mm by the mb() in
-+		 * arch_spin_unlock(), when finish_lock_switch() drops
-+		 * the rq lock.
-+		 */
-+		WRITE_ONCE(next_mm->context[cpu], mmc);
- 	}
- #ifdef CONFIG_SMP
- 	/* A deferred shootdown can also invalidate a newly allocated ASN. */
-diff --git a/arch/alpha/kernel/smp.c b/arch/alpha/kernel/smp.c
-index e21bc3920bec..11768aa292a4 100644
---- a/arch/alpha/kernel/smp.c
-+++ b/arch/alpha/kernel/smp.c
-@@ -625,12 +625,30 @@ static void
- ipi_flush_tlb_mm(void *x)
- {
- 	struct mm_struct *mm = x;
--	if (mm == current->active_mm && !asn_locked())
-+	if (mm == current->mm && !asn_locked())
- 		flush_tlb_current(mm);
- 	else
- 		flush_tlb_other(mm);
- }
- 
-+/* True if a CPU other than this one holds an ASN for MM.  */
-+static bool
-+mm_context_elsewhere(struct mm_struct *mm)
-+{
-+	int cpu, this_cpu = smp_processor_id();
-+
-+	/* Pairs with the barrier the publishing CPU issues before using MM.  */
-+	smp_mb();
-+
-+	for_each_online_cpu(cpu) {
-+		if (cpu == this_cpu)
-+			continue;
-+		if (READ_ONCE(mm->context[cpu]))
-+			return true;
-+	}
-+	return false;
-+}
-+
- void
- flush_tlb_mm(struct mm_struct *mm)
- {
-@@ -638,14 +656,8 @@ flush_tlb_mm(struct mm_struct *mm)
- 
- 	if (mm == current->active_mm) {
- 		flush_tlb_current(mm);
--		if (atomic_read(&mm->mm_users) <= 1) {
--			int cpu, this_cpu = smp_processor_id();
--			for (cpu = 0; cpu < NR_CPUS; cpu++) {
--				if (!cpu_online(cpu) || cpu == this_cpu)
--					continue;
--				if (mm->context[cpu])
--					mm->context[cpu] = 0;
--			}
-+		if (atomic_read(&mm->mm_users) <= 1 &&
-+		    !mm_context_elsewhere(mm)) {
- 			preempt_enable();
- 			return;
- 		}
-@@ -690,14 +702,8 @@ flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
- 	/* As in ipi_flush_tlb_page(): a targeted tbi() needs MM current.  */
- 	if (mm == current->mm) {
- 		flush_tlb_current_page(mm, vma, addr);
--		if (atomic_read(&mm->mm_users) <= 1) {
--			int cpu, this_cpu = smp_processor_id();
--			for (cpu = 0; cpu < NR_CPUS; cpu++) {
--				if (!cpu_online(cpu) || cpu == this_cpu)
--					continue;
--				if (mm->context[cpu])
--					mm->context[cpu] = 0;
--			}
-+		if (atomic_read(&mm->mm_users) <= 1 &&
-+		    !mm_context_elsewhere(mm)) {
- 			preempt_enable();
- 			return;
- 		}
-@@ -728,7 +734,7 @@ static void
- ipi_flush_icache_page(void *x)
- {
- 	struct mm_struct *mm = (struct mm_struct *) x;
--	if (mm == current->active_mm && !asn_locked())
-+	if (mm == current->mm && !asn_locked())
- 		__load_new_mm_context(mm);
- 	else
- 		flush_tlb_other(mm);
-@@ -747,14 +753,8 @@ flush_icache_user_page(struct vm_area_struct *vma, struct page *page,
- 
- 	if (mm == current->active_mm) {
- 		__load_new_mm_context(mm);
--		if (atomic_read(&mm->mm_users) <= 1) {
--			int cpu, this_cpu = smp_processor_id();
--			for (cpu = 0; cpu < NR_CPUS; cpu++) {
--				if (!cpu_online(cpu) || cpu == this_cpu)
--					continue;
--				if (mm->context[cpu])
--					mm->context[cpu] = 0;
--			}
-+		if (atomic_read(&mm->mm_users) <= 1 &&
-+		    !mm_context_elsewhere(mm)) {
- 			preempt_enable();
- 			return;
- 		}
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index dfe427d93072..5b62bdeabe2a 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -69,7 +69,9 @@ __load_new_mm_context(struct mm_struct *next_mm)
- 	struct pcb_struct *pcb;
- 
- 	mmc = __get_new_mm_context(next_mm, smp_processor_id());
--	next_mm->context[smp_processor_id()] = mmc;
-+	WRITE_ONCE(next_mm->context[smp_processor_id()], mmc);
-+	/* Publish the context before this CPU can access the mm. */
-+	smp_mb();
- 
- 	pcb = &current_thread_info()->pcb;
- 	pcb->asn = mmc & HARDWARE_ASN_MASK;
-diff --git a/arch/alpha/mm/tlbflush.c b/arch/alpha/mm/tlbflush.c
-index 239c72b8a741..a2aef90e6234 100644
---- a/arch/alpha/mm/tlbflush.c
-+++ b/arch/alpha/mm/tlbflush.c
-@@ -66,7 +66,7 @@ static void ipi_flush_mm_and_page(void *x)
- 	struct tlb_mm_and_addr *d = x;
- 
- 	/* Part 1: mm context side (Alpha uses ASN/context as a key mechanism). */
--	if (d->mm == current->active_mm && !asn_locked())
-+	if (d->mm == current->mm && !asn_locked())
- 		__load_new_mm_context(d->mm);
- 	else
- 		flush_tlb_other(d->mm);
--- 
-2.43.0
-
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
