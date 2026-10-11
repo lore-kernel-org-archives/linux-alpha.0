@@ -1,68 +1,66 @@
-Received: from mail-yx1-f41.google.com (mail-yx1-f41.google.com [74.125.224.41])
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68A05451986
-	for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 20:16:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 084C539021A
+	for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 20:37:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791749820; cv=none; b=QC+9q1CiL4e/P2tl73gaXRnQB1S0//o+vzTFxbw+L/cxSvk9nEU02MBFZvAuk2+TfbGkq3vDl6giDMiQ0aBvuQ84amtRR7SbNw+iVq1wz6B3qUxxE6ER+CWdJz7Y1677B77a+Nm07tObtaiVTcPY5QcFpXoucO0iN5f9FK6Y6JY=
+	t=1791751050; cv=none; b=at7VO+2ciC3gsQ8F/o+xNTojYDgz2+IcyBt5g5aensKGDx1eyooHGaTqrz3H0YenE3ZSlIOQ2CK/ZgHv8FQlymeEGmFoKWrtsJKhF8tELJaWhslxGRmag2UvVZxI2Fdf3k5YUOc1GOQPInw7Gf9lliimLKKDQz8jB5xkxGGg+VI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791749820; c=relaxed/simple;
-	bh=HKwdMYyKmRuchbP4c1XxhY0dQ26+OiRri0424Ox1MNM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=EFHMyeauRfwWaR57W4tqCh8nVx1muyUwpJT2kiRP5Fsvf7FLq0puGixD+Wgg75KErquNk2fjM0XrdHYgQ7bjTHDwVLtbRrXY2zncZdHgRRPo6Xp2WtRPaugk2iCOFy2EokSeth1XSeGpuQXKvb1AS+PNw+Fuj417/usG2lkp3Vc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iXvF7HXK; arc=none smtp.client-ip=74.125.224.41
+	s=arc-20240116; t=1791751050; c=relaxed/simple;
+	bh=GqxR9gNOB18oNI7VGb/lK4F6CxWjz8h4zrcF4QPTtn4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Ohv8K8Fz477oABEIS96YA98BjpXW9QXcT7KZGC9b9cykRpZw1to/2Am3N1HWYZJ141zF8OQA+jMt/V4ifiqTdgY4UVJD+1oWWxKFB+w4sYQujgVS4Ry2k4fuV/YIBYZhJn6BdZZIYzQtdJo2kmaYTHfPrNGs6gzql8fhC25eLVg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AOV288Ug; arc=none smtp.client-ip=209.85.128.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iXvF7HXK"
-Received: by mail-yx1-f41.google.com with SMTP id 956f58d0204a3-677d35fd1d2so1029999d50.1
-        for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 13:16:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AOV288Ug"
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-8ac8a2ac52bso10985377b3.0
+        for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 13:37:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791749817; x=1792354617; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=8UfLUE/KJOT5M/bL0VV01RXMRIPvbS9JV6u+siHBB/k=;
-        b=iXvF7HXKteUsiEgHRSA+ARKG6LRzLDjMLwZivqykKZwcZx2GXY7wxgnfn+yQBt7sk1
-         GvdFD+M9bWt5Ge09vMD5KwzNHnc/sIgOM0VwuK7dRWzgMrt5zfVcEd0+bUgdU2JAqgod
-         o5iVXcafe9UDNrRNGJu4cGIaqpnw7jeQcxlxI1MwBuz6bqJvnQRU3kdHMJncqZxvfFHe
-         AWUXgy9wLv5tRENI8nyBr7PjWciSwqaSzfUO1e6eYtptKppOCIs5xlZH9woKgUFgRyQ0
-         R3BtviFk5atAPkIpqrDeMsGge+tZM1MVBn3pUmMX9fgSA8FJoWfo8EQ4x3QU2UZN/J3C
-         sHKQ==
+        d=gmail.com; s=20251104; t=1791751047; x=1792355847; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=2j8G9aHSjP36yNVlwzumqBCueTgcinKhTiJknp+vEIc=;
+        b=AOV288UgHaT/nLCcdjdAXHHMItRTCkY/spKPA+e03RxSdt8hjXxH0rFu8D7j8NwruQ
+         fAnPAK4yB23R3nyuHMOIRV6qjhBB0wuiYchPy2cQFtJGHQhXj7HddRCJKRDL71N3/7G/
+         DoBOloLCGRj8fq1M+8fwBdlvxa476pdWx8KmyQPk1OcDZKP7oDm0S6jk0J+iggX8Y8wn
+         81IbVIZE7mLXTAspHbKe3DLrHM6+ZwbLASx+hwNm72kBN9T4fFWy+WlAiQ92vJFidcU0
+         tf4tuleZxAgMTnFhVJLOkD7T72HiycOUxmq6m0GdI0JZ7JtzEDNUQPlyi4+HY/CFAVgj
+         aBPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791749817; x=1792354617;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=8UfLUE/KJOT5M/bL0VV01RXMRIPvbS9JV6u+siHBB/k=;
-        b=uB/wX7G9Rm36cLEFtRT0L5LuS5Tx389HzViaJp8DUMvtHEz7FveHR1Ci2QO3OHZPZM
-         1j5u9kl+I/5c1siRrduSkkyvqjlrOPoRkoFZF4e2bb4FZoI/jQBdLr/4/d0ZOoMI/mfj
-         m+HzDysWbvyfP2pZUQ2FhvoJAC1jkb48x2phEK5diGQX2dJsrYexs18EZD4RX+TzD/Vr
-         ICTYNFur21JdQsimM/0NvMk8dLoxLFLM3LLq2KWJkkjF5N4bUuoZx2ZelXHVG44qQfG6
-         PWP30px6SvbMv3gFKD4oT3sReeuNdeAxutMkMT6BbAajXG+6xYjiQcVmuxqJ0mCkRMJr
-         7yuw==
-X-Gm-Message-State: AFq9FYJ/Jtoo2CJlbhC2Qn5SEMOnMy6di6Eh+AxQkVvv7b+7ly2Za+21
-	mBhw0GbCEhMh71DEj9kvHyMtH8ibSIZvSjhqki0WEkLiyFK3SWUPYkLD
-X-Gm-Gg: AYBFou0vDdhAcHGDoBIvpyV5Ap9mTlMecgvil3Lmdsa2BaviEalsPVoFGKsyAvMhRVq
-	cvPJKRRseLL0DWx8Q3C/OPYOobDYPH1CMyUuTTeKXP9jDw3OTvmzyKkQn8I2gvEaLRrAGz6BUED
-	bUUuW9PhbDblamf2WzLUr+wGW8OAHw57Vde9uS7mBwzHGuzBFbJZ768OWjcKzxn4p8NFi329MTI
-	tNsq+p9MG3DUyfmm4BDexSHCThrRgZ54EwqnSr85JHNUzw4A0cP5N8RVfQjoHdoIF6xHhGBvBDg
-	sUmZOT54NwBO3jEkQ0E+gdh+YzmoVw3NgqKVvXey/ET6LfvLSZy6jJZnWIVWFf2sDkxak0pRrk+
-	PmO29uZILOtOmQbgKyyPAwFpfyx+wOxAAdhz/dEhyMRaeKDxNmtF3IzLiOEfqwSRglXOtXRZGYa
-	499Ui7I4eKXjBteP9QYQBmlao4+T5ADTWzK3AuJnOEHhjZAiNehvXU1noRNasL4d4HbCA1GvrNb
-	kFYlxx/LONRHjqQvQMahCEGdeT7UGZYX8R6MmRImHZsAHD/YgDtLj2A
-X-Received: by 2002:a05:690e:4199:b0:676:bf92:2520 with SMTP id 956f58d0204a3-6793627473bmr1908818d50.89.1791749817201;
-        Sun, 11 Oct 2026 13:16:57 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1791751047; x=1792355847;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=2j8G9aHSjP36yNVlwzumqBCueTgcinKhTiJknp+vEIc=;
+        b=i2nFgkbz7C8aOJ4J9kE2J7EPAluI4W+uFtyKHOFzOPdw16Hro4INnDBXpBbbd7dM8Z
+         Vk0s6VgsT3a8f9ZT8uB0lgI0XaFkaObCfOQciQBEkr8qveiXIE0G29Dped0kH7cIn3hu
+         dv9vNDkrAnXj290RtnXcDTjS2cMhis1Lp6w3ZKQzSkyw4DsE9EmrvlJi5EGqv8Plf8sq
+         klk1iAxOTxCz8JbYOi3wd9+GcAmOx22juWruHj6/5EaVcMTqp9xlWfCBj0Nwbn5a7y6n
+         UwOFYXg38qFkfyWDr8OXSUtyURo3y3iagAoNfzgkCBopI0x6oR73A3CnamaUsC2+1++o
+         I0fg==
+X-Forwarded-Encrypted: i=1; AKwUvBz/CLG1p0uTALwpddK6EAimO0S1+/rUSzV1hnvSW7chEVZWXh7l442YddxG9gyWxCfTg5jq2NSfyIFfow==@vger.kernel.org
+X-Gm-Message-State: AFq9FYKmNn/hplsUZS4FPY5/nuzX7HDulLjDH9FrIqypczle5HyYsj9x
+	F07YQxz4L6+kaXVnsO5El5vANvlLEqcR/i1GB5A7nxtsITuK4i/YwEZV
+X-Gm-Gg: AYBFou3YNxzXzYH35wJHkfqCheZEx3Sr0zUtVplrLOrZaGbj8GILOBdFUfucu8EUcJm
+	PVHSfLOt3b9TMbaNgx5r1GbLDlh5fvlAtNh8yyspW0sr9z1Svbg11BVFOqSrab0U10LX/EjP5k5
+	3/0fIWV6oCY1Nl92L2AjjpWZsEidNIvp5T0CYRg3Ht74nxFhuQOceaJPuHquPW544Zhji94OYAQ
+	rp6ckCRbK4rIpBJg9M4aaP9yP6kBEgnODmIImkVA+WLv127zuUtz/LSOhDNNQnuCZRiIKk91jeY
+	HJkSYb8PlKuxCQn3tt95coh6kiMtT47G/TqM6Hne8Mo4Tx+hUzh15YlbEjp2MSiM1KDnfc3D89J
+	rEoqF0qp4eDj8F5Gz9B7jMUG3jDvEjYplI6tc0Ji3hECQZqhiIyyeUCMDeZQtjjVKOZBmSCiPig
+	cBzShVLd13W0l4UAxCOC39aA1sMoFXcDUDWpXBia+YV4DzEvHfDpMf7wPp4FR+irgs9LYxIN7/V
+	vE7hcU3pDSW1FnTaewpOL54oM6zM4gG7ZM68bfF4/8s45a7U/UXc8oY
+X-Received: by 2002:a05:690c:281:b0:80e:dc2:873b with SMTP id 00721157ae682-8b07ed55d68mr25749927b3.16.1791751046028;
+        Sun, 11 Oct 2026 13:37:26 -0700 (PDT)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-679356ae586sm2953786d50.15.2026.10.11.13.16.55
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b07ed0b54asm27861707b3.0.2026.10.11.13.37.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2026 13:16:55 -0700 (PDT)
+        Sun, 11 Oct 2026 13:37:24 -0700 (PDT)
 From: Matt Turner <mattst88@gmail.com>
-Date: Sun, 11 Oct 2026 16:16:44 -0400
-Subject: [PATCH 4/4] alpha: add HAVE_PERF_REGS and
- HAVE_PERF_USER_STACK_DUMP support
+Date: Sun, 11 Oct 2026 16:37:24 -0400
+Subject: [PATCH] perf regs: Add alpha support
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
@@ -71,94 +69,73 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261011-alpha-perf-regs-v3-v1-4-eaa625a39712@gmail.com>
-References: <20261011-alpha-perf-regs-v3-v1-0-eaa625a39712@gmail.com>
-In-Reply-To: <20261011-alpha-perf-regs-v3-v1-0-eaa625a39712@gmail.com>
-To: Richard Henderson <richard.henderson@linaro.org>, 
- Magnus Lindholm <linmag7@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-doc@vger.kernel.org, linux-perf-users@vger.kernel.org, 
- Matt Turner <mattst88@gmail.com>
+Message-Id: <20261011-alpha-perf-tools-regs-v1-1-2a5940e22548@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MMQqAMAxA0atIZgNtERWvIg6lphoQWxIRQXp3i
+ +Mb/n9BSZgUpuYFoZuV01lh2wbC7s+NkNdqcMb11hiL/si7x0wS8UrpUBTaFIMzvR+7lcIQobZ
+ ZKPLzf+ellA8e82DjZwAAAA==
+X-Change-ID: 20261001-alpha-perf-tools-regs-c206a84dec7f
+To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
+ Arnaldo Carvalho de Melo <acme@kernel.org>, 
+ Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
+ Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
+ Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>, 
+ Adrian Hunter <adrian.hunter@intel.com>, 
+ James Clark <james.clark@linaro.org>
+Cc: linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org, 
+ Magnus Lindholm <linmag7@gmail.com>, 
+ Richard Henderson <richard.henderson@linaro.org>, 
+ linux-alpha@vger.kernel.org, Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6348; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=HKwdMYyKmRuchbP4c1XxhY0dQ26+OiRri0424Ox1MNM=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJOv1vFYbApjvmsY3vtyT/c3ZelpJ44pzzY7LztzcFDE
- 7LkOcSPdHxkYRDjYpgppsgSt16RZVbbjqU+p6V/wcxhZQIZIi3SwAAELAx8uYl5pUY6Rnqm2oZ6
- hkCGjlE8RE6PQSOzuLg0tUg3raDIIS+/JLEkMz+vWC+/IDWvIL1ALy0zrSQjI7+oOBVohF5eaom
- pq6ObkaGBiaWjhZmThaOpibOzk6GTm6Ojs6uTkaW5iYGzpaOJq6U5AxenAMw1qccY/rtWbWib+v
- fi5rUPNzYev3hx3fw366xvb1z51l5l4fwp3bPaGBkWz3T1vS9Ya8D3/8V/bZvI8q6EtoaDjPH5S
- 5U/8LGemcEBAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=10666; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=GqxR9gNOB18oNI7VGb/lK4F6CxWjz8h4zrcF4QPTtn4=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJOf25+c/CMhVvL6dOMpRqtao6xrKtfa8mVu07fm3jF0
+ UR7+p65HR9ZGMS4GGaKKbLErVdkmdW2Y6nPaelfMHNYmUCGSIs0MAABCwNfbmJeqZGOkZ6ptqGe
+ IZChYxQPkdNj0MgsLi5NLdJNKyhyyMsvSSzJzM8r1ssvSM0rSC/QS8tMK8nIyC8qTgUaoZeXWmL
+ q6uhmZGhgYuloYeZk4Whq4uzsZOjk5ujo7OpkZGluYuBs6WjiamnOwMUpAHNNuirDf3ejGNmEK8
+ lrdFRO3ROTsqya8vKgx5L7n7bN/b61LGnljy2MDP9XP9p/uveB2SNWrf6vYn/O8+rybWC/xp71e
+ fG38lJ/fg4A
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-Let perf sample registers and dump the user stack, which is what the
-perf tool needs for --call-graph dwarf.
+Add the alpha perf register tables so that -I/--user-regs and
+--call-graph dwarf work.
 
-The register indices follow the hardware numbering, so r0-r30 map
-directly to DWARF register numbers, with pc after them. r9-r15
-are callee-saved and live in switch_stack rather than pt_regs, so they
-cannot be sampled. Without r15 an unwinder cannot recover the CFA of a
-first frame that uses $15 as its frame pointer.
-
-sp is not in pt_regs either: for user frames it comes from
-user_stack_pointer(), and for kernel frames (PERF_SAMPLE_REGS_INTR) it
-is the end of the trap frame, as in stacktrace.c.
+r9-r15 cannot be sampled and are left out of the mask. Perf register
+numbers 0-30 are the DWARF numbers. The pc is DWARF 64, the column GCC
+uses as the alternate return address column on alpha, so libdw's
+frame_nregs is 65.
 
 Assisted-by: Claude:claude-opus-5-5
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- .../features/perf/perf-regs/arch-support.txt       |  2 +-
- .../features/perf/perf-stackdump/arch-support.txt  |  2 +-
- arch/alpha/Kconfig                                 |  2 +
- arch/alpha/include/uapi/asm/perf_regs.h            | 45 +++++++++++++++++
- arch/alpha/kernel/Makefile                         |  1 +
- arch/alpha/kernel/perf_regs.c                      | 56 ++++++++++++++++++++++
- 6 files changed, 106 insertions(+), 2 deletions(-)
+This depends on the kernel side, "alpha: add HAVE_PERF_REGS and
+HAVE_PERF_USER_STACK_DUMP support", posted as part of:
 
-diff --git a/Documentation/features/perf/perf-regs/arch-support.txt b/Documentation/features/perf/perf-regs/arch-support.txt
-index 4c9a5a012075..7d736d678fd4 100644
---- a/Documentation/features/perf/perf-regs/arch-support.txt
-+++ b/Documentation/features/perf/perf-regs/arch-support.txt
-@@ -6,7 +6,7 @@
-     -----------------------
-     |         arch |status|
-     -----------------------
--    |       alpha: | TODO |
-+    |       alpha: |  ok  |
-     |         arc: | TODO |
-     |         arm: |  ok  |
-     |       arm64: |  ok  |
-diff --git a/Documentation/features/perf/perf-stackdump/arch-support.txt b/Documentation/features/perf/perf-stackdump/arch-support.txt
-index dd362b5cb638..17b84ea7769d 100644
---- a/Documentation/features/perf/perf-stackdump/arch-support.txt
-+++ b/Documentation/features/perf/perf-stackdump/arch-support.txt
-@@ -6,7 +6,7 @@
-     -----------------------
-     |         arch |status|
-     -----------------------
--    |       alpha: | TODO |
-+    |       alpha: |  ok  |
-     |         arc: | TODO |
-     |         arm: |  ok  |
-     |       arm64: |  ok  |
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index b2c359b947f6..8fafbfabd1e5 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -41,6 +41,8 @@ config ALPHA
- 	select HAVE_PAGE_SIZE_8KB
- 	select HAVE_PCSPKR_PLATFORM
- 	select HAVE_PERF_EVENTS
-+	select HAVE_PERF_REGS
-+	select HAVE_PERF_USER_STACK_DUMP
- 	select NEED_DMA_MAP_STATE
- 	select NEED_SG_DMA_LENGTH
- 	select GENERIC_IRQ_PROBE
-diff --git a/arch/alpha/include/uapi/asm/perf_regs.h b/arch/alpha/include/uapi/asm/perf_regs.h
+https://lore.kernel.org/r/20261011-alpha-perf-regs-v3-v1-0-3354d135d972@gmail.com
+
+--call-graph dwarf also needs libdw alpha unwinding support (abi_cfi
+and frame_nregs), which I am sending to elfutils-devel separately.
+Without it, libdw rejects the thread and perf reports the error;
+-I/--user-regs work regardless.
+---
+ tools/arch/alpha/include/uapi/asm/perf_regs.h      | 45 ++++++++++++++++++++++
+ tools/perf/arch/alpha/include/perf_regs.h          | 16 ++++++++
+ tools/perf/check-headers.sh                        |  1 +
+ tools/perf/util/dwarf-regs-arch/Build              |  1 +
+ tools/perf/util/dwarf-regs-arch/dwarf-regs-alpha.c | 14 +++++++
+ tools/perf/util/dwarf-regs.c                       |  5 +++
+ tools/perf/util/include/dwarf-regs.h               |  2 +
+ tools/perf/util/perf-regs-arch/Build               |  1 +
+ tools/perf/util/perf-regs-arch/perf_regs_alpha.c   | 34 ++++++++++++++++
+ tools/perf/util/perf_regs.c                        | 13 +++++++
+ tools/perf/util/perf_regs.h                        |  5 +++
+ 11 files changed, 137 insertions(+)
+
+diff --git a/tools/arch/alpha/include/uapi/asm/perf_regs.h b/tools/arch/alpha/include/uapi/asm/perf_regs.h
 new file mode 100644
 index 000000000000..da96a31b12fb
 --- /dev/null
-+++ b/arch/alpha/include/uapi/asm/perf_regs.h
++++ b/tools/arch/alpha/include/uapi/asm/perf_regs.h
 @@ -0,0 +1,45 @@
 +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 +#ifndef _UAPI_ASM_ALPHA_PERF_REGS_H
@@ -205,81 +182,229 @@ index 000000000000..da96a31b12fb
 +};
 +
 +#endif /* _UAPI_ASM_ALPHA_PERF_REGS_H */
-diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
-index 4ea5c189e60e..0c04b89676ed 100644
---- a/arch/alpha/kernel/Makefile
-+++ b/arch/alpha/kernel/Makefile
-@@ -18,6 +18,7 @@ obj-$(CONFIG_PCI)	+= pci.o pci_iommu.o pci-sysfs.o
- obj-$(CONFIG_SRM_ENV)	+= srm_env.o
- obj-$(CONFIG_MODULES)	+= module.o
- obj-$(CONFIG_PERF_EVENTS) += perf_event.o
-+obj-$(CONFIG_HAVE_PERF_REGS) += perf_regs.o
- obj-$(CONFIG_RTC_DRV_ALPHA) += rtc.o
- obj-$(CONFIG_AUDIT)	+= audit.o
- 
-diff --git a/arch/alpha/kernel/perf_regs.c b/arch/alpha/kernel/perf_regs.c
+diff --git a/tools/perf/arch/alpha/include/perf_regs.h b/tools/perf/arch/alpha/include/perf_regs.h
 new file mode 100644
-index 000000000000..10afe4e205e9
+index 000000000000..409f3a08af9b
 --- /dev/null
-+++ b/arch/alpha/kernel/perf_regs.c
-@@ -0,0 +1,56 @@
++++ b/tools/perf/arch/alpha/include/perf_regs.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef ARCH_PERF_REGS_H
++#define ARCH_PERF_REGS_H
++
++#include <stdlib.h>
++#include <linux/types.h>
++#include <linux/bits.h>
++#include "../../../../arch/alpha/include/uapi/asm/perf_regs.h"
++
++#define PERF_REGS_MAX PERF_REG_ALPHA_MAX
++
++/* The kernel rejects r9-r15. */
++#define PERF_REGS_MASK (GENMASK_ULL(PERF_REG_ALPHA_MAX - 1, 0) & \
++			~GENMASK_ULL(PERF_REG_ALPHA_R15, PERF_REG_ALPHA_R9))
++
++#endif /* ARCH_PERF_REGS_H */
+diff --git a/tools/perf/check-headers.sh b/tools/perf/check-headers.sh
+index 531c0e0e84df..9baf83f79e23 100755
+--- a/tools/perf/check-headers.sh
++++ b/tools/perf/check-headers.sh
+@@ -36,6 +36,7 @@ declare -a FILES=(
+   "arch/x86/include/asm/msr-index.h"
+   "arch/x86/lib/x86-opcode-map.txt"
+   "arch/x86/tools/gen-insn-attr-x86.awk"
++  "arch/alpha/include/uapi/asm/perf_regs.h"
+   "arch/arm/include/uapi/asm/perf_regs.h"
+   "arch/arm64/include/uapi/asm/perf_regs.h"
+   "arch/loongarch/include/uapi/asm/perf_regs.h"
+diff --git a/tools/perf/util/dwarf-regs-arch/Build b/tools/perf/util/dwarf-regs-arch/Build
+index ceb68ae86fd8..026b7b5ca895 100644
+--- a/tools/perf/util/dwarf-regs-arch/Build
++++ b/tools/perf/util/dwarf-regs-arch/Build
+@@ -1,3 +1,4 @@
++perf-util-$(CONFIG_LIBDW) += dwarf-regs-alpha.o
+ perf-util-$(CONFIG_LIBDW) += dwarf-regs-arm64.o
+ perf-util-$(CONFIG_LIBDW) += dwarf-regs-arm.o
+ perf-util-$(CONFIG_LIBDW) += dwarf-regs-csky.o
+diff --git a/tools/perf/util/dwarf-regs-arch/dwarf-regs-alpha.c b/tools/perf/util/dwarf-regs-arch/dwarf-regs-alpha.c
+new file mode 100644
+index 000000000000..50fd17096597
+--- /dev/null
++++ b/tools/perf/util/dwarf-regs-arch/dwarf-regs-alpha.c
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <errno.h>
++#include <dwarf-regs.h>
++#include "../../../arch/alpha/include/uapi/asm/perf_regs.h"
++
++int __get_dwarf_regnum_for_perf_regnum_alpha(int perf_regnum)
++{
++	if (perf_regnum >= PERF_REG_ALPHA_R0 && perf_regnum <= PERF_REG_ALPHA_SP)
++		return perf_regnum;
++	if (perf_regnum == PERF_REG_ALPHA_PC)
++		return 64;
++
++	return -ENOENT;
++}
+diff --git a/tools/perf/util/dwarf-regs.c b/tools/perf/util/dwarf-regs.c
+index 09aca6304002..3fd71787c658 100644
+--- a/tools/perf/util/dwarf-regs.c
++++ b/tools/perf/util/dwarf-regs.c
+@@ -185,6 +185,8 @@ static int get_libdw_frame_nregs(unsigned int machine, unsigned int flags __mayb
+ 		return 74;
+ 	case EM_MIPS:
+ 		return 71;
++	case EM_ALPHA:
++		return 65;
+ 	default:
+ 		return 0;
+ 	}
+@@ -228,6 +230,9 @@ int get_dwarf_regnum_for_perf_regnum(int perf_regnum, unsigned int machine,
+ 	case EM_MIPS:
+ 		reg = __get_dwarf_regnum_for_perf_regnum_mips(perf_regnum);
+ 		break;
++	case EM_ALPHA:
++		reg = __get_dwarf_regnum_for_perf_regnum_alpha(perf_regnum);
++		break;
+ 	default:
+ 		pr_err("ELF MACHINE %x is not supported.\n", machine);
+ 		return -ENOENT;
+diff --git a/tools/perf/util/include/dwarf-regs.h b/tools/perf/util/include/dwarf-regs.h
+index 1da915c2683a..8d1a981ab8aa 100644
+--- a/tools/perf/util/include/dwarf-regs.h
++++ b/tools/perf/util/include/dwarf-regs.h
+@@ -105,6 +105,8 @@ int __get_dwarf_regnum_x86_64(const char *name);
+ int __get_dwarf_regnum_for_perf_regnum_i386(int perf_regnum);
+ int __get_dwarf_regnum_for_perf_regnum_x86_64(int perf_regnum, int abi);
+ 
++int __get_dwarf_regnum_for_perf_regnum_alpha(int perf_regnum);
++
+ int __get_dwarf_regnum_arm64(const char *name);
+ int __get_dwarf_regnum_for_perf_regnum_arm(int perf_regnum);
+ int __get_dwarf_regnum_for_perf_regnum_arm64(int perf_regnum);
+diff --git a/tools/perf/util/perf-regs-arch/Build b/tools/perf/util/perf-regs-arch/Build
+index be95402aa540..1fbc299775f7 100644
+--- a/tools/perf/util/perf-regs-arch/Build
++++ b/tools/perf/util/perf-regs-arch/Build
+@@ -1,4 +1,5 @@
+ perf-util-y += perf_regs_aarch64.o
++perf-util-y += perf_regs_alpha.o
+ perf-util-y += perf_regs_arm.o
+ perf-util-y += perf_regs_csky.o
+ perf-util-y += perf_regs_loongarch.o
+diff --git a/tools/perf/util/perf-regs-arch/perf_regs_alpha.c b/tools/perf/util/perf-regs-arch/perf_regs_alpha.c
+new file mode 100644
+index 000000000000..cb9c8a1cd74b
+--- /dev/null
++++ b/tools/perf/util/perf-regs-arch/perf_regs_alpha.c
+@@ -0,0 +1,34 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
-+#include <linux/bits.h>
-+#include <linux/perf_event.h>
-+#include <asm/perf_regs.h>
++#include "../perf_regs.h"
++#include "../../arch/alpha/include/perf_regs.h"
 +
-+#define REG(idx, field) \
-+	[PERF_REG_ALPHA_##idx] = offsetof(struct pt_regs, field)
-+
-+#define REG_RESERVED	(~GENMASK_ULL(PERF_REG_ALPHA_MAX - 1, 0) | \
-+			 GENMASK_ULL(PERF_REG_ALPHA_R15, PERF_REG_ALPHA_R9))
-+
-+static const unsigned int pt_regs_offset[PERF_REG_ALPHA_MAX] = {
-+	REG(R0, r0),	REG(R1, r1),	REG(R2, r2),	REG(R3, r3),
-+	REG(R4, r4),	REG(R5, r5),	REG(R6, r6),	REG(R7, r7),
-+	REG(R8, r8),	REG(R16, r16),	REG(R17, r17),	REG(R18, r18),
-+	REG(R19, r19),	REG(R20, r20),	REG(R21, r21),	REG(R22, r22),
-+	REG(R23, r23),	REG(R24, r24),	REG(R25, r25),	REG(R26, r26),
-+	REG(R27, r27),	REG(R28, r28),	REG(GP, gp),	REG(PC, pc),
++static const char * const alpha_reg_names[PERF_REG_ALPHA_MAX] = {
++	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
++	"r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15",
++	"r16", "r17", "r18", "r19", "r20", "r21", "r22", "r23",
++	"r24", "r25", "r26", "r27", "r28", "gp", "sp", "pc",
 +};
 +
-+u64 perf_reg_value(struct pt_regs *regs, int idx)
++uint64_t __perf_reg_mask_alpha(bool intr __maybe_unused)
 +{
-+	if (idx == PERF_REG_ALPHA_SP) {
-+		if (user_mode(regs))
-+			return user_stack_pointer(regs);
-+		/* Same kernel sp approximation as stacktrace.c. */
-+		return (unsigned long)(regs + 1);
-+	}
-+
-+	if (WARN_ON_ONCE((u32)idx >= PERF_REG_ALPHA_MAX ||
-+			 BIT_ULL(idx) & REG_RESERVED))
-+		return 0;
-+
-+	return *(unsigned long *)((void *)regs + pt_regs_offset[idx]);
++	return PERF_REGS_MASK;
 +}
 +
-+int perf_reg_validate(u64 mask)
++const char *__perf_reg_name_alpha(int id)
 +{
-+	if (!mask || mask & REG_RESERVED)
-+		return -EINVAL;
++	if (id < 0 || id >= PERF_REG_ALPHA_MAX)
++		return NULL;
 +
-+	return 0;
++	return alpha_reg_names[id];
 +}
 +
-+u64 perf_reg_abi(struct task_struct *task)
++uint64_t __perf_reg_ip_alpha(void)
 +{
-+	return PERF_SAMPLE_REGS_ABI_64;
++	return PERF_REG_ALPHA_PC;
 +}
 +
-+void perf_get_regs_user(struct perf_regs *regs_user,
-+			struct pt_regs *regs)
++uint64_t __perf_reg_sp_alpha(void)
 +{
-+	regs_user->regs = task_pt_regs(current);
-+	regs_user->abi = perf_reg_abi(current);
++	return PERF_REG_ALPHA_SP;
 +}
+diff --git a/tools/perf/util/perf_regs.c b/tools/perf/util/perf_regs.c
+index c8242b7e1db5..6eb5824f5521 100644
+--- a/tools/perf/util/perf_regs.c
++++ b/tools/perf/util/perf_regs.c
+@@ -43,6 +43,9 @@ uint64_t perf_intr_reg_mask(uint16_t e_machine, int *abi /*inout*/)
+ 	uint64_t mask = 0;
+ 
+ 	switch (e_machine) {
++	case EM_ALPHA:
++		mask = __perf_reg_mask_alpha(/*intr=*/true);
++		break;
+ 	case EM_ARM:
+ 		mask = __perf_reg_mask_arm(/*intr=*/true);
+ 		break;
+@@ -86,6 +89,9 @@ uint64_t perf_user_reg_mask(uint16_t e_machine, int *abi /*inout*/)
+ 	uint64_t mask = 0;
+ 
+ 	switch (e_machine) {
++	case EM_ALPHA:
++		mask = __perf_reg_mask_alpha(/*intr=*/false);
++		break;
+ 	case EM_ARM:
+ 		mask = __perf_reg_mask_arm(/*intr=*/false);
+ 		break;
+@@ -129,6 +135,9 @@ const char *perf_reg_name(int id, uint16_t e_machine, uint32_t e_flags, int abi)
+ 	const char *reg_name = NULL;
+ 
+ 	switch (e_machine) {
++	case EM_ALPHA:
++		reg_name = __perf_reg_name_alpha(id);
++		break;
+ 	case EM_ARM:
+ 		reg_name = __perf_reg_name_arm(id);
+ 		break;
+@@ -198,6 +207,8 @@ int perf_reg_value(u64 *valp, struct regs_dump *regs, int id)
+ uint64_t perf_arch_reg_ip(uint16_t e_machine)
+ {
+ 	switch (e_machine) {
++	case EM_ALPHA:
++		return __perf_reg_ip_alpha();
+ 	case EM_ARM:
+ 		return __perf_reg_ip_arm();
+ 	case EM_AARCH64:
+@@ -227,6 +238,8 @@ uint64_t perf_arch_reg_ip(uint16_t e_machine)
+ uint64_t perf_arch_reg_sp(uint16_t e_machine)
+ {
+ 	switch (e_machine) {
++	case EM_ALPHA:
++		return __perf_reg_sp_alpha();
+ 	case EM_ARM:
+ 		return __perf_reg_sp_arm();
+ 	case EM_AARCH64:
+diff --git a/tools/perf/util/perf_regs.h b/tools/perf/util/perf_regs.h
+index c9f461b6f11f..4134e4eed802 100644
+--- a/tools/perf/util/perf_regs.h
++++ b/tools/perf/util/perf_regs.h
+@@ -34,6 +34,11 @@ const char *__perf_reg_name_arm64(int id);
+ uint64_t __perf_reg_ip_arm64(void);
+ uint64_t __perf_reg_sp_arm64(void);
+ 
++uint64_t __perf_reg_mask_alpha(bool intr);
++const char *__perf_reg_name_alpha(int id);
++uint64_t __perf_reg_ip_alpha(void);
++uint64_t __perf_reg_sp_alpha(void);
++
+ uint64_t __perf_reg_mask_arm(bool intr);
+ const char *__perf_reg_name_arm(int id);
+ uint64_t __perf_reg_ip_arm(void);
 
+---
+base-commit: bc01105ed65d15787b2eb93ac26e8624a2139e35
+change-id: 20261001-alpha-perf-tools-regs-c206a84dec7f
+
+Best regards,
 -- 
-2.55.0
+Matt Turner <mattst88@gmail.com>
 
