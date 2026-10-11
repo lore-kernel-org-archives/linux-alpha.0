@@ -1,120 +1,132 @@
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F8B533F8A2
-	for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 20:01:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.222.175
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791748896; cv=pass; b=hyM4pf08JkRksJkwtkGMwiyLjIEgzogh/OE2+dNmuRzwElL2GnTMmIPzOHHRn7L9aFARW42t5NbrZblRjc7BaCDwA2Zil5EhQg5RPj3GuXDxe8tyvwnhXjnmMr6mBd3yzBu9FbLl4A85lBh3ZYAvBo/xkMwAj7giIJJN71bEx+Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791748896; c=relaxed/simple;
-	bh=1tzJN88GwpvDiyz/lrjVdtV8dFKQy4NpjoeYN/PYPdM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tdLyuPi4Z1nalBUT0ekEp/17H5pAJBf8TzCZEMoLV/+UANxBH6+Qob8jqOXmJT/wya7Gfs+hA4f9aOEiDNIPh7E5vPkR5rdKYMk4Mzx8/sTNE6hbQeEfKoFCcKgAgaMmIBA7TPgkrJo4o3Ozs3+swkXUsYuBa5RskdqvBfn2dp4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hj2ewtMT; arc=pass smtp.client-ip=209.85.222.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF9D83537FB
+	for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 20:16:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791749808; cv=none; b=NRHSBlPS5wkRoH5XiIBZ8xQyyuuBda7ZuQsSGRzuC3qgGkUQ2oaiWbA5BaAiTPx0EDc5tBU3M3o3cM3NDyGBwSG4rXfROPdEHgWI1IGE/ak4l9gv6u+FZx/y5rbubrVods7hE2AzsHvgWouDx+t9g2vGGkmD7ZTovsG5at2v3L8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791749808; c=relaxed/simple;
+	bh=mUa5JfPytUIBNId27ct+pI+y+lXe6dkBu7TtmZ2Okr0=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=EdSyO17M+MjCZBJWTYCJu8lQz4S8KPkX+OujRgk5Z27ZlLBZzRIqrTI36gZC37gNZsKVu3oZDuNIbp/3OCb5dzpM5J3avk7AbzS9Na3tJ3lKRobj5zF9lfKDJs+ZxNaKzldAXbjQv22heA/WqP5Jouh7Aupe5L4zUA3JZO5Hwyc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fxG8KF6k; arc=none smtp.client-ip=209.85.128.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hj2ewtMT"
-Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-92ed3993c1eso75202085a.1
-        for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 13:01:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791748894; cv=none;
-        d=google.com; s=arc-20260327;
-        b=iXsJy8hwi7jqEK0TyX5LCEB4aDj2mYY5MtgdFIoAiDyMtoGVGwix1ftMGwBlwz39N2
-         cuerbPWuVXs4icq/jPCHrZTxp1dNLDfN9b+F4RMF1NZayZuowBjTWcbKkShihA96L+5x
-         7qNYI198fIpPV1+dfITav9n6ogW1lEv39xtTcA8OAh/yZrtAzAHATXLyW07RbM0GhD4L
-         llcK57XPw/zgGVWk5S/lQPKbVkHtkGvJ3iBg//DWbLfbzNDhNyIgcejkc/VtL6F9WJk1
-         irVXAStFyDrcVrL9tk1SP034uRPxEF6KiGsDdrw5kTKN4R89sokfaYI3dHzqATApRceV
-         CZ2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=6S4lTE+OpEhZb6bjQs47nv2nou0BGYnNK81t93sALC0=;
-        fh=CSD9Hvsr2QJkcJbofyuPmiLSc3IMtNQB0bAYHeuTz8w=;
-        b=PN7D4Cxlx8LsoTGe45+qooIGN+4KIUsEgpoQlFYTR4HMpvBBt03HOyR40HF27V4Ba1
-         cOypr/UnuU2k69aS2uIRxDMjmXIm1XNXwQqK4SBUBFB3LmbTAp/l3Sfny3+XO4YWlCyJ
-         t5gTX+qbn/r7Hp5EPgOG1KBO2hJ0HxUPtbCiQ8n4Y/DzCe8xNojLis7ISbxG17a9pi+N
-         z+09ODYvGW2m6h9fjqpAsdhLSdRChbKQBC1PzCwGpDwbcbnB8cep5Itcgg9wxVj0HRG+
-         yIEY/s0Of28ZTkL0qtIY3VJIv5eRApqtr8jYzoXjicpxWRBeGXtaORz5+zpgTGrJYpk4
-         fkmg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fxG8KF6k"
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-8ac525c1f05so8958447b3.1
+        for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 13:16:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791748894; x=1792353694; darn=vger.kernel.org;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=6S4lTE+OpEhZb6bjQs47nv2nou0BGYnNK81t93sALC0=;
-        b=hj2ewtMTYwaSPbrexTCOwRAPkXV3L3WMdGnMxNnKEXWjM1lgUP7/hoB9MO3WjNFY5A
-         yyGnWLWUBJeMvP/e15LuMzRTlpitsx7fdIqU4BqyXqWpy0Cwt60Xy+XQYf5OBo30y+4Q
-         eDzxtBu5LRYWr2j99RNZRo0Kheqa3GwPMtnav1Hsqb9jdvoc+ULrPS8/vBYHAVtfJIEj
-         4mpJiG0qL3XROaPoZog563FR4gcFSPyN+L2ud8QHWI3z+SsDBD5uCNlFazHExKSaLlI+
-         ONyrDnkZrrJDXSNTO7tPieH4Eo06NF7nhCkbe2DP/9/6Vsu/1yH8DEAtQBsaC2k+MsLp
-         WSYQ==
+        d=gmail.com; s=20251104; t=1791749806; x=1792354606; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=LMIFt4Dv9YYDb9vJ6+cJXhs5xmH9sVe/KBqI/bov4Ps=;
+        b=fxG8KF6k5+mW6gdTNTG4F67fBO+eA4n5qdO34dC9x5APqsqi4uaQ8CyYedrMMEiBWt
+         UAo/sFIm2V1ZmlPWeWJr1CdOyWs+WZjnBCyihF3bRTIy3klYKMd9ceBGWF+/i4DxDMBe
+         SBWvTI0CVPSSS73Obasmzh+SkbTwl9TaWx+xPLFU+suSQNmYCglKIU6LBN3kD+Chq2ic
+         PvmWkQHj1UTFyMb0TPAv0Ru4zFIzAsWg/6dEQhTWsNR91niQvCmFY/csPLNlqTE2zc6e
+         uAhyBNm410MaLyAxeqEQ3gCkY3o8COIIu6va8k/deJghbt9MtvlmHYmmxh8Q8+lyM2fD
+         s1tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791748894; x=1792353694;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20260707; t=1791749806; x=1792354606;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=6S4lTE+OpEhZb6bjQs47nv2nou0BGYnNK81t93sALC0=;
-        b=qY/WmPFyzGQ97M6DyPZMsCRegXF5uyWygCNHwwN3YB8+h6e3+JTOKR74MaDE7hLB08
-         9lFBzYVTT+rYcpk+Hykrl8GJk9bk8Z3Eppy/GSuNg/Aa1uNf8CEuLON8d0AyLQheCnbN
-         GQIxKTLut1unbgKgCWjk/TRXVo0NBvTEDPovfVskdtTDvjt8KQiaZ9Rd5MdHwdqs7NYO
-         mrU6H/BLxsIlaLrbtahKmxpNYD5h90ivvaTy2ZZCoOYHOdqKxueQJA7IPrLaZMW/3rtr
-         Vaj2O8TdVf/221/+jztrKctHXfEqvfuHH6v5Bg7wycoDin1B7hlm7ZhIyGwigSkeFuVo
-         f48w==
-X-Forwarded-Encrypted: i=1; AKwUvBzBXDQm31BDR/QsoKi6Ph11sPFNo1cL/Q09PJ9beh8L57euhuVnzF21/kTqjGvn1EVhe7AEmSCha5bj8w==@vger.kernel.org
-X-Gm-Message-State: AFq9FYJlzWZZvJfUsTU3SInelQfHdaDcTBaPB8grEZFRppXN1H5JhCy1
-	TlKktdY68iBFF+oR3TrnVPWUCWuAPwHQn96nsPpNcmtRCOUtPNzlXwgWOMaQXlKaIV3HsoaU7uE
-	CdJVicGdPBJiJMM7xcX/9zKs1AvknjdELwakU2M4=
-X-Gm-Gg: AYBFou256hb4Oc3kqKj2Iyy9CNPCMqHTb4Hj4yXnac+o/ITO9oBaP+I4trdGZFYsogU
-	SJ80XB8qhoRcgmbQ2U/bcnghJe3cD5ZxuYuwmiLB1EHtAZO2wcf5lOfo40NREozJ90lKLP/lK07
-	2Kc4vD76wwVxERdlSFPrTK6Ihyp2nVUPGMCstZ2nX2+ishtZtFNivPgZEw+znQlRUzd8bhB9WDe
-	UWrcp7ei8jcOsSkY7wnXmaEi5K083DWBuYy5PWgUT3lGtkqKIwVv2YU6mSpBKXJV/U4LS3PoICY
-	SxpTwJfPaKjpEYapEUOHADa3NB2KiYqbutMzYPzgnEqEVIzBTlf4uQKnsWsrQzbLaZ4+uKIzvUJ
-	3Wgn4vKyfM/VhdwwaooHNvpCIlOAoQ2X3FbsDRoqx+6ijsBqNXZacMNI66BKCbpknCvAGlRE=
-X-Received: by 2002:a05:620a:a41b:20b0:93e:c12c:fbd1 with SMTP id
- af79cd13be357-93ec12d08e0mr831249985a.77.1791748894091; Sun, 11 Oct 2026
- 13:01:34 -0700 (PDT)
+        bh=LMIFt4Dv9YYDb9vJ6+cJXhs5xmH9sVe/KBqI/bov4Ps=;
+        b=j7UiJpHIXGtXeoVU4iFfIY+fbcDSyX6kfpTQ2P4nYRG4mVXbpholZue9BvWyU/KNmW
+         UOz3usd0ypXC5jQpmS3oYkh+rCyL5ALC9v0kNdy1SuKze2kluZrVFaPHQRbjPDPZZOME
+         Y+tiwWnZ0mx8ng1WWFYEfTZuaiws2UU9vWBtWI4+4nWmjkOCgHJvn9ewl6R2/lEmq29J
+         6DOsl9FwmA94e/zN1b2owQQfEmvfdqiSpn/0zvaAYBMTJi9V5kb2yB4gHQCj/MpEwDtN
+         MCRwrNEfA2fQAiwvMlVKFD2VEX4H/kiAhRI+yCS34+jnSnhb0xNLzM9B2H59mJx8bGkB
+         kWEQ==
+X-Gm-Message-State: AFq9FYJoLkE5wxuVsvqE6Irm7h0l+SDYcWyNNkFNa+SQXqr82mquqkfg
+	QkRiftPUoDj1e2eLPczLlWGmeoFkwodrtX48uyufFQD6D30sFSnJC6IL
+X-Gm-Gg: AYBFou1hFIKxmEd6fl/sXng8xzXjYsrV0m/ZjoOmEzr0hf6TzxpmqqutAlr3niaRFnF
+	LZbhCYQtwj6xkAsssWBqOETlxfgp8o71kUf5Cm8XZrMigxUkpHA7XOLZVIY9WCXCckwYe/BgtTk
+	3YhhXCF+2ENw1+Dt60y6In1k8kmu/RJKRROYvULw6j1nq11KZs1TS6NN/ALgf2Czn2C3UvfAGA6
+	7RMr6f650xfXGseOKKVoirwpHMsf4AO5DiPhZhuJNAZX4gyL3PsFdA75kFtorth4RnoD6itAcQV
+	jgx/wnTy+3sXXISGHlqBzEV0oPE2tvXDpSR26DDcs3S/b13L3Ut9WNg9Gtq3opYC2OMym+mSHbk
+	wenwg276BLp2PNFh2fezkmZOlr7tk5c98QzJ05lkw8Hmfi94v6d84O+8udD4K/HfoWv35jRtbh5
+	iY0rTsUcs6T6Ln4ZjTEkH4XxdMBzeNxSxTkowMH46jRyej5R+blG8gWamgoiIXWkw8IJW2R+BRG
+	upUZwCcys0IdCtlBzqCgkhZF5fhvlgMspwr5EqQVr+H+Wh0gbIV8Mr7
+X-Received: by 2002:a05:690c:6e85:b0:8b0:a352:f96d with SMTP id 00721157ae682-8b0a352fd2bmr4001297b3.11.1791749805566;
+        Sun, 11 Oct 2026 13:16:45 -0700 (PDT)
+Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b07f1ea845sm28267397b3.24.2026.10.11.13.16.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Oct 2026 13:16:43 -0700 (PDT)
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PATCH 0/4] alpha: perf register sampling and user stack dumps
+Date: Sun, 11 Oct 2026 16:16:40 -0400
+Message-Id: <20261011-alpha-perf-regs-v3-v1-0-eaa625a39712@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261011191344.981000-1-linmag7@gmail.com> <20261011191344.981000-7-linmag7@gmail.com>
-In-Reply-To: <20261011191344.981000-7-linmag7@gmail.com>
-From: Matt Turner <mattst88@gmail.com>
-Date: Sun, 11 Oct 2026 16:01:14 -0400
-X-Gm-Features: AclHuK9hH6WUDnezreEOOPO2jeyuAE8H0CKQdbkUt_jrQI3BponjxKRx6Hgy5is
-Message-ID: <CAEdQ38GoGhoaoymQER16qF2NHwhOGjGsTh68B8oqSzeR-LL-uA@mail.gmail.com>
-Subject: Re: [PATCH v6 6/6] alpha: stop on fatal Tsunami system ECC and write
- parity errors
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MSQqAMAxA0auUrA10wAGvIi5KjRoQLSkUofTuF
+ pdv8X+BRMKUYFYFhDInfu4G0ykIp78PQt6awWo7GK0N+iueHiPJjkJHwuxwJOt6PQUTvIUWRqG
+ d33+6rLV+S01NGGQAAAA=
+X-Change-ID: 20261001-alpha-perf-regs-v3-7e23508c1ca2
+To: Richard Henderson <richard.henderson@linaro.org>, 
+ Magnus Lindholm <linmag7@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-doc@vger.kernel.org, linux-perf-users@vger.kernel.org, 
+ Matt Turner <mattst88@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1840; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=mUa5JfPytUIBNId27ct+pI+y+lXe6dkBu7TtmZ2Okr0=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJOv1uptCh8YuRrwxtOx3f+klebfddBfEKC3JNCEUmFt
+ ctMreJNOz6yMIhxMcwUU2SJW6/IMqttx1Kf09K/YOawMoEMkRZpYAACFga+3MS8UiMdIz1TbUM9
+ QyBDxygeIqfHoJFZXFyaWqSbVlDkkJdfkliSmZ9XrJdfkJpXkF6gl5aZVpKRkV9UnAo0Qi8vtcT
+ U1dHNyNDAxNLRwszJwtHUxNnZydDJzdHR2dXJyNLcxMDZ0tHE1dKcgYtTAOaaa4sZGXo7mf1+B+
+ z12/Eu/shBuwOFs9f1RPd5T66Yfn13a9Os2HJGhkel4i1b+KpcHhzx1so9zvd5YZnmqdYzFw/NM
+ lGfOpWvgBsA
+X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
+ fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-> +#define TSUNAMI_PERROR_FATAL (perror_m_uecc | perror_m_perr)
+This lets perf sample registers and dump the user stack on alpha, which
+perf record --call-graph dwarf needs to unwind user space.
 
-Why PERR and not RDPE? Bad parity on data read from PCI seems just as
-bad for the consumer. If the HRM says the Pchip poisons that data and
-the CPU takes a 670 for it, please say so in the changelog.
+r9-r15 are not in pt_regs, so they cannot be sampled. An unwinder
+therefore cannot get past a first frame that uses $15 as its frame
+pointer (-O0 code or alloca).
 
-> +             perror = live.perror[0] | live.perror[1];
+The perf tool side is a separate patch for perf-tools-next. libdw also
+needs alpha unwinding support, which I am sending to elfutils-devel.
 
-The changelog says incidental PERROR state on a CPU or environmental
-vector cannot trigger the panic. It still can on a system vector: UECC
-or PERR latched before an unrelated NXM will panic here. That may be
-what you want, since the error is real either way, but the changelog
-should cover it. It also depends on the PERRMASK question I asked on
-patch 4.
+---
+Matt Turner (4):
+      alpha: fix stale user_stack_pointer()
+      alpha: stop storing the user stack pointer in pt_regs
+      alpha: use user_stack_pointer() in KSTK_ESP() and dump_elf_thread()
+      alpha: add HAVE_PERF_REGS and HAVE_PERF_USER_STACK_DUMP support
 
-Two things that I think belong in the changelog:
+ .../features/perf/perf-regs/arch-support.txt       |  2 +-
+ .../features/perf/perf-stackdump/arch-support.txt  |  2 +-
+ arch/alpha/Kconfig                                 |  2 +
+ arch/alpha/include/asm/processor.h                 |  3 +-
+ arch/alpha/include/asm/ptrace.h                    |  7 +--
+ arch/alpha/include/uapi/asm/perf_regs.h            | 45 +++++++++++++++++
+ arch/alpha/include/uapi/asm/ptrace.h               |  2 +-
+ arch/alpha/kernel/Makefile                         |  1 +
+ arch/alpha/kernel/asm-offsets.c                    |  1 -
+ arch/alpha/kernel/entry.S                          |  5 --
+ arch/alpha/kernel/perf_regs.c                      | 56 ++++++++++++++++++++++
+ arch/alpha/kernel/process.c                        |  2 +-
+ arch/alpha/kernel/ptrace.c                         | 12 +++++
+ arch/alpha/kernel/traps.c                          |  8 ----
+ 14 files changed, 122 insertions(+), 26 deletions(-)
+---
+base-commit: 8f5dbfb93440d1aba216a1a34369a65654b94be9
+change-id: 20261001-alpha-perf-regs-v3-7e23508c1ca2
 
-A CPU-detected uncorrectable ECC error (670 through
-ev6_machine_check()) still does not panic, so after this patch the
-policy differs by who detected the error.
+Best regards,
+-- 
+Matt Turner <mattst88@gmail.com>
 
-A PCI card with a marginal connection that asserts PERR# now takes the
-machine down, where before it logged and carried on.
