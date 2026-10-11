@@ -1,136 +1,118 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14902466B44
-	for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 20:00:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9979D26CE2C
+	for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 20:00:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.180
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791748821; cv=pass; b=U6EM+cDzYLbaTE5Z5x0yXYHvgg0ZAd/71E/UOmlUl8/WiqlkxJGVbozweHr9svTkeQZYO+XaHGs8WBUwv1lVPLIX9ImI/JezLg15fuECNPAnVUnCxxQYKhx/dHmOS7fnfPfzhxnxSZSd+2KlUnb5VelW7n1bkx3HiIm2bRW6D1E=
+	t=1791748840; cv=pass; b=FZwrShv/3GeityGeWYQW3ccszJeChTeF+4oeyUiwcCBe3oxjO7e+5PnubJf9Yh4tUoktXeyJtc1v+6S00TUP7H/ZoEsehxojU+s01zlKSktutZfcrD5t7bwUFtULAyusaFmijQN+OIBe/FraKBYHtpF8whAJbc2suZWU87Iq4F8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791748821; c=relaxed/simple;
-	bh=PafRVT+L1hTCA458bkWDsrr6ZsVGkP4Fi7cPDz2SeAw=;
+	s=arc-20240116; t=1791748840; c=relaxed/simple;
+	bh=bYL7lEF9EBPQywYdkV6utsdpe40zrBCiNEczQQi1TLc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OrmVkfDYQ1buamiq55iZ26I+KRuNA7ELVjRcknQuRbuuzdKhcobmvPgyaWDJhw1a5bgAVxPV8okTfOIkjME0iRal0qMynwj5srgvWGUBCXlJxumZZnybQ+Zy0Cxw4vNDTQZ1mHXw5zMrhjFqrmOaFYolL13hAldD0QnOv0ae9p8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XcGrZgQ2; arc=pass smtp.client-ip=209.85.160.169
+	 To:Cc:Content-Type; b=cJVq+DIjfnix4LxAmkOl6hokQkuqYMnAqRW6BzVpavvhWbp5Hfr8fySvZsKv/7RtK2zCsDgJM0Xh/tQhq/U9BcMxo1HNs+YUemSWzStfMHZE0KfX1EuQpOpFde1inZFYPMNnT8jiyFsV1HGC6mTMko0RTRctzoN7nhv35hpDTr0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ep/6CdEc; arc=pass smtp.client-ip=209.85.160.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XcGrZgQ2"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-533952f3714so16356001cf.2
-        for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 13:00:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791748818; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ep/6CdEc"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-53397554beaso14812651cf.3
+        for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 13:00:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791748838; cv=none;
         d=google.com; s=arc-20260327;
-        b=sJUJ6SfUh7YPsi06NMACFI4/LMZ0VcdAVB35PGbtP/KvOYwKWK076gvmTqVaXdcrTR
-         0Z+4XI+G1vF5RFy/sUOd65YoDZ2ladifyble+Q/yWohhqyFQuQirznVfbmXaK56wxAyK
-         zfWoqY7jBwv6iamtIDFy75tA6GoyFIB6TY4UYSGlHbDZ4PygwFKtCfPb6tHSBDuLrnbn
-         //keaWtvnO9JfmVtvUJz76/9mPJv1KQYKlmFu50z4sGcAWaup1QLR6lI789Pqnk5gDZU
-         QMvGZt20yq2N+L0UsiGIEaqgL7ihFwffWd+PHTZvv5xAzjdgCH+TzXnwHGhzLyOBCvGv
-         OiBg==
+        b=bueVxtzQ3BD/HEdYaUhG65aHmk6/GO6dPOVATeMoRgORTicAFGRegRC9SXGO+pcMsH
+         XGGgRh7GLhYhvMygPRPrM3likroehKzwmwG6+1mrGvKz6aY1LXU0HTG90dzTHa5Bxqk3
+         2jZECL11Kr8xzhmQwEqTkYCMjCy7g5WRVW9D+uxJTrhFv7PCnCTXbJ5uV1SgmBwl7yy/
+         g4/LQmt3RHfItEyYiUedkbqx8UqrPBtnqAKagPC46fgcvzQQ5gspWGLBaLcVoi+BN9Ib
+         zt+0dsKr8nfNDc83Q6mGBpOqRGqtUPyt0nOznpRKfElWeN47WPmoP0uCO46SKrSaU+jj
+         LKUQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:dkim-signature;
-        bh=fHzd/PpmTpoi3aoYVl6YzROirHzRjHYEj9c77Sd2SZw=;
-        fh=IudZMgOwgqOAj+wn1/SDMGB7Ny0o7ZmXVIGADjMF4oE=;
-        b=Xz7Z1ydKRi2Sgpo+r3jM0Flj5qRm54tBZ95erJ9rrw59y0PM5iTyKd4Wkg/II3zpCS
-         DsWAYzqaYFLAXEOVRZgco/tauEYbUUy96FIOZo+3ZnxROYmyDCZ1HUuii+ffSrMOvc6s
-         y0k8MiHBR8HtbfDC25JEMtETnL/1C6zUYdRblWz4hjwLjqbNHyEobdECVE+9jsdSMLMV
-         SyR7HO76McWaa8rrJfDKdiWGmzDcm4Hn1Ut8XfP6bDsax1mQgaXBW/+oLkjZW8l/AhpS
-         ZCLz9j9uWiOI6GO/MqFy6XNDWp1Tsa24RIZCWTf2PK09p1ocCpITQGyxxLdSMJ+tRCiM
-         jWow==;
+        bh=zEv4PBcdGJDyHGXZpS5PeBl71OvDfJp17c7butaS+8w=;
+        fh=l7PZk8w1dWFaAE7nFA/xncvvVPoLS22sJjMIda9Y9uU=;
+        b=ZymcO+I5IK+MbtRgaB+ePrUHuJyDYyfgTwz4aa0q6dRXbBWSd64yX4CElcRtgXcGTM
+         B84toroHxBdkfwK3s4nWSBIOja4evCc3rjD60OGK6vGPQ4d2PUhaa0NvtWW7wPqXPnUS
+         k91Eblox0KO8SE+YfaJJBm/QCxf2iM++ljHxztE2BJuDv+dN3G7uOhrHefzPEIJs7Tkk
+         /Lax67FTPpvCK8/V9rKU5s2wzrNdOfMw6HsjIzE60CfhZScxhYbMaNhG5bCwHR1SXpQK
+         NMw9uCpcX3mgwfDpCoqwR/Epf5/7J4s60bZ72zziM3EGwRw9iZmNapJq0tlxaEu0UzYy
+         OTHQ==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791748818; x=1792353618; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791748838; x=1792353638; darn=vger.kernel.org;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=fHzd/PpmTpoi3aoYVl6YzROirHzRjHYEj9c77Sd2SZw=;
-        b=XcGrZgQ2BM8TnRQxhnQNbJrLJmeZMM2+O9M9yLPbMWKV/grJ8wWnnpp6qElUl+/0xV
-         CDLfiGDvtyIrZ30pCK+SoUAu3Di2rAmq8zXsnjvg2HhnRNNH4njyKmB8KXUGD6NMpXWj
-         +VEe+bpCUYPZEd43WvFC4JIou07zi/Xb9rNdB/TExQrWauMm1SgC23ySlNFJFVddtmSp
-         OMYaHVotMkuEO5GY59OU5r89f+Ssj4IiJ4yVGo07nnXok35FywyDTmYQmHFZhsp6iKxQ
-         QsUTUHN2yXg0Z3FLN2L2oeFKDLZPlJXKdJ1C3KftzUJG+qD/fh43cYMm14CcmoK2lnDq
-         3jjw==
+        bh=zEv4PBcdGJDyHGXZpS5PeBl71OvDfJp17c7butaS+8w=;
+        b=Ep/6CdEcIuNyab+Sd/BW1/3cmUN2QX03LY0g1uoGNp0JKVx573FVCbS6D+5ttzRqQ7
+         kSciGRNEAaNdnp2J5rcRV4Ej+SZwWNcl8fDL0Yqyb49wpANhIkJirii3zwblHWVnpcFC
+         JcsWB3pR+IoH0rPDY0RXWQLQjvgYUX3/GO2mEINHC1dnDf/SYLKWH19CZIDUFq3MwPOQ
+         qF7R/G7fUoWlWkwJm5UZ+4X5qcs/e4CH+Ukyl2yp0dNufcN3ES6YtfBnCq6LG58JE8vg
+         DhD/Bwr65zqTlsQxkYuxPEP/yGkzJTU4+HP2Uu29g2OApxgVRd2+E7h340yQ7GYsWZgr
+         vr5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791748818; x=1792353618;
+        d=1e100.net; s=20260707; t=1791748838; x=1792353638;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=fHzd/PpmTpoi3aoYVl6YzROirHzRjHYEj9c77Sd2SZw=;
-        b=r3uejgf6HecVUz1Z73o7OO6OaxC8egr2jwN9TjfjRtxTwCob0nY4P7Uqg4pr+njm/t
-         UqY1ma+jGEfhVPuweMPnyhMzxPxD7Er1sPE5eN4N2aemkh36W7I1nihnXYni93PWn0KL
-         rB7oSp88Q9ntz8fiKx55aMGtTp5QjOeW2h8EuKsoqRa+dFycXOq123MzqgLOSmlz5k8p
-         aotKdImvkFfG+YaKJHfLVHrbaeUBXRFtl84pkWWKSM+KD8Vluorf8GaRYRrnCdMy1Fvy
-         6rThFRZYYW0ES4KE8LyOl2N2ZJRKd4nPIBw9c6iaBmsa0GI7mllUP5lAbdeta767YPoL
-         0MJw==
-X-Forwarded-Encrypted: i=1; AKwUvByIs7GX8/goR9rc+d1zuDi0+q5sjpYkqSJnCWxnM3zKGF7OMXmuwn+sWJ/cHKhuYHqtbRq33z9hhdK44g==@vger.kernel.org
-X-Gm-Message-State: AFq9FYJjA6G5UNHVu//MtWl3PZuYTNx39m5v/EjbUNtSsQFyOmSNFSqn
-	s6DtTIn+u2yfM+CgTUf3cfC3KQTH+vqgGLRnSqQ8BbukhEHun7coXms5boRyPMvI/pSC4E1qTzA
-	AtA1XaR4/GApD3ZBDQUAgETbPz+/hp58=
-X-Gm-Gg: AYBFou02UKCR3AxON6+WuwMfpZr5JuYoLlPzKTguTxfDZd+PQZUNGzG9YAPcKNZtQpy
-	ES+XRDk0WZMOq7bIdpFgbQWLWi4jXXPr2oUNeT7hMAVgFnLH+5gn0DwasjiIrC2T+kaLDIl3eG8
-	nuEBFAcTARfFGRA0env2n/qW3R1xBY0RKroJl0P9t9kIFyh75+CH0nPE51kel0vSbCSdr9ajOz0
-	APUBARm0ffzU2SoaQXwKXC5A0jqDzRCyARCvcxhInMnb0urj368hbULynsrodNbLRS1rd01fOAm
-	VN6ndSqcJWUEL4ahJlGtW5gLBU3nQv+XeGtT3Vx4AiiLSmu8Xo0OeayTw/r3efOqNOqCzmBy0DY
-	0drFjnmE6ljA8OgSk8XZ9Y6aNEzg15/CiEKEJpmkQzXx8kXe1j8VqUMXFuYwSuS7azws4azg=
-X-Received: by 2002:a05:622a:2615:b0:535:bf6:320b with SMTP id
- d75a77b69052e-5359f066860mr125127841cf.0.1791748817777; Sun, 11 Oct 2026
- 13:00:17 -0700 (PDT)
+        bh=zEv4PBcdGJDyHGXZpS5PeBl71OvDfJp17c7butaS+8w=;
+        b=Xv3P1xPto9ll/IxWtlZbKAFbZxwNavBKfzNBGcSHmKfSDXgHN14LSs2nfaLCy9Ybtz
+         E5/jyCosnmcN2ION4wbGwCMKOHxtbRk00gDZNsQ7uPVqCfPQodk+Ewd9YQ8xz7XQwshk
+         a97u2NhMTf6UYeeKf3GRo39KktnyjcxHHtUakQ6RHuroJ0hT65It/qJPGx0b3aifdej2
+         zY3XntmoXhyFC8O865WhU8bM5t5YKTwaH2CVYIJWLSmiooPyRbM/3xKZ4hlp71NGRdDy
+         m4udc9QwsWMZ5MfFeDl6B2MV10svOKT8uB0Tf8jteKViY6k5cQvRvSGzKTWEffay9EsX
+         G8AQ==
+X-Forwarded-Encrypted: i=1; AKwUvByDGJkmnq/0TAnVWWP8WJbQ/+mk7a6s6XWIqx34Q8WL5RV+iqWqKWB59bicirmcT7wIA6rCbVIVe2jWzg==@vger.kernel.org
+X-Gm-Message-State: AFq9FYKcP6d1Fn9jwr2aiZq3XVOFy9YRuXf8sutOZhTEPs9aV//5LaxX
+	pfcDtVM3MpVMrW0ZOdOXHt0mz9XgCac+1ThQTK1CT0hWBd4UlwD+t6x//enQ0Rkj2qTRsdl1siJ
+	nrCyrb3XhezClYURXZZ/OuFw6adIcYXpNf10Ll9c=
+X-Gm-Gg: AYBFou0i4Y/JkowhFmR4Lkh2o5RVITUuZvyWzGAJVAKJfMaFYz0p2lSFU2/lwZpWQDY
+	0nBrawc7JkywYW6E5KH/x9HuHsxoJWntfYIJySTigUiBzQp1XZ55G+krZp47s085QbbsI52gR5I
+	h5afbE8GlgX5CrPeGOKBBbR0c2TSSTG6qctvmIArwbDWFjGuusHl11aRKEk+z9Ap0wBWXKciFZx
+	YGSCQiLxKlo1hSmxh7kcq5eDQL1m6QzyaxwOZP5Dd2wq8LI1iDGiFCkaYNLvWhiZvZL1ww9lfB3
+	wXRH43OnCDNaNzLWWcnb78UPSXr47eCAEOecl+Qua++9sh/QDaTLrL6zBYeWrx73IduNJfi60q8
+	Lz8adGLRHv9uZtD1kSdrL65kzUgNOBFlv+RNaEugIb5D0vwglKg2e1+59p5pGMLA0U7IKv0Y=
+X-Received: by 2002:a05:622a:1ba3:b0:535:a5f9:7524 with SMTP id
+ d75a77b69052e-535a5f9783cmr124819321cf.67.1791748838418; Sun, 11 Oct 2026
+ 13:00:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261011191344.981000-1-linmag7@gmail.com> <20261011191344.981000-5-linmag7@gmail.com>
-In-Reply-To: <20261011191344.981000-5-linmag7@gmail.com>
+References: <20261011191344.981000-1-linmag7@gmail.com> <20261011191344.981000-6-linmag7@gmail.com>
+In-Reply-To: <20261011191344.981000-6-linmag7@gmail.com>
 From: Matt Turner <mattst88@gmail.com>
-Date: Sun, 11 Oct 2026 16:00:02 -0400
-X-Gm-Features: AclHuK8gThSsTR6UPLB2dbtNxL1DaDdN0mPX8SSgu4DvGRlJWKXOsoPGo7emv4k
-Message-ID: <CAEdQ38GnwLbEWicdPGN93=j1mNRpY_yO2m7iXJ12VRq5V3WcCg@mail.gmail.com>
-Subject: Re: [PATCH v6 4/6] alpha: decode and acknowledge Tsunami system
- machine checks
+Date: Sun, 11 Oct 2026 16:00:22 -0400
+X-Gm-Features: AclHuK-icwgsC48Km-eUTvYCG_61xgnem75VKlOo5DkjLHSa5iilCjLTl0a3u8c
+Message-ID: <CAEdQ38G6KtnJVgS=5VtJQyNy3Z+LQwgaaAWc4MvJfxRGU=yF2g@mail.gmail.com>
+Subject: Re: [PATCH v6 5/6] alpha: decode Clipper environmental events and
+ retain console logs
 To: Magnus Lindholm <linmag7@gmail.com>
 Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
 	linux-alpha@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-> +#include <asm/irq_regs.h>
->  #include <asm/core_tsunami.h>
+> +     if (header->code != 0x206 ||
+> +         clipper_process_environment(header, 0) != MCHK_DISPOSITION_DISMISS) {
 
-Patch 1 already includes this a few lines down, so it is now included
-twice.
+clipper_process_environment() returns MCHK_DISPOSITION_REPORT for any
+valid frame and UNKNOWN_ERROR for a truncated one. It never returns
+DISMISS, so this condition is always true. The silent first pass can
+go, and the body can lose a level of indentation.
 
-> +     /* INV invalidates SYN, CMD and ADDR; SERR has no command/address. */
-> +     if (perror & (TSUNAMI_PERROR_INV | perror_m_serr)) {
+> +     status |= CLIPPER_BITS(CLIPPER_EnvQW1SMIR, frame->smir, 0x15);
 
-If SERR is set together with another error bit, this throws away the
-transaction that the other error latched. Can it test for SERR being
-the only error bit?
+Your cover letter says SMIR bit 0 stayed set in all three reports,
+including the one after the supply was reconnected and its own failure
+bit had cleared. With this mask that last report prints "System Power
+Supply failure detected" for a recovery. Bit 0 looks latched, or
+inverted like the halt and reset bits. I would treat it as raw context
+(mask 0x14) until we know. Could you post the dmesg from that test?
 
-Similarly, with an ECC bit and a PCI bit both set, the fields are
-decoded as ECC. We cannot tell which came first, but a comment saying
-so would help.
+> +             if (packet->type == EL_TYPE__REGATTA__PROCESSOR_ERROR_FRAME ||
 
-> +     tsunami_clear_errors(&live);
-
-This runs for every vector, and tsunami_report_live_errors() then
-prints whatever was latched. Does a PERROR bit still latch when its
-PERRMASK bit is clear? If it does, NDS left over from config probing
-will show up at KERN_CRIT on an unrelated CPU error.
-
-> +             tsunami_process_logout_frame(header, 1);
-> +             dik_show_regs(get_irq_regs(), NULL);
-
-For the correctable vector this is a full register dump per CRE. Titan
-only does it under alpha_verbose_mcheck. The old code dumped as well,
-so it is not a regression, but would you want the same gate for 620?
-
-> +             mb();
-> +     }
->
-> -     process_mcheck_info(vector, la_ptr, "TSUNAMI",
-> -                         mcheck_expected(smp_processor_id()));
->  }
-
-This leaves a blank line before the closing brace until patch 6.
+Minor: Titan prints by_type.regatta_frame.cpuid for these. It would be
+useful here as well.
