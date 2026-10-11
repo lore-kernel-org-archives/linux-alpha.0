@@ -1,170 +1,130 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 385C33E49DE
-	for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 15:09:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2FD5339386
+	for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 17:57:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.45
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791731367; cv=pass; b=C9OkXZ2uvAzhV62c8sa/EMtrL/dDvw+IseaGRc3uy10xIXdx+OilLzgpAtS9zCEucpMecMCus+vTgIzGA0PTfBB8TAcXmigO83hIKl13W38RcQQjQQ3kQLb6+DFri895QS7HcxXQ4ZBMC+Kk/OdX4h7oJXwvbvOO3PmoiIFkjJ0=
+	t=1791741450; cv=pass; b=Hgs75CfpdESUxSvqRV93GpZ80kWDFAzzw4W2a3K1YVRdMdEUqHLLZGg6pCLVHTnOiS5/sm3pyzIA0N1/YAZrnzb90yoQwiKmVvNLLXYFl0z6MTTKOf2x3RR4tv7VAvOoubbah2DfAUuTPdVCdxIdoAD2jkNoJqb/ATQ95CmRREc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791731367; c=relaxed/simple;
-	bh=K2AzJvWmFuXl8WjO1KJdfYR7kz6Z7a6AQW5/wUEyPLc=;
+	s=arc-20240116; t=1791741450; c=relaxed/simple;
+	bh=vv0u8vo23cbfMgzNVqcLLtv9/ElCfp9eTCctT0UEpkA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kLUe2zKBT3aY50a2WTquW+e9sKJVuE4B0eZ11olfsEgcpvJViyoAlfmW2JpQ5KfcztRrM+VOFpdIJILtTZyI33jVKz3z4wzg70gBrY36wKbqdgOB3NHfXuL037fWaB5nuyUdaXJp9XKFwwa0Br8USZ0QQRrF/ejUDla3ZImxBNw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SLiUMiyM; arc=pass smtp.client-ip=209.85.208.50
+	 To:Cc:Content-Type; b=thDwmjasi2v6de4J9TR2vGPIs+rN8WxiI/zhlcI6YavDtqZAl9RMW4/0IFHlabPNt+srUITxbJSPdZAgJrQNx2A9jEWli6b4NV82D8VCi+rgnShHW4gErIHdHPdphekUsdsrP11+LJPLePt5lxImRb2SqDnmSDBByDNIlZzZaAE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BJaVnmbN; arc=pass smtp.client-ip=209.85.208.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SLiUMiyM"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-6b170129413so1721628a12.1
-        for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 08:09:26 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791731364; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BJaVnmbN"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6b1a86c0316so847132a12.0
+        for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 10:57:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791741447; cv=none;
         d=google.com; s=arc-20260327;
-        b=knvKf6c0ZxXorP5EEYAX2rugjm4qE3j8fqj+dE4aQVXwBE5svgrhANIcghaR+bAviw
-         rn+VAeqBxZR5PatwlMnHvw3KGcjDAMC2HlsP8CHod05SijSqgxbjD+SWWHwUdZ01KS43
-         jOHym1S3cdbeEtRi1gY6FDGV1Am8JS+Ahw/qu8ThxTuTnAe4BoUKk6Cn2pU5igK9pVr4
-         O+7yc0y39pS2NWI3h2oaKG3PGtDkx2eYQRKowLKWd35Uza/zTAAQ2YzeIS+v8pcVz9Js
-         m5tV30q9tF9Pw5k0CbNGXIr2OckxwnUSKUjdNke2zK7ODioF3twitaOC3GJdFXrJvA6o
-         Wiug==
+        b=UkiHoUMQVF2NACgnJCXL0N5dnVjcKsfHjkCxYjj5v905wf6kcUM/Q2cR0XiheGF4RP
+         sWsBQiNFJbm6Cv0MaO1uIYeubYQSPWq6UfdBb+wHeyF5pRMvLUKZkkepF12sKDBCPiMV
+         4+DLbOCfVBEyg/QQ5bQFaaSwpkbOJbp6hzC4vdpT2SrF/KRxRpiAuKOSaZd6g6RMM2Ia
+         w2gLVF+jcLsRrk4fi2em2nFwaYTyzS0RG05kGgrzvvl+IDAov7oeJpzKFlx+vji73+fa
+         XnqtU/ivT0hU+6YfdHU10MweBD2gJKgGhi12JcNZ6aMao6yUpeovWV+rz51cN+nFOmyk
+         vOQA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=7EhW3wTNjaZ800qY5zEi7YbceixPkrVlHD9ZpRRBYLw=;
-        fh=WBgUEg7Lzd91cIyk0aUbW0rO0Dkky4Q7wDH/wa5iGTk=;
-        b=bAJEZNfb9BkTJaz7AKs3RLCtbCwfeIINP2T6lYShTGjfSEMbA2l5K6GHI4SG9XwioH
-         3OYQYW9oDPJj+EIigN4rcoVGpL6ifVpAoCAo6y5nkf6VjvGExhaFyAHLKB2e8vxINQnH
-         XG2JvjD0ERkY/LNv1E1+M1sxf3S17H+dEpWV/HFBRsRlFl/luu8kSRHe/gwdVuLhWAxM
-         CAvKOdlPZKPteYKkHH8tS2erPzTpylw3uy5hlgNNlUlOhmNMKnutaNTzvsMPzFVB+k3S
-         /8ElPWBpeItxBwh++gUpwy3+DcjZmqm6uUDnONxbZ6k3zPavM9jaOVPGCj47yuc7msjp
-         PA2w==;
+        bh=vv0u8vo23cbfMgzNVqcLLtv9/ElCfp9eTCctT0UEpkA=;
+        fh=3JPIIwKgQBX1a2T9DDzVDpj3EycSJhAZOihZS2Y1KHU=;
+        b=OXoIAyIhBUwXT+tGorIZKxZytMj50kU+/hKYw6Y23fByJM3Z9ZXaQIww+34va6slyb
+         so+Za/ciGc8ZRJrW/M9LwawrRL7BzuoCIh9iGOdyNJe7L/9Nfwa0PPE2T96KM636CSwP
+         CKdijX4m53nIOsrdcl6IxgMFbbfUqKTmJgrt1G3mcUnBs8b8DDB1vqQtXfUZwOQreb+E
+         JTrEbaROkb1bhEyEBmGLM/QXxlJdaMPGpl3UpHLfKOJieb1GYi3OmNH10lETBB/xLYul
+         MN3goKoPbLljBgF6RqHPa2jaXmoBFvV9no+HgyBmpuwc/sR+9Ws8xug+dVThQUYFB3+a
+         q1Ww==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791731364; x=1792336164; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791741447; x=1792346247; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=7EhW3wTNjaZ800qY5zEi7YbceixPkrVlHD9ZpRRBYLw=;
-        b=SLiUMiyMYNurvQ680L3ZJ6V+ZKEf1XXqvua4B1/2rH2K2/FrfI434SD3YBgpTR3ETR
-         GsbTPksS/99xr1/T8BQsabOhpdNsfXfsG/4oa1fUSZ4lwyYxiW+hGBNQiVQdAyPhJI+0
-         pkmiVkKlniBBU3GW/CYWdys/5eCfE4NSaVBrXzctIRoWGtDAetLhRH1BTTiHXTw0Ct9Q
-         7XTXf3cx+B7b6csmBgH/LBVpIwwlYhZwUrsY3AAiT6fwdcEAmJaiXtkzxp12dSqAacxF
-         bpLZ7pI7WpFSD+PwOMz/RakkyUvKybCeVnUUVOFpilTDisBKfJJxRCQcwRgIsQH9GAys
-         p/Yw==
+        bh=vv0u8vo23cbfMgzNVqcLLtv9/ElCfp9eTCctT0UEpkA=;
+        b=BJaVnmbN8RomVt60emh0wOzJ1MplR3D2i9RM1O9V8MJhnilKsYhnG+qqQbzJWB8IiM
+         jEVsccI6Wn2rGBnvFUd/lZW51I883Y9etPxJCdKDp+ow7oAv+3EESxnkGqT+Ypqu0AR9
+         nKA4xSM+moF7wQd05dxGgx33AkxOCq27BltSZoaiqNSgB394TfFP7BUtVkmtX3Z3CDdf
+         LiJCjw5b8TaneazjNTbKnyzifvYp8mJYT1K+ii60jrF0GrkZaj26aqP4O0+q+DtKqDeB
+         DqGWsxiNGdfCipIFVj8MvvRQlXOdAFKedISJOnTHHa02gxUNb2ejOLWwriWm0ewD3Aqr
+         59kA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791731364; x=1792336164;
+        d=1e100.net; s=20260707; t=1791741447; x=1792346247;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=7EhW3wTNjaZ800qY5zEi7YbceixPkrVlHD9ZpRRBYLw=;
-        b=jxIbMhgVLl/+lCOjH/h2ZJWWwzRQpNxaaZE0v0AmrCtqyZDwnkFAmHc8+YC4y0X0N3
-         devFr2RyHmxA0zGj+CW65M9QJg+0yXB49d1GKMV4H3SeCL6YRQmS+NdVGW1xrR8wlsyD
-         DckbardMWE+iWYQA9VoSqUD1pLyIO0AYFOB3pXVwrx1Dxmwb9KkSlNNCie91BzbX5pbA
-         OwySfuf3F8Vug7iWt0FFL3Gxn76jjgRCmxpx/ix3ytiePVGXSIJkMWEQ1RUNFcltda4a
-         fb5Ob7YGIGcybZOSTI6tkfmbWCg0ICp34iXkrDMXgAnBdXl1aYEijXPRnPWMhaDJb3fS
-         7JZQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzmYRhbpLYUeyv2+4wX7dnw+uv/qYdwUsJiDAojEPj0oYfa7N3TgRZcDRlsKrjZsc46+BoG6d8lkUHCTQ==@vger.kernel.org
-X-Gm-Message-State: AFq9FYJzKHcR59OjA6ftquJH/tj6ay1pM8j5/IwsyGkKWbcdSPtlz+Bi
-	zZmWJtqte6u5OLn/2etHb2Bb8YGWJnGywUGGqywmvybXhDUZz1cMsckcL/yamgs9LuSN61XCT+Z
-	6p0ACbK3wxjQXg933dWJe6LSIlJdxNZM=
-X-Gm-Gg: AYBFou2Q1jVlJ1xQzaD9d+cf3id4s1jpRDNE56SX2QGiKRZua2VJ8E3fd53pw4s8HS0
-	Xk+oJsEbgMjCfOpHpOpbr//gXZXXbX1E8JlzHdqxwCViSoEid2ZAjVPnVVd3Y+h0Mw5j4LskKgA
-	N28RVBfmfY3Go6ijnxi9uYg38y0vos5V5jKsxOwnoTswIHmv2X9/mejDyW8Gp1eJiOCPaT8Hnbd
-	cBqoMxPHaqSL8PFsY7vM2+Xrozi4qnfMJwlyl7VqzjQpkeSiRS00Y+Bbsiyy+NcAn3D6ehtokJt
-	kLVQW3XIMuo9MwI6hL7QsbGvjBe+hmBz5onHtQwXj+8eL8wE6JKfBTIR4tArxk7u9hwTZGzPfzO
-	0clKlnBVURgrL3UEPy4POkZfrw5nYxyQGryLzpe5iRg==
-X-Received: by 2002:a05:6402:4490:b0:6aa:ea1f:7e64 with SMTP id
- 4fb4d7f45d1cf-6b17c25d5acmr6953116a12.15.1791731364388; Sun, 11 Oct 2026
- 08:09:24 -0700 (PDT)
+        bh=vv0u8vo23cbfMgzNVqcLLtv9/ElCfp9eTCctT0UEpkA=;
+        b=NhLIhBQBfqQPn3DVPJ5O2lfB5pRxJQyxgO/XIU+v8W+f1EaxEqWi/BszmFqMMe1TQ1
+         sa6kCR8RGDfaizvv/oOAuzKrJDwwbaLhVK5fzM1fYn+2PqZ3yXhfxBaIa53AEWigNLVC
+         FPkq64HILNGGbqmKRGws4IjL03yyfFP42Y0JeboOsHhI+3ifqgsNzFAU0K0po/QW8KPj
+         hgrZvejcHLmQ6FxC3xT17hDJeO9b1ZToVw3gA1lHi3fF8KKQ8zyBP0A618AXOjJ1eiA3
+         OucfyOyFJrJFdrLHq2TnEeG3zWD3wIFCAEWrtcNzw2yG1+Sg/s/VHUYtLAi8AF2ibIQl
+         wwcA==
+X-Forwarded-Encrypted: i=1; AKwUvBzPBTt0XoPMKY1VhRxd3/lLMd4X2sqpf4uSpuf6zQMuLwB633PIYRQLdMXa+LiRANXrkDewTzk9A1K2sg==@vger.kernel.org
+X-Gm-Message-State: AFq9FYKj/VB/TiapaI4RqONflQtZ04Igw8b2QdBuTvJmxpN6i/GU6u5s
+	pluBxwjEk9QstQ5lSe779LFW+wFhi3rvNRjldWQ8u28+67lMvTC4rABXstuR30zcKGXF5dHxM2E
+	WVtY5cO2VXgbUC/SnzoKS0gMoH3OQU/OxM86n
+X-Gm-Gg: AYBFou07W44rxx9brvhFs4y43HRAdsprKSGmE0UU9ZvWgBqMyP22lIGw/lmgsZYlmnH
+	YmlSPlyBjcLIb/o7iJ9u6DAxbj+9ZtBBPcbFXcb5rShuR/wgicGHwic6WyAYv27gYCsofcq7uhI
+	Cv/bjVXB+6oejPIsC8TIybrbUld7HYnsPBxEeFmZ2KoUfpElfhslQIftq6l26Ov9E6lTXq9WAFO
+	+rTDsxOwGfiWaZvLimRvdM4jGh0sv7yak2xVQJuo/6ZfxJi4mGSaxCCIVlD9NXVJiJkTzgAQoBf
+	CBnGAtaRI1PySI0a9G6I2AsXzETaFXTDI2fJq+nLfwmn7oAUO9xSrL7Nr1ks7OrP0IfFzA+3k4s
+	lsaykojdgggZJOr8B2bk9ienSdlS2VHi4/Gi3KFACUw==
+X-Received: by 2002:a05:6402:501e:b0:6ab:e30:c9a7 with SMTP id
+ 4fb4d7f45d1cf-6b17c23e3bcmr6751589a12.10.1791741447143; Sun, 11 Oct 2026
+ 10:57:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261010144621.974850-1-linmag7@gmail.com> <20261010144621.974850-3-linmag7@gmail.com>
- <CAEdQ38Hqj9+5vui4j6s2-5OihgtiQGSM9L93RTYdp-PfGK0_mQ@mail.gmail.com>
-In-Reply-To: <CAEdQ38Hqj9+5vui4j6s2-5OihgtiQGSM9L93RTYdp-PfGK0_mQ@mail.gmail.com>
+References: <20261009115627.969047-1-linmag7@gmail.com> <20261009115627.969047-2-linmag7@gmail.com>
+ <CAEdQ38FAO=9V5VLbNCTE+8oyA4hcd2kYL0t=UYHkHTpWBj_-FA@mail.gmail.com>
+In-Reply-To: <CAEdQ38FAO=9V5VLbNCTE+8oyA4hcd2kYL0t=UYHkHTpWBj_-FA@mail.gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Sun, 11 Oct 2026 17:09:13 +0200
-X-Gm-Features: AclHuK8wAlJ2w8Hi5NCVzVlnkDCQzMFOzN9OC3Lxue_fENNRoRcIedsjd9ZKdVs
-Message-ID: <CA+=Fv5Rxgc_9Q=b+7hj5w=hY5-CWx7aKsSAs4vcCAo2xGedDuw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] alpha: do not skip TLB shootdown IPIs for
- kthread-borrowed mms
+Date: Sun, 11 Oct 2026 19:57:15 +0200
+X-Gm-Features: AclHuK-v0A-9qIiMWYRGUniSAjPB1V_8t7ZwGE_oKW-OkEmDc2yZJTZk47qD9nM
+Message-ID: <CA+=Fv5RSvMUVwCjvYnnA1ZJ3fvNiekc2XLP_SbL0oUFNiPacwA@mail.gmail.com>
+Subject: Re: [PATCH v5 1/5] alpha: move Tsunami machine check handling to err_tsunami.c
 To: Matt Turner <mattst88@gmail.com>
 Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org, stable@vger.kernel.org
+	linux-alpha@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi Matt,
 
-On Sun, Oct 11, 2026 at 1:34=E2=80=AFAM Matt Turner <mattst88@gmail.com> wr=
+On Sat, Oct 10, 2026 at 3:36=E2=80=AFAM Matt Turner <mattst88@gmail.com> wr=
 ote:
 >
-> On Sat, Oct 10, 2026 at 16:33 +0200, Magnus Lindholm wrote:
-> > This requires the preceding removal of remote slot clearing from
-> > migrate_flush_tlb_page(). It also requires the stale-TLB series to set
-> > need_new_asn on both the reused and newly allocated ASN paths.
-> [...]
-> > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > Cc: stable@vger.kernel.org
+> Subject: Re: [PATCH v5 1/5] alpha: move Tsunami machine check handling
+> to err_tsunami.c
+> In-Reply-To: <20261009115627.969047-2-linmag7@gmail.com>
 >
-> With that Fixes tag this will be tried on every stable tree, and the
-> dependency is only in the prose. The hunk context includes comments the
-> stale-TLB series adds, so it will fail to apply rather than misapply,
-> which is the safe outcome. Naming the prerequisites on the Cc: stable
-> line would still save a round of FAILED mails.
+> On Fri, Oct 9, 2026, Magnus Lindholm wrote:
+> > Move the existing handler and PCI error clearing helpers without changi=
+ng
+> > their behavior. Build the error objects for ALPHA_TSUNAMI so that all
+> > Tsunami configurations, including non-generic Shark, can use them.
 >
-
-Thanks, fixed in for-next. I've added the prerequisite commits to the
-Cc: stable annotations.
-
-
-> > +             /*
-> > +              * Ordered before any use of the mm by the mb() in
-> > +              * arch_spin_unlock(), when finish_lock_switch() drops
-> > +              * the rq lock.
-> > +              */
-> > +             WRITE_ONCE(next_mm->context[cpu], mmc);
+> > +obj-$(CONFIG_ALPHA_TSUNAMI) +=3D err_ev6.o err_tsunami.o
 >
-> "Any use of the mm" is slightly too strong: swpctx loads the new ptbr
-> and ASN in switch_to(), before the unlock. What the ordering has to
-> precede is the first TLB fill for a user address, so maybe:
+> Nit: nothing in a non-generic Tsunami build uses err_ev6.o until patch 4,
+> so that half could move there. Not worth a respin on its own.
 >
->                 /*
->                  * Ordered before any user access through the mm by the
->                  * mb() in arch_spin_unlock(), when finish_lock_switch()
->                  * drops the rq lock.
->                  */
+> I built each patch with W=3D1 for GENERIC and SHARK, and the tip for DP26=
+4
+> and EIGER as well. No new warnings. GENERIC boots on QEMU's clipper with
+> two CPUs.
 >
-> Fine as a fixup, no need for a v5 on my account.
->
+> Reviewed-by: Matt Turner <mattst88@gmail.com>
 
-I've changed the comment to "before any user access
-through the mm" as suggested, and refilled the changelog paragraph.
-No functional changes, your Reviewed-by is retained.
-
-> > +             if (atomic_read(&mm->mm_users) <=3D 1 &&
-> > +                 !mm_context_elsewhere(mm)) {
->
-> Not for this series: once every slot has a single writer, I think the
-> slot test is sufficient by itself and mm_users only narrows the
-> shortcut. Dropping it later would extend the shortcut to a
-> multithreaded process whose threads all sit on one CPU. Worth a look
-> after this has had some soak time.
->
-
-Interesting, that is for sure worth looking into.
-
->
-> Nit: the changelog paragraph starting "Order the slot reads" has a short
-> line at "Also issue smp_mb() after" that wants refilling.
-
-The combined TLB v5 and MMU v4 stack has now completed an SMP compaction
-soak on the ES40 with three CPUs online and CONFIG_COMPACTION=3Dy.
-
-Regards
+Thanks, I've moved that dependency to patch 4 in the upcoming v6.
+ I'll pick up your tag for the v6
 
 Magnus
