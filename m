@@ -1,95 +1,95 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 433B54A263C
-	for <linux-alpha@vger.kernel.org>; Mon, 12 Oct 2026 15:51:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 897AD4ACC69
+	for <linux-alpha@vger.kernel.org>; Mon, 12 Oct 2026 16:18:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.42
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791820296; cv=pass; b=UvsUiW63kyWUC8bX0eK9kfpuT/Ec/4JIwI0BoQXquNnRMcXOB6kdyk7n7/WTCFjLfTOTiT3rgw2yMWub9h2rmcrgWXAWhjBRroNGf+koH28O2GwxuwZqP8bTjr05MPby/aeZdv0R/m+rrcjDneiO+AVs/V//i+cbP4q84U11rb4=
+	t=1791821927; cv=pass; b=et0mAhM62Fhx+scMCUis+gTH7wsKl7JQmjZN9d/NaJp5znVgsNoA8d+G9U65wSHvXQ7ZLA6EZC54KA1OfBAS/mIy9dJlEgSsXp3ALXbw2EWrwXAisAMLFkwrdxYUVAOT676Tg1i3Eyji3NTV8QYO/uqvW506Hyw68IJFXbJwOJE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791820296; c=relaxed/simple;
-	bh=2HkM2JG2ntV4O9L1XnPwIDhp9hlRGoVV+6lp00SUDi8=;
+	s=arc-20240116; t=1791821927; c=relaxed/simple;
+	bh=qvVpEPzOzLifjD/7DmAg+LNyF2ciqW2crgsJsv4fMNY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RpChn8wAq8zbZtRD1CRmKwMFxyXUsi4BfgbIICCSv303vGSak7VQSHiUnSbraVpHWULslLaYOH+BpHtUaoh18pYW5PZYGFmrkhHxdT+ieTDM15hHiIpiob4IFpBI4B5MPs+T2OLvWB+W6q4pTjEkNUVeNV2ASX3hYaiJqxtTCBY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MAwRCGPb; arc=pass smtp.client-ip=209.85.218.51
+	 To:Cc:Content-Type; b=r1sYKlQP9IylL9SbDkkVPs+3ipkUFVkUAn/DhgjbX8Ydykw9U5s+xTTsBr3+p9gzs0gmJBMBuy3fGHRR4BclTU46bKRX3HSYbA5stKJ8kL4YDcarzhmpAcrxRuropwgRBh+UfdQNQqZIck1SS+dl+yZPtHG8AjhrqpqklVBdpNs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PsPS4BD7; arc=pass smtp.client-ip=209.85.208.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MAwRCGPb"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-c2e7496f947so326115366b.1
-        for <linux-alpha@vger.kernel.org>; Mon, 12 Oct 2026 08:51:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791820293; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PsPS4BD7"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-6b167ffd132so2984886a12.1
+        for <linux-alpha@vger.kernel.org>; Mon, 12 Oct 2026 09:18:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791821924; cv=none;
         d=google.com; s=arc-20260327;
-        b=l8WD7moPUOpaPS5pTjh9xLd8uV36cNW4zM3VOua4B2+wI0l9JEWrgknShmpllHWNj8
-         XfVn8sDP0wFf8gGbdYSTorEKpden02Lrr6ZDG7Q2HPcZHLjv8De47CER7cfAfGGSQXTC
-         XVhb1HMmlSLxBDuKFS0CZx4BqyFPo18vZQjdR9Hb9WPKJDzRECr13Cmcmt/rU80/jrTz
-         bqJ6vtBg/KL53C3ygQ6vTRRTfmdfq8lvGtN4MUuRPfI1f3+P0KtYMVM8eOLB8z6BHfil
-         f372grqh2+brG4yWxCwySKRylJ8NxkpRU7MxXj4N2k8VczoOUcTPP/dzFM38+bzXQGrZ
-         yZ8w==
+        b=rMBmgxM64ZWd/9uQ5MHhvAulrXyl86P4yFvMq/O3MeFu+ex7ErqcWXx75mgxXKPZiJ
+         RCejQnhX354JmIh47g0bkhX0duFxmo+SpTTIm9O/4Z9n8KoJFj4cOSjVI6Zab2qoPQW0
+         Uva8XUfe/2ipoadiSWs/e9sS2pIuxevHQpjegimO0YmEayCY0hfJuhElVeEU6FYkfjjE
+         /z6D6mJD6rXNkdgMUgp7yPtvNzqMHpSMmftzBV3CpWfsNELdEC09k8k73o82takfSFLT
+         CkT+kp9sItLv4TmQVK6q5qlQE2VJ/E8Zs6o3U8hAPMVSAvmKZZtpKAedsOmbwdsUboYp
+         5tGw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=ktNtTU9JVKl3ZfnOkIWLssk9gxWZSjBCu9lT+n1NcmY=;
-        fh=Lv2SfAQ2A9Y2mft0rgoSL5/pfa/jvWRGWSeWRkebMm4=;
-        b=UaHf/QpNoMR4ZLR4ihrsbXuPB4Z+nTNL27/Z3JJcbutDN2HwD5LCAf1/Qz/XFR0XNA
-         YwjuznZPKGzD0/KRWxNuQT4NvCi2EijnCixFohExLlWtiyjgZVmab6ybreNWtf0LK4Qd
-         sFLoZLMnInnKj9R6qhv3jwMfw2oHsHez3SshCGJFRTCd1Pa7ZskNWL4hSzFSOQePTYn4
-         18gWk3rTzDOjIgjbfo7/4ztCG1AMz8hqHffO3w7UN6C3+GyZxHwpc+ncHkk07qHIIZbI
-         Yb8g189C/uIUNJ0+58DyBSo0rtXSjAmM6EH5Y4frhEkHFp+kZLh4T36RUHSgy4EGlzbq
-         K0YA==;
+        bh=CUeAR5YurRmrLyPWT1WYCY1/iIz0jhnPKKa1Syh0wXc=;
+        fh=Fm2xPRNM20uywP69qwa0N191XauKDWY/8+Pdi6fu9Eo=;
+        b=R67pV7Jqj65fdNASRygVAMYOAqyUrXXefAHNoe98I5pdbF2ii+xa9GWmBDOui9JphA
+         jLn/bN9cQcxBV1QQp8QWITsK/dyoYfxBUCU95H8UlvQbrnFLgJJnF6nCsYuLiQmMhqKs
+         FOEBF3DnEeX7YKba2mMkiLfYixDemlwMkij+cEY2uKb54JP0hZn4de0yCHOp914xOhyv
+         JS3KLqeHZRf5yG6je4g23fosHzhQBTk7JedmjT59HVKlH8WiEGtfn+Vt2fRS/fyvjF6m
+         QX84S6gymQWW/BerzbjKiMNcmD3pG2n+p06q90gf4RYyISmM8rwnN0C9hykyUgBvSbAx
+         rFpw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791820293; x=1792425093; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1791821924; x=1792426724; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ktNtTU9JVKl3ZfnOkIWLssk9gxWZSjBCu9lT+n1NcmY=;
-        b=MAwRCGPbF0QPfcfV9LnuZ5kmzcZSsQr/euUjqbBg109DgnrDdDQlH30j26KpRK0iQl
-         JL5pmwQXyPs/Ko/IsrXlFrReAPp+f8uvp1M74hwpmJbekZxsVYzxKdiyNYH89O0XQG16
-         moK8vjGr+e2SUn+GikOB0h6Ky14moFiRs8W/u42bp6iBR3X4CDJeFCezN3W/hW8Ot3it
-         C4A5UUPY+N/kUEzMWp54N+nCDePa7mz0Zqg1yeu8WjACmZK0qu3Ekb3HvR5ufGtDBfkq
-         4CMUDTTVZ7LuOkzG6vdpSbswau6RzGI2QPzzob51y7vzH2grxM3ukwG7nYHrHPiux6EM
-         yQmg==
+        bh=CUeAR5YurRmrLyPWT1WYCY1/iIz0jhnPKKa1Syh0wXc=;
+        b=PsPS4BD7m2jkgUCxRdMk0FNY2z5ZY59lAfo1Ryo47UKC1ju9hpMh4jWUN90HEJprgS
+         Z+PRQR0N4FHO8/rzWt0K9670/ixmjyEGtvNvyXmSFP75wzZeEH1zaOf+tR32+jDFpJqe
+         ZuISWP8RJ2XqbFu/QDyph1iE0p49cMI7cNH2h8l9KfHhfAazx+pHtYvkqaU8J2jyCVaz
+         MPWT3vHhzxXm4aYP1+AwRiQnTVbGa2NXDJGCdNej3Mk7bHUkN/cxVzAnTNkZFN9McSQC
+         CXN4VzRUuv/vQwGi3HCnNaElw+i0BqDIwIZWS+TlnGoffcIcf4qf/5Yd6Ae5MJNOZL+u
+         qX9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791820293; x=1792425093;
+        d=1e100.net; s=20260707; t=1791821924; x=1792426724;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ktNtTU9JVKl3ZfnOkIWLssk9gxWZSjBCu9lT+n1NcmY=;
-        b=fjsb+rT4Y9Thhn3ptMIg72uvbFS5b0TZJYbpssOtHo6T1rKaKwHAIPcnoLWluxmEAr
-         iUsdT0bcsfiI/cXbGVdzN5MNYZNgHnp4KJzUqlcVT3W5hnyOzpYuElq/fm26LYAqqJaI
-         aJOly/5hi6nlR9fe1RBQ1D08Qx0f/RxE9y5cx+gi6VRMzhWxaH1hi0IWhlA3VnULyDDk
-         MB0PfXy5/DVRis/bvP9aSK4ZFMmFdMo2WZYk+K7gK4SLgDx4up7z9c6akgxlTrwjlxEX
-         RL6RrqoSvwIcO9WMWFbdSi9mMqquBUk8sP/ysSHEHLRnp/tkj/nnKd2s4u04wi8/fDoQ
-         7q3Q==
-X-Forwarded-Encrypted: i=1; AKwUvBzCKstw+8nNt0c9HTNK89huZOmtqJx6gms/n+HN/52/7Mvm4UgDKi1CiOKUiLTGbbSZeL+wvxpEFX/tLw==@vger.kernel.org
-X-Gm-Message-State: AFq9FYImp0JhmYt6S7SsTX6nfzbuA21xOgver5KrT2Ihj4vl9uMDiEI7
-	oUBCqAMTbP+ne/hAKcptyUB+u8b1lbooXLVJWzbOtktiwn8MA3Pu2/JKShDWd9Y2DYxzxj6RRVG
-	qcSUqiF3z6kdkHMR9Lbka3ah6IwlgDb8=
-X-Gm-Gg: AYBFou2FAj1BNQrnpqB4Ts3MEPAEIh3qezkpRRDBkHxsG4OT7U3ayyT9NV1pxlr8rrh
-	kDoPJacZbPPtSkid6E9pgI8QzdfKBO1OGsmqjNFNaDsnHGcR89see2B4ckvNRpfhvGWtiMDyboW
-	dZxN+byg3b3oEdAwSwF4vDrBDUwGmSl9RqggKEMt63RvgH1JcibP/U+BklZtXATNMU3NWhYfmej
-	hB/jWGhoxsoBL6Jjn2RXP0bAuy+G/gStjHIjzbX4LEYY7zlKVmU294g/7E0x0pMZOsj4z7qxim5
-	YYQ42+TzqYVP3B0q94rbNufDrnSNWG7sQmIFGFMxtHeCjs8DSdFNL1ltaSfdRU+lfNc56t4B47f
-	OQt8FCTtZqfg8zp2eEBNZQ5N8ZqH/MBXRhejpytWtkA==
-X-Received: by 2002:a17:907:9690:b0:c31:82aa:dd60 with SMTP id
- a640c23a62f3a-c31a9d0a5e7mr975742866b.15.1791820293222; Mon, 12 Oct 2026
- 08:51:33 -0700 (PDT)
+        bh=CUeAR5YurRmrLyPWT1WYCY1/iIz0jhnPKKa1Syh0wXc=;
+        b=vv4DS30WcYaDlTXP5l3S4EnRrap8Gxa27SXRBpuqXK0ibmjTTXFI4l//X5eqe4vNSu
+         vZvqqzdfMkMRhV7N5edAkl3JTCFzASce03X+qtouuK3N/LNVDMAoNEPaIh4Na83WggKz
+         vMu1Da/ifqZ+T/3sGiGeK27ITh6SGQe8m9LsHncU1zVsU1KReeFRQDrfajmefBGFwVaZ
+         wzzFGiR+37Q/sq27cYzg4OlRQb/csBxgi+Wrj495NtX4hCArMkViyZ/kbXc/Qxu4+bhc
+         Dv8ekhDFf5JLoJSkCt8zdUVOeikz38S8EIcKdcSdxcdOYNciZ2DWUWxKwyoxE9HdMZUa
+         N0mA==
+X-Forwarded-Encrypted: i=1; AKwUvBzCqSnMIOqvh007mjuozScZ4T88+Aj8NAJ8GbIx231h35KcqDyvGIYgACHTWvHgVCfCVaW87jzFhQgp6g==@vger.kernel.org
+X-Gm-Message-State: AFq9FYJr7uAVmVFRoguPMgSAAMk+WRXReX0o94nL1mObxhkSBIX4z8FP
+	Vq3tPSeGBXASN8uEm4WcrJLvM7anLRaxaDFUK38xQglvQwWAqIJWVVA6s9OMnlyGm3a6ycWTcCW
+	9HI3lZtMASv6TO7pydhCRc4Pk1N87tFU=
+X-Gm-Gg: AYBFou2Olsi88xV+wkpcLwtfHXFTqskkpONnCn1kNj9+NMma/AMQsmQwRdOaOwVZfwX
+	eaGR6l0MgfpyM7CQGBD03sxgtfxSMyelJHuFsIpiGmZlSvvbcG2YqN4ABBUMZUwq3TEHhFRPqCy
+	K2ToypbSmY8B1oYh4Oo8pu217f8ewgUaSFBdCeJW6Kab5PqDxNdhfVsE5Wz7NsqmpPaaRgKDzfH
+	TG2SfqiB0qPPwpBEwuq1RkVIHx9Xk/saBfPPlOJEac3g2WGEVz/k51ZWYV4SXNLbQ8AlA61neUj
+	wOP1UERjqm/P0DGBaTy6ASAwKYr3LNDaBrKIuqEVilR7KAc+DHn/gHXdzGZOs2uRM3o8A8RB6f0
+	+1FsA+nSIezI+HpKIp1aPDfjmoSQGZ8I2VnhbPR76PA==
+X-Received: by 2002:a17:906:dc8e:b0:c2e:4488:b8a3 with SMTP id
+ a640c23a62f3a-c31aa0850bamr1000531266b.33.1791821923522; Mon, 12 Oct 2026
+ 09:18:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261011-alpha-perf-regs-v3-v1-0-eaa625a39712@gmail.com>
-In-Reply-To: <20261011-alpha-perf-regs-v3-v1-0-eaa625a39712@gmail.com>
+References: <20261011-alpha-perf-regs-v3-v1-0-eaa625a39712@gmail.com> <20261011-alpha-perf-regs-v3-v1-1-eaa625a39712@gmail.com>
+In-Reply-To: <20261011-alpha-perf-regs-v3-v1-1-eaa625a39712@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Mon, 12 Oct 2026 17:51:21 +0200
-X-Gm-Features: AclHuK-xhWPZl4E0ja-mmL2ZAsaPkLiMeX7H21n80nyvvKlwLIZYd2jJw2alGQQ
-Message-ID: <CA+=Fv5Rf-DKCTSnex2_Y9o+VU+mbHhMNzLJyBQ1+9hTjHufXAA@mail.gmail.com>
-Subject: Re: [PATCH 0/4] alpha: perf register sampling and user stack dumps
+Date: Mon, 12 Oct 2026 18:18:32 +0200
+X-Gm-Features: AclHuK-nN_rEqA6xqbO4CkyZX0-XsUGhkKaJX3rrOmarOEgQAl1ktERcvGizgjc
+Message-ID: <CA+=Fv5RoxY0Bav9Q-E4FpEofokfB26ePOwPPWUmEDp6_sO5S3Q@mail.gmail.com>
+Subject: Re: [PATCH 1/4] alpha: fix stale user_stack_pointer()
 To: Matt Turner <mattst88@gmail.com>
 Cc: Richard Henderson <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org, 
 	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
@@ -102,58 +102,74 @@ Hi Matt,
 On Sun, Oct 11, 2026 at 10:16=E2=80=AFPM Matt Turner <mattst88@gmail.com> w=
 rote:
 >
-> This lets perf sample registers and dump the user stack on alpha, which
-> perf record --call-graph dwarf needs to unwind user space.
+> PALcode keeps the user stack pointer in the PCB, not the trap frame, so
+> pt_regs->usp is only valid where entry code stores it: entSys,
+> do_entArith() and do_entIF(). Interrupts, page faults and unaligned
+> traps leave it stale, and ptrace and /proc/<pid>/syscall read it
+> through user_stack_pointer().
 >
-> r9-r15 are not in pt_regs, so they cannot be sampled. An unwinder
-> therefore cannot get past a first frame that uses $15 as its frame
-> pointer (-O0 code or alloca).
+> A user-mode pt_regs is at the top of its task's stack, so find the
+> thread_info from it and use rdusp() for current or pcb.usp otherwise,
+> as KSTK_ESP() and the regset code already do.
 >
-> The perf tool side is a separate patch for perf-tools-next. libdw also
-> needs alpha unwinding support, which I am sending to elfutils-devel.
->
+> Fixes: 8a2857bc2b30 ("alpha: enable regset-based ptrace and core dumps")
+> Assisted-by: Claude:claude-opus-5-5
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
 > ---
-> Matt Turner (4):
->       alpha: fix stale user_stack_pointer()
->       alpha: stop storing the user stack pointer in pt_regs
->       alpha: use user_stack_pointer() in KSTK_ESP() and dump_elf_thread()
->       alpha: add HAVE_PERF_REGS and HAVE_PERF_USER_STACK_DUMP support
+>  arch/alpha/include/asm/ptrace.h |  7 +------
+>  arch/alpha/kernel/ptrace.c      | 12 ++++++++++++
+>  2 files changed, 13 insertions(+), 6 deletions(-)
 >
->  .../features/perf/perf-regs/arch-support.txt       |  2 +-
->  .../features/perf/perf-stackdump/arch-support.txt  |  2 +-
->  arch/alpha/Kconfig                                 |  2 +
->  arch/alpha/include/asm/processor.h                 |  3 +-
->  arch/alpha/include/asm/ptrace.h                    |  7 +--
->  arch/alpha/include/uapi/asm/perf_regs.h            | 45 ++++++++++++++++=
-+
->  arch/alpha/include/uapi/asm/ptrace.h               |  2 +-
->  arch/alpha/kernel/Makefile                         |  1 +
->  arch/alpha/kernel/asm-offsets.c                    |  1 -
->  arch/alpha/kernel/entry.S                          |  5 --
->  arch/alpha/kernel/perf_regs.c                      | 56 ++++++++++++++++=
-++++++
->  arch/alpha/kernel/process.c                        |  2 +-
->  arch/alpha/kernel/ptrace.c                         | 12 +++++
->  arch/alpha/kernel/traps.c                          |  8 ----
->  14 files changed, 122 insertions(+), 26 deletions(-)
-> ---
-> base-commit: 8f5dbfb93440d1aba216a1a34369a65654b94be9
-> change-id: 20261001-alpha-perf-regs-v3-7e23508c1ca2
+> diff --git a/arch/alpha/include/asm/ptrace.h b/arch/alpha/include/asm/ptr=
+ace.h
+> index 430e8dc27ff7..45d1229344b6 100644
+> --- a/arch/alpha/include/asm/ptrace.h
+> +++ b/arch/alpha/include/asm/ptrace.h
+> @@ -26,12 +26,7 @@ static inline unsigned long regs_return_value(struct p=
+t_regs *regs)
+>         return regs->r0;
+>  }
 >
-> Best regards,
+> -/* Helpers for working with the user stack pointer */
+> -static inline unsigned long user_stack_pointer(struct pt_regs *regs)
+> -{
+> -       /* Valid for user-mode regs */
+> -       return regs->usp;
+> -}
+> +unsigned long user_stack_pointer(struct pt_regs *regs);
+>
+>  static __always_inline bool regs_irqs_disabled(struct pt_regs *regs)
+>  {
+> diff --git a/arch/alpha/kernel/ptrace.c b/arch/alpha/kernel/ptrace.c
+> index e1d8c2f69688..dba7e9905cfa 100644
+> --- a/arch/alpha/kernel/ptrace.c
+> +++ b/arch/alpha/kernel/ptrace.c
+> @@ -440,6 +440,18 @@ ptrace_cancel_bpt(struct task_struct * child)
+>         return (nsaved !=3D 0);
+>  }
+>
+> +/*
+> + * PALcode keeps the user stack pointer in the PCB, not the trap frame.
+> + * A user-mode pt_regs sits at the top of its task's stack, so the
+> + * thread_info is at the base.
+> + */
+> +unsigned long user_stack_pointer(struct pt_regs *regs)
+> +{
+> +       struct thread_info *ti =3D (void *)((unsigned long)regs & -THREAD=
+_SIZE);
+> +
+> +       return ti =3D=3D current_thread_info() ? rdusp() : ti->pcb.usp;
+> +}
+> +
+>  void user_enable_single_step(struct task_struct *child)
+>  {
+>         /* Mark single stepping.  */
+>
 > --
-> Matt Turner <mattst88@gmail.com>
+> 2.55.0
 >
 
-The four kernel patches apply cleanly on my for-next branch. I built and
-booted the series on my ES40 (EV67/Tsunami), and tested software-clock,
-page-fault and hardware-cycle sampling, register masks and user stack
-dumps across all three online CPUs. The targeted tests passed.
+Nice work!
 
-I have a few review comments(I'll respond to the individual patches).
-The separate perf patch records and decodes the samples, but
-I cannot yet confirm DWARF unwinding: the installed elfutils 0.195 lacks
-the required Alpha support. Could you point me to that patch as well?
-
-Thanks,
-Magnus
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
