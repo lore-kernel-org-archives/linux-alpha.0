@@ -1,139 +1,241 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C28153AD50F
-	for <linux-alpha@vger.kernel.org>; Mon, 12 Oct 2026 04:58:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791781093; cv=pass; b=UoWk+28cNQQ/hWAw9JTOnXv2aCbTTNshMcUIvSwsd6/+2PNeoQuVlbwKg0SoqI68Xe0TFKIXZBxnC1x8vb7LfFgiJMCPZ4S9YKdDOY+JL/3g8lRmP0RfBVg1ewdkXAoTTzBirlv0BHdM7jEu1UCJhiJLlJ4abgeFBuMa4bVX34I=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791781093; c=relaxed/simple;
-	bh=CbeNc2AaMhtIK8r40L1vtYnXZoUmD9EShDnhDcrXSPQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PqB41Y/aFJ/cZs4ZIpUhlD6P699TAbrSuUC2t530la738SUzwU6XRZn+uuMlTDOkdza3UKmgnAMm7wo90aZjRQAzispUbA3w4ot/Kenwah8Zbb2BkDCcuqmBybQTS8Hj4nuB4wl0I3quvpPsmCUYdF/eUucZkyn27BAJe/klqto=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UeBJ0/qb; arc=pass smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF3AC48C8DC
+	for <linux-alpha@vger.kernel.org>; Mon, 12 Oct 2026 12:37:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791808681; cv=none; b=tWa33BELlXjQvPHOfht/PkhaHDqN/yDBU+tSqWj6yd50n/Mc1tE2TCsqjtTYDzMgBxNJQ0io82xqHZfkRg9oqm98IcHLmDOs7l9xw5wOIDAfE0n3uyWshaxNY21y4mrSm+2sCpaKwYrF+lbqUIfVikRk3oH7fq+dlEjydrZH9Nw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791808681; c=relaxed/simple;
+	bh=VH0AM69Ra+gB3iZQ6SWDCq1VTBUq+NfYyh42eZTZN6M=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WY+szMK9+y8fK2vIjOMeYIr7aev+iegstPnCJ8pI9N15D4EtI4H9n3yOmqyI6tAPCdSTiVK55w7T9lU9zNugP8taW1mP7bebQ19fp4X4UZ+xre9+ihYP0k7WwisacElw5ciCTyth3GmOtnBXFZDNbOnpVbLUK57d854nYD24thI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AHyFXYEK; arc=none smtp.client-ip=209.85.221.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UeBJ0/qb"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-6b1cc392d8bso269592a12.1
-        for <linux-alpha@vger.kernel.org>; Sun, 11 Oct 2026 21:58:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791781090; cv=none;
-        d=google.com; s=arc-20260327;
-        b=bd+zlyLTlZLojoTGnClqtPmJQvPSVHStvDLcB9/WqTwIyhv4uADc45m6UDSLGT8dR9
-         CAJmgUbG6tkuMjWKUHB+Ac2hlwI7EH4UpVocLODLpBD76/DSYcOusNuQSe5y02FxHpzh
-         LVRiojgw7+UdSpCh/Wy/JLrpIYWno4b20bzyu+dMY/N5chdBthU+EFwuBkJ9bVes1ksW
-         8Ka9jlsQvQIHznNTQRSCwBTICohPXcCOrPdiih1VqRa4zkEz8oEtMhzII+AoZSk/jU3i
-         xAKYUUEl/RJ913RC1GRN+eHRaCNjTxrF2lrx1AnTSD5jTENi5uabJfxeAURGMYbmFR8C
-         0FHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=BWJ08ytHN/opOqIBCvIGVsDXGqGAWZ+1JMUfudfTNpg=;
-        fh=1azpPjSdOJ+1NjmCAC+K+0cC/hQGX/1yaCjv3YyEIQ0=;
-        b=IoWnjhxAfPaXlXAXXnSH75sThE7S3o/qNLAJYjj/UJDoDnZSZe5o/19gJdZG9G09bA
-         P0RQ5+NSKEPj3NR0WU5gDEv3kwRPxPNWLOzMktctUWqK1CTYrvx9JDej71JpQYlOchKJ
-         a0aSZfYvS3l07WNqFm0fbPrmiR00LWcStzr5JzntyZ1XxlvOyZrt8cxAVrfpFkZemQ5w
-         WuqBOR7zQVUXP84S9wJ/BM9oXG4aXvgVoPm4fTbnckigomjXz6FwKZV8lppOM/k6wJkj
-         O7A58ThL30M2P/eKBK/xPjUfPPQUNZACQkbJcRekdYJL2Ea973dBRW2JnV0+NvnQAD8M
-         TngQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AHyFXYEK"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-48bbb06e746so1062688f8f.3
+        for <linux-alpha@vger.kernel.org>; Mon, 12 Oct 2026 05:37:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791781090; x=1792385890; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=gmail.com; s=20251104; t=1791808676; x=1792413476; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=BWJ08ytHN/opOqIBCvIGVsDXGqGAWZ+1JMUfudfTNpg=;
-        b=UeBJ0/qbkwVutzI3PJszlxt/NFhopJsuKy9vPURJl0ihJ/sjjk6uDwl1TXizXD62Ed
-         Ao8oLXkvyEdqyRcbdrdjH/ZEmrjbs731ZhYn4GKrPW9t6gMPWTEpEjXlZG8lm9TQVL+N
-         ISTE6Bs04K8Kg8n77F5CZumTZbgwQ2T42xyw27ruHRhV4f1lnOmyOD4fYKtwCfpuDcax
-         osbzyjCkX1u83YVEU/P9lIP+/Dg3OtjjHhHoSAVJox+opwbJV/d6XgfwLwMUWhDVSihe
-         7grdXN8stDnnaN6bC1RQZElcR/KoBZgH4O0Whqo8NpUA6nSf93RxeDXzbDZY8YF3wZrK
-         xemg==
+        bh=FAa1zh2oFmbuGXbuxB3nKxDGq0l8J98l2LtUP9fmNNc=;
+        b=AHyFXYEK9PVW3OlQ4XLbP62vQBFVIyoKzFxnXAZ8DPf0iTldGDhpPsEOaZ3sZ9yKRC
+         4I299NxDfuU01EIwt3Cp0zNc0OJzQs3Ucg0afDMds2155iCz3A5NhMFehys84ZcHIvDz
+         Ty7dzLmbaBvHrF0XqHEZs18xAuIAPDmV5OpJQ1PqA/haeCIfmSgI9D44TbAXvUXdSsr9
+         /NKxqeYqyj4aZDAwCyJCQsS8snOFR4CsGgRB3cTC/rNwtlOPdu8zgIYYW6aRFVK33nvQ
+         IRKdA+CFI2yztZ+L/gw3QvMVuF9N/KwRNSUTKI9nNIHaVJ3dT9fw4fYIGhE5CXMzajj2
+         qJ/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791781090; x=1792385890;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1791808676; x=1792413476;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=BWJ08ytHN/opOqIBCvIGVsDXGqGAWZ+1JMUfudfTNpg=;
-        b=rfqBA1/PhDsK86XERV4ikVKAo+OD+t/Li5kidHdYp/P8d41FQCuHUgm7zf7Gip0brt
-         0wNZ2MMgtfjkJIKuFdZx/TyS2X9zAlFFtIUz9ueIdK/1NlpVSku4ORzEpvJoSy/js9aa
-         duN6Cq6BIvUcNerUMz+5Nca51djJp0atIkuhbwheh0pABRNYkfc6DD9DsLZDTn2w9Oka
-         cTWFPfQHdtgryJNIfxN32VaQKjsED97zUWAN9vUPUlTJll5pQl9vu41vUieW3l8me0sh
-         1N6A2s7g21DuCi83L4kq0cfZqmKaKXB1nMBD4zv9k/uT0cHK07MGG0vlxdK8NiOqcP8g
-         nMNA==
-X-Forwarded-Encrypted: i=1; AKwUvBwt0BjQxALWRJcLM5miq0u7oIJwcLIKfP88L+NrJ/ucTpotX90Z+00d94x/ZuHVNzVprTDw1y8kMGZrpQ==@vger.kernel.org
-X-Gm-Message-State: AFq9FYL7t7xGejer4DGisP9dDKSU3Smlld74L3mQQIkEThFuuF6a3x7g
-	aRVSeP/Hs8NDnloqharYpWpXJG9IXzMnCrpSc3QYY14anSzbFQxGDXTGVA4wA4STdF4/0a541Ky
-	5YKp3GOHkp/hgsla92p1ed2GyX9ljGmjJy9qUbLg=
-X-Gm-Gg: AYBFou2DBiMIk2whkwK1337RihQ5kpsEeA6z7PJ8bE5BQzT1/9G2yxMemSGaZMBqLbs
-	6z06vrKHuFaKOdWGCHtUn4sUAInfxN//k7fa6yGYsfQ4auTFal+PGgFROddRDbFxv9yu/aZVTK8
-	fsXkaU0kZGxy8iDrhD1VooWB0CwenhnOd+opBRrnmJOEwWTje8/WkdIcXN7+kR6B7DXrpDlDXGZ
-	5MADmZKP+ddhdzM7lMDgPEWzoNu2XQGefx3XSQt5Ww+W9fP0e2eWDLGEYAtYNtw0PO8GMYTJM8a
-	pHNBsYZTXoCW1AeE65k7pqoGesFfd9C/I+IJb3L3XM3Q8HgY3RLrs7tF9GHJeu8EFX0FvJ0Efwd
-	i7WnXn4p3Vl26CQQKzITk7E6R3Tf/KSUgCk+aAjq4zA==
-X-Received: by 2002:a05:6402:1ed6:b0:6a7:f5a1:88b2 with SMTP id
- 4fb4d7f45d1cf-6b17c2a41fcmr7878845a12.14.1791781089790; Sun, 11 Oct 2026
- 21:58:09 -0700 (PDT)
+        bh=FAa1zh2oFmbuGXbuxB3nKxDGq0l8J98l2LtUP9fmNNc=;
+        b=sfYJT/p3+3w+/kdDNoekPUUUSpTIL0a6nHpjqkXZVhdJPQgbFptywEjKIIlhu8Whuw
+         dLFdTlhLCsBIYJ9BN7vpcYj7aXUNGd/SSJE0BaTvakFRk3RqPiKCa6Vs/6/rVBOsdapl
+         WsQNnIag7hQFfVhMCfHLbpmMXDdMEgpp/6RngliX1H6UBnOIgRK638+h+RoRmQctmyO9
+         thOJhEw562tldD3fdabQpzbVGCNRtGrCphTkZUH53e4gul3xaxvnX5YbFj4EoqHKnZoj
+         JRB1aMbDJ2u06YGAj2RVWIrgqAmAwypyuDc6PEKVy+yDOQm0wGj1/IQteOGD3KrI3MtL
+         KQ5Q==
+X-Forwarded-Encrypted: i=1; AKwUvByktTOblBqpuSub2iqX1MP0lpH+ws4J32XpEVw6ekIlGOop9QOrgdOzTfPYQYsTfnRXLrfNnyB+OpoNXg==@vger.kernel.org
+X-Gm-Message-State: AFq9FYKd1hU9D+eedz181ZBnomUqm/s3POBxUk3qR07owv+JF0AAndBV
+	ct5qUmGPS8iBYMIOJTxvohA8X+jV+Dv3W6YLFBlC4PrfLBIXREx+vAxd
+X-Gm-Gg: AYBFou00k6ECiohCP/W0cjsn2ODqDhnIthfuTJJPY+UA3IlGeKXItys8Ax5duxeZANb
+	ggxSWhQELgvZ35gXKjQs1hJ/7/Nbr7T9UtEiw/BexkdW/OXm/rx4APy1zRW3nyyQBqQsJu1EG9g
+	/iIiyNk+4C4EM8fPwugioVOck2NZXvLYR45dWXsfp08eOCCxDRqpN/E6gQFUBQL/Fn3LU9zYhAH
+	lUxqoVsmJBhJfplicnGpdH2rnc4MEHZAGbZ/q6+ubFPh26Pp3n8vw4LJA8tNMZnOLXRpexJ3kia
+	uEsmTawCJ1Xdl+NTz7dQqwx/hoq4ZwGlDmBgGwe/4aJj+39HWTcS4AHloqu9fgPtLeXKsw95JD/
+	WnittH3QLzMfN4/yY2pxKcx7/NGF7TRdHAmEGKgWG7bWTjxPOyy9WiTeICg1kga9HDy/Ks0lX5X
+	DX1kKIP1m2Ut2NsS8+ilTZFgcnuMN2Shli4BPPg4Nx8LmOWXIpRYUfxfDfw4RIiMhQKWtjl86v4
+	h6t6stUW38I6qPDNT5sKF2/MmXBHBSmQWE=
+X-Received: by 2002:a5d:43cb:0:b0:48a:f59f:8b70 with SMTP id ffacd0b85a97d-48dbaae4c6cmr13859682f8f.46.1791808675476;
+        Mon, 12 Oct 2026 05:37:55 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48db9ae17e9sm19599710f8f.57.2026.10.12.05.37.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2026 05:37:55 -0700 (PDT)
+Date: Mon, 12 Oct 2026 13:37:53 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Matt Turner <mattst88@gmail.com>
+Cc: Magnus Lindholm <linmag7@gmail.com>, Richard Henderson
+ <richard.henderson@linaro.org>, linux-alpha@vger.kernel.org,
+ linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
+ oe-kbuild-all@lists.linux.dev
+Subject: Re: [PATCH] alpha: add 128-bit shift helpers
+Message-ID: <20261012133753.3a5868e9@pumpkin>
+In-Reply-To: <20261010022039.1610210-1-mattst88@gmail.com>
+References: <CA+=Fv5RJpeusA2W4rRHOJMPRn8iF=OngRy05X22Myurs0wA-sQ@mail.gmail.com>
+	<20261010022039.1610210-1-mattst88@gmail.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261011191344.981000-1-linmag7@gmail.com> <20261011191344.981000-7-linmag7@gmail.com>
- <CAEdQ38GoGhoaoymQER16qF2NHwhOGjGsTh68B8oqSzeR-LL-uA@mail.gmail.com>
-In-Reply-To: <CAEdQ38GoGhoaoymQER16qF2NHwhOGjGsTh68B8oqSzeR-LL-uA@mail.gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Mon, 12 Oct 2026 06:57:56 +0200
-X-Gm-Features: AclHuK9J7B4YJ03biBN9Djiaei2hQpnXUSq3U9jXETC2EPL7QR24Bon1lKqKQPU
-Message-ID: <CA+=Fv5TC4OTgVKXdnqDWawXBm4M1m8ZHPJoX6wL8K8fdyPo5xw@mail.gmail.com>
-Subject: Re: [PATCH v6 6/6] alpha: stop on fatal Tsunami system ECC and write
- parity errors
-To: Matt Turner <mattst88@gmail.com>
-Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Matt,
+On Fri,  9 Oct 2026 22:20:39 -0400
+Matt Turner <mattst88@gmail.com> wrote:
 
-On Sun, Oct 11, 2026 at 10:01=E2=80=AFPM Matt Turner <mattst88@gmail.com> w=
-rote:
->
-> > +#define TSUNAMI_PERROR_FATAL (perror_m_uecc | perror_m_perr)
->
-> Why PERR and not RDPE? Bad parity on data read from PCI seems just as
-> bad for the consumer. If the HRM says the Pchip poisons that data and
-> the CPU takes a 670 for it, please say so in the changelog.
->
-> > +             perror =3D live.perror[0] | live.perror[1];
->
-> The changelog says incidental PERROR state on a CPU or environmental
-> vector cannot trigger the panic. It still can on a system vector: UECC
-> or PERR latched before an unrelated NXM will panic here. That may be
-> what you want, since the error is real either way, but the changelog
-> should cover it. It also depends on the PERRMASK question I asked on
-> patch 4.
->
-> Two things that I think belong in the changelog:
->
-> A CPU-detected uncorrectable ECC error (670 through
-> ev6_machine_check()) still does not panic, so after this patch the
-> policy differs by who detected the error.
->
-> A PCI card with a marginal connection that asserts PERR# now takes the
-> machine down, where before it logged and carried on.
+> Selecting ARCH_SUPPORTS_INT128 lets generic code shift __int128 values by
+> a variable count. gcc open-codes such a shift when optimizing for speed,
+> but with CONFIG_CC_OPTIMIZE_FOR_SIZE=y it calls the libgcc routines
+> __ashlti3, __ashrti3 and __lshrti3 instead. The kernel does not link
+> against libgcc and Alpha does not provide them, so the link fails:
+> 
+>   alpha-linux-ld: lib/ubsan.o: in function `get_signed_val':
+>   (.text+0x1c0): undefined reference to `__ashlti3'
+>   (.text+0x1f8): undefined reference to `__ashrti3'
+>   alpha-linux-ld: kernel/time/timekeeping.o: in function `delta_to_ns_safe':
+>   (.text+0x2ac): undefined reference to `__lshrti3'
+> 
+> Provide the three helpers in C, as s390 does, and export them for
+> modules. They are built into the kernel proper rather than lib.a so the
+> exports are present even when nothing built in references them.
 
-Thanks, these are good points. Would it make sense to drop patch 6
-for now and address the panic policy in a follow-up? That would let
-us consider RDPE, CPU-detected ECC and previously latched errors
-alongside UECC/PERR, including the impact of a device asserting PERR#.
+Do they need an explicit (shift &= 63)?
+I've seen gcc/clang remove an explicit '&= 63' because they know the
+hardware instruction ignores the high bits.
+But I'm not sure what happens here.
+Adding it won't make much difference - unless it matters.
 
-V7 could then focus on the reporting and acknowledgment improvements.
-That would preserve the existing continuation behavior for now,
-without implying that continuing after an uncorrectable error is safe.
+David
 
-Magnus
+> 
+> The 64x64 to 128-bit multiply is always expanded inline with mulq/umulh,
+> so no __multi3 is needed.
+> 
+> Fixes: fd04433a5bf3 ("alpha: select ARCH_SUPPORTS_INT128")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Closes: https://lore.kernel.org/oe-kbuild-all/202610090831.DSxrGQRc-lkp@intel.com/
+> Assisted-by: Claude:claude-opus-5-5
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
+> ---
+> Magnus, this is an alternative to dropping the select. It applies on top
+> of for-next (496e328c6107). If you would rather drop "alpha: select
+> ARCH_SUPPORTS_INT128" for now, I will resend this without the Fixes tag,
+> followed by the select, as a two-patch series.
+> 
+> Tested with gcc 16: defconfig plus CONFIG_CC_OPTIMIZE_FOR_SIZE=y and
+> CONFIG_UBSAN=y builds and links (vmlinux and modules, W=1), and the
+> helpers match the compiler's inline shifts for every count from 0 to 127
+> in a userspace test. Not boot tested.
+> 
+>  arch/alpha/include/asm/asm-prototypes.h |  6 +++
+>  arch/alpha/lib/Makefile                 |  2 +
+>  arch/alpha/lib/tishift.c                | 70 +++++++++++++++++++++++++
+>  3 files changed, 78 insertions(+)
+>  create mode 100644 arch/alpha/lib/tishift.c
+> 
+> diff --git a/arch/alpha/include/asm/asm-prototypes.h b/arch/alpha/include/asm/asm-prototypes.h
+> index c8ae46fc2e74..672fea15032f 100644
+> --- a/arch/alpha/include/asm/asm-prototypes.h
+> +++ b/arch/alpha/include/asm/asm-prototypes.h
+> @@ -17,3 +17,9 @@ extern void __remlu(void);
+>  extern void __divqu(void);
+>  extern void __remqu(void);
+>  extern unsigned long __udiv_qrnnd(unsigned long *, unsigned long, unsigned long , unsigned long);
+> +
+> +#ifdef CONFIG_ARCH_SUPPORTS_INT128
+> +extern __int128_t __ashlti3(__int128_t a, int shift);
+> +extern __int128_t __ashrti3(__int128_t a, int shift);
+> +extern __int128_t __lshrti3(__int128_t a, int shift);
+> +#endif
+> diff --git a/arch/alpha/lib/Makefile b/arch/alpha/lib/Makefile
+> index 84046e730e6d..f77d4a46f2e6 100644
+> --- a/arch/alpha/lib/Makefile
+> +++ b/arch/alpha/lib/Makefile
+> @@ -35,6 +35,8 @@ lib-y =	__divqu.o __remqu.o __divlu.o __remlu.o \
+>  	callback_srm.o srm_puts.o srm_printk.o \
+>  	fls.o
+>  
+> +obj-$(CONFIG_ARCH_SUPPORTS_INT128) += tishift.o
+> +
+>  # The division routines are built from single source, with different defines.
+>  AFLAGS___divqu.o = -DDIV
+>  AFLAGS___remqu.o =       -DREM
+> diff --git a/arch/alpha/lib/tishift.c b/arch/alpha/lib/tishift.c
+> new file mode 100644
+> index 000000000000..488e1e483d48
+> --- /dev/null
+> +++ b/arch/alpha/lib/tishift.c
+> @@ -0,0 +1,70 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * 128-bit shift helpers.
+> + *
+> + * gcc open-codes a variable 128-bit shift when optimizing for speed, but
+> + * calls these libgcc routines when optimizing for size.
+> + */
+> +
+> +#include <linux/export.h>
+> +#include <linux/types.h>
+> +#include <asm/asm-prototypes.h>
+> +
+> +union ti {
+> +	__int128_t val;
+> +	struct {
+> +		u64 low;
+> +		u64 high;
+> +	};
+> +};
+> +
+> +__int128_t __ashlti3(__int128_t a, int shift)
+> +{
+> +	union ti ti = { .val = a };
+> +
+> +	if (!shift)
+> +		return ti.val;
+> +	if (shift < 64) {
+> +		ti.high = (ti.high << shift) | (ti.low >> (64 - shift));
+> +		ti.low <<= shift;
+> +	} else {
+> +		ti.high = ti.low << (shift - 64);
+> +		ti.low = 0;
+> +	}
+> +	return ti.val;
+> +}
+> +EXPORT_SYMBOL(__ashlti3);
+> +
+> +__int128_t __ashrti3(__int128_t a, int shift)
+> +{
+> +	union ti ti = { .val = a };
+> +
+> +	if (!shift)
+> +		return ti.val;
+> +	if (shift < 64) {
+> +		ti.low = (ti.low >> shift) | (ti.high << (64 - shift));
+> +		ti.high = (s64)ti.high >> shift;
+> +	} else {
+> +		ti.low = (s64)ti.high >> (shift - 64);
+> +		ti.high = (s64)ti.high >> 63;
+> +	}
+> +	return ti.val;
+> +}
+> +EXPORT_SYMBOL(__ashrti3);
+> +
+> +__int128_t __lshrti3(__int128_t a, int shift)
+> +{
+> +	union ti ti = { .val = a };
+> +
+> +	if (!shift)
+> +		return ti.val;
+> +	if (shift < 64) {
+> +		ti.low = (ti.low >> shift) | (ti.high << (64 - shift));
+> +		ti.high >>= shift;
+> +	} else {
+> +		ti.low = ti.high >> (shift - 64);
+> +		ti.high = 0;
+> +	}
+> +	return ti.val;
+> +}
+> +EXPORT_SYMBOL(__lshrti3);
+
