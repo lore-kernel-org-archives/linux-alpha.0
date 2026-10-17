@@ -1,157 +1,153 @@
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69BDA3B9950
-	for <linux-alpha@vger.kernel.org>; Fri, 16 Oct 2026 23:54:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.172
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792194883; cv=pass; b=kmRLLetzqAN+TTCs9B1mxnNWncF4fmdyyrjXkjJHU2HZ0sm9/JW2TRVN/NNUZNPfXRRG7sjogYoxkF7FcUV+WNgSx/cN+hmMwtS8k+mZXohBzBI3LSlG+2F+SmCLhwyMEWIrhGmaxgrsuokg3HttJ1QjFtSO6jA6nDTimbRkPWI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792194883; c=relaxed/simple;
-	bh=Xu70sCv6gBchM8XqIWDLSGQJVvPN3Uu3ZYyJG0fpoHo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=vBqdpHNVTHot8kI3SAF69L1/UFasrFAvsRdasIGbFMgNR72zcIgIATPmivmLQmCp+gPB9KpvZLAcjEqOv4nw76UP8/kCECmuPAQ073JolWypi7omcaFN5Wm1ueffedU1Ux9TAyvfDRdjiosxQp3LYtIvHWUbPGYlqWdth/AYcYw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JWhiWKXw; arc=pass smtp.client-ip=209.85.208.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C408D385529
+	for <linux-alpha@vger.kernel.org>; Sat, 17 Oct 2026 01:55:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792202157; cv=none; b=MQVzRC/aKn7p/Bj8mDi8e7lV+EthCzwBLMGN6EyiJxP8w/Q0mFuOY8QFtjPKwvrHEOZbgvgX0gbaKIXuuH60bStxsoKWg5UnWs9P2KeburEn7aUz9FUnkyAfQG6GtqpHti4H8xo7LtA4NwzbOrGiYDl5tocLmSUEfez77jxZ2Ms=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792202157; c=relaxed/simple;
+	bh=amj26N7GBgNkKSic738dtOdhoZO7SxmjDL8PSryCbBM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=n0BwY0nSL83eTYXKAy750QC3DbOlvibcnKvQ4Aee4f+4Ll5YL7++YN8hcsXcr7pHYiKChq1qyOJBkVdrdIvcqiAf5cp60MSYl1MxZn3I/eH0McbMMqsKBrgPEwkCg9dU6pW+zQA+F1l476M+bf6TwoTruKFdrYteFZy72Gk018E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KyBIzeHZ; arc=none smtp.client-ip=209.85.128.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JWhiWKXw"
-Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-3a60cb94b80so4283631fa.2
-        for <linux-alpha@vger.kernel.org>; Fri, 16 Oct 2026 16:54:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792194880; cv=none;
-        d=google.com; s=arc-20260327;
-        b=evqSDpHRyyyC5yN9Ma+SFcZzCt4G8iwi9QYlzwLp9jT/D6RdSCefGNiJjMozvH5Fob
-         T2eHPOxoObHvTGsKPhGBkcfgms6CcIkaCkSTLcE2I5+d6O8q7XHYRJJ0lA3OR+Ds2yW0
-         WMFmR06ooHWig6en2VUqkt2P+FNfhky8Mmbn+tRg1HPUDdwZACbtMO1hkYsICIl8A+V1
-         +ouKkMi6Mn2KFJAOv3Mavrz6hdwG7LVjAugSzKgt2Dmqq3P+NCA1hInqW2t5J5/LQFFO
-         AhzLFfd5/A5oGK2cPkCOLR6Cyzf+KsFo560KYeAmUlly0MNKnHczQOIMIT+nc9ScLHcF
-         cePQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=hPUuJtr2Z7cXgheskjaddEaTgz9tX41V1DHpHN9aHT0=;
-        fh=Cv1wMBUpcdYGI0mg1LPp2wD/XA/FHtxtHzvn4SmZQ7E=;
-        b=rX4XUM4avteZ/xK0uBaVvjjU5d0UuumJga2WoVXdqbSYA8bR3R1PGgx/rd1nhrxZN3
-         oy+dmki7nIrTEB0aUNDN+ZHKudU6zWV0y0JyOkQS+5EHCBnOg6Xjd9LEsXD+5NxSDiJV
-         +jMnzAw8GzvPU4j0pjlhIOUKETXrIXjlcJdXzrp7pqx1RNuH99peR0hzjEN1Yv6RlD60
-         pmpyGMuV3zAg1KNYnOYWaA+NfUJifdDmZCQxQYj3TG4EB8nOkzGuZ+QC5AoQrdZRGKo8
-         3RQSSqFQeCm9M6Xc57mmqULL3BA1FtN0xORDD7Ii3WQeebHejP5azA3UhV3ERoPFInyM
-         l+NA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KyBIzeHZ"
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-8b0c5a64de8so14316477b3.0
+        for <linux-alpha@vger.kernel.org>; Fri, 16 Oct 2026 18:55:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792194880; x=1792799680; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=hPUuJtr2Z7cXgheskjaddEaTgz9tX41V1DHpHN9aHT0=;
-        b=JWhiWKXwvq1E2jNbMBDl/rLpYYXleh6ovNmddqYaPDKpiGcm7RR8XC5VCMkPSiTqH4
-         4Lrro/f/ArobvNZJOfiRS8sfH8dKHgmjugdph4Dtg1Z9zz0VTvxPgyRQT5wzHTEsfzdx
-         5GMQORLxJw94S2ZuAj+9IXQSBvLKO3w7VuiCcL4CYFeHEGO56gr/GYRVngriTEo5EACK
-         9J9iZiglBo5KflyIJcqiyC64XZc0fU7jelhfiG0SsTvV43EXXWBztos4KBfltY0GU6Ik
-         tcZowYIzspmMOUcw/WXdZsTBPjFJGocX0wm8C77t0jI31Tr8oXdKpnS1aCGVxp+4lq+U
-         qxsA==
+        d=gmail.com; s=20251104; t=1792202155; x=1792806955; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=V5KfIFOpzzVgEmADZkACyBVWel5cim9UCxoXS8oTCY4=;
+        b=KyBIzeHZBFSGJopzAV18TAIGtbwWivzxYOmavLodDM+juWnRhEp1Kr2nVTf+a5qUKg
+         v5UrzbO2cE9p4/lDVSr7eBNay8uE2rE6nVFmR4qzGVjdJbsYEBZvoapqRdnUwrKdnXXm
+         ReqML3nKDFFB8VqwE65GTlQ4P2t7wiAtB/nbREheOC8IfUIDHpXAHYozodQJ3xbpTrGl
+         lvnyeVPOOuCQGUCvWldw0SwEFOrDNoUOAJDhBWw6ST+accIwCRddSIDGmyGCgwMdQyr3
+         a1C02yAEpLFaDidk1FShhi1pKeL8Ec0tIaAERm9GTYuLwzXFs7alNGnFO0ekayT7WRK3
+         lI2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792194880; x=1792799680;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=hPUuJtr2Z7cXgheskjaddEaTgz9tX41V1DHpHN9aHT0=;
-        b=GqlayJD+WGAXNY7cA17+Do92jVkBN0ppAey+o8KMaC3+MwY1JqYcUAzUkoyqY4QwW0
-         9D0aVtsK7njDktkFEHEj/WWZDtI+0AOH2B8NVptFPgh06rvg62xVrc78DgB/fJZgVEU5
-         G7e+u+Wyy8yVJVwTteOuKmMWfn//7+ckrfco9W9Whil0JHJHFoj6RoD5oy7eZVKQIA3/
-         csgsgUsqoh2rOhrxXj8b3IMu9nfnrncu+PbZX9rzlrnTJhnLP5pu4ie9lVQxBnVd9r2n
-         YVoiZ8k4FCBn0DYxIDTfgqSBVccdpUe9jQ7SZaMsAsAS515EtXXHCXFc9HmQNubXdjTM
-         XwlA==
-X-Gm-Message-State: AFq9FYJr8HyC070ep+B8HyG0J+csoe4IaDVAh8OR8VW8HrBBdXIQgvPU
-	AcHCqeoosJItsjYGuu/56ry8RK0fAZn66VDmj7+0p2amqcwaF+/Gz5tdND6t0xxIntJDAofZTS4
-	l1nfBUYKQzX6bhNc6NhyxLcLJ4xWy8VA=
-X-Gm-Gg: AYBFou0slT9qp5a4Xxmn00ZOxBvpcu7K5RIMDnhVM4qdOXenGc4QJh45ciZ9c+WsHdm
-	xAgQMwtEv5BBs7yp7xGGc6yJ7CMQDCY4OrakKg7F7+ryTxXwVxd9NHof7lqltpzxYPvYs72b/62
-	unv9IHp9C6NSwLaTWtVtkGtbNIFEB+RsvJrG+AhfbUpCFggOjRE9YUYuXmHW3lK3jl49wbiqTHv
-	eOvvJ1owJ5Q8YqrkVnyK+R0tGqnYYUnUukNlcWlm/ddVT6+jKdaAX6itPm9ckeh44tJLfdpUGlM
-	3mVMe5pqzqk7GpJbzOlszHoLnyPuzIWE9/OhYSld+G0F4meXnn7LnwkTTFfmUokCa6G5ZCpFKzv
-	fN4Lpz0lovQS8BxWvi5loarSb5T9IlxaGAv9bzQ==
-X-Received: by 2002:a05:651c:b11:b0:3a6:622a:2cad with SMTP id
- 38308e7fff4ca-3ab2928a0f6mr2581751fa.10.1792194880130; Fri, 16 Oct 2026
- 16:54:40 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1792202155; x=1792806955;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=V5KfIFOpzzVgEmADZkACyBVWel5cim9UCxoXS8oTCY4=;
+        b=TxU0aPZk0ktlRDniv9p4ECeHl8oUcGU/kuKfrGO6z+aUtQyp6VlwRHKJ1CUQ/6l05n
+         aOkNwRmfC7QBZ3lSpNqr3hwkoD4Jfw2aWXi+AxeYs4S1pusWxERHAAUX31v3IA/sv8ys
+         bFpusr12RHAzpV+kDrtViGDCsIEjq0RgiBCn4sb8XtAuM9Vq23ab3VamH6IO8ySafYLa
+         Ad35pfE7MFIlfcuyMww0zBvejz5pTTq8ED/zM708zXua7JSCZLHL4KxXDBUzyE5ziWj0
+         qhA9mVsiDaQ6vigUi7iVBQdLd+XzCuBGWO107g3GszydUiVDxGQbH9ysDg6V0suVsrOW
+         USAQ==
+X-Gm-Message-State: AFq9FYLCvAHs8y8CUD1AB53vxXG5ZIfwUi7I/bHsfjce+yKaTTPqoKBC
+	2n0lEcwjnRetX1WRnRRJbpvka5HFzyUtLKGqtciEtMZbKAihUt90Pzkr
+X-Gm-Gg: AYBFou3icYpiukYKM3JnUwvDhmDFvt66VTWnvhaPf4h75A7YbjzxIzptBjhWROqwN/k
+	1jYWQzYslIjQRRKSgLFi0oOOlGlnbDhO9yqPC1pO0GZDbYBWiHyDGvH9aAvNud0nWncEAy0Ny0b
+	ohLehwqxYXeKoxQMOsRKS2CoAbu7yD/HFq5Dux5h2Zkntsq8kiYRglJ9E4EPvOIfVZCasqoDDi8
+	PUFyf6xz4XN9oBpO4GNZ7DoH9lhMj1IW8xV5SMHJzzU8cNlhHig2yPHS1mUWuaw2n3EnO0hCbzY
+	yLSNwckg5SCUexOZRXfqiUspYk5tzXCl4IqPoj2MpF2SJuDVEIwO2a07d4ld6xqcbeqDQ1Uxpf0
+	GMNQ1Z7qu9IaVKR7a6dBmRxqU4S6azJMkwTLaDZp3sFoveWE1yoctFAFfYqo9LU7Bkw5ZJKABwT
+	Fwv7tbB7RtO/PdRWZpwNOUxyR6Xgs4TONgOeIPjRYRIw01MpqbWpYv+SCvgfn99lZeuORG+RX67
+	E3MoPi+EhikijlS5B0RIhLLb59AqLxpr80FdMyyVlCAqkreRCnEHUUpmPwzLSoy+M8kyen9s8oR
+	ljHknSS/zA0Wu2L+M7FqibaVNui9
+X-Received: by 2002:a05:690c:60c6:b0:8b0:56e6:54ff with SMTP id 00721157ae682-8b0f20f2b8fmr6810397b3.6.1792202154647;
+        Fri, 16 Oct 2026 18:55:54 -0700 (PDT)
+Received: from localhost (108-93-236-139.lightspeed.chtnsc.sbcglobal.net. [108.93.236.139])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b0e590b586sm15829807b3.31.2026.10.16.18.55.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2026 18:55:53 -0700 (PDT)
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PATCH v2 0/5] alpha: perf register sampling and user stack dumps
+Date: Fri, 16 Oct 2026 21:55:46 -0400
+Message-Id: <20261016-alpha-perf-regs-v3-v2-0-17654742226a@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20261001165018.415526-1-mattst88@gmail.com> <alpine.DEB.2.21.2610162207360.22065@angie.orcam.me.uk>
- <CAEdQ38FOXiV+Sz8fdPswRN=m2dKkYzgF2-9OWx3WskdsmWUGtQ@mail.gmail.com> <alpine.DEB.2.21.2610162254380.22065@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2610162254380.22065@angie.orcam.me.uk>
-From: Matt Turner <mattst88@gmail.com>
-Date: Fri, 16 Oct 2026 19:54:27 -0400
-X-Gm-Features: AclHuK-x7TuHH0mEi9Pj4V7Hm4nU0EXmWkGGruSlpHEUPPLEzlbY4sMq3pYo3WA
-Message-ID: <CAEdQ38FRnjHSSAWxFJqUBUL2zMRg5_GDcJJC3fx8i=K8ZWWK3Q@mail.gmail.com>
-Subject: Re: [PATCH 1/4] alpha: replace dead links in Kconfig help text
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: linux-alpha@vger.kernel.org, Magnus Lindholm <linmag7@gmail.com>, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/22NywrCQAxFf0WyNjJJaauu/A/pIoxpG+iLGRmU0
+ n93LC5dngP33BWiBtMI18MKQZNFm6cMfDyA72XqFO2RGdhxRc4RyrD0gouGFoN2EVOBtXJRurM
+ nLwx5uARt7bVH703m3uJzDu/9I9HX/nL0N5cIHapIxaUUl5r41o1iw8nPIzTbtn0A3qXslrQAA
+ AA=
+X-Change-ID: 20261001-alpha-perf-regs-v3-7e23508c1ca2
+To: Richard Henderson <richard.henderson@linaro.org>, 
+ Magnus Lindholm <linmag7@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-doc@vger.kernel.org, linux-perf-users@vger.kernel.org, 
+ Ian Rogers <irogers@google.com>, Matt Turner <mattst88@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2600; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=amj26N7GBgNkKSic738dtOdhoZO7SxmjDL8PSryCbBM=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLIuXV10VlF/39zcEnabm29+TT3kMS/kx1KnuxE/ue+/q
+ VO/dvaiRMdHFgYxLoaZYooscesVWWa17Vjqc1r6F8wcViaQIdIiDQxAwMLAl5uYV2qkY6Rnqm2o
+ Zwhk6BjFQ+T0GDQyi4tLU4t00wqKHPLySxJLMvPzivXyC1LzCtIL9NIy00oyMvKLilOBRujlpZa
+ Yujq6GRkamFg6Wpg5WTiamjg7Oxk6uTk6Ors6GVmamxg4WzqauFqaM3BxCsBc8+sII8OBrdfP7X
+ Eqff9YNU3ZSX5F71HXXXLHn+imX3ir3Lk8a7cSw/+I9/9t113QsWAvmjDz/+8rwXUP++dvXz5n2
+ /tNtxWXsuczAwA=
+X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
+ fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-On Fri, Oct 16, 2026 at 6:36=E2=80=AFPM Maciej W. Rozycki <macro@orcam.me.u=
-k> wrote:
->
-> On Fri, 16 Oct 2026, Matt Turner wrote:
->
-> > >  Of course nested links may or may not work, but at least references =
-to
-> > > some information are retained.  Or has it all been already extracted =
-and
-> > > written down in the wiki?
-> >
-> > Did you compare any of the wiki pages and the old links?
->
->  I read through the old pages and found them reasonable.  No, I didn't
-> reach for the wiki, perhaps I should have.
->
-> > I looked at all of these links via archive.org before sending the
-> > patches and didn't see any useful information. The LX164 link just
-> > contained the board specs and a link to the Technical Reference
-> > Manual. The Rawhide link is an install guide for Red Hat 6.0. Similar
-> > situation with the Ruffian page.
-> >
-> > If you see any information that's missing from the wiki that I spent a
-> > huge amount of time creating, point it out and I'll add it. At this
-> > point, I see no reason to keep links to 1999-era articles.
->
->  Fair enough, I take your word, this was just a question.  I guess it
-> wouldn't hurt having your effort mentioned in the commit description;
-> indeed I think it would help saying that the wiki has made all the old
-> references obsolete.
+This lets perf sample registers and dump the user stack on alpha, which
+perf record --call-graph dwarf needs to unwind user space.
 
-Sorry, re-reading my message, it feels unnecessarily aggressive. Not my int=
-ent.
+r9-r15 are not in pt_regs, so they cannot be sampled. An unwinder
+therefore cannot get past a first frame that uses $15 as its frame
+pointer (-O0 code or alloca).
 
->  And I get nervous whenever pointers to old information get removed, as i=
-t
-> makes it gradually more and more difficult to chase.  As recently as the
-> day before yesterday I have pointed someone to an archive.org copy of a
-> specification they were after and could not find for an old piece of MIPS
-> hardware, that no contemporary search engine would list and I could only
-> locate because 20+ years ago I recorded the full URL as I downloaded it.
+The perf tool side is a separate patch for perf-tools-next:
 
-Yeah, I feel that. I did everything I could to preserve history and
-sources for the wiki content. I spent months waiting on GitHub support
-to transfer the "alphalinux" organization that the late Peter Petrakis
-set up a decade ago
+  https://lore.kernel.org/r/20261011-alpha-perf-tools-regs-v1-1-2a5940e22548@gmail.com
 
-https://github.com/alphalinux/
+libdw also needs alpha unwinding support, which I sent to
+elfutils-devel:
 
-It now hosts various repositories, including the wiki content:
+  https://inbox.sourceware.org/elfutils-devel/20261012-alpha-v1-0-46760216dfb7@gmail.com/
 
-https://github.com/alphalinux/alphalinux.org-wiki-content
+---
+Changes in v2:
+- Patch 4: report sp as 0 for software event samples, whose pt_regs is
+  a per-CPU buffer rather than a trap frame (Magnus).
+- New patch 5: fill in pc for those samples via
+  perf_arch_fetch_caller_regs() (Magnus).
+- Collect trailers. Magnus's Tested-by on patch 4 dropped until he
+  retests the change.
+- Link the perf and elfutils postings.
+- Link to v1: https://lore.kernel.org/r/20261011-alpha-perf-regs-v3-v1-0-eaa625a39712@gmail.com
 
-and all of the Alpha-related mailing list archives I could find:
+---
+Matt Turner (5):
+      alpha: fix stale user_stack_pointer()
+      alpha: stop storing the user stack pointer in pt_regs
+      alpha: use user_stack_pointer() in KSTK_ESP() and dump_elf_thread()
+      alpha: add HAVE_PERF_REGS and HAVE_PERF_USER_STACK_DUMP support
+      alpha: fill in pc for software event samples
 
-https://github.com/alphalinux/mailing-list-archives
+ .../features/perf/perf-regs/arch-support.txt       |  2 +-
+ .../features/perf/perf-stackdump/arch-support.txt  |  2 +-
+ arch/alpha/Kconfig                                 |  2 +
+ arch/alpha/include/asm/perf_event.h                |  7 +++
+ arch/alpha/include/asm/processor.h                 |  3 +-
+ arch/alpha/include/asm/ptrace.h                    |  7 +--
+ arch/alpha/include/uapi/asm/perf_regs.h            | 45 +++++++++++++++
+ arch/alpha/include/uapi/asm/ptrace.h               |  2 +-
+ arch/alpha/kernel/Makefile                         |  1 +
+ arch/alpha/kernel/asm-offsets.c                    |  1 -
+ arch/alpha/kernel/entry.S                          |  5 --
+ arch/alpha/kernel/perf_regs.c                      | 64 ++++++++++++++++++++++
+ arch/alpha/kernel/process.c                        |  2 +-
+ arch/alpha/kernel/ptrace.c                         | 12 ++++
+ arch/alpha/kernel/traps.c                          |  8 ---
+ 15 files changed, 137 insertions(+), 26 deletions(-)
+---
+base-commit: 8f5dbfb93440d1aba216a1a34369a65654b94be9
+change-id: 20261001-alpha-perf-regs-v3-7e23508c1ca2
 
-My intention is that even if I (and alphalinux.org) disappear, the
-wiki content won't.
+Best regards,
+-- 
+Matt Turner <mattst88@gmail.com>
+
