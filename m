@@ -1,653 +1,336 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.53
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792444825;
+	b=QJX10lyvelt0iBS8mUm/8Brt0IkcF239l0xTSSrZBMMJz7Hj4DQM3ZVMOhW0NQK7w/pm
+	 f0IMVm5DKQhJdyxnh1rX9g8JX69JUiaNnCeJIFtQNkagdrwkUWaPx9dljaR3GB9Oo/fDq
+	 vI5b2nUfEtiixMJyuaJfwI8ErRRJzEv7+LHEhkeojjsJOTfQL0VBQ4gnKJGWmRlTv4Je7
+	 MYEy1WbFisoctn3N10h3ByX5IqprmgmRrI6IMpZkZ9K6KPglHS/ZESKtSgr1Mx9fdGGag
+	 Z841g4e7w6Jl7fxnRsZvwWSVbylWDNi8/EDYlIpE7vrmtsEsMnNhRRyXER1+RHeIh6g==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792444825;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition;
+	bh=tvAEnUMeCV4ueKXHU1XISp2Vw3H06kR1t3NRMZ+s7UE=;
+	b=MY3uoePrpIZFZHUr2SVReu173Q1+vvI8CIN0OM+TF6nhGlulIhEdeJWXPw+vAjIvUmur
+	 4pppRCgPFcsM+8g8wj5VR8gnZjM/oOtb72vD/YLfpvDcEU4K0DlB4iRdw8bYQr8I/1deK
+	 DOY1D/cqXTmUHy1oUSzRhpth5XDmPI3d5ImVF8L34ozxT7K/McyXDnoCtit7uRnNhh0xv
+	 VGeMrLoM++3YuukHQO0OIHNU7qA9zW3UhhjUO7Qj4zTbLqdG4ptiwybCcL3TEl1XgG3aD
+	 I9/p9yFyQwhJzN6BIvRbC4ON/iUtbjdZIGayQ1f+4uvtriynt7mVw/awI7rwLQSp76w==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=cWhts00N;
+	arc=none smtp.remote-ip=209.85.208.53
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 280EC639ADD;
-	Mon, 19 Oct 2026 14:05:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792418762; cv=none; b=na47uALtmIv0bS4myxEGgTBIsFUv12XguGzXhrxK2KDBqBmUzbsxz3mt+Knj9cQ2ZpWjDVvk33/z8SeKht16eYC/DdScTjsYBZwX6GKtubV8xaFxstWctkc7+SqUTAZTWQzwbl+p62MdFZLWqRLrtlW7Gqzva6oO0R5iBBXwJIs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792418762; c=relaxed/simple;
-	bh=j2lsVuaDxLq5YGS39Mvy5V1cjHvzvJHn+jyxw/iAeXc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PsaUAjjdWlqO0KN97ChMQIu/Y2hr8iudA7W05jC/m3NB0Nm6nldEY0yTJ9m6wrsh+/BkCuhMXASB/zA2Nuo4Kjg/fwdblWedeimTddZyCwt/on4l5hE4x7Qf9ULRsErLc911M7aU+KikJBSl2mSXz2c43QHLSJvDoPpWKb49BYg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e19KtIR1; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7027A606A322
+	for <linux-alpha@vger.kernel.org>; Mon, 19 Oct 2026 21:20:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7027A606A322
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e19KtIR1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4F5B1F000C9;
-	Mon, 19 Oct 2026 14:05:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792418758;
-	bh=iYeBBRAiwhPGPvkR6LZAXASAEAQRdSSyEbmen/nO2RM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=e19KtIR1PR1eGqDiVRZVPJMckDv1WopesfVPIjNstGWESgzMTvFqh1nbR5O+jou4R
-	 0uoFNIk3IdaOOLUGNg82t+yJrjVOcQ4KTmL7TpBZe6V6Fkb8K7gn2FYeQ6nQg1YlLm
-	 +jkzXwrAZkLfj4utFjFaVZcGBg2Q1aTVeeSsHhl12lj1mwwqSZnO5jLCZsXsQsGbMV
-	 pOgF6V0NoV/xXXmGTSpOMzovpE3AH6dIhA2r0useZRppFC9kmv+eq2JrN854Np09fI
-	 tC/6zoZ7gEs8Hx5w8JVQygXvhq78G+fXWgyYbAetz81OLQFoNuH3Gv0dU2PMlcVJLq
-	 uEA0FFhrB8zhQ==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: Matt Turner <mattst88@gmail.com>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Sasha Levin <sashal@kernel.org>,
-	richard.henderson@linaro.org,
-	linux-alpha@vger.kernel.org,
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=cWhts00N
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6ae27f06c2fso4335384a12.3
+        for <linux-alpha@vger.kernel.org>; Mon, 19 Oct 2026 14:20:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792444824; x=1793049624; darn=vger.kernel.org;
+        h=content-disposition:content-type:mime-version:message-id:subject:cc
+         :to:from:date:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=tvAEnUMeCV4ueKXHU1XISp2Vw3H06kR1t3NRMZ+s7UE=;
+        b=cWhts00NX4DITtl1zgOIxZAo+B60b9BbR4owMWbNcZqS9G2Ev4ykuEDoHnERAox4mR
+         sWpChay85TZzV+2zqJAtDd1vDuaD1zfBZ8sxowV+avlnkYieuYmoTIU5m+eUHE+9PatV
+         5Ljt6AgY6k6E8bvXSe16KnY5IiNedCcBfFKqHbQdVZxCpv3qkF/kXyIyIR5kUWALTDGh
+         UTC59EeD4kxQ4lraUqU4H/L+KJyC2GhuAbqNZsZKZGB+yOyheIhxv1tQNEkno6xec4R5
+         RVOGQJ9DY9GdEOAjUqmWmm/Yk+RR7iDGu5YkBMDBXWvLWnLBZqTy1b1H8rb4SvUOYzmJ
+         foVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792444824; x=1793049624;
+        h=content-disposition:content-type:mime-version:message-id:subject:cc
+         :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=tvAEnUMeCV4ueKXHU1XISp2Vw3H06kR1t3NRMZ+s7UE=;
+        b=G1CrEFTGQX2Mb3WHB24KVutaiVe+cMSuFQglMNIOA3X4zd7UfI1jP0ELcxL4nGLl8V
+         ajz2oKsWf9xFg7NbcRnfEehknVJMkL5Mi04EbiNf4qslWBg7wuyQkyuEJ9Q5ytzj70YK
+         wg+M6Y/8GwjAWobWchyy+sHldvsxlh/EHrG6phCWckciaChRYSLrdfCv0vkWqoDZAlL3
+         HU3e6C5myQxjS4QAWC19RP0uEgPuzjHfeMZD/gpJWFPOFx6O+bStA3Ax7sq/HYpYv7VG
+         ZO7F7n6r+5aaxWDOLavRVwTY9ZnJuu6qcqR/RmLKrXRHJeTSDHb77UyGWBNOrSSYkrkg
+         xK0A==
+X-Forwarded-Encrypted: i=1; AKwUvBxREV45i48xoxRH9ZItysOAoQ5hwQNLPLkbErH8QqhTxvMfN+Cde8DK46pnZodfcfnTClN0mSCGlr1JTA==@vger.kernel.org
+X-Gm-Message-State: AFq9FYJwpsxlDQN3JF0mZmDJtqKOk6IA/lDI24FMJ35r/D5AyJSm1UqH
+	0mxSXrnBBVuhuMnDC4fXnv8F6db76siZkkd6IheJcjHIyAuyp+OPIWVL
+X-Gm-Gg: AYBFou0DOJla+D3S4LPo2PUvk40wxE0Bda8uabwMvqm+aogX1WSbeuVZWBMlSXMCYOc
+	a1ewpBgITdzvyf0Vn/A81fS29t8XQxfmlpRo52y0Jdqc/1QW9M7ffB3McDZHxNUrxZ7AQFCsyIL
+	GxwDg/BCJYWMCOfQUa+J2/dcbQLdzHUrk+YmUUmwtKj1F/o3SCJlr/O0/ygE7wY95qjGeK184Sn
+	u8D0uOYF0Ltph6b/kV2pX5RWf04G7fWRhmyM+TO3PtdxaAQjOzT4LekijlPYa2C8FvlXKCUNKTn
+	2oHHsh2nqBzcCEkU/o89hKsQbOwX3OOkCvbcS8fuoQBsX/Gh3UjL2c9Ww3iNSr835+lXXUCf2Rs
+	WKCbqONUx8guADy9xMptqIXNNcXkJfJR/NTMutzP/Cxy16fs/Kb8FIEhwC53TziO9x5+j8CYbGr
+	ASipSvrhmqXTMTdTcIsIhGukZYM8kJaIe2N8T0u4a+tTvigCjNHcjl7CesYrHEoRo0F+Djm/sQU
+	lzhcKDG/GUJDc6grJHOFrewcjUYmKox/tY=
+X-Received: by 2002:a05:6402:1950:b0:6b1:cc39:28ec with SMTP id 4fb4d7f45d1cf-6b3a821ac70mr5788492a12.42.1792444823030;
+        Mon, 19 Oct 2026 14:20:23 -0700 (PDT)
+Received: from z440.darklands.se ([2001:9b1:ff:d701:39b7:f5a0:a2f4:8184])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b3cd39ec18sm1776370a12.16.2026.10.19.14.20.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2026 14:20:22 -0700 (PDT)
+Date: Mon, 19 Oct 2026 23:20:20 +0200
+From: Magnus Lindholm <linmag7@gmail.com>
+To: torvalds@linux-foundation.org, linux-alpha@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.18-5.10] alpha: run the remote RTC access in a worker, not an IPI callback
-Date: Mon, 19 Oct 2026 09:52:46 -0400
-Message-ID: <20261019135441.1420968-475-sashal@kernel.org>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261019135441.1420968-1-sashal@kernel.org>
-References: <20261019135441.1420968-1-sashal@kernel.org>
-Precedence: bulk
+Cc: mattst88@gmail.com, richard.henderson@linaro.org, linmag7@gmail.com
+Subject: [GIT PULL] alpha updates for v7.4
+Message-ID: <ataJlL6L7TrS3gWs@z440.darklands.se>
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
+List-Post: <mailto:linux-alpha@vger.kernel.org>
+List-Help: <mailto:linux-alpha+help@vger.kernel.org>
 List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
+List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
+Precedence: list
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.18.57
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-From: Matt Turner <mattst88@gmail.com>
-
-[ Upstream commit 6f45effbd74012f1715584ba51abaa3196a47c08 ]
-
-On Marvel the CMOS clock is only reachable from the boot cpu, so
-remote_read_time() and remote_set_time() bounce the access there with
-smp_call_function_single(), whose callback runs in hard interrupt
-context.
-
-alpha_rtc_read_time() calls mc146818_get_time() with a 10 ms timeout.
-That waits out the RTC update cycle in mc146818_avoid_UIP(), which drops
-rtc_lock and udelay()s 100 us at a time until the update completes or
-the timeout expires:
-
-	for (i = 0; UIP_RECHECK_LOOPS_MS(i) < timeout; i++) {
-		spin_lock_irqsave(&rtc_lock, flags);
-		...
-		if (CMOS_READ(RTC_FREQ_SELECT) & RTC_UIP) {
-			spin_unlock_irqrestore(&rtc_lock, flags);
-			udelay(UIP_RECHECK_DELAY);
-			continue;
-		}
-
-So a clock read from a non-boot cpu can spin for up to 10 ms in hard
-interrupt context on the boot cpu, while the cpu that sent the request
-spins in smp_call_function_single() waiting for it to finish.
-
-mc146818_set_time() does not poll, but it takes rtc_lock too, and
-rtc_lock is a spinlock_t.  Only raw spinlocks may be taken in hard
-interrupt context, so lockdep reports the write path as soon as a
-non-boot cpu sets the clock:
-
-  [ BUG: Invalid wait context ]
-  -----------------------------
-  swapper/0/0 is trying to lock:
-  fffffc0003690470 (rtc_lock){....}-{3:3}, at: mc146818_set_time+0x74/0x450
-  other info that might help us debug this:
-  context-{2:2}
-  no locks held by swapper/0/0.
-  stack backtrace:
-  CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 7.2.0-rc1 #1 NONE
-  Trace:
-  [<fffffc000102ebb0>] dump_stack+0x28/0x44
-  [<fffffc000110efcc>] __lock_acquire+0xb0c/0x1060
-  [<fffffc000110f5f0>] lock_acquire.part.0+0xd0/0x300
-  [...]
-  [<fffffc0001b0d834>] mc146818_set_time+0x74/0x450
-  [<fffffc0001f090cc>] _raw_spin_lock_irqsave+0x7c/0xc0
-  [<fffffc0001042f90>] do_remote_set+0x90/0xc0
-  [<fffffc000119c1a4>] __flush_smp_call_function_queue+0x314/0x5c0
-  [<fffffc000119c474>] generic_smp_call_function_single_interrupt+0x24/0x40
-  [<fffffc000103d984>] handle_ipi+0xa4/0x230
-  [<fffffc0001037044>] do_entInt+0x1a4/0x2e0
-
-The rtc class ops are always called from process context, so there is no
-reason to run the access from an interrupt at all.  Use work_on_cpu() to
-run it in a worker on the boot cpu.  Alpha does not support cpu hotplug,
-so the boot cpu cannot go offline while the work is pending.
-
-Tested on an AlphaServer ES47 (Marvel/EV7): hwclock read and write
-pinned to a non-boot cpu, twenty times, with no splat.
-
-Signed-off-by: Matt Turner <mattst88@gmail.com>
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
-Link: https://lore.kernel.org/r/20260810202835.3592833-1-mattst88@gmail.com
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
-
-LLM Generated explanations, may be completely bogus:
-
-Local tree is **6.12.111** (`pending-6.12`). The Marvel remote-RTC IPI
-path is in this checkout, `work_on_cpu()` is available, and the patch
-applies cleanly. This is a real interrupt-context bug, not a feature.
-
-===============================================================
-PHASE 1: COMMIT MESSAGE FORENSICS
-===============================================================
-
-**Step 1.1: PARSE THE SUBJECT LINE**
-
-Record: **[alpha]** **[run]** — Marvel CMOS access that today runs in an
-IPI callback should run in a worker on the boot CPU instead.
-
-**Step 1.2: PARSE ALL COMMIT MESSAGE TAGS**
-
-Record:
-- **Reviewed-by:** Magnus Lindholm `<linmag7@gmail.com>` (Alpha co-
-  maintainer)
-- **Link:** `https://lore.kernel.org/r/20260810202835.3592833-1-
-  mattst88@gmail.com`
-- **Signed-off-by:** Matt Turner `<mattst88@gmail.com>` (Alpha
-  maintainer, author)
-- **Signed-off-by:** Magnus Lindholm `<linmag7@gmail.com>` (maintainer
-  merge)
-- No **Fixes:** tag (expected)
-- No **Cc: stable** on this committed revision (expected; not used as a
-  negative)
-- No **Reported-by:** / **Tested-by:** tags in the commit itself; the
-  body reports hardware testing by the author
-- Ignore pipeline markers (**Upstream commit**, Sasha Levin SOB) per
-  instructions
-
-**Step 1.3: ANALYZE THE COMMIT BODY TEXT**
-
-Record:
-- **Bug:** On Marvel, CMOS is only reachable from the boot CPU.
-  `remote_read_time()` / `remote_set_time()` bounce via
-  `smp_call_function_single()`. That callback runs in **hardirq**.
-- **Read path:** `alpha_rtc_read_time()` → `mc146818_get_time(tm, 10)` →
-  `mc146818_avoid_UIP()` can drop `rtc_lock` and `udelay(100us)` in a
-  loop for up to **10 ms**.
-- **Write path:** `mc146818_set_time()` takes `rtc_lock` (`spinlock_t`).
-  Lockdep reports **Invalid wait context** (`{3:3}` lock in `{2:2}`
-  hardirq) on `7.2.0-rc1` when a non-boot CPU sets the clock. Stack:
-  `do_remote_set` → `__flush_smp_call_function_queue` → `handle_ipi` →
-  `do_entInt`.
-- **Symptom:** lockdep BUG on RTC set from a non-boot CPU; boot CPU can
-  spin up to 10 ms in IPI while the requester busy-waits in
-  `smp_call_function_single()`.
-- **Fix:** RTC class ops already run in process context; use
-  `work_on_cpu(boot_cpuid, ...)`. Alpha has no CPU hotplug, so the boot
-  CPU cannot go offline under the work.
-- **Tested:** AlphaServer ES47 (Marvel/EV7); `hwclock` read/write pinned
-  to a non-boot CPU, twenty times, no splat.
-
-**Step 1.4: DETECT HIDDEN BUG FIXES**
-
-Record: Not hidden. Explicit interrupt-context / lockdep bug fix. Not
-cleanup-only.
-
-===============================================================
-PHASE 2: DIFF ANALYSIS - LINE BY LINE
-===============================================================
-
-**Step 2.1: INVENTORY THE CHANGES**
-
-Record:
-- **File:** `arch/alpha/kernel/rtc.c` only (**+12 / −25**, net −13)
-- **Functions:** `do_remote_read`, `remote_read_time`, `do_remote_set`,
-  `remote_set_time`
-- **Scope:** single-file surgical fix under `HAVE_REMOTE_RTC`
-  (`CONFIG_SMP && (CONFIG_ALPHA_GENERIC || CONFIG_ALPHA_MARVEL)`)
-
-**Step 2.2: UNDERSTAND THE CODE FLOW CHANGE**
-
-Record:
-- **Before:** non-boot CPU packs `tm` into `union remote_data`, calls
-  `smp_call_function_single(boot_cpuid, do_remote_*, &x, 1)` (wait=1).
-  Callback in hardirq writes `x.retval`.
-- **After:** `return work_on_cpu(boot_cpuid, do_remote_*, tm)`.
-  Callbacks are `long (*)(void *)` and return
-  `alpha_rtc_{read,set}_time()` directly. Boot-CPU fast path unchanged.
-- **Path:** userspace RTC read/set (`hwclock`, sysfs, `/dev/rtc`) from a
-  non-boot CPU on Marvel.
-
-**Step 2.3: IDENTIFY THE BUG MECHANISM**
-
-Record:
-- **Category:** interrupt-context abuse / invalid locking context (plus
-  hardirq latency).
-- **Mechanism:** IPI hardirq took `spinlock_t rtc_lock` and could
-  `udelay()` up to 10 ms. Process-context worker can take `spinlock_t`
-  and sleep/delay legally.
-- Not a leak, UAF, or new API.
-
-**Step 2.4: ASSESS THE FIX QUALITY**
-
-Record:
-- Obviously correct: same CMOS work, different execution context.
-- Minimal; removes the `union remote_data` marshalling that IPI wait
-  required.
-- **Regression risk: low.** `work_on_cpu()` sleeps; RTC ops already run
-  under `rtc->ops_lock` (mutex) in `drivers/rtc/interface.c`. Alpha has
-  no hotplug, so `work_on_cpu()` (not `_safe`) is the right helper.
-  `work_on_cpu_key()` in this tree uses on-stack work; it does not
-  return `-ENOMEM`.
-- Pre-existing `smp_processor_id() != boot_cpuid` race vs migration
-  exists in both old and new code; not introduced here.
-- Patch 2/2 in the series (IPL 7 `trace_hardirqs_off` annotation) is
-  independent; this patch does not need it.
-
-===============================================================
-PHASE 3: GIT HISTORY INVESTIGATION
-===============================================================
-
-**Step 3.1: BLAME THE CHANGED LINES**
-
-Record: IPI marshalling is from **`85d0b3a573d8b`** (“alpha: Reorganize
-rtc handling”, Richard Henderson, 2013, **v3.13-rc1**). Present for the
-entire life of this LTS series.
-
-**Step 3.2: FOLLOW THE FIXES: TAG**
-
-Record: No `Fixes:` tag. The IPI design has been wrong relative to
-`mc146818_*` locking/polling since that 2013 code; the 10 ms bound is
-from **`120931db07b49`** (“rtc: Add support for configuring the UIP
-timeout for RTC reads”, **v6.8-rc1**), which **is** an ancestor of this
-HEAD.
-
-**Step 3.3: CHECK FILE HISTORY FOR RELATED CHANGES**
-
-Record: Recent `arch/alpha/kernel/rtc.c` history is RTC-core API updates
-(`mc146818_get_time()` return check, UIP timeout,
-`devm_rtc_allocate_device`). No competing rewrite of the remote path.
-Standalone vs later RTC core, not part of a required multi-patch RTC
-series.
-
-**Step 3.4: CHECK THE AUTHOR'S OTHER COMMITS**
-
-Record: Matt Turner is an Alpha maintainer (commits across
-`arch/alpha/`, including Marvel IRQ fixes). Magnus Lindholm is also
-active on Alpha (memory compaction, etc.) and reviewed this.
-
-**Step 3.5: CHECK FOR DEPENDENT/PREREQUISITE COMMITS**
-
-Record: Needs `work_on_cpu()` (`include/linux/workqueue.h` /
-`kernel/workqueue.c`) — present. Needs `alpha_rtc_{read,set}_time` +
-`HAVE_REMOTE_RTC` — present. No new helpers. **Applies standalone.**
-Series patch 2/2 is a separate irqflags/lockdep issue in `do_entInt()`.
-
-===============================================================
-PHASE 4: MAILING LIST AND EXTERNAL RESEARCH
-===============================================================
-
-**Step 4.1: FIND THE ORIGINAL PATCH DISCUSSION**
-
-Record:
-- `b4 dig -c <sha>` could not run: this commit is **not** in the local
-  object database.
-- `b4 mbox 20260810202835.3592833-1-mattst88@gmail.com` saved a
-  **4-message** thread.
-- Lore HTTP fetch returned 403; mbox contents were used instead.
-- **This is patch 1/2** (v2-style rewrite). An earlier May 2026 patch
-  (“Use work_on_cpu() for cross-CPU RTC access”) ignored
-  `work_on_cpu()`’s return value; review asked to return it directly.
-  The committed diff does that.
-- Magnus: “The change looks good to me.” Built/booted on AlphaServer
-  ES40 (does not hit Marvel remote-RTC). **Reviewed-by** granted. No
-  NAK.
-- No reviewer asked for `Cc: stable` on this revision. The May posting
-  mentioned stable; that is author intent on an earlier revision, not
-  used as the decision.
-
-**Step 4.2: CHECK WHO REVIEWED THE PATCH**
-
-Record: To `linux-alpha@`; Cc Richard Henderson, Magnus Lindholm, LKML.
-Reviewed by Magnus (Alpha). Author is Alpha maintainer.
-
-**Step 4.3: SEARCH FOR THE BUG REPORT**
-
-Record: Author-found on ES47 with lockdep (`7.2.0-rc1`). Not syzbot.
-Concrete trigger: `hwclock` on a non-boot CPU. Same class of access any
-userspace RTC client can perform.
-
-**Step 4.4: CHECK FOR RELATED PATCHES AND SERIES**
-
-Record: 2-patch Alpha lockdep series. **1/2 = this RTC IPI fix (self-
-contained). 2/2 = IPL 7 annotation in `irq_alpha.c` (not a
-prerequisite).**
-
-**Step 4.5: CHECK STABLE MAILING LIST HISTORY**
-
-Record: No stable@ thread found for this subject (lore.kernel.org 403;
-web search showed the LKML/linux-alpha thread only). No known NAK
-against backporting.
-
-===============================================================
-PHASE 5: CODE SEMANTIC ANALYSIS
-===============================================================
-
-**Step 5.1: IDENTIFY KEY FUNCTIONS IN THE DIFF**
-
-Record: `do_remote_read`, `remote_read_time`, `do_remote_set`,
-`remote_set_time`. Callees: `alpha_rtc_read_time` / `alpha_rtc_set_time`
-→ `mc146818_get_time` / `mc146818_set_time`.
-
-**Step 5.2: TRACE CALLERS**
-
-Record: Only hooked as `remote_rtc_ops.{read,set}_time` when
-`alpha_mv.rtc_boot_cpu_only` (set in `arch/alpha/kernel/sys_marvel.c`).
-Core RTC calls them from `rtc_read_time()` / `rtc_set_time()` in
-`drivers/rtc/interface.c` after
-`mutex_lock_interruptible(&rtc->ops_lock)` — **process context**,
-userspace-reachable (`hwclock`, sysfs, `/dev/rtc`).
-
-**Step 5.3: TRACE CALLEES**
-
-Record: `mc146818_avoid_UIP()` loops with `spin_lock_irqsave(&rtc_lock)`
-and `udelay(UIP_RECHECK_DELAY)` (100 µs), timeout 10 ms from
-`alpha_rtc_read_time()`. `mc146818_set_time()` uses
-`spin_lock_irqsave(&rtc_lock, flags)` (verified around the CMOS write
-setup). `rtc_lock` is `DEFINE_SPINLOCK(rtc_lock)` in
-`arch/alpha/kernel/time.c`.
-
-**Step 5.4: FOLLOW THE CALL CHAIN**
-
-Record: Userspace ioctl/sysfs → `rtc_{read,set}_time` (mutex) →
-`remote_*` → (old) IPI on boot CPU / (new) `work_on_cpu`. **Reachable
-from unprivileged or time-admin userspace** depending on `/dev/rtc`
-permissions; `hwclock` is the documented trigger. Not an obscure init-
-only path.
-
-**Step 5.5: SEARCH FOR SIMILAR PATTERNS**
-
-Record: Other arches use `work_on_cpu()` for CPU-local work that cannot
-run in IPI (`arch/x86/kernel/apm_32.c`, cpufreq, PCI probe). No other
-Alpha IPI+RTC site. No duplicate of this bug in-tree.
-
-===============================================================
-PHASE 6: CROSS-REFERENCING AGAINST THE LOCAL TREE
-===============================================================
-
-**Step 6.1: DOES THE BUGGY CODE EXIST IN THIS TREE?**
-
-Record: **Yes.** `arch/alpha/kernel/rtc.c` still uses
-`smp_call_function_single` for remote read/set (lines 165–194 in this
-checkout). Kernel **6.12.111**. Bug introduced **v3.13**; UIP 10 ms
-timeout in this file since **v6.8**.
-
-**Step 6.2: CHECK FOR BACKPORT COMPLICATIONS**
-
-Record: **`git apply --check` succeeded** on this tree (12 insertions,
-25 deletions). Surrounding RTC file matches the hunks. Include of
-`<linux/workqueue.h>` is appropriate; `work_on_cpu()` macro exists under
-`CONFIG_SMP`.
-
-**Step 6.3: CHECK IF RELATED FIXES ARE ALREADY HERE**
-
-Record: `git log --grep='remote RTC' -- arch/alpha/` empty. No earlier
-work_on_cpu conversion. **Not already fixed.**
-
-===============================================================
-PHASE 7: SUBSYSTEM AND MAINTAINER CONTEXT
-===============================================================
-
-**Step 7.1: IDENTIFY THE SUBSYSTEM AND ITS CRITICALITY**
-
-Record: **arch/alpha RTC** (Marvel SMP CMOS). Criticality:
-**PERIPHERAL** (Alpha Marvel only), but RTC time get/set is user-visible
-and used at boot (`hctosys`) and by `hwclock`. Wrong context can stall
-the **boot CPU** in hardirq.
-
-**Step 7.2: ASSESS SUBSYSTEM ACTIVITY**
-
-Record: Alpha is low-churn but still receiving correctness fixes in this
-tree (Marvel IRQ, FPCR, PCI mmap). Mature platform; this IPI scheme is
-old, not new experimental code.
-
-===============================================================
-PHASE 8: IMPACT AND RISK ASSESSMENT
-===============================================================
-
-**Step 8.1: DETERMINE WHO IS AFFECTED**
-
-Record: **Platform-specific:** SMP Alpha Marvel (or `ALPHA_GENERIC` on
-Marvel hardware) with `rtc_boot_cpu_only`. Not x86/arm. Population is
-small but real (ES47 testers).
-
-**Step 8.2: DETERMINE THE TRIGGER CONDITIONS**
-
-Record: RTC read or set from a **non-boot CPU**. Common for `hwclock` /
-systemd time if the process is not pinned to CPU0. Unprivileged trigger
-depends on device node policy; typically `hwclock` is admin. Timing:
-every such access, not a rare race (the IPI path is deterministic).
-
-**Step 8.3: DETERMINE THE FAILURE MODE SEVERITY**
-
-Record:
-- **This 6.12 tree, default configs:** Alpha does **not** select
-  `HAVE_PREEMPT_RT`. `PROVE_RAW_LOCK_NESTING` is **default n**, so
-  `LD_WAIT_CONFIG == LD_WAIT_SPIN` and the exact `{3:3}` vs `{2:2}`
-  splat needs that debug option (as on the 7.2-rc1 report).
-- **Always on this tree:** boot CPU IPI handler can **poll/udelay up to
-  10 ms** in hardirq; requester busy-waits. That is illegal/unwanted in
-  interrupt context (IRQ latency on the boot CPU, nested IRQ mess after
-  `spin_unlock_irqrestore` inside the callback).
-- **With lockdep + `PROVE_RAW_LOCK_NESTING`:** lockdep BUG on set-time
-  (documented stack).
-- Severity for this tree: **HIGH** for the interrupt-context/latency bug
-  on Marvel SMP; **not** a universal panic on a stock distro defconfig
-  without lockdep. Still a real correctness bug, not cosmetic.
-
-**Step 8.4: CALCULATE RISK-BENEFIT RATIO**
-
-Record:
-- **Benefit:** Marvel SMP users stop running CMOS poll/lock in IPI;
-  lockdep-enabled kernels stop the wait-context BUG; `hwclock` from a
-  secondary CPU is safe.
-- **Risk:** very low — ~12 lines, process-context-only, no API change,
-  applies cleanly, hardware-tested.
-- **Ratio:** favorable. Niche hardware is not a reason to leave a
-  hardirq-delay/lockdep bug in an LTS tree that still ships Alpha.
-
-===============================================================
-PHASE 9: FINAL SYNTHESIS
-===============================================================
-
-**Step 9.1: COMPILE THE EVIDENCE**
-
-**FOR backporting:**
-- Real bug: IPI hardirq does `udelay` + `spinlock_t rtc_lock`.
-- Buggy code is in **this** 6.12 tree (since v3.13).
-- Small, obviously correct, maintainer-authored and reviewed.
-- Tested on ES47; Magnus reviewed.
-- `work_on_cpu()` exists; no hotplug on Alpha.
-- Applies cleanly (`git apply --check` exit 0).
-- Userspace-reachable (`hwclock`).
-- Independent of series patch 2/2.
-
-**AGAINST:**
-- Only Marvel SMP Alpha.
-- Stock 6.12 without `PROVE_RAW_LOCK_NESTING` may not print the lockdep
-  splat; production impact is primarily **up to 10 ms boot-CPU hardirq
-  stall**, not a guaranteed oops.
-- No `Fixes:` tag (not a negative per rules).
-
-**UNRESOLVED:** Could not HTTP-fetch lore.kernel.org (403); thread
-recovered via `b4 mbox`. Could not `b4 dig -c` a SHA that is not in this
-repo.
-
-**Step 9.2: APPLY THE STABLE RULES CHECKLIST**
-
-1. Obviously correct and tested? **PASS** — ES47 `hwclock` ×20; Magnus
-   Reviewed-by.
-2. Fixes a real bug that affects users? **PASS** — Marvel SMP RTC from a
-   non-boot CPU.
-3. Important issue? **PASS** — hardirq polling/locking is a serious
-   context bug (lockdep BUG under prove-locking; IRQ latency otherwise).
-   Not a style cleanup.
-4. Small and contained? **PASS** — one file, −13 net lines.
-5. No new features or APIs? **PASS** — context change only.
-6. Can apply to the local tree? **PASS** — `git apply --check`
-   succeeded; prerequisites present.
-
-**Step 9.3: CHECK FOR EXCEPTION CATEGORIES**
-
-Record: Not a device-ID/quirk/DT/build/docs exception. Ordinary small
-arch bugfix.
-
-**Step 9.4: MAKE YOUR DECISION**
-
-Backport. The IPI callback is the wrong context for
-`mc146818_get_time()`/`mc146818_set_time()` in this 6.12 tree, the
-replacement is the existing `work_on_cpu()` helper, and the change is
-tiny and already shown to apply.
-
-===============================================================
-What the commit solves for stable users
-===============================================================
-
-On Marvel, CMOS must run on the boot CPU. This tree still bounces that
-work with `smp_call_function_single()`, so `mc146818_avoid_UIP()` can
-spin in **hardirq for up to 10 ms** and `mc146818_set_time()` takes
-`rtc_lock` in that IPI. `work_on_cpu(boot_cpuid, ...)` keeps the same
-CMOS access but in a worker, which matches how RTC class ops are already
-invoked (mutex, process context). Alpha has no CPU hotplug, so the boot
-CPU stays online for the work.
-
-It meets stable rules: real bug, small, no new API, clean apply, tested.
-Risk is low relative to leaving interrupt-context RTC access in 6.12.
-
-===============================================================
-Verification
-===============================================================
-
-- **[Phase 1]** Subject/tags parsed from the candidate message;
-  Reviewed-by Magnus; Link message-id
-  `20260810202835.3592833-1-mattst88@gmail.com`; no Fixes; hardware test
-  described in the body.
-- **[Phase 2]** Diff is only `arch/alpha/kernel/rtc.c`; IPI →
-  `work_on_cpu`; union marshalling removed.
-- **[Phase 2]** Local `rtc.c` still has `smp_call_function_single` in
-  `remote_read_time`/`remote_set_time`.
-- **[Phase 2]** `mc146818_avoid_UIP()` in `drivers/rtc/rtc-
-  mc146818-lib.c` confirmed: `spin_lock_irqsave` + `udelay(100)` loop;
-  `alpha_rtc_read_time()` passes timeout **10**.
-- **[Phase 2]** `mc146818_set_time()` takes `rtc_lock`;
-  `DEFINE_SPINLOCK(rtc_lock)` in `arch/alpha/kernel/time.c`.
-- **[Phase 2]** `rtc_read_time`/`rtc_set_time` take `rtc->ops_lock`
-  mutex (`drivers/rtc/interface.c`) — process context.
-- **[Phase 3]** `git blame` on remote RTC: `85d0b3a573d8b` (v3.13-rc1);
-  `git merge-base --is-ancestor 85d0b3a573d8b HEAD` true.
-- **[Phase 3]** Timeout commit `120931db07b49` is ancestor of HEAD
-  (v6.8-rc1).
-- **[Phase 3]** No HOTPLUG in `arch/alpha/Kconfig`; `work_on_cpu()`
-  present in `include/linux/workqueue.h` / `kernel/workqueue.c` (on-
-  stack work, no `-ENOMEM`).
-- **[Phase 3]** `rtc_boot_cpu_only = 1` only in
-  `arch/alpha/kernel/sys_marvel.c`.
-- **[Phase 4]** `b4 mbox` thread: 4 messages; patch 1/2 this fix, patch
-  2/2 independent; Magnus Reviewed-by; no NAK.
-- **[Phase 4]** Earlier May patch had return-value review; committed
-  version returns `work_on_cpu()`.
-- **[Phase 4]** lore.kernel.org WebFetch: 403; contents recovered from
-  mbox.
-- **[Phase 5]** Callers limited to `remote_rtc_ops`; userspace RTC path.
-- **[Phase 6]** `git describe HEAD` → `p-6.12-3-gc504cf0baa3d8`; `make
-  kernelversion` → **6.12.111**.
-- **[Phase 6]** `git apply --check` on extracted mbox diff: **exit 0**.
-- **[Phase 6]** Fix not already in this tree (`git log --grep='remote
-  RTC' -- arch/alpha/` empty).
-- **[Phase 7]** Alpha Marvel RTC; peripheral but user-facing.
-- **[Phase 8]** `PROVE_RAW_LOCK_NESTING` default n in this tree; Alpha
-  has no `HAVE_PREEMPT_RT`. Lockdep splat needs that debug option; 10 ms
-  IPI `udelay` does not.
-- **UNVERIFIED:** Exact mainline SHA (not in this object db). Whether
-  distro 6.12 Alpha configs enable `PROVE_RAW_LOCK_NESTING`.
-
-The patch is a small, tested context fix for a bug that exists in this
-tree and applies without prerequisites.
-
-**YES**
-
- arch/alpha/kernel/rtc.c | 37 ++++++++++++-------------------------
- 1 file changed, 12 insertions(+), 25 deletions(-)
-
-diff --git a/arch/alpha/kernel/rtc.c b/arch/alpha/kernel/rtc.c
-index cfdf90bc8b3f8..9e7d714ef6f85 100644
---- a/arch/alpha/kernel/rtc.c
-+++ b/arch/alpha/kernel/rtc.c
-@@ -15,6 +15,7 @@
- #include <linux/bcd.h>
- #include <linux/rtc.h>
- #include <linux/platform_device.h>
-+#include <linux/workqueue.h>
- 
- #include "proto.h"
- 
-@@ -142,54 +143,40 @@ static const struct rtc_class_ops alpha_rtc_ops = {
- };
- 
- /*
-- * Similarly, except do the actual CMOS access on the boot cpu only.
-- * This requires marshalling the data across an interprocessor call.
-+ * Similarly, except do the actual CMOS access on the boot cpu only.  The
-+ * access polls for the RTC update cycle and takes rtc_lock, so run it in a
-+ * worker on that cpu rather than from an interprocessor interrupt.
-  */
- 
- #if defined(CONFIG_SMP) && \
-     (defined(CONFIG_ALPHA_GENERIC) || defined(CONFIG_ALPHA_MARVEL))
- # define HAVE_REMOTE_RTC 1
- 
--union remote_data {
--	struct rtc_time *tm;
--	long retval;
--};
--
--static void
-+static long
- do_remote_read(void *data)
- {
--	union remote_data *x = data;
--	x->retval = alpha_rtc_read_time(NULL, x->tm);
-+	return alpha_rtc_read_time(NULL, data);
- }
- 
- static int
- remote_read_time(struct device *dev, struct rtc_time *tm)
- {
--	union remote_data x;
--	if (smp_processor_id() != boot_cpuid) {
--		x.tm = tm;
--		smp_call_function_single(boot_cpuid, do_remote_read, &x, 1);
--		return x.retval;
--	}
-+	if (smp_processor_id() != boot_cpuid)
-+		return work_on_cpu(boot_cpuid, do_remote_read, tm);
- 	return alpha_rtc_read_time(NULL, tm);
- }
- 
--static void
-+static long
- do_remote_set(void *data)
- {
--	union remote_data *x = data;
--	x->retval = alpha_rtc_set_time(NULL, x->tm);
-+	return alpha_rtc_set_time(NULL, data);
- }
- 
- static int
- remote_set_time(struct device *dev, struct rtc_time *tm)
- {
--	union remote_data x;
--	if (smp_processor_id() != boot_cpuid) {
--		x.tm = tm;
--		smp_call_function_single(boot_cpuid, do_remote_set, &x, 1);
--		return x.retval;
--	}
-+	if (smp_processor_id() != boot_cpuid)
-+		return work_on_cpu(boot_cpuid, do_remote_set, tm);
- 	return alpha_rtc_set_time(NULL, tm);
- }
- 
--- 
-2.53.0
-
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+This pull request completes Alpha's conversion to GENERIC_ENTRY and
+enables a range of kernel features through Kconfig updates, including
+UBSAN, gcov, kmemleak, page-table checking, fast GUP and sparse IRQs.
+
+It includes TLB and MMU context fixes prompted by glibc test-suite
+failures, HugeTLB support for 64KB, 512KB and 4MB pages, and fixes for
+poisoned-page faults and page-table checking.
+
+Machine-check handling is improved on Tsunami platforms, with bounded
+EV6 logout decoding, Clipper environmental event reporting and safer
+firmware console-log scanning.
+
+Other changes add self-extracting compressed kernels with support for
+all kernel compression formats, Alpha-specific XZ tuning, perf register
+and user-stack sampling, and Alpha support in the seccomp selftests.
+The series also fixes user stack-pointer reporting and IRQ entry
+ordering, adds 128-bit shift helpers, cleans up linker sections, and
+updates Kconfig help.
+
+The following changes since commit cee9395acd8043be0644b25c34bfa86623f2b935:
+
+  Linux 7.3-rc1 (2026-08-30 13:34:40 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/lindholm/alpha.git tags/alpha-for-v7.4-tag
+
+for you to fetch changes up to 71cf9644bcb35e686c3e12a703325335a0925946:
+
+  alpha: add bounded Clipper console-log scanning (2026-10-18 20:43:29 +0200)
+
+----------------------------------------------------------------
+alpha updates for v7.4
+
+- alpha: add bounded Clipper console-log scanning
+- alpha: decode Clipper environmental events
+- alpha: decode and acknowledge Tsunami system machine checks
+- alpha: bound EV6 logout decoding by the processor area
+- alpha: describe the Tsunami system machine check frame
+- alpha: move Tsunami machine check handling to err_tsunami.c
+- alpha: fill in pc for software event samples
+- alpha: add HAVE_PERF_REGS and HAVE_PERF_USER_STACK_DUMP support
+- alpha: use user_stack_pointer() in KSTK_ESP() and dump_elf_thread()
+- alpha: stop storing the user stack pointer in pt_regs
+- alpha: fix stale user_stack_pointer()
+- selftests/seccomp: add Alpha support to seccomp_bpf
+- alpha: do not skip TLB shootdown IPIs for kthread-borrowed mms
+- alpha: do not clear remote MMU contexts in migrate_flush_tlb_page()
+- alpha: invalidate the local context in flush_icache_user_page()
+- alpha: invalidate the local context in flush_tlb_mm()
+- alpha: fix the local TLB invalidate in the UP flush_tlb_page()
+- alpha: fix the local TLB invalidate in flush_tlb_page()
+- alpha: invalidate the local context in flush_tlb_page()
+- alpha: only use a targeted tbi() when the target mm is really current
+- alpha: run check_mmu_context() from finish_arch_post_lock_switch()
+- alpha: load the MMU context when switch_mm() switches the current task
+- alpha: implement hugetlb support
+- alpha: align hugetlb mappings in arch_get_unmapped_area()
+- alpha: define granularity hint PTE bits
+- alpha: describe the PTE read and write enable bits
+- alpha: handle VM_FAULT_HWPOISON in do_page_fault()
+- alpha: add missing page_table_check_pte_clear() to ptep_get_and_clear()
+- alpha: default NR_CPUS to 32 for Wildfire
+- alpha: link platform help text to the alphalinux.org wiki
+- alpha: correct system descriptions in Kconfig help text
+- alpha: replace dead links in Kconfig help text
+- alpha: support the remaining kernel compression formats
+- alpha: add self-extracting compressed kernel boot stub
+- xz: add arch-specific tuning for alpha
+- alpha: select SPARSE_IRQ
+- alpha: select ARCH_WANT_IRQS_OFF_ACTIVATE_MM
+- alpha: select ARCH_WANT_LD_ORPHAN_WARN
+- alpha: discard .eh_frame and the relocation sections
+- alpha: select SYSCTL_EXCEPTION_TRACE
+- alpha: select ARCH_USE_MEMTEST
+- alpha: select HAVE_GUP_FAST
+- alpha: select ARCH_HAS_DEBUG_VM_PGTABLE
+- alpha: add ARCH_SUPPORTS_PAGE_TABLE_CHECK support
+- alpha: add ARCH_HAS_PTE_SPECIAL support
+- alpha: add HAVE_ARCH_THREAD_STRUCT_WHITELIST support
+- alpha: select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+- alpha: select HAVE_ARCH_COMPILER_H
+- alpha: select ARCH_SUPPORTS_INT128
+- alpha: select ARCH_HAS_FAST_MULTIPLIER
+- alpha: select ARCH_SUPPORTS_ATOMIC_RMW
+- alpha: select EDAC_SUPPORT
+- alpha: select HAVE_DEBUG_KMEMLEAK
+- alpha: select ARCH_HAS_GCOV_PROFILE_ALL
+- alpha: select ARCH_HAS_UBSAN
+- alpha: enter hardirq context before looking up the irq descriptor
+- alpha: enable GENERIC_ENTRY
+
+----------------------------------------------------------------
+Magnus Lindholm (18):
+      alpha: enable GENERIC_ENTRY
+      alpha: load the MMU context when switch_mm() switches the current task
+      alpha: run check_mmu_context() from finish_arch_post_lock_switch()
+      alpha: only use a targeted tbi() when the target mm is really current
+      alpha: invalidate the local context in flush_tlb_page()
+      alpha: fix the local TLB invalidate in flush_tlb_page()
+      alpha: fix the local TLB invalidate in the UP flush_tlb_page()
+      alpha: invalidate the local context in flush_tlb_mm()
+      alpha: invalidate the local context in flush_icache_user_page()
+      alpha: do not clear remote MMU contexts in migrate_flush_tlb_page()
+      alpha: do not skip TLB shootdown IPIs for kthread-borrowed mms
+      selftests/seccomp: add Alpha support to seccomp_bpf
+      alpha: move Tsunami machine check handling to err_tsunami.c
+      alpha: describe the Tsunami system machine check frame
+      alpha: bound EV6 logout decoding by the processor area
+      alpha: decode and acknowledge Tsunami system machine checks
+      alpha: decode Clipper environmental events
+      alpha: add bounded Clipper console-log scanning
+
+Matt Turner (39):
+      alpha: enter hardirq context before looking up the irq descriptor
+      alpha: select ARCH_HAS_UBSAN
+      alpha: select ARCH_HAS_GCOV_PROFILE_ALL
+      alpha: select HAVE_DEBUG_KMEMLEAK
+      alpha: select EDAC_SUPPORT
+      alpha: select ARCH_SUPPORTS_ATOMIC_RMW
+      alpha: select ARCH_HAS_FAST_MULTIPLIER
+      alpha: select ARCH_SUPPORTS_INT128
+      alpha: select HAVE_ARCH_COMPILER_H
+      alpha: select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+      alpha: add HAVE_ARCH_THREAD_STRUCT_WHITELIST support
+      alpha: add ARCH_HAS_PTE_SPECIAL support
+      alpha: add ARCH_SUPPORTS_PAGE_TABLE_CHECK support
+      alpha: select ARCH_HAS_DEBUG_VM_PGTABLE
+      alpha: select HAVE_GUP_FAST
+      alpha: select ARCH_USE_MEMTEST
+      alpha: select SYSCTL_EXCEPTION_TRACE
+      alpha: discard .eh_frame and the relocation sections
+      alpha: select ARCH_WANT_LD_ORPHAN_WARN
+      alpha: select ARCH_WANT_IRQS_OFF_ACTIVATE_MM
+      alpha: select SPARSE_IRQ
+      xz: add arch-specific tuning for alpha
+      alpha: add self-extracting compressed kernel boot stub
+      alpha: support the remaining kernel compression formats
+      alpha: replace dead links in Kconfig help text
+      alpha: correct system descriptions in Kconfig help text
+      alpha: link platform help text to the alphalinux.org wiki
+      alpha: default NR_CPUS to 32 for Wildfire
+      alpha: add missing page_table_check_pte_clear() to ptep_get_and_clear()
+      alpha: handle VM_FAULT_HWPOISON in do_page_fault()
+      alpha: describe the PTE read and write enable bits
+      alpha: define granularity hint PTE bits
+      alpha: align hugetlb mappings in arch_get_unmapped_area()
+      alpha: implement hugetlb support
+      alpha: fix stale user_stack_pointer()
+      alpha: stop storing the user stack pointer in pt_regs
+      alpha: use user_stack_pointer() in KSTK_ESP() and dump_elf_thread()
+      alpha: add HAVE_PERF_REGS and HAVE_PERF_USER_STACK_DUMP support
+      alpha: fill in pc for software event samples
+
+ Documentation/admin-guide/kernel-parameters.txt    |   2 +-
+ .../debug/debug-vm-pgtable/arch-support.txt        |   2 +-
+ .../debug/gcov-profile-all/arch-support.txt        |   2 +-
+ .../features/debug/kmemleak/arch-support.txt       |   2 +-
+ .../features/perf/perf-regs/arch-support.txt       |   2 +-
+ .../features/perf/perf-stackdump/arch-support.txt  |   2 +-
+ .../features/vm/pte_special/arch-support.txt       |   2 +-
+ arch/alpha/Kconfig                                 | 185 ++++--
+ arch/alpha/Makefile                                |   6 +-
+ arch/alpha/boot/.gitignore                         |   2 +
+ arch/alpha/boot/Makefile                           |  16 +-
+ arch/alpha/boot/compressed/.gitignore              |   3 +
+ arch/alpha/boot/compressed/Makefile                |  89 +++
+ arch/alpha/boot/compressed/head.S                  |  36 ++
+ arch/alpha/boot/compressed/misc.c                  | 209 +++++++
+ arch/alpha/boot/compressed/trampoline.S            |  46 ++
+ arch/alpha/boot/compressed/vmlinux.lds.S           |  83 +++
+ arch/alpha/boot/compressed/vmlinux.scr             |  10 +
+ arch/alpha/include/asm/asm-prototypes.h            |   6 +
+ arch/alpha/include/asm/core_tsunami.h              |   8 +-
+ arch/alpha/include/asm/entry-common.h              |  14 +
+ arch/alpha/include/asm/ftrace.h                    |   5 +-
+ arch/alpha/include/asm/hugetlb.h                   |  43 ++
+ arch/alpha/include/asm/mmu_context.h               |  35 +-
+ arch/alpha/include/asm/page.h                      |  13 +
+ arch/alpha/include/asm/perf_event.h                |   7 +
+ arch/alpha/include/asm/pgtable.h                   |  83 ++-
+ arch/alpha/include/asm/processor.h                 |  10 +-
+ arch/alpha/include/asm/ptrace.h                    |  17 +-
+ arch/alpha/include/asm/stacktrace.h                |  20 +
+ arch/alpha/include/asm/switch_to.h                 |   1 -
+ arch/alpha/include/asm/syscall.h                   |  11 +-
+ arch/alpha/include/asm/thread_info.h               |  30 +-
+ arch/alpha/include/asm/tlbflush.h                  |   3 +-
+ arch/alpha/include/uapi/asm/perf_regs.h            |  45 ++
+ arch/alpha/include/uapi/asm/ptrace.h               |   2 +-
+ arch/alpha/kernel/Makefile                         |   5 +-
+ arch/alpha/kernel/asm-offsets.c                    |   6 +-
+ arch/alpha/kernel/core_tsunami.c                   |  34 -
+ arch/alpha/kernel/entry.S                          | 323 +++-------
+ arch/alpha/kernel/err_common.c                     |  13 +
+ arch/alpha/kernel/err_ev6.c                        |  38 +-
+ arch/alpha/kernel/err_impl.h                       |   1 +
+ arch/alpha/kernel/err_tsunami.c                    | 688 +++++++++++++++++++++
+ arch/alpha/kernel/irq.c                            |   9 +-
+ arch/alpha/kernel/irq_alpha.c                      |  27 +-
+ arch/alpha/kernel/osf_sys.c                        |  14 +-
+ arch/alpha/kernel/perf_regs.c                      |  64 ++
+ arch/alpha/kernel/process.c                        |   2 +-
+ arch/alpha/kernel/proto.h                          |  11 +-
+ arch/alpha/kernel/ptrace.c                         | 142 ++---
+ arch/alpha/kernel/signal.c                         | 164 ++++-
+ arch/alpha/kernel/smp.c                            |  67 +-
+ arch/alpha/kernel/sys_dp264.c                      |   3 +-
+ arch/alpha/kernel/traps.c                          |   8 -
+ arch/alpha/kernel/vmlinux.lds.S                    |  11 +
+ arch/alpha/lib/Makefile                            |   2 +
+ arch/alpha/lib/tishift.c                           |  70 +++
+ arch/alpha/mm/Makefile                             |   2 +
+ arch/alpha/mm/fault.c                              |  52 +-
+ arch/alpha/mm/hugetlbpage.c                        | 308 +++++++++
+ arch/alpha/mm/init.c                               |   5 +
+ arch/alpha/mm/tlbflush.c                           |  18 +-
+ scripts/xz_wrap.sh                                 |   5 +
+ tools/testing/selftests/seccomp/seccomp_bpf.c      |  26 +
+ 65 files changed, 2610 insertions(+), 560 deletions(-)
+ create mode 100644 arch/alpha/boot/.gitignore
+ create mode 100644 arch/alpha/boot/compressed/.gitignore
+ create mode 100644 arch/alpha/boot/compressed/Makefile
+ create mode 100644 arch/alpha/boot/compressed/head.S
+ create mode 100644 arch/alpha/boot/compressed/misc.c
+ create mode 100644 arch/alpha/boot/compressed/trampoline.S
+ create mode 100644 arch/alpha/boot/compressed/vmlinux.lds.S
+ create mode 100644 arch/alpha/boot/compressed/vmlinux.scr
+ create mode 100644 arch/alpha/include/asm/entry-common.h
+ create mode 100644 arch/alpha/include/asm/hugetlb.h
+ create mode 100644 arch/alpha/include/asm/stacktrace.h
+ create mode 100644 arch/alpha/include/uapi/asm/perf_regs.h
+ create mode 100644 arch/alpha/kernel/err_tsunami.c
+ create mode 100644 arch/alpha/kernel/perf_regs.c
+ create mode 100644 arch/alpha/lib/tishift.c
+ create mode 100644 arch/alpha/mm/hugetlbpage.c
