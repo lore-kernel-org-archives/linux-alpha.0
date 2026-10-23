@@ -1,96 +1,142 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.137.202.136
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.129.124
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792715050;
-	b=JehGnMocDtR5ZiqnyHoEwd2SymW2otp4JrkITmQuJmcTFUpV5SNStMnkpqtqr9RRBD0x
-	 Y7hzGWqr3ndX9Jbxj2Q5KLLFl+5gzDheaYzKHkMOqw73AKnsTnaBunvxIfFJ2EsYxSTUY
-	 WFfoVvCQtaUQF0HioUNVSkw7QFl7HZZjAdKDIvqb97zIvnBiPSvT5H8Ksau93meG70Zyj
-	 leuw/EZrKFjtB1ZusQ+/2jbVU+LTFCqh9p/92irJ3csZM4DdI8mYs9yKJMNIuOX69YGUl
-	 rJxscecZmLw091td6D0PB7o2IRfhP44LS8LM75KUrKif8Lx64aQuxLAff8bJ/CBf4jA==
+	t=1792738254;
+	b=DtNRh87ii1X3v3wxPt0Uvpb+xGGFrxnS890fwI1nDkIDeuaZV93COgndCTKO21SlNnhN
+	 cGf/faz7R+v6FPM+V8lxmozXxZFFNzZbD2WtBEqLH2J2wgUWXvrh+RB7lsqSJ9v34mDEk
+	 LxHwad6DG3CozwpFHGiyKHR14q2nkOZo2Wim3QSDDwFQB9I9b0T2VNH2DGe5wS4KkUdQE
+	 XpWamPSXrXo+JLR9NHSpi1qj/eqq2DDT6kN+wLTboHJ697R8pzzo31j4q3D2Y6hNwN8QJ
+	 VFolwOiT7tSBnPVKBDtPYxLnap5L6H2uJSA7Ha6EJtIHkVgXddURKVurWoiitw+dUJA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792715050;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Date:From:To:CC:
-	 Subject:User-Agent:In-Reply-To:References:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=sewWTjP+M6E94TwmQI+LvxiP3Dgk+UiInUJ1sYqPvjE=;
-	b=kR2CrW7/hkAfxZW3cHeIT4RoXyK7nQWiqdFq13pZhWIcIfxUr/T5/oAMjrAhRkFaTRwC
-	 M//jmNwbhkwd87XRtxr9KAd6zQcuJ7nbsAA7YJ2XjR8CQn7i8rAWpVtJcZESSThiTOPhI
-	 GqUKBye1vGqUjRhwQqx7KiN5ooRXPfvdi4c2cOWIDxah/gDIGcHF/FiNXFX3clAubYPM9
-	 viBh7Iv08T62//sz0D8ep/1E6LAvuzOC6shVJ+21DlKbdu1Xng5bCEuCMvWdLUdgRm11G
-	 lNMxRMzZjok3rCVZPYW/S1HjIzIQ2SPA2d21Pz8VARQ6MG/Ur2p2WDPEdPGMthJHHIw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792738254;
+	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
+	 X-Mimecast-MFC-AGG-ID:Received:Received:From:To:Cc:Subject:Date:
+	 Message-ID:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:X-Scanned-By;
+	bh=F6+noPVYF4kQP6smbqYTSV7WwZHDrBWE8Us7MYDz21A=;
+	b=oT0YBoOULoTMlXj9A4uraHUaYXzQf0UO23al+nonhzGv9A16FF9Adm1Pil6BV4MRRNc9
+	 m4qVX72dazZ5shj8lrqAfUY2cD3wV19e1F72M+YXNFz7FyX/TztpUXR6fj+abcLaI+eae
+	 k4NVQSS72UM+95DGkpZIDaSZWjRYJwZb0vNn7eNTpynNxOAO3FNQob0vaNZXlYyU5+4d/
+	 n7hTvuudCr2sYwaYrkSvwiK/e26NKEc7z4nAIHUPgCTkLuLRh8dNz9E3nG7ZCODCDA829
+	 J9TBIjUC6sdY6yAedDA+YdnqxJO77I38Eat/kxVzc0wjqXPUiU0VHGgTy+nd5tIdjMw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=zytor.com;
-	spf=pass smtp.mailfrom=zytor.com;
-	dkim=pass header.d=zytor.com header.i=@zytor.com header.a=rsa-sha256 header.s=2026092801 header.b=B0iR0guj;
-	arc=none smtp.remote-ip=198.137.202.136
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+	dmarc=pass header.from=redhat.com;
+	spf=pass smtp.mailfrom=redhat.com;
+	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=OMSOOnPs;
+	arc=none smtp.remote-ip=170.10.129.124
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71B2E606A31D;
-	Fri, 23 Oct 2026 00:24:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 71B2E606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC4A6606A31B
+	for <linux-alpha@vger.kernel.org>; Fri, 23 Oct 2026 06:50:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EC4A6606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=zytor.com header.i=@zytor.com header.a=rsa-sha256 header.s=2026092801 header.b=B0iR0guj
-Received: from ehlo.thunderbird.net (ENVISION-AE.edge1.SanJose1.Level3.net [4.79.220.182])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 69N0MTYe1497671
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Thu, 22 Oct 2026 17:22:30 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 69N0MTYe1497671
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2026092801; t=1792714955;
-	bh=sewWTjP+M6E94TwmQI+LvxiP3Dgk+UiInUJ1sYqPvjE=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=B0iR0gujNC7PBahAQGPELPfOvA7wFnm4aVgauSDh6Mr2eGjg9f2sjLSQ7t78E+yy1
-	 f8bIVvq6KYitlu1MNVZc3rKXjku7b5th05mhKR3968auNM3tY5s5Ser+GgoQNITSum
-	 ZADmFoGGs0IzvcRHHbEEE6rPcUpxXrq+3jB2dvktUZRlLHRQfdXJNzBfWoR9LWTL/0
-	 Vfr9nrAF6Af+MSU3LPirKQDCQPLvyBm4AXAwcmc36BGcccEuO+/ctQAGEZb2pFmtOB
-	 9hRTTHAao28lytaVTDSTMgSi2sQxwQH+82H9bDetNn7xdIGgwxNjxXV+Ny1OiYpDe8
-	 //k9lsYxpZvPw==
-Date: Thu, 22 Oct 2026 17:22:24 -0700
-From: "H. Peter Anvin" <hpa@zytor.com>
-To: Thomas Gleixner <tglx@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-CC: LKML <linux-kernel@vger.kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Shrikanth Hegde <sshegde@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org,
-        Kees Cook <kees@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
-        loongarch@lists.linux.dev, Paul Walmsley <pjw@kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>, linux-riscv@lists.infradead.org,
-        Sven Schnelle <svens@linux.ibm.com>, linux-s390@vger.kernel.org,
-        x86@kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Jinjie Ruan <ruanjinjie@huawei.com>, Andy Lutomirski <luto@kernel.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Richard Henderson <richard.henderson@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>, Guo Ren <guoren@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Helge Deller <deller@gmx.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Richard Weinberger <richard@nod.at>, Chris Zankel <chris@zankel.net>,
-        linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org,
-        linux-csky@vger.kernel.org, linux-m68k@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-sh@vger.kernel.org, linux-um@lists.infradead.org,
-        Arnd Bergmann <arnd@arndb.de>, Vineet Gupta <vgupta@kernel.org>,
-        Will Deacon <will@kernel.org>, Brian Cain <bcain@kernel.org>,
-        Michal Simek <monstr@monstr.eu>, Dinh Nguyen <dinguyen@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andreas Larsson <andreas@gaisler.com>,
-        linux-snps-arc@lists.infradead.org, linux-hexagon@vger.kernel.org,
-        linux-openrisc@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org,
-        =?ISO-8859-1?Q?Michal_Such=E1nek?= <msuchanek@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_=5Bpatch_16/18=5D_x86/entry=3A_Get_rid?=
- =?US-ASCII?Q?_of_the_sys=5Fni=5Fsyscall=28=29_indirection?=
-User-Agent: K-9 Mail for Android
-In-Reply-To: <87cxt11ktr.ffs@fw13>
-References: <20260707181957.433213175@kernel.org> <20260707190254.493733289@kernel.org> <20261022142425.3Wx-RrU5@linutronix.de> <87fqxx1r80.ffs@fw13> <87cxt11ktr.ffs@fw13>
-Message-ID: <1149A39E-BEBA-46EA-94F4-4DFFC4733EF5@zytor.com>
+	dkim=pass (1024-bit key, unprotected) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=OMSOOnPs
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1792738253;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=F6+noPVYF4kQP6smbqYTSV7WwZHDrBWE8Us7MYDz21A=;
+	b=OMSOOnPsNjgXAs4VW2wEJVFqA5G00O5XxWdwyixxlHumLFkSHuH6MMgFGEUr0NiEg5Of75
+	a/Q/IFxmxwM1zBMCpK4811aK1BGiNta6SQoFQvpqoL7TJ9euZfn2k+ezMFNn31nvWTMIQV
+	sLN8bUMty7SlPjnUHCFhLdHds3JeRNI=
+Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-587-1BrFnSVrOACgn3OQUjDx2Q-1; Fri,
+ 23 Oct 2026 02:50:51 -0400
+X-MC-Unique: 1BrFnSVrOACgn3OQUjDx2Q-1
+X-Mimecast-MFC-AGG-ID: 1BrFnSVrOACgn3OQUjDx2Q_1792738248
+Received: from mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.17])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id BCC341955F71;
+	Fri, 23 Oct 2026 06:50:47 +0000 (UTC)
+Received: from thuth-p1g4.redhat.com (unknown [10.44.48.42])
+	by mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 7EFCD1956095;
+	Fri, 23 Oct 2026 06:50:27 +0000 (UTC)
+From: Thomas Huth <thuth@redhat.com>
+To: Arnd Bergmann <arnd@arndb.de>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nicolas Schier <nsc@kernel.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org,
+	Chris Zankel <chris@zankel.net>,
+	Max Filippov <jcmvbkbc@gmail.com>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Luis Augenstein <luis.augenstein@tngtech.com>,
+	Maximilian Huber <maximilian.huber@tngtech.com>,
+	Anup Patel <anup@brainfault.org>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Shuah Khan <shuah@kernel.org>,
+	Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Andy Lutomirski <luto@kernel.org>,
+	Vincenzo Frascino <vincenzo.frascino@arm.com>
+Cc: soc@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-kbuild@vger.kernel.org,
+	=?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
+	Mark Rutland <mark.rutland@arm.com>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	Atish Patra <atish.patra@linux.dev>,
+	Sean Christopherson <seanjc@google.com>,
+	Alexandre Ghiti <alex@ghiti.fr>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>,
+	linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org,
+	linux-efi@vger.kernel.org,
+	netdev@vger.kernel.org,
+	kvm@vger.kernel.org,
+	kvm-riscv@lists.infradead.org,
+	linux-riscv@lists.infradead.org,
+	linux-kselftest@vger.kernel.org,
+	llvm@lists.linux.dev
+Subject: [PATCH v5 13/13] treewide: Stop defining __ASSEMBLY__ for assembler files
+Date: Fri, 23 Oct 2026 08:48:50 +0200
+Message-ID: <20261023064908.66707-14-thuth@redhat.com>
+In-Reply-To: <20261023064908.66707-1-thuth@redhat.com>
+References: <20261023064908.66707-1-thuth@redhat.com>
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -100,178 +146,309 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.17
 
-On October 22, 2026 2:34:08 PM PDT, Thomas Gleixner <tglx@kernel=2Eorg> wro=
-te:
->On Thu, Oct 22 2026 at 21:15, Thomas Gleixner wrote:
->> On Thu, Oct 22 2026 at 16:24, Sebastian Andrzej Siewior wrote:
->>> On 2026-07-07 21:07:01 [+0200], Thomas Gleixner wrote:
->>> |[RUN]           Checking out of range system calls
->>> |[FAIL]                  x32 syscall 1:-64 returned -9999, but it shou=
-ld have returned -ENOSYS
->>> |[FAIL]              x32 syscalls 1:-64=2E=2E-2 had 63 failure
->>> |[OK]                x32 syscall 1:-1 returned MODIFIED_BY_PTRACE as e=
-xpected
->>> |[FAIL]                  x64 syscall 1:1073741760 returned -9999, but =
-it should have returned -ENOSYS
->>> =E2=80=A6
->>>
->>> and so on=E2=80=A6 The test has
->>>
->>> | #define MODIFIED_BY_PTRACE      -9999
->>>
->>> and the ptracer modifies the return code=2E However not always=2E Not =
-sure
->>> if this was indeed a pointless exercise or not=2E
->>
->> Hrmm=2E That's weird=2E Let me have a look=2E
->
->So I clearly failed to decode the overloading of the -1L return value
->correctly and then failed to run the stupid test=2E
->
->TBH, this whole thing was a horrid and inconsistent mess=2E
->
->The logic in the original code was:
->
->    When the entry work code returned an invalid syscall number then the
->    return value in regs->ax was set to -ENOSYS, except when the
->    returned syscall number was -1=2E Syscall number "-1" indicated that
->    the syscall has to be aborted=2E
->
->     regs->ax =3D -ENOSYS;
->     syscall =3D enter_work(regs, syscall);
->     if (syscall_in_range(syscall))
->        regs->ax =3D do_syscall(syscall);
->     else if (syscall !=3D -1)
->        regs->ax =3D -ENOSYS;
->
->So if the ptrace check in enter_work() overwrote regs->ax and the
->syscall number (either as supplied by user space or rewritten) was out
->of range and not -1 then the x86 entry code overwrote regs->ax to
->-ENOSYS again=2E IOW, there is no distinction between a check induced
->abort and a syscall with syscall number -1=2E
->
->The rework changed the return value to boolean, which is true when the
->syscall should be invoked and false when one of the checks requests to
->abort the syscall=2E In that case the return code does not touch the
->return value in regs->ax=2E
->
->If the eventually modified syscall number is out of range then the code
->relies on the fact that regs->ax was preset with -ENOSYS, i=2Ee=2E:
->
->     regs->ax =3D -ENOSYS;
->     // True indicates to proceed
->     if (enter_work(regs, &syscall)) {
->         if (syscall_in_range(syscall))
->            regs->ax =3D do_syscall(syscall);
->     }
->
->That seems to be equivalent, but it is not when ptrace() modifies
->the return value in regs->ax and also rewrites the syscall number to an
->invalid value or leaves the user supplied invalid value intact and does
->_NOT_ abort the syscall=2E
->
->So the reworked code does not overwrite the tracer modified return value
->with -ENOSYS in that case and returns whatever the tracer decided to put
->into it=2E
->
->TBH, that makes a lot more sense than the original behavior=2E If the
->tracer decides to fiddle with the default return value then that's what
->the tracer intended=2E
->
->That makes the behavior consistent vs=2E other abort scenarios:
->
->    ptrace()
->      regs->ax =3D MAGIC;
->      return true;            // Allow syscall
->
->    seccomp()
->      return false;          // Abort syscall
->
->So when the tracer modified the return value and seccomp aborts the
->syscall then the tracer induced value is preserved=2E That was the case i=
-n
->the original code as well because seccomp() indicated the abort by
->returning -1 as the modified syscall number=2E Similar effects when ftrac=
-e
->(BPF, kprobe) decided to overwrite the syscall number)=2E
->
->Bringing the original behaviour back is trivial enough, but I'm not
->convinced that it makes any sense and is worth it=2E At least this
->confines the x32 specific insanity of treating -1 special to x32=2E=2E=2E
->
->Thanks,
->
->        tglx
->---
->--- a/arch/x86/entry/syscall_32=2Ec
->+++ b/arch/x86/entry/syscall_32=2Ec
->@@ -77,6 +77,8 @@ static __always_inline void do_syscall_3
-> 	if (likely(nr < IA32_NR_syscalls)) {
-> 		nr =3D array_index_nospec(nr, IA32_NR_syscalls);
-> 		regs->ax =3D ia32_sys_call(regs, (unsigned int)nr);
->+	} else {
->+		regs->ax =3D -ENOSYS;
-> 	}
-> }
->=20
->--- a/arch/x86/entry/syscall_64=2Ec
->+++ b/arch/x86/entry/syscall_64=2Ec
->@@ -64,15 +64,24 @@ static __always_inline bool do_syscall_x
-> 	return false;
-> }
->=20
->-static __always_inline void do_syscall_x32(struct pt_regs *regs, unsigne=
-d long nr)
->+static __always_inline bool do_syscall_x32(struct pt_regs *regs, unsigne=
-d long nr)
-> {
->+	if (!IS_ENABLED(CONFIG_X86_X32_ABI))
->+		return false;
->+
->+	/* Preserve the historic insanity of treating -1 special on x32 */
->+	if (nr =3D=3D ULONG_MAX)
->+		return true;
->+
-> 	/* Adjust the starting offset of the table */
-> 	nr -=3D __X32_SYSCALL_BIT;
->=20
->-	if (IS_ENABLED(CONFIG_X86_X32_ABI) && likely(nr < X32_NR_syscalls)) {
->+	if (likely(nr < X32_NR_syscalls)) {
-> 		nr =3D array_index_nospec(nr, X32_NR_syscalls);
-> 		regs->ax =3D x32_sys_call(regs, (unsigned int)nr);
->+		return true;
-> 	}
->+	return false;
-> }
->=20
-> /* Returns true to return using SYSRET, or false to use IRET */
->@@ -81,8 +90,10 @@ static __always_inline void do_syscall_x
-> 	if (likely(syscall_enter_from_user_mode_randomize_stack(regs, &nr))) {
-> 		instrumentation_begin();
->=20
->-		if (!do_syscall_x64(regs, nr))
->-			do_syscall_x32(regs, nr);
->+		if (unlikely(!do_syscall_x64(regs, nr))) {
->+			if (!do_syscall_x32(regs, nr))
->+				regs->ax =3D -ENOSYS;
->+		}
->=20
-> 		instrumentation_end();
-> 	}
->
->
->
->
->
->
->
->
->
->
->
+All spots have been changed to __ASSEMBLER__ (i.e. the macro that
+gets defined by the compiler), so we don't have to manually define
+__ASSEMBLY__ anymore.
 
-It was never limited to x32=2E=2E=2E
+Signed-off-by: Thomas Huth <thuth@redhat.com>
+---
+ Makefile                                             | 2 +-
+ arch/alpha/boot/compressed/Makefile                  | 2 +-
+ arch/arm64/kernel/vdso32/Makefile                    | 1 -
+ arch/loongarch/vdso/Makefile                         | 2 +-
+ arch/mips/boot/compressed/Makefile                   | 2 +-
+ arch/mips/vdso/Makefile                              | 2 +-
+ arch/powerpc/boot/Makefile                           | 2 +-
+ arch/powerpc/platforms/cell/spufs/Makefile           | 2 +-
+ arch/s390/Makefile                                   | 2 +-
+ arch/x86/boot/Makefile                               | 2 +-
+ arch/x86/boot/compressed/Makefile                    | 2 +-
+ arch/x86/realmode/rm/Makefile                        | 2 +-
+ arch/xtensa/kernel/Makefile                          | 2 +-
+ drivers/firmware/efi/libstub/Makefile                | 2 +-
+ drivers/net/wan/Makefile                             | 2 +-
+ scripts/Makefile.build                               | 2 +-
+ scripts/gfp-translate                                | 2 +-
+ scripts/headers_install.sh                           | 1 -
+ scripts/sbom/tests/cmd_graph/test_savedcmd_parser.py | 2 +-
+ tools/testing/selftests/kvm/lib/riscv/handlers.S     | 4 ----
+ tools/testing/selftests/vDSO/vgetrandom-chacha.S     | 2 --
+ 21 files changed, 17 insertions(+), 25 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 0319cd716d73b..98bffdd9cf2d6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -606,7 +606,7 @@ LINUXINCLUDE    := \
+ 		-I$(objtree)/include \
+ 		$(USERINCLUDE)
+ 
+-KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
++KBUILD_AFLAGS   := -fno-PIE
+ 
+ KBUILD_CFLAGS :=
+ KBUILD_CFLAGS += -fshort-wchar
+diff --git a/arch/alpha/boot/compressed/Makefile b/arch/alpha/boot/compressed/Makefile
+index eb930f01b4be4..16119a13e53a3 100644
+--- a/arch/alpha/boot/compressed/Makefile
++++ b/arch/alpha/boot/compressed/Makefile
+@@ -22,7 +22,7 @@ KBUILD_CFLAGS += -fno-asynchronous-unwind-tables
+ KBUILD_CFLAGS += -pipe -mcpu=ev4 -mno-fp-regs -ffixed-8
+ KBUILD_CFLAGS += -DDISABLE_BRANCH_PROFILING -D__DISABLE_EXPORTS
+ KBUILD_CFLAGS += $(CC_FLAGS_DIALECT)
+-KBUILD_AFLAGS := -D__ASSEMBLY__ $(KBUILD_CFLAGS)
++KBUILD_AFLAGS := $(KBUILD_CFLAGS)
+ 
+ # The stub has no sanitizer or coverage runtime. arch/alpha/lib/lib.a is
+ # built with the kernel's instrumentation and -mcpu=, so build private
+diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefile
+index 00efdc5d23543..0ba0b4bb3e013 100644
+--- a/arch/arm64/kernel/vdso32/Makefile
++++ b/arch/arm64/kernel/vdso32/Makefile
+@@ -77,7 +77,6 @@ VDSO_CFLAGS += -marm
+ endif
+ 
+ VDSO_AFLAGS := $(VDSO_CAFLAGS)
+-VDSO_AFLAGS += -D__ASSEMBLY__
+ 
+ # From arm vDSO Makefile
+ VDSO_LDFLAGS += -Bsymbolic --no-undefined -soname=linux-vdso.so.1
+diff --git a/arch/loongarch/vdso/Makefile b/arch/loongarch/vdso/Makefile
+index 0b84892d084b6..c2b73fd3781c0 100644
+--- a/arch/loongarch/vdso/Makefile
++++ b/arch/loongarch/vdso/Makefile
+@@ -32,7 +32,7 @@ cflags-vdso := $(ccflags-vdso) \
+ 	$(call cc-option, -fasynchronous-unwind-tables) \
+ 	$(call cc-option, -fno-stack-protector)
+ aflags-vdso := $(ccflags-vdso) \
+-	-D__ASSEMBLY__ -Wa,-gdwarf-2
++	-Wa,-gdwarf-2
+ 
+ ifneq ($(c-gettimeofday-y),)
+   CFLAGS_vgettimeofday.o += -include $(c-gettimeofday-y)
+diff --git a/arch/mips/boot/compressed/Makefile b/arch/mips/boot/compressed/Makefile
+index 2684540758a8d..3e3803b2db48f 100644
+--- a/arch/mips/boot/compressed/Makefile
++++ b/arch/mips/boot/compressed/Makefile
+@@ -30,7 +30,7 @@ endif
+ KBUILD_CFLAGS := $(KBUILD_CFLAGS) -D__KERNEL__ -D__DISABLE_EXPORTS \
+ 	-DBOOT_HEAP_SIZE=$(BOOT_HEAP_SIZE) -D"VMLINUX_LOAD_ADDRESS_ULL=$(VMLINUX_LOAD_ADDRESS)ull"
+ 
+-KBUILD_AFLAGS := $(KBUILD_AFLAGS) -D__ASSEMBLY__ \
++KBUILD_AFLAGS := $(KBUILD_AFLAGS) \
+ 	-DBOOT_HEAP_SIZE=$(BOOT_HEAP_SIZE) \
+ 	-DKERNEL_ENTRY=$(VMLINUX_ENTRY_ADDRESS)
+ 
+diff --git a/arch/mips/vdso/Makefile b/arch/mips/vdso/Makefile
+index 00d3ba2c482ac..4d04987e995de 100644
+--- a/arch/mips/vdso/Makefile
++++ b/arch/mips/vdso/Makefile
+@@ -33,7 +33,7 @@ cflags-vdso := $(ccflags-vdso) \
+ 	-fno-stack-protector -fno-jump-tables -DDISABLE_BRANCH_PROFILING \
+ 	$(call cc-option, -fno-asynchronous-unwind-tables)
+ aflags-vdso := $(ccflags-vdso) \
+-	-D__ASSEMBLY__ -Wa,-gdwarf-2
++	-Wa,-gdwarf-2
+ 
+ ifneq ($(c-gettimeofday-y),)
+ obj-vdso-y += vgettimeofday.o
+diff --git a/arch/powerpc/boot/Makefile b/arch/powerpc/boot/Makefile
+index 7ee0fa2d3371e..5dca91ec9f4aa 100644
+--- a/arch/powerpc/boot/Makefile
++++ b/arch/powerpc/boot/Makefile
+@@ -80,7 +80,7 @@ BOOTCFLAGS	:= $(BOOTTARGETFLAGS) \
+ 		   $(call cc-option,-mno-spe) $(call cc-option,-mspe=no) \
+ 		   -fomit-frame-pointer -fno-builtin -fPIC
+ 
+-BOOTAFLAGS	:= $(BOOTTARGETFLAGS) -D__ASSEMBLY__
++BOOTAFLAGS	:= $(BOOTTARGETFLAGS)
+ 
+ BOOTARFLAGS	:= -crD
+ 
+diff --git a/arch/powerpc/platforms/cell/spufs/Makefile b/arch/powerpc/platforms/cell/spufs/Makefile
+index 60319d4ff25a6..959617c4ee89c 100644
+--- a/arch/powerpc/platforms/cell/spufs/Makefile
++++ b/arch/powerpc/platforms/cell/spufs/Makefile
+@@ -15,7 +15,7 @@ SPU_AS		:= $(SPU_CROSS)gcc
+ SPU_LD		:= $(SPU_CROSS)ld
+ SPU_OBJCOPY	:= $(SPU_CROSS)objcopy
+ SPU_CFLAGS	:= -O2 -Wall -I$(srctree)/include -D__KERNEL__
+-SPU_AFLAGS	:= -c -D__ASSEMBLY__ -I$(srctree)/include -D__KERNEL__
++SPU_AFLAGS	:= -c -I$(srctree)/include -D__KERNEL__
+ SPU_LDFLAGS	:= -N -Ttext=0x0
+ 
+ $(obj)/switch.o: $(obj)/spu_save_dump.h $(obj)/spu_restore_dump.h
+diff --git a/arch/s390/Makefile b/arch/s390/Makefile
+index 8b712cd85fcd3..83ecc702f7146 100644
+--- a/arch/s390/Makefile
++++ b/arch/s390/Makefile
+@@ -17,7 +17,7 @@ KBUILD_CFLAGS	+= -fPIC
+ LDFLAGS_vmlinux	:= $(call ld-option,-no-pie)
+ extra_tools	:= relocs
+ aflags_dwarf	:= -Wa,-gdwarf-2
+-KBUILD_AFLAGS_DECOMPRESSOR := $(CLANG_FLAGS) -m64 -D__ASSEMBLY__
++KBUILD_AFLAGS_DECOMPRESSOR := $(CLANG_FLAGS) -m64
+ ifndef CONFIG_AS_IS_LLVM
+ KBUILD_AFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO),$(aflags_dwarf))
+ endif
+diff --git a/arch/x86/boot/Makefile b/arch/x86/boot/Makefile
+index 4a9bce32586d3..69d75072888d1 100644
+--- a/arch/x86/boot/Makefile
++++ b/arch/x86/boot/Makefile
+@@ -52,7 +52,7 @@ targets += cpustr.h
+ # ---------------------------------------------------------------------------
+ 
+ KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP
+-KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
++KBUILD_AFLAGS	:= $(KBUILD_CFLAGS)
+ KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
+ KBUILD_CFLAGS	+= $(CONFIG_CC_IMPLICIT_FALLTHROUGH)
+ 
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 680ad803cba7d..e73ef522496e1 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -49,7 +49,7 @@ KBUILD_CFLAGS += -include $(srctree)/include/linux/hidden.h
+ # that the compiler finds it even with out-of-tree builds (make O=/some/path).
+ CFLAGS_sev-handle-vc.o += -I$(objtree)/arch/x86/lib/
+ 
+-KBUILD_AFLAGS  := $(KBUILD_CFLAGS) -D__ASSEMBLY__
++KBUILD_AFLAGS  := $(KBUILD_CFLAGS)
+ 
+ KBUILD_LDFLAGS := -m elf_$(UTS_MACHINE)
+ KBUILD_LDFLAGS += $(call ld-option,--no-ld-generated-unwind-info)
+diff --git a/arch/x86/realmode/rm/Makefile b/arch/x86/realmode/rm/Makefile
+index a0fb39abc5c86..20bbe1af05acd 100644
+--- a/arch/x86/realmode/rm/Makefile
++++ b/arch/x86/realmode/rm/Makefile
+@@ -65,5 +65,5 @@ $(obj)/realmode.relocs: $(obj)/realmode.elf FORCE
+ 
+ KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP -D_WAKEUP \
+ 		   -I$(srctree)/arch/x86/boot
+-KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
++KBUILD_AFLAGS	:= $(KBUILD_CFLAGS)
+ KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
+diff --git a/arch/xtensa/kernel/Makefile b/arch/xtensa/kernel/Makefile
+index d3ef0407401f6..ece4ae6dea97d 100644
+--- a/arch/xtensa/kernel/Makefile
++++ b/arch/xtensa/kernel/Makefile
+@@ -39,7 +39,7 @@ sed-y = -e ':a; s/\*(\([^)]*\)\.text\.unlikely/*(\1.literal.unlikely .{text}.unl
+ 	-e 's/\.{text}/.text/g'
+ 
+ quiet_cmd__cpp_lds_S = LDS     $@
+-cmd__cpp_lds_S = $(CPP) $(cpp_flags) -P -C -Uxtensa -D__ASSEMBLY__ \
++cmd__cpp_lds_S = $(CPP) $(cpp_flags) -P -C -Uxtensa \
+ 		 -DLINKER_SCRIPT $< | sed $(sed-y) >$@
+ 
+ $(obj)/vmlinux.lds: $(src)/vmlinux.lds.S FORCE
+diff --git a/drivers/firmware/efi/libstub/Makefile b/drivers/firmware/efi/libstub/Makefile
+index 415f63105b481..d4edc3c0c4556 100644
+--- a/drivers/firmware/efi/libstub/Makefile
++++ b/drivers/firmware/efi/libstub/Makefile
+@@ -61,7 +61,7 @@ KBUILD_CFLAGS := $(filter-out $(CC_FLAGS_LTO), $(KBUILD_CFLAGS))
+ # `-fdata-sections` flag from KBUILD_CFLAGS_KERNEL
+ KBUILD_CFLAGS_KERNEL := $(filter-out -fdata-sections, $(KBUILD_CFLAGS_KERNEL))
+ 
+-KBUILD_AFLAGS			:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
++KBUILD_AFLAGS			:= $(KBUILD_CFLAGS)
+ 
+ lib-y				:= efi-stub-helper.o gop.o secureboot.o tpm.o \
+ 				   file.o mem.o random.o randomalloc.o pci.o \
+diff --git a/drivers/net/wan/Makefile b/drivers/net/wan/Makefile
+index 00e9b7ee1e012..4233143534465 100644
+--- a/drivers/net/wan/Makefile
++++ b/drivers/net/wan/Makefile
+@@ -57,7 +57,7 @@ $(obj)/wanxlfw.bin: $(obj)/wanxlfw.o FORCE
+ 	$(call if_changed,m68kld_bin_o)
+ 
+ quiet_cmd_m68kas_o_S = M68KAS  $@
+-      cmd_m68kas_o_S = $(M68KCC) -D__ASSEMBLY__ -Wp,-MD,$(depfile) -I$(srctree)/include/uapi -c -o $@ $<
++      cmd_m68kas_o_S = $(M68KCC) -Wp,-MD,$(depfile) -I$(srctree)/include/uapi -c -o $@ $<
+ 
+ $(obj)/wanxlfw.o: $(src)/wanxlfw.S FORCE
+ 	$(call if_changed_dep,m68kas_o_S)
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index 6127feb970c65..0b7c1e273f0cb 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -465,7 +465,7 @@ targets += $(lib-y) $(always-y)
+ # ---------------------------------------------------------------------------
+ quiet_cmd_cpp_lds_S = LDS     $@
+       cmd_cpp_lds_S = $(CPP) $(cpp_flags) -P -U$(ARCH) \
+-	                     -D__ASSEMBLY__ -DLINKER_SCRIPT -o $@ $<
++	                     -DLINKER_SCRIPT -o $@ $<
+ 
+ $(obj)/%.lds: $(src)/%.lds.S FORCE
+ 	$(call if_changed_dep,cpp_lds_S)
+diff --git a/scripts/gfp-translate b/scripts/gfp-translate
+index 8385ae0d5af93..f6353795fdca3 100755
+--- a/scripts/gfp-translate
++++ b/scripts/gfp-translate
+@@ -73,7 +73,7 @@ echo Parsing: $GFPMASK
+ #include <stdio.h>
+ 
+ // Try to fool compiler.h into not including extra stuff
+-#define __ASSEMBLY__	1
++#define __ASSEMBLER__	1
+ 
+ #include <generated/autoconf.h>
+ #include <linux/gfp_types.h>
+diff --git a/scripts/headers_install.sh b/scripts/headers_install.sh
+index 2f1d1767ca267..9c15e748761c4 100755
+--- a/scripts/headers_install.sh
++++ b/scripts/headers_install.sh
+@@ -36,7 +36,6 @@ sed -E -e '
+ 	s/(^|[^a-zA-Z0-9])__packed([^a-zA-Z0-9_]|$)/\1__attribute__((packed))\2/g
+ 	s/(^|[[:space:](])(inline|asm|volatile)([[:space:](]|$)/\1__\2__\3/g
+ 	s@#(ifndef|define|endif[[:space:]]*/[*])[[:space:]]*_UAPI@#\1 @
+-	s/__ASSEMBLY__/__ASSEMBLER__/g
+ ' $INFILE > $TMPFILE || exit 1
+ 
+ scripts/unifdef -U__KERNEL__ -D__EXPORTED_HEADERS__ $TMPFILE > $OUTFILE
+diff --git a/scripts/sbom/tests/cmd_graph/test_savedcmd_parser.py b/scripts/sbom/tests/cmd_graph/test_savedcmd_parser.py
+index 93787a1cd1566..8d9ae35764040 100644
+--- a/scripts/sbom/tests/cmd_graph/test_savedcmd_parser.py
++++ b/scripts/sbom/tests/cmd_graph/test_savedcmd_parser.py
+@@ -152,7 +152,7 @@ class TestSavedCmdParser(unittest.TestCase):
+         self._assert_parsing(cmd, expected)
+ 
+     def test_clang(self):
+-        cmd = """clang -Wp,-MMD,arch/x86/entry/.entry_64_compat.o.d -nostdinc -I../arch/x86/include -I./arch/x86/include/generated -I../include -I./include -I../arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I../include/uapi -I./include/generated/uapi -include ../include/linux/compiler-version.h -include ../include/linux/kconfig.h -D__KERNEL__ --target=x86_64-linux-gnu -fintegrated-as -Werror=unknown-warning-option -Werror=ignored-optimization-argument -Werror=option-ignored -Werror=unused-command-line-argument -fmacro-prefix-map=../= -Werror -D__ASSEMBLY__ -fno-PIE -m64 -I../arch/x86/entry -Iarch/x86/entry    -DKBUILD_MODFILE='"arch/x86/entry/entry_64_compat"' -DKBUILD_MODNAME='"entry_64_compat"' -D__KBUILD_MODNAME=kmod_entry_64_compat -c -o arch/x86/entry/entry_64_compat.o ../arch/x86/entry/entry_64_compat.S"""
++        cmd = """clang -Wp,-MMD,arch/x86/entry/.entry_64_compat.o.d -nostdinc -I../arch/x86/include -I./arch/x86/include/generated -I../include -I./include -I../arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I../include/uapi -I./include/generated/uapi -include ../include/linux/compiler-version.h -include ../include/linux/kconfig.h -D__KERNEL__ --target=x86_64-linux-gnu -fintegrated-as -Werror=unknown-warning-option -Werror=ignored-optimization-argument -Werror=option-ignored -Werror=unused-command-line-argument -fmacro-prefix-map=../= -Werror -fno-PIE -m64 -I../arch/x86/entry -Iarch/x86/entry    -DKBUILD_MODFILE='"arch/x86/entry/entry_64_compat"' -DKBUILD_MODNAME='"entry_64_compat"' -D__KBUILD_MODNAME=kmod_entry_64_compat -c -o arch/x86/entry/entry_64_compat.o ../arch/x86/entry/entry_64_compat.S"""
+         expected = "../arch/x86/entry/entry_64_compat.S"
+         self._assert_parsing(cmd, expected)
+ 
+diff --git a/tools/testing/selftests/kvm/lib/riscv/handlers.S b/tools/testing/selftests/kvm/lib/riscv/handlers.S
+index b787b982e922a..c8cc2d695f483 100644
+--- a/tools/testing/selftests/kvm/lib/riscv/handlers.S
++++ b/tools/testing/selftests/kvm/lib/riscv/handlers.S
+@@ -3,10 +3,6 @@
+  * Copyright (c) 2023 Intel Corporation
+  */
+ 
+-#ifndef __ASSEMBLY__
+-#define __ASSEMBLY__
+-#endif
+-
+ #include <asm/csr.h>
+ 
+ .macro save_context
+diff --git a/tools/testing/selftests/vDSO/vgetrandom-chacha.S b/tools/testing/selftests/vDSO/vgetrandom-chacha.S
+index 16f985b089d45..42839c5cf5ec4 100644
+--- a/tools/testing/selftests/vDSO/vgetrandom-chacha.S
++++ b/tools/testing/selftests/vDSO/vgetrandom-chacha.S
+@@ -3,8 +3,6 @@
+  * Copyright (C) 2024 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+  */
+ 
+-#define __ASSEMBLY__
+-
+ #if defined(__aarch64__)
+ #include "../../../../arch/arm64/kernel/vdso/vgetrandom-chacha.S"
+ #elif defined(__loongarch__)
+-- 
+2.56.0
+
