@@ -1,142 +1,122 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.129.124
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792738254;
-	b=DtNRh87ii1X3v3wxPt0Uvpb+xGGFrxnS890fwI1nDkIDeuaZV93COgndCTKO21SlNnhN
-	 cGf/faz7R+v6FPM+V8lxmozXxZFFNzZbD2WtBEqLH2J2wgUWXvrh+RB7lsqSJ9v34mDEk
-	 LxHwad6DG3CozwpFHGiyKHR14q2nkOZo2Wim3QSDDwFQB9I9b0T2VNH2DGe5wS4KkUdQE
-	 XpWamPSXrXo+JLR9NHSpi1qj/eqq2DDT6kN+wLTboHJ697R8pzzo31j4q3D2Y6hNwN8QJ
-	 VFolwOiT7tSBnPVKBDtPYxLnap5L6H2uJSA7Ha6EJtIHkVgXddURKVurWoiitw+dUJA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792738254;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=170.10.133.124
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792759537;
+	b=NKwvjnS0MwMYdx0yD1o4TSGFbWUoAcut52E+fw23eiD8rMz7LGytj7aBiQ23FLz+DGeZ
+	 vZd7EMEncWw1iR1qJHPmohvSLhOHUrrFSkmr+wjK6FTqnRVGxzgc6pljgXAaKuaCUwMOT
+	 Q0ON3Snn6bgaQ5UlyIHZOZ3+xqIkVz2NV+Ct4zlgSrJX5KpoKN88Hz4H5LVfkc6mD+IuP
+	 kYVhZfXplIEBH2NJaZpGhjULrUFBc5D1AkNFSYegwNOQPllzkCTP+TXNtLPUt/hd/OBZE
+	 7vNGc6I/uGFIc0FS/C+DSiPGFBJ8q9Zuay+hS4+XYIsJurBS0jB9r/G+N5qJGSIBCkg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792759537;
 	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
-	 X-Mimecast-MFC-AGG-ID:Received:Received:From:To:Cc:Subject:Date:
-	 Message-ID:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:X-Scanned-By;
-	bh=F6+noPVYF4kQP6smbqYTSV7WwZHDrBWE8Us7MYDz21A=;
-	b=oT0YBoOULoTMlXj9A4uraHUaYXzQf0UO23al+nonhzGv9A16FF9Adm1Pil6BV4MRRNc9
-	 m4qVX72dazZ5shj8lrqAfUY2cD3wV19e1F72M+YXNFz7FyX/TztpUXR6fj+abcLaI+eae
-	 k4NVQSS72UM+95DGkpZIDaSZWjRYJwZb0vNn7eNTpynNxOAO3FNQob0vaNZXlYyU5+4d/
-	 n7hTvuudCr2sYwaYrkSvwiK/e26NKEc7z4nAIHUPgCTkLuLRh8dNz9E3nG7ZCODCDA829
-	 J9TBIjUC6sdY6yAedDA+YdnqxJO77I38Eat/kxVzc0wjqXPUiU0VHGgTy+nd5tIdjMw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	 X-Mimecast-MFC-AGG-ID:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 X-Received:MIME-Version:References:In-Reply-To:From:Date:
+	 X-Gm-Features:Message-ID:Subject:To:Cc:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=Dw7ixUsZNlBi2ggGvaFZwX+nWP7PGBtWcR/4kzMhp/c=;
+	b=VD6O6bE9AueSN+81MerItFrLKBjJOsdOeIlPLSFx9E7B8kPnwb/rA6n+I5mf0AtNLHc7
+	 p99NNfU5xzVEKX4eagZY5ws9U/BTMgTv8ON8DUyufXp2wIXzJXOJGgUHLEjJjponq+mDq
+	 d/pabXrO7kxTKga3/89zTqgyYwmgy5ktEv3DMx9pCCj3sqnhWhf1fup8dARhM3NlXvL1i
+	 wfE7dufaXCrNPmUeznokdluveEJ6q478l1njn/4K71jH8iuFxyKoWEPBff/odP+/diUNw
+	 R5Ov0YHIL1/3dntr6SLr+SjY42lgb4KvSXdDZm+zWoRLQYH7XDsw+lSWmvF2uylBGMg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=redhat.com;
 	spf=pass smtp.mailfrom=redhat.com;
-	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=OMSOOnPs;
-	arc=none smtp.remote-ip=170.10.129.124
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=fNzvV8H0;
+	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=google header.b=kvNnk1JJ;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=170.10.133.124
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC4A6606A31B
-	for <linux-alpha@vger.kernel.org>; Fri, 23 Oct 2026 06:50:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EC4A6606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8060606A320
+	for <linux-alpha@vger.kernel.org>; Fri, 23 Oct 2026 12:45:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A8060606A320
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=OMSOOnPs
+	dkim=pass (1024-bit key, unprotected) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=fNzvV8H0;
+	dkim=pass (2048-bit key, unprotected) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=google header.b=kvNnk1JJ
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1792738253;
+	s=mimecast20190719; t=1792759535;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=F6+noPVYF4kQP6smbqYTSV7WwZHDrBWE8Us7MYDz21A=;
-	b=OMSOOnPsNjgXAs4VW2wEJVFqA5G00O5XxWdwyixxlHumLFkSHuH6MMgFGEUr0NiEg5Of75
-	a/Q/IFxmxwM1zBMCpK4811aK1BGiNta6SQoFQvpqoL7TJ9euZfn2k+ezMFNn31nvWTMIQV
-	sLN8bUMty7SlPjnUHCFhLdHds3JeRNI=
-Received: from mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-587-1BrFnSVrOACgn3OQUjDx2Q-1; Fri,
- 23 Oct 2026 02:50:51 -0400
-X-MC-Unique: 1BrFnSVrOACgn3OQUjDx2Q-1
-X-Mimecast-MFC-AGG-ID: 1BrFnSVrOACgn3OQUjDx2Q_1792738248
-Received: from mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.17])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-03.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id BCC341955F71;
-	Fri, 23 Oct 2026 06:50:47 +0000 (UTC)
-Received: from thuth-p1g4.redhat.com (unknown [10.44.48.42])
-	by mx-prod-int-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id 7EFCD1956095;
-	Fri, 23 Oct 2026 06:50:27 +0000 (UTC)
-From: Thomas Huth <thuth@redhat.com>
-To: Arnd Bergmann <arnd@arndb.de>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nicolas Schier <nsc@kernel.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org,
-	Chris Zankel <chris@zankel.net>,
-	Max Filippov <jcmvbkbc@gmail.com>,
-	Ard Biesheuvel <ardb@kernel.org>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Luis Augenstein <luis.augenstein@tngtech.com>,
-	Maximilian Huber <maximilian.huber@tngtech.com>,
-	Anup Patel <anup@brainfault.org>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Shuah Khan <shuah@kernel.org>,
-	Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Andy Lutomirski <luto@kernel.org>,
-	Vincenzo Frascino <vincenzo.frascino@arm.com>
-Cc: soc@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kbuild@vger.kernel.org,
-	=?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
-	Mark Rutland <mark.rutland@arm.com>,
-	WANG Xuerui <kernel@xen0n.name>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-	Shrikanth Hegde <sshegde@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-	Atish Patra <atish.patra@linux.dev>,
-	Sean Christopherson <seanjc@google.com>,
-	Alexandre Ghiti <alex@ghiti.fr>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Bill Wendling <morbo@google.com>,
-	Justin Stitt <justinstitt@google.com>,
-	linux-alpha@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	loongarch@lists.linux.dev,
-	linux-mips@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	linux-efi@vger.kernel.org,
-	netdev@vger.kernel.org,
-	kvm@vger.kernel.org,
-	kvm-riscv@lists.infradead.org,
-	linux-riscv@lists.infradead.org,
-	linux-kselftest@vger.kernel.org,
-	llvm@lists.linux.dev
-Subject: [PATCH v5 13/13] treewide: Stop defining __ASSEMBLY__ for assembler files
-Date: Fri, 23 Oct 2026 08:48:50 +0200
-Message-ID: <20261023064908.66707-14-thuth@redhat.com>
-In-Reply-To: <20261023064908.66707-1-thuth@redhat.com>
-References: <20261023064908.66707-1-thuth@redhat.com>
+	bh=Dw7ixUsZNlBi2ggGvaFZwX+nWP7PGBtWcR/4kzMhp/c=;
+	b=fNzvV8H0a4CGSeFaVB1kItZellOilDAi0AfZDhWTfDfKWRdS69arafzqPD1tUaxoWmXYZp
+	9bIYoQsPaGp97rbfOik74ZNjU6sIvqfubZN3djzdWWu1R2g413RPBcqYZ3H+uedLKmAM1Y
+	WQxv+8MCTRorQqtDETgItsta0dOw1wg=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-36-jr6wJxYrOpmmmYyr-fd8RA-1; Fri, 23 Oct 2026 08:45:33 -0400
+X-MC-Unique: jr6wJxYrOpmmmYyr-fd8RA-1
+X-Mimecast-MFC-AGG-ID: jr6wJxYrOpmmmYyr-fd8RA_1792759532
+Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-c40bbd26f74so74060066b.0
+        for <linux-alpha@vger.kernel.org>; Fri, 23 Oct 2026 05:45:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792759532; cv=none;
+        d=google.com; s=arc-20260327;
+        b=PZa3PDiCoRFmFSMWZg2jj9xpqCAMjEq1j04LnaBrzIQh08PgYNN0RYHBD21/CsB4XM
+         GYSdql0L9XIlo4TiTb6SMZiEahuu1tFRlBkb20XkKgSdHM1FJ21tQQV/ZCosLhzfiBYr
+         DAqo4JALCdXxPbY53dXlTFFTk+MJ02SmIlgB691yRGUsAnfduhJ3eKmPFCFo962EqjTk
+         ZxXvuCtpkI1umxfyqyb+wTOuBXZmc4TmzWa3Cuv6/Mr4M2RoIHZSfgC7AMH5H08nszxV
+         G0CgLcwPJFvLH3qGynp8OgfhCdVzDyWiSL9XUpFFWOyK6+Q9vKumlpTg0i9v7RjogXNI
+         mgmQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=Dw7ixUsZNlBi2ggGvaFZwX+nWP7PGBtWcR/4kzMhp/c=;
+        fh=/qzwQ5/Z94B3hWUB7/ibuGYPs/xhn+02zKkn0sBuYCM=;
+        b=VjTtDeE9ZFQaOOQiJEmLkfFyDuMHRt+zIssxzV1h4BDly1PYvg0O00/S9lhgbfL5vi
+         8UGLTG8uzNWHSGj0wLQTt4OLmiDXkMs182wN59+kf3kKlG19kueyI/9XP4vnueVbJKA1
+         qwpoOYVEMSOpybCvJVCoBMQ7BPmUXh57UtcxEXTG0VPVrN2pslmb9gg7O5xVAu8lS0dM
+         m84wCr+xpAHLXwEqAF68VNntsQsx1Mo1Ta6FXvJJyZ7M4/1b/rm2bVXj8qfSacSYBrSP
+         HOJWh/EN8NLyXZ8SN3QqNhh+qyw4RFydR+z/mbkvuyFRxxoA1DnrT/JN6H3ytMSuceZv
+         KL6A==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=redhat.com; s=google; t=1792759532; x=1793364332; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Dw7ixUsZNlBi2ggGvaFZwX+nWP7PGBtWcR/4kzMhp/c=;
+        b=kvNnk1JJq5fdRFGdNebQGgC7q5Z0qxP3L9LUL3H41Yth6fk3qBq/vZiBoiFYGjpoaa
+         n0dKED8PrTcleCQwOwv7EZPUJSb5pjlDuNEjMabYepgzXz7C3LDzgy4bYbztjIZyxLVm
+         9Xqzkh+s/Df+49IhCw6cb1qC+ZGFZ4Nq2c4DcUiiFr5dQqfAvw2NN8GjnWhsaGKkKTYY
+         KzF7Id+sGWe/yi/p3xtqj3XYUidB030oWuXhAmSpJVfUlD5svLFMDnkRZ4hFBW84cWXH
+         J5am/hwQZPE6DkBBvdYxtO+xDbckJ1JouoT4CQ4/tz5aQZvy3bGe6vJgFqQzFd7jFxWj
+         dG+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792759532; x=1793364332;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Dw7ixUsZNlBi2ggGvaFZwX+nWP7PGBtWcR/4kzMhp/c=;
+        b=nw2b6PNMzlPP+kEYZgTQP8M4T8HsBiLmwoIG091NSOdCMaKxloJIGrFZNZ02Jue8Pr
+         40npQ0glSWg5h8zxZ1PEVNZH/A2OyQv3TOt7lfIFQ4hFGhPeikiZcl069JC2aW/0f6b1
+         9maax+E1mKl1ZV3tbxdywGNt0KFE/jwABEZ0/4NmtSa9aCTkUlKSkO7PQ4/5OCevoL/g
+         k3yWUgZUQScp0IBtUhWC4xBKb75NBJxz4GCZbdyRs67gfqEOBOUAzth3uCILfm870JsA
+         YNS9MBFlqsM020RKbHwzz2bcvju8p2tvkabGlxIHMZPEVaJYlbB935v2XZ7F0xR+9TAk
+         GKnA==
+X-Forwarded-Encrypted: i=1; AKwUvByAPlfS88linzXWnELk2oRqcmVIClBuyrrnbyZkUeUsDsh7x0MwAohtOpj5FPB20ihyN7D67hrxz5cP7Q==@vger.kernel.org
+X-Gm-Message-State: AFq9FYLWqOWa9JZln+o6+gqnRwiANTuav08TD4EYWxqCVwpnpYbrKvgR
+	hJnxNYbOFbIqVfBhHzUXwI/APR6hvK0KDu56xxGnAdZsGRn0WbAJIbU08wM8EDyWqbTv8+haEV1
+	040dLEfFdBQeGb74lkpcWIWaemrm3QXr/iSTFF2efy9b3hVo6RdcnO3OvsNbQmBspR9nJA5hKRd
+	48F8S6V90ZDuT+PFMO/Cao+v8rwoA+YrYyJwOAr2g=
+X-Gm-Gg: AYBFou0kER1Q1EsFixFmoMZWTCwlrDOUUZr9r6xI0wIdSCDNHI5t6afdPRjdZ6l+9QB
+	pzJvm5AS+mk5Sme0+vzeg8pHQmFQ2LCQWsTDLG9bjIxj/ajt7qo2r3hA+Y6Xe7oBG4qC8njV7ca
+	on6+hzZZpxNaRAVtc0rp5Pl8ObIBIWae3ghUARGYzkA2/PnDys4va36K/KLyGYyu6Azh1u+OtDR
+	OfWcRwBl9PIMj0c2jVrA+Uci+hN447CTTH5Yg6VqKHVlU9aJDHObSc7me+xf+7f3tA5xJjbflSJ
+	tVs=
+X-Received: by 2002:a17:907:fd8a:b0:c2e:46d0:b802 with SMTP id a640c23a62f3a-c46a92ae6c0mr328358166b.40.1792759531918;
+        Fri, 23 Oct 2026 05:45:31 -0700 (PDT)
+X-Received: by 2002:a17:907:fd8a:b0:c2e:46d0:b802 with SMTP id
+ a640c23a62f3a-c46a92ae6c0mr328354266b.40.1792759531460; Fri, 23 Oct 2026
+ 05:45:31 -0700 (PDT)
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -146,309 +126,79 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 3.0 on 10.30.177.17
+References: <cover.1790088067.git.rrobaina@redhat.com> <CAHC9VhQ=FFYVNmQdiMsqg+5KDDrSC3SZS+H2=r_GkhfwQox8tg@mail.gmail.com>
+ <CAABTaaBL=TScs8Qqu3b8F6KZPGMyvwy6cBC3teDaBL6MGMucNg@mail.gmail.com> <CAHC9VhROsmzbm+AP63Sm7mqCokgEy6Zu0AVMY0gxp8qY75Pqiw@mail.gmail.com>
+In-Reply-To: <CAHC9VhROsmzbm+AP63Sm7mqCokgEy6Zu0AVMY0gxp8qY75Pqiw@mail.gmail.com>
+From: Ricardo Robaina <rrobaina@redhat.com>
+Date: Fri, 23 Oct 2026 09:45:20 -0300
+X-Gm-Features: AclHuK-AKUESe6iHVc-VzwOYib6sgRKlK0BCnAtM6wg5S60Ozyo0oOLLHvDr8CI
+Message-ID: <CAABTaaBOrPknzdxc5S6L9hGu7hbFu2e1RZG=Sxjb_B1Cs4Sixw@mail.gmail.com>
+Subject: Re: [PATCH v3 00/14] audit: log all six syscall arguments in the
+ SYSCALL record
+To: Paul Moore <paul@paul-moore.com>
+Cc: audit@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	linux-csky@vger.kernel.org, linux-mips@vger.kernel.org, 
+	linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linux-sh@vger.kernel.org, sparclinux@vger.kernel.org, 
+	linux-um@lists.infradead.org, bpf@vger.kernel.org, eparis@redhat.com, 
+	sgrubb@redhat.com, oleg@redhat.com, richard.henderson@linaro.org, 
+	mattst88@gmail.com, linmag7@gmail.com, linux@armlinux.org.uk, 
+	catalin.marinas@arm.com, will@kernel.org, guoren@kernel.org, monstr@monstr.eu, 
+	tsbogend@alpha.franken.de, jonas@southpole.se, 
+	stefan.kristiansson@saunalahti.fi, shorne@gmail.com, 
+	James.Bottomley@hansenpartnership.com, deller@gmx.de, 
+	ysato@users.sourceforge.jp, dalias@libc.org, glaubitz@physik.fu-berlin.de, 
+	davem@davemloft.net, andreas@gaisler.com, richard@nod.at, 
+	anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net, chris@zankel.net, 
+	jcmvbkbc@gmail.com, tglx@kernel.org, peterz@infradead.org, luto@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-All spots have been changed to __ASSEMBLER__ (i.e. the macro that
-gets defined by the compiler), so we don't have to manually define
-__ASSEMBLY__ anymore.
+On Tue, Oct 20, 2026 at 1:39=E2=80=AFPM Paul Moore <paul@paul-moore.com> wr=
+ote:
+>
+> On Tue, Oct 13, 2026 at 8:36=E2=80=AFAM Ricardo Robaina <rrobaina@redhat.=
+com> wrote:
+> > On Thu, Oct 1, 2026 at 6:06=E2=80=AFPM Paul Moore <paul@paul-moore.com>=
+ wrote:
+> > > On Tue, Sep 22, 2026 at 3:21=E2=80=AFPM Ricardo Robaina <rrobaina@red=
+hat.com> wrote:
+>
+> ...
+>
+> > > * As pointed out by Sashiko, when you were converting all of the
+> > > arches, it looks like you missed alpha.  I took a quick look and it
+> > > appears that it should be a pretty straightforward conversion like
+> > > most of the others.
+> >
+> > I've actually dropped the alpha patch as per Magnus's request [1].
+> >
+> > [1] https://lore.kernel.org/audit/CA+=3DFv5T4826T2sd0Gbh-nfZsqcWK_phdBK=
+y4BLWOvDTt92t5Eg@mail.gmail.com/
+>
+> The problem is that as things stand, this patchset breaks the build on
+> Alpha.  Perhaps this gets resolved during the current merge window,
+> but as you know we can't break the kernel build ...
+>
+> https://lore.kernel.org/oe-kbuild-all/202610041836.6TatRQSm-lkp@intel.com
 
-Signed-off-by: Thomas Huth <thuth@redhat.com>
----
- Makefile                                             | 2 +-
- arch/alpha/boot/compressed/Makefile                  | 2 +-
- arch/arm64/kernel/vdso32/Makefile                    | 1 -
- arch/loongarch/vdso/Makefile                         | 2 +-
- arch/mips/boot/compressed/Makefile                   | 2 +-
- arch/mips/vdso/Makefile                              | 2 +-
- arch/powerpc/boot/Makefile                           | 2 +-
- arch/powerpc/platforms/cell/spufs/Makefile           | 2 +-
- arch/s390/Makefile                                   | 2 +-
- arch/x86/boot/Makefile                               | 2 +-
- arch/x86/boot/compressed/Makefile                    | 2 +-
- arch/x86/realmode/rm/Makefile                        | 2 +-
- arch/xtensa/kernel/Makefile                          | 2 +-
- drivers/firmware/efi/libstub/Makefile                | 2 +-
- drivers/net/wan/Makefile                             | 2 +-
- scripts/Makefile.build                               | 2 +-
- scripts/gfp-translate                                | 2 +-
- scripts/headers_install.sh                           | 1 -
- scripts/sbom/tests/cmd_graph/test_savedcmd_parser.py | 2 +-
- tools/testing/selftests/kvm/lib/riscv/handlers.S     | 4 ----
- tools/testing/selftests/vDSO/vgetrandom-chacha.S     | 2 --
- 21 files changed, 17 insertions(+), 25 deletions(-)
+Of course, you're absolutely right that we can't break the build. I
+was afraid that this dependency might cause trouble.
 
-diff --git a/Makefile b/Makefile
-index 0319cd716d73b..98bffdd9cf2d6 100644
---- a/Makefile
-+++ b/Makefile
-@@ -606,7 +606,7 @@ LINUXINCLUDE    := \
- 		-I$(objtree)/include \
- 		$(USERINCLUDE)
- 
--KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
-+KBUILD_AFLAGS   := -fno-PIE
- 
- KBUILD_CFLAGS :=
- KBUILD_CFLAGS += -fshort-wchar
-diff --git a/arch/alpha/boot/compressed/Makefile b/arch/alpha/boot/compressed/Makefile
-index eb930f01b4be4..16119a13e53a3 100644
---- a/arch/alpha/boot/compressed/Makefile
-+++ b/arch/alpha/boot/compressed/Makefile
-@@ -22,7 +22,7 @@ KBUILD_CFLAGS += -fno-asynchronous-unwind-tables
- KBUILD_CFLAGS += -pipe -mcpu=ev4 -mno-fp-regs -ffixed-8
- KBUILD_CFLAGS += -DDISABLE_BRANCH_PROFILING -D__DISABLE_EXPORTS
- KBUILD_CFLAGS += $(CC_FLAGS_DIALECT)
--KBUILD_AFLAGS := -D__ASSEMBLY__ $(KBUILD_CFLAGS)
-+KBUILD_AFLAGS := $(KBUILD_CFLAGS)
- 
- # The stub has no sanitizer or coverage runtime. arch/alpha/lib/lib.a is
- # built with the kernel's instrumentation and -mcpu=, so build private
-diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefile
-index 00efdc5d23543..0ba0b4bb3e013 100644
---- a/arch/arm64/kernel/vdso32/Makefile
-+++ b/arch/arm64/kernel/vdso32/Makefile
-@@ -77,7 +77,6 @@ VDSO_CFLAGS += -marm
- endif
- 
- VDSO_AFLAGS := $(VDSO_CAFLAGS)
--VDSO_AFLAGS += -D__ASSEMBLY__
- 
- # From arm vDSO Makefile
- VDSO_LDFLAGS += -Bsymbolic --no-undefined -soname=linux-vdso.so.1
-diff --git a/arch/loongarch/vdso/Makefile b/arch/loongarch/vdso/Makefile
-index 0b84892d084b6..c2b73fd3781c0 100644
---- a/arch/loongarch/vdso/Makefile
-+++ b/arch/loongarch/vdso/Makefile
-@@ -32,7 +32,7 @@ cflags-vdso := $(ccflags-vdso) \
- 	$(call cc-option, -fasynchronous-unwind-tables) \
- 	$(call cc-option, -fno-stack-protector)
- aflags-vdso := $(ccflags-vdso) \
--	-D__ASSEMBLY__ -Wa,-gdwarf-2
-+	-Wa,-gdwarf-2
- 
- ifneq ($(c-gettimeofday-y),)
-   CFLAGS_vgettimeofday.o += -include $(c-gettimeofday-y)
-diff --git a/arch/mips/boot/compressed/Makefile b/arch/mips/boot/compressed/Makefile
-index 2684540758a8d..3e3803b2db48f 100644
---- a/arch/mips/boot/compressed/Makefile
-+++ b/arch/mips/boot/compressed/Makefile
-@@ -30,7 +30,7 @@ endif
- KBUILD_CFLAGS := $(KBUILD_CFLAGS) -D__KERNEL__ -D__DISABLE_EXPORTS \
- 	-DBOOT_HEAP_SIZE=$(BOOT_HEAP_SIZE) -D"VMLINUX_LOAD_ADDRESS_ULL=$(VMLINUX_LOAD_ADDRESS)ull"
- 
--KBUILD_AFLAGS := $(KBUILD_AFLAGS) -D__ASSEMBLY__ \
-+KBUILD_AFLAGS := $(KBUILD_AFLAGS) \
- 	-DBOOT_HEAP_SIZE=$(BOOT_HEAP_SIZE) \
- 	-DKERNEL_ENTRY=$(VMLINUX_ENTRY_ADDRESS)
- 
-diff --git a/arch/mips/vdso/Makefile b/arch/mips/vdso/Makefile
-index 00d3ba2c482ac..4d04987e995de 100644
---- a/arch/mips/vdso/Makefile
-+++ b/arch/mips/vdso/Makefile
-@@ -33,7 +33,7 @@ cflags-vdso := $(ccflags-vdso) \
- 	-fno-stack-protector -fno-jump-tables -DDISABLE_BRANCH_PROFILING \
- 	$(call cc-option, -fno-asynchronous-unwind-tables)
- aflags-vdso := $(ccflags-vdso) \
--	-D__ASSEMBLY__ -Wa,-gdwarf-2
-+	-Wa,-gdwarf-2
- 
- ifneq ($(c-gettimeofday-y),)
- obj-vdso-y += vgettimeofday.o
-diff --git a/arch/powerpc/boot/Makefile b/arch/powerpc/boot/Makefile
-index 7ee0fa2d3371e..5dca91ec9f4aa 100644
---- a/arch/powerpc/boot/Makefile
-+++ b/arch/powerpc/boot/Makefile
-@@ -80,7 +80,7 @@ BOOTCFLAGS	:= $(BOOTTARGETFLAGS) \
- 		   $(call cc-option,-mno-spe) $(call cc-option,-mspe=no) \
- 		   -fomit-frame-pointer -fno-builtin -fPIC
- 
--BOOTAFLAGS	:= $(BOOTTARGETFLAGS) -D__ASSEMBLY__
-+BOOTAFLAGS	:= $(BOOTTARGETFLAGS)
- 
- BOOTARFLAGS	:= -crD
- 
-diff --git a/arch/powerpc/platforms/cell/spufs/Makefile b/arch/powerpc/platforms/cell/spufs/Makefile
-index 60319d4ff25a6..959617c4ee89c 100644
---- a/arch/powerpc/platforms/cell/spufs/Makefile
-+++ b/arch/powerpc/platforms/cell/spufs/Makefile
-@@ -15,7 +15,7 @@ SPU_AS		:= $(SPU_CROSS)gcc
- SPU_LD		:= $(SPU_CROSS)ld
- SPU_OBJCOPY	:= $(SPU_CROSS)objcopy
- SPU_CFLAGS	:= -O2 -Wall -I$(srctree)/include -D__KERNEL__
--SPU_AFLAGS	:= -c -D__ASSEMBLY__ -I$(srctree)/include -D__KERNEL__
-+SPU_AFLAGS	:= -c -I$(srctree)/include -D__KERNEL__
- SPU_LDFLAGS	:= -N -Ttext=0x0
- 
- $(obj)/switch.o: $(obj)/spu_save_dump.h $(obj)/spu_restore_dump.h
-diff --git a/arch/s390/Makefile b/arch/s390/Makefile
-index 8b712cd85fcd3..83ecc702f7146 100644
---- a/arch/s390/Makefile
-+++ b/arch/s390/Makefile
-@@ -17,7 +17,7 @@ KBUILD_CFLAGS	+= -fPIC
- LDFLAGS_vmlinux	:= $(call ld-option,-no-pie)
- extra_tools	:= relocs
- aflags_dwarf	:= -Wa,-gdwarf-2
--KBUILD_AFLAGS_DECOMPRESSOR := $(CLANG_FLAGS) -m64 -D__ASSEMBLY__
-+KBUILD_AFLAGS_DECOMPRESSOR := $(CLANG_FLAGS) -m64
- ifndef CONFIG_AS_IS_LLVM
- KBUILD_AFLAGS_DECOMPRESSOR += $(if $(CONFIG_DEBUG_INFO),$(aflags_dwarf))
- endif
-diff --git a/arch/x86/boot/Makefile b/arch/x86/boot/Makefile
-index 4a9bce32586d3..69d75072888d1 100644
---- a/arch/x86/boot/Makefile
-+++ b/arch/x86/boot/Makefile
-@@ -52,7 +52,7 @@ targets += cpustr.h
- # ---------------------------------------------------------------------------
- 
- KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP
--KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
-+KBUILD_AFLAGS	:= $(KBUILD_CFLAGS)
- KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
- KBUILD_CFLAGS	+= $(CONFIG_CC_IMPLICIT_FALLTHROUGH)
- 
-diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
-index 680ad803cba7d..e73ef522496e1 100644
---- a/arch/x86/boot/compressed/Makefile
-+++ b/arch/x86/boot/compressed/Makefile
-@@ -49,7 +49,7 @@ KBUILD_CFLAGS += -include $(srctree)/include/linux/hidden.h
- # that the compiler finds it even with out-of-tree builds (make O=/some/path).
- CFLAGS_sev-handle-vc.o += -I$(objtree)/arch/x86/lib/
- 
--KBUILD_AFLAGS  := $(KBUILD_CFLAGS) -D__ASSEMBLY__
-+KBUILD_AFLAGS  := $(KBUILD_CFLAGS)
- 
- KBUILD_LDFLAGS := -m elf_$(UTS_MACHINE)
- KBUILD_LDFLAGS += $(call ld-option,--no-ld-generated-unwind-info)
-diff --git a/arch/x86/realmode/rm/Makefile b/arch/x86/realmode/rm/Makefile
-index a0fb39abc5c86..20bbe1af05acd 100644
---- a/arch/x86/realmode/rm/Makefile
-+++ b/arch/x86/realmode/rm/Makefile
-@@ -65,5 +65,5 @@ $(obj)/realmode.relocs: $(obj)/realmode.elf FORCE
- 
- KBUILD_CFLAGS	:= $(REALMODE_CFLAGS) -D_SETUP -D_WAKEUP \
- 		   -I$(srctree)/arch/x86/boot
--KBUILD_AFLAGS	:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
-+KBUILD_AFLAGS	:= $(KBUILD_CFLAGS)
- KBUILD_CFLAGS	+= -fno-asynchronous-unwind-tables
-diff --git a/arch/xtensa/kernel/Makefile b/arch/xtensa/kernel/Makefile
-index d3ef0407401f6..ece4ae6dea97d 100644
---- a/arch/xtensa/kernel/Makefile
-+++ b/arch/xtensa/kernel/Makefile
-@@ -39,7 +39,7 @@ sed-y = -e ':a; s/\*(\([^)]*\)\.text\.unlikely/*(\1.literal.unlikely .{text}.unl
- 	-e 's/\.{text}/.text/g'
- 
- quiet_cmd__cpp_lds_S = LDS     $@
--cmd__cpp_lds_S = $(CPP) $(cpp_flags) -P -C -Uxtensa -D__ASSEMBLY__ \
-+cmd__cpp_lds_S = $(CPP) $(cpp_flags) -P -C -Uxtensa \
- 		 -DLINKER_SCRIPT $< | sed $(sed-y) >$@
- 
- $(obj)/vmlinux.lds: $(src)/vmlinux.lds.S FORCE
-diff --git a/drivers/firmware/efi/libstub/Makefile b/drivers/firmware/efi/libstub/Makefile
-index 415f63105b481..d4edc3c0c4556 100644
---- a/drivers/firmware/efi/libstub/Makefile
-+++ b/drivers/firmware/efi/libstub/Makefile
-@@ -61,7 +61,7 @@ KBUILD_CFLAGS := $(filter-out $(CC_FLAGS_LTO), $(KBUILD_CFLAGS))
- # `-fdata-sections` flag from KBUILD_CFLAGS_KERNEL
- KBUILD_CFLAGS_KERNEL := $(filter-out -fdata-sections, $(KBUILD_CFLAGS_KERNEL))
- 
--KBUILD_AFLAGS			:= $(KBUILD_CFLAGS) -D__ASSEMBLY__
-+KBUILD_AFLAGS			:= $(KBUILD_CFLAGS)
- 
- lib-y				:= efi-stub-helper.o gop.o secureboot.o tpm.o \
- 				   file.o mem.o random.o randomalloc.o pci.o \
-diff --git a/drivers/net/wan/Makefile b/drivers/net/wan/Makefile
-index 00e9b7ee1e012..4233143534465 100644
---- a/drivers/net/wan/Makefile
-+++ b/drivers/net/wan/Makefile
-@@ -57,7 +57,7 @@ $(obj)/wanxlfw.bin: $(obj)/wanxlfw.o FORCE
- 	$(call if_changed,m68kld_bin_o)
- 
- quiet_cmd_m68kas_o_S = M68KAS  $@
--      cmd_m68kas_o_S = $(M68KCC) -D__ASSEMBLY__ -Wp,-MD,$(depfile) -I$(srctree)/include/uapi -c -o $@ $<
-+      cmd_m68kas_o_S = $(M68KCC) -Wp,-MD,$(depfile) -I$(srctree)/include/uapi -c -o $@ $<
- 
- $(obj)/wanxlfw.o: $(src)/wanxlfw.S FORCE
- 	$(call if_changed_dep,m68kas_o_S)
-diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-index 6127feb970c65..0b7c1e273f0cb 100644
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -465,7 +465,7 @@ targets += $(lib-y) $(always-y)
- # ---------------------------------------------------------------------------
- quiet_cmd_cpp_lds_S = LDS     $@
-       cmd_cpp_lds_S = $(CPP) $(cpp_flags) -P -U$(ARCH) \
--	                     -D__ASSEMBLY__ -DLINKER_SCRIPT -o $@ $<
-+	                     -DLINKER_SCRIPT -o $@ $<
- 
- $(obj)/%.lds: $(src)/%.lds.S FORCE
- 	$(call if_changed_dep,cpp_lds_S)
-diff --git a/scripts/gfp-translate b/scripts/gfp-translate
-index 8385ae0d5af93..f6353795fdca3 100755
---- a/scripts/gfp-translate
-+++ b/scripts/gfp-translate
-@@ -73,7 +73,7 @@ echo Parsing: $GFPMASK
- #include <stdio.h>
- 
- // Try to fool compiler.h into not including extra stuff
--#define __ASSEMBLY__	1
-+#define __ASSEMBLER__	1
- 
- #include <generated/autoconf.h>
- #include <linux/gfp_types.h>
-diff --git a/scripts/headers_install.sh b/scripts/headers_install.sh
-index 2f1d1767ca267..9c15e748761c4 100755
---- a/scripts/headers_install.sh
-+++ b/scripts/headers_install.sh
-@@ -36,7 +36,6 @@ sed -E -e '
- 	s/(^|[^a-zA-Z0-9])__packed([^a-zA-Z0-9_]|$)/\1__attribute__((packed))\2/g
- 	s/(^|[[:space:](])(inline|asm|volatile)([[:space:](]|$)/\1__\2__\3/g
- 	s@#(ifndef|define|endif[[:space:]]*/[*])[[:space:]]*_UAPI@#\1 @
--	s/__ASSEMBLY__/__ASSEMBLER__/g
- ' $INFILE > $TMPFILE || exit 1
- 
- scripts/unifdef -U__KERNEL__ -D__EXPORTED_HEADERS__ $TMPFILE > $OUTFILE
-diff --git a/scripts/sbom/tests/cmd_graph/test_savedcmd_parser.py b/scripts/sbom/tests/cmd_graph/test_savedcmd_parser.py
-index 93787a1cd1566..8d9ae35764040 100644
---- a/scripts/sbom/tests/cmd_graph/test_savedcmd_parser.py
-+++ b/scripts/sbom/tests/cmd_graph/test_savedcmd_parser.py
-@@ -152,7 +152,7 @@ class TestSavedCmdParser(unittest.TestCase):
-         self._assert_parsing(cmd, expected)
- 
-     def test_clang(self):
--        cmd = """clang -Wp,-MMD,arch/x86/entry/.entry_64_compat.o.d -nostdinc -I../arch/x86/include -I./arch/x86/include/generated -I../include -I./include -I../arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I../include/uapi -I./include/generated/uapi -include ../include/linux/compiler-version.h -include ../include/linux/kconfig.h -D__KERNEL__ --target=x86_64-linux-gnu -fintegrated-as -Werror=unknown-warning-option -Werror=ignored-optimization-argument -Werror=option-ignored -Werror=unused-command-line-argument -fmacro-prefix-map=../= -Werror -D__ASSEMBLY__ -fno-PIE -m64 -I../arch/x86/entry -Iarch/x86/entry    -DKBUILD_MODFILE='"arch/x86/entry/entry_64_compat"' -DKBUILD_MODNAME='"entry_64_compat"' -D__KBUILD_MODNAME=kmod_entry_64_compat -c -o arch/x86/entry/entry_64_compat.o ../arch/x86/entry/entry_64_compat.S"""
-+        cmd = """clang -Wp,-MMD,arch/x86/entry/.entry_64_compat.o.d -nostdinc -I../arch/x86/include -I./arch/x86/include/generated -I../include -I./include -I../arch/x86/include/uapi -I./arch/x86/include/generated/uapi -I../include/uapi -I./include/generated/uapi -include ../include/linux/compiler-version.h -include ../include/linux/kconfig.h -D__KERNEL__ --target=x86_64-linux-gnu -fintegrated-as -Werror=unknown-warning-option -Werror=ignored-optimization-argument -Werror=option-ignored -Werror=unused-command-line-argument -fmacro-prefix-map=../= -Werror -fno-PIE -m64 -I../arch/x86/entry -Iarch/x86/entry    -DKBUILD_MODFILE='"arch/x86/entry/entry_64_compat"' -DKBUILD_MODNAME='"entry_64_compat"' -D__KBUILD_MODNAME=kmod_entry_64_compat -c -o arch/x86/entry/entry_64_compat.o ../arch/x86/entry/entry_64_compat.S"""
-         expected = "../arch/x86/entry/entry_64_compat.S"
-         self._assert_parsing(cmd, expected)
- 
-diff --git a/tools/testing/selftests/kvm/lib/riscv/handlers.S b/tools/testing/selftests/kvm/lib/riscv/handlers.S
-index b787b982e922a..c8cc2d695f483 100644
---- a/tools/testing/selftests/kvm/lib/riscv/handlers.S
-+++ b/tools/testing/selftests/kvm/lib/riscv/handlers.S
-@@ -3,10 +3,6 @@
-  * Copyright (c) 2023 Intel Corporation
-  */
- 
--#ifndef __ASSEMBLY__
--#define __ASSEMBLY__
--#endif
--
- #include <asm/csr.h>
- 
- .macro save_context
-diff --git a/tools/testing/selftests/vDSO/vgetrandom-chacha.S b/tools/testing/selftests/vDSO/vgetrandom-chacha.S
-index 16f985b089d45..42839c5cf5ec4 100644
---- a/tools/testing/selftests/vDSO/vgetrandom-chacha.S
-+++ b/tools/testing/selftests/vDSO/vgetrandom-chacha.S
-@@ -3,8 +3,6 @@
-  * Copyright (C) 2024 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-  */
- 
--#define __ASSEMBLY__
--
- #if defined(__aarch64__)
- #include "../../../../arch/arm64/kernel/vdso/vgetrandom-chacha.S"
- #elif defined(__loongarch__)
--- 
-2.56.0
+I noticed Magnus posted a pull request a few days ago containing the
+"alpha: enable GENERIC_ENTRY" series [1]. It seems this will get
+resolved during the current merge window.
+
+For future reference, what's the best way to handle dependencies on
+other subsystem changes like this?
+
+[1] https://lore.kernel.org/linux-alpha/ataJlL6L7TrS3gWs@z440.darklands.se/
+
+>
+> --
+> paul-moore.com
+>
+
+-Ricardo
 
