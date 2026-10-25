@@ -1,96 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.171
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.44
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792822329;
-	b=w3KfKKOIMTlUnATaER3yG4xolkkbJhz4ReeYNXPn/5IWTAqS1gwFPNn+WTzGBOJzTP51
-	 cLWvyn5rqzRED4YBw5ixhbD23Xn6nK6POEIKh5KrD9GsM/ECTrALU5jplF3T9+q8Erdeg
-	 TCSG0OD+4m+BdfOQjKGMxZPFDsfTOluxLQGETpuvts6Wjj/vWIDjGpi4MJipTDFBV6Qpd
-	 7kD7hch9hercgegw7t/D2V3kXsgeyzL5LY+ikEVV9cv+xYHudQGjxTcfegpS2pFejM598
-	 YH3mlFfT+SHVRB0LrrmvAzgJ2Zdc0DzJGW0owYqOrWGEtK1OJEzQssOLG1P1RfGBXNQ==
+	t=1792914183;
+	b=T3EawVMFa0lyHHHrgfBjqnIirobQwS82WFi2erXVs0NjXwDY86gz0/TnRhLYPAdWAQIz
+	 Hzlx7yS21c/0qvkuIyaM1EZeI8N6hVYvJ1IKdelKFOaxzLPsEuwobtYnmogQXGN95qeR5
+	 JHXM/8QBKzHvWuLyPSDXDLpEmX1O7a8dAvofW2m9Gal+QfDiropHQfs2RepJsNa6RBfvG
+	 uksl+Hx8UVOLr1qfGonbrHQ9fES21O8gfMZ8ssPKQCzna5tKnpJnQuXrY09F5iL4byYrL
+	 nJnl5utdd4lIDk4dJaQhSAzYv/oEbZOw4BbIZufTAwVo0Rh1QokLmGxfTiCxSQJg6Pg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792822329;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792914183;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=VRzUlJpt3G+S3KUXRCNRlTPq/5izEy1vG6+NzOoYVdk=;
-	b=0rU6rQzjn5anI/vKOAE8MwbASz8Se6LQavCE4W1I64vl1p/uUPy+qHCg9YMKa5Q6QBTw
-	 3LrEQGhdDzKC2HR+pJ0ywdNQkUy/phCQGdaeCrSq2OJhNcBsCWuDkNBw1wOeameb/HM/b
-	 Ms4c5XNtrD6jrSBiTAJc/NbV60xWGkpsub1cMJ5yySwzBqSqw35/g68M39OUu/7JrL6Aa
-	 fRb7NpgHoZxRGBxY8hca5dAY4q70rfpxprdOjM0O/f66x7bdOY4+LseLvGSz2hsb4uJYH
-	 WsaOB0cur5hG3F5uGyAXydyEve0DzzSb7/24bZKE9Ck2p9X9UccOj4Gb9RH4NCC84Rg==
+	bh=pXIk2WIkNT0windvDKCB/LIGkYLCIcpQCNUp9JyU/UQ=;
+	b=IzylIsY1gHefhndQp9HEQwd8BxiFYDCj76PRvJGxvcMVlN+DNus9Bjw3aPe55z279puF
+	 2q0TNMh429bsiYGpko5uGkkvMIwM9OY28+OMSdvDkYASJiTC7YV78aRvwwxs/16K8uldU
+	 1ai+foz71y1ITLPOJjMdH7k+t+HvvxxML/3PJr16oq0xSubEiqqmei+OER80L86MWRQBJ
+	 dY6WftHvi0LExvdtnkO2VddfAQyrtLCt6CFsLpSTgKGgEwgAVqglXMLzPp+ZeoBSxQNyj
+	 8jYwdeTS6h9yjeQQKh+NZYQKu2yLxuUiEzx4Pa4LqScz88hyFII5NagxdKb2pTsXTFg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=ib0ZNFEm;
-	arc=none smtp.remote-ip=209.85.215.171
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Mkq6F7kl;
+	arc=none smtp.remote-ip=209.85.208.44
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73743606A31B
-	for <linux-alpha@vger.kernel.org>; Sat, 24 Oct 2026 06:12:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 73743606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB43D606A31B
+	for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 07:43:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BB43D606A31B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=ib0ZNFEm
-Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-cc4aa18f9afso661840a12.3
-        for <linux-alpha@vger.kernel.org>; Fri, 23 Oct 2026 23:12:09 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Mkq6F7kl
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-6afa651700eso2879798a12.2
+        for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 00:43:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792822329; x=1793427129; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=VRzUlJpt3G+S3KUXRCNRlTPq/5izEy1vG6+NzOoYVdk=;
-        b=ib0ZNFEmkAW7EJhvab8naBX3Pp40HGOHlSt6XapkA/hU+jx3vq1Ku5laUW7ZWcjSrz
-         WJu0D1OBVTiWoAeUupsgARtcCjz1A8vKS4yPNIQ+4/qmMHBueRt9P7wa9SJtSAc0E0Ta
-         v1MYu/URbJ11Vxyo3dCJ3XXvskuYV+sDWn29Cq/tSKjFnxzc5Lj9qaDsNvA2JwfMFwDM
-         Lk5uthpmssp+rqWcZlrXZdGt6sH8u9nCqL9KFAdYc/qCrzw1POl6eGMOi8SNlgswrS3e
-         K1rQAXffHM1QUdhZLtSJyA0iKulpCBNw7+DElgBrJDdl2ttHywH4DHUBik188MnxBzn1
-         RISQ==
+        d=gmail.com; s=20251104; t=1792914181; x=1793518981; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=pXIk2WIkNT0windvDKCB/LIGkYLCIcpQCNUp9JyU/UQ=;
+        b=Mkq6F7klgtQfZ2EUk8cTUBVFuIjtnimu4n5peoDhTY+pTQyjfEi/s9/FkgVRm4BTkU
+         8FImKRGOwF4N1HmLT3ahOJWvohTcW+zsmh5HqwcWicz5/CCi1pp+raP6tU6ZJxxsX4lH
+         t473RMo8ny78KTMRYO/dSGG+nxsY84hkeByJGVTs7E23hOebyYRdKWcegdftJHKenvPj
+         dhNaCXGsYWW4U02zfiSBMZW4jEB12chN17+D+LjCdXjWdb4cWmgfOqzDn+l1KU6jPzdc
+         7EieBj1yugZ1KNxWggQCE+HbpIkkrGblG2YyjvFxmlrKXFzWyOO5B9bdiWum0SjkfuFc
+         SfSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792822329; x=1793427129;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=VRzUlJpt3G+S3KUXRCNRlTPq/5izEy1vG6+NzOoYVdk=;
-        b=ftZ5fkvUmEmhbDVaFRDkT8tcZbfZVI83Yk2Li2pOW29/iz0JkkzW0WbSrWHqQ00lB5
-         XVUZJSXkFvLZ3fYd7HEwyX6SLafvj4ZneuTLE8rHcfN9mue6JD5QR/XgvqNGT/dMNQDV
-         LgF/pRYZQ1HzkourvsNVgm9lsAUcf0i2cZyDk4DRUhSwQm8c+qNSPZAbr1no5lr0iWrL
-         riMd8mS9/vjWgtJKUt4uGoKhDrKoCkFy+qxMET30NYjNtabNI9zCJILFV3fqoUklsMVK
-         zqiSMtut2jXWNdve8fr2U8RxNN83OhASghYcFpy0svvO1iHixALqjVkTmGxqUVZf0bDe
-         wteQ==
-X-Gm-Message-State: AFq9FYJh3x8niEokUwwF3UGdcfxdk9o0JQDWeLGAOXoQ4suM5FmCpMbF
-	tlRiwrLYfKYBBpl5s/enpG/PwTTAAlvynMp1j5gNwMyAOERkpMpsm3M8h71mYte/jbc=
-X-Gm-Gg: AYBFou1lL6xBrr1O6eBNXqShMDPXWqZpKP6hVOhYftwFZ8GuLHxXG/ru75JV/4SlHtp
-	jwfIdimU9xPdNZntY9FtXG1zzLWQh1uGh4cUn0lNdDqIh/0inpEdd5aUZvxLLJDZbtTmgDSy7N9
-	CI55FhgYeTNNoyMo2Yd/PWve0KZh6pZafkqaI65iv1IGH6DXI2neZmvFUDsXJItIUSGAs/QpFKu
-	JoJGzeltwNQj58JS8IHWFGyhXx71jfVmUYhzi9uv9dH8gptYfNRnf7PsIC0HxjKGlpOdcqgUjcf
-	H2/CGAoBMZuQkbIkPifEP95IyHK+2kmZrsSmoM0P8SKGUdIFyJE4B0ogMWmwZTUx4z7UJ0A9ZUN
-	DoKJ45GHSJqJ0q4WtkSn2OFrlWtxYXP2S0N3QIy7c3r40JZhcCIbnrRZUThEUMGFujN6OnENJrq
-	CVpamnYYR2LjCPaWSKVO9YdZ3YJSa6yDQffEdktyMdu5GoChFDJyk7IvPuNJZ9dc7Emxyt6w0Wr
-	8fYUNjAtdKxqlgbU3F8pZ3iRWRfJ/RONmexwN7Cs1TbWg/+utvTbh6EYrFaJ6gP+8SwXcagEjtI
-	36faDwArr6bKlskE9UqMtpWkpDkMNMX3a0KT0zpSFrlAG/d2ct7EqsBjsiVlV0lPL1RrdyS69SX
-	h2WlR4EvvO+kv7A1I4Gd76fX4xA==
-X-Received: by 2002:a17:90b:5888:b0:3ab:33b6:2c27 with SMTP id 98e67ed59e1d1-3adea8985c3mr1153367a91.23.1792822328671;
-        Fri, 23 Oct 2026 23:12:08 -0700 (PDT)
-Received: from LAPTOP-VN8JNK11 ([111.223.27.68])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ea9af332c3sm3153665ad.3.2026.10.23.23.12.05
+        d=1e100.net; s=20260707; t=1792914181; x=1793518981;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=pXIk2WIkNT0windvDKCB/LIGkYLCIcpQCNUp9JyU/UQ=;
+        b=I7i+qTLlKY/Nq3hAv7sRyjyZ60gTm84SeKpvXkA/PG6ALIZE/sKfBayzisxMEGlLc6
+         KO6U+8Xo49L3c1dcnfvyh7DYcArwawCUFcqs8cUViByup+lXLzNmE1HbbPz6cY7zEBhw
+         Z9IKxY3jEFH7ocQ4Cfkt/zQNq/s6PW4nexD2D7JgmCxC9N0ndj2YRt1ZG43mtUPbTMOu
+         iu0HN/yqNKZCOQLK1qUBndK/hu4KuGmwpgEzB/ok///vHDij7ETEL09VYLeJkAjoR/d0
+         P5y9WXfkUfEwvHoTL2I70WiyRvEeffvnearY9nhWBWd16JLl1NiqeV9DqMR/RdpZi0Ec
+         97NQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzsPyrPGriTj8+mgfOMUtgXY4QHU2dqHmeGZDHFOfXOtwcQWOtwsFThV7kux+Fe07/pzrV2b7REmxkWxw==@vger.kernel.org
+X-Gm-Message-State: AFq9FYLatBi7EtmKgziCTfUJGn0pZqvHYYuydjRCSI5kwjHzRWBqstAE
+	+kULSf/U/jxKrrejZz7hrrEKIC5D4/BKW81g/fxwT1gBJB+Q8O3xGcqZ
+X-Gm-Gg: AYBFou27WNQUeyVPXTY+2Bbml3Nb8ZC0jOL5j/TReaeT+RJfqvqwbNV72xGZd+Y4/Cg
+	pUhM9OK4UNwm0CnmoJ1bUzUkSr6bYowL5HoFI+ezep0gcLxHnFiOlUp4yoxNx+rd2kAbg0iw/Ve
+	EPS2TrOlQjzMlualnKYu6QjYWtyY2SrBynSt/iU74dGNTZZ1m6I5LGG6LiZQ0gsukaD83FJgZjh
+	jxFOlTbqOfiMuDbzr2NahuAFOqIKGgnYxXYJUzScD2IHLEyBQBImc51AvBzr2s/2ZvP/oVEQ4mt
+	Ytqz1G/IPXEKABwO4VdPfJW97vhe6Q/ctS0Ri+7/E4jzIUxP7QVj7uojHYQhyhbj9ft3XNlmSDT
+	4GIBeTB+W7XOt6crqKuuCMJ0PSS+Cb32La4BsnysBLPGbZ95l2eADzBX6V0U32W9GtItetCCqy3
+	t2r5nfI1AHxIIuP3P3eaKuj/M37f92L+7wTROTwF9pbwgbrWD3xmiDPHRAOw9lZz8+Rh3Ov7sMJ
+	gv3KmSEopDVQgyEO1N317tsqHAnUWD7FeAqnXoWy52NMRoJls/r+u0DXkuQ1athNxoVBgkkroeP
+	jijiRb4c4qkdmA6oQxserw==
+X-Received: by 2002:a05:6402:14c8:b0:6b4:21c1:21a9 with SMTP id 4fb4d7f45d1cf-6b442ff31demr2690071a12.31.1792914180977;
+        Sun, 25 Oct 2026 00:43:00 -0700 (PDT)
+Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b445990d9bsm2033641a12.30.2026.10.25.00.43.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 23:12:08 -0700 (PDT)
-From: Ankit Thakur <codeankit.thakur@gmail.com>
-To: Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Magnus Lindholm <linmag7@gmail.com>
-Cc: linux-alpha@vger.kernel.org,
+        Sun, 25 Oct 2026 00:43:00 -0700 (PDT)
+From: Magnus Lindholm <linmag7@gmail.com>
+To: richard.henderson@linaro.org,
+	mattst88@gmail.com,
 	linux-kernel@vger.kernel.org,
-	Ankit Thakur <codeankit.thakur@gmail.com>
-Subject: [PATCH 2/2] alpha: boot: remove duplicate LDFLAGS_bootloader assignment
-Date: Sat, 24 Oct 2026 11:41:56 +0530
-Message-ID: <20261024061156.1742-2-codeankit.thakur@gmail.com>
-X-Mailer: git-send-email 2.55.0.windows.3
-In-Reply-To: <20261024061156.1742-1-codeankit.thakur@gmail.com>
-References: <20261024061156.1742-1-codeankit.thakur@gmail.com>
+	linux-alpha@vger.kernel.org
+Cc: linmag7@gmail.com
+Subject: [PATCH] alpha: fix PR_GET_UNALIGN flag mask
+Date: Sun, 25 Oct 2026 08:38:50 +0100
+Message-ID: <20261025074237.1050419-1-linmag7@gmail.com>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -102,26 +98,37 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-LDFLAGS_bootloader is assigned the same value twice in a row.
-Drop the redundant line.
+GET_UNALIGN_CTL clears the flags it needs to read, so PR_GET_UNALIGN
+always returns zero. Keep the UAC bits when translating them to prctl
+flags.
 
-Signed-off-by: Ankit Thakur <codeankit.thakur@gmail.com>
+This was uncovered while running the strace test suite on Alpha.
+
+Fixes: 3185bd261882 ("alpha: separate thread-synchronous flags")
+Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/alpha/boot/Makefile | 1 -
- 1 file changed, 1 deletion(-)
+Tested on UP2000+ (SMP). A standalone regression probe verifies flag
+round-trips, EFAULT handling and fork isolation. The probe and unchanged
+strace prctl-unalign test fail before the fix and pass afterwards.
 
-diff --git a/arch/alpha/boot/Makefile b/arch/alpha/boot/Makefile
-index b7e530a65..3c4477e21 100644
---- a/arch/alpha/boot/Makefile
-+++ b/arch/alpha/boot/Makefile
-@@ -105,7 +105,6 @@ $(obj)/tools/bootph: $(obj)/bootpheader $(OBJSTRIP) FORCE
- $(obj)/tools/bootpzh: $(obj)/bootpzheader $(OBJSTRIP) FORCE
- 	$(call if_changed,objstrip)
+ arch/alpha/include/asm/thread_info.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
+index d781ac79106d..22c07ce0a77a 100644
+--- a/arch/alpha/include/asm/thread_info.h
++++ b/arch/alpha/include/asm/thread_info.h
+@@ -110,7 +110,7 @@ register unsigned long *current_stack_pointer __asm__ ("$30");
+ 	0; })
  
--LDFLAGS_bootloader   := -static -T # -N -relax
- LDFLAGS_bootloader   := -static -T # -N -relax
- LDFLAGS_bootpheader  := -static -T # -N -relax
- LDFLAGS_bootpzheader := -static -T # -N -relax
+ #define GET_UNALIGN_CTL(task,value)	({				\
+-	__u32 status = task_thread_info(task)->status & ~UAC_BITMASK;	\
++	__u32 status = task_thread_info(task)->status & UAC_BITMASK;	\
+ 	__u32 res = 0;							\
+ 	if (status & TS_UAC_NOPRINT)					\
+ 		res |= PR_UNALIGN_NOPRINT;				\
+
+base-commit: 71cf9644bcb35e686c3e12a703325335a0925946
 -- 
-2.55.0.windows.3
+2.43.0
 
