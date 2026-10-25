@@ -1,92 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.44
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.178
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792914183;
-	b=T3EawVMFa0lyHHHrgfBjqnIirobQwS82WFi2erXVs0NjXwDY86gz0/TnRhLYPAdWAQIz
-	 Hzlx7yS21c/0qvkuIyaM1EZeI8N6hVYvJ1IKdelKFOaxzLPsEuwobtYnmogQXGN95qeR5
-	 JHXM/8QBKzHvWuLyPSDXDLpEmX1O7a8dAvofW2m9Gal+QfDiropHQfs2RepJsNa6RBfvG
-	 uksl+Hx8UVOLr1qfGonbrHQ9fES21O8gfMZ8ssPKQCzna5tKnpJnQuXrY09F5iL4byYrL
-	 nJnl5utdd4lIDk4dJaQhSAzYv/oEbZOw4BbIZufTAwVo0Rh1QokLmGxfTiCxSQJg6Pg==
+	t=1792936377;
+	b=X0iH7/WMB9tdoHTqWJ/jEeUSo6/BILgZAtWViPdSK6gKGU5F1uEkadueKvDYFdETCwQn
+	 RHde0V2BfwzDM+mUxQ50VRrtjPqtlU2pGnho0tICIgxOZjfeBk3ZJ2VXaABE5AZdOw2H5
+	 QewXJmIRIeXKOpazK0arTa2LHDDxc5N3CfimAYH8h5tayJKkXQw3lsjUY5NV6TWzW/xKx
+	 lin3bTQiMyFkITXDCb6n4ztBYqe5GmsZuzrbcb1RtFB2effsYaWu036VKNGR1uLYGFVeM
+	 htAOVfHLc3Yzld/QifAi83VqrgFJF8wB1QLHeJh2gZB1aLa/Q4ll3zu8w5JbbiFmvwA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792914183;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792936377;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=pXIk2WIkNT0windvDKCB/LIGkYLCIcpQCNUp9JyU/UQ=;
-	b=IzylIsY1gHefhndQp9HEQwd8BxiFYDCj76PRvJGxvcMVlN+DNus9Bjw3aPe55z279puF
-	 2q0TNMh429bsiYGpko5uGkkvMIwM9OY28+OMSdvDkYASJiTC7YV78aRvwwxs/16K8uldU
-	 1ai+foz71y1ITLPOJjMdH7k+t+HvvxxML/3PJr16oq0xSubEiqqmei+OER80L86MWRQBJ
-	 dY6WftHvi0LExvdtnkO2VddfAQyrtLCt6CFsLpSTgKGgEwgAVqglXMLzPp+ZeoBSxQNyj
-	 8jYwdeTS6h9yjeQQKh+NZYQKu2yLxuUiEzx4Pa4LqScz88hyFII5NagxdKb2pTsXTFg==
+	 Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=w+35OHT8eig97D6eOQL/H2On44eSSo3B/P3W218Fgsk=;
+	b=IqJwvpQU5jOHCly++DBkLBflqE6ztALJuknurKyrYn99hPXYIOJDBlIe3XGyK8Uzz9Q6
+	 2p7Mj7sMuvsV+PWG44qXNiFmPwxDUHb41Bhn+glwZczioupnLN5ZoVTtAXcat3yRRUFR3
+	 pGJi8jDTJTaNsbt4w6wp8nwBNn5e3gG3tYLxrrTDhbA2z1st+hBc1dDtGL0MGcspO4c6H
+	 KrRQGFe0nDwiEmTv/ogdaftkqcvs05+ccNNP5y3m1Lt5VM8o+3kdWXIBlaw8fiEqrRHey
+	 nT2zSA4si3fWgh29IlKoOdgkff361Aq12f7kW5SOuRZ2+2jIV2dKvRKf9EPAG3/k88A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Mkq6F7kl;
-	arc=none smtp.remote-ip=209.85.208.44
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=jLAkP2eI;
+	arc=none smtp.remote-ip=209.85.128.178
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB43D606A31B
-	for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 07:43:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BB43D606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43096606A31B
+	for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 13:52:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43096606A31B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Mkq6F7kl
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-6afa651700eso2879798a12.2
-        for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 00:43:02 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=jLAkP2eI
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-8b10ac6ab7bso19872127b3.1
+        for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 06:52:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792914181; x=1793518981; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=pXIk2WIkNT0windvDKCB/LIGkYLCIcpQCNUp9JyU/UQ=;
-        b=Mkq6F7klgtQfZ2EUk8cTUBVFuIjtnimu4n5peoDhTY+pTQyjfEi/s9/FkgVRm4BTkU
-         8FImKRGOwF4N1HmLT3ahOJWvohTcW+zsmh5HqwcWicz5/CCi1pp+raP6tU6ZJxxsX4lH
-         t473RMo8ny78KTMRYO/dSGG+nxsY84hkeByJGVTs7E23hOebyYRdKWcegdftJHKenvPj
-         dhNaCXGsYWW4U02zfiSBMZW4jEB12chN17+D+LjCdXjWdb4cWmgfOqzDn+l1KU6jPzdc
-         7EieBj1yugZ1KNxWggQCE+HbpIkkrGblG2YyjvFxmlrKXFzWyOO5B9bdiWum0SjkfuFc
-         SfSw==
+        d=gmail.com; s=20251104; t=1792936376; x=1793541176; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:subject:cc:to:from:message-id:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=w+35OHT8eig97D6eOQL/H2On44eSSo3B/P3W218Fgsk=;
+        b=jLAkP2eI3nFD6ECuhVjuy9y5smABETQRmxjSpdOTM3eBnvN2TYHqpJa+H7DqtOizYk
+         hfL2TkHM9UPjR+sRMCx2qBGYp8D8hS3XE55juNHLJDpeXyr6r4p1grytvkomF+6Jqoog
+         s8Nv4gEP1k1pTOlMs/oZIHM7wKFFci4X6XAaNeQvLqRdqEjBkq3mAkePOempRC9DrorX
+         gU7jmSYenlJJnB/YwSfN52jFm8DIMz+JeT6NLcv7Cw+dbwR0/lb02GMlO9yiVNoPMfyI
+         gO8EJE7LlBtj3PkxlToBVgg2eWd0uIlnq6j0loSqoXCEypnCdIUSfLqPvNLUd6kbwFRA
+         hMfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792914181; x=1793518981;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=pXIk2WIkNT0windvDKCB/LIGkYLCIcpQCNUp9JyU/UQ=;
-        b=I7i+qTLlKY/Nq3hAv7sRyjyZ60gTm84SeKpvXkA/PG6ALIZE/sKfBayzisxMEGlLc6
-         KO6U+8Xo49L3c1dcnfvyh7DYcArwawCUFcqs8cUViByup+lXLzNmE1HbbPz6cY7zEBhw
-         Z9IKxY3jEFH7ocQ4Cfkt/zQNq/s6PW4nexD2D7JgmCxC9N0ndj2YRt1ZG43mtUPbTMOu
-         iu0HN/yqNKZCOQLK1qUBndK/hu4KuGmwpgEzB/ok///vHDij7ETEL09VYLeJkAjoR/d0
-         P5y9WXfkUfEwvHoTL2I70WiyRvEeffvnearY9nhWBWd16JLl1NiqeV9DqMR/RdpZi0Ec
-         97NQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzsPyrPGriTj8+mgfOMUtgXY4QHU2dqHmeGZDHFOfXOtwcQWOtwsFThV7kux+Fe07/pzrV2b7REmxkWxw==@vger.kernel.org
-X-Gm-Message-State: AFq9FYLatBi7EtmKgziCTfUJGn0pZqvHYYuydjRCSI5kwjHzRWBqstAE
-	+kULSf/U/jxKrrejZz7hrrEKIC5D4/BKW81g/fxwT1gBJB+Q8O3xGcqZ
-X-Gm-Gg: AYBFou27WNQUeyVPXTY+2Bbml3Nb8ZC0jOL5j/TReaeT+RJfqvqwbNV72xGZd+Y4/Cg
-	pUhM9OK4UNwm0CnmoJ1bUzUkSr6bYowL5HoFI+ezep0gcLxHnFiOlUp4yoxNx+rd2kAbg0iw/Ve
-	EPS2TrOlQjzMlualnKYu6QjYWtyY2SrBynSt/iU74dGNTZZ1m6I5LGG6LiZQ0gsukaD83FJgZjh
-	jxFOlTbqOfiMuDbzr2NahuAFOqIKGgnYxXYJUzScD2IHLEyBQBImc51AvBzr2s/2ZvP/oVEQ4mt
-	Ytqz1G/IPXEKABwO4VdPfJW97vhe6Q/ctS0Ri+7/E4jzIUxP7QVj7uojHYQhyhbj9ft3XNlmSDT
-	4GIBeTB+W7XOt6crqKuuCMJ0PSS+Cb32La4BsnysBLPGbZ95l2eADzBX6V0U32W9GtItetCCqy3
-	t2r5nfI1AHxIIuP3P3eaKuj/M37f92L+7wTROTwF9pbwgbrWD3xmiDPHRAOw9lZz8+Rh3Ov7sMJ
-	gv3KmSEopDVQgyEO1N317tsqHAnUWD7FeAqnXoWy52NMRoJls/r+u0DXkuQ1athNxoVBgkkroeP
-	jijiRb4c4qkdmA6oQxserw==
-X-Received: by 2002:a05:6402:14c8:b0:6b4:21c1:21a9 with SMTP id 4fb4d7f45d1cf-6b442ff31demr2690071a12.31.1792914180977;
-        Sun, 25 Oct 2026 00:43:00 -0700 (PDT)
-Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b445990d9bsm2033641a12.30.2026.10.25.00.43.00
+        d=1e100.net; s=20260707; t=1792936376; x=1793541176;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:subject:cc:to:from:message-id:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=w+35OHT8eig97D6eOQL/H2On44eSSo3B/P3W218Fgsk=;
+        b=E6xRRQVShG18qjBKIfMJg8W+M2UwAyMWyYqBthopEWbVIouvZwDFVBAnFhihNRx8Pi
+         8XeAoAbTPBLQ3J6efTvs3ImEVWLGzgLwgJV2jjSG6G9tMpfA/Uecjl++8bkFcQIZ+/u6
+         jsvMRmhJNvt9wQFdqAd9oy5Y5Np0cp2JiKafvAlvjf4pj8Lcq8ZY5m3OdjGrcJHgQZ6v
+         4pmSvzvhdZt0k8FQ27T9iKBUX1h72DkKy3sTw9XCjfLhbiMktLu8Ze3UBTbCOLsTobiN
+         heIG2GDLEGPBPgJVc1CFWPrDqttYMq7faO8AbAb7ut+0Uo4PwfuG3z+K+pqRhX+VuR66
+         t5TQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwveLQPOEFH5WoJLFybXQVqm/363I+FD8jikHCoxRUyi8u5poAiDhV7n6fAvJT1wbEkgppGwhJRSXoM5A==@vger.kernel.org
+X-Gm-Message-State: AFq9FYJbI3vWTO8sOVKwmAxpy1MNoM+Wvh2JjDXZhBJr5y67/OYJ7h3h
+	zIC9xgYrdTMGOpIwCxbNp68tr1RZssfqxfFywxKXPdAOSuefwz+LUyjg
+X-Gm-Gg: AYBFou1njN7H5vlQKFxiUjqHtgB03a4FHXXt94xoWlC1RwnuR5yWlpuJI1FX+02H9mW
+	Oqc8xiaJy8z1lm0dQ/050y8N28Z24EEKvb1cZ3vPsRoWaBws1YhaZFukZFhBBQfdw9/VEpQmAZO
+	7GW971/JLvd6av98OukxS0hk1+4mt7cmDwekr4D0/ItnObK+Rb/JNjQL1ZZN8vGSgtqtGSxnvYw
+	NIegBsP6qb/q4bYD4nGIct4QI9mX0biMVPTDFynVQAlO0URbYJz4ARbngV84RwWaUZTDxq/dp1c
+	Bx18kyNZJTMeP9cTTRDXIDJNirlUckW97YifDu9aqc9fBj8LPmbB2h1qHBpYr4rYwpnjPjxoZwX
+	KzCW/JkJPX3cnBgQe64ndOGy5tSHnbIeqUmsaxVEC8yEW3cF/TbWGYC1qjkiG1UoG6ccDU9ut6t
+	tVK+WP4+6Xd5xpVE0Y+rLJQZjnmgDZ9ybbIvbEpPl6zz729/XSIGc5xU5V1ZU3pOgwYlheeGU9n
+	eYo2C+aNmZkwOAlFpkFebqTS+gVHwh37uGq3kxKuYQFgOF8Z+Cn0qiJIhEMP7eBWyVSQdC0NB3C
+	+uHu2IBzlEeJxBcj2ZGltf+rZTnaRcAf/DQ9oDr38IPZdYt/PPVXFdzcyw==
+X-Received: by 2002:a05:690c:d8a:b0:8b0:6866:c5b6 with SMTP id 00721157ae682-8b1669b73d7mr28746487b3.9.1792936376071;
+        Sun, 25 Oct 2026 06:52:56 -0700 (PDT)
+Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b166dd1571sm19902957b3.13.2026.10.25.06.52.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Oct 2026 00:43:00 -0700 (PDT)
-From: Magnus Lindholm <linmag7@gmail.com>
-To: richard.henderson@linaro.org,
-	mattst88@gmail.com,
-	linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org
-Cc: linmag7@gmail.com
-Subject: [PATCH] alpha: fix PR_GET_UNALIGN flag mask
-Date: Sun, 25 Oct 2026 08:38:50 +0100
-Message-ID: <20261025074237.1050419-1-linmag7@gmail.com>
-X-Mailer: git-send-email 2.53.0
+        Sun, 25 Oct 2026 06:52:54 -0700 (PDT)
+Date: Sun, 25 Oct 2026 09:52:52 -0400
+Message-ID: <20261025095252.1749067.mattst88@gmail.com>
+From: Matt Turner <mattst88@gmail.com>
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org
+Subject: Re: [PATCH] alpha: fix PR_GET_UNALIGN flag mask
+In-Reply-To: <20261025074237.1050419-1-linmag7@gmail.com>
+References: <20261025074237.1050419-1-linmag7@gmail.com>
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -96,39 +96,21 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
-GET_UNALIGN_CTL clears the flags it needs to read, so PR_GET_UNALIGN
-always returns zero. Keep the UAC bits when translating them to prctl
-flags.
+On Sun, Oct 25, 2026 at 08:38:50AM +0100, Magnus Lindholm wrote:
+> GET_UNALIGN_CTL clears the flags it needs to read, so PR_GET_UNALIGN
+> always returns zero. Keep the UAC bits when translating them to prctl
+> flags.
+>
+> This was uncovered while running the strace test suite on Alpha.
+>
+> Fixes: 3185bd261882 ("alpha: separate thread-synchronous flags")
+> Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 
-This was uncovered while running the strace test suite on Alpha.
+Reviewed-by: Matt Turner <mattst88@gmail.com>
 
-Fixes: 3185bd261882 ("alpha: separate thread-synchronous flags")
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
----
-Tested on UP2000+ (SMP). A standalone regression probe verifies flag
-round-trips, EFAULT handling and fork isolation. The probe and unchanged
-strace prctl-unalign test fail before the fix and pass afterwards.
+This has been broken since v3.7, so please add
 
- arch/alpha/include/asm/thread_info.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/alpha/include/asm/thread_info.h b/arch/alpha/include/asm/thread_info.h
-index d781ac79106d..22c07ce0a77a 100644
---- a/arch/alpha/include/asm/thread_info.h
-+++ b/arch/alpha/include/asm/thread_info.h
-@@ -110,7 +110,7 @@ register unsigned long *current_stack_pointer __asm__ ("$30");
- 	0; })
- 
- #define GET_UNALIGN_CTL(task,value)	({				\
--	__u32 status = task_thread_info(task)->status & ~UAC_BITMASK;	\
-+	__u32 status = task_thread_info(task)->status & UAC_BITMASK;	\
- 	__u32 res = 0;							\
- 	if (status & TS_UAC_NOPRINT)					\
- 		res |= PR_UNALIGN_NOPRINT;				\
-
-base-commit: 71cf9644bcb35e686c3e12a703325335a0925946
--- 
-2.43.0
-
+Cc: stable@vger.kernel.org
