@@ -1,73 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=130.133.4.66
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792963417;
-	b=Bzbw0ntsMVlFlKFsbbeJkfiiQELsppjkPq5ZR7rYufyiSjsxTup/r6AzA0Vo6hjdH0Xg
-	 DzxuPRxsG/0/qZG9X2GZ1Spv6/q9FLVv3uVm3IQepUhWCVY0D35o0ufv3gwAaTB85jsZ9
-	 uUbsFN1ceVuZDZC2J2IpNoBn+Ifdv3bbPE9k0kwcsaradWR+FeRzbzSc9Z4aJs0vVrbFe
-	 HfTleUdZd1Vv2vVitxvl83Ok18synRLD+nnKRgszRTu+pHXlNF5hmpjwweu3faICXwBn+
-	 GbNZKe5Rz3fIqzhln/Pwsrk4ULkW5AXZVRUs45JDw6onj+Y3u08X9aeUz/6qWn3lOqQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792963417;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Subject:
-	 From:To:Cc:Date:In-Reply-To:References:Content-Type:
-	 Content-Transfer-Encoding:User-Agent:MIME-Version:X-Original-Sender:
-	 X-Originating-IP:X-ZEDAT-Hint;
-	bh=kvsReDb1yu77SIToXXCZrJewGJEJwD+B5h3we0C+/1o=;
-	b=PtmlyPu//iPa7UDBzo+5gSnW+MVak4j8dsTJKLJcQv/7Y3+K6cQONKZD6/Lo09dtaaDF
-	 Jm/yiK/8hZcE14QvIv0Zd4B6EegukGQ71iMvrV6hDG2zmX+nup1FLiC09A+VYd34laAFs
-	 jMG53vrvxbfRbHwh/Hx6N4rjdybcBKmMwOOeFojSQIjl5HKqDxkMDQXinn7UgaqSmzleT
-	 s1LN3vmp0tlPCtdLiaaXU8WwdRhnzE3QdXdgh6SRgAVc827aHm3oXwoeBaQisIObBtZnz
-	 YBIgvDedE1ZOhXOUpqn77yrjA/3edEO8ldkRq3RasmpWfGAkch2K1wAnGKn5g+rFqXg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=physik.fu-berlin.de;
-	spf=pass smtp.mailfrom=zedat.fu-berlin.de;
-	dkim=pass header.d=fu-berlin.de header.i=@fu-berlin.de header.a=rsa-sha256 header.s=fub01 header.b=mPeobhC1;
-	arc=none smtp.remote-ip=130.133.4.66
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.175
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792965111;
+	b=JmcQdLHuOXAUE6bSDd8PHdgpDfiGtPlYQ2sFC6N3HMr5lbmSnWL+QsZe1gCSZpnJkXht
+	 h7U6SV6+2Boh00j0Bos7adzXcz6V3HbRQNLni30TiDDejyYzqbtdoGTYhuxmSs2V1YaVr
+	 zvZ+qXOJxmJ3GHSfw5/Rr3OqrGs+JjKZVlUIGOTwjtfLs49gcc8MOd48gX1+8Ml7giYZd
+	 bJdG8NCM2tmDQsvLkClaKrlZnxsz5UCMEH4XSqfH4bRV5BvWuISrnIejcfQZYqLMOGMcU
+	 boAsyN9iawmZDRuKD6pJD5NghOMhsEdktE47caBHX9mWgZ0H6m7GDcEr0exN81MKWWg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792965111;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
+	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=ZqgNS4Dh7bRrtMBkrqtS1YGYiBq9bbUChB11hsUxU4I=;
+	b=IWGEvtDy+EETHkoyLuyP/uJDUlNXMU4qffb2xLqraz0/tYLu3nU439VKZI4TFqWvFKdR
+	 7he0Yaa9bXgYEEvWkIbz+ZzeRWJuj8N5WCatoYOgSAWk0p7VKV6xigmtOFdZwYHtZk3Iy
+	 4vx5AKFrLAPZcrzGKKZKoi2pW0cvDgaK2P+yOqiKET2Q+dxaZTeUTypX0nfUTzDPFOvNW
+	 G3gnGJ2JTyo7M8EWCfoubtCuqux0HrkmCMCStlvu0qjMgZyRktLm2oobq/0Gw1cuIRBzC
+	 OxXFoRLj+2wzC5/EyUnt9WS1ZYNDl0o3YS6ih2Dtsgux8gxFqBaatvkQW7l1VRsGzpg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=ZkxTz9PJ;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.175
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D063606A31A
-	for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 21:23:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0D063606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41663606A31B
+	for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 21:51:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 41663606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=fu-berlin.de header.i=@fu-berlin.de header.a=rsa-sha256 header.s=fub01 header.b=mPeobhC1
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:From:
-	Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-	Content-Transfer-Encoding:Content-ID:Content-Description:In-Reply-To:
-	References; bh=kvsReDb1yu77SIToXXCZrJewGJEJwD+B5h3we0C+/1o=; t=1792963415;
-	x=1793568215; b=mPeobhC1h0CBNt7rcuaO8rj0bLrS+gD2z6h/ixYJxO8K4YBZTVbwVGY0/C36s
-	lxU+AAbsyD4TNrnBAMkH1R6gr/b+1pOQe0BaMGuXZaghEG01s2t6dSZLjZXSZE6Zk4x39BnqeeWN9
-	S8LrrztugHnp9XVKpaaNO86EEwHZJToIOpf2sRJzftCGXb88Kul3A+50rOiGwqXX49XBlrTI4mwgj
-	sLhEA3bKqcvarw7IBFdWmhiKsgQVzqN/pPhwKvwaFaRO/QGMIHBQDtCMQQSLAse9zJpizzp2bstPW
-	eVUlOMiUSCKhFhwbRtn4VIAoW1Bd/IW+mLtO2eKNZZ3jRLp/5Q==;
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.100)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1xL5gi-00000000f48-32Hi; Sun, 25 Oct 2026 22:23:32 +0100
-Received: from p5b13a90a.dip0.t-ipconnect.de ([91.19.169.10] helo=suse-laptop.fritz.box)
-          by inpost2.zedat.fu-berlin.de (Exim 4.100)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1xL5gi-00000001uQK-24Uz; Sun, 25 Oct 2026 22:23:32 +0100
-Message-ID: <fb652fa753ac027924ea6626f23f99da3661d09a.camel@physik.fu-berlin.de>
-Subject: Re: alphalinux.org has a wiki again
-From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-To: Matt Turner <mattst88@gmail.com>
-Cc: linux-alpha@vger.kernel.org
-Date: Sun, 25 Oct 2026 22:23:31 +0100
-In-Reply-To: <20261025171857.8ed673bb5900@gmail.com>
-References: <20261025171857.8ed673bb5900@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.60.2 
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=ZkxTz9PJ
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-3a595487d43so17280331fa.3
+        for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 14:51:51 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792965109; cv=none;
+        d=google.com; s=arc-20260327;
+        b=d8AcVKM2WM+BZaPK/5h0WyS6+9elugrrsDdrXbHnKXHtFYKIdsIKh5CNTw8ZGvlyif
+         Vnw9HxBHspJlWtAoQC6AUbwLGo4nWCbRojG8ycLRszQVFqjzhoW6KfaYnhuTgNf0bfw/
+         Ne8LhIdB9XZGiMf+719mwIWGFLs7vnhNCQbFmM6Zd/l2GcjE1/uJiCxbtxZreM+BDx5s
+         OJSB+XxZQ6hiWyJGBBMBoVNzTZjZ8sCkVi79y5jo8+Js/O3vRDID3xPsjxqW6kSk1vW5
+         cI2McYoM+buxqlMae5knmUl9HAFNXVjFFKSK3p4Onvj4SypCHIijPHrpWcSCGVHUF463
+         hkSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ZqgNS4Dh7bRrtMBkrqtS1YGYiBq9bbUChB11hsUxU4I=;
+        fh=bHVZzUXhUHMDpcC8Sm5hGw/Kpz2e0rvJq895VlXDJuI=;
+        b=E1e8+R/pHG/0PHi/BtEciq5BvKXZoMqZz8m6fMikFMyhJciz2VazVj8J2/7d9MF/Og
+         cKDthK5xTNhSa4BtZ0ZrXksGAA0iigPeVcaFXEbu54XLPOMFR40tfsZZWEzrML0pBkr9
+         s0dU4fbATMc7DLVQYDfgAelXGv6s/oxJDck/wxxmOt0LifZ5/eqWsI4xM7q8WpwdRoVG
+         ML/YwnypVV6jrMquf4ddPIAGdhInInhR9R+n8SEVj8IQ3uzLX/fB2Lvun+CxTt0dAvmr
+         /P845e6sUPHlITe6rH6hvyj27fk6RLI/PNS8rkXSGVVQ3uQz/0WufN1ir/pWQ/K3tx6V
+         mYAg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792965109; x=1793569909; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ZqgNS4Dh7bRrtMBkrqtS1YGYiBq9bbUChB11hsUxU4I=;
+        b=ZkxTz9PJsdf1uiaB5yJMoOTaudKGV9yNtCVP0LVZSFG5x0Pg0YuyixX2z/uTjoV7+4
+         oguxoxGKkVSxKttRl18Okx2wEgAM6Ei7BJi4K2uAo4zkZDIFQwWRn5ifPcYq0vcXyqyc
+         dvURYPfALrEAJracziTMrit9qffGxZfjoYb0t71KiIoJgRGlo7CGl3ioVHeZ7MnsYg9d
+         WGWb+qQRleuA+F/hpU1AuNpHvIE2XSI4g8LfAJEMfANELvl5OWw93W//3AlJHsZTpLpI
+         b+rlaM1IGQV06N9pvEFgH0unbBtwBirbUcmdUii71axDtvziHe9QCxDrVR37lZ1HfAsN
+         7DrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792965109; x=1793569909;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ZqgNS4Dh7bRrtMBkrqtS1YGYiBq9bbUChB11hsUxU4I=;
+        b=p7MioTb/X8PKgX1Ocx+LNAUJFLgDFV1HIyLrOpKOHjBicPnL3hNbleFxLXIF28vCE9
+         v+bWC49dSPujLGo8KLDDUlc9QnRTXyAN6J3N+56FozVX7owCQ0RO0SBlAdaDe2jGKwqz
+         CeMhwleykg6pTT16+fhKivvE1XTrdybO/qwG3C2z0c7n6sQpVsLicpU/UmTznjB+QWA1
+         Rvp848yXTE2itJcNGZCOtcQp8Y3bX85j5DzhikO9bDLWHQtlpTVOPNlw00ta8aL6rTFh
+         9I7AB6dZbytIhYuD28ojEVVt4vakvgebeJXNB2rh9Jhpca2pyEiVlrB3NIpQ2Fa/KxJ2
+         Ektw==
+X-Gm-Message-State: AFq9FYI/4CLUr1ObDpAEH2TQDE+DhuwIcU8K2vq/6b84I01+ZF1hwX+9
+	LaOXjx2kN/UO0wxI9ypsj6Zh+ta+D5bE/ADU5S2wEk1YQz2NcbdFWrVo/yDUUDMluQst2Z4cZKD
+	BPkIF0nCYCllwrB/gLY/T3/3Bl+pTW+en8g==
+X-Gm-Gg: AYBFou0uz+jfpYoSWfA19gocC5OYeaMO1TtJa1/y6x9LI/s/EiUhBsTQT3101AY4pD8
+	z/347OFNQ9damy98EQfoG6q0/skasH7lrU0NVRx7tvCp1wE3njc0trlFkhoiYH0Y+WEvrrjJ6AW
+	3SqC8V2zeRlBsl4H2ZTMvvQi1A18PGQXQKWnneH3o4JX2LoXD3cNsXAVB7rgf8C9qNCo0eFQv6G
+	3CHCI7EbfxnY0MNeVDaOIsjkZm5gRDitCQJlaNOMDsNG2zO5oSAfdzVm4yDyG4u+uupq1ZGKXD0
+	zJEkK2nlpS/yn2zSp0uWNCdKkZxBR4UEf9k2bo8WfUv7b3X75jqaGsf9s3LCvDr37aKamYHXFpS
+	26fLOgy8dEBGfbV5whmxTXo43GqAAOgFgUe3sSfvFFontZeB2laPzNYDTthwiCHNDAIZx97NlFU
+	ICSSnJOWd8PtE7rLgjnyC99vd4NjULjYCnHWRVX/G1Xu8c766+0o5s
+X-Received: by 2002:a05:651c:154d:b0:3ab:53a5:797e with SMTP id
+ 38308e7fff4ca-3ac6fd28b3cmr12259851fa.17.1792965109181; Sun, 25 Oct 2026
+ 14:51:49 -0700 (PDT)
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -77,27 +104,35 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-ZEDAT-Hint: PO
+References: <20261025171857.8ed673bb5900@gmail.com> <fb652fa753ac027924ea6626f23f99da3661d09a.camel@physik.fu-berlin.de>
+In-Reply-To: <fb652fa753ac027924ea6626f23f99da3661d09a.camel@physik.fu-berlin.de>
+From: Matt Turner <mattst88@gmail.com>
+Date: Sun, 25 Oct 2026 17:51:36 -0400
+X-Gm-Features: AclHuK83f0SLMZUG-6WeQNjYL-U-vYZui36wj9gDzMRGQooYzV8AgsPe63L7X5A
+Message-ID: <CAEdQ38FXWTvUNzePLSh+pHbOTEgs_Sbjn5xMus5VvWLc9gepoA@mail.gmail.com>
+Subject: Re: alphalinux.org has a wiki again
+To: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc: linux-alpha@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Matt,
+On Sun, Oct 25, 2026 at 5:23=E2=80=AFPM John Paul Adrian Glaubitz
+<glaubitz@physik.fu-berlin.de> wrote:
+>
+> Hi Matt,
+>
+> On Sun, 2026-10-25 at 17:18 -0400, Matt Turner wrote:
+> > alphalinux.org has a wiki again: https://alphalinux.org/
+>
+> Great job, thanks a lot!
+>
+> > The old MediaWiki install was lost in 2012 when the server died
+> > without a backup. The new one runs on DokuWiki, and its content is
+> > kept in git at https://github.com/alphalinux/alphalinux.org-wiki-conten=
+t
+>
+> I assume you already checked the Internet Archive (archive.org) for
+> anything to recover, haven't you?
 
-On Sun, 2026-10-25 at 17:18 -0400, Matt Turner wrote:
-> alphalinux.org has a wiki again: https://alphalinux.org/
-
-Great job, thanks a lot!
-
-> The old MediaWiki install was lost in 2012 when the server died
-> without a backup. The new one runs on DokuWiki, and its content is
-> kept in git at https://github.com/alphalinux/alphalinux.org-wiki-content
-
-I assume you already checked the Internet Archive (archive.org) for
-anything to recover, haven't you?
-
-Adrian
-
---=20
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+Yes, I've collected everything from archive.org of value. The old wiki
+had a lot less content than the current one.
