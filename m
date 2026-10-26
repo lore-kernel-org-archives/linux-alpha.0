@@ -1,101 +1,50 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.53
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792965703;
-	b=CLspYD8O3iGT1k8jJXNE+DukOjlasA4rEEEE7dBzrjuYTUATDklVefNl7R6YVVIS7c52
-	 I7Gt/gc2w6hsmiM1ZpzxBfPI56w03niqPOBRQceMPzmuTtUuVy4XpN0sSIIittMyfnONB
-	 whJvmaO1fI89uIH46Oq/xxxBKn+AKQyO9dn1vYbHpQwu9G6ht9K6HXPWYC55mhjs6D9x6
-	 TYNFDMs2ghh3tCyDCGMoyfSuL4/Si3z9Myw2U1f9LIu5I2KMZAZMg/xWW8WOg+1V1JIVN
-	 Z3CC4DpGOLl08Gnx/236xz5bmA/ahXMWXEohKqfh8uMKlIJGhFjIH7K4Mj5s3R5y9dw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792965703;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=RGlfky/kbSvYMvlNPauc6AogrKOAX6yWUZF/o3cy2kY=;
-	b=mOCsVL9bs7Q4AVJwCqw6d8if+UB71zPBn5/n7sJCudWVfKLXPupWwcJuHVrQ4INOjngV
-	 qs2hcTUgrSod1o1TDOWprKdm9qSKjcn9JS5RwWSiV+9FsdXggS12ZZns3D8jl7ba9qHgF
-	 20zTAhFKBvB4dwPChtel/L6Y/GfT9CLNesLJ+pBs04HhbeQBL9PyIofNd0kRW8vqb2nqq
-	 /sHTLrRn+JqtCdODZ3w8qvovPRRNU12b2V2ILChEdRVVuyeQYHwwhNA96X4mDhrxYWw/6
-	 9t9WPWWO/VyFXtHI8y1qUlhRr87MhQ+87oCBOMHcb3PeIFiUN4Ue6MDUy+MpuhF2Sbw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=mQTqNWsa;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.53
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=188.68.32.151
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792975461;
+	b=0Wg8Rr5LN2Mm5E8Sj8jZ1sEG6hAQrrJq0W2Hn81LjK6QXoQya3BOV9tTDSaIZUGI7iVI
+	 CxsUpgm/HilYfdhoY2hFUvtt/pird0bYN11ZUsSliMGbS/Grx7cITjGI5PL8w0He8rUq0
+	 MPYj7mfQN3CEugsMi15JeMNJm2sPcXs84EaJdRBESHzOYhaMaisyIZI2/MmjZy/QNaLdf
+	 z1cl4SS2qOlOFJ14GasVVSQb4+E1EqIhLlkzvAx6GaL/cfFzYTiEfu67VqqflD5VcCLJa
+	 lEN0KxL0TFgFkKyPxQ4dqJRY4SuBx09q1Plt8oahQtist2/t2jv5Sbs6sxIsshxFfoA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792975461;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-Operating-System:X-gpg-fingerprint:X-gpg-key:X-Echelon-Enable:
+	 X-TKUeV:X-message-flag;
+	bh=5V/5TAB96ndPwiAAKCMcB/cnjrnPTc++uezTCortw4s=;
+	b=ubXnskYDrPrBisjTrmljcjaAGRsxef+wT6qrBpeJj2T/+NzK2fkIDuHqALCh2/YBcHyx
+	 TOPIZ35jtLAplcY416MdFesiQVto0fnGFNDwEqH+xffmBe16Qf8RIe7lg4P8eBFH7tSCW
+	 GTycQLWHH37vTsY8+T2y11GYW2aSxRBTjIcUhNiTEYxXFHg9CiSF1Io87mVzA18I3ljvB
+	 8ofMiax0U9NztO0A/wE15TfPfjNErihNyD/hQwVMKPOuGFo02ukSiY6BgVdE4WyEAk7u8
+	 ZSrypAHIpoKIBDFIfj5ybgCtqWazBCxa0xfF4DqJJA6jWwayjT/G0cv0ZS6YKxZrw6A==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=lug-owl.de;
+	spf=pass smtp.mailfrom=lug-owl.de;
+	arc=none smtp.remote-ip=188.68.32.151
+Received: from lug-owl.de (lug-owl.de [188.68.32.151])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC69E606A31D
-	for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 22:01:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CC69E606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=mQTqNWsa
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6b3dc272dcfso3082799a12.3
-        for <linux-alpha@vger.kernel.org>; Sun, 25 Oct 2026 15:01:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792965701; cv=none;
-        d=google.com; s=arc-20260327;
-        b=K4LHlN1F+thEancwmxw2pW7M1S9GEmeACIZ6F/GAVzJ00hTAgwjTxahT6XJtAvZT8R
-         FcNAGQSXTMlz2rwhS5xjC6WclNee3BPle5HcjgEGkqZXbLT38EZSWQo6g4Fbru8wlmQt
-         KJR+uxEdPzcRt89Nezu9wnnZlMicTSxRr1DrYekRcz2qFR8+8RqyfUpYUlP12oxWLX6H
-         XeG1wAEDb2tc2D6UNqvkw3RmF0JPtrVJlLys5Bn3JaoMnPTzVJOJyji8fZMItzpyjeAK
-         6MryKV2ae5qAz0+4aVfb4WnLUWo6DKww8M0mqS4i8WpRshR8cmIBWx/gKP1fo0Ff39kI
-         65FA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=RGlfky/kbSvYMvlNPauc6AogrKOAX6yWUZF/o3cy2kY=;
-        fh=gUVgaXwVcBQ3nZohgdff1P/nNhXLFgUOUFIRlmYXDMY=;
-        b=V1fMNHnr9dgrQo8Y3Iu/3MA0rb5lCaGYLNPpmgiBAVtP/RlnX1Fj6ahyI+2kk0BxoX
-         2YfxotGKcm+EeGPYXfAs8P/8h9Tiu3KNtp9WjtzrbjK0lT9i4R/PIXlX8o/KHip06rcn
-         0u483QN4G8cSr7VgEqKRt9FJJtZkfIX5aaJPaZ1SDSE9UEPPyyTAttH1S9yvn+wgQPyx
-         BvKgrXBFVu2JVx+/AnH16IXDEQLMtGPa7gtY5MEVzkL3B0NMPxzB975O3cyi52FpTTyT
-         8VnbcwFfVR8H0Z+6N3Y7hY/75T/fwbX7PfqTHJFWd9rUttfevRMOYuhw+s6T0YbbPyE3
-         x4xg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792965701; x=1793570501; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=RGlfky/kbSvYMvlNPauc6AogrKOAX6yWUZF/o3cy2kY=;
-        b=mQTqNWsaP28KlZxGFeJR0y+EVK/2CMqREV1iqCJaBvcJdV7FRgvMFnrNFcPy0bMpAE
-         gaHiKNgEvBzDtWUQai4tVtr1YEXiAfmG0Ad07Tk//xDOzjCkvtEEAG2+zP1EkJZtanL8
-         zEfRnqMui4CLwIZ5gqhyNuUH7utRthl/abV2YLJLIeLhyoQLtYep9z1yTfWMAthG4nXi
-         Y23gcTF1MDe/yCk5HjcnLlBDJPW3y1Mbxahf8FzTAQTxz8q0QqI0iO3gk9uZ6jJkJtgc
-         dw/QPZcG3tnVdkeb/L5rf+5PCGFHx0b4wJ2S6AfP7dIqWl3uH0cyK9xq9PV8In/Hwhrw
-         j/4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792965701; x=1793570501;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=RGlfky/kbSvYMvlNPauc6AogrKOAX6yWUZF/o3cy2kY=;
-        b=URtQygADmP0iDiposToJ8S+4WWIhc5uhCn26tEGe1wshYnipQJ2PbHktfR6AlFwWTQ
-         8FmXSypHqEg69USUetl2EywqkJUW6PMB9Oe/j53HSorxyiJCWn/kN67x4dzI1X3IOA7E
-         f/sfMmkz/+6Cd+JFXY3ja/ja78l/+nTh5YDrNm2ACEJyRUkqS7URjBsfy7RBQIz7HZyq
-         jFRkCxIQj566N9vShS5PLBRkuq4cWJMz1A2QgPfREUVcCG2rbPf0s+GvFCtDKOd0plEg
-         vzbvwNiEd44DTjdksJn2lRgYah2tI/2zMqRdLLOP94h98p+tAXuas7uzzlz6KPgJT/ht
-         ZMSg==
-X-Forwarded-Encrypted: i=1; AKwUvByv1POwV6Y5tVCei6fxe3Dqyi9AUFmSWY3GYsH4QLyjY3sq8Ht6WA/quGKlo0SGGizXfMvj9QbQpoiymA==@vger.kernel.org
-X-Gm-Message-State: AFq9FYKTilbpqoM7Vgk9gGZIZZy6DRp9CQoaumWCblKP4YM/z0nHPK3k
-	i2MJ5BJ/+MvYEfAP5FC37eVQNERZbQjhgHbSk6NXHTDEsWmCbzPWfPtz+vu/1stlccDGkkO4MqO
-	/66GK7kJ7FKh3BU60GUDfQLwOdieaeZA=
-X-Gm-Gg: AYBFou1R4oIFEExa0+icy7IaGo0o4j7LpcoT+7y/2j3ujm3/FwOdP14f0kMi7N8K5iI
-	fMiig+88bUBzLUBLTHWnqJazhVoZYrveKGPlTOqifSyTdpa3RetodGoAKDYFyF5ipBMn917XgIO
-	4/AKqSkfsFWVKktDUsmQA14juZ8mPnkwIJTRIVa6LYT1NuxqlpfcT0sOGXSSmdfEi5zP9I/nCmH
-	PxVu27el+IRNlRtEIuiu51wRge+sOI4uuY8kSyjRySwLqrcmqQxIr1unoixHx/TeTN9G0MrdiJp
-	etsI6gSVw4mPwZ1FZCPBUIFy/y0S0zyii7Dsw25B0gB3nTsIW42WqJAAHuMTQJseURimjF4owas
-	l0rlKKYOOyDXMdqgAnI+CJOg0UuW9ytqo+sDPWGmQ+rSpgKNNRDlKmir/I5/U+AlVhwaoWzLpYh
-	tojrnBiCxwGlHhVGiVYQd1FyU=
-X-Received: by 2002:a05:6402:56:b0:6b1:fe71:dd4f with SMTP id
- 4fb4d7f45d1cf-6b443000260mr4663395a12.24.1792965700946; Sun, 25 Oct 2026
- 15:01:40 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0ECB606A31A;
+	Mon, 26 Oct 2026 00:44:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E0ECB606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lug-owl.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lug-owl.de
+Received: by lug-owl.de (Postfix, from userid 1001)
+	id E4950422D6; Mon, 26 Oct 2026 01:44:11 +0100 (CET)
+Date: Mon, 26 Oct 2026 01:44:11 +0100
+From: Jan-Benedict Glaw <jbglaw@lug-owl.de>
+To: Matt Turner <mattst88@gmail.com>
+Cc: Richard Henderson <richard.henderson@linaro.org>,
+	Magnus Lindholm <linmag7@gmail.com>, linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-perf-users@vger.kernel.org, Ian Rogers <irogers@google.com>
+Subject: Re: [PATCH v3 4/5] alpha: add HAVE_PERF_REGS and
+ HAVE_PERF_USER_STACK_DUMP support
+Message-ID: <at6iW11clMShlGCq@lug-owl.de>
+References: <20261018-alpha-perf-regs-v3-v3-0-52be85332c57@gmail.com>
+ <20261018-alpha-perf-regs-v3-v3-4-52be85332c57@gmail.com>
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -105,40 +54,114 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261025074237.1050419-1-linmag7@gmail.com> <20261025095252.1749067.mattst88@gmail.com>
-In-Reply-To: <20261025095252.1749067.mattst88@gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Sun, 25 Oct 2026 23:01:28 +0100
-X-Gm-Features: AclHuK-eQojPe5lJyn33drATNBGWugIoWrGtsC9eLOJyaaSVhTFrZYxNKdFyp3M
-Message-ID: <CA+=Fv5QxcYhWtp1GgtMWLSzoXLXNdFkx7LreTDsPU2abv9gPGw@mail.gmail.com>
-Subject: Re: [PATCH] alpha: fix PR_GET_UNALIGN flag mask
-To: Matt Turner <mattst88@gmail.com>
-Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="mslrvrPhqrcBcnNc"
+Content-Disposition: inline
+In-Reply-To: <20261018-alpha-perf-regs-v3-v3-4-52be85332c57@gmail.com>
+X-Operating-System: Linux chamaeleon 6.12.113+deb13-amd64 
+X-gpg-fingerprint: 250D 3BCF 7127 0D8C A444  A961 1DBD 5E75 8399 E1BB
+X-gpg-key: wwwkeys.de.pgp.net
+X-Echelon-Enable: howto poison arsenous mail psychological biological nuclear
+ warfare test the bombastical terror of flooding the spy listeners explosion
+ sex drugs and rock'n'roll
+X-TKUeV: howto poison arsenous mail psychological biological nuclear warfare
+ test the bombastical terror of flooding the spy listeners explosion sex
+ drugs and rock'n'roll
+X-message-flag: Please send plain text messages only. Do not send HTML
+ emails. Thank you. 
+
+
+--mslrvrPhqrcBcnNc
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi Matt,
+Hi,
 
-On Sun, Oct 25, 2026 at 2:52=E2=80=AFPM Matt Turner <mattst88@gmail.com> wr=
-ote:
->
-> On Sun, Oct 25, 2026 at 08:38:50AM +0100, Magnus Lindholm wrote:
-> > GET_UNALIGN_CTL clears the flags it needs to read, so PR_GET_UNALIGN
-> > always returns zero. Keep the UAC bits when translating them to prctl
-> > flags.
-> >
-> > This was uncovered while running the strace test suite on Alpha.
-> >
-> > Fixes: 3185bd261882 ("alpha: separate thread-synchronous flags")
-> > Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
->
-> Reviewed-by: Matt Turner <mattst88@gmail.com>
->
-> This has been broken since v3.7, so please add
->
-> Cc: stable@vger.kernel.org
+On Sun, 2026-10-18 10:22:04 -0400, Matt Turner <mattst88@gmail.com> wrote:
+> Let perf sample registers and dump the user stack, which is what the
+> perf tool needs for --call-graph dwarf.
 
-Will do, thanks for the review.
+After this patch series, it conflicts with previous upstream changes:
 
-Magnus
+[=E2=80=A6]
+> diff --git a/arch/alpha/kernel/perf_regs.c b/arch/alpha/kernel/perf_regs.c
+> new file mode 100644
+> index 000000000000..33ea2e831ba0
+> --- /dev/null
+> +++ b/arch/alpha/kernel/perf_regs.c
+> @@ -0,0 +1,64 @@
+[=E2=80=A6]
+> +int perf_reg_validate(u64 mask)
+> +{
+> +	if (!mask || mask & REG_RESERVED)
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+[=E2=80=A6]
+
+# CC      arch/alpha/kernel/perf_regs.o
+  alpha-linux-gcc -Wp,-MMD,arch/alpha/kernel/.perf_regs.o.d -nostdinc -I./a=
+rch/alpha/include -I./arch/alpha/include/generated -I./include -I./include =
+-I./arch/alpha/include/uapi -I./arch/alpha/include/generated/uapi -I./inclu=
+de/uapi -I./include/generated/uapi -include ./include/linux/compiler-versio=
+n.h -include ./include/linux/kconfig.h -include ./include/linux/compiler_ty=
+pes.h -D__KERNEL__ -fshort-wchar -funsigned-char -fno-common -fno-PIE -fno-=
+strict-aliasing -std=3Dgnu11 -fms-extensions -pipe -mno-fp-regs -ffixed-8 -=
+fno-jump-tables -mcpu=3Dev56 -mtune=3Dev6 -Wa,-mev6 -fno-delete-null-pointe=
+r-checks -O2 -fno-allow-store-data-races -fno-stack-protector -fno-omit-fra=
+me-pointer -fno-optimize-sibling-calls -ftrivial-auto-var-init=3Dzero -fzer=
+o-init-padding-bits=3Dall -fno-stack-clash-protection -fdiagnostics-show-co=
+ntext=3D2 -fstrict-flex-arrays=3D3 -fno-strict-overflow -fno-stack-check -f=
+conserve-stack -fno-builtin-wcslen -Wall -Wextra -Wundef -Werror=3Dimplicit=
+-function-declaration -Werror=3Dimplicit-int -Werror=3Dreturn-type -Werror=
+=3Dstrict-prototypes -Wno-format-security -Wno-trigraphs -Wno-frame-address=
+ -Wno-address-of-packed-member -Wmissing-declarations -Wmissing-prototypes =
+-Wframe-larger-than=3D2048 -Wno-main -Wno-type-limits -Wno-dangling-pointer=
+ -Wvla-larger-than=3D1 -Wno-pointer-sign -Wcast-function-type -Wno-untermin=
+ated-string-initialization -Wno-array-bounds -Wno-stringop-overflow -Wno-al=
+loc-size-larger-than -Wimplicit-fallthrough=3D5 -Werror=3Ddate-time -Werror=
+=3Dincompatible-pointer-types -Werror=3Ddesignated-init -Wenum-conversion -=
+Wunused -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-packed=
+-not-aligned -Wno-format-overflow -Wno-format-truncation -Wno-stringop-trun=
+cation -Wno-override-init -Wno-missing-field-initializers -Wno-shift-negati=
+ve-value -Wno-maybe-uninitialized -Wno-sign-compare -Wno-unused-parameter -=
+g -Wno-sign-compare    -DKBUILD_MODFILE=3D'"arch/alpha/kernel/perf_regs"' -=
+DKBUILD_BASENAME=3D'"perf_regs"' -DKBUILD_MODNAME=3D'"perf_regs"' -D__KBUIL=
+D_MODNAME=3Dperf_regs -c -o arch/alpha/kernel/perf_regs.o arch/alpha/kernel=
+/perf_regs.c =20
+arch/alpha/kernel/perf_regs.c:46:5: error: conflicting types for 'perf_reg_=
+validate'; have 'int(u64)' {aka 'int(long long unsigned int)'}
+   46 | int perf_reg_validate(u64 mask)
+      |     ^~~~~~~~~~~~~~~~~
+In file included from ./include/linux/perf_event.h:50,
+                 from arch/alpha/kernel/perf_regs.c:4:
+=2E/include/linux/perf_regs.h:13:5: note: previous declaration of 'perf_reg=
+_validate' with type 'int(u64,  bool)' {aka 'int(long long unsigned int,  _=
+Bool)'}
+   13 | int perf_reg_validate(u64 mask, bool simd_enabled);
+      |     ^~~~~~~~~~~~~~~~~
+make[4]: *** [scripts/Makefile.build:290: arch/alpha/kernel/perf_regs.o] Er=
+ror 1
+make[3]: *** [scripts/Makefile.build:551: arch/alpha/kernel] Error 2
+make[2]: *** [scripts/Makefile.build:551: arch/alpha] Error 2
+make[1]: *** [/home/jenkins/workspace/linux-alpha-alpha-defconfig___3/linux=
+/Makefile:2229: .] Error 2
+make: *** [Makefile:248: __sub-make] Error 2
+
+MfG, JBG
+
+--=20
+
+--mslrvrPhqrcBcnNc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQQlDTvPcScNjKREqWEdvV51g5nhuwUCat6iWQAKCRAdvV51g5nh
+u/SNAJ9Mzo+AZmCGsEYWRkTnjDMxXtk7BQCfUU0klDfb7QJLLGqqt3J0mncTHNY=
+=eZNK
+-----END PGP SIGNATURE-----
+
+--mslrvrPhqrcBcnNc--
