@@ -1,101 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.177
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.174
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793332816;
-	b=lZm/lvv/GsydJErgkzJCm5gtTjvNivulBY0XFS3sv6S3+/YctpBSNKm1aG1lSfakOoPp
-	 mVo50kLdb455AQ8aY5LLyrEfJMrjkdK5TmEZWUINyPMpgYR2ddSvU69T9611b/DLtWL3c
-	 TlVU1Y6uRaRCmq53GZsFRWlFwsVCKfl4nVBKy1eOlLIxXh3RCKQfT1zV9vket8ygdi6xH
-	 zwjTM6NGR3YuvPtJ79dhCRAGPhAkdvrc1Hc0XwVlSmVU28MWvIKGab3GOI+ZCSOaMpECG
-	 3SuedBgjF4ovCynKsuu5nsVxRkPdc+RyBqJ1+eg9WAZvbRhghykhcrS1VQuLCWmFUVw==
+	t=1793332860;
+	b=yiH/8YP6v5k8nEqFbjweZs1y7Ez1REaqC7MeCCmij3F1Sgwe0v8K7UidSmC1jRbRZ5sh
+	 dH+OpRmPgSAkNJY+F5PlB6nhUTmsIvB/1pOJ3PY62mxu3/gYkcTj2bBBOikCxrXQVgaSV
+	 usUXA6sXcdrDQ+52DZXf5xPNKbrUa2W6NTQcRPyuhc5GBpMx3RlZ9YUUUBwkYVfDvHPrn
+	 LA0bT8zdVzm6WKXf7Vy+yburw+PTjVJGHNku1o4vdoilTR3N5Y+YnA1zbcYYSwmw2lYkm
+	 STjVsl4+LnWCoJKfQWWtmp/ssYCH22Lq+lkHvvMz/cdkwJPICQPJ4k5SYYujKwxBBSg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793332816;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793332860;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
 	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
 	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=w+nM/vAkuCP/V6D3oVU+Bkna7/XRYF0/nbbL7krfSm4=;
-	b=ybSWkJpqjPkii7eVnBNL+E1VeHaexgwGJHShzyKlEeD0e45D3IHLuxTri4vyejesvYMx
-	 m6ct61KfK3pR6o+2rMflmjYIK0tqrVlX3HzIuIo6YvYsw1cjY9D8hwW7DjV1oBHCi5M5V
-	 z6gN2WeUFxPsuBUbmpNY072CoK6h6CJZ7ymb2RYM1098ARbiLAjyiOE2WnDMUMI3fELoX
-	 lZv7HgZEW6MiwsaoaFKmck/tDkk3SYyPYWq2jYqhPLASAvDMXMIdoMKyrYcGzNc8SjaQ2
-	 lvOxpOWz6zGfu1GhqPB+Vq9TpxgKjP43Ge+4TzDY4hFcbhgCSnRhjMxOwKOTFDyj/xw==
+	bh=8m6uTadjpBwBsLxAqFfYb4n2COxFt9O2P0MYlt7cnpU=;
+	b=fZAXkUwr1/Kiy8dlN47LefI+4JpQ4hhKtp0VvbGy+B5yRhmRIvyt/koddSUvYXkUQAoE
+	 VHAuBlH3jyMWlFNqAErRrU2QMk4R6L2EQHog986b737NP66VZqh88H0V/XaWx2P+xqfdz
+	 y0+0wc5MMNUklwRvvm8s8lwazOAAEPFtuVzhFgEE3gouqXFZ3i2wX4mKzgWgWf/Ylr4g6
+	 6NXrmTF5Cr//wg6eh6lO1Xc1SyFQmO1tXacVvxFnPCYnQf9oLDTo/WzPPut4ypnTLU/cD
+	 ndyzua+ftjGD3swytrbrsO20qmFhrot8o7BioBEWGDjDAS2H1JXC4UlYnieXbNIsN6g==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Epqzn++T;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.177
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MLQ8fT2b;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.174
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 555C6606A31E
-	for <linux-alpha@vger.kernel.org>; Fri, 30 Oct 2026 04:00:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 555C6606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90F6F606A323
+	for <linux-alpha@vger.kernel.org>; Fri, 30 Oct 2026 04:00:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90F6F606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Epqzn++T
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-3ab28f3e4dcso11680341fa.0
-        for <linux-alpha@vger.kernel.org>; Thu, 29 Oct 2026 21:00:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793332814; cv=none;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MLQ8fT2b
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-3a75f960be4so2534791fa.2
+        for <linux-alpha@vger.kernel.org>; Thu, 29 Oct 2026 21:00:55 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1793332854; cv=none;
         d=google.com; s=arc-20260327;
-        b=Ikoy98ED2OyQoeYq2fjBKfWrVcy8J8oh4tVtnO1e6ydpKpLaSfsGf8akwhFPyn3CZ0
-         6SlG8bBgvPpfmmE0H2xyKgB+Y+sGAiko4FTTmHYdKcBbq61qgwea8MiqQihCotH9nznU
-         0bp0VUoUiAhFZyF/fqgPu74pq8SdUyOGHJanaYKIUJISaVv3EzJSmZXwKVV0DZ0nlKtw
-         4zk1oHBJtiqrLeSXiBnd3HHzeox4Th4xndgNoCwpk+eXYToXOAVBhDEElLpjfb0PXPtE
-         faytQLIJb2FN2nwtwG6FR9pYcqSBIQvyDi/EBzaEasMvgcDy0UGLvsYpxmzTrI/ckX5Z
-         3kVg==
+        b=nqPAAZ6h5MaSDHCZ/lcMmi2xHM6hOIw21MTzQM+Uc2el5+R4ryw90j+wRztMpGpG+D
+         x6wqjjbdQQz8/FmGdP3PSMpoOF/+4pU6hzFF4FeuP5/XuK4isx/GL0zjbMdDogFRZNgN
+         +qrOn0FYdZoEget9KeXhTdNIYb0q29pSAWvVBoWbZXZl4lXT+vQsFn5sQB4XF/AVJz+3
+         AzjrKQJcWIE9QsbBSIPlDiyIi/9/MFIH2gwekT68Uza20oDJGg58p9rC5Es47dZHGK2t
+         rwZsBi6X30gEDoM6eQWz8bzX58E7GgpWawc2XoYGcVsXlnPwdGKYe3+JbVQOEUlRDWsU
+         49UA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=w+nM/vAkuCP/V6D3oVU+Bkna7/XRYF0/nbbL7krfSm4=;
-        fh=93332Vu/sBf+P9lc2PEmXOgQdNRYzKC5OGTED8feu8U=;
-        b=BALKD2ANrQiRs252MzSHc+ceAuQSQXbprDUQSBX/kY0YChzqsYNbsRhDxI6Lfsxth7
-         cNmQhk6CrTfb7rBfbOenJ9QKnptdV36vPEEoqK668tuuF6Tvtc89U6simAtDpWJE6enZ
-         2JVwidqEQCxRDwaCjwKvto+rOO2+M7BLl1N3FMJdMuu9iC91Nye9oIplDPOOdclg3Iuf
-         RGeWH1r94pY6qO9F/0cLylb0v8B+xWCsfvzC+c7U3Qlk0I08KdzQXzGNx5u/6KJbSibK
-         UKR0Mu3wjiyPjczA5S62tne0TfzG0XJe+ah1bS1wVaaVYveMfdoufDHn5kc17weqPaN5
-         NSlg==;
+        bh=8m6uTadjpBwBsLxAqFfYb4n2COxFt9O2P0MYlt7cnpU=;
+        fh=CFlRdT7qLHYquKURv0gqkCSS4G8eaJ4HQpcMXL4jpMY=;
+        b=Cxd7oj8aWhyLGhDBkjozmcA2foEySwHKvYBjAcLi40CzTF0f6pvGph+iXIKk7DGJhV
+         nJzIneVchhY2Aqi+/1xhc05AYd/d7uHFxhRN9WhjT4OzXzS4vT/BvFkvPo8o98q2weP9
+         skxnY8VnWkK50y6vofolD/xGkevuCIsOxfLobNWSa96Jtj8RBytScpEpIXGbwMZsvWj7
+         suViEEAUF63mGgvbdcnvdVOYYKhsIlgCuuI+Xr+M8DlL9UUYfvZfwvRm2THvCprhDmY8
+         YTNkPofFvYT/iUZrR+unQxL/w7YAiq9jj5T6cFtYE1k/Np25nNSJ498rlI9eKz/OQpGw
+         Kjnw==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793332814; x=1793937614; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793332854; x=1793937654; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=w+nM/vAkuCP/V6D3oVU+Bkna7/XRYF0/nbbL7krfSm4=;
-        b=Epqzn++T3ThHlw+p2SQJa62uo0Fu2kGBJpXoBicTYzqSdjSehXr1hZjLptWfjIiXJR
-         pJUpUbU4BuEYZm38r0Rw2O4P/EvFduucyYU6TAsyUqtAEiZNP8FI6XujHB+4HA7Gva8J
-         0ytOjdd2fQOkdFHaly+iuSq6qh7BnZ3LszMKs61zPfs1e//5PKcBH96VCAf9QKdMhSSL
-         ZU9BkOHmvzEd9p2R3kyxcQtWW7Wk+34ySlELX+gmgKH+Ug7cj+hk4nUSd9/3xI00DsW7
-         anYJqlX/RjNQdU2NrUFalbMYh2Pa+kT/+EAKIbcHfuQLyvbk4FaG7F9S04mUAUIaClta
-         MOdA==
+        bh=8m6uTadjpBwBsLxAqFfYb4n2COxFt9O2P0MYlt7cnpU=;
+        b=MLQ8fT2bA0IrB2pWxDyIfLSZwP+jWNfK8KitmWsaH5PvWcsxpG40uPvwBHXRfLS+F8
+         89jJ4mCB9yzWEMFfYAZOifPZFwdESXCh0QaBKJIXS0HkyTQI6U2cynrF0eh8XR3vpzmR
+         /0FCy+cThpruJWT2/pk0Fz0CWlL5Z0TvB7Ju9uOCeA7NO3Sv18Xx0FGBhUuU4kFx9Kra
+         c3PwWxHE3Ne9clhAT9BJiemvOeYSJv/igs4A06foLgG0jV/1o/AeeQf+uO58xje9NkxK
+         zO63q/P7lgO7se5dOw7JrM+th6b4GKT2ODiy2BIKtp0850iRKgmJ1UOyixEeGRCzV2WM
+         UlEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793332814; x=1793937614;
+        d=1e100.net; s=20260707; t=1793332854; x=1793937654;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=w+nM/vAkuCP/V6D3oVU+Bkna7/XRYF0/nbbL7krfSm4=;
-        b=za+qll0oUxYdvqW7zqcx3F5OSqdDGI2KfjSxMUBoLapZU9ra28MFCZgpnBA2gyPW+6
-         uyLpGnGAL1QUrfdyuaTDhO7FzlQE7yXk+TuNG8clj2A5dct2eZn4mX731it7AJhqQ1Il
-         xFFcs0aC+xlYCBt1QFqXHUMY4rVA6+Xo+1E/g+4GquxMKOrXhWbS6yXPL8LOISQBrveX
-         W/pVaXJg/IWG7jtlSGK3x2qNIFVoOe9o1uBoey6naOXkTqul49ww+XeqD0KQ14dXvqY8
-         1hDvQuZFaRCW0xMNTzJty5MveDyMSMFPsQ2H7Wo32+Tv23s52LaKMkCOGPo9Y3WZgALb
-         1m0Q==
-X-Forwarded-Encrypted: i=1; AKwUvBy6jstFrER/+arrW79PTUlwyWJkrFO9FPwEB1la35vQaAy5/X0j8b1rcDEuAEQP7fZVT7dk64L/1ZiRXA==@vger.kernel.org
-X-Gm-Message-State: AFq9FYIHKcG6SjME8yl6s4EuFn3iqAiwmmrb/9HH7tfmxOoLalLodUi8
-	g1h9l6zrIuIl5CH1yXaiZefAcW5YO1Xq5SzEPccruvREcp/DN1vxgZaHXUHkuopfqmWjvN8Tqyl
-	g574GsKXm4WBKsVOPhgT3wFk7danfHOM=
-X-Gm-Gg: AYBFou2+iXNRmAxoM8bP2P93TdmAddpabGgYFPsVvX4BsVA2zXdh1oqti95HqAhL3zJ
-	k0tMyP8H04vyqnur6DdBsT7uWSifAUgNnGV44vWrw6Dj6ba3eKxBskVL7SOKV/3eRdNKOO5W+A9
-	tVNwIFDYzFxnz6CYqBL05L9JcEnDxRqr6mxkIQojpmVMC7Pc+pkkHR/CkWIIy3raOja4SjEcerw
-	LWfrf8oAIzpEMHzP0jZ+M1gT+bqiSvy5ll4Aw62hz/sCWN8P+BO0OM337r0QGwNW7lp1trZgQ+K
-	6piEo12aVS2vB1G2ogK/yzjsT2C0OjHVB+5K8CLmyPYotVRn9TixhSTspJptQjKveR7WLLmTtIa
-	Gbz9RoOLUb15KwZhX7S/cmOQfXuhflglC5hxxmlckflAgzcxTPXUy9uN5/XzqL0r7k3yIteItz3
-	tGCAPy5/KZkQWvqLugtcDfdg24hmRcjGaFL4QDR2etKL0hYXDWWFqm
-X-Received: by 2002:a2e:bc26:0:b0:3ab:13e6:c351 with SMTP id
- 38308e7fff4ca-3acb7966d6fmr1569531fa.2.1793332814462; Thu, 29 Oct 2026
- 21:00:14 -0700 (PDT)
+        bh=8m6uTadjpBwBsLxAqFfYb4n2COxFt9O2P0MYlt7cnpU=;
+        b=cRELLoogCRe6eX5kezeEL4c8yaLLD2vVn537qsn+6GR2/s0OaHNJJzHIwZlhrib1Hg
+         bUW2640BAl9scMzgRvjybCFLbV7hwx9/DF1bYmEnW6dMm62dJp7srzRmy7OxHCROWmYV
+         kC+QTYAQVe8vEdnVERrtCouL4qqi5PnNkD5e0DHzREShNlm/5QNuUHQVF4UmfBWenHN2
+         WPNqOvvuTyN0SPdayVRMkEp2e9MeZvjnTpAp6AOZrWRKIZYIN/cpskgiocPqe+27yk+p
+         zDHCOrT5NV9hlZ+cpcS2IMS1y/07iLmuNyflPgiII07bCbMmCqx8O2Q9MDmh/AsWT2r7
+         UdoQ==
+X-Forwarded-Encrypted: i=1; AKwUvBw0mCCj2AF70e7IX0yjWh6yJ0UCUhpzEhqW1rL8bhw/HhY6NA5eai2hj7frBgA9Wc5tkjHyjQUb/j/L3A==@vger.kernel.org
+X-Gm-Message-State: AFq9FYIp6Op9ZaorfAXLsY2VjUd0XbNvbTKJVJAd7+R0BL5A/JGnGXSX
+	rvzuHs5+IyYJqRHqu4UsdTeCvm807FOwWeesZvtfEjAd3p8OGBTjAj8csJs8yW986PNF/o/72Dg
+	n5EXsK2ym+2EPMVhIiqT4TTum7Wirgx8=
+X-Gm-Gg: AYBFou1qoWL42l15t6bYexP0aE3Ksf12bTDrgSTBFnB2gbEPH+Nra5zv8whJug9z73c
+	neNv9zMwJuaDpg4griBG1q635lfYPkwxNKSmEmV84g7nL4bImEFNUqkfp/DTVTO3iyHx/UFouLt
+	Jswsj9HcHZnvrZ3O2GfWIDYMUz/Qak+bIDWeKpiD5VxryFsPHYHHe4bzQFcvxlPGsDJL7hrTrDh
+	y/PNMSeUwFqxQti63nl7cBLsrw0xl8bVFiPi8DvTCK2QUn84KwJkCD7xnUFd83xD3VG37loyOxv
+	+DFQVSQi1n4a0+fpjvfF8iW9R8nQ4hTrVvB7zC9BgsdomxwtD5VpdqZCEkt8lAOo7UiBSPzAHQZ
+	Seix6BOmv7O9ZatMuE/e2o1EQSlbrkbXE5HjWDL1/12ImxYJ4leylu7GI6afco0qfBFeWORXa/o
+	DAJO0OXkqzS9jqUPtGcA953gdTE/Ld/9N7nEapUNOfHSNbONWrPkW1
+X-Received: by 2002:a05:651c:31da:b0:3a6:55fa:a63 with SMTP id
+ 38308e7fff4ca-3acb7ac4432mr1662031fa.16.1793332853588; Thu, 29 Oct 2026
+ 21:00:53 -0700 (PDT)
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -106,16 +106,15 @@ List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
 References: <20261028-alpha-profileme-v1-0-d44b52bf2500@gmail.com>
- <20261028-alpha-profileme-v1-5-d44b52bf2500@gmail.com> <CA+=Fv5S5S3o1=2LetFuLQNqjtuw0DTgxVWAYAiAVvsdUNgNEyQ@mail.gmail.com>
-In-Reply-To: <CA+=Fv5S5S3o1=2LetFuLQNqjtuw0DTgxVWAYAiAVvsdUNgNEyQ@mail.gmail.com>
+ <20261029091141.GG1779021@noisy.programming.kicks-ass.net> <CAEdQ38GiZLmnjYxzN6C92uz4-MOX7KoYvTuRrZ5Zike8ssDCqQ@mail.gmail.com>
+In-Reply-To: <CAEdQ38GiZLmnjYxzN6C92uz4-MOX7KoYvTuRrZ5Zike8ssDCqQ@mail.gmail.com>
 From: Matt Turner <mattst88@gmail.com>
-Date: Fri, 30 Oct 2026 00:00:02 -0400
-X-Gm-Features: AclHuK_oJ3s5RUCirMOkhYNov1PNLqWTliY-wAZYDiCbHMWHZpexW4vczKNrsL0
-Message-ID: <CAEdQ38EwMT2a09rZMcJDmots55b6bcX0-ARWfb1sC7w7n3VkRg@mail.gmail.com>
-Subject: Re: [PATCH 5/5] alpha/perf: optionally randomize the ProfileMe
- sampling interval
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Peter Zijlstra <peterz@infradead.org>, 
+Date: Fri, 30 Oct 2026 00:00:41 -0400
+X-Gm-Features: AclHuK_z8jslhuN5ZuHXp-j3J2LHCtXaMNwtybHEsthjNqU9OxnrlVuVJiof-vs
+Message-ID: <CAEdQ38F1+iCoxseW_M_16m9wXW0xe-4eKtr2OnehP=3XppF4MQ@mail.gmail.com>
+Subject: Re: [PATCH 0/5] alpha/perf: add ProfileMe sampling
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Magnus Lindholm <linmag7@gmail.com>, 
 	Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
 	Mark Rutland <mark.rutland@arm.com>, 
 	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, 
@@ -125,13 +124,34 @@ Cc: Richard Henderson <richard.henderson@linaro.org>, Peter Zijlstra <peterz@inf
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 29, 2026 at 11:02=E2=80=AFAM Magnus Lindholm <linmag7@gmail.com=
-> wrote:
-> One minor corner case? This  multiplication can overflow for very
-> large  sample periods. I guess normal sampling periods are not
-> affected, is it worth using overflow-safe multiply/shift to avoid this
-> limitation?
+On Thu, Oct 29, 2026 at 11:34=E2=80=AFAM Matt Turner <mattst88@gmail.com> w=
+rote:
+>
+> On Thu, Oct 29, 2026 at 5:11=E2=80=AFAM Peter Zijlstra <peterz@infradead.=
+org> wrote:
+> >
+> > On Wed, Oct 28, 2026 at 02:09:29PM -0400, Matt Turner wrote:
+> > > The 21264 from EV67 on, and the 21364, have a second performance coun=
+ter
+> > > mode, ProfileMe, alongside the Aggregate mode that the driver uses to=
+day.
+> > > An Aggregate mode sample reports the PC where the overflow interrupt =
+was
+> > > taken. On an EV7 that is anywhere from 15 instructions before to 12
+> > > after the one that overflowed the counter, which makes perf annotate
+> > > output close to useless. In ProfileMe mode the CPU picks one fetched
+> > > instruction, follows it down the pipeline, and reports its PC along w=
+ith
+> > > what happened to it: whether it retired, whether it trapped and why,
+> > > whether it was a mispredicted branch, stalled before map, or was kill=
+ed
+> > > on a wrong path, and what PCTR1 counted while it was in flight.
+> >
+> > Isn't this the thing that ended up as AMD's IBS?
+>
+> I have no idea, but it wouldn't surprise me too much :)
 
-Yes, it overflows once the period reaches 2^35. Unlikely, but perf
-allows it. v2 uses mul_u64_u32_shr(), and saturates the sum with
-check_add_overflow() as well.
+Looking a bit further, it does seem so. ProfileMe was published by Dean
+et al. at MICRO-30 in 1997, and IBS works the same way: tag one
+instruction, follow it down the pipeline, and report what happened to
+it.
