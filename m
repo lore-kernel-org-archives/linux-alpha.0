@@ -1,86 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793555892;
-	b=FXIcFh7dOmBvLkccW6Pmtfk9UNfYtnbK2nFMIYfF7USaK2GOjNjmgWTIdZjYXK+JpG44
-	 tqyZ0MOuwDi/WYZxJq2vyrGUGsUtRFafjL2GebWj4/sufLRJsJBbyPOS6g+vpKQG2jOz/
-	 d08Nm6+1MdAl4XDfljYFpgteSVYmPyBNOrbjeYKAN+utLcDzRv7EtRP6sfdU3WPwggRhZ
-	 gt3pmB2dbX842tC4cXpO8qbDFq+1x+3GWd36mGLP3BDbxJG2s/y43YRQSG4BX8G3FL/JH
-	 VKpfCGNTp1Hz0GdDcZARYpLUn5L45Fh2eEljXH2E7aR2A95SjzD1/7WJ45Hy9hXQgLg==
+	t=1793561290;
+	b=rUbmjvSsfv32E1s72P9sGtPFlxQP9hME37l6BGTOeHiadkj11A83mgoMog7A4U7eq+dF
+	 nYQLWbd97Ks3OTg8gVkfkRUHvXXwfz7f3A3avjYaL0KHZTvR8qx5tt/FFyMqmvzHqN7Es
+	 Q2Mp/+LxSUOiID+VJO1qJ+85F73O5WMkCOv5vIICqO3UxVEAVQ7nx0WU6thMQ2YBFIt1v
+	 XizfkHA5ROfngQ5ILSeUwBSR+4KNTORgr33F2JbiiGUsISAEVcm32eLUj3+R0IsorAop7
+	 GOZy35olMYqSpphIT8hc4R6g5OHEF/Jta7X7GJozZ9L6cnHHtd3kU7kmbmN7IzURPcA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793555892;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:References:
-	 Date:Message-ID:MIME-Version:Content-Type;
-	bh=+7HwRXGWtYS3xmU+Z46/w0lVl31Dl0sZcMyXjmUDfIs=;
-	b=e5Xj0w/BMboK2HQTrlV3GC9nl6B4wY2eIhjnYKaxYXq6FcqHV6g/4o/4sNm7Yk8pIt1P
-	 GubvDHoF3P9IfIZ64kH/SrqXU+FvyHXCkHkydGw4xIZVnM3zDZaDNVHLokOm3NLlUV5tz
-	 aj4+LvcdpZFGZawmh6JY5Sc8UMl8DTlgnC93b6QJ43JQmcZCXaa6LIvDPp3rJjDHQ9p1g
-	 0TPGTX3jwWN/n+YsCLlKSua75jB7b+KM3N/9V45vjViVZa2NwK1GRGCfVyEyuhkhDNWdl
-	 O1P/fPfVoq1Z7ZkCr6dgNpsYtUuNmhKMMMu5ivftXcMwLcIVwKssjyXi+rzxGn1H6MQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793561290;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
+	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key;
+	bh=dosiBfQauFJU+WqcvxLeUWiXahPtDKDMOxRNRzp0hBw=;
+	b=0zdLgNwUN/gOFJTP8FoqLtkuBNStEdH5Vc1Clveo2at1clWFWd85O+4FomGQI2dRwr6s
+	 I/2Pq6vPG8vHdSlopWUECUGmRIRIwJahguOb7+RTPACZ7trL8e9HqFmOTXwFQ2Ls1Y88c
+	 SW7r4QgngiVKzk9HXioK8HRxmOtM6E2+p5cI9vzxnOtnaHgwtu3x9VEkS47FZAE9cn5vE
+	 9rdRRgDwNV7yejkBQHrpY7sn5netiI0nxyv5ye3LH0QrwuT4R2HNNdA/V8zkQJ9wxR1yJ
+	 HET4l/7ksyhL2Me1govzrPDJC8ssdSUciCxbbTItRGWTE/Nxr8HT/kGREfEG8UCv2oQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FkpyzqH8;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zURuGlF3;
+	arc=none smtp.remote-ip=209.85.128.179
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 155C7606A338;
-	Sun,  1 Nov 2026 17:58:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7F50606A332
+	for <linux-alpha@vger.kernel.org>; Sun,  1 Nov 2026 19:28:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A7F50606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FkpyzqH8
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 388A21F00A17;
-	Sun,  1 Nov 2026 17:58:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793555891;
-	bh=+7HwRXGWtYS3xmU+Z46/w0lVl31Dl0sZcMyXjmUDfIs=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=FkpyzqH892Y24Bf4MzJaxg0GENU+W3h1HrKoje37+gLiStKVwoHULfobDtcxPd97k
-	 O7yDPvc5mWSjJBu8vqqdIiJljIIY/6Z6d8PFXXCg74LTEn4DannL5V6rcy3NiVl7Cu
-	 DnutKq7d2bLfY2EkKJcg1fiS7Qvebb0UQQu9SHDSugPX5Tba1NEXcVGdUEzB6sw+y5
-	 V2z/p2t+EDUDEUhm+YjJeNELsgmzPgXTja1HpGoACFV2HxgapWeRjmaKUW4P/rTSol
-	 vGE0a3SiPbMJFefI/JNfVFZ/R4iCFJ+Rd4uFfOaqAIzWd7mtslcqNYqP4841tBmpOx
-	 x3REifKbTPuGQ==
-From: Thomas Gleixner <tglx@kernel.org>
-To: "H. Peter Anvin" <hpa@zytor.com>, Sebastian Andrzej Siewior
- <bigeasy@linutronix.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, Peter Zijlstra
- <peterz@infradead.org>, Michael Ellerman <mpe@ellerman.id.au>, Shrikanth
- Hegde <sshegde@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org, Kees Cook
- <kees@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
- loongarch@lists.linux.dev, Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt
- <palmer@dabbelt.com>, linux-riscv@lists.infradead.org, Sven Schnelle
- <svens@linux.ibm.com>, linux-s390@vger.kernel.org, x86@kernel.org, Mark
- Rutland <mark.rutland@arm.com>, Jinjie Ruan <ruanjinjie@huawei.com>, Andy
- Lutomirski <luto@kernel.org>, Oleg Nesterov <oleg@redhat.com>, Richard
- Henderson <richard.henderson@linaro.org>, Russell King
- <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Guo
- Ren <guoren@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Thomas
- Bogendoerfer <tsbogend@alpha.franken.de>, Helge Deller <deller@gmx.de>,
- Yoshinori Sato <ysato@users.sourceforge.jp>, Richard Weinberger
- <richard@nod.at>, Chris Zankel <chris@zankel.net>,
- linux-arm-kernel@lists.infradead.org, linux-alpha@vger.kernel.org,
- linux-csky@vger.kernel.org, linux-m68k@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
- linux-sh@vger.kernel.org, linux-um@lists.infradead.org, Arnd Bergmann
- <arnd@arndb.de>, Vineet Gupta <vgupta@kernel.org>, Will Deacon
- <will@kernel.org>, Brian Cain <bcain@kernel.org>, Michal Simek
- <monstr@monstr.eu>, Dinh Nguyen <dinguyen@kernel.org>, "David S. Miller"
- <davem@davemloft.net>, Andreas Larsson <andreas@gaisler.com>,
- linux-snps-arc@lists.infradead.org, linux-hexagon@vger.kernel.org,
- linux-openrisc@vger.kernel.org, sparclinux@vger.kernel.org,
- linux-arch@vger.kernel.org, Michal =?utf-8?Q?Such=C3=A1nek?=
- <msuchanek@suse.de>, Jonathan
- Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: [PATCH V2] x86/entry: Fix ptrace regression
-In-Reply-To: <87mrrvxaty.ffs@fw13>
-References: <20260707181957.433213175@kernel.org>
- <20260707190254.493733289@kernel.org>
- <20261022142425.3Wx-RrU5@linutronix.de> <87fqxx1r80.ffs@fw13>
- <87cxt11ktr.ffs@fw13> <1149A39E-BEBA-46EA-94F4-4DFFC4733EF5@zytor.com>
- <871p9g1s3w.ffs@fw13> <87y0boze95.ffs@fw13>
- <C6D7BF04-4CF7-48D1-93B5-E80D52C2617D@zytor.com> <87se1wyvs8.ffs@fw13>
- <87mrrvxaty.ffs@fw13>
-Date: Sun, 01 Nov 2026 18:58:08 +0100
-Message-ID: <87ecd4xwlr.ffs@fw13>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zURuGlF3
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-8ac8a2ac52bso25328287b3.0
+        for <linux-alpha@vger.kernel.org>; Sun, 01 Nov 2026 11:28:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793561289; x=1794166089; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=dosiBfQauFJU+WqcvxLeUWiXahPtDKDMOxRNRzp0hBw=;
+        b=zURuGlF3OtPn5UpMJ+6asPaxDlkTRbDA7ljsjyUXB1Yo/YFqsJnbEYE2GbjrSFmrWB
+         I+0mb9kQ/0NyVhqI7mvyPjLDr14oJ8M6z3fJP91m4kkB8s0b0wLBg8GRj8uNg+cQ+Yfy
+         VUtRdWKf6OieVWAFe5q2OQ0hqZz9DF/AMioIERCIfSc+5qsKPKIijbs/q2WhEfeys6U5
+         oBi9bJhK32N+vsi3POW9jiTvVFAM273zSW8sWULLRLGzz8I6WdzNadGTBot6XjLgPVYn
+         xo1+TvtSThzXInTtIVd2Yj9IXO7R8e6QexbSD6iO49jgRBpntLSlgbd/HYPbIYLMkYsT
+         Hkmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793561289; x=1794166089;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=dosiBfQauFJU+WqcvxLeUWiXahPtDKDMOxRNRzp0hBw=;
+        b=xuMVKnwmgS9vFw1YM0k8017/PHxapRIvwUVlfEPgZoGRhQqb10l3v6XQKLEXUK4+wb
+         5X42yHqfKVEMou2cXo8CJKPq6Z71BxEOMDxSwsE2W/TgoeL5Y0gmXVn+tHtMZkHey4aR
+         68gTSGk3meNB1PytdqDMChO6g44vRJ4jKPDsKYeTV6N6kDYGaLnluPO053ouOEBKYd4b
+         45z7XRy1cvL+m8zQHmGW8tzJtZGElr3k3Ogcviv1euzaZ4wWIL6EDUmz6mCxQuKyWdk7
+         yOp4x6c5CkNwFuwO4caMZtILELHASEE45MmaXx1ZVRPUxyMB8Drc7mrQJinN1ouhqFR8
+         5jUg==
+X-Gm-Message-State: APuU4Z/qCA3OzxrFNBQN7CsNLaAPMxweKF9hJosQPQRx4aHdNaxaTXRY
+	VcPLn+SDucukJkM6tz9OlCGcLyq3AYymjaPaQmSdQ56co1S52HtvT42H
+X-Gm-Gg: AYBFou2iZfPSbbY/SqGqXDghuRt4x9gZ6toOdSsLa4O3duW+V2uaGbE3fSpEK9oBrbU
+	E0z+59Y28WhjHyNMVupgkHCRC45S9aYKUK2+d8CDspK5VCuMBfiSi5kqLJvnXcjbtX1b/9MhDDj
+	5e1KoZiwcEfUzKuSbVE22NAVv3b/Gpt+1qEruwYD7K85ZPQzT54lVtKeiZeios5DDpfGZ3Ja1kC
+	IrgjFKV1TRsV0AF4zyo+cO0cfe7WSBaBxTUktGIbzpoy9vtsvN1yInZmYDPZMdjxY0PbiUU0/kt
+	WGwKc8ytmU3iPdAZ6eSTcau/FIZuVGuCxgJiVf3ZSs2vjlNK9FEG4y1zHB1CKtfBEOj6fIlC2aq
+	jO/ARrhSWrjX9DRmahgI/0WVFJGIR5unjT/yvU5eYLLrC8X2qkXRTAgKhO9ffYkIDdJzW5ufNzr
+	CLr48t1YclX+mxsf9pku97na6x5R/1rBBOL71lT8BpOOtXMS0iO6QWUNJddSmv0pvr4g+i6rj6b
+	WXSjP0xAcDXwWljipuq9sTAfldlW6fHCXG2TLIJns7j6rfrQ6tgUyl6bcWTcSJtQojYhuKcfH0i
+	ARe2D6dss3ZXuudSDXyUdLlRyYQa6ePoVcs/uEOxBa9u+fB2dIIMBgwA+vsJDTic1XtlVJnrZA+
+	2lmeqM8qZwQ==
+X-Received: by 2002:a05:690c:f90:b0:8ab:3b98:5a30 with SMTP id 00721157ae682-8b1c68babdfmr78540977b3.33.1793561288626;
+        Sun, 01 Nov 2026 11:28:08 -0800 (PST)
+Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b2b71240bcsm39775747b3.9.2026.11.01.11.28.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Nov 2026 11:28:08 -0800 (PST)
+From: Matt Turner <mattst88@gmail.com>
+Date: Sun, 01 Nov 2026 14:28:04 -0500
+Subject: [PATCH v3 1/7] alpha/perf: pass PERFMON_CMD_LOGGING_ALL to the
+ logging options call
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -90,87 +93,84 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261101-alpha-profileme-v3-1-92d511b5a044@gmail.com>
+References: <20261101-alpha-profileme-v3-0-92d511b5a044@gmail.com>
+In-Reply-To: <20261101-alpha-profileme-v3-0-92d511b5a044@gmail.com>
+To: Richard Henderson <richard.henderson@linaro.org>, 
+ Magnus Lindholm <linmag7@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
+ Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, 
+ Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
+ Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
+ Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>, 
+ Adrian Hunter <adrian.hunter@intel.com>, 
+ James Clark <james.clark@linaro.org>, Oleg Nesterov <oleg@redhat.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-perf-users@vger.kernel.org, Matt Turner <mattst88@gmail.com>, 
+ Peter Zijlstra <a.p.zijlstra@chello.nl>, Ingo Molnar <mingo@elte.hu>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2126; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=IGfq8dWu2iMEFoz3MC34tYu6sOJyy2DqaUpgqZ45fio=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKeTzo6UdA79u0Xl57CUwccHAWMwo8+Nik+4rVVyT5Vs
+ DpF/OeRjo8sDGJcDDPFFFni1iuyzGrbsdTntPQvmDmsTCBDpEUaGICAhYEvNzGv1EjHSM9U21DP
+ EMjQMYqHyOkxaGQWF5emFummFRQ55OWXJJZk5ucV6+UXpOYVpBfopWWmlWRk5BcVpwKN0MtLLTF
+ 1dXQzMjQwsXS0MHOycDQ1cXZ2MnRyc3R0dnUysjQ3MXC2dDRxtTRn4OIUgLnG3oGR4YRDa1naVf
+ Zzz9eJcRUyhLqsfxRmm1K61F7qd+WbsOzm+wz/TBsnPDzUoxCYHX3W1/j9TcsrEQvXLilY0Scke
+ eemwVpXdgA=
+X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
+ fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-The recent rework of the syscall entry code missed the historical detail of
-the abuse of syscall number -1L to abort a syscall and keep modifications
-by tracers to the return value, while a rewrite of the syscall number to an
-invalid value undoes eventual tracer modification to the return value and
-overwrite it with -ENOSYS.
+alpha_pmu_enable() passes EV67_PCTR_MODE_AGGREGATE to
+PERFMON_CMD_LOGGING_OPTIONS. That constant is the counting mode bit for
+PCTR_CTL, which belongs in the PERFMON_CMD_DESIRED_EVENTS argument. The
+logging options call takes a flag in bit 0 where 0 means "count all
+processes". It works only because EV67_PCTR_MODE_AGGREGATE happens to be
+0.
 
-Restore the original behaviour.
+Table E-18 of the Alpha Architecture Reference Manual gives bit 0 the
+opposite sense, but the PALcode in the ES40 and ES47 firmware agrees
+with the above: it sets I_CTL[SPCE], which enables counting for all
+processes, unless bit 0 is set. Linux never sets the PME bit in the
+PCB, so if 0 meant "selected processes only", nothing would be counted.
 
-Fixes: 1b1f3b3e1b39 ("x86/entry: Get rid of the sys_ni_syscall() indirection")
-Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@kernel.org>
-Cc: stable@vger.kernel.org
-Closes: https://lore.kernel.org/all/20261022142425.3Wx-RrU5@linutronix.de
+Add a name for that argument and pass it instead. No functional change.
+
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
 ---
-V2: Add the missing -1 check in the 32bit path - sashiko
----
- arch/x86/entry/syscall_32.c |    4 ++++
- arch/x86/entry/syscall_64.c |   26 ++++++++++++++++++++++----
- 2 files changed, 26 insertions(+), 4 deletions(-)
+ arch/alpha/include/asm/wrperfmon.h | 2 ++
+ arch/alpha/kernel/perf_event.c     | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
---- a/arch/x86/entry/syscall_32.c
-+++ b/arch/x86/entry/syscall_32.c
-@@ -77,6 +77,10 @@ static __always_inline void do_syscall_3
- 	if (likely(nr < IA32_NR_syscalls)) {
- 		nr = array_index_nospec(nr, IA32_NR_syscalls);
- 		regs->ax = ia32_sys_call(regs, (unsigned int)nr);
-+	} else {
-+		/* See comment in do_syscall_64() */
-+		if (nr != -1UL) {
-+			regs->ax = -ENOSYS;
+diff --git a/arch/alpha/include/asm/wrperfmon.h b/arch/alpha/include/asm/wrperfmon.h
+index c97b82a1f7db..1fa9bc813263 100644
+--- a/arch/alpha/include/asm/wrperfmon.h
++++ b/arch/alpha/include/asm/wrperfmon.h
+@@ -23,6 +23,8 @@
+ #define PERFMON_CMD_I_STAT 8
+ #define PERFMON_CMD_PMPC 9
+ 
++/* PERFMON_CMD_LOGGING_OPTIONS arguments */
++#define PERFMON_CMD_LOGGING_ALL 0
+ 
+ /* EV5/EV56/PCA56 Counters */
+ #define EV5_PCTR_0 (1UL<<0)
+diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
+index a3eaab094ece..2d9383425357 100644
+--- a/arch/alpha/kernel/perf_event.c
++++ b/arch/alpha/kernel/perf_event.c
+@@ -728,7 +728,7 @@ static void alpha_pmu_enable(struct pmu *pmu)
+ 		maybe_change_configuration(cpuc);
+ 
+ 		/* Start counting the desired events. */
+-		wrperfmon(PERFMON_CMD_LOGGING_OPTIONS, EV67_PCTR_MODE_AGGREGATE);
++		wrperfmon(PERFMON_CMD_LOGGING_OPTIONS, PERFMON_CMD_LOGGING_ALL);
+ 		wrperfmon(PERFMON_CMD_DESIRED_EVENTS, cpuc->config);
+ 		wrperfmon(PERFMON_CMD_ENABLE, cpuc->idx_mask);
  	}
- }
- 
---- a/arch/x86/entry/syscall_64.c
-+++ b/arch/x86/entry/syscall_64.c
-@@ -64,15 +64,20 @@ static __always_inline bool do_syscall_x
- 	return false;
- }
- 
--static __always_inline void do_syscall_x32(struct pt_regs *regs, unsigned long nr)
-+static __always_inline bool do_syscall_x32(struct pt_regs *regs, unsigned long nr)
- {
-+	if (!IS_ENABLED(CONFIG_X86_X32_ABI))
-+		return false;
-+
- 	/* Adjust the starting offset of the table */
- 	nr -= __X32_SYSCALL_BIT;
- 
--	if (IS_ENABLED(CONFIG_X86_X32_ABI) && likely(nr < X32_NR_syscalls)) {
-+	if (likely(nr < X32_NR_syscalls)) {
- 		nr = array_index_nospec(nr, X32_NR_syscalls);
- 		regs->ax = x32_sys_call(regs, (unsigned int)nr);
-+		return true;
- 	}
-+	return false;
- }
- 
- /* Returns true to return using SYSRET, or false to use IRET */
-@@ -81,8 +86,21 @@ static __always_inline void do_syscall_x
- 	if (likely(syscall_enter_from_user_mode_randomize_stack(regs, &nr))) {
- 		instrumentation_begin();
- 
--		if (!do_syscall_x64(regs, nr))
--			do_syscall_x32(regs, nr);
-+		if (unlikely(!do_syscall_x64(regs, nr))) {
-+			/*
-+			 * The special treatment of syscall number -1 is a
-+			 * historical bogosity as the original code used -1 to
-+			 * indicate syscall abort, which is not distinguishable
-+			 * from a syscall which is invoked with syscall number
-+			 * -1. The historic behavior is to keep the return value
-+			 * in regs->ax unmodified in that case, which means it's
-+			 * either the preset value -ENOSYS or a value which was
-+			 * written by a tracer. If the syscall number is invalid
-+			 * but not -1 then overwrite any tracer modification.
-+			 */
-+			if (!do_syscall_x32(regs, nr) && nr != -1L)
-+				regs->ax = -ENOSYS;
-+		}
- 
- 		instrumentation_end();
- 	}
+
+-- 
+2.55.0
+
