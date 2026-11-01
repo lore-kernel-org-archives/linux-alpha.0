@@ -1,88 +1,89 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.171
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793561297;
-	b=JONObC3qWWk9Nu9lNSkriVsfRafuIEeOJNMtZcoVqF2oe1PVayiFnMsdm58ZWj73HjVX
-	 i7zWi9SNsPo0yRcnlofbX7IH/2gPFABzEzAZqPJSOYb0UjyYpcO5BjOxh/91cgkuvwG6Z
-	 2FsXV4sGKQ6ygmrFZS8ZLHEzCwUFYCuJRfoncViwV1my7O/GBOZDKpASWKHE2R98eAhBt
-	 C3jk+6ty5Xm6cRHQtEXSON6SBnhlPkTHUHYFlz9JEHYgfGelx0eQGXIbJMloUUhc3/Iiv
-	 Ws4rUsPiI/Y22vWPGjpii5sxpVKrxjp6qJ2tgOMt5uD6f7LR8KC7K+KJqydZzQS0tRg==
+	t=1793561293;
+	b=dqIoNfolSaabW8ZUvnf1LhLy8A4Nbwlo14TwUyt2TLxBGM7mlBkYUXJ4F7YGr91gcglv
+	 WLoTKGmoCDqk2qoIpwq61k538XVzoF/333mW0XBwDL8Yapvr0B/s8qv5pv9q2p56Cjras
+	 3d1DsE77cmWYjzk+hCNPHuuFz+z3UnHDkNK5K7vqqjrO6Y6Zt9dYwmEPTe2STp2HdUGXb
+	 O3XEJUGZkHXZmxech90tNbeReGJAVfNtcaL6DHEhGXeOK0iXSOIJ5VGYf6B8XzxoPYNdN
+	 xrblOjangavlf3mzfVwvV1h8D9d9wpfW0sNgMil3P/2cCzIYNhrF5N0oQTR3gD9lTZA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793561297;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793561293;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
 	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
 	 X-Developer-Key;
-	bh=t/6UJdmTXHa5CFtPmZ35mg3YaxIUiqdjrGgBWpPFHWo=;
-	b=RApI6XPulvN67CL0inFG8Z1LoW+45pk+rIySu5WBhJJM1Lf9+PsOJwVfnxpFXK26GfYc
-	 pyRf3X6j9PKSSa6WusvZKw6KH41980LafCWBt2vJDtGJhDw5jpWgain1qdIKXdLrJ9WuL
-	 hQf+qybZfNHvoW82TJ3QNAw9A1p7CBL2r0F0KJn35oJrYyyHnMfmxG1hxkuXDAqp6cZyr
-	 gpxwIzEy+HhuVMBc8FpffXE9FMJxOb4CYvXzSaG54hTI/fGhscXBu0vjYfIN4ah5k53Bx
-	 Se9CqOwhhvaVdwqv0eM1/dqYQqAxs7IvzYrcqY5TgPET7z/hlXRYMfQx2mKxAb+urxg==
+	bh=vUuHLakRNbr4esv7p2rM0pJWyo4Q85EyExt4ND+SVOs=;
+	b=3sPrWHWl0PND9qrwbfRKHKKXUP+3rW5yvuxTqUbdNOcOhRfVR6rXMcjxO8icY3o8xEwD
+	 9uCdj9ya51EUDpNATNRAVBohwivY/FGqpuBoetoS/9mWs0cIAJEqmbKyclFBcsda0iAib
+	 Vc+WW1pWoG7ecAK9HWhhf4PezmLSCTZS8h/Zt8d+z9N1XwexEETP2a0x9OYS8CsYYzXea
+	 PWfouiaA/RamaEtv/57MxyGjDN4jP0G3HzYHwI5z26ruVkIx0sNVs2D/AZ1Jskl5y/js9
+	 bM7D3mJ/kyhDbpfpy1ID/cIqXCngALXAdZxLZ4W97PpJSoHUee++PBjA6aEI2K1t27w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iu5NFwRt;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PHi1lMaP;
 	arc=none smtp.remote-ip=209.85.128.171
 Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 724E3606A336
-	for <linux-alpha@vger.kernel.org>; Sun,  1 Nov 2026 19:28:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 724E3606A336
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54AF6606A327
+	for <linux-alpha@vger.kernel.org>; Sun,  1 Nov 2026 19:28:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 54AF6606A327
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iu5NFwRt
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-8b0d91601bdso25733347b3.1
-        for <linux-alpha@vger.kernel.org>; Sun, 01 Nov 2026 11:28:11 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PHi1lMaP
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-8ac4806e210so17904407b3.1
+        for <linux-alpha@vger.kernel.org>; Sun, 01 Nov 2026 11:28:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793561290; x=1794166090; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793561292; x=1794166092; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=t/6UJdmTXHa5CFtPmZ35mg3YaxIUiqdjrGgBWpPFHWo=;
-        b=iu5NFwRtmJYrFvn9JNU/9uakhYFdVOgLX3iENODjW3PRn7MxLmuhkjz4RSgPlaQknN
-         Hnf7aGqHK3Ae5vmg7/yO2zpjArV09GY3Wm3mnuhMqsPgydPRs0NolFhRo4sfZ/b3iRsH
-         PHAWt3Qj8oAiIpyE3bzbMAT9ettQL4YyqU7RsUI8p2DlROgS8MOxdSGMW74AK/yZFJQ6
-         xjIw+LspWHK6Y9lhOTlvgz77Y/8V7xEDZEJlCRXOHYoGH0JgAl+rQPf0rSqRV81UkDbh
-         4zZw5rkOwSwbxp1MfePfrdBXKx601wAdn9nflCrdT06raeBHcOJyyBlJxLOoL/WmrRJE
-         oAQQ==
+        bh=vUuHLakRNbr4esv7p2rM0pJWyo4Q85EyExt4ND+SVOs=;
+        b=PHi1lMaP6DJ14nweKwQZ98dt4zasR7P6wJF54ko8g8l3/7uVQVvN6I5eMHmut5PMyt
+         ta4Dskz5PNsyOR80K76EX/8MGEftwgybPOpMSqj2tJxUwdOfvU/Gt1uisFMJn9OrJAGE
+         B2M4/4Ej+3NcFO4q1Eexvbm7HFEyMQJYKs1MEA26Y0KF7a+ZzMzZxu+nhmomCxXBp4zA
+         YVm/fl+mq8FxuBrf8hsB0EZXvm2Zc4NkJqm21aqMB/96nS8fwitcTrZ1IpOQ8igHCB6+
+         PrxEJioUmvcfrjJOThbu/H7WdZZSADS9Pl1qc+wP/O0tnje+bz21U6XdKLHoL62FH66G
+         IM+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793561290; x=1794166090;
+        d=1e100.net; s=20260707; t=1793561292; x=1794166092;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=t/6UJdmTXHa5CFtPmZ35mg3YaxIUiqdjrGgBWpPFHWo=;
-        b=P7JtKtw41rKKwI4h6txlsO8T6lZ3FfqBzOWUOmQSTbeMF9C5X2pCXclOjsj3IRTy64
-         brjbVP8fPKi7QyDxRrnvLk4H7z1RTS4Nqp1edRDPIx8x1kMzxKqlfOcwZoRD7CXe9M+M
-         90LHwf0nlBoBycpiV8lqwLAm+eS3mw0cQ8kHdP7r8lgchf6f6QsmDaZ+vewQZ6CX42gJ
-         K88uklNyqWOEqVGOvugnB4crL4ppxju/VazxHhScG2zfVglfq/hgYyjehhCDy0RgLFx/
-         LOhVwYdTCHAUcgDuwv3t3+2pqCZAH3lFfzlFcg71hmKcGTOOJzKD72J/PkRjEJ8Kyrl7
-         +nuw==
-X-Gm-Message-State: APuU4Z/CuIPsCnxaliMdAovQwq1/Lg4mX0EVMCB2FK+YxUMvwpkSEuja
-	MohipPSwFGriUE/2GNqA/roG7qlPIva9LwyyzFuGErVx86j0/QriRTD+
-X-Gm-Gg: AYBFou0Tn9YurRdFOgLGcl7l7P+N8cpYOIERAtcqH+6VKDdkecw0abc37IA7GSEBZaA
-	OgI+oJN9nk1Doft39Od6Tnybim1KSQWAf80J5O1ntEg+JCFa0ze68Wcm9mPYpQ/igjufUhKZYNJ
-	gGrzRzwXnZavost6O5fv5zhYU1pesvZr6+xPuJ8lpMjkxp9sSuFMW+ndf/UN7vYlcwgW8WdOBVi
-	xRf2PI90GauUhg9NN7AoAJAJVn3HffCM6xt8ZtoJDJeG83E/exgUTkNIO8MbYFvRKwFUfx3aMdy
-	X/SLIDSDW934KyK0x7vKKzaaqWS//mQKBMSnYmnEYk+f4fNN9YoTQ7NNROSc9QashETzjNM1puf
-	Scl/Rjtk+AB9VKYXeyRRaiHiqOxxfMg0kz8EweYBFoq0tuUt9KincAL5CnPZXLWIglZBYpyxcsp
-	6WHUZbAceulOJpeATQiDmhokpoADl2TpvPcZaAqwXPRWLbEd7rMde5RmyvQMOqVqDE3ft8b5us6
-	TmXi4uB20Ixo18gab6uma0vhKstFctgxSldErM25fP4qLlVjMPylJxIhrPfDXJbfIBzcTF1NSAJ
-	FVSCuIY9dPquVm4SnMn0KvERurqdW/C3QO/xdpwhDsbHLWI1S3ZrBcXUgLAqgVdkZRLkQEprfQr
-	AuROMgYaEhA==
-X-Received: by 2002:a05:690c:c4e3:b0:8b0:cdf4:94ae with SMTP id 00721157ae682-8b2b65ade50mr58685557b3.3.1793561290282;
-        Sun, 01 Nov 2026 11:28:10 -0800 (PST)
+        bh=vUuHLakRNbr4esv7p2rM0pJWyo4Q85EyExt4ND+SVOs=;
+        b=iLrG5+UcFa6Q4GyR+piCO34CSxakyr1u0EsiXw+uXT4RrBTXmG1KmMenQU5dOFHo/J
+         Fhiw3O07CNXkzNTB9oC6Md6rEbqDs4wD36JLmCDVeaI7Qam70JTU6arjkRxtqTzOAkhX
+         8+wOqjrTAtQwJMQ8lK33hwsfcZTkOUzRdytRdlQtwaNr/TP/OG8WSbFazDqbvjQkMuTQ
+         q4UPyTuh3uXsCboKKBxJFZimfaUZPFDf2XSPTyXwIP3eIc+fGtX6qoHiyaurskw/spsb
+         nyLL//I19td1aV7hac+XbvdK/gmgwzbFltel5RgwHWDcCnxmT9ztSEkWUPBDqmKZUM0+
+         52WQ==
+X-Gm-Message-State: APuU4Z9kDm4GR12mdvlQZBC+DWXYboiohiXyY3hmNz2yeutGOEzngut3
+	Q6JOWug/gaTyQkCrGuNJa7Dc3wh6Hm0yrFiiwzNSZmZ1QBKLQfAT9eCL
+X-Gm-Gg: AYBFou39C0+jw+533sp4pei2YUkE9do6+noi5OkljI8CM0w7j/BpaUGBkVO2DgaTK3b
+	6m+aCBFAJDNVPQDesn0/e1t9m1XZMrLT7qgCD5I/Y02U6wsODe2mDWpjLD/BhThOfQnntbQRzAP
+	iYxUUXly2N3yQGCEtVF4gB+507wOF+7SZWRypc+f8JKjry8/FvYqsXuFA2UoIYRL58t9lIq+H2R
+	pYCyQrQyptB9iF4e+S5xKq24xCGY2G7Qlfmr2k1cNh1b78pUwxSMSu+xVb75HmF31obMIk24Om6
+	rSqhouTPJR29UjAgdIcuAkWDW42zWlTynQyF2uFJHwwa0Bc1SUlJ3IHEWcsSdoIcJLdA4f0AV9Z
+	SNuAN7thz7PhFILWCr3nTACmrGLq3o7NAlD+Pd8DMyOoLUZ+JgoSZFaVIDbSsXdTba1rhptzlk7
+	7pMKEuN1q7HNRUksl9FIvFJeJU1QLssDEBKYspdeG3OWIjCYxlPbhbFUfC9dRnwrBpdhZrd5juv
+	AVqlZan2P5CGrpz6tk5GnKGMoSFJdQlJOD3vQp4yf5xQ7W5b9sXHbEjfrGcZThRI/oXbNGBVrOJ
+	F9eXrwDjM5UlfXsxkIk2I+3/Z8e62zzkZIECidnua5Tat5CaQDGnL4b/5Q0eLXJS9VH+gUYQD6H
+	PO1XVIy69j7LiMidiLDWZ1rBAk0y+fNo=
+X-Received: by 2002:a05:690c:30a:b0:8b1:6e61:513 with SMTP id 00721157ae682-8b2b64382d1mr80228967b3.0.1793561292194;
+        Sun, 01 Nov 2026 11:28:12 -0800 (PST)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b2b719d2d5sm39894247b3.40.2026.11.01.11.28.09
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b2b6d3ba5bsm40482837b3.0.2026.11.01.11.28.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Nov 2026 11:28:09 -0800 (PST)
+        Sun, 01 Nov 2026 11:28:11 -0800 (PST)
 From: Matt Turner <mattst88@gmail.com>
-Date: Sun, 01 Nov 2026 14:28:05 -0500
-Subject: [PATCH v3 2/7] alpha/perf: add sysfs format and event attributes
+Date: Sun, 01 Nov 2026 14:28:06 -0500
+Subject: [PATCH v3 3/7] alpha/perf: clear PERF_HES_UPTODATE when an event
+ starts counting
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -94,7 +95,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261101-alpha-profileme-v3-2-92d511b5a044@gmail.com>
+Message-Id: <20261101-alpha-profileme-v3-3-92d511b5a044@gmail.com>
 References: <20261101-alpha-profileme-v3-0-92d511b5a044@gmail.com>
 In-Reply-To: <20261101-alpha-profileme-v3-0-92d511b5a044@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -109,89 +110,56 @@ Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-perf-users@vger.kernel.org, Matt Turner <mattst88@gmail.com>, 
  Peter Zijlstra <a.p.zijlstra@chello.nl>, Ingo Molnar <mingo@elte.hu>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2352; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=nsB8jInGhmdIwF4AteMUmNQCWwgxX1qv6DhmPNtskC4=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKeTzp6dmHz8k+MMTLrM16lTFlSqpJt2qJUWqzh+rNpb
- sB6Lpv7HR9ZGMS4GGaKKbLErVdkmdW2Y6nPaelfMHNYmUCGSIs0MAABCwNfbmJeqZGOkZ6ptqGe
- IZChYxQPkdNj0MgsLi5NLdJNKyhyyMsvSSzJzM8r1ssvSM0rSC/QS8tMK8nIyC8qTgUaoZeXWmL
- q6uhmZGhgYuloYeZk4Whq4uzsZOjk5ujo7OpkZGluYuBs6WjiamnOwMUpAHNN1jtGhncnG2dvu8
- LC+/31roxt6pf/BS7d7Fwwf/GdHbW7Vrk8S/3E8D9t6QTuY5HLdU6c5erhW7php+W9v1+rvwkUN
- Pd52Ncer+EDAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1692; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=bEa6cnf/NHGbPsC7PL/IhVePDwjtE880lWDMA14mV8w=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKeTzpqzXxf5wfjifN3lZpDysVDXp81fLXlTXn3qW/Mu
+ QJ1RfMPdnxkYRDjYpgppsgSt16RZVbbjqU+p6V/wcxhZQIZIi3SwAAELAx8uYl5pUY6Rnqm2oZ6
+ hkCGjlE8RE6PQSOzuLg0tUg3raDIIS+/JLEkMz+vWC+/IDWvIL1ALy0zrSQjI7+oOBVohF5eaom
+ pq6ObkaGBiaWjhZmThaOpibOzk6GTm6Ojs6uTkaW5iYGzpaOJq6U5AxenAMw1s94y/OHe7lSsdj
+ a1/LZQ24ddVcs/PP+xQ0tZ4YcRG0fe0sDlh8IY/qeIprfEJzSZ2fu9q597Z5uzuG7om/a8v1rFI
+ rMMnvx8xwYA
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-The Alpha PMU registers with no attribute groups, so the perf tool has no
-way to learn the raw config layout, and the PMU's own events can only be
-named as raw hex numbers.
+alpha_pmu_add() sets PERF_HES_UPTODATE and maybe_change_configuration()
+then programs and enables the counter, but nothing clears the flag until
+the first alpha_pmu_start(). In that window alpha_pmu_stop() with
+PERF_EF_UPDATE skips the count update, because the flag claims the count
+is current. Since the next reload rewrites the counter, everything
+counted since the event was added is lost.
 
-Describe the event field in format/event and export aliases for the four
-EV67 event types. mbox-replay has no generic hardware event, and can now
-be named as cpu/mbox-replay/.
+perf_adjust_freq_unthr_events() does this on the first tick
+after an event in frequency mode is scheduled in, which is the default
+for perf record, and it then sees no count to adjust the period with.
 
+Clear the flag where the event starts counting. alpha_pmu_add() cannot
+do it, since the event is not programmed until the PMU is enabled, and
+stopping it before then must not read the counter.
+
+Fixes: a4eaf7f14675 ("perf: Rework the PMU methods")
+Assisted-by: Claude:claude-opus-5-5
 Signed-off-by: Matt Turner <mattst88@gmail.com>
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/alpha/kernel/perf_event.c | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ arch/alpha/kernel/perf_event.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
-index 2d9383425357..70840c05d39b 100644
+index 70840c05d39b..ecec78c355cd 100644
 --- a/arch/alpha/kernel/perf_event.c
 +++ b/arch/alpha/kernel/perf_event.c
-@@ -212,6 +212,44 @@ static int ev67_raw_event_valid(u64 config)
- };
+@@ -456,8 +456,11 @@ static void maybe_change_configuration(struct cpu_hw_events *cpuc)
+ 			cpuc->current_idx[j] = idx;
+ 		}
  
- 
-+PMU_FORMAT_ATTR(event, "config:0-7");
-+
-+static struct attribute *ev67_format_attrs[] = {
-+	&format_attr_event.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group ev67_format_group = {
-+	.name = "format",
-+	.attrs = ev67_format_attrs,
-+};
-+
-+/* Values must match enum ev67_pmc_event_type. */
-+PMU_EVENT_ATTR_STRING(cycles, ev67_event_cycles, "event=0x01");
-+PMU_EVENT_ATTR_STRING(instructions, ev67_event_instructions, "event=0x02");
-+PMU_EVENT_ATTR_STRING(bcache-misses, ev67_event_bcache_misses, "event=0x03");
-+PMU_EVENT_ATTR_STRING(mbox-replay, ev67_event_mbox_replay, "event=0x04");
-+
-+static struct attribute *ev67_event_attrs[] = {
-+	&ev67_event_cycles.attr.attr,
-+	&ev67_event_instructions.attr.attr,
-+	&ev67_event_bcache_misses.attr.attr,
-+	&ev67_event_mbox_replay.attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group ev67_events_group = {
-+	.name = "events",
-+	.attrs = ev67_event_attrs,
-+};
-+
-+static const struct attribute_group *ev67_attr_groups[] = {
-+	&ev67_format_group,
-+	&ev67_events_group,
-+	NULL,
-+};
-+
-+
- static const struct alpha_pmu_t ev67_pmu = {
- 	.event_map = ev67_perfmon_event_map,
- 	.max_events = ARRAY_SIZE(ev67_perfmon_event_map),
-@@ -761,6 +799,7 @@ static struct pmu pmu = {
- 	.start		= alpha_pmu_start,
- 	.stop		= alpha_pmu_stop,
- 	.read		= alpha_pmu_read,
-+	.attr_groups	= ev67_attr_groups,
- 	.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
- };
- 
+-		if (!(hwc->state & PERF_HES_STOPPED))
++		if (!(hwc->state & PERF_HES_STOPPED)) {
++			/* The counter is live, so hwc->prev_count will go stale. */
++			hwc->state &= ~PERF_HES_UPTODATE;
+ 			cpuc->idx_mask |= (1<<cpuc->current_idx[j]);
++		}
+ 	}
+ 	cpuc->config = cpuc->event[0]->hw.config_base;
+ }
 
 -- 
 2.55.0
