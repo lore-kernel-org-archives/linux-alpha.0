@@ -1,89 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.178
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793561304;
-	b=kd2C77cJSseBQoVU9TJ6b76yoEBD1LaQYEmWPfXlFvul+oKp4XnKgwopAaaMPn8w/oFv
-	 +8QxpjCrWOuX9DR4i19x4d2Rpo7r5nT5nR7CBAba2MJKG7DEQ6AkOwBV7Rxy8Gj5FA7rM
-	 tCa+bN6P5uaMtAn3w8op3J6RSwrC3XvGgVltxgBS88e1e3bnFUExmm7RlTsjLxqBKphr8
-	 XJLSHlRHEf6BX8raqZ5+ck/E5AIjqDoIcTWY6iq1Zu3Gvo94PUHhNvCZOyhjSj4e3lAG9
-	 E2e1dFfio6NoHdH2d3WDqprwDD7BYoZu5MWZOLu2oFyrAt0xk+BzJXHbOPBDWkjO7lw==
+	t=1793571358;
+	b=veHfLDZGJU0MgoCpB5PsrNcLoLq2Y2PnYj0MYs3RCyPbVSw5HPn6zHMF1SJ0RpAL+p3l
+	 xRm6T/rISKcmLMThqn0s8suz+qgpyb97jeEkMiY0Hww4M4dYA31XBA6i2HXbzT6t4Q8rc
+	 80Bm5CLStEhejRfsNOB0qK+NJ7eoRpluBBWhwp0I/y3oj4SXhLEKSQ6K961oDIPiTM8CP
+	 bu8ipGDiETkUKAtlrw+FCkoh+2nmQTDTBZUoKLJ7BuiWexYaJ0x56oCz/SBvTYKW2M5j0
+	 BNHuU74Bc0uHzWcITYs4qhHIRhH7UaLownNQTF+QChsbLlIQ+B5bP72mrKt7GJkeYYA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793561304;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
-	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
-	 X-Developer-Key;
-	bh=4VWlDyarhGLs59ZmxOAL3pCox4wN1k2aQWsJ1VbQoyY=;
-	b=p2rMMFfbjoqttwnlMLpodths2xl9t6FcJne7fzhCmQ21pwmMBdbV+PWLNQDry6Y3jd+b
-	 0lWxZllSsnunrBop8GBAJFFQbGUBY/HnZEEHvShzOoW4zdyOAcekb6Xc6xFjRgRov8Oel
-	 3vC9KgyLDs/YrZRNQg1jFXUaOgIsoQ/DRf97KIwEP0gFQbyk87WTpQujEuhtl1w10QVIl
-	 GAgR1Emmc0pYqjboUXK2TuLFW9Pdm7m6OfsfkhvEK6WuwTJZHVu6xwLYo5omKTbo8G6IU
-	 +wtmPVZIu6HtVBcX6NJJrIhV6RxyF/wEkeip4s9lvrK3INGtOiW0H4M0MsnF++asTAA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793571358;
+	h=Received:DKIM-Signature:Received:Content-Type:MIME-Version:
+	 Content-Transfer-Encoding:Subject:From:Message-Id:Date:References:
+	 In-Reply-To:To:Cc;
+	bh=22yhHEiHUWVm81OxkB+6UNZ5/HC7Jn4HF5eln+k49OY=;
+	b=K8EcHu6lVqonfolAhZwajlCpfHKnOWLpTdx+8cnsx6DwP/WmXhIpjngGUCtFxo/grNxy
+	 wDylyBCRZoU2tCI4jdaEkOpE8sTpJ4DKCfW4RTMbzUrA8Y5t2qLv9CBOti1fvdQeohIoq
+	 EFVmT5GlSzOT8UpVUoD6h7oITLDJu7hACScJYUl3CrAoQ3HXaua+X5zS991BZggtMQtSx
+	 gW5D47JwnwMfLfFhoTH2FFukBFHYuXkfNR1P/RoJXe5h+0pqGmg5YUUISHwF91gqLjdHr
+	 D0pDeqwy8M/ZFoMRwrWIm4jtJsi6zKgbzpe6H6xrwsjpsURIlHqVs+Nbg7ITtCi14Xg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=S2kisjCd;
-	arc=none smtp.remote-ip=209.85.128.178
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AXmvtNOq;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5AE960A2625
-	for <linux-alpha@vger.kernel.org>; Sun,  1 Nov 2026 19:28:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A5AE960A2625
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BACD760A262D;
+	Sun,  1 Nov 2026 22:15:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=S2kisjCd
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-8ab38a051aaso21907207b3.3
-        for <linux-alpha@vger.kernel.org>; Sun, 01 Nov 2026 11:28:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793561303; x=1794166103; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=4VWlDyarhGLs59ZmxOAL3pCox4wN1k2aQWsJ1VbQoyY=;
-        b=S2kisjCdmPZ5bwqVbfQcLsUDTCaG3of2QvgAz2fQy00csrpt96ES9g8VW1DI/+P/XD
-         1VxsxqI2E/no3LfUiMzQa9ol5B45jD3xv6yhW3o3dIqPmqEQS6wDcBCa2rpKwvegQDNv
-         kB9b6UKhAdnZuuHRX46fHTpInntvYuJAykStCZWn+y/WP2ngtfSPPf2EMN/UfcJUKqFR
-         eenkhEH/H1ohvyUbNh+6sDN3jbJdZxS8CNGUyRmKhZS24OEQ6MtzwZ7qMpkra01WMNsW
-         muhvSyJFvX2Vn2yroRhn2AZIcGi3HFHDFZrXwB4T3foL/7Vv4Njx+7kCTbc3SfVdmVpZ
-         CL/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793561303; x=1794166103;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=4VWlDyarhGLs59ZmxOAL3pCox4wN1k2aQWsJ1VbQoyY=;
-        b=gMecEoACWQsHs81x83xZoRjDOray7+VYFZOaxK/L5qtI28j7rslXcFZy9/5EBxuEv3
-         8DD6PrflzsAunrtMCHSMmos42CVAI5OfcEMQLsI6dBrwk7SRuErh/HKEbj8Ppd8Y/jBq
-         H2fwIhLBocjWEVGvu4EtMNnkyIOx9jPjmgzr8alu08RbwNurvI6Ukrw2DTe+xNUSL+nL
-         DgBGztVUTcF75c9ARG3wq7KIOTjOZ08MS6HJPw6xd3t0dAX1Z+GPclejlKOXkyzHWGlU
-         Orv+9AfV0GVVFcjB1AzSWT3Tl5qiSNCfBLlsZuR3QXYepp8lPhsXQuoxRBfbvGscvtyi
-         oFSw==
-X-Gm-Message-State: APuU4Z80EPXY+pMejYNufk3NddA5yUn+pPG5HUuYsx9Xrjj/+hHSMrOo
-	OppHPwOx4BKLPw/VrX3y/EWYsPJZYIj2QLjlJzr/UArSlen0x3NRQnU2
-X-Gm-Gg: AYBFou3BHo7ib14pnfHl+ji2ADt08a45gJsnCLLANAmcG9Epiqpnbg6ni/3QTxzNssO
-	n7dxQPyFuQqpXXIHaMPVYpcHX1sVTevz6+6A36L5DaH9IFbi0h/3u+n8hlBYvgdhXH5YBcTFlve
-	t19V88HTgSF5FcAB6orkZNnEAMGc/o/lVlrhW5wmV0+GZRbjMMLi5ciPxc5MX/u+6R9wAPEy4Q4
-	+fT6iHbDlZK9a8i5Cl85xYMK0/JrbcLxUnxQk/157QBfWYlgC1UP+g0CKmMm2Sc+l1j5bDJJsvH
-	ZLJc/G6qgL/c3K8OJW+3dR43h4KuZd0p9qdHwv0bpMYcZV9HQtrzHiNvJKLttEqO3VHgFJeQoD+
-	GZS7C4pNhvO5ewc2+x807Nss5QeERPUI3m4jMla2Eh6ljwRdyGIk/7+p+8fGH3CtizD7dBeQV7Y
-	4D+unzR23C2HtJcFMsOxPBO6qiVwo06yx8VB/ZTtol6+Q3S73AnTMv9eBPXFuaHAES13bD8JuLF
-	MFIJtyUFS9KL/MLViaq0VJWS6nG7rxiX/kaG5CGF9yfZnTt0Ec/B4eHXd0bnLPyamqsCL/8l1Xl
-	AOjTBVex9cmLv/aiguAYlQ0edhj9zA86I+kuzR0P61eyddMIwcNDQbfPWL/nsHdM7pcx2TVZpbj
-	2SmRVjuOkfw==
-X-Received: by 2002:a05:690c:c513:b0:8b0:a857:654f with SMTP id 00721157ae682-8b2b67b73cemr51969817b3.63.1793561302558;
-        Sun, 01 Nov 2026 11:28:22 -0800 (PST)
-Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b2b7125371sm39969497b3.11.2026.11.01.11.28.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Nov 2026 11:28:21 -0800 (PST)
-From: Matt Turner <mattst88@gmail.com>
-Date: Sun, 01 Nov 2026 14:28:10 -0500
-Subject: [PATCH v3 7/7] alpha/perf: optionally randomize the ProfileMe
- sampling interval
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=AXmvtNOq
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BEAA1F01578;
+	Sun,  1 Nov 2026 22:15:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793571357;
+	bh=22yhHEiHUWVm81OxkB+6UNZ5/HC7Jn4HF5eln+k49OY=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc;
+	b=AXmvtNOqtLjopWWCQdkY1kf58r2tsshOv49SBa++XWevEZbozepPlSlFvrN1dcXpb
+	 9cANlomEUPj0ZBiZL28+j2QgAXsMv3s2laIiduoGI+ce38Y8h1u9SB0tbHS5wH5wGm
+	 +MC9Oi6Swj6nPVmYgaYL1CAKQ9ojJ66d0jdnEvjYS8ncAFvCnZtFlP7tikcjqtWDG5
+	 Nh59YfDcc4DI14trFqfgqkMwwd0YKiYIlqlolp6obAZrN5CV473iUawTOR6ZCcdra9
+	 V8ouXGtGQ2ZtYTopFX4ZriYxCryYodGD8Ier/J+MdgFsg9Z8lfVl/h7OVFyYY5TBQC
+	 LvCqYqw3qq3fA==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 7D5B538003B8;
+	Sun,  1 Nov 2026 22:15:57 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -93,156 +53,95 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261101-alpha-profileme-v3-7-92d511b5a044@gmail.com>
-References: <20261101-alpha-profileme-v3-0-92d511b5a044@gmail.com>
-In-Reply-To: <20261101-alpha-profileme-v3-0-92d511b5a044@gmail.com>
-To: Richard Henderson <richard.henderson@linaro.org>, 
- Magnus Lindholm <linmag7@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
- Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, 
- Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
- Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
- Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>, 
- Adrian Hunter <adrian.hunter@intel.com>, 
- James Clark <james.clark@linaro.org>, Oleg Nesterov <oleg@redhat.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-perf-users@vger.kernel.org, Matt Turner <mattst88@gmail.com>, 
- Peter Zijlstra <a.p.zijlstra@chello.nl>, Ingo Molnar <mingo@elte.hu>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4503; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=L90ZL0BUtYXerAHuGfkXQ/FfilBgYa9DEbvkOqQGpVc=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLKeTzp6Nsr/TVdmxomMa/Zhbo8CJsioC+99MetI3pnAH
- zm2pkZtHR9ZGMS4GGaKKbLErVdkmdW2Y6nPaelfMHNYmUCGSIs0MAABCwNfbmJeqZGOkZ6ptqGe
- IZChYxQPkdNj0MgsLi5NLdJNKyhyyMsvSSzJzM8r1ssvSM0rSC/QS8tMK8nIyC8qTgUaoZeXWmL
- q6uhmZGhgYuloYeZk4Whq4uzsZOjk5ujo7OpkZGluYuBs6WjiamnOwMUpAHPNbWeG/76q1WU/Ih
- JfM/zbmmPJ5Cb8KXSDcqG2147DN559P+FT/4Xhf9T/DXr2ur6nEtU4eEO1DS4X6TQtUZF4z5P66
- quYVIY/MwA=
-X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
- fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 00/12] mm: make userland page table freeing RCU-safe
+From: patchwork-bot+linux-riscv@kernel.org
+Message-Id: 
+ <179357135604.2624073.12750471724213497880.git-patchwork-notify@kernel.org>
+Date: Sun, 01 Nov 2026 22:15:56 +0000
+References: <20260925-rcu-pagetable-freeing-v5-0-31e91065fea4@kernel.org>
+In-Reply-To: <20260925-rcu-pagetable-freeing-v5-0-31e91065fea4@kernel.org>
+To: Lorenzo Stoakes (ARM) <ljs@kernel.org>
+Cc: linux-riscv@lists.infradead.org, akpm@linux-foundation.org,
+ david@kernel.org, ziy@nvidia.com, baolin.wang@linux.alibaba.com,
+ liam@infradead.org, nico.pache@linux.dev, ryan.roberts@arm.com,
+ dev.jain@arm.com, baohua@kernel.org, lance.yang@linux.dev,
+ usama.arif@linux.dev, kas@kernel.org, guoren@kernel.org, bcain@kernel.org,
+ geert@linux-m68k.org, dinguyen@kernel.org, schuster.simon@siemens-energy.com,
+ jonas@southpole.se, stefan.kristiansson@saunalahti.fi, shorne@gmail.com,
+ dalias@libc.org, glaubitz@physik.fu-berlin.de, pjw@kernel.org,
+ palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr,
+ linux@armlinux.org.uk, vgupta@kernel.org, monstr@monstr.eu, chris@zankel.net,
+ jcmvbkbc@gmail.com, will@kernel.org, aneesh.kumar@kernel.org,
+ npiggin@gmail.com, peterz@infradead.org, davem@davemloft.net,
+ andreas@gaisler.com, richard.henderson@linaro.org, mattst88@gmail.com,
+ linmag7@gmail.com, catalin.marinas@arm.com, mark.rutland@arm.com,
+ chenhuacai@kernel.org, kernel@xen0n.name, tsbogend@alpha.franken.de,
+ James.Bottomley@HansenPartnership.com, deller@gmx.de, maddy@linux.ibm.com,
+ mpe@ellerman.id.au, chleroy@kernel.org, hca@linux.ibm.com, gor@linux.ibm.com,
+ agordeev@linux.ibm.com, borntraeger@linux.ibm.com, svens@linux.ibm.com,
+ richard@nod.at, anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
+ tglx@kernel.org, mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+ x86@kernel.org, hpa@zytor.com, arnd@arndb.de, vbabka@kernel.org,
+ rppt@kernel.org, surenb@google.com, mhocko@suse.com, jgg@ziepe.ca,
+ jhubbard@nvidia.com, peterx@redhat.com, ysato@users.sourceforge.jp,
+ shakeel.butt@linux.dev, corbet@lwn.net, rdunlap@infradead.org,
+ linux-mm@kvack.org, linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org,
+ linux-hexagon@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+ linux-openrisc@vger.kernel.org, linux-sh@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-snps-arc@lists.infradead.org,
+ linux-arch@vger.kernel.org, sparclinux@vger.kernel.org,
+ linux-alpha@vger.kernel.org, loongarch@lists.linux.dev,
+ linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+ linux-um@lists.infradead.org, hughd@google.com, qi.zheng@linux.dev,
+ linux-doc@vger.kernel.org, gerg@linux-m68k.org
 
-A fixed sampling interval can phase-lock with a loop whose length divides
-it, so that the same few instructions are profiled over and over while
-the rest of the loop is never seen. DCPI avoided this by randomizing the
-interval.
+Hello:
 
-Add a randomize config bit that varies each interval by up to 1/16 of
-the period in either direction. Only ProfileMe events accept it, since
-Aggregate mode samples already land a variable distance from the
-instruction that overflowed. Counts are unaffected, because prev_count
-already records the value written to the counter. The jitter
-is computed with mul_u64_u32_shr() and the sum saturates, so that a
-period beyond 32 bits cannot overflow.
+This series was applied to riscv/linux.git (fixes)
+by Andrew Morton <akpm@linux-foundation.org>:
 
-The jitter comes from a per-CPU prandom state rather than
-get_random_u32_below(), which takes the batched entropy local lock and
-triggers an invalid wait context report from lockdep in the PMI.
+On Fri, 25 Sep 2026 21:09:35 +0100 you wrote:
+> The majority of architectures in the kernel defer page table freeing until
+> an RCU grace period has elapsed, this series converts all remaining
+> architectures to do so too and eliminates CONFIG_MMU_GATHER_RCU_TABLE_FREE
+> altogether.
+> 
+> This is important because it enables safe lockless page table walking under
+> RCU alone.
+> 
+> [...]
 
-Signed-off-by: Matt Turner <mattst88@gmail.com>
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
----
- arch/alpha/kernel/perf_event.c | 37 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 36 insertions(+), 1 deletion(-)
+Here is the summary with links:
+  - [v5,01/12] mm/khugepaged: deposit a newly allocated page table on collapse
+    https://git.kernel.org/riscv/c/eb823057e092
+  - [v5,02/12] mm: enable MMU_GATHER_RCU_TABLE_FREE for most 2-level architectures
+    https://git.kernel.org/riscv/c/d22254fd57f0
+  - [v5,03/12] mm: enable MMU_GATHER_RCU_TABLE_FREE for MMU riscv
+    https://git.kernel.org/riscv/c/5ae75414416f
+  - [v5,04/12] mm: enable MMU_GATHER_RCU_TABLE_FREE for MMU arm
+    https://git.kernel.org/riscv/c/8e645d98fb78
+  - [v5,05/12] mm: enable MMU_GATHER_RCU_TABLE_FREE for arc, microblaze, xtensa
+    https://git.kernel.org/riscv/c/799bd3c4be5f
+  - [v5,06/12] mm: enable MMU_GATHER_RCU_TABLE_FREE for sparc64
+    https://git.kernel.org/riscv/c/461a24a81215
+  - [v5,07/12] mm: enable MMU_GATHER_RCU_TABLE_FREE for m68k-coldfire
+    https://git.kernel.org/riscv/c/ccdaaf591664
+  - [v5,08/12] mm: enable MMU_GATHER_RCU_TABLE_FREE for sh-X2
+    https://git.kernel.org/riscv/c/a72df945113a
+  - [v5,09/12] mm: enable MMU_GATHER_RCU_TABLE_FREE for m68k-motorola
+    https://git.kernel.org/riscv/c/0f5cbeebe00e
+  - [v5,10/12] mm: enable MMU_GATHER_RCU_TABLE_FREE for sparc32
+    https://git.kernel.org/riscv/c/35dd856770f3
+  - [v5,11/12] mm: userland pgtable freeing is RCU-safe now, remove leftover bits
+    https://git.kernel.org/riscv/c/35e340a47888
+  - [v5,12/12] mm: change the contract for free_pgtables(), update docs
+    https://git.kernel.org/riscv/c/a5c0a39d0e57
 
-diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
-index a816a18036b7..037182b4f8c4 100644
---- a/arch/alpha/kernel/perf_event.c
-+++ b/arch/alpha/kernel/perf_event.c
-@@ -16,6 +16,9 @@
- #include <linux/kdebug.h>
- #include <linux/mutex.h>
- #include <linux/init.h>
-+#include <linux/math64.h>
-+#include <linux/overflow.h>
-+#include <linux/prandom.h>
- 
- #include <asm/hwrpb.h>
- #include <linux/atomic.h>
-@@ -33,9 +36,11 @@
- /* Layout of attr.config for PERF_TYPE_RAW events; see format/ in sysfs. */
- #define ALPHA_PERF_CONFIG_EVENT		0xffULL
- #define ALPHA_PERF_CONFIG_PROFILEME	BIT_ULL(8)
-+#define ALPHA_PERF_CONFIG_RANDOMIZE	BIT_ULL(9)
- 
- /* hw_perf_event.flags */
- #define ALPHA_PERF_FLAG_PROFILEME	0x1
-+#define ALPHA_PERF_FLAG_RANDOMIZE	0x2
- 
- /* For tracking PMCs and the hw events they monitor on each CPU. */
- struct cpu_hw_events {
-@@ -59,6 +64,9 @@ struct cpu_hw_events {
- };
- DEFINE_PER_CPU(struct cpu_hw_events, cpu_hw_events);
- 
-+/* For randomizing sample intervals from the PMI, where locks are not allowed. */
-+static DEFINE_PER_CPU(struct rnd_state, alpha_perf_rnd);
-+
- 
- 
- /*
-@@ -246,10 +254,12 @@ static int ev67_raw_event_valid(u64 config)
- 
- PMU_FORMAT_ATTR(event, "config:0-7");
- PMU_FORMAT_ATTR(profileme, "config:8");
-+PMU_FORMAT_ATTR(randomize, "config:9");
- 
- static struct attribute *ev67_format_attrs[] = {
- 	&format_attr_event.attr,
- 	&format_attr_profileme.attr,
-+	&format_attr_randomize.attr,
- 	NULL,
- };
- 
-@@ -384,6 +394,22 @@ static int alpha_perf_event_set_period(struct perf_event *event,
- 		ret = 1;
- 	}
- 
-+	/*
-+	 * Vary each new interval by up to 1/16 of the period either way, so
-+	 * the samples cannot phase-lock with a loop whose length divides the
-+	 * period. The count stays exact because prev_count records the value
-+	 * written.
-+	 */
-+	if (ret && (hwc->flags & ALPHA_PERF_FLAG_RANDOMIZE) && period >= 8) {
-+		long jitter = period / 8;
-+		u32 r = prandom_u32_state(this_cpu_ptr(&alpha_perf_rnd));
-+		long offset = mul_u64_u32_shr(jitter, r, 32) - jitter / 2;
-+
-+		if (check_add_overflow(left, offset, &left))
-+			left = LONG_MAX;
-+		local64_set(&hwc->period_left, left);
-+	}
-+
- 	/*
- 	 * Hardware restrictions require that the counters must not be
- 	 * written with values that are too close to the maximum period.
-@@ -750,7 +776,8 @@ static int __hw_perf_event_init(struct perf_event *event)
- 		return -EOPNOTSUPP;
- 	} else if (attr->type == PERF_TYPE_RAW) {
- 		if (attr->config & ~(ALPHA_PERF_CONFIG_EVENT |
--				     ALPHA_PERF_CONFIG_PROFILEME))
-+				     ALPHA_PERF_CONFIG_PROFILEME |
-+				     ALPHA_PERF_CONFIG_RANDOMIZE))
- 			return -EINVAL;
- 		ev = attr->config & ALPHA_PERF_CONFIG_EVENT;
- 		if (!alpha_pmu->raw_event_valid(ev))
-@@ -775,6 +802,14 @@ static int __hw_perf_event_init(struct perf_event *event)
- 		return -EINVAL;
- 	hwc->flags = profileme ? ALPHA_PERF_FLAG_PROFILEME : 0;
- 
-+	if (attr->type == PERF_TYPE_RAW &&
-+	    (attr->config & ALPHA_PERF_CONFIG_RANDOMIZE)) {
-+		if (!profileme)
-+			return -EINVAL;
-+		prandom_init_once(&alpha_perf_rnd);
-+		hwc->flags |= ALPHA_PERF_FLAG_RANDOMIZE;
-+	}
-+
- 	/*
- 	 * We place the event type in event_base here and leave calculation
- 	 * of the codes to programme the PMU for alpha_pmu_enable() because
-
+You are awesome, thank you!
 -- 
-2.55.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
