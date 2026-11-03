@@ -1,102 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.169
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.179
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793737981;
-	b=lAjlIxyoK7ngCNSH7JdFe7WHksQm/Aik8/l0xJ1EH97bh4D4+R4p/iYxEo/Z1AhsRZBZ
-	 e/a+LS5BrIj8nOcy0wPLH4AiVpgWEadI4lsynn/pR00EUANnLO7DWVBg+Bj3yWT0fCIzI
-	 HlmHn/6EfZSzIGk3JJQt6kZPcZaHLbeyGkVsZlgLVsfU2y25TcSr/f5u9yMz19H/LIwke
-	 1R/T5cXo30bUtgZVF60RaP/McpNDabHb3l8JxUhFBfWIQ11uQS0Lb01jlpd+7M5G54GxR
-	 HsCgxgH30Pu185raDp1ePT8/KTuopahAK7lH/Qxj5SpvOvZZ+Iga0uFkhmX6LYeyCPg==
+	t=1793738176;
+	b=EoNqOEVcSGFuYZSraKajC8LHV7+c6W/8AWa6nVyD/8vp1/Fcc7EV5Z3u7t8VFKZKQCHe
+	 1KdXFuDgyy9CRN5BXNWQhVgyqxLGPexULMU0osMjI3ADy2r7uktoPtq2siZm5EXGmMIYo
+	 YczPI0UKhRWgeb7JxwOyq0HgL4esnPKD9N3dtJ7Mo5hwnT2xVy804ZR2Edlh/RbuNbVLd
+	 Sx8uyKGrxk8NkYpnyWxYXScAXNIcJ3ckd7EVhugZrGLfem29dxWuVXqgxIglLRhu9Ycrj
+	 GqgOBzmgesrdI+LeKV65MQFznx+a9fTHCLctEGUAdGB3e+SZo/eM9YC2JWb+LPaYf7g==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793737981;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793738176;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
 	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
 	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=gg+W2EgP56N1Sf6e0W1B3Tc564yhByMeGofGsIPeu+U=;
-	b=dXegZtIZ3nGTO9ycBfI//F1fHvR94CoMdd7aRuB1vAzl/UsSPQVASVO65CK5+lHD2qVc
-	 YY18mP+ieh0L5ff9lo5w39Zxwt1kM6d9UsostXqZi9g/5HpHRELjnSSBnaWbfck4429Lw
-	 kkTWONmKLShc2QkR5tSpp0C23RYE54Kqk6rw9fryMWR5GhP5IFHoEl26WGMRwU6J6jHS9
-	 W7RCpOCZyk/1YWT2JSYsxWS3Ou4b/HKjmzDrgoZhVlZb0wqE+m0fBm+Q97BofYeo5e7jN
-	 w9/FCjUj4gC11B31nxe5u4DvWpATm7tcx3bjLnAJK0zkTH0EVbkZBCyKm0W3ttwDjNg==
+	bh=xQ4+oRgLtbqlKeiqs+JELHHN3xsV9CKXX0CLSPpUZjo=;
+	b=OvYLt+Ro/Js3uWYoJJ2qfcsjuPs39fd+E5dWXt1R3xs+Sj6hh6u605ZEKeilU6g+mZZX
+	 SZFwARxpu6C01cE9ES2fM6U14T+GfZOpLc5cz6odvBy24oh0oSiUsKXb13nvOt3aZQDZd
+	 4Jy78HTLdseKsUueDNP32K0NMyLJc30k1XExmV8GxWtVOKLhLp1bB2YtKZWWonOotU9nq
+	 p4P5uqJV/EldzvekT3vBT3Ef0ORBtq96krRwYJ0hr75CD2BEdoffao/W+WOSe2MBM0x3N
+	 ffSQhHKTP6VbCLOS6xkU3I04JMEdZBVZOCCiHyEaSMrl2L3EkGVcUwKTVE1R0yo0gqQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Jm9h17sU;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.169
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Bf9JONb3;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.179
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29851606A31B
-	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 20:33:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 29851606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A1E8606A324
+	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 20:36:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7A1E8606A324
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Jm9h17sU
-Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-3ab3dd966e1so271111fa.2
-        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 12:33:01 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793737979; cv=none;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Bf9JONb3
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3ab30b3212aso408521fa.0
+        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 12:36:16 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793738175; cv=none;
         d=google.com; s=arc-20260327;
-        b=OMz2a3KjIbCU/lFxnHHOaPsrzXPi1F1+ZI49F+ux/BrNN/hqiogMpe0kCX/U+NFlkn
-         BBMDpaQ2n9lP5CjjiDiUxur+qd0bsPlf7tNoqeBsGzyx7SXouO1n6M3Wvm27jhB/6I85
-         FkszbE8XQ1WB7qGyRTh7k26eQwidlRg9Llg7xFqxZReQtowa2NrRrv0Yqqaok2JRHzpl
-         jA46EzwxhOrS7ICcG8/rRFGfErZUibgArP3/yIRlr2bV6ICu7muhTpS3N+44FGBSs0Yn
-         WVfu10lc+x09N9/vzSkhkTqrn5MddQgyzZjA5JwHH4j/VrRWtQSzkRid/oi8qjhBDfWy
-         lIAg==
+        b=CxKJ6PXynZDOUgRh1YEpbO5JvMo5u+3asyxzJgVNUI8bVr1Eclp/qCHNN/LkJ5Cv9p
+         1mPQXN7ELk9hrGLnjkNYqjPocLAKOsAxaOKttfwVrU3eD0ym+lbAmb3LKYmYBWm9kkN6
+         cQw7zNpSB2tiKMvo83dLciQ0hAb7LqtqyH6bFFOvn7WrzCWP0FkR6+hcf2P0i+Lz7V49
+         YawT7Of80mWfWMfRPnrpYtMlZQ9XQhn+19ZlgiYQIbzI576RqzapRd3R7+I/z9+SBF4V
+         jTv+uIonHopPFDMMT9x3ELoor3O5RBJFYj48I5Cn46TP4/VQuXi8O7pgupz2wV/tfD+Z
+         xjOQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=gg+W2EgP56N1Sf6e0W1B3Tc564yhByMeGofGsIPeu+U=;
-        fh=HYmIV3qT9YdpWrCgGRO/knowVcaOS9hRH4Nr4Ki3zbo=;
-        b=ZWdOuT3aKiY7ja+hhJR1ClZlVoGLY2OAfT/UzY8GYJ+5D0B3lb1O5wWsZDBh87yr9R
-         HwrmUQ2mKJowFqUquC7FeHZYw6fnmucH2Sxm3pVhdZNBqB+4ACXQmikj5MydU3rUkovJ
-         bEJ6DsB46Ul0gpvnevBZSX7JzuH3Y0UrIFBFXHdHXU7GPMmj4jLyquSARtZtBUlloD1L
-         h3QH12o6SxOIOqo35pQauc9fuLYlTguYgHzAtU4nsPJGWyxE/JMCMg1+jkTcR3U8e0Ny
-         pnSUSF+Qiz4NMNWy3vID3I19SFRpelIdXQ0PIluCvoSMwreSJJKbBJkKRH2iCcouYnsf
-         uLcQ==;
+        bh=xQ4+oRgLtbqlKeiqs+JELHHN3xsV9CKXX0CLSPpUZjo=;
+        fh=acSpPAIRQz0v0aBTB9hzD7qXSuMYSZCOaTthWTY7j8M=;
+        b=NXE3Ij/GtFw9V0FUzQbI4hYwC9OsSekwuTzDTkWl3+OTrYEbClF8Gz55w57uNOKBVD
+         wsqxRmfpWILqoe0t+Kd32YotJgi/tvG1qTjV3fiaInrneFOlmTE2KndB9fR3tOkuiFI1
+         XWjWG9X0WGYNlYx86t3piyfHzxqykhE0cVsn8Bp0tEyBQLZorE0IV8c09W2i2ftHL4p+
+         tWjMi6oC/EK1ptO68Sh+igXs0NPkEYzklQFqfiHtIobtRtsJFrzgR0FcuadjAyyBTWDq
+         2UHzEhsk+yrBYZRI7FhL1jtQ70xxNE2/eh+dl487+woSEfXABzdnEcQkpB9Gp1bFDZTi
+         t07A==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793737979; x=1794342779; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793738175; x=1794342975; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=gg+W2EgP56N1Sf6e0W1B3Tc564yhByMeGofGsIPeu+U=;
-        b=Jm9h17sUzBa0J1wZjuoUGLG8nXwDfKaiZdnwQV8i0Z5rIyLWtnFizG54Mb8VhuEFNX
-         rW7Y4rc1FmE2eQGibXhlfFcLCv/cANTCjYmEA3X0qB/wSffc+Jue8m0ZrTj91g/ysaH3
-         II453nGlC1agps4Kl22gBYgtJAmrJewCpfylTLwG8ckuEdaqaCxeknDvLnvo8KkYqMMr
-         oN1Hk4uuEJ4jQ2j8NVNpkyQEC2uRRabXtMqJv3w2Gpxh7olpRi4CGgDHr79l4gcpAzUT
-         M7UJMSMiGL6ExHwGMnOskz1O2ZQopyzLk9ZiQ+5rpbFdRZFhlLgNMm/Pm5gCb6nLX0Gh
-         Mdng==
+        bh=xQ4+oRgLtbqlKeiqs+JELHHN3xsV9CKXX0CLSPpUZjo=;
+        b=Bf9JONb3tnHnffKYegeTecqFiyDWbdgWPTHUTayiSdHMFN5ahHLEdrlOc4Ka2yqU16
+         r0wPdQz5WWPa2G8gHOqWH8WQAr8mDq1kdwkoPYPNgpyUTKN0ONz51fv/I+1MVfySyxip
+         tC3LkYQD2rm+4thrZvujp/3VARnFED+6alYiLfHH1AlxX2CrBTURgD8BuzlE30WHqMks
+         3jpHP549hG6Q/+M9EffK4JCNFIsFomDb+6hivIi/Kl9BWD3Tw/6FKwk/0A6TvPGE9HlW
+         Dn4vT0JDBF7X158LdSpAemHTLXG1PUX0fanexjTn54/EW+UTS3TP74uiomxJHa2uLc2T
+         mdFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793737979; x=1794342779;
+        d=1e100.net; s=20260707; t=1793738175; x=1794342975;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=gg+W2EgP56N1Sf6e0W1B3Tc564yhByMeGofGsIPeu+U=;
-        b=X2WwchVF+00ztmsXbx4zjsRzY02yIpdlru0uYsMArldWHKyqoyE3iW43wdhhEsQe9V
-         IOHrhJdamsslWi2wuJlallnJzV+/2oTOBJF8KtLd6yoNE6ZM0q1owYbp2j2eS6hg21M1
-         yxkeVLIf9YuSqRzmeDXdxj5ByGwnTNB4+/pgN5lndE5IsZC6AFwXO+VZ7VoWczUWb7A7
-         NTvLF8Z8iOFxV698tx0Gaozx+LAzegzODQCc8Zmw1cs1VWOG7UwdHI6I1YU2Qt6SHTuz
-         4fpG5JfLk/YHcXLikPrxc+7fPad06HbdBmFacKKagR2rHxjUBz8tmM/dQbCqQJrD8Wxg
-         Et8w==
-X-Forwarded-Encrypted: i=1; AKwUvByK8SgDjbwfHf09ef/+MUD176z687g+FnShM1qaUmYW6Gyeg+XNMWL8opwCKYg2UBChWFdTKJS9co1rfw==@vger.kernel.org
-X-Gm-Message-State: APuU4Z9gSx/pN3x/Em053llISrlgyaSzxvlCJISiRMtPrp63EjZMHZqG
-	LT1gSjT8oE112BOn+4EJWBwwSkJvnimiFOOaa7otiqDtvWBp+wE6mLezrK5B08ETmeixHKvklyF
-	GVmptddAMc6BRnUcIcIJIPtXWxaQUg9E=
-X-Gm-Gg: AYBFou29M96RkQAOyw8cDZwWnNRw5Zo61gg+/E7ix0xzalwsaVwZdtCehEfNYVDbgcb
-	P+jE65dUk4wl8C4fI1mYl/+mCMLr1iTOab3z23cRi1XTFiga/DtdZqE1KugMXbjvmyLcFi4yfBe
-	ZDPf5UGXhFuWqeHOV4N6B1XBBrH4GmT/9WWwqiw5hGzwGUOU2cBnpXlFxeUx8xUH8uoQxv9Gv82
-	N+AGazCHjOa0cEdq71tyVL5lWx2B1plud4+B0aX56umX5z1Ozxpd9aHcSd6cU5EMaXDZqbhiWkw
-	a6ay8gIH4ERxyom7ujxyck5egPYUy0r8TvJg8ngy1E1yZ9E8GgKmKBUzYmpHf3xi+B/PF8uHsZR
-	eS0LzB5MlReJJTVIEZw50aJtI1Czt7JMMIctG/t0Gc+oC/0Ig6jwbM0S8OLP5Wu4f2nzbMjpeHi
-	c8J3HZ0tcfU+m+Fxqyp48G8NTq2nfLwlOeduQTBBphO+WFT/elLiprk+ZPVqm4UpcSdcSuupe06
-	Q==
-X-Received: by 2002:a05:651c:a0cf:10b0:3a6:58fb:8540 with SMTP id
- 38308e7fff4ca-3acb7b2ae3fmr23751711fa.19.1793737979205; Tue, 03 Nov 2026
- 12:32:59 -0800 (PST)
+        bh=xQ4+oRgLtbqlKeiqs+JELHHN3xsV9CKXX0CLSPpUZjo=;
+        b=pgR8JrD5iKvm45Z+3NQiX2y8joDZKUmZNHYqJM93uYg0/VbvFZh2ZZmXGe10Ba/tzG
+         mK+TJHFrKKMRyP2e1mR9XHjsMwZRrZUhLnxy2FMm1EqkDeHNXEQiyibUVUQGteMZYG1z
+         1lM327L72NS8EYT/DpBQXajqgHLpnGLLraXKp8aT6GLXY6LgHG50ISVgrgLmnqGCoyLq
+         yzsz1LYwYIHZ7qWZdAfYt/jAk6D+eW1f43hKI31LvcN+kloSYUqfxCo6qLyT349l52n+
+         QEVeFPnYzZEgm8MqG12piZRH89uEhVmrlP8LNW9SwZDg0a1b03+tJpgIO3C6WSMTcdon
+         hNUQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzJQ8JnK/NYgp02T512z9nYnWOdQSkUcAs98MY3tplKPJVDxphaqHo4P8OcMa8WeUsJKtE+DiiHE0iPnA==@vger.kernel.org
+X-Gm-Message-State: APuU4Z/Uv4aMAwOMPuZSZXEg9E5pdFy4nX/t9TIcLDqKi5LcV4bfDxMD
+	yBEeP5FICR4W7/E7FNqk0lJ9AffPxHeAxwmpdmRM6qUbKlWIZOoFdrwlfo+OGqRkwvZPId6oQM3
+	es+BqG885FauZkrObIR/1EbwbahZCQWw=
+X-Gm-Gg: AYBFou2InH0u7vgQGdUFqjzOGiLC7W6uVaqt76YsEY8hc0GmGpAO5lp+VzAowXnGlGX
+	i/C1oRMX0QJ+XTlSWDwpEjU5B2nkdh5XZwPJzS7bENINzXPldGRdq5h7J3xAKW5racL0+mxmWZZ
+	CbTl1Gqdc7IaByE3nBAqYUTqGvnHp2Js0GM1f3vdSA/s2jgJppauRtWpLrtuomvDw6X9Y59rr6E
+	+s7hIqu9k/GHP97rDOexXCes0zgZj4xd1BnArmvwf352ABrF6Rdh2/0gpCyRUW0JYT3mJgnejAV
+	AEILitFlly/nRV6093pF1Bl7VCyVs8lD1hMqfM3uUn5zH5jdxMzUXODqJMdEP0U4xKA9lMspCnv
+	okZtl5fDMKzq+frmHpp3h+ktn/BvIjErgltBB5Z5DegGDqKJP6DOwg9R9is00loV3ICoTwUPF5W
+	w2zf5WzOhLQq8QOwOxYlnUq3YRfkEMVLF33sR7B3X39SWnlJh1Rj5A
+X-Received: by 2002:a2e:8a88:0:b0:3ac:4ce6:8b73 with SMTP id
+ 38308e7fff4ca-3acb7acf227mr31681581fa.22.1793738174621; Tue, 03 Nov 2026
+ 12:36:14 -0800 (PST)
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -106,73 +105,44 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261102-alpha-profileme-v4-0-61e00f5e1da8@gmail.com> <CAP-5=fWC7AM9aAsHaZvQVXznYzVp5FRQtH=vu2xxQys7QWvCQg@mail.gmail.com>
-In-Reply-To: <CAP-5=fWC7AM9aAsHaZvQVXznYzVp5FRQtH=vu2xxQys7QWvCQg@mail.gmail.com>
+References: <20261102-alpha-profileme-v4-0-61e00f5e1da8@gmail.com>
+ <20261102-alpha-profileme-v4-5-61e00f5e1da8@gmail.com> <CA+=Fv5RgTNGzApgq-YcPZ6u_My9-c8T6xMjb-_yuQRV5C53T7Q@mail.gmail.com>
+In-Reply-To: <CA+=Fv5RgTNGzApgq-YcPZ6u_My9-c8T6xMjb-_yuQRV5C53T7Q@mail.gmail.com>
 From: Matt Turner <mattst88@gmail.com>
-Date: Tue, 3 Nov 2026 15:32:47 -0500
-X-Gm-Features: AclHuK_DMhE10jbZfTykItRyJaRbazl8IY4r3kkMT9nMEXLGWMUP-9x3lCLMK38
-Message-ID: <CAEdQ38GGq6Dsq+daBNKsPOWtR8h6+KcdvaVqrxd24Dd3QJhZwA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/7] alpha/perf: add ProfileMe sampling
-To: Ian Rogers <irogers@google.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Magnus Lindholm <linmag7@gmail.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
-	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+Date: Tue, 3 Nov 2026 15:36:02 -0500
+X-Gm-Features: AclHuK9vlMkzNd2fjRaApLlEuj1lZIne7iaoIdNdKx6zdWRN1ZXEG5eUPUtd56E
+Message-ID: <CAEdQ38Gd4sDEtbUqSoy3QsFeQb46Bg3CZRzmPiGFLbSqLpxG+g@mail.gmail.com>
+Subject: Re: [PATCH v4 5/7] alpha/perf: implement ProfileMe sampling
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Peter Zijlstra <peterz@infradead.org>, 
+	Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
 	Mark Rutland <mark.rutland@arm.com>, 
 	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, 
-	Adrian Hunter <adrian.hunter@intel.com>, James Clark <james.clark@linaro.org>, 
-	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-perf-users@vger.kernel.org
+	Ian Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>, 
+	James Clark <james.clark@linaro.org>, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 2, 2026 at 10:29=E2=80=AFPM Ian Rogers <irogers@google.com> wro=
-te:
-> [...] I have a suggestion about the rest of the data, which is
-> currently only reachable through PERF_SAMPLE_RAW. Raising it now since
-> it's easier to shape before the uapi lands.
+On Tue, Nov 3, 2026 at 2:41=E2=80=AFAM Magnus Lindholm <linmag7@gmail.com> =
+wrote:
+> One remaining question, should we accept precise_ip=3D3? For a PAL-mode
+> PMPC we report the interrupted PC, which can differ from the profiled
+> instruction. Should we reject level 3, or skip those fallback samples
+> when level 3 is requested? What do you think?
 
-Thanks, Ian. This is incredibly valuable feedback. I really appreciate
-you taking the time to write this!
+Good catch. I think rejecting it is right. Level 3 means "must have 0
+skid", and we can't promise that while the PALmode samples, and a user
+PMPC in a kernel thread, keep the interrupted PC. Dropping those samples
+at level 3 would hide ITB misses and redirects completely, which seems
+worse than having a little skid on a few samples.
 
-I've done all of these in v5, as patches 8 to 11.
+AMD IBS refuses precise_ip > 2 for the same reason (its fallback when the
+RIP is invalid looks just like ours), and perf's :P falls back to 2 on
+its own. So cycles:P and perf record's default event still get ProfileMe.
+On my ES47, cycles:ppp now fails and cycles:P records with precise_ip 2.
 
-> The PCTR1 window count looks like a natural fit for
-> PERF_SAMPLE_WEIGHT_STRUCT.
-
-Patch 8 does it as you suggested, and only when the sample's IP is the
-profiled instruction. On the ES47 the weight matched PCTR1 in the raw
-record in every exact sample, and was 0 in the PALmode ones.
-
-> Similarly, if any I_STAT trap types identify a memory event, a DTB
-> miss on a load or store say, setting PERF_SAMPLE_DATA_SRC (mem_op,
-> mem_dtlb) for those samples would make them visible to the memory
-> sort keys.
-
-Patch 9. The DTB miss trap types map to an L1 mem_dtlb miss. I_STAT
-does not say whether it was a load or a store, so mem_op comes from the
-opcode. A test touching one word per page got LOAD and STORE as
-expected.
-
-One thing turned up while testing: an instruction killed before it was
-mapped can have TRP and MIS set, even when it is not a branch. So
-those bits are ignored when PM_KILLED_BM is set.
-
-> The remaining status bits (retired/killed, mispredict, trap) don't
-> have a generic home, but they'd make useful filters
-
-Patch 10 adds retired, mispredict and trapped in config1. As with SPE's
-event_filter, a sample must match every bit that is set. Dropped
-samples still go through perf_event_account_interrupt().
-
-> Since PEBS and IBS op only sample retired instructions, it may even
-> make sense for precise_ip to imply retired-only, leaving the profileme
-> bit for the unfiltered view.
-
-Patch 11, kept separate since it changes the default. On a loop with a
-randomly mispredicted branch, 19% of the unfiltered samples were killed
-before map and another 48% later; with cycles:p both are 0%. The cost
-is that DTB miss samples are of aborted instructions, so seeing their
-data source needs cpu/cycles,trapped/p.
+v5 refuses it with -EOPNOTSUPP.
 
 Thanks,
 Matt
