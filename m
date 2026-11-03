@@ -1,48 +1,123 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793696987;
-	b=jOndgfZMPQPFhWLm9VG0yZSFCgQ64pa7sfshbqfwtpnpwaWt0n2C3f/0/3yFn8bS0CGj
-	 XU/cV0huc0h/bFAgUGvpeS9NHBnqUnSZMyhcgfmyWLkkp94IIHv0Zh5+a4e/MCS4ZxlGf
-	 Yj/+b1z7b3G7JZ/Gg4YsHJz8z383Ka7IBWKJv4ZzMbcSsNHz0JKSTLSDdRZyfzkOWqcGT
-	 gCwjZ84T5OnBUNLQnRGBitQwdcSyxbsYdTSw5+yBh664oX2jddUITkadUUlWf0DJDVJGf
-	 3tt/ElPUaWDly5AbLVFi6isxDCCP9J9ASoFxnL/pqYXqpnbHgjUKXDHVua//OY9BcoA==
+	t=1793702481;
+	b=rNYQKEDqsmiP3MogOH/JR171y9Bs0RPAUwcIkgx4wTrTnXiX0EkZzzdiNOoeGUQkJk/N
+	 emtRRJKWq4qI4yD5eWKjFrg065QOuhwb0g69WMOfcom9AczxxmJltma8tJ60qZmDgFI9X
+	 PCFnKfrJzpIayLsjNj1HSXwQYPc1HnpU+UVHoPVucU7VypwaMApYrYxv0w/YEU7iS0B4a
+	 1aMbLFDImW5tkACbeKz65AcT0DCBaMAQoLT2qEitamQvh8IzAE10Fzlwl8LyXjw0f/GVf
+	 41fVQbwRW+xf5uThEmf7ALfYfLztxSin0PNIvk48UJoFuZWdj4cyOcsf3woGgeozWOA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793696987;
-	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:
-	 X-Mailer;
-	bh=0sVsx2ECqjItiIs8s497yPBInJ/alQD9PApMYIDhMMg=;
-	b=XFnFMM0te51GJsPhdYW/9v8cycsjI2UIosEzRj96B2lBd4wvf20gKsiIreA0i0qeQ51O
-	 A/NJbtZXvuMBIs/RFtBda5cScATLqS6HQQ2TeFZUVwuXjgRh6n4jZpww8hgANT5mJswP3
-	 2n91iSMHxEpfSJCuLCXXLE6np82e4q0uv8uiuNoprtg1kqVeZZLkT0TjwZcro2Y39mvLF
-	 Ena+M5U14UJPVWCT3IerRwIxp81Fbkvh3pYOqB2wah3x/iYpmwQgx9prhUQjys0J5L8WC
-	 YHu+wQf2wjwkmrvLehHIc4iDSP4hrFOdj3x9P/i4XfxXBrh2OAhbl0EfjCmSDrz/0nw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793702481;
+	h=DMARC-Filter:Received:Received:Received:Date:Message-ID:From:To:Cc:
+	 Subject:In-Reply-To:References:User-Agent:MIME-Version:Content-Type:
+	 X-Rspamd-Pre-Result:X-Rspamd-Server:X-Spamd-Result:X-Spam-Flag:
+	 X-Spam-Score:X-Spam-Level:X-Rspamd-Queue-Id:X-Rspamd-Pre-Result:
+	 X-Rspamd-Action;
+	bh=n3928gBIWqHxVcE0Q0TQTSHKUQ5+JmJrD1oVco54lEw=;
+	b=HwjEIW3xc83Pm0CwR2K/jkKioKJQAd99tyX6Cj6/AI9N9iW/GZLJnxdXlQ0Md8xjAhXp
+	 UE7o9jZIB+LI63ZtxP6vN6y+Xa2ri8buth6IGDfiJmvMTMZhzbTH0SsXovYkLzVbKMXXq
+	 vFiXEDLAkZ+L9q6fw4jUwFncyR3YRX4/Enl/UY62hCFlYX14DcVGD2BOI8gPoV+9s44Gh
+	 NTh6As2zyA8On/8V/FwUCthQCAD8QE6ugtIC2CMxuUVLpLwWQObkkycenc7WWO7gIR9OU
+	 N7zwdfKQiWgR5tYfGnHvdPnsVNyCZZ3iwLafK2p+H23NKktgtnQh2Lj+IsH/Ghh3akA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ew0TMgcb;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=suse.de;
+	spf=pass smtp.mailfrom=suse.de;
+	arc=none smtp.remote-ip=195.135.223.130
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47C31606A329;
-	Tue,  3 Nov 2026 09:09:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ew0TMgcb
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 452B01F000C1;
-	Tue,  3 Nov 2026 09:09:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793696985;
-	bh=0sVsx2ECqjItiIs8s497yPBInJ/alQD9PApMYIDhMMg=;
-	h=From:Date:Subject:To:Cc;
-	b=Ew0TMgcbY06/NYC4JZyEWa/Z6ta0YEwvLpIXHVNS9GACMTlTWWHwUTS6MISat20gX
-	 v8JC9UxhGttj9VGDZWO+BwLixl370KGHaVh4dxnyh6pYqLvEOhE5HoGsG4W/MPywsn
-	 K/LHgOz6VhfuqB5qTOGBV/jOyYvhnw7Aq6c5ufPfo9r9Mg8H+qORHNyiqD3JUzZLc7
-	 o/g/tyuFXBQsNa5a7vnAiw0kDHEUFsKE/ZiHjEQR+AwpxdWMOGkTVvYc26cbN5+7fr
-	 8z8B2uQKzKvc29zdIHICb4RlYZncxUQyvUuDPqN2fRY2plN4Fm+Dl7L/PWNNS4CrNs
-	 YHz28al1c291Q==
-From: Linus Walleij <linusw@kernel.org>
-Date: Tue, 03 Nov 2026 10:09:42 +0100
-Subject: [PATCH] alpha: Use symbol assignment in SYM_END
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23D3A606A81C;
+	Tue,  3 Nov 2026 10:41:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 23D3A606A81C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 8017122D12;
+	Tue,  3 Nov 2026 10:41:18 +0000 (UTC)
+Authentication-Results: smtp-out1.suse.de;
+	none
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id A98D41350A;
+	Tue,  3 Nov 2026 10:41:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id fPJkIE266WqxEgAAD6G6ig
+	(envelope-from <tiwai@suse.de>); Tue, 03 Nov 2026 10:41:17 +0000
+Date: Tue, 03 Nov 2026 11:41:09 +0100
+Message-ID: <87ik2exkmy.wl-tiwai@suse.de>
+From: Takashi Iwai <tiwai@suse.de>
+To: Christian Brauner <brauner@kernel.org>
+Cc: linux-fsdevel@vger.kernel.org,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	Jann Horn <jannh@google.com>,
+	Josef Bacik <josef@toxicpanda.com>,
+	Chris Mason <mason@kernel.org>,
+	Jeff Layton <jlayton@kernel.org>,
+	NeilBrown <neil@brown.name>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Al Viro <viro@zeniv.linux.org.uk>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Christoph Hellwig <hch@lst.de>,
+	Greg Kroah-Hartman <gregkh@suse.de>,
+	Joel Granados <joel.granados@kernel.org>,
+	Kees Cook <kees@kernel.org>,
+	Jan Kara <jack@suse.cz>,
+	Jan Kara <jack@suse.com>,
+	linux-kernel@vger.kernel.org,
+	linux-nfs@vger.kernel.org,
+	linux-acpi@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	linux-s390@vger.kernel.org,
+	linux-scsi@vger.kernel.org,
+	linux-um@lists.infradead.org,
+	linux-wireless@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	netdev@vger.kernel.org,
+	ntfs3@lists.linux.dev,
+	platform-driver-x86@vger.kernel.org,
+	coreteam@netfilter.org,
+	kexec@lists.infradead.org,
+	linux-pci@vger.kernel.org,
+	linux-sound@vger.kernel.org,
+	netfilter-devel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	ibm-acpi-devel@lists.sourceforge.net,
+	jfs-discussion@lists.sourceforge.net,
+	linux-alpha@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-cifs@vger.kernel.org,
+	linux-fbdev@vger.kernel.org,
+	linux-hwmon@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-sh@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	samba-technical@lists.samba.org,
+	sparclinux@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-doc@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-atm-general@lists.sourceforge.net,
+	Takashi Iwai <tiwai@suse.de>,
+	linux-input@vger.kernel.org,
+	linux-raid@vger.kernel.org,
+	linux-ext4@vger.kernel.org,
+	linux-modules@vger.kernel.org,
+	linux-debuggers@vger.kernel.org,
+	Chuck Lever <cel@kernel.org>,
+	stable@vger.kernel.org
+Subject: Re: [PATCH RFC 09/38] ALSA: info: don't write past the end of a data entry
+In-Reply-To: <20261102-work-procfs-bugfixes-v1-9-59422ed3e465@kernel.org>
+References: <20261102-work-procfs-bugfixes-v1-0-59422ed3e465@kernel.org>
+	<20261102-work-procfs-bugfixes-v1-9-59422ed3e465@kernel.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/30.2 Mule/6.0
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -51,72 +126,64 @@ List-Subscribe: <mailto:linux-alpha+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261103-alpha-compile-v1-1-9e93e2260a9f@kernel.org>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MQQqAIBBA0avErBOcwoquEi1ExxywEoUIxLsnL
- d/i/wKZElOGtSuQ6OHM99WAfQfG6+sgwbYZBjlMiHIUOkSvhbnPyIEEOWtJLTOiMtCamMjx+/+
- 2vdYP4ES2iF8AAAA=
-X-Change-ID: 20261103-alpha-compile-efdde587115c
-To: Richard Henderson <richard.henderson@linaro.org>, 
- Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
- kernel test robot <lkp@intel.com>, Linus Walleij <linusw@kernel.org>
-X-Mailer: b4 0.16.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-Rspamd-Pre-Result: action=no action;
+	module=replies;
+	Message is reply to one we originated
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spamd-Result: default: False [-4.00 / 50.00];
+	REPLY(-4.00)[]
+X-Spam-Flag: NO
+X-Spam-Score: -4.00
+X-Spam-Level: 
+X-Rspamd-Queue-Id: 8017122D12
+X-Rspamd-Pre-Result: action=no action;
+	module=replies;
+	Message is reply to one we originated
+X-Rspamd-Action: no action
 
-Alpha uses the .set directive to select assembler options, so the
-symbol assignment emitted by the generic SYM_END macro fails to assemble.
-This breaks COMPILE_TEST builds left and right, e.g.:
+On Mon, 02 Nov 2026 15:21:24 +0100,
+Christian Brauner wrote:
+> 
+> snd_info_entry_write() clamps the count to what is left of the entry
+> by computing entry->size - pos as a size_t. For a position past the end
+> that wraps and the write goes to the driver unclamped, for opl4 into
+> sample memory outside of what the entry covers. At the end of the entry
+> the driver gets a count of 0 and vmalloc(0) warns. Before the clamp
+> moved into the common code the driver ignored such writes. Fail them
+> with -ENOSPC instead, like a block device does at the end of the
+> device. Returning 0 would make writers that use stdio retry forever.
+> 
+> Fixes: d97e1b78239c ("ALSA: info - Check file position validity in common layer")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 
-  Error: junk at end of line, first unrecognized character is `,'
-  Error: .size expression for bcm6846_runner_start does not evaluate to a constant
+Reviewed-by: Takashi Iwai <tiwai@suse.de>
 
-Override SYM_END to use an ordinary symbol assignment for the calculated
-size. Preserve the symbol type, size and local size symbol while leaving
-other architectures unchanged.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Closes: https://lore.kernel.org/oe-kbuild-all/202611031620.n4ptlpo7-lkp@intel.com/
-Signed-off-by: Linus Walleij <linusw@kernel.org>
----
-The generic SYM_END uses .set for symbol assignment, but Alpha interprets
-.set as an assembler mode directive. Provide an Alpha override using
-ordinary assignment.
+thanks,
 
-Tested the unchanged Runner wrapper with an Alpha-targeted GNU assembler
-2.46.1: the original header reproduces the reported errors, while the
-fixed header assembles without warnings. Symbol sizes and the embedded
-Runner bytes were checked. A full Alpha allyesconfig build was not run.
+Takashi
 
-This patch was prepared with LLM assistance.
----
- arch/alpha/include/asm/linkage.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/arch/alpha/include/asm/linkage.h b/arch/alpha/include/asm/linkage.h
-index aa8661fa60dc..a3f0302c92d0 100644
---- a/arch/alpha/include/asm/linkage.h
-+++ b/arch/alpha/include/asm/linkage.h
-@@ -6,4 +6,12 @@
- #define SYSCALL_ALIAS(alias, name)					\
- 	asm ( #alias " = " #name "\n\t.globl " #alias)
- 
-+#ifdef __ASSEMBLY__
-+/* Alpha uses .set for assembler options, not symbol assignments. */
-+#define SYM_END(name, sym_type)				\
-+	.type name sym_type ASM_NL			\
-+	.L__sym_size_##name = . - name ASM_NL		\
-+	.size name, .L__sym_size_##name
-+#endif
-+
- #endif
-
----
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-change-id: 20261103-alpha-compile-efdde587115c
-
-Best regards,
---  
-Linus Walleij <linusw@kernel.org>
-
+> ---
+>  sound/core/info.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/sound/core/info.c b/sound/core/info.c
+> index c4d57d0809ad..982087bc8575 100644
+> --- a/sound/core/info.c
+> +++ b/sound/core/info.c
+> @@ -171,6 +171,8 @@ static ssize_t snd_info_entry_write(struct file *file, const char __user *buffer
+>  	pos = *offset;
+>  	if (!valid_pos(pos, count))
+>  		return -EIO;
+> +	if (pos >= entry->size)
+> +		return count ? -ENOSPC : 0;
+>  	if (count > 0) {
+>  		size_t maxsize = entry->size - pos;
+>  		count = min(count, maxsize);
+> 
+> -- 
+> 2.53.0
+> 
