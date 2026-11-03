@@ -1,89 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.175
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.173
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793672351;
-	b=AgXhZTpiYQVqpV9loojWeijcQK5ElHOzCIcu/54f4skbA6WPHpeLtGOxoWsKjw2wIUmL
-	 378qNR68H8j/dBAMwy3+DTjEfTlUqtHQEcCRzL959vo8bCnm5rKVq7TeUuqfOGjmaLG7m
-	 K1lG9fwsAJOyNlsR/0D1QSUyxApn8E2ad12ODl+3EjY8d3P+UZ9PVBWJh8HBLzh4vZu1b
-	 NDXTDrtoXRpAql6BppRgLbmg8pWxX6jKM8SJqrRBSVTvuTfNtDN1Vb53CS0xR5qndDv5+
-	 RXI+ETbLXsFrVOJBzQctVFcU64X044vrI/YG69eaPldHtjL8hAow01JYgHq+IObGVnw==
+	t=1793672352;
+	b=pCzQY41T0D2Q8+7Fx6TT841Mfd/AGSKjVvt+ZqQKzD4My+BP6jdhQy24oiqm8BiHgfES
+	 9AKaUuBGbQhWi7prDZ9KCVaREvyb54aumAamaASkO7yYNSsQypLzytyGnJCZpggbjcv2X
+	 UTQKSHmVirPXk7BFB81r0t6Izo29ZvxBZvILO4NX4N3SSx90VALG1FiqqGxB/EQiNtSrf
+	 mGT0d5biArGzyK2chvWAW/okkNMTanmKP4m+0mmWUsjdc07IA66WI1kcen/+riQRmQr00
+	 dvArL+9PmOIl6xhrgKqhhkVQHc6UbVr+S+er/w9ofZNnfOpcOqmJWBPh4J8e1hTUiaw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793672351;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793672352;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key;
-	bh=VyzpExeelLAR9HxeoHhIVWRIik0hjXGnpC16hisKM74=;
-	b=lYSb0CNtM/VlCACRZJJguPgOnsoBKIRi71vbVjALTEkHOM6nLv4LlGncvLcpfYJtsHBi
-	 tcjAvbtmR9kq678tRRNGVcJJMXlrxfy2FoNc+9OyzRWBqLI5RBYoMKDJonv7xwxTos6ji
-	 0z60p7eJohBH7DPD7gYkWklIj479XAZ2QEXegA1QZYZCf+wy94Dgv2mt8UPYG34FGTR62
-	 sV58DfZ4gYw/OPpIECQoEQnYxSQhmKMEUMA72WHnMxvS3eS3SYBBVMKjeYV722yDvNo9W
-	 u3kJzbm2iEnirzncqwAl5sezXK2McrtdH4kWlxjoH8iLiUPfZAbKeLF6bqOEzSlC5YQ==
+	bh=Ieb1Wuoqk1M0uQhH5oMrUB8Fx3AFSLm3Ma4CMZW0nno=;
+	b=spwqPxHAOWHLLq6HxzdAAlQgYHKdnkpXUBKEIGNqUjaBDb5Pp+K/EVXIiTAQVPBgdes4
+	 fOwXGlW8NREMiCN2AzSvCRQtVH7RLIywTQtw1mR1UA0/zW+shwHOZLJ2bPmIvLsFtHNEv
+	 4j84+ggP9WHhZO9z43JHdGeOKSwGBmRjh+aG1MjVaSGs8hHCB5dytmjEZzLW6zTV1LGhd
+	 ScCtt7wHmDywDEMyf1Y3R54GHzSEplOW/yW1yakenlksw4D7DCauRyANcpfFctJmOUtTi
+	 stu3or7lu7DMzSjOh46dt4gDJGOKUSM0X6YfpO6wXjSZ2D8PnopuIEafAgDCnNuPn/Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YPG3aHZN;
-	arc=none smtp.remote-ip=209.85.128.175
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="j6Hto/id";
+	arc=none smtp.remote-ip=209.85.128.173
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B82E606A327
-	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 02:19:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1B82E606A327
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E5B7606A331
+	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 02:19:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7E5B7606A331
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YPG3aHZN
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-8aea7b7ca0cso31842897b3.2
-        for <linux-alpha@vger.kernel.org>; Mon, 02 Nov 2026 18:19:10 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=j6Hto/id
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-8b0f59a5fdeso30331757b3.1
+        for <linux-alpha@vger.kernel.org>; Mon, 02 Nov 2026 18:19:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793672350; x=1794277150; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=VyzpExeelLAR9HxeoHhIVWRIik0hjXGnpC16hisKM74=;
-        b=YPG3aHZNwjTy7pqWgk/wgmpwgP8ccjFKXRuzkZWDSlc/gqhvKcBtIS9Atqu5CKZc8F
-         Qxvs6lhqCkdN0GggJRuirt72jv0IiyAZ4U+y+zTqGyQDViGkq1Nf8k1jUpeNm6iTxWlZ
-         hqYAMYVzt5kMk4XC7lhC9YBv2eURF/zTxz29+wj/9rDRikIYgw10piczw3R+QqNZV07K
-         RZ6JLQUMZhwKRP6h/vx2jNaIm02X0YWj7CQ5CYmI9E81EL5bU9zwuUn7YcQN/VwBmJAc
-         Y7zYKVyxX2Hw1I92lRSVsG0sdToJGEF8k8lnnqu6Y/d5SA6uW8VbLr3yX5PGVKdjMDif
-         SvDA==
+        d=gmail.com; s=20260707; t=1793672351; x=1794277151; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Ieb1Wuoqk1M0uQhH5oMrUB8Fx3AFSLm3Ma4CMZW0nno=;
+        b=j6Hto/ida5XRbaRW5hIrlK5gemlSt704KPKrBzkUd+nYVFEyT537d/xAVbRYVXW8Nl
+         6RXo16f+Tz17kEPTYP1ISDfdQj2PpppkSZgDiGgvHdYZaU4yytEQrMZVezJEvLcYBVus
+         /1/uIJDLIkcNNmdUe3t0/sn9q1yXmtbImFH9mx0dYI6Rl/UY05/EG0JwIlbuvZe1+0bj
+         7oTOnBq5rERYx+tVabmPbFKhE0BnO0SiVGH34SN9Vl+wT36WMBbcPAWYDAVmR4QrxW/L
+         05cSgkmHcePRcxyMHwlWnkr3MFrEGb+LP0Zxowvnq/kUgjoUJB0YFH7JNCotoN2CCkwW
+         BNKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793672350; x=1794277150;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=VyzpExeelLAR9HxeoHhIVWRIik0hjXGnpC16hisKM74=;
-        b=wJpE/Q8u0IVTye5TTffuJo2Dfdkrbw6PchdABlKbnvHOnCaPN2e/tC9fWbmGJwHflM
-         MHDpJWTO3vBkV47ooSyOMdECjtO74BQoO7E6RBGr3D1OgoHP8MVmToebBwxEDcujwfHO
-         ZKjsy084jdJ7JAclL5pnoU3HThF4DaKK0I5UmPKyAwkJByWhTm7peZ0yiXdM8+4AE8o/
-         5BWdBFlOy51+WTcQX6vpGW0TWBTqtHyjiYV7ZUlRjrBFhsQh6g1TdjAdFQJiMHk6/6iM
-         RXVJtl+UnGuZyt3iQJ8bWmu6ZGAJRWNf17HMm6m8iZU4blQZampCNgS9azCyD3CLIZyg
-         4nLA==
-X-Forwarded-Encrypted: i=1; AKwUvBwRra8hjhgVLbI/kmDpzIAMoXM1qZhj1dyZUchOJw7g9qFjDt2/s1n2pP24emaYSBAyYHOkfnVY0+xyQA==@vger.kernel.org
-X-Gm-Message-State: APuU4Z8FXxE2pzJQGSis8T2vvP+NJMq7lW7vddEZTFrQizRPj8VLz0+b
-	cOaKrVz3Wi4Bl2entZvwiF5rweJjO+qZunj0tZjFIi5T5cgCOVevw6kI
-X-Gm-Gg: AYBFou0eQ1hHrzn2v8rXGxkyn3ScvJl9wzlGWpQp1joIan8NgIQiJsR6l0qFWqoFHAR
-	iFVKMlshVRwnSp4kyWcLZvXvWaN42adxarvv5N//a4TS3HguXU8Hj/4t1csUAHdCDbuJVoAc/LI
-	r4brY9eU7Cmql7baF+GYGZ3pCttK43AKm2ZFLGJ0XP/Pg4FZ+vKrVlNpA18sZdFI06QLqOSww/4
-	+lwlqfAryJUVkmUO7tpIjwUFuOBfaJe+3orGXgDLTGng8o/C4xPj7x8QHSSyH/kT6q88yOnaywt
-	rFVDj+bsfw5DnnKKgv+dd2kZxANf6PM4ZyZ/kdaEAiPI7mhC53wbUG0AWNR/DRvQsMOEXxoexYo
-	Fkr9DWetIKDbQKwxyC3+mWf8S47UyOX8I3LjW56NXv+k2LLoeEcVq8QIsBDHQYKpyHb0uBC/K5R
-	Gr0kY8ip5G2l5SNtXdq3u/a4pZPbm5dsdYGGWhV/B+UJ1oFskfrDXND2D1iisGeuw4Anh3zoHkP
-	zThA3NfaMhBo1JkIVUxV3B9eiKsXCsfxOL5JpKiALEYFysXB1do8biqJXYyYQ6nQ4YltdiTnTUc
-	y7SYCYiOuRZS+cfvUtGxuh5y8zhYBwYbX7lQRyEuwgmizRZJPQL2jggg0j0vwEOEdn8g+8h+Z/z
-	v4zFbL2K3Ie1ZYgoKYD5rBch+930nr5U=
-X-Received: by 2002:a05:690c:397:b0:8b0:c673:993c with SMTP id 00721157ae682-8b2b66ce40fmr68322287b3.21.1793672349957;
-        Mon, 02 Nov 2026 18:19:09 -0800 (PST)
+        d=1e100.net; s=20260707; t=1793672351; x=1794277151;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Ieb1Wuoqk1M0uQhH5oMrUB8Fx3AFSLm3Ma4CMZW0nno=;
+        b=oLmb02c5vQylS9ajqoeKzTVp2gRfwFGyBJ4nIxxyPbhvqD6oVOWcaAv94DLlEQxW3+
+         +iln3aOU8R76MJmvhpcuMQcJ4aEpcjsM5W19LXMM8C+ThdfmMDvBv+IgnsxgRWFSMMYn
+         v+QU7fYSlTuOZ2J4zIXTDV7BbxmBDfI2sdpwh7XvsjnQi9ArzAbKjdRB1aWOkQA10iBP
+         ENBHHRW4uvpZwTZ9F12HuPj7Ni2O0kUYfbGLbtb4Uv0INzynZLFCYQDYQqDnODZXmNbz
+         02YXAg3War6/rZp7QpMpuQTP3YytacA+jSusChcHO6YiLR1zwNuJBE78KXSPhRcFeHkj
+         zhww==
+X-Forwarded-Encrypted: i=1; AKwUvBzUhthoViatwPZ3urw97uWWOJ/lWBk6RMUaL8MvSgVkqgz8w6RY+Ex3/khCXgf/zQ3MpVZelqCoOYPgtg==@vger.kernel.org
+X-Gm-Message-State: APuU4Z+YUJAfuMtvOHk6uIZGHo6XNm5ISgMZbwwIuxwt3nfPXsvfxsZG
+	LzNPKlMJqaKBSMrPWizOXVBMEWVttaCTll7KqJ/Pu9V1/I5gYnkoqlbXyPE87k4G
+X-Gm-Gg: AYBFou1vhUFWOpKKgKdfDoA7aClTwYM6dRGtJ7FrT3k5j7712Rl8y7ql1j1AUONr8KE
+	RpcGjLTICxPfvzTQpYQ5gipEAXixTHpPfEcnyq2sUPBg8e/Bg+IQwX1R5heITmNkG2hOrpJTQoM
+	2+SuslnA/NAZvb5zdNdW1n3guWMTbUpcUWnL/lIm5mMzaSB7cP1fxreoB8n9nwqoAtFKVOpR1Ju
+	tNM1wVinEYCUAsRDGoo/lVu/zqBFQvMAqcWJUPEbBi0EDZZdqMKNnC5fYfWO6NzSYhQkNX8Mi5x
+	YCGMOh3SxrDEz4mAKzni6APAqpurtFv0lPezc9CjboFmBEBo65zZnSr82qFHTowOyr/rg37MTB7
+	NpMCDqTYrBMW+8ElghtmkkVUaIKq5J+b4z0jGxJ3lqUxoVphq+W6pdE4RjyNOg7tKh5gp6iy3Hh
+	F8Wu+Q7ghDz0qj+ewu801+0zh5AZS0H5/J2uStDYfv5wHBb2HQ8qOsANjJL+Td7rh+qbdF+SUZw
+	6ny2VC62jnmDY7QYshnkeMCvosbdkPGordfAzB3eeUsAOJLz3FzTCPe6T5EKH4sn8g3U564MfPm
+	UeUKQ/AoEVWbfe31af1psDwZb5ffaGoawWJu2l76nXZ8emBlOiIQ6fnhqbVuPUr3xSbeSkBVtZP
+	/YDcYSd38jQ==
+X-Received: by 2002:a05:690c:83:b0:8b0:881d:aadb with SMTP id 00721157ae682-8b2b671b917mr90113227b3.32.1793672351464;
+        Mon, 02 Nov 2026 18:19:11 -0800 (PST)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b2b71b70fdsm62693447b3.43.2026.11.02.18.19.08
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b2b71240a4sm63029937b3.7.2026.11.02.18.19.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2026 18:19:09 -0800 (PST)
+        Mon, 02 Nov 2026 18:19:10 -0800 (PST)
 From: Matt Turner <mattst88@gmail.com>
-Subject: [PATCH v3 0/2] perf alpha: Decode ProfileMe samples
-Date: Mon, 02 Nov 2026 21:19:07 -0500
-Message-Id: <20261102-perf-alpha-profileme-v3-0-4bf6e1dda733@gmail.com>
+Date: Mon, 02 Nov 2026 21:19:08 -0500
+Subject: [PATCH v3 1/2] perf alpha: Decode ProfileMe raw samples
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -95,11 +95,9 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4WNzQ6CMBAGX4X0bM12awh48j2Mh1K2soa/tEg0h
- He3xQsX43Gy384sIpBnCuKcLcLTzIGHPoI+ZMI2pr+T5DqyQMBcARZyJO+kacfGyNEPjlvqSBY
- Qb2VZkUYt4uvoyfFr015vXw7P6kF2Sq60aDhMg39v3Vml3Z/ErCRId8qtKnVRA6jLvTPcHu3Qi
- ZSYcSfR8EOCUVJaQgcVUI64l6zr+gG7DQA5DwEAAA==
-X-Change-ID: 20261028-perf-alpha-profileme-8010299be323
+Message-Id: <20261102-perf-alpha-profileme-v3-1-4bf6e1dda733@gmail.com>
+References: <20261102-perf-alpha-profileme-v3-0-4bf6e1dda733@gmail.com>
+In-Reply-To: <20261102-perf-alpha-profileme-v3-0-4bf6e1dda733@gmail.com>
 To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
  Arnaldo Carvalho de Melo <acme@kernel.org>, 
  Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
@@ -111,92 +109,288 @@ Cc: Magnus Lindholm <linmag7@gmail.com>, linux-alpha@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org, 
  Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3404; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=WpIs83CyacYYndX7yUegp0rf7Gr25AUcEjh92rXYCVc=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJeusxhzuF7GlyqHTP1uenxwxFNBoH/jneVmC+TLHqXU
- xLJdORkx0cWBjEuhpliiixx6xVZZrXtWOpzWvoXzBxWJpAh0iINDEDAwsCXm5hXaqRjpGeqbahn
- CGToGMVD5PQYNDKLi0tTi3TTCooc8vJLEksy8/OK9fILUvMK0gv00jLTSjIy8ouKU4FG6OWllpi
- 6OroZGRqYWDpamDlZOJqaODs7GTq5OTo6uzoZWZqbGDhbOpq4WpozcHEKwFyjyM7wP0xyusox4S
- ebaqbUtT+UuzI54MJ258dc1/7su9qzcU/2VGNGhoPxG7M/WM5KX/7f6mlGu3bMi+Cu+LnpXY/Ob
- rmUdlD4FRsA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=9921; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=7lcubxbmB7ufGAmyO6K8gbaB2Adi+GhCZaQDaJGyq6Q=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJeusxxn6FQ/XHhorlRKdL5XbkV0ZryHd0vlin1fvJ7+
+ TRx2aNrHR9ZGMS4GGaKKbLErVdkmdW2Y6nPaelfMHNYmUCGSIs0MAABCwNfbmJeqZGOkZ6ptqGe
+ IZChYxQPkdNj0MgsLi5NLdJNKyhyyMsvSSzJzM8r1ssvSM0rSC/QS8tMK8nIyC8qTgUaoZeXWmL
+ q6uhmZGhgYuloYeZk4Whq4uzsZOjk5ujo7OpkZGluYuBs6WjiamnOwMUpAHNN6k1GhoUOUt8L90
+ tfnXm6eW9me7DXGZYOmcTLjS+YP7/8zX3g2UmG/25ZtWpPdxz5nFE+J4Gb91thZcDiw/EFe184O
+ 8sUvjR9zwwA
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-The Alpha kernel series "alpha/perf: add ProfileMe sampling" adds
-ProfileMe sampling to the Alpha cpu PMU. Each ProfileMe sample carries
-the profiled instruction's PMPC and its I_STAT and PCTR_CTL status as
-PERF_SAMPLE_RAW data, which says whether the instruction retired,
-whether it trapped and why, whether it was a mispredicted branch,
-stalled before map, or was killed on a wrong path, and what PCTR1
-counted while it was in flight:
+The Alpha cpu PMU attaches struct alpha_profileme_sample to each
+ProfileMe sample as PERF_SAMPLE_RAW data: the profiled instruction's
+PMPC along with the I_STAT and PCTR_CTL status that says what happened
+to it.
 
-  https://lore.kernel.org/r/20261101-alpha-profileme-v3-0-92d511b5a044@gmail.com
+Decode it in perf report -D and perf script -D the way AMD IBS raw data
+is decoded, naming the trap from TRAP_TYPE when TRP is set and from the
+PALcode entry offset in PMPC for redirect traps, which TRAP_TYPE does
+not report. The payload is copied out of the sample and converted from
+little endian, so that it decodes on strict-alignment and big-endian
+hosts too.
 
-This series is the perf tool side. Patch 1 decodes the raw data in perf
-report -D and perf script -D, as is done for AMD IBS. It copies the new
-uapi header from the kernel series into tools/arch, so it should wait
-until that header is merged. Patch 2 adds a script that sums the status
-by symbol or by instruction, in the style of DCPI.
-
-To try it, with the kernel series applied:
-
-  perf record -R -e instructions:p -- ./workload
-  tools/perf/python/alpha-profileme.py --pc
-
-I tested this on an AlphaServer ES47 (EV7). Sampling a loop whose
-branch tests random data reports that branch mispredicted in 21% of its
-samples, and 0% with sorted data.
+Copy the uapi header that defines the struct into tools/arch and add it
+to check-headers.sh.
 
 Signed-off-by: Matt Turner <mattst88@gmail.com>
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
 ---
-Changes in v3:
-- Patch 1: silence -Wpacked around the uapi header, which breaks the
-  build where __u64 is 4-byte aligned, such as sh4.
-- Patch 2: only read raw data from cpu PMU events, as a tracepoint's
-  payload can pass for ProfileMe status. Thanks to Magnus Lindholm.
-- Patch 2: print a table for each thing PCTR1 can count, so that mixing
-  events no longer averages unrelated values. Thanks to Magnus Lindholm.
-- Link to v2: https://patch.msgid.link/20261030-perf-alpha-profileme-v2-0-9ce2f0b0e622@gmail.com
-
-Changes in v2:
-- Patch 1: copy the raw data out of the sample and convert it from
-  little endian, so that it decodes on strict-alignment and big-endian
-  hosts.
-- Patches 1 and 2: follow the new 28-byte struct alpha_profileme_sample
-  from kernel v2.
-- Link to v1: https://patch.msgid.link/20261028-perf-alpha-profileme-v1-0-f46c1938d001@gmail.com
-
-To: Peter Zijlstra <peterz@infradead.org>
-To: Ingo Molnar <mingo@redhat.com>
-To: Arnaldo Carvalho de Melo <acme@kernel.org>
-To: Namhyung Kim <namhyung@kernel.org>
-To: Mark Rutland <mark.rutland@arm.com>
-To: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-To: Jiri Olsa <jolsa@kernel.org>
-To: Ian Rogers <irogers@google.com>
-To: Adrian Hunter <adrian.hunter@intel.com>
-To: James Clark <james.clark@linaro.org>
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-perf-users@vger.kernel.org
-
----
-Matt Turner (2):
-      perf alpha: Decode ProfileMe raw samples
-      perf python: Add alpha-profileme.py
-
  tools/arch/alpha/include/uapi/asm/perf_event.h |  31 +++++
  tools/perf/check-headers.sh                    |   1 +
- tools/perf/python/alpha-profileme.py           | 172 +++++++++++++++++++++++++
  tools/perf/util/Build                          |   1 +
- tools/perf/util/alpha-sample-raw.c             | 150 +++++++++++++++++++++
+ tools/perf/util/alpha-sample-raw.c             | 150 +++++++++++++++++++++++++
  tools/perf/util/sample-raw.c                   |   2 +
  tools/perf/util/sample-raw.h                   |   2 +
- 7 files changed, 359 insertions(+)
----
-base-commit: 4626d370ae89b8af4d46a45372b269f926ec662d
-change-id: 20261028-perf-alpha-profileme-8010299be323
+ 6 files changed, 187 insertions(+)
 
-Best regards,
---  
-Matt Turner <mattst88@gmail.com>
+diff --git a/tools/arch/alpha/include/uapi/asm/perf_event.h b/tools/arch/alpha/include/uapi/asm/perf_event.h
+new file mode 100644
+index 000000000000..aa0eff5a917c
+--- /dev/null
++++ b/tools/arch/alpha/include/uapi/asm/perf_event.h
+@@ -0,0 +1,31 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++#ifndef _UAPI_ASM_ALPHA_PERF_EVENT_H
++#define _UAPI_ASM_ALPHA_PERF_EVENT_H
++
++#include <linux/types.h>
++
++/*
++ * PERF_SAMPLE_RAW payload of a ProfileMe sample from the cpu PMU.
++ *
++ * pmpc, i_stat and pctr_ctl are the values of the PMPC, I_STAT and
++ * PCTR_CTL registers when the ProfileMe window closed. i_stat holds only
++ * bits 40:30 and pctr_ctl only bits 47:0. See the EV67/EV68 Hardware
++ * Reference Manuals for the field layout.
++ *
++ * In the sample record the payload follows the 32-bit PERF_SAMPLE_RAW
++ * size, so it starts 4 bytes past an 8-byte boundary. The 64-bit fields
++ * are packed after the 32-bit version so that they are 8-byte aligned in
++ * the record and no padding follows the payload.
++ *
++ * Fields may be added to the end in later versions.
++ */
++#define ALPHA_PROFILEME_SAMPLE_VERSION	1
++
++struct alpha_profileme_sample {
++	__u32 version;
++	__u64 pmpc __attribute__((packed));
++	__u64 i_stat __attribute__((packed));
++	__u64 pctr_ctl __attribute__((packed));
++};
++
++#endif /* _UAPI_ASM_ALPHA_PERF_EVENT_H */
+diff --git a/tools/perf/check-headers.sh b/tools/perf/check-headers.sh
+index 531c0e0e84df..de66bb148754 100755
+--- a/tools/perf/check-headers.sh
++++ b/tools/perf/check-headers.sh
+@@ -36,6 +36,7 @@ declare -a FILES=(
+   "arch/x86/include/asm/msr-index.h"
+   "arch/x86/lib/x86-opcode-map.txt"
+   "arch/x86/tools/gen-insn-attr-x86.awk"
++  "arch/alpha/include/uapi/asm/perf_event.h"
+   "arch/arm/include/uapi/asm/perf_regs.h"
+   "arch/arm64/include/uapi/asm/perf_regs.h"
+   "arch/loongarch/include/uapi/asm/perf_regs.h"
+diff --git a/tools/perf/util/Build b/tools/perf/util/Build
+index 2c1f880c4c47..2ab63bbe4a05 100644
+--- a/tools/perf/util/Build
++++ b/tools/perf/util/Build
+@@ -77,6 +77,7 @@ perf-util-y += sample.o
+ perf-util-y += sample-raw.o
+ perf-util-y += s390-sample-raw.o
+ perf-util-y += amd-sample-raw.o
++perf-util-y += alpha-sample-raw.o
+ perf-util-y += ordered-events.o
+ perf-util-y += namespaces.o
+ perf-util-y += comm.o
+diff --git a/tools/perf/util/alpha-sample-raw.c b/tools/perf/util/alpha-sample-raw.c
+new file mode 100644
+index 000000000000..e8751224748f
+--- /dev/null
++++ b/tools/perf/util/alpha-sample-raw.c
+@@ -0,0 +1,150 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Alpha specific. Provide textual annotation for ProfileMe raw sample data.
++ */
++
++#include <stdio.h>
++#include <string.h>
++#include <linux/kernel.h>
++#include <linux/perf_event.h>
++
++/* -Wpacked objects to the packed fields where __u64 is 4-byte aligned. */
++#pragma GCC diagnostic push
++#pragma GCC diagnostic ignored "-Wpacked"
++#pragma GCC diagnostic ignored "-Wattributes"
++#include "../../arch/alpha/include/uapi/asm/perf_event.h"
++#pragma GCC diagnostic pop
++
++#include "evlist.h"
++#include "evsel.h"
++#include "sample-raw.h"
++#include "util/sample.h"
++
++/* I_STAT */
++#define I_STAT_OVR(x)		(((x) >> 30) & 0x7)
++#define I_STAT_ICM(x)		(((x) >> 33) & 0x1)
++#define I_STAT_TRAP_TYPE(x)	(((x) >> 34) & 0xf)
++#define I_STAT_LSO(x)		(((x) >> 38) & 0x1)
++#define I_STAT_TRP(x)		(((x) >> 39) & 0x1)
++#define I_STAT_MIS(x)		(((x) >> 40) & 0x1)
++
++/* PCTR_CTL */
++#define PCTR_CTL_TAK(x)		((x) & 0x1)
++#define PCTR_CTL_VAL(x)		(((x) >> 1) & 0x1)
++#define PCTR_CTL_SL1(x)		(((x) >> 2) & 0x3)
++#define PCTR_CTL_SL0(x)		(((x) >> 4) & 0x1)
++#define PCTR_CTL_PCTR1(x)	(((x) >> 6) & 0xfffff)
++#define PCTR_CTL_KILLED(x)	(((x) >> 26) & 0x1)
++#define PCTR_CTL_STALLED(x)	(((x) >> 27) & 0x1)
++#define PCTR_CTL_PCTR0(x)	(((x) >> 28) & 0xfffff)
++
++/* PMPC */
++#define PMPC_PAL(x)		((x) & 0x1)
++#define PMPC_PAL_OFFSET(x)	((x) & 0x7fff)
++
++static const char * const trap_type_names[16] = {
++	[0]  = "replay",
++	[2]  = "DTB double miss (3 level)",
++	[3]  = "DTB double miss (4 level)",
++	[4]  = "FP disabled",
++	[5]  = "unaligned",
++	[6]  = "DTB single miss",
++	[7]  = "Dstream fault",
++	[8]  = "OPCDEC",
++	[10] = "machine check",
++	[12] = "arithmetic",
++	[14] = "MT_FPCR",
++	[15] = "reset",
++};
++
++/* What PCTR1 counts during the window, by SL1. */
++static const char * const pctr1_names[4] = {
++	"cycles",
++	"retire delay",
++	"bcache misses",
++	"mbox replays",
++};
++
++static const char *trap_name(__u64 i_stat, __u64 pmpc)
++{
++	const char *name;
++
++	/* Redirect traps leave TRAP_TYPE alone and are named by PMPC. */
++	if (PMPC_PAL(pmpc)) {
++		switch (PMPC_PAL_OFFSET(pmpc)) {
++		case 0x481:
++			return "Istream access violation";
++		case 0x581:
++			return "ITB miss";
++		case 0x681:
++			return "interrupt";
++		default:
++			break;
++		}
++	}
++	if (!I_STAT_TRP(i_stat) || I_STAT_MIS(i_stat))
++		return "none";
++	name = trap_type_names[I_STAT_TRAP_TYPE(i_stat)];
++	return name ? name : "other (see PMPC)";
++}
++
++/*
++ * Copy the payload out of the sample, since nothing guarantees its
++ * alignment in the buffer, and convert it from the little-endian byte
++ * order it was recorded in.
++ */
++static bool is_profileme_sample(struct evlist *evlist, union perf_event *event,
++				struct perf_sample *sample,
++				struct alpha_profileme_sample *pm)
++{
++	struct evsel *evsel;
++
++	if (sample->raw_size < sizeof(*pm))
++		return false;
++
++	evsel = evlist__event2evsel(evlist, event);
++	if (!evsel)
++		return false;
++	if (evsel->core.attr.type != PERF_TYPE_HARDWARE &&
++	    evsel->core.attr.type != PERF_TYPE_RAW)
++		return false;
++
++	memcpy(pm, sample->raw_data, sizeof(*pm));
++	pm->version = le32_to_cpu(pm->version);
++	pm->pmpc = le64_to_cpu(pm->pmpc);
++	pm->i_stat = le64_to_cpu(pm->i_stat);
++	pm->pctr_ctl = le64_to_cpu(pm->pctr_ctl);
++
++	return pm->version >= ALPHA_PROFILEME_SAMPLE_VERSION;
++}
++
++void evlist__alpha_sample_raw(struct evlist *evlist, union perf_event *event,
++			      struct perf_sample *sample)
++{
++	struct alpha_profileme_sample pm;
++	unsigned long long i_stat, ctl, pmpc;
++
++	if (event->header.type != PERF_RECORD_SAMPLE ||
++	    !is_profileme_sample(evlist, event, sample, &pm))
++		return;
++
++	i_stat = pm.i_stat;
++	ctl = pm.pctr_ctl;
++	pmpc = pm.pmpc;
++
++	printf("ProfileMe PMPC:\t%016llx %s trap %s%s\n",
++	       pmpc, PMPC_PAL(pmpc) ? "PAL" : (pmpc >> 63 ? "kernel" : "user"),
++	       trap_name(i_stat, pmpc),
++	       I_STAT_TRP(i_stat) && I_STAT_MIS(i_stat) ? " mispredicted" : "");
++	printf("ProfileMe I_STAT:\t%016llx TRP %d MIS %d LSO %d TrapType %d ICM %d OVR %d\n",
++	       i_stat, (int)I_STAT_TRP(i_stat), (int)I_STAT_MIS(i_stat),
++	       (int)I_STAT_LSO(i_stat), (int)I_STAT_TRAP_TYPE(i_stat),
++	       (int)I_STAT_ICM(i_stat), (int)I_STAT_OVR(i_stat));
++	printf("ProfileMe PCTR_CTL:\t%016llx VAL %d TAK %d Stalled %d Killed %d",
++	       ctl, (int)PCTR_CTL_VAL(ctl), (int)PCTR_CTL_TAK(ctl),
++	       (int)PCTR_CTL_STALLED(ctl), (int)PCTR_CTL_KILLED(ctl));
++	printf(" SL0 %d SL1 %d PCTR0 %d PCTR1 %d (%s)\n",
++	       (int)PCTR_CTL_SL0(ctl), (int)PCTR_CTL_SL1(ctl),
++	       (int)PCTR_CTL_PCTR0(ctl), (int)PCTR_CTL_PCTR1(ctl),
++	       pctr1_names[PCTR_CTL_SL1(ctl)]);
++}
+diff --git a/tools/perf/util/sample-raw.c b/tools/perf/util/sample-raw.c
+index f5ae9f468983..f765429a481d 100644
+--- a/tools/perf/util/sample-raw.c
++++ b/tools/perf/util/sample-raw.c
+@@ -19,6 +19,8 @@ void evlist__init_trace_event_sample_raw(struct evlist *evlist, struct perf_env
+ 
+ 	if (e_machine == EM_S390) {
+ 		evlist__set_trace_event_sample_raw(evlist, evlist__s390_sample_raw);
++	} else if (e_machine == EM_ALPHA) {
++		evlist__set_trace_event_sample_raw(evlist, evlist__alpha_sample_raw);
+ 	} else if (e_machine == EM_X86_64 || e_machine == EM_386) {
+ 		const char *cpuid = perf_env__cpuid(env);
+ 
+diff --git a/tools/perf/util/sample-raw.h b/tools/perf/util/sample-raw.h
+index c8d38c841c8c..8df0bd3d02aa 100644
+--- a/tools/perf/util/sample-raw.h
++++ b/tools/perf/util/sample-raw.h
+@@ -14,6 +14,8 @@ void evlist__s390_sample_raw(struct evlist *evlist, union perf_event *event,
+ bool evlist__has_amd_ibs(struct evlist *evlist);
+ void evlist__amd_sample_raw(struct evlist *evlist, union perf_event *event,
+ 			    struct perf_sample *sample);
++void evlist__alpha_sample_raw(struct evlist *evlist, union perf_event *event,
++			      struct perf_sample *sample);
+ void evlist__init_trace_event_sample_raw(struct evlist *evlist, struct perf_env *env);
+ 
+ #endif /* __SAMPLE_RAW_H */
+
+-- 
+2.55.0
 
