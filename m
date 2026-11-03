@@ -1,75 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793723196;
-	b=de0t5tAyrnyXAbkQbiTZ2C+cbAYfDQs2cTyl/SqxKfDJG3XHdMeMj3022Ufe+mERdVAT
-	 +ZzygmdJOITO18ZCTcF6Hze1dneVPtjYSJLLNNOZ4bq4JZQoTyhfB2H4OWGAlSDtbAp8X
-	 lMw+lQb0HBhfuqekU6sPU6XOcgN62V2BzWtztyYNkR5lDMcxukdlo1ZJ+1pazOpZmQLfn
-	 yWXqCMjxYFEfYAIrmYqyKPh7vya7mLyXWm99lwJ3Yunl0DlePoZ15H46ZKsOVXA5XjajR
-	 amsBuX0CyCvpY0OOus2YL65Do0Uox5LMAGQG9R6+YMBItQrG2k2yVSvVPsokIp2mzZA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793723196;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=88x5nWCU4/5DUnm5J75+/44oJREtwTCj+m3lJcaJoNE=;
-	b=tdawQlYfgDrb3alGEDfr439O5Cw+xIZMzgxuDQTvu1eq98R7olpfgWnXNElxe+6RNneW
-	 +WtM6uldUVExM54iZpuquygLBgV4ss9v1DdlPrhBRgjlpJsdA9htasb5VqBuKI9xdRRZQ
-	 mXNqPuVznzoA01sj3DERKYaelKX3fIa36NpOutkvXGqh8Mxsj0eSKWhsIaJedFVEQIxti
-	 n7X9odVx6mncFTtIw7BeW8JUrJIaRC0dbILM11QFF47/8afyZkTDuml9E/fnFFfGtarJY
-	 +ME6FErInGL9MCUfBY7Ykc5Ds6s17BJZSRUQzGoG5BB1MPpvwHhtpkwzrDzTAt0asVQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HyDteQG2;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.169
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793737981;
+	b=lAjlIxyoK7ngCNSH7JdFe7WHksQm/Aik8/l0xJ1EH97bh4D4+R4p/iYxEo/Z1AhsRZBZ
+	 e/a+LS5BrIj8nOcy0wPLH4AiVpgWEadI4lsynn/pR00EUANnLO7DWVBg+Bj3yWT0fCIzI
+	 HlmHn/6EfZSzIGk3JJQt6kZPcZaHLbeyGkVsZlgLVsfU2y25TcSr/f5u9yMz19H/LIwke
+	 1R/T5cXo30bUtgZVF60RaP/McpNDabHb3l8JxUhFBfWIQ11uQS0Lb01jlpd+7M5G54GxR
+	 HsCgxgH30Pu185raDp1ePT8/KTuopahAK7lH/Qxj5SpvOvZZ+Iga0uFkhmX6LYeyCPg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793737981;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=gg+W2EgP56N1Sf6e0W1B3Tc564yhByMeGofGsIPeu+U=;
+	b=dXegZtIZ3nGTO9ycBfI//F1fHvR94CoMdd7aRuB1vAzl/UsSPQVASVO65CK5+lHD2qVc
+	 YY18mP+ieh0L5ff9lo5w39Zxwt1kM6d9UsostXqZi9g/5HpHRELjnSSBnaWbfck4429Lw
+	 kkTWONmKLShc2QkR5tSpp0C23RYE54Kqk6rw9fryMWR5GhP5IFHoEl26WGMRwU6J6jHS9
+	 W7RCpOCZyk/1YWT2JSYsxWS3Ou4b/HKjmzDrgoZhVlZb0wqE+m0fBm+Q97BofYeo5e7jN
+	 w9/FCjUj4gC11B31nxe5u4DvWpATm7tcx3bjLnAJK0zkTH0EVbkZBCyKm0W3ttwDjNg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Jm9h17sU;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.169
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 259F4606A327;
-	Tue,  3 Nov 2026 16:26:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29851606A31B
+	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 20:33:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 29851606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HyDteQG2
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09A721F000C1;
-	Tue,  3 Nov 2026 16:26:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793723195;
-	bh=88x5nWCU4/5DUnm5J75+/44oJREtwTCj+m3lJcaJoNE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=HyDteQG2VBDz2pwudxJvRFZ3NzuhMM1n/qoJyRpSIEa+4sIo8qfNjCKCMkx9fqPnu
-	 PTXEB3HB8c+csEYJbUqrD18YNji+Wb3P0nPR4rCDriU41qd0d35Q951xfxtaew6zqD
-	 xTRV7HQa/evoV4YEWVb3yEGxlVh8/pDAOnR650sPVOaA2QtXNMiUjYtFVGzVyuFmxJ
-	 cuqSFcaDMPcPNDAwdq/HarCHKLW8nQ/TcudxBJnTO/IQN1HpQ6LTm2xHx92xHn7YRV
-	 9GYQVIg2n29fkajQrtiWC1hueIuFYRrAfwMXbzDr3+UFxfeou5MMiBIFbN+ZYhp4th
-	 RFlMkVbcaKQDw==
-Date: Tue, 3 Nov 2026 17:26:21 +0100
-From: Christian Brauner <brauner@kernel.org>
-To: Chuck Lever <cel@kernel.org>
-Cc: linux-fsdevel@vger.kernel.org, 
-	Linus Torvalds <torvalds@linux-foundation.org>, Jann Horn <jannh@google.com>, Josef Bacik <josef@toxicpanda.com>, 
-	Chris Mason <mason@kernel.org>, Jeff Layton <jlayton@kernel.org>, NeilBrown <neil@brown.name>, 
-	Eric Dumazet <edumazet@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>, 
-	Greg Kroah-Hartman <gregkh@suse.de>, Joel Granados <joel.granados@kernel.org>, 
-	Kees Cook <kees@kernel.org>, Jan Kara <jack@suse.cz>, Jan Kara <jack@suse.com>, 
-	linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org, linux-acpi@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org, linux-s390@vger.kernel.org, 
-	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>, linux-um@lists.infradead.org, linux-wireless@vger.kernel.org, 
-	Linuxppc Dev <linuxppc-dev@lists.ozlabs.org>, netdev@vger.kernel.org, ntfs3@lists.linux.dev, 
-	platform-driver-x86@vger.kernel.org, coreteam@netfilter.org, kexec@lists.infradead.org, 
-	linux-pci@vger.kernel.org, linux-sound@vger.kernel.org, netfilter-devel@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, ibm-acpi-devel@lists.sourceforge.net, 
-	jfs-discussion@lists.sourceforge.net, linux-alpha@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-cifs@vger.kernel.org, linux-fbdev@vger.kernel.org, 
-	linux-hwmon@vger.kernel.org, linux-mm@kvack.org, linux-sh@vger.kernel.org, 
-	linux-usb@vger.kernel.org, samba-technical@lists.samba.org, sparclinux@vger.kernel.org, 
-	linux-m68k@lists.linux-m68k.org, linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-atm-general@lists.sourceforge.net, Takashi Iwai <tiwai@suse.de>, linux-input@vger.kernel.org, 
-	linux-raid@vger.kernel.org, linux-ext4@vger.kernel.org, linux-modules@vger.kernel.org, 
-	linux-debuggers@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH RFC 27/38] sunrpc: make queue_wait a global wait queue
- again
-Message-ID: <20261103-lufttemperatur-absondern-zweifach-31d272ad55ab@brauner>
-References: <20261102-work-procfs-bugfixes-v1-0-59422ed3e465@kernel.org>
- <20261102-work-procfs-bugfixes-v1-27-59422ed3e465@kernel.org>
- <16f91f93-16b4-49b1-b7fa-cec69759c349@app.fastmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Jm9h17sU
+Received: by mail-lj1-f169.google.com with SMTP id 38308e7fff4ca-3ab3dd966e1so271111fa.2
+        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 12:33:01 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793737979; cv=none;
+        d=google.com; s=arc-20260327;
+        b=OMz2a3KjIbCU/lFxnHHOaPsrzXPi1F1+ZI49F+ux/BrNN/hqiogMpe0kCX/U+NFlkn
+         BBMDpaQ2n9lP5CjjiDiUxur+qd0bsPlf7tNoqeBsGzyx7SXouO1n6M3Wvm27jhB/6I85
+         FkszbE8XQ1WB7qGyRTh7k26eQwidlRg9Llg7xFqxZReQtowa2NrRrv0Yqqaok2JRHzpl
+         jA46EzwxhOrS7ICcG8/rRFGfErZUibgArP3/yIRlr2bV6ICu7muhTpS3N+44FGBSs0Yn
+         WVfu10lc+x09N9/vzSkhkTqrn5MddQgyzZjA5JwHH4j/VrRWtQSzkRid/oi8qjhBDfWy
+         lIAg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=gg+W2EgP56N1Sf6e0W1B3Tc564yhByMeGofGsIPeu+U=;
+        fh=HYmIV3qT9YdpWrCgGRO/knowVcaOS9hRH4Nr4Ki3zbo=;
+        b=ZWdOuT3aKiY7ja+hhJR1ClZlVoGLY2OAfT/UzY8GYJ+5D0B3lb1O5wWsZDBh87yr9R
+         HwrmUQ2mKJowFqUquC7FeHZYw6fnmucH2Sxm3pVhdZNBqB+4ACXQmikj5MydU3rUkovJ
+         bEJ6DsB46Ul0gpvnevBZSX7JzuH3Y0UrIFBFXHdHXU7GPMmj4jLyquSARtZtBUlloD1L
+         h3QH12o6SxOIOqo35pQauc9fuLYlTguYgHzAtU4nsPJGWyxE/JMCMg1+jkTcR3U8e0Ny
+         pnSUSF+Qiz4NMNWy3vID3I19SFRpelIdXQ0PIluCvoSMwreSJJKbBJkKRH2iCcouYnsf
+         uLcQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793737979; x=1794342779; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=gg+W2EgP56N1Sf6e0W1B3Tc564yhByMeGofGsIPeu+U=;
+        b=Jm9h17sUzBa0J1wZjuoUGLG8nXwDfKaiZdnwQV8i0Z5rIyLWtnFizG54Mb8VhuEFNX
+         rW7Y4rc1FmE2eQGibXhlfFcLCv/cANTCjYmEA3X0qB/wSffc+Jue8m0ZrTj91g/ysaH3
+         II453nGlC1agps4Kl22gBYgtJAmrJewCpfylTLwG8ckuEdaqaCxeknDvLnvo8KkYqMMr
+         oN1Hk4uuEJ4jQ2j8NVNpkyQEC2uRRabXtMqJv3w2Gpxh7olpRi4CGgDHr79l4gcpAzUT
+         M7UJMSMiGL6ExHwGMnOskz1O2ZQopyzLk9ZiQ+5rpbFdRZFhlLgNMm/Pm5gCb6nLX0Gh
+         Mdng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793737979; x=1794342779;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=gg+W2EgP56N1Sf6e0W1B3Tc564yhByMeGofGsIPeu+U=;
+        b=X2WwchVF+00ztmsXbx4zjsRzY02yIpdlru0uYsMArldWHKyqoyE3iW43wdhhEsQe9V
+         IOHrhJdamsslWi2wuJlallnJzV+/2oTOBJF8KtLd6yoNE6ZM0q1owYbp2j2eS6hg21M1
+         yxkeVLIf9YuSqRzmeDXdxj5ByGwnTNB4+/pgN5lndE5IsZC6AFwXO+VZ7VoWczUWb7A7
+         NTvLF8Z8iOFxV698tx0Gaozx+LAzegzODQCc8Zmw1cs1VWOG7UwdHI6I1YU2Qt6SHTuz
+         4fpG5JfLk/YHcXLikPrxc+7fPad06HbdBmFacKKagR2rHxjUBz8tmM/dQbCqQJrD8Wxg
+         Et8w==
+X-Forwarded-Encrypted: i=1; AKwUvByK8SgDjbwfHf09ef/+MUD176z687g+FnShM1qaUmYW6Gyeg+XNMWL8opwCKYg2UBChWFdTKJS9co1rfw==@vger.kernel.org
+X-Gm-Message-State: APuU4Z9gSx/pN3x/Em053llISrlgyaSzxvlCJISiRMtPrp63EjZMHZqG
+	LT1gSjT8oE112BOn+4EJWBwwSkJvnimiFOOaa7otiqDtvWBp+wE6mLezrK5B08ETmeixHKvklyF
+	GVmptddAMc6BRnUcIcIJIPtXWxaQUg9E=
+X-Gm-Gg: AYBFou29M96RkQAOyw8cDZwWnNRw5Zo61gg+/E7ix0xzalwsaVwZdtCehEfNYVDbgcb
+	P+jE65dUk4wl8C4fI1mYl/+mCMLr1iTOab3z23cRi1XTFiga/DtdZqE1KugMXbjvmyLcFi4yfBe
+	ZDPf5UGXhFuWqeHOV4N6B1XBBrH4GmT/9WWwqiw5hGzwGUOU2cBnpXlFxeUx8xUH8uoQxv9Gv82
+	N+AGazCHjOa0cEdq71tyVL5lWx2B1plud4+B0aX56umX5z1Ozxpd9aHcSd6cU5EMaXDZqbhiWkw
+	a6ay8gIH4ERxyom7ujxyck5egPYUy0r8TvJg8ngy1E1yZ9E8GgKmKBUzYmpHf3xi+B/PF8uHsZR
+	eS0LzB5MlReJJTVIEZw50aJtI1Czt7JMMIctG/t0Gc+oC/0Ig6jwbM0S8OLP5Wu4f2nzbMjpeHi
+	c8J3HZ0tcfU+m+Fxqyp48G8NTq2nfLwlOeduQTBBphO+WFT/elLiprk+ZPVqm4UpcSdcSuupe06
+	Q==
+X-Received: by 2002:a05:651c:a0cf:10b0:3a6:58fb:8540 with SMTP id
+ 38308e7fff4ca-3acb7b2ae3fmr23751711fa.19.1793737979205; Tue, 03 Nov 2026
+ 12:32:59 -0800 (PST)
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -79,72 +106,73 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <16f91f93-16b4-49b1-b7fa-cec69759c349@app.fastmail.com>
+References: <20261102-alpha-profileme-v4-0-61e00f5e1da8@gmail.com> <CAP-5=fWC7AM9aAsHaZvQVXznYzVp5FRQtH=vu2xxQys7QWvCQg@mail.gmail.com>
+In-Reply-To: <CAP-5=fWC7AM9aAsHaZvQVXznYzVp5FRQtH=vu2xxQys7QWvCQg@mail.gmail.com>
+From: Matt Turner <mattst88@gmail.com>
+Date: Tue, 3 Nov 2026 15:32:47 -0500
+X-Gm-Features: AclHuK_DMhE10jbZfTykItRyJaRbazl8IY4r3kkMT9nMEXLGWMUP-9x3lCLMK38
+Message-ID: <CAEdQ38GGq6Dsq+daBNKsPOWtR8h6+KcdvaVqrxd24Dd3QJhZwA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/7] alpha/perf: add ProfileMe sampling
+To: Ian Rogers <irogers@google.com>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Magnus Lindholm <linmag7@gmail.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Mark Rutland <mark.rutland@arm.com>, 
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, 
+	Adrian Hunter <adrian.hunter@intel.com>, James Clark <james.clark@linaro.org>, 
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-perf-users@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 02, 2026 at 10:12:12AM -0500, Chuck Lever wrote:
-> 
-> 
-> On Mon, Nov 2, 2026, at 9:21 AM, Christian Brauner wrote:
-> > Since commit 552d0e17ea04 ("sunrpc: convert queue_wait from global to
-> > per-cache-detail waitqueue") poll() and epoll queue their waiters for a
-> > channel file on the queue_wait head in struct cache_detail. But the
-> > cache_detail can be freed while its channel file is still open and
-> > waited on.
-> >
-> > The procfs channel files of a network namespace are removed when the
-> > namespace goes away. Removing a procfs file waits for the callers that
-> > are in one of its methods right now and then calls ->release on every
-> > file that is still open (cf. close_pdeo()). The waiters that poll() and
-> > epoll left on the head stay queued until their file is really closed.
-> > So:
-> >
-> >   sunrpc_exit_net()
-> >   -> ip_map_cache_destroy()
-> >      -> cache_unregister_net()
-> >         -> remove_cache_proc_entries()
-> >            -> proc_remove()      // ->release, the waiters stay queued
-> >      -> cache_destroy_net()      // kfree(cd)
-> >
-> > and when poll() returns remove_wait_queue() writes to the freed
-> > cache_detail:
-> >
-> >   BUG: KASAN: slab-use-after-free in _raw_spin_lock_irqsave+0x4b/0xa0
-> >   Read of size 1 at addr ff110001131bb570 by task sunrpc-poll-uaf/242
-> >   Call Trace:
-> >    remove_wait_queue+0x22/0x1c0
-> >    poll_freewait+0xc2/0x230
-> >    do_sys_poll+0x9ba/0xd50
-> >    __x64_sys_poll+0x165/0x470
-> >   Freed by task 12:
-> >    kfree+0x267/0x620
-> >    sunrpc_exit_net+0x34/0x80
-> >    ops_undo_list+0x271/0x8d0
-> >    cleanup_net+0x3f3/0x860
-> >
-> > Closing an epoll instance that watches the file gets there through
-> > ep_unregister_pollwait() instead.
-> >
-> > The channel files of a network namespace belong to the root of its
-> > user namespace and cache_open() doesn't check for a capability. So an
-> > unprivileged user can open the channel file of a namespace of its own
-> > from the outside, poll it and let the namespace die.
-> >
-> > Go back to a single static wait queue that never goes away. A wakeup
-> > for one cache wakes the waiters of all caches again but cache_poll()
-> > reports per cache_detail so that's just a spurious wakeup. procfs
-> > should really own the wait queue of its files like kernfs does but
-> > that's nothing for stable.
-> >
-> > Reported-by: Chris Mason <mason@kernel.org>
-> > Fixes: 552d0e17ea04 ("sunrpc: convert queue_wait from global to 
-> > per-cache-detail waitqueue")
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
-> 
-> Acked-by: Chuck Lever <cel@kernel.org>
+On Mon, Nov 2, 2026 at 10:29=E2=80=AFPM Ian Rogers <irogers@google.com> wro=
+te:
+> [...] I have a suggestion about the rest of the data, which is
+> currently only reachable through PERF_SAMPLE_RAW. Raising it now since
+> it's easier to shape before the uapi lands.
 
-Fwiw, I have a patch series on top of this that makes procfs own the
-waitqueue and then this whole UAF issues goes away structurally and you
-get to elide that global thing here.
+Thanks, Ian. This is incredibly valuable feedback. I really appreciate
+you taking the time to write this!
+
+I've done all of these in v5, as patches 8 to 11.
+
+> The PCTR1 window count looks like a natural fit for
+> PERF_SAMPLE_WEIGHT_STRUCT.
+
+Patch 8 does it as you suggested, and only when the sample's IP is the
+profiled instruction. On the ES47 the weight matched PCTR1 in the raw
+record in every exact sample, and was 0 in the PALmode ones.
+
+> Similarly, if any I_STAT trap types identify a memory event, a DTB
+> miss on a load or store say, setting PERF_SAMPLE_DATA_SRC (mem_op,
+> mem_dtlb) for those samples would make them visible to the memory
+> sort keys.
+
+Patch 9. The DTB miss trap types map to an L1 mem_dtlb miss. I_STAT
+does not say whether it was a load or a store, so mem_op comes from the
+opcode. A test touching one word per page got LOAD and STORE as
+expected.
+
+One thing turned up while testing: an instruction killed before it was
+mapped can have TRP and MIS set, even when it is not a branch. So
+those bits are ignored when PM_KILLED_BM is set.
+
+> The remaining status bits (retired/killed, mispredict, trap) don't
+> have a generic home, but they'd make useful filters
+
+Patch 10 adds retired, mispredict and trapped in config1. As with SPE's
+event_filter, a sample must match every bit that is set. Dropped
+samples still go through perf_event_account_interrupt().
+
+> Since PEBS and IBS op only sample retired instructions, it may even
+> make sense for precise_ip to imply retired-only, leaving the profileme
+> bit for the unfiltered view.
+
+Patch 11, kept separate since it changes the default. On a loop with a
+randomly mispredicted branch, 19% of the unfiltered samples were killed
+before map and another 48% later; with cycles:p both are 0%. The cost
+is that DTB miss samples are of aborted instructions, so seeing their
+data source needs cpu/cycles,trapped/p.
+
+Thanks,
+Matt
