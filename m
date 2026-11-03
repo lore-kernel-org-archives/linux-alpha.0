@@ -1,101 +1,75 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.53
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793718778;
-	b=p6DZjBmIcyHfhrUOxsnpET4CT4NVjUXbqz8cokL1Eo39rrNZ5xKd51cx2L16om7QDpL+
-	 TgWdzyQzqf8fl2zFEwK5U/B0Q3uR/6BFGneLIXhlOGSPrf2ye8XobiksSU3s4Q8gBrkUD
-	 BuRG2eTjOIGHOGMZFy+ZYdZssy1fPt9Qz65eTcTGomxw0b9mcFfDmWzDhrqkt/fW2pIWD
-	 3AB72Z1L3u8f3I7Nxp+ib2LQV5wbaUWNNf5oxFVtzHDNOhHdxL5CQVtfEl8KSo4+z0w5M
-	 wS66Pv91YDspWiwRWrwf8y22XD/6FWkyoLG9HLThIA95yZKUXBIWUOyHab5yT0k4ycg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793718778;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=QsewQ4bSQyXCreyiSJB98dbyhPJ57LIsDJYpo0Npvlg=;
-	b=KAX8wOENJZo3SAYb9npZFbYd1aOUKAi9l6qNwzHDDVcMqqoddWzl5AruYmstIGMYEZlH
-	 JP8sFXSnEKeIie17t69TQyL9X/iEldDG8ZKESvUQJmBZMvMulsOevGoh/cZFVfrj3eh4L
-	 B6yC5oQxupAYY1yf1X1Z2W4z1nQQfu4sVcKI1Sw7uRKX8U7wKc3CmMyujOK9jwMrE5Qq2
-	 UiYsY74nSSbw2ehvkl5xmMc0N102XLES+g2PD3XuIguDR9YjArdHwRGkEN9o9o3Cy3v1u
-	 oKVEalzH+ZeJCl6Zb2a/vCjmNVWFEMkYmu2KkoOZ4EXeLUFiTQ4IsPQ3xM6MxoUzJ1Q==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="aL3a/B1A";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.53
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793723196;
+	b=de0t5tAyrnyXAbkQbiTZ2C+cbAYfDQs2cTyl/SqxKfDJG3XHdMeMj3022Ufe+mERdVAT
+	 +ZzygmdJOITO18ZCTcF6Hze1dneVPtjYSJLLNNOZ4bq4JZQoTyhfB2H4OWGAlSDtbAp8X
+	 lMw+lQb0HBhfuqekU6sPU6XOcgN62V2BzWtztyYNkR5lDMcxukdlo1ZJ+1pazOpZmQLfn
+	 yWXqCMjxYFEfYAIrmYqyKPh7vya7mLyXWm99lwJ3Yunl0DlePoZ15H46ZKsOVXA5XjajR
+	 amsBuX0CyCvpY0OOus2YL65Do0Uox5LMAGQG9R6+YMBItQrG2k2yVSvVPsokIp2mzZA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793723196;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=88x5nWCU4/5DUnm5J75+/44oJREtwTCj+m3lJcaJoNE=;
+	b=tdawQlYfgDrb3alGEDfr439O5Cw+xIZMzgxuDQTvu1eq98R7olpfgWnXNElxe+6RNneW
+	 +WtM6uldUVExM54iZpuquygLBgV4ss9v1DdlPrhBRgjlpJsdA9htasb5VqBuKI9xdRRZQ
+	 mXNqPuVznzoA01sj3DERKYaelKX3fIa36NpOutkvXGqh8Mxsj0eSKWhsIaJedFVEQIxti
+	 n7X9odVx6mncFTtIw7BeW8JUrJIaRC0dbILM11QFF47/8afyZkTDuml9E/fnFFfGtarJY
+	 +ME6FErInGL9MCUfBY7Ykc5Ds6s17BJZSRUQzGoG5BB1MPpvwHhtpkwzrDzTAt0asVQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HyDteQG2;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8ACF606A789
-	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 15:12:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E8ACF606A789
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 259F4606A327;
+	Tue,  3 Nov 2026 16:26:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=aL3a/B1A
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6b1dae0febeso6316025a12.2
-        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 07:12:56 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793718775; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Q2wjdIdLCjPB7NAwv8gfy6nFwdznKbC9kKjYMkcy6oIsdOB6Foh1N3x0Jp6thcdRKa
-         8EVpOAokCAbqZfGiBZ+QsUSmoL9KWRsO/HQ4WggB0mewkfN41KgAXKt74J7iFy277xyE
-         g6sXQ95fpO8JAzvTx2J57BGHrwHnjygGHzN9JAJo6GMdD3IMsVwPzmzL3kt5oTQ6CLFa
-         Nk+C5QwL+qFYRXV0WM7STty5Yus1q7rzJ6I6s56xTjql2X8yj0Apti27uXJEWWxcCykt
-         3mYkHvUq0M3wKZmRIYwbv8CdN/rW89NU3mJfkg2DC8GWi6Z9hWg3AEQaAgkmnkJwgqFr
-         cdag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=QsewQ4bSQyXCreyiSJB98dbyhPJ57LIsDJYpo0Npvlg=;
-        fh=6GzNdb43I/X8/4wp1Sh8Ux9KuwGM30t5gmPz8B6kGFE=;
-        b=Kd+kRFQCpU1ZOGXHceMSnYbz5AKkXcCoel+X5mvVLhzdkKvbdNB2P2r5Pa4Bx2J5Oo
-         jvZVnCmk6wLcMDZWMYKPLMkCNumDYcnlXpwFWwmCmj88LtQCPNUT4ui7RB+flwOMboGW
-         p4ylWRZlor38wDATCWAYBTPSKF5cEMb3kWifz85Ea3WW8hDDAPprh+n0/aXdbLfwkYu0
-         5URs8at5mgbR2FAlYwynvUALjks7DNp0kCHHv7OEj4ZK/Uqait1ETtcRtHrhu3I6oZBw
-         3si84AY8DAZMTZUjljWqmfvQuZGObXSxAF4J+B4tNxBdKgmpHjpwYLDrBlYB89Mug563
-         GZ4Q==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793718775; x=1794323575; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=QsewQ4bSQyXCreyiSJB98dbyhPJ57LIsDJYpo0Npvlg=;
-        b=aL3a/B1AV+UGrazg+7plNsxS7dL+F6hTVquzpd3MtjPg2vHO1Xtu3j9xxaUuEhbN4O
-         Jd1BuY51fqCCfDwgcY5VQg1eh+pVEoieAQXHDFU88zWWKem4tBysSnW978H+TaLviIbL
-         gRKWK8TgU6u4ysOmsAus3gO9hkapv6kLExWrMHTG3ZJWiKzCxiZb+/X2Wm/bY7TGHhsd
-         kjDmQ7aAxBXh1toLH8155O4HY8ebIirW7k709O585hWJoSj90/UPPaEVr2LznT7IEArg
-         yTEHekw7QdfgjNuf1OpfqS71bf9+rN6JCzyzUz3hnJhQpJK8O7OVdGNkpoiO9Lg4pR+S
-         zflw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793718775; x=1794323575;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=QsewQ4bSQyXCreyiSJB98dbyhPJ57LIsDJYpo0Npvlg=;
-        b=vyao3XNnwQpjFAqH83H8h0WfZ/2Zu5+3mIJOyplR1oW9vW7QgdEbNszKYooBqgmzMF
-         PsWVPs9A5MWi6DkHI32ZJlMwsRCqJEUXcaqAl7BI7bQuX8Emsc9ni6HCKSpOcS2zwvQa
-         HWtHt60pnhoTnClVpy5VVOd9IIig4vtHJVTiPIjYUIJLsrVPQpspVNovzIDKaT7S87Hu
-         Jd0YS2i9yUZ6OY0Dsl5272aJWXJgWS+PreAPjk2R6XtkxMhpUTH+JoKz6Le7lK7eTWYo
-         JGr9OGkoIJlJ8ypsetNvj0X/sHy0iwUY6Lp7lMDkJURJB/1utkBV//8X69ok3QusMGCP
-         sSIw==
-X-Forwarded-Encrypted: i=1; AKwUvByG8wZcuiVJrIatVvokjd5tWsivUAZpapGJUlUSZL2Kf6FsUh1Escx0K/m5JAViNQgCcA66FvbJBaUpJA==@vger.kernel.org
-X-Gm-Message-State: APuU4Z8kmDtWwGHShqbmywbImE6BxbinAM4gsBuNMt7hwHIZj73b3N21
-	tpyzK+1+KSxNVzaqmmk9t97XWYEGsrmm34sPsJJNnUZVyByJBFQmzJWc3LXnHNzKg0j7RXoqkFf
-	8OzM0IkEcl921dEfE9TsTJ7kAQ+haxJI=
-X-Gm-Gg: AYBFou08HRUWlUPGwkrnbfWAFOxe/RC6qTYN168vHQjTTyff6qdoVWmeH3kGpBqYhMi
-	SipYQW1pLAWoVpzi9VSTYfvrtIZrNIeKxPe81vgCuBeQQav1Rq4QAfhq93dksNeETPEDmdArwkQ
-	nzbL97rVJlm73JeVEpgRkxRELIrQzM15KXR2iN43o+pp7R1P3+0INlk8JEfA7fgUyglr/pDNkh1
-	EH+fW56oTPgraQyH0o9rYoza1QNar+ZfakNh9NGm1NnMCy+lje1xJao8MGi0PS6piki4PDny+10
-	v3VKTB7iN0Tc7OSZIn1ix2F8V9wUm/CIWeiD7ExlJ6gkfyrZ3wHUhgyQcDcZjNKT9qdh1ydWira
-	BnNe4pTR5k5ss9q3pCAl02HneWlhDhrm64QgFphzJJpHjfjMOFR3f1gYte6hhY7hrMoOO8R/OaX
-	BzQSMIJumjl9zpmNJy
-X-Received: by 2002:aa7:d746:0:b0:6b1:bbbf:c8da with SMTP id
- 4fb4d7f45d1cf-6b4d467f117mr6727840a12.17.1793718775223; Tue, 03 Nov 2026
- 07:12:55 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HyDteQG2
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09A721F000C1;
+	Tue,  3 Nov 2026 16:26:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793723195;
+	bh=88x5nWCU4/5DUnm5J75+/44oJREtwTCj+m3lJcaJoNE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=HyDteQG2VBDz2pwudxJvRFZ3NzuhMM1n/qoJyRpSIEa+4sIo8qfNjCKCMkx9fqPnu
+	 PTXEB3HB8c+csEYJbUqrD18YNji+Wb3P0nPR4rCDriU41qd0d35Q951xfxtaew6zqD
+	 xTRV7HQa/evoV4YEWVb3yEGxlVh8/pDAOnR650sPVOaA2QtXNMiUjYtFVGzVyuFmxJ
+	 cuqSFcaDMPcPNDAwdq/HarCHKLW8nQ/TcudxBJnTO/IQN1HpQ6LTm2xHx92xHn7YRV
+	 9GYQVIg2n29fkajQrtiWC1hueIuFYRrAfwMXbzDr3+UFxfeou5MMiBIFbN+ZYhp4th
+	 RFlMkVbcaKQDw==
+Date: Tue, 3 Nov 2026 17:26:21 +0100
+From: Christian Brauner <brauner@kernel.org>
+To: Chuck Lever <cel@kernel.org>
+Cc: linux-fsdevel@vger.kernel.org, 
+	Linus Torvalds <torvalds@linux-foundation.org>, Jann Horn <jannh@google.com>, Josef Bacik <josef@toxicpanda.com>, 
+	Chris Mason <mason@kernel.org>, Jeff Layton <jlayton@kernel.org>, NeilBrown <neil@brown.name>, 
+	Eric Dumazet <edumazet@kernel.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>, 
+	Greg Kroah-Hartman <gregkh@suse.de>, Joel Granados <joel.granados@kernel.org>, 
+	Kees Cook <kees@kernel.org>, Jan Kara <jack@suse.cz>, Jan Kara <jack@suse.com>, 
+	linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org, linux-acpi@vger.kernel.org, 
+	linux-kselftest@vger.kernel.org, linux-s390@vger.kernel.org, 
+	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>, linux-um@lists.infradead.org, linux-wireless@vger.kernel.org, 
+	Linuxppc Dev <linuxppc-dev@lists.ozlabs.org>, netdev@vger.kernel.org, ntfs3@lists.linux.dev, 
+	platform-driver-x86@vger.kernel.org, coreteam@netfilter.org, kexec@lists.infradead.org, 
+	linux-pci@vger.kernel.org, linux-sound@vger.kernel.org, netfilter-devel@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, ibm-acpi-devel@lists.sourceforge.net, 
+	jfs-discussion@lists.sourceforge.net, linux-alpha@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-cifs@vger.kernel.org, linux-fbdev@vger.kernel.org, 
+	linux-hwmon@vger.kernel.org, linux-mm@kvack.org, linux-sh@vger.kernel.org, 
+	linux-usb@vger.kernel.org, samba-technical@lists.samba.org, sparclinux@vger.kernel.org, 
+	linux-m68k@lists.linux-m68k.org, linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-atm-general@lists.sourceforge.net, Takashi Iwai <tiwai@suse.de>, linux-input@vger.kernel.org, 
+	linux-raid@vger.kernel.org, linux-ext4@vger.kernel.org, linux-modules@vger.kernel.org, 
+	linux-debuggers@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH RFC 27/38] sunrpc: make queue_wait a global wait queue
+ again
+Message-ID: <20261103-lufttemperatur-absondern-zweifach-31d272ad55ab@brauner>
+References: <20261102-work-procfs-bugfixes-v1-0-59422ed3e465@kernel.org>
+ <20261102-work-procfs-bugfixes-v1-27-59422ed3e465@kernel.org>
+ <16f91f93-16b4-49b1-b7fa-cec69759c349@app.fastmail.com>
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -105,262 +79,72 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261102-perf-alpha-profileme-v3-0-4bf6e1dda733@gmail.com> <20261102-perf-alpha-profileme-v3-2-4bf6e1dda733@gmail.com>
-In-Reply-To: <20261102-perf-alpha-profileme-v3-2-4bf6e1dda733@gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Tue, 3 Nov 2026 16:12:44 +0100
-X-Gm-Features: AclHuK-5MktQVkWH25f7cHD8D0vNLr-mwxWg2ZtpgvT0msziqP_pJU8QaFNmgoE
-Message-ID: <CA+=Fv5QxqE08ZE+FWUhp44=bNypEpqx_JYZH3ELzu+nMD1HpbA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] perf python: Add alpha-profileme.py
-To: Matt Turner <mattst88@gmail.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
-	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
-	Mark Rutland <mark.rutland@arm.com>, 
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, 
-	Ian Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>, 
-	James Clark <james.clark@linaro.org>, linux-alpha@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <16f91f93-16b4-49b1-b7fa-cec69759c349@app.fastmail.com>
 
-Hi Matt,
+On Mon, Nov 02, 2026 at 10:12:12AM -0500, Chuck Lever wrote:
+> 
+> 
+> On Mon, Nov 2, 2026, at 9:21 AM, Christian Brauner wrote:
+> > Since commit 552d0e17ea04 ("sunrpc: convert queue_wait from global to
+> > per-cache-detail waitqueue") poll() and epoll queue their waiters for a
+> > channel file on the queue_wait head in struct cache_detail. But the
+> > cache_detail can be freed while its channel file is still open and
+> > waited on.
+> >
+> > The procfs channel files of a network namespace are removed when the
+> > namespace goes away. Removing a procfs file waits for the callers that
+> > are in one of its methods right now and then calls ->release on every
+> > file that is still open (cf. close_pdeo()). The waiters that poll() and
+> > epoll left on the head stay queued until their file is really closed.
+> > So:
+> >
+> >   sunrpc_exit_net()
+> >   -> ip_map_cache_destroy()
+> >      -> cache_unregister_net()
+> >         -> remove_cache_proc_entries()
+> >            -> proc_remove()      // ->release, the waiters stay queued
+> >      -> cache_destroy_net()      // kfree(cd)
+> >
+> > and when poll() returns remove_wait_queue() writes to the freed
+> > cache_detail:
+> >
+> >   BUG: KASAN: slab-use-after-free in _raw_spin_lock_irqsave+0x4b/0xa0
+> >   Read of size 1 at addr ff110001131bb570 by task sunrpc-poll-uaf/242
+> >   Call Trace:
+> >    remove_wait_queue+0x22/0x1c0
+> >    poll_freewait+0xc2/0x230
+> >    do_sys_poll+0x9ba/0xd50
+> >    __x64_sys_poll+0x165/0x470
+> >   Freed by task 12:
+> >    kfree+0x267/0x620
+> >    sunrpc_exit_net+0x34/0x80
+> >    ops_undo_list+0x271/0x8d0
+> >    cleanup_net+0x3f3/0x860
+> >
+> > Closing an epoll instance that watches the file gets there through
+> > ep_unregister_pollwait() instead.
+> >
+> > The channel files of a network namespace belong to the root of its
+> > user namespace and cache_open() doesn't check for a capability. So an
+> > unprivileged user can open the channel file of a namespace of its own
+> > from the outside, poll it and let the namespace die.
+> >
+> > Go back to a single static wait queue that never goes away. A wakeup
+> > for one cache wakes the waiters of all caches again but cache_poll()
+> > reports per cache_detail so that's just a spurious wakeup. procfs
+> > should really own the wait queue of its files like kernfs does but
+> > that's nothing for stable.
+> >
+> > Reported-by: Chris Mason <mason@kernel.org>
+> > Fixes: 552d0e17ea04 ("sunrpc: convert queue_wait from global to 
+> > per-cache-detail waitqueue")
+> > Cc: stable@vger.kernel.org
+> > Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
+> 
+> Acked-by: Chuck Lever <cel@kernel.org>
 
-On Tue, Nov 3, 2026 at 3:19=E2=80=AFAM Matt Turner <mattst88@gmail.com> wro=
-te:
->
-> perf report shows where Alpha ProfileMe samples land but cannot
-> aggregate the raw status attached to them.
->
-> Add a standalone script, using the perf Python module, that summarizes
-> it by symbol or, with --pc, by instruction, in the style of DCPI: the
-> fraction of samples killed on a wrong path, not retired, mispredicted,
-> taken or stalled, the mean PCTR1 window count, and trap counts by type.
-> Mispredict and trap types are only counted when I_STAT[TRP] is set,
-> since they are stale otherwise. Redirect traps are counted by their
-> PALcode entry offset in PMPC.
->
-> Raw data is only read from cpu PMU events, as a tracepoint's payload can
-> pass for ProfileMe status. Rows are kept apart by PCTR_CTL[SL1], as a
-> mean over two things PCTR1 can count means nothing.
->
-> On an EV7, sampling a loop whose branch tests random data reports that
-> branch mispredicted in 21% of its samples, and 0% with sorted data.
->
-> Signed-off-by: Matt Turner <mattst88@gmail.com>
-> ---
->  tools/perf/python/alpha-profileme.py | 172 +++++++++++++++++++++++++++++=
-++++++
->  1 file changed, 172 insertions(+)
->
-> diff --git a/tools/perf/python/alpha-profileme.py b/tools/perf/python/alp=
-ha-profileme.py
-> new file mode 100755
-> index 000000000000..366b288c6e1b
-> --- /dev/null
-> +++ b/tools/perf/python/alpha-profileme.py
-> @@ -0,0 +1,172 @@
-> +#!/usr/bin/env python3
-> +# SPDX-License-Identifier: GPL-2.0
-> +"""Summarize Alpha ProfileMe samples.
-> +
-> +Aggregates the ProfileMe status that the Alpha cpu PMU attaches to each
-> +sample as PERF_SAMPLE_RAW data, by symbol or, with --pc, by instruction.
-> +
-> +Record with raw data, e.g.:
-> +  perf record -R -e instructions:p -- ./workload
-> +  alpha-profileme.py [-i perf.data] [--pc] [--top N]
-> +
-> +Columns:
-> +  samples   ProfileMe samples attributed to the row
-> +  killed%   profiled instruction killed before it was mapped (PM_KILLED_=
-BM)
-> +  invalid%  instruction did not trap and did not retire valid (VAL clear=
-)
-> +  mispr%    conditional branch mispredicted (TRP and MIS)
-> +  taken%    TAK set; only meaningful for rows that are conditional branc=
-hes
-> +  stall%    instruction stalled between fetch and map (PM_STALLED)
-> +  pctr1     mean PCTR1 count during the window; what it counts depends o=
-n
-> +            the event: inum retire delay for cycles:p, window cycles for
-> +            instructions:p, Bcache misses for bcache-misses:p and Mbox
-> +            replay traps for cpu/mbox-replay/p
-> +  traps     trap counts by type, only for samples with TRP set
-> +
-> +Samples from events that set PCTR1 to count different things are printed
-> +in separate tables, as their means cannot be compared.
-> +"""
-> +from __future__ import annotations
-> +
-> +import argparse
-> +from collections import defaultdict
-> +import struct
-> +import sys
-> +from typing import Optional
-> +import perf
-> +
-> +TRAP_TYPES =3D {
-> +    0: "replay", 2: "dtb2-3l", 3: "dtb2-4l", 4: "fen", 5: "unalign",
-> +    6: "dtb1", 7: "dfault", 8: "opcdec", 10: "mchk", 12: "arith",
-> +    14: "mt_fpcr", 15: "reset",
-> +}
-> +REDIRECTS =3D {0x481: "iacv", 0x581: "itbmiss", 0x681: "intr"}
-> +PCTR1_NAMES =3D ("cycles", "retire delay", "bcache misses", "mbox replay=
-s")
-> +SAMPLE =3D struct.Struct("<IQQQ")
-> +
-> +
-> +class Row:
-> +    """ProfileMe status totals for one symbol or instruction."""
-> +    def __init__(self) -> None:
-> +        self.samples =3D 0
-> +        self.killed =3D 0
-> +        self.invalid =3D 0
-> +        self.mispredict =3D 0
-> +        self.taken =3D 0
-> +        self.stalled =3D 0
-> +        self.pctr1 =3D 0
-> +        self.traps: dict[str, int] =3D defaultdict(int)
-> +
-> +
-> +def pct(n: int, d: int) -> float:
-> +    """Return n as a percentage of d."""
-> +    return 100.0 * n / d if d else 0.0
-> +
-> +
-> +class ProfileMe:
-> +    """Aggregates ProfileMe raw sample data."""
-> +    def __init__(self, by_pc: bool, top: int) -> None:
-> +        self.by_pc =3D by_pc
-> +        self.top =3D top
-> +        # Keyed by PCTR_CTL[SL1], which sets what PCTR1 counts.
-> +        self.tables: dict[int, dict[str, Row]] =3D defaultdict(lambda: d=
-efaultdict(Row))
-> +        self.skipped =3D 0
-> +        self.session: Optional[perf.session] =3D None
-> +
-> +    def process_event(self, sample: perf.sample_event) -> None:
-> +        """Add one sample's ProfileMe status to its row."""
-> +        raw =3D sample.raw_buf
-> +        # Raw data from another PMU or a tracepoint is not ProfileMe sta=
-tus.
-> +        if (sample.evsel.type not in (perf.TYPE_HARDWARE, perf.TYPE_RAW)=
- or
-> +                not raw or len(raw) < SAMPLE.size):
-> +            self.skipped +=3D 1
-> +            return
-> +        version, pmpc, i_stat, ctl =3D SAMPLE.unpack_from(raw)
-> +        if version < 1:
-> +            self.skipped +=3D 1
-> +            return
-> +
-> +        symbol =3D sample.symbol or "[unknown]"
-> +        if self.by_pc:
-> +            if pmpc & 1:
-> +                key =3D f"PAL+{pmpc & 0x7fff:#x}"
-> +            else:
-> +                key =3D f"{pmpc & ~3:#018x} {symbol}"
-> +        else:
-> +            key =3D f"{sample.dso or '[unknown]'} {symbol}"
-> +
-> +        r =3D self.tables[(ctl >> 2) & 3][key]
-> +        r.samples +=3D 1
-> +        trp =3D (i_stat >> 39) & 1
-> +        if (ctl >> 26) & 1:
-> +            r.killed +=3D 1
-> +        if not trp and not (ctl >> 1) & 1:
-> +            r.invalid +=3D 1
-> +        if ctl & 1:
-> +            r.taken +=3D 1
-> +        if (ctl >> 27) & 1:
-> +            r.stalled +=3D 1
-> +        r.pctr1 +=3D (ctl >> 6) & 0xfffff
-> +
-> +        redirect =3D REDIRECTS.get(pmpc & 0x7fff) if pmpc & 1 else None
-> +        if redirect:
-> +            r.traps[redirect] +=3D 1
-> +        elif trp:
-> +            if (i_stat >> 40) & 1:
-> +                r.mispredict +=3D 1
-> +            else:
-> +                tt =3D (i_stat >> 34) & 0xf
-> +                r.traps[TRAP_TYPES.get(tt, "other")] +=3D 1
-> +
-> +    def print_totals(self) -> None:
-> +        """Print the busiest rows of each table."""
-> +        total =3D sum(r.samples for rows in self.tables.values() for r i=
-n rows.values())
-> +        print(f"{total} ProfileMe samples, {self.skipped} without Profil=
-eMe data")
-> +        for sl1, rows in sorted(self.tables.items()):
-> +            print(f"\npctr1 counts {PCTR1_NAMES[sl1]}:")
-> +            self.print_table(rows)
-> +
-> +    def print_table(self, rows: dict[str, Row]) -> None:
-> +        """Print the busiest rows of one table."""
-> +        print(f"{'samples':>8} {'killed%':>7} {'invalid%':>8} {'mispr%':=
->6} "
-> +              f"{'taken%':>7} {'stall%':>6} {'pctr1':>7}  {'location':<4=
-0} traps")
-> +        ordered =3D sorted(rows.items(), key=3Dlambda kv: kv[1].samples,=
- reverse=3DTrue)
-> +        for key, r in ordered[:self.top]:
-> +            traps =3D " ".join(f"{k}=3D{v}" for k, v in
-> +                             sorted(r.traps.items(), key=3Dlambda kv: -k=
-v[1]))
-> +            print(f"{r.samples:8d} {pct(r.killed, r.samples):7.1f} "
-> +                  f"{pct(r.invalid, r.samples):8.1f} "
-> +                  f"{pct(r.mispredict, r.samples):6.1f} "
-> +                  f"{pct(r.taken, r.samples):7.1f} "
-> +                  f"{pct(r.stalled, r.samples):6.1f} "
-> +                  f"{r.pctr1 / r.samples:7.1f}  {key:<40} {traps}")
-> +
-> +    def run(self, input_file: str) -> None:
-> +        """Run the session."""
-> +        self.session =3D perf.session(perf.data(input_file), sample=3Dse=
-lf.process_event)
-> +        try:
-> +            self.session.process_events()
-> +        finally:
-> +            # Break the reference cycle between perf.session and self.pr=
-ocess_event
-> +            # because perf.session lacks cyclic GC support (tp_traverse)=
-.
-> +            self.session =3D None
-> +        self.print_totals()
-> +
-> +
-> +def main() -> None:
-> +    """Main function."""
-> +    parser =3D argparse.ArgumentParser(description=3D"Summarize Alpha Pr=
-ofileMe samples")
-> +    parser.add_argument("-i", "--input", default=3D"perf.data", help=3D"=
-Input file")
-> +    parser.add_argument("--pc", action=3D"store_true", help=3D"aggregate=
- by instruction")
-> +    parser.add_argument("--top", type=3Dint, default=3D30, help=3D"rows =
-to print")
-> +    args =3D parser.parse_args()
-> +
-> +    analyzer =3D ProfileMe(args.pc, args.top)
-> +    try:
-> +        analyzer.run(args.input)
-> +    except IOError as e:
-> +        print(e, file=3Dsys.stderr)
-> +        sys.exit(1)
-> +
-> +
-> +if __name__ =3D=3D "__main__":
-> +    main()
->
-> --
-> 2.55.0
->
-
-I tested alpha-profileme.py with fresh ES40 recordings. It kept
-window cycles and retire delay in separate tables, and it skipped
-the unrelated tracepoint payload in my test. I also decoded the
-ES40 recordings successfully on x86-64.
-
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
+Fwiw, I have a patch series on top of this that makes procfs own the
+waitqueue and then this whole UAF issues goes away structurally and you
+get to elide that global thing here.
