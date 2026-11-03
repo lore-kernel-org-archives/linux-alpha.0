@@ -1,100 +1,48 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.224.45
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793693375;
-	b=s4bi4T8eZr1OCkx8dnX5/2nVf9f7DQkxj9h139+oN6xpCrY202BJj/JFWNA3Rr1IXUL+
-	 aF2PHHFqooC4AdP2TMeGqzYEvmWXHlWBGy9SguoHDIANh5XtRXcOYXREw/EV/MOKsQyJN
-	 qKBTSA6WHusvIkoJTQx8Fl3iAeShyhcGi64i9F+UtkzncVd3TJOzdfyPFGQw2l/cQcspb
-	 yWbznuDyKViixRtN5qdaKZOJEO2AdSu0mmJA+FdPiaVs9REuFXH6ozuZ/3/G1HvJcvq0f
-	 Imp8X9WrRf6JDAmOpXeUzQZz4GzIgAAfaDvQypjYk6vTkGkQtD0/oiLrfjTCsnRkNLA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793693375;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=uco2Ur8UEZmqW/9CJQ0xjIkmj7Rk/+V8qinnt88vYRo=;
-	b=vh/lH5rzF075gt0UGR2ZXyHqUVL/8JI5PZmgjw5rBKxx3YfLAWGot9rW/dYutp4Zvmtu
-	 IHvvHhifvfxs4NWmOqAD14cTj1mgIis3NpxK9qGKu0Kd4z/9sYa78s/6ImZxgr+GacZVS
-	 SeeMSP/Ed50ckO9dcvoCPOYBtMVkkAIygmln/nEH51BRMgeNtHoYN5H1/EStLA/dlUPPu
-	 C0wqutagejIhPuDT5ejPyFndFVYYzqj74X/XYiicxCdl4yHE69KzfeR9YhihBUa8oUnRx
-	 re2yr4jsggn7VjpW/ijBCA4q3zGnsILNO0tWxkcq9ZdUeOrHY9ohegxEx+k+FtMdLmw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Zu1BS2I0;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.224.45
-Received: from mail-yx1-f45.google.com (mail-yx1-f45.google.com [74.125.224.45])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793696987;
+	b=jOndgfZMPQPFhWLm9VG0yZSFCgQ64pa7sfshbqfwtpnpwaWt0n2C3f/0/3yFn8bS0CGj
+	 XU/cV0huc0h/bFAgUGvpeS9NHBnqUnSZMyhcgfmyWLkkp94IIHv0Zh5+a4e/MCS4ZxlGf
+	 Yj/+b1z7b3G7JZ/Gg4YsHJz8z383Ka7IBWKJv4ZzMbcSsNHz0JKSTLSDdRZyfzkOWqcGT
+	 gCwjZ84T5OnBUNLQnRGBitQwdcSyxbsYdTSw5+yBh664oX2jddUITkadUUlWf0DJDVJGf
+	 3tt/ElPUaWDly5AbLVFi6isxDCCP9J9ASoFxnL/pqYXqpnbHgjUKXDHVua//OY9BcoA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793696987;
+	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:
+	 X-Mailer;
+	bh=0sVsx2ECqjItiIs8s497yPBInJ/alQD9PApMYIDhMMg=;
+	b=XFnFMM0te51GJsPhdYW/9v8cycsjI2UIosEzRj96B2lBd4wvf20gKsiIreA0i0qeQ51O
+	 A/NJbtZXvuMBIs/RFtBda5cScATLqS6HQQ2TeFZUVwuXjgRh6n4jZpww8hgANT5mJswP3
+	 2n91iSMHxEpfSJCuLCXXLE6np82e4q0uv8uiuNoprtg1kqVeZZLkT0TjwZcro2Y39mvLF
+	 Ena+M5U14UJPVWCT3IerRwIxp81Fbkvh3pYOqB2wah3x/iYpmwQgx9prhUQjys0J5L8WC
+	 YHu+wQf2wjwkmrvLehHIc4iDSP4hrFOdj3x9P/i4XfxXBrh2OAhbl0EfjCmSDrz/0nw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ew0TMgcb;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8579606A330
-	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 08:09:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B8579606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47C31606A329;
+	Tue,  3 Nov 2026 09:09:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Zu1BS2I0
-Received: by mail-yx1-f45.google.com with SMTP id 956f58d0204a3-677d35fd1d2so3635350d50.1
-        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 00:09:34 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793693374; cv=none;
-        d=google.com; s=arc-20260327;
-        b=NaULNs7tqIyr1I9zq50H2b8qDeEM8/rLCtKA+fYyYDNJq5idSon0Pbeo9p3FzQXmhP
-         o+i6GJT4zaqjD5FIK0bk5hKuL1KtjpOQPRK6zpnzTrqFV1/k4laAsbPc7g2DFJsySiUg
-         76FH76GrVPQb3PK2jEI0e+eHDwfCc/z2r5CVs/F+FCq5HqQPcrYCq/IiLJbeuSl/zkhc
-         0168/jOvPdPnGWo/n/wwZhgcT0nH64WzGwGkAwGaYOabYK06IZRyJ962kRjY82OyXI4G
-         eB8lqwZUquTN4IvxwHkwYARqr16isjRdzNh4d6cx7U7xAdYWfs/1qZjtfnN3bNWp0Z8r
-         XXsQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=uco2Ur8UEZmqW/9CJQ0xjIkmj7Rk/+V8qinnt88vYRo=;
-        fh=ZRWVucDuyxWYFKwsOSdQpszVRd2KaKV9lNcRT7eO4Rc=;
-        b=o+J8u4agRgdsDKqk9ow+pjAhoCOB94SKz0WiOttGNEULUe67hgOo5z1OuSnbFuGUYx
-         XJ8Sg4BSnq3YIbxT/h4dA9bOILt52I8n9RMyTR4OSHF9likdh4oOO6dgGUI2xxMX9SSQ
-         jKvnArdkzErIoW8XVJjT4xCBJgMha7wx1uWVNDJzVCFzcAWMZbmY4lEuJIKN0cS8n3aT
-         n45NyYGK8a6i8uRXwnJuaSIQrxyz2D6V+la37A/vyHkgrv4rELfYwRNaQ7X8Klw5lHin
-         Sl7E57qxr+GRSzvKMXAItxPfMEDdOPU9rgNYnuk61zijDzH6N0rb+cOf2dTb2hjxeomI
-         Iqbg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793693374; x=1794298174; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=uco2Ur8UEZmqW/9CJQ0xjIkmj7Rk/+V8qinnt88vYRo=;
-        b=Zu1BS2I0O/mUVyGvLylpEzEwz28R1CQXBRIdrANS8QvtA6Rn7J7nEHNPvnC2J2RY0R
-         I02SgfZ4WrQb3X49+emq+cduy0AdAGJVkwkLVb4f9oN7frUz2LSIUnAcJubETdnuSjZZ
-         Olw7Ia2XESWh0gSfQsFoK1wUGzDmK/7GJDTqABfaPJ8101I4iZzmT0RRXbq4weAWA6yV
-         hST4SPeJIE1qzEOW/dUFm60DLffiBjS+UMIj8dp6vTsXhYr4IWCVOuobHx53ZS2stb8V
-         H18FS6awNF0PmDtFaj7DyHHX4ZQPMMIFzQqBs7vdgDrmUHJPWquvH78GwlvKWBOAxklJ
-         C8PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793693374; x=1794298174;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=uco2Ur8UEZmqW/9CJQ0xjIkmj7Rk/+V8qinnt88vYRo=;
-        b=GbyhSbC5m2TudJ75wnzctZ/cINs7jSyJrf7cx5BrPMljsUXX+LaZlYYsNQ5jDNltWn
-         fZKcrO85AvJ6CiC9FdUf1ZNUsfMllwwuCb9sLJa4dLf7sysRn8FSCGnHfP9qIQi6uYIZ
-         YcuaMRTLJ/mZkIvS68ul1X5oR9zrkgGDXPWZs46NetVCHMna5AFnagLd/Z0bqPBwTh/S
-         rvkPX1j05YSGbQNRnuqtQzN666EjkV1vcUVQ5x7CclD2VP+eKgnQ20SvwVRMLPOWXWFU
-         qWy91DtlmBVKFKtrBGA8YUq1p7ucssaOuSL6d5axqY+Senhd0oboYc1dAzWOFZSwxkrP
-         GW9Q==
-X-Forwarded-Encrypted: i=1; AKwUvBwcC4ttb+8Hj6CnIqWXZBhnrIychUGWrTNKGlBaWfxOYCyuBmHl53nzcvjjUIuO26g64bZpqPfbGXqKoQ==@vger.kernel.org
-X-Gm-Message-State: APuU4Z9HXQJvFelpNNbMeoAgUOb3d/E/MdX3aadrVPEv8c9cou4xyELh
-	nsH4pqjmZFKjWGPTZbnA7nB5Ab+p6r/3P7gaqmrbCKvFc/bIagLcTW/nteO5vm7N7f1tPJtczVs
-	HHPikzNh8nbTdBLUdmddz4BpnbAAmzHs=
-X-Gm-Gg: AYBFou3v4PcgHda7HilLbgp5PcRKpruhEgA+MUVG7iqVw9yDd+XwLVWcFPgiICycnj2
-	zbAxsc4hZpjYgOiksJF8ziSklwTMKscnMJdXe4GfVji1Xot9qigwyFgc02dZt7K4qOoQnSVIut1
-	zmebRDJLG4uWZv1ybfTfjq7bxRyQEBlS8LhUyKy6QlZKdU9NMZHO9cDgOWV1Kp0h+KunhgN9yVt
-	0i0+QLnQquvdO1s/vwyrdHimahoLoj/AWKBoD2ERjuEs6pG9s2YVofT4oZ6GhryFhMsEbpf6onA
-	an8oq8ng0yU6Cynxg/hKkU3x3kckEx5fEiv0j6bAzgFxtn68XNYunHFtgr1/WocOsWSBPPntiWj
-	xkuCijMLQRrKP5McmZFaeomrIpQClGa6hMrFzeFMMqPRaOz/spNcTqCOR6obkeV2asRQNEw==
-X-Received: by 2002:a05:690e:488d:20b0:679:a42b:f0cb with SMTP id
- 956f58d0204a3-67ba4fa410bmr4995779d50.17.1793693373507; Tue, 03 Nov 2026
- 00:09:33 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ew0TMgcb
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 452B01F000C1;
+	Tue,  3 Nov 2026 09:09:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793696985;
+	bh=0sVsx2ECqjItiIs8s497yPBInJ/alQD9PApMYIDhMMg=;
+	h=From:Date:Subject:To:Cc;
+	b=Ew0TMgcbY06/NYC4JZyEWa/Z6ta0YEwvLpIXHVNS9GACMTlTWWHwUTS6MISat20gX
+	 v8JC9UxhGttj9VGDZWO+BwLixl370KGHaVh4dxnyh6pYqLvEOhE5HoGsG4W/MPywsn
+	 K/LHgOz6VhfuqB5qTOGBV/jOyYvhnw7Aq6c5ufPfo9r9Mg8H+qORHNyiqD3JUzZLc7
+	 o/g/tyuFXBQsNa5a7vnAiw0kDHEUFsKE/ZiHjEQR+AwpxdWMOGkTVvYc26cbN5+7fr
+	 8z8B2uQKzKvc29zdIHICb4RlYZncxUQyvUuDPqN2fRY2plN4Fm+Dl7L/PWNNS4CrNs
+	 YHz28al1c291Q==
+From: Linus Walleij <linusw@kernel.org>
+Date: Tue, 03 Nov 2026 10:09:42 +0100
+Subject: [PATCH] alpha: Use symbol assignment in SYM_END
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -104,150 +52,71 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261102-alpha-profileme-v4-0-61e00f5e1da8@gmail.com> <20261102-alpha-profileme-v4-4-61e00f5e1da8@gmail.com>
-In-Reply-To: <20261102-alpha-profileme-v4-4-61e00f5e1da8@gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Tue, 3 Nov 2026 09:09:20 +0100
-X-Gm-Features: AclHuK8ply3pJX1L9_Bu09MY9iz-O5YDE5hMEC7B4ENAaYi_sdcMs5-aNdaWce8
-Message-ID: <CA+=Fv5RErSDNsb-qc_P+jBxBJYSPv5qkJhN-dLj7EankCsYOSw@mail.gmail.com>
-Subject: Re: [PATCH v4 4/7] alpha/perf: do not report user registers from the
- entry code
-To: Matt Turner <mattst88@gmail.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Peter Zijlstra <peterz@infradead.org>, 
-	Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
-	Mark Rutland <mark.rutland@arm.com>, 
-	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, 
-	Ian Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>, 
-	James Clark <james.clark@linaro.org>, linux-alpha@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261103-alpha-compile-v1-1-9e93e2260a9f@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MQQqAIBBA0avErBOcwoquEi1ExxywEoUIxLsnL
+ d/i/wKZElOGtSuQ6OHM99WAfQfG6+sgwbYZBjlMiHIUOkSvhbnPyIEEOWtJLTOiMtCamMjx+/+
+ 2vdYP4ES2iF8AAAA=
+X-Change-ID: 20261103-alpha-compile-efdde587115c
+To: Richard Henderson <richard.henderson@linaro.org>, 
+ Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ kernel test robot <lkp@intel.com>, Linus Walleij <linusw@kernel.org>
+X-Mailer: b4 0.16.0
 
-Hi Matt,
+Alpha uses the .set directive to select assembler options, so the
+symbol assignment emitted by the generic SYM_END macro fails to assemble.
+This breaks COMPILE_TEST builds left and right, e.g.:
 
-On Tue, Nov 3, 2026 at 4:02=E2=80=AFAM Matt Turner <mattst88@gmail.com> wro=
-te:
->
-> perf_get_regs_user() returns task_pt_regs() whenever a sample of a user
-> task lands in the kernel. But exception entry runs with interrupts
-> enabled, so the sample can land before the entry code has saved the user
-> registers. Only the part PALcode pushed is valid then. An interrupt
-> taken on the first instruction of entUna, say, pushes its own frame on
-> top of PALcode's, which overlaps the rest of the user frame, so r7 and r8
-> read as the interrupt's r23 and r24.
->
-> Report no user registers while the interrupted PC is in the entry code.
-> Such a sample also gets no user stack dump. The range is all of the entry
-> code from entInt to the end of the save in entSys, so it also drops the
-> registers of samples that land after they were saved there.
->
-> An interrupt that nests on one taken in the entry code still reads the
-> incomplete frame, as its own PC has left the entry code.
->
-> Fixes: 9280e99d87dd ("alpha: add HAVE_PERF_REGS and HAVE_PERF_USER_STACK_=
-DUMP support")
-> Assisted-by: Claude:claude-opus-5-5
-> Signed-off-by: Matt Turner <mattst88@gmail.com>
-> ---
->  arch/alpha/include/asm/ptrace.h | 12 ++++++++++++
->  arch/alpha/kernel/entry.S       |  9 +++++++++
->  arch/alpha/kernel/perf_regs.c   | 13 +++++++++++++
->  3 files changed, 34 insertions(+)
->
-> diff --git a/arch/alpha/include/asm/ptrace.h b/arch/alpha/include/asm/ptr=
-ace.h
-> index 45d1229344b6..1400ba3e7d43 100644
-> --- a/arch/alpha/include/asm/ptrace.h
-> +++ b/arch/alpha/include/asm/ptrace.h
-> @@ -14,6 +14,18 @@
->  #define task_pt_regs(task) \
->    ((struct pt_regs *) (task_stack_page(task) + 2*PAGE_SIZE) - 1)
->
-> +/*
-> + * Whether pc is in entry code that may not have completed the frame at
-> + * task_pt_regs(). See entry.S.
-> + */
-> +static inline bool in_entry_save_code(unsigned long pc)
-> +{
-> +       extern char __entry_save_start[], __entry_save_end[];
-> +
-> +       return pc >=3D (unsigned long)__entry_save_start &&
-> +              pc < (unsigned long)__entry_save_end;
-> +}
-> +
->  #define current_pt_regs() \
->    ((struct pt_regs *) ((char *)current_thread_info() + 2*PAGE_SIZE) - 1)
->
-> diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
-> index 790389a15c3c..b8d7804e5aa3 100644
-> --- a/arch/alpha/kernel/entry.S
-> +++ b/arch/alpha/kernel/entry.S
-> @@ -186,8 +186,14 @@
->
->  /*
->   * Non-syscall kernel entry points.
-> + *
-> + * Between __entry_save_start and __entry_save_end the frame at task_pt_=
-regs()
-> + * may not be complete. perf uses these to avoid reading it.
->   */
->
-> +       .globl  __entry_save_start
-> +__entry_save_start:
-> +
->  CFI_START_OSF_FRAME entInt
->         SAVE_ALL
->         lda     $8, 0x3fff
-> @@ -479,9 +485,12 @@ entSys:
->         lda     $8, 0x3fff
->         bic     $sp, $8, $8
->
-> +       /* PAL_callsys does not save these, unlike the other entries. */
->         stq     $16, SP_OFF+24($sp)
->         stq     $17, SP_OFF+32($sp)
->         stq     $18, SP_OFF+40($sp)
-> +       .globl  __entry_save_end
-> +__entry_save_end:
->
->         mov     $0, $1
->         lda     $16, 7
-> diff --git a/arch/alpha/kernel/perf_regs.c b/arch/alpha/kernel/perf_regs.=
-c
-> index 33ea2e831ba0..894683851b30 100644
-> --- a/arch/alpha/kernel/perf_regs.c
-> +++ b/arch/alpha/kernel/perf_regs.c
-> @@ -59,6 +59,19 @@ u64 perf_reg_abi(struct task_struct *task)
->  void perf_get_regs_user(struct perf_regs *regs_user,
->                         struct pt_regs *regs)
->  {
-> +       /*
-> +        * Exception entry runs with interrupts enabled, so a sample can =
-land
-> +        * before the entry code has saved the user registers. PALcode ha=
-s
-> +        * pushed only its part of the frame, and the rest may hold an
-> +        * interrupt's frame. An interrupt that nests on top of one taken=
- here
-> +        * is not caught, as its PC has left the entry code.
-> +        */
-> +       if (in_entry_save_code(regs->pc)) {
-> +               regs_user->regs =3D NULL;
-> +               regs_user->abi =3D PERF_SAMPLE_REGS_ABI_NONE;
-> +               return;
-> +       }
-> +
->         regs_user->regs =3D task_pt_regs(current);
->         regs_user->abi =3D perf_reg_abi(current);
->  }
->
-> --
-> 2.55.0
->
+  Error: junk at end of line, first unrecognized character is `,'
+  Error: .size expression for bcm6846_runner_start does not evaluate to a constant
 
-Tested on my AlphaServer ES40. Across all three CPUs, the syscall
-probe sampled the newly protected part of entSys 180 times. Every
-sample correctly omitted the user registers and stack. I also saw
-this in all 173 hits from separate perf recordings.
+Override SYM_END to use an ordinary symbol assignment for the calculated
+size. Preserve the symbol type, size and local size symbol while leaving
+other architectures unchanged.
 
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
-Tested-by: Magnus Lindholm <linmag7@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202611031620.n4ptlpo7-lkp@intel.com/
+Signed-off-by: Linus Walleij <linusw@kernel.org>
+---
+The generic SYM_END uses .set for symbol assignment, but Alpha interprets
+.set as an assembler mode directive. Provide an Alpha override using
+ordinary assignment.
+
+Tested the unchanged Runner wrapper with an Alpha-targeted GNU assembler
+2.46.1: the original header reproduces the reported errors, while the
+fixed header assembles without warnings. Symbol sizes and the embedded
+Runner bytes were checked. A full Alpha allyesconfig build was not run.
+
+This patch was prepared with LLM assistance.
+---
+ arch/alpha/include/asm/linkage.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/alpha/include/asm/linkage.h b/arch/alpha/include/asm/linkage.h
+index aa8661fa60dc..a3f0302c92d0 100644
+--- a/arch/alpha/include/asm/linkage.h
++++ b/arch/alpha/include/asm/linkage.h
+@@ -6,4 +6,12 @@
+ #define SYSCALL_ALIAS(alias, name)					\
+ 	asm ( #alias " = " #name "\n\t.globl " #alias)
+ 
++#ifdef __ASSEMBLY__
++/* Alpha uses .set for assembler options, not symbol assignments. */
++#define SYM_END(name, sym_type)				\
++	.type name sym_type ASM_NL			\
++	.L__sym_size_##name = . - name ASM_NL		\
++	.size name, .L__sym_size_##name
++#endif
++
+ #endif
+
+---
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+change-id: 20261103-alpha-compile-efdde587115c
+
+Best regards,
+--  
+Linus Walleij <linusw@kernel.org>
+
