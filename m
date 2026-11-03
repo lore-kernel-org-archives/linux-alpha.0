@@ -1,83 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793742195;
-	b=Lnany2pmQ3l+9JwBitEEdldBk6O9WSZGAfrYVD8Zqf3bkJW87ndM9DaDNSIhMLqktbBJ
-	 usJ4omlm8eYf5avKxYxuu73AIrbKWps07HaLxMmovAb5R2u/lYB9efhRPdLboaau6nhIU
-	 0iSSo4kqjaJCpmP1LfVoqn0BpQF0detXnfNh1Y9hJTBuMo3MFI/V3TtecqwcuRiBGRnyx
-	 yby8MUX3A7WQn6PRtlK+CgllC41HNT1kUrhOAEDp1F7DO42TSgd9NFD7AssWfO+35bs36
-	 hxDZ0DJCTj6Xn57r6tGIMTFvhfUkmerDlbt8s4wVu6UHluF9cc5AojenaH1CowfgwRQ==
+	t=1793742196;
+	b=HE0AViM3c0weV3l0epYVIr4wYMCDUP8U7Luuh8qYf67weYd/7Fjif1p/a7azr6PP0kCr
+	 iPmWxjqwgL8h+u4v1uxwaM5i1hHF4ntemuZJckbfQgVTfQ8QVncSpfKcTJ2ENcedjqdFY
+	 uWohHBEEa1CLI6GYgFEOkevEpdryBVcWLY2+tggB4syDAchtE2+Vire0ZAr2Wt4ZiG+nl
+	 qwC2D1DN3N0yLpknRy3MlySxKNYrJUqc/KfgUPrehIewVuFoM4z1qMTGzGZjwQ509bZ1G
+	 v1NYOybAK2CAKM7P1LKjPQa0LRy7GrdPqM8MrKy98QtA6ddWvk4aRxBo5bfLnGgN3Zw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793742195;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793742196;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=lsQbLTCb15SEBz66E/puI9KOwSbRd2cOgYsx7WE88Ls=;
-	b=P6eH3NzrnR7nH1hWICqCER9UKQFrlLN9+XV0DVl8E06YxrNP1feNjifQHaY3SQPHne12
-	 2m58FS9fX55Uj7Ok6zI54naw6FHyyEEzMD2BWWuPsXcAqoNxqJJryOdZSCpCpXKOgu/s/
-	 tAs9De3LxRQJp4UGl8LosiSNCcygPfZWoXWxut6EAJoJgyVwDND4NfcmU+TuVdM6X5TRQ
-	 4F1QFthxlbnzpibOS60XpBuGO6nlIEoN4ySBD4BzZIW3Y8pGsF4CQaxWGufNpY6ssZ6E5
-	 6/ab7eERsffvd+lblzgla/X3ooGMgaC1krKfo0GnFmKEIuWOEmzGG2VqGHsg0JPMJyg==
+	bh=wiixacI9+OIBzgiEEn6eKWz0f2j1hW6VMWT9Hic5AQo=;
+	b=fZRUhmDyq2oFBwU/uY7ngGRnqO6PContD+DjePWC+f9kZd9zjRGYEfdE3GzpNC8nwZ4I
+	 QalP4uWkbRakZgKHOLP7H7iwg56vXQS/Tw2n/DOEumek2F0Vzsa3ePNHf2VkMz321KtGD
+	 dsI53Amp1YNUBgPly0kzSo88BETMPCka7LPCoQ60WJ5A81sKg+QboXRMXdxD77oK2K3MY
+	 H0VfRSDj8+XIeamHGvsBwEbIqnfi8AZKRcgRKJlqVxXIsrTEyWKquCFrkb4ezuVuEic2q
+	 L9co2rDOm9ZL/DdwuZn1fI0MpSc4HWHhaRz+5Cfv7uIOMyBePnVjTTNtw8sp8c7GVRw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=A5CHPewS;
-	arc=none smtp.remote-ip=209.85.208.42
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FQSKpPpr;
+	arc=none smtp.remote-ip=209.85.208.43
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 393BF606A32E
-	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 21:43:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 393BF606A32E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FC8A606A33B
+	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 21:43:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3FC8A606A33B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=A5CHPewS
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-6b1dae0febeso6889114a12.2
-        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 13:43:15 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=FQSKpPpr
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-6b1aa27963eso1812977a12.1
+        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 13:43:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793742194; x=1794346994; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793742195; x=1794346995; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=lsQbLTCb15SEBz66E/puI9KOwSbRd2cOgYsx7WE88Ls=;
-        b=A5CHPewSGSTU2oeHArS+Of4cmMXag/WzykuQsiv+SZXPrjYlsQGklY6SHJ59b2R5Pu
-         xDqfKMN0Hal/bA7PPxq8uR/fD0gM3HHz41jMUmDsFm+nwBbYFNirdgIn2Gy+EvbyvgV+
-         Gqi1iUw1jlYykhd+2Rx7CUwTVVPUl+/wx2iLlOG41MWANizqlcIxA5AgLpprwAQKYgpm
-         Hv8Jn4h5hczWt27TiFa9kt09R/Q+vnjJTBBHfU1FeN7zPUYNXpaO5xBK7OpcaBfuJ7WO
-         2juceEhWRVEveMlYMoy+PkFmqHtTqARMwhNgoJIBC1GL4Nys2eLanVSgRNDhDtJSw1vI
-         gSkg==
+        bh=wiixacI9+OIBzgiEEn6eKWz0f2j1hW6VMWT9Hic5AQo=;
+        b=FQSKpPprvEMgZOOhUwG4A8mNt7T8IA3bh9a/h2e9b4PmWfSRZ3cM+us2pjyqaahOG0
+         Ywdz4gayJ9EjYXZF4En96C9RLaYXV0MAZvK0B8D0mVT1hoEze6ClqEuHkEIdmubu+/SD
+         Q9ZXz0ooOaDkVjj/SFmG87ovZ1PEDGqPIJ24Kd50nT0c3Mfv+lIW9gpa457oJDhGhfGC
+         TpgaXbrwBl5RZLpONNJ+JW5QJpWzhKbDB4KPpuvWgJ7wJaO8Qw8TQ/toRmlLVDtvqOqv
+         xXTSqDljfdrt/4kO5xYaGGLZwhVh9/HGyAdp5mQ6mTOJOuoHBlysQJHsjuxXW2f+AK2A
+         e3yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793742194; x=1794346994;
+        d=1e100.net; s=20260707; t=1793742195; x=1794346995;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=lsQbLTCb15SEBz66E/puI9KOwSbRd2cOgYsx7WE88Ls=;
-        b=ewul8I1LG+4olMc6gwx0ioyyvnzO9bRmJ1UAVAsHDWPCBH7QxM5USohCSNrvQb9TJy
-         h5qTU18X7fxfhvZhExVVoEc/YWjlQtbTrX0mtoiuXwwJn5aN05AC5mHJYEA+SOrOVVy1
-         8g5c9VcKmzzwYsutOL20OnvtBPqmzuugu2puPe+OI4O/ttUYX3SwntjXj2fPtfknMI7y
-         rZ6TR2veADTDcx+6fHqJ5zx9jgLq+cJuDlnNmKe1OhSPDibEHJx5uoNARqJPQVj9vMJa
-         XNyA4rwqYMtGp8yuOew+fFaNXgdkHB9g+DraAkI7+0v61RzYDwHUxjZkicH534WK4YJp
-         pmTA==
-X-Forwarded-Encrypted: i=1; AKwUvBzqyYh/XIcsmeYw89p6kuK6AmI8QwaoPzNk4dPpVIRZdsIN3YBZbETMe2yXH/DD2QGqPh5aX2mres7RvA==@vger.kernel.org
-X-Gm-Message-State: APuU4Z9YRmDcW6pKHu3DvLFuZnMXsEcSZj2I9cAHHpXju+jOjm6p+avv
-	PRbKDa63nqP4yNpyHCrS1q8CPU7hMcEXE/L/PpcT+dQCb9xdtXIBdBCJ
-X-Gm-Gg: AYBFou3peY3sL08bfwE5dEQv5gitWi/Tfb9ftV6ONAUhxc68BrlDb6Rr6MGWq4DYZka
-	PpTaV0rb79X3pZV7Vmy0K9X3DIpmMQjrXkm7W2rBbdPeGbE5jpUqhaPCJfdLNFf+ryGaqHDMRCS
-	Lw3kUajf9q0sbujgbGbC9MgO1RkIr6Y9pSAVsW7YY/Abk/QIIxpWPnjHAVdEuwDSJDW7Pcurbls
-	3oySX55qb3Mwk+sNaK+zOK5GIb/o4UuvNaB06SQJ4IvF30InfDV3ysE0+n4FocQB+lDDPU704oN
-	nL3c2HD8i8oYuCnA/YVv6lP8TLW2JzHd+XR2oJe7tprmwAx9MLaD2AXRo2DuBnUWypfCVRvC6Rs
-	CC+IGk62DU7kBtUPOaXVuDHHH4PYnkjhnZyKTxiNThgEepmKCkMEcrUJrZNHt+40ck78uEINRN3
-	YjZQV8KtB2jb94/vbxWIVfoHp8VmTvxWrDV4+gwojf4Nr5rHO+72C2fpX7wnsyA01crHsej/9FJ
-	8x9Lyr5tGbY8h645BN2KgrGJIy9+zEmJKVDk1UpOpmGpNAiv+DH8knuA8SCEZa4EKyeTwsX1vUS
-	e/+aeG7pWanU+bwDlSByRQQlpFbSClfwc1iTzvtEmIgybDd5xnuBeFYNT5G/gXMK76r0hgc=
-X-Received: by 2002:a05:6402:90c:b0:6aa:f0e:a15f with SMTP id 4fb4d7f45d1cf-6b4d534badfmr10647171a12.38.1793742193445;
-        Tue, 03 Nov 2026 13:43:13 -0800 (PST)
+        bh=wiixacI9+OIBzgiEEn6eKWz0f2j1hW6VMWT9Hic5AQo=;
+        b=RuT1dBCWgo8wJ+V5+TPQJCsU1Ph3ej6udtxWGlBwi/+GysW6Q+AFZWGiX7yWXWKPWn
+         D+z8t5CGLP1USP3ZegpDK0w08HB207pUffCoHM7TpHL8L0vq85FqKO/FHE9XPuyLOcDN
+         /7l2CcTI9PD00h+NDeUqmPrjJCSNgKp/fxsY3SakeKwd44tR/ui3wjewcE4N0KOLipXZ
+         z5tYBNzZCUuqM2y9BZFlVU9MjK6mbz+HTg1PKvvyZNNCUIJOQZ48Jhttk2xNCtWtsx/j
+         BUMb8cUWajEIjd/38x0OLjQ25iNqFkbZBRVhrimBiwbY3+PqQ7n1vYuNcQWqeV33Ztfs
+         6XUQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwmk2HZDSEH9ZAAUzsPbvuNL4Bm0kJzjzphdfgltI+fnVXeCMyw8bwr6tNhf0O0zDlpXg6HkDJbDC1+EA==@vger.kernel.org
+X-Gm-Message-State: APuU4Z//T4DvMMvPb9RCfOwBqH6dIvEyaMbwVOyN76rxqf5yynlXCZKI
+	+Ga/tkxhOjPfD+3n7PCIt0tfKNsdsLKz5E2hDP+0GBu7kz0RVOAGx0+CZNzp7n2HcWk=
+X-Gm-Gg: AYBFou0JoJBdmKqnpl591aDURhmW/g1wpPNn/n2ZcJPtkyiaMAQM0fwKRdxAz2JhQXy
+	RZnkRynJu2tEstcLe263xlWeByqHI+VJK0HfsjVM2nqDqFR4EVEiKDE8mzQAztQd9o/m5hg6AJi
+	G9VR6DRwCs6zUtSsIKxnBbNeEVvraXzF+/5jV9enIvPeoBkEa0vWAcnzmt+5qmzwS1iy0Qah9gj
+	oHtCqRNgm3vjtt6Gnu/h87NqG019fnKeIgCuf5Eskgrf49UACga2xTvCHA/vcOxAgD34D5x3sFZ
+	fIccVhbr19EK3nW9G5pEv91SP1c4HZj5PtmqV0zfw/5HldvnYivN+2hGfdcTSdkQTTEz0kGDjso
+	Ufp/2evYoOiO7U5VqJpuQH1fKEO4wm6xwqkiArvZXqJMLpHxaNVXrF4fg5Js+p4CT+9Oba8VK5v
+	xe7E/MZUn3/HaFIyXDpa0cj3asuBXkSNUuZJxlJ8CBjUioAFeyCGDGM7qDGd6cO3dIYNunlsuUm
+	jQ8QlwwoIAjx/S6E4XIH+MxbjuDGS2Xc8we8pPEFtypcRDAaaGNOs0cTKFi0nDeFnOYjh9he7dS
+	VLgr7A0bh93vqnMLSoOmyxHIFDPpeThlWFlco4a7A2QB9EnK8Ztx0b1zjmSdSKXhJMT/7ns=
+X-Received: by 2002:aa7:c418:0:b0:6ae:16f5:5be9 with SMTP id 4fb4d7f45d1cf-6b4d4c78d8fmr7236202a12.7.1793742194559;
+        Tue, 03 Nov 2026 13:43:14 -0800 (PST)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b55ac5a2a6sm40550a12.16.2026.11.03.13.43.12
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b55ac5a2a6sm40550a12.16.2026.11.03.13.43.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2026 13:43:12 -0800 (PST)
+        Tue, 03 Nov 2026 13:43:13 -0800 (PST)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: richard.henderson@linaro.org,
 	mattst88@gmail.com,
@@ -85,9 +85,9 @@ To: richard.henderson@linaro.org,
 	linux-alpha@vger.kernel.org
 Cc: linmag7@gmail.com,
 	stable@vger.kernel.org
-Subject: [PATCH 01/14] alpha: fix saved registers in page-fault oops dumps
-Date: Tue,  3 Nov 2026 22:35:07 +0100
-Message-ID: <20261103214120.1099893-2-linmag7@gmail.com>
+Subject: [PATCH 02/14] alpha: report syscall errors correctly to audit
+Date: Tue,  3 Nov 2026 22:35:08 +0100
+Message-ID: <20261103214120.1099893-3-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261103214120.1099893-1-linmag7@gmail.com>
 References: <20261103214120.1099893-1-linmag7@gmail.com>
@@ -102,29 +102,42 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The aligned exception frame moved r9-r15 back by one word. Adjust the
-pointer passed to die_if_kernel() so s0-s6 show the correct registers.
+Use a3 to distinguish errors from successful return values and negate
+error codes for audit. Failed syscalls otherwise appear successful with
+a positive errno. Keep raw r0 for kernel-mode frames.
 
-Fixes: 3b35a171060f ("alpha: align stack for page fault and user unaligned trap handlers")
+Fixes: a9302e843944 ("alpha: Enable system-call auditing support.")
 Cc: stable@vger.kernel.org
 Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/alpha/mm/fault.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/alpha/include/asm/ptrace.h | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/arch/alpha/mm/fault.c b/arch/alpha/mm/fault.c
-index 3dfeb854f196387d8c8f709d0ce355e5145035fb..f09f69894cfd65d814ab1cf498c946043fb9e8a3 100644
---- a/arch/alpha/mm/fault.c
-+++ b/arch/alpha/mm/fault.c
-@@ -244,7 +244,7 @@ retry:
- 	   terminate things with extreme prejudice.  */
- 	printk(KERN_ALERT "Unable to handle kernel paging request at "
- 	       "virtual address %016lx\n", address);
--	die_if_kernel("Oops", regs, cause, (unsigned long*)regs - 16);
-+	die_if_kernel("Oops", regs, cause, (unsigned long *)regs - 17);
- 	make_task_dead(SIGKILL);
+diff --git a/arch/alpha/include/asm/ptrace.h b/arch/alpha/include/asm/ptrace.h
+index 45d1229344b6f848eb930917bf50ba759da99beb..c933c8805eedd91e3845bb4b46588974258398c2 100644
+--- a/arch/alpha/include/asm/ptrace.h
++++ b/arch/alpha/include/asm/ptrace.h
+@@ -21,9 +21,18 @@
+ 	(current_thread_info()->syscall_meta \
+ 	|= ALPHA_SYSCALL_META_FORCE_SUCCESS)
  
- 	/* We ran out of memory, or some other thing happened to us that
+-static inline unsigned long regs_return_value(struct pt_regs *regs)
++#define is_syscall_success is_syscall_success
++static inline int is_syscall_success(struct pt_regs *regs)
+ {
+-	return regs->r0;
++	return !regs->r19;
++}
++
++static inline long regs_return_value(struct pt_regs *regs)
++{
++	/* For user-mode registers, a3 is an error flag only at syscall exit. */
++	if (is_syscall_success(regs) || !user_mode(regs))
++		return regs->r0;
++	return -regs->r0;
+ }
+ 
+ unsigned long user_stack_pointer(struct pt_regs *regs);
 -- 
 2.43.0
 
