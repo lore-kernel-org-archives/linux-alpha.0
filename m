@@ -1,92 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.51
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793742207;
-	b=FL2jzyGhSKXg9jJ0UY7Wvr3+VxuHDXkNIozYmp1NAsx/ya+5M+S40wJ6oJqb8XMCBxVr
-	 cB9XM7WUpvr6unV97FQLuJobkTySDJZHyVLYUv222t0d0eENRxsLYSEEiLvSwCwm0W4hR
-	 dJmXwmLhbYHu9fk1nlryUxX8yxuRXLrKUz/LqxnD0acIpcdsC0KxN5q6adMmn669L+/1P
-	 uYeQBc7RGS16BwrfFFgz27P9+yyzifRjPhU7aAasJvjzTYCP9ZOO8l9paGG90Fya4lekV
-	 3aLTX1fzdxAwBqezxzj7gvRWMD3qwM5MBawK7GhrBnhLLRM+q8XkBZwNaeu+bbQqRhQ==
+	t=1793742208;
+	b=gmUJ5WtKYNV/zEbAKAtJ4XBnTWYOb2IZD9BEzyDFtR+dQnGFYlPaVb+S2SXjACR0BNPD
+	 H7cPMLFZIhea2jLTOJfSqn8otEOc2z3WpT+dJSIeArlA22+h4lvENGHZ0zebib0yTyVR3
+	 3zNFVocsqWWB0sp37d0i0GZCOgMCbtWiuffzl3Wfc2tLl1uId+dQUjq1sDIvxT1obw3FS
+	 flkpuVW4yPOa+dVSwkHuJcXFS93fb9FmSuiolNhtiDG6DqrRApB+VyCLb6Ar8VBm6kZvt
+	 9sYgcIJzAJ3MtsbuXPOJbBtQ+NvQm5BZCvAzvF/Iu5qwxjLgI4vswggfG2wjNrZenqQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793742207;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793742208;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=vUI4WubnJa1B4/84lLFCEDflaxOrnHrdNhUumLhC5ng=;
-	b=Q4291kBJsgEPhXvZWOI9Q6od4LccxHlJW3RVBmLP8nKKlaujQvr88J44ACfU0d7J0Ktd
-	 Y2OkPNh1F08POV933D4cTxHGu9gkUBOlfqZj0IMBNpLbujpqyDHnCZVOW74SL98WrhMVQ
-	 xfUuK4nCoDJGoN9oV8ZzHOSvsgBHkbbo99peM5vrJzMOlIHJYiAEH1vbBNBl0/31wJUUI
-	 skBq0XQZx7bK5r6osSxM7wjOHhEe0Wh0WXCPq/9JI1oYzvISbCpj8JRNGvfOSbxHN6o35
-	 YPTGwOzpe4Pr27TLk7nlCUxD5XF91ByPXsEVf+/XwILH5UxyS0Iri/8UgICOg3ia+tQ==
+	bh=C9mkZI7UPnFUcdrNwGMweO7b1qOA1u4Bsg8DNlvkpTc=;
+	b=EPFlcuV0qoFc4TZRxmQXWKRzsdv1XE99bfV1s37rtZgkq+yJF5uN2I89WVRHFSbv2DSu
+	 CCzBT8V78Acmqm81e4cHwO4kNbMow3BmY+B3Y4u5vQrbEKur1u/DjTgB+ftG5P2s7ltRp
+	 8QtzGF0CuV454MTjQU65Ur5WhKdAU3hJ7vjS5AivXtJYlmYn/sG9H//QX7rczxmeT5Ng2
+	 wWu0OVk4+oGvBsvbPApCBWKGJarCkN5gqo2ZOhUvqvsGlTNIIxUVgD3r4hRCGUcHeGyZo
+	 MHj2Glu3M3sq5VBP7QV4Y2Nj8bkj2zfDPzgu3rPii/wzYUhsbpZV14biPx/P9u6aiJQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YH4TeVD9;
-	arc=none smtp.remote-ip=209.85.208.42
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=S8HHgAqG;
+	arc=none smtp.remote-ip=209.85.208.51
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A3B26082BD4
-	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 21:43:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2A3B26082BD4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 280C86082BE0
+	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 21:43:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 280C86082BE0
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YH4TeVD9
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-6b45f9ec1ceso5211528a12.2
-        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 13:43:26 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=S8HHgAqG
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6b1ab2ad719so6777186a12.3
+        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 13:43:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793742205; x=1794347005; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793742206; x=1794347006; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=vUI4WubnJa1B4/84lLFCEDflaxOrnHrdNhUumLhC5ng=;
-        b=YH4TeVD9yklISDTSf/HTYUcoOVemwE33ZyBdtAsgHES+ReJVpl6S+Y1QWO4ACCA83E
-         yhmcBNYOrCtYpQMXp6cPt36Is6eGQSA97okm8OnZ9rzPpzNqPI6Ri/eSEXTBQtgbF56K
-         L00lBGXRkDu1kXtrC8V52aB7nl4NGSMe/ECFcGJBLUqj3P0zOHgoX15nSeLjIj6MH26s
-         i7sQP2zZbRhhvRRaEyooqgM0/v+UTFhEdBVM3+OyI5cNd2RLexEj/bT/4qvfQp6jdaV4
-         /yCwFLvGOlqaVmaoK0k8qt2QUHUOB8JW55TzL/4RjdmO4E/wTVqNYjAd25XZ3VTuU0ps
-         R27g==
+        bh=C9mkZI7UPnFUcdrNwGMweO7b1qOA1u4Bsg8DNlvkpTc=;
+        b=S8HHgAqGYZ6dlH5v1zjdH6Cf8l977nm3fXP26IoSm6c39LE1EYQk4jEpmHmy8bVoF+
+         4VyWrdpKf+25yQ97Jk167umkbqjmbzQlLH/8qAIVqfpBWNt9ffSZTycV/0/mCnnmnE/z
+         xvFm3sGeMFGFh4CcY3pwTF/C2QAnHJN7jRHo41CqVTP+kiWI/b2LtD3TekNDKAyYZKh6
+         fRqzr9PelGdXZvOlYt01AgIQmUIZFVXRSoO1O9LxctstHDfPI5KahwTRI8buSAMLS8Ov
+         7rWrkUpt6UDhHXX5yGKEJUGFcYwKP1UeEEpahenRqpG/RcIZt7cPHh21VftGLQnsmYkJ
+         kE3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793742205; x=1794347005;
+        d=1e100.net; s=20260707; t=1793742206; x=1794347006;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=vUI4WubnJa1B4/84lLFCEDflaxOrnHrdNhUumLhC5ng=;
-        b=PSJzjgj5mONVUC28/rEr8MUmlHkkl0RGnJKcQxLgS+NmEpz/qMQoGYGF7Wl/JK9AKA
-         UpvG68GP+QyoJy9vq+AAJbZiJQTTd2IckaP5tcg4CSlqoOzPcI8zR5TQlGSLS+9/37kK
-         r4fOUePJXKmVyjw3P1PykIv8HdVbO6GlOu0a4f5OSBgmtr+8rtDosLWWD/kKAG+uBXNk
-         yZg5DM8FjRA8HdD6805bFKcZwEo4glYqBB0sXPo4Jo0aKTWhouZB6I6rDE4iKZqv5ZUs
-         KXlGyLn/Mm46f0ZrMIyFeMzSwB3UiZbqgk5N/vRi/Mnq46vkJWKXdzD8vXA+8AduJAUd
-         WkWw==
-X-Forwarded-Encrypted: i=1; AKwUvBwvzdusogHmt12K+40DbI95jFDXlMY/RBv44Ib99J54B+ohvPEeWrFUwW+AEO4dHpUngqtpftLqWYg3dg==@vger.kernel.org
-X-Gm-Message-State: APuU4Z9Sii6kWU3T2u161QVwsyseJaNybE+NUM6hU9Bjsc0PvPZucpsQ
-	OBMOT+HrkD5pLcshBx/bqsMtgvDYesW1MbmCQCLWVqNkUm9dX9MiArzJ
-X-Gm-Gg: AYBFou09mHd0IVar/C5RU/Oq1WSJHolu1T/2DcGT7S+4I3bF1pDB69wQXfBSF6MBdgt
-	doL/WmjI6Nf00aiBEnbP0TVwWI/t+Iktx/5Yc/pFn8Y5dX29ISbo+9vYaQ+8xLjsHUf7pbMV7Dx
-	xl4EFJpHeMwFd2WoqibWJIL+NkC/n8/3SgGKlnaoNM3YSuy5+5pWW5YACifNveTP3MDV5dhM5+e
-	f/jq/DO/VYMI8DfilaVlWLoEtRc0gGKEZRj8HAnCxMHSct7LDpJhgU5rJInUqRT0VRILEyBOTTX
-	XU7csZqZKWS00XK8BZsxQNvssLLj4ZP88IofZFjyzGuVbH+vQ36aaMIZ9reK5X3ZwMU8AR0w4bC
-	u1KJqUb2wugK8YXlJVGMTWLlM6U+lwiiDjkeqMETwlXsqx2jEic8R6EBzGqEuh7YnLklJH/8RyP
-	e4TVmtObhBiQByq92/R7FZCv6HAeMlbpdIw8rIPog8jbnrmWBNQXLoL3tC7PprOEOkDmdysmcQL
-	HQXNEd2z+bJd2HLoms9B5ZOylArL0ssCA8sFqSltKiVCfg6oxAKAE/b15CmHOw/Q/eDC556rlvd
-	BaBmMdNzxuJDlh5gJ3cGahMwO4cS2XNG5fmsUo4lnR3e4a4UOKXA63Nja+P/BBsKGJEpPA4=
-X-Received: by 2002:aa7:d901:0:b0:6b3:8456:e891 with SMTP id 4fb4d7f45d1cf-6b4d339252cmr8103106a12.6.1793742205577;
-        Tue, 03 Nov 2026 13:43:25 -0800 (PST)
+        bh=C9mkZI7UPnFUcdrNwGMweO7b1qOA1u4Bsg8DNlvkpTc=;
+        b=lmqDQ2jW4F9jl0PedBC/l1jHGSaUU8LmE0Gyq9zr/Xi8eKIM7vQPcLdnFH1eTWOaSf
+         +ZlQZFPpAOMObAZ+kUXcNw3ClsuV9DZY0LFe1PYZC21SRpLK09ABNdHsLEOwX3JOVX2/
+         e+lyt+sOIC6y+3WwIpZKkSYVUYuX1nNddU41evs+XUDDBrYrC64C/PBmtded2kU8NFQW
+         jspfzwFKsbTR/j8MYDUfR19LQwZWDA2IXPEv+95HU7I0cvVPBTNRvD7iNLavv+pzFs90
+         5BRQwvmTDC2Bx+ffqCn9hVOtBqxgH2lAJHLJaaBeuyC+uutI2ui4SmECr9SrwF9QcKH7
+         0q1A==
+X-Forwarded-Encrypted: i=1; AKwUvBxlO2UVt8EtExbS9LQY1JPRR6qU9GZ2YObq5XBn5ZUWP7zy9vGr+fRqBlSfFEfKov8NIXq15EkiPxXGcQ==@vger.kernel.org
+X-Gm-Message-State: APuU4Z+C7cTO5U0zFE4dU3j319qrjDcck7WIEzWf0+/iSBZRbETabpvd
+	IA2Di5yWUIA5lktXY7tiljE8YBuYXJbnY6vqjV0Um+fbYPHEnAtViUck
+X-Gm-Gg: AYBFou12wZRD0wBgV7xflq+6whX2tlm/fCn9hV+wNeGSNVCtcdLNCTadyapkXoNuAU6
+	S1tXDAUg1H96abcPr+hMey3tefyULvubV11XZR7ikEj3sevCIk0YyAdJd/eEXUHeipmioGri2KC
+	QlVVeVE5a5O96ImLO3/RWk64U493TVNuTIdDrUDMFu1eTBkuCfZNLp73/BAbTgvGNoPvVdfbF2t
+	E6ZARPjq5RqC2X+jgdFJ2AF3/y6SXTWLACycbkiZPT+RUBSi/T2RVGZbIKldaFeNuWdcekEQe9K
+	mzTLwsK0jmdlO/srMlNtnceBukbHrI521xTn7IqvZ0s8W/34vRmdRqguQRnInQ8lwD/Ho8fOKLN
+	3vQNrgU/7BB5Fbm4Obj58oSIem2dKcUGfpSZaUiMaFqWc3UqCvpPbq41pXtXLHy8RhcGtPc1g4t
+	qw42b3JtxDE8PkJwrygsA+WEUCWFkkhbug099zFsr0eHkE/LqybB5w1FI+Tfz1bEIlDXtdPSwjZ
+	yfdur2+8fX02mxjRLtg382XKPZMzh4fGh7i9S/qZ4wlQRtyH7HI56MzKuOUfhSfwSj5cKIl8DDa
+	ojdBedluVhumO9e5f+yXG0RNjWCpo0edL/j/JyCEI5dtRfOUFNxdbICnNqUWAOUKlB8hc3s=
+X-Received: by 2002:a05:6402:27d4:b0:6b4:7f3:a9cb with SMTP id 4fb4d7f45d1cf-6b4d64b21c9mr11493103a12.42.1793742206485;
+        Tue, 03 Nov 2026 13:43:26 -0800 (PST)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b55ac5a2a6sm40550a12.16.2026.11.03.13.43.24
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b55ac5a2a6sm40550a12.16.2026.11.03.13.43.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2026 13:43:25 -0800 (PST)
+        Tue, 03 Nov 2026 13:43:26 -0800 (PST)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: richard.henderson@linaro.org,
 	mattst88@gmail.com,
 	linux-kernel@vger.kernel.org,
 	linux-alpha@vger.kernel.org
 Cc: linmag7@gmail.com
-Subject: [PATCH 12/14] alpha: use memparse for memory size options
-Date: Tue,  3 Nov 2026 22:35:18 +0100
-Message-ID: <20261103214120.1099893-13-linmag7@gmail.com>
+Subject: [PATCH 13/14] alpha: use generic getrusage for OSF resource accounting
+Date: Tue,  3 Nov 2026 22:35:19 +0100
+Message-ID: <20261103214120.1099893-14-linmag7@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261103214120.1099893-1-linmag7@gmail.com>
 References: <20261103214120.1099893-1-linmag7@gmail.com>
@@ -101,64 +101,116 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace the private parser for mem= and gartsize= with memparse(),
-preserving page rounding. This also accepts T/P/E suffixes and uses
-memparse()'s saturating overflow handling.
+Use getrusage() for OSF resource accounting. This intentionally aligns
+osf_getrusage() accounting with getrusage(2): RUSAGE_SELF covers the whole
+thread group rather than only the calling thread, and ru_maxrss, block
+I/O and context-switch counts are populated instead of remaining zero.
+CPU times use the generic microsecond conversion instead of the previous
+jiffy rounding.
+
+Keep the OSF structure layout and the existing RUSAGE_SELF/RUSAGE_CHILDREN
+selector restriction. Share result conversion with osf_wait4() and remove
+the jiffy-based time conversion.
 
 Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/alpha/kernel/setup.c | 24 ++----------------------
- 1 file changed, 2 insertions(+), 22 deletions(-)
+ arch/alpha/kernel/osf_sys.c | 56 ++++++++++++++-------------------------------
+ 1 file changed, 17 insertions(+), 39 deletions(-)
 
-diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
-index 4cbcfb1852d51e7aaf37b01a176f4a4280af6dae..28387786cb9f9ad4b587a22a3b0267b825b424c7 100644
---- a/arch/alpha/kernel/setup.c
-+++ b/arch/alpha/kernel/setup.c
-@@ -241,26 +241,6 @@ reserve_std_resources(void)
- 	for ((_cluster) = (memdesc)->cluster, (i) = 0;		\
- 	     (i) < (memdesc)->numclusters; (i)++, (_cluster)++)
+diff --git a/arch/alpha/kernel/osf_sys.c b/arch/alpha/kernel/osf_sys.c
+index 61d8061762133f5e128d8538cf104dfede57ea6d..c08796f627332e4562a30557dee700052d03c0e7 100644
+--- a/arch/alpha/kernel/osf_sys.c
++++ b/arch/alpha/kernel/osf_sys.c
+@@ -15,7 +15,7 @@
+ #include <linux/sched/signal.h>
+ #include <linux/sched/mm.h>
+ #include <linux/sched/task_stack.h>
+-#include <linux/sched/cputime.h>
++#include <linux/resource.h>
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/smp.h>
+@@ -960,13 +960,6 @@ put_tv_to_tv32(struct timeval32 __user *o, struct __kernel_old_timeval *i)
+ 			    sizeof(struct timeval32));
+ }
  
--static unsigned long __init
--get_mem_size_limit(char *s)
+-static inline void
+-jiffies_to_timeval32(unsigned long jiffies, struct timeval32 *value)
 -{
--        unsigned long end = 0;
--        char *from = s;
--
--        end = simple_strtoul(from, &from, 0);
--        if ( *from == 'K' || *from == 'k' ) {
--                end = end << 10;
--                from++;
--        } else if ( *from == 'M' || *from == 'm' ) {
--                end = end << 20;
--                from++;
--        } else if ( *from == 'G' || *from == 'g' ) {
--                end = end << 30;
--                from++;
--        }
--        return end >> PAGE_SHIFT; /* Return the PFN of the limit. */
+-	value->tv_usec = (jiffies % HZ) * (1000000L / HZ);
+-	value->tv_sec = jiffies / HZ;
 -}
 -
- #ifdef CONFIG_BLK_DEV_INITRD
- void * __init
- move_initrd(unsigned long mem_limit)
-@@ -486,7 +466,7 @@ setup_arch(char **cmdline_p)
- 			continue;
- 		}
- 		if (strncmp(p, "mem=", 4) == 0) {
--			mem_size_limit = get_mem_size_limit(p+4);
-+			mem_size_limit = memparse(p + 4, NULL) >> PAGE_SHIFT;
- 			continue;
- 		}
- 		if (strncmp(p, "srmcons", 7) == 0) {
-@@ -499,7 +479,7 @@ setup_arch(char **cmdline_p)
- 		}
- 		if (strncmp(p, "gartsize=", 9) == 0) {
- 			alpha_agpgart_size =
--				get_mem_size_limit(p+9) << PAGE_SHIFT;
-+				memparse(p + 9, NULL) & PAGE_MASK;
- 			continue;
- 		}
- #ifdef CONFIG_VERBOSE_MCHECK
+ SYSCALL_DEFINE2(osf_gettimeofday, struct timeval32 __user *, tv,
+ 		struct timezone __user *, tz)
+ {
+@@ -1062,37 +1055,27 @@ struct rusage32 {
+ 	long	ru_nivcsw;		/* involuntary " */
+ };
+ 
++static int put_rusage32(struct rusage32 __user *ru, struct rusage *r)
++{
++	if (put_tv_to_tv32(&ru->ru_utime, &r->ru_utime))
++		return -EFAULT;
++	if (put_tv_to_tv32(&ru->ru_stime, &r->ru_stime))
++		return -EFAULT;
++	if (copy_to_user(&ru->ru_maxrss, &r->ru_maxrss,
++			 sizeof(*ru) - offsetof(struct rusage32, ru_maxrss)))
++		return -EFAULT;
++	return 0;
++}
++
+ SYSCALL_DEFINE2(osf_getrusage, int, who, struct rusage32 __user *, ru)
+ {
+-	struct rusage32 r;
+-	u64 utime, stime;
+-	unsigned long utime_jiffies, stime_jiffies;
++	struct rusage r;
+ 
+ 	if (who != RUSAGE_SELF && who != RUSAGE_CHILDREN)
+ 		return -EINVAL;
+ 
+-	memset(&r, 0, sizeof(r));
+-	switch (who) {
+-	case RUSAGE_SELF:
+-		task_cputime(current, &utime, &stime);
+-		utime_jiffies = nsecs_to_jiffies(utime);
+-		stime_jiffies = nsecs_to_jiffies(stime);
+-		jiffies_to_timeval32(utime_jiffies, &r.ru_utime);
+-		jiffies_to_timeval32(stime_jiffies, &r.ru_stime);
+-		r.ru_minflt = current->min_flt;
+-		r.ru_majflt = current->maj_flt;
+-		break;
+-	case RUSAGE_CHILDREN:
+-		utime_jiffies = nsecs_to_jiffies(current->signal->cutime);
+-		stime_jiffies = nsecs_to_jiffies(current->signal->cstime);
+-		jiffies_to_timeval32(utime_jiffies, &r.ru_utime);
+-		jiffies_to_timeval32(stime_jiffies, &r.ru_stime);
+-		r.ru_minflt = current->signal->cmin_flt;
+-		r.ru_majflt = current->signal->cmaj_flt;
+-		break;
+-	}
+-
+-	return copy_to_user(ru, &r, sizeof(r)) ? -EFAULT : 0;
++	getrusage(current, who, &r);
++	return put_rusage32(ru, &r);
+ }
+ 
+ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
+@@ -1104,12 +1087,7 @@ SYSCALL_DEFINE4(osf_wait4, pid_t, pid, int __user *, ustatus, int, options,
+ 		return err;
+ 	if (!ur)
+ 		return err;
+-	if (put_tv_to_tv32(&ur->ru_utime, &r.ru_utime))
+-		return -EFAULT;
+-	if (put_tv_to_tv32(&ur->ru_stime, &r.ru_stime))
+-		return -EFAULT;
+-	if (copy_to_user(&ur->ru_maxrss, &r.ru_maxrss,
+-	      sizeof(struct rusage32) - offsetof(struct rusage32, ru_maxrss)))
++	if (put_rusage32(ur, &r))
+ 		return -EFAULT;
+ 	return err;
+ }
 -- 
 2.43.0
 
