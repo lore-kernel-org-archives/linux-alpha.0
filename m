@@ -1,101 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.51
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.53
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793704006;
-	b=bwwDD2RJmc022FRTl8+PK/gxITgi7lsQxQSPDsuMhI75jSeGgfpmp6/aH6jSW5J4EHFY
-	 pNST13MZxbnKWjBnvafjBecoUelfZWHjZnabJFNHA5BvGpb3Rb9BBjUtclg8sGlT2/EJ4
-	 iRHNeANBEAxcESKjDV8rwqSZjWm7ZF4J+HIIXAO1mkYuFIIgYS5T34Z305I8GM/1LF6zx
-	 kaS8Xnt1c1KXay/KtsUBDZ6FnOXhCzmUtWH1fRs0qB4QOw+0rLzJzxlQlhtXdhZEpleil
-	 v4eFPLGL6xl7duAJoTd6QWvYxHNWUZ8McQHOyjqI4jm0iMgYuFwqElvuQ8fhHhwRNUA==
+	t=1793718778;
+	b=p6DZjBmIcyHfhrUOxsnpET4CT4NVjUXbqz8cokL1Eo39rrNZ5xKd51cx2L16om7QDpL+
+	 TgWdzyQzqf8fl2zFEwK5U/B0Q3uR/6BFGneLIXhlOGSPrf2ye8XobiksSU3s4Q8gBrkUD
+	 BuRG2eTjOIGHOGMZFy+ZYdZssy1fPt9Qz65eTcTGomxw0b9mcFfDmWzDhrqkt/fW2pIWD
+	 3AB72Z1L3u8f3I7Nxp+ib2LQV5wbaUWNNf5oxFVtzHDNOhHdxL5CQVtfEl8KSo4+z0w5M
+	 wS66Pv91YDspWiwRWrwf8y22XD/6FWkyoLG9HLThIA95yZKUXBIWUOyHab5yT0k4ycg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793704006;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793718778;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
 	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
 	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=N/WKx1dvlKtMTD6b1Dkde2yUpnwD8vYx6xMXPAAWNvY=;
-	b=SlE+loqZarVjhk/wsS8+dkoKTdhGYnceb6Oc4zRFxUtBAmFHFRzPTbUojGwX3W4eGCrt
-	 GackH0Qh1lWFk6SSU2GIYUIWC/vswjIvJ0yi3WdprIYKltM7vCCquaB/eAtC2uNDxuv+s
-	 xPiakkg8TfJ1WHUqgMYye6+FhDL3j254wclO5gw98ZeS6l7vnnAZKdWaor3WhM/Keriw2
-	 vvuiiVKu1/aDtp/VFBBr0O0z527Apan+SiVaNxjpqaGaAxDu0KppjH2HqFRoHvDyvKJwp
-	 GgXLr1g2TfvpLmiJNVK8guApZJJrGUqIUwiBfuN/uWNZ3EsrlpHJfOytZ7qQqKm2RsQ==
+	bh=QsewQ4bSQyXCreyiSJB98dbyhPJ57LIsDJYpo0Npvlg=;
+	b=KAX8wOENJZo3SAYb9npZFbYd1aOUKAi9l6qNwzHDDVcMqqoddWzl5AruYmstIGMYEZlH
+	 JP8sFXSnEKeIie17t69TQyL9X/iEldDG8ZKESvUQJmBZMvMulsOevGoh/cZFVfrj3eh4L
+	 B6yC5oQxupAYY1yf1X1Z2W4z1nQQfu4sVcKI1Sw7uRKX8U7wKc3CmMyujOK9jwMrE5Qq2
+	 UiYsY74nSSbw2ehvkl5xmMc0N102XLES+g2PD3XuIguDR9YjArdHwRGkEN9o9o3Cy3v1u
+	 oKVEalzH+ZeJCl6Zb2a/vCjmNVWFEMkYmu2KkoOZ4EXeLUFiTQ4IsPQ3xM6MxoUzJ1Q==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=e2DuDTks;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.51
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="aL3a/B1A";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.53
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 075A4606F7E5
-	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 11:06:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 075A4606F7E5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8ACF606A789
+	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 15:12:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E8ACF606A789
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=e2DuDTks
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-6afa651700eso5841073a12.2
-        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 03:06:45 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793704004; cv=none;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=aL3a/B1A
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6b1dae0febeso6316025a12.2
+        for <linux-alpha@vger.kernel.org>; Tue, 03 Nov 2026 07:12:56 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793718775; cv=none;
         d=google.com; s=arc-20260327;
-        b=sLmM7lxMC6LJOgW3BN7fhN5C29dDjY44pOsJEU8zt/HAtGL3aekyxDhTMOfMLn762B
-         OTEEHDhxaZ3KMhMqJwMrSnWd8ZnDxj/xbL8N14MK3kzKCQOMSTk7qfHgoFtFY37vkctx
-         OoJBM4tMda3I+Pw9HRXSib8eGv6kiiJdETtZpQSGZxKwIOJCHieAX/DDwbv3sXRFHBj+
-         aoExueZLYwfIW2mmkvHUw0VuUeg2LI7ncoG0+rCSsC3GMn9efoH6t0BMe2+Jz9RXpoW7
-         vtOcDDsVVl2BEYkFsfBGSMpJMlETw4/spzunzaqlf2fpU+BssMAIux9g7AEHVgEq2AdV
-         Emfg==
+        b=Q2wjdIdLCjPB7NAwv8gfy6nFwdznKbC9kKjYMkcy6oIsdOB6Foh1N3x0Jp6thcdRKa
+         8EVpOAokCAbqZfGiBZ+QsUSmoL9KWRsO/HQ4WggB0mewkfN41KgAXKt74J7iFy277xyE
+         g6sXQ95fpO8JAzvTx2J57BGHrwHnjygGHzN9JAJo6GMdD3IMsVwPzmzL3kt5oTQ6CLFa
+         Nk+C5QwL+qFYRXV0WM7STty5Yus1q7rzJ6I6s56xTjql2X8yj0Apti27uXJEWWxcCykt
+         3mYkHvUq0M3wKZmRIYwbv8CdN/rW89NU3mJfkg2DC8GWi6Z9hWg3AEQaAgkmnkJwgqFr
+         cdag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=N/WKx1dvlKtMTD6b1Dkde2yUpnwD8vYx6xMXPAAWNvY=;
-        fh=YaIhO/ojiHqlY6tHTt65eZB2psI5HRIeU+lp9Shzmv0=;
-        b=cYrSg8uR50dy+qgRsPTZZpGBsViowFRqVCVtfcs1SBl6TzffItwdlmPvPhO4g6J97v
-         hhi+1oKxgycNnNYiL08vBef2W/ApsiBDEazc2BBmt76wYblay92LHnrStimc/9ng5Yxa
-         bwFW7VKCwDlRTEa/UkBTYf9Ca/Vgu8UNZLeVcasDJfUkMa0OfKtW2ZEwnZBuDr6jAdqR
-         gJgdSHlymGoYQykUp8CQ9qNYVvj6HsEvyRC5hjW9oy76M5e/Ae4FsCNkrvyDKHAG6pvj
-         tkUMPw7Hz60+cOCtggyeuWYYoEaHGR1nnMZUAVSH8JyM1U9XSGveQ5dXH6M1wcwo7qwk
-         1fqg==;
+        bh=QsewQ4bSQyXCreyiSJB98dbyhPJ57LIsDJYpo0Npvlg=;
+        fh=6GzNdb43I/X8/4wp1Sh8Ux9KuwGM30t5gmPz8B6kGFE=;
+        b=Kd+kRFQCpU1ZOGXHceMSnYbz5AKkXcCoel+X5mvVLhzdkKvbdNB2P2r5Pa4Bx2J5Oo
+         jvZVnCmk6wLcMDZWMYKPLMkCNumDYcnlXpwFWwmCmj88LtQCPNUT4ui7RB+flwOMboGW
+         p4ylWRZlor38wDATCWAYBTPSKF5cEMb3kWifz85Ea3WW8hDDAPprh+n0/aXdbLfwkYu0
+         5URs8at5mgbR2FAlYwynvUALjks7DNp0kCHHv7OEj4ZK/Uqait1ETtcRtHrhu3I6oZBw
+         3si84AY8DAZMTZUjljWqmfvQuZGObXSxAF4J+B4tNxBdKgmpHjpwYLDrBlYB89Mug563
+         GZ4Q==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793704004; x=1794308804; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793718775; x=1794323575; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=N/WKx1dvlKtMTD6b1Dkde2yUpnwD8vYx6xMXPAAWNvY=;
-        b=e2DuDTks/EEje4+iKJ4BABVZzNrwOnegOge1hHHgecVPwiDRr4fOBm0m61f25X7hhj
-         Zn6CoXRVW3jcobR3CuamkshJei9lB7lEcaJpp7Jx4cBOy625g4IDmiSNuFiX2zlmRBMr
-         4qBgBoTbLKoxoOxtYCDdkuXNujW8sOn6jY8LRGc5WUjvsrzaZXcg5oxssAhGQPjjMlaY
-         u4HMnASC9Q0xzwoKxXGcQDmwhWaqByiLyQ+jF8i3Ub0fMT42umomyHypNEg6Af9vm2y2
-         IgB9hjbkL24D4/3aWMk8Jz7o9v+muD97ppQ4Keez2hLYE0d//zi2SRqUTjZad2xG1t2v
-         eVDA==
+        bh=QsewQ4bSQyXCreyiSJB98dbyhPJ57LIsDJYpo0Npvlg=;
+        b=aL3a/B1AV+UGrazg+7plNsxS7dL+F6hTVquzpd3MtjPg2vHO1Xtu3j9xxaUuEhbN4O
+         Jd1BuY51fqCCfDwgcY5VQg1eh+pVEoieAQXHDFU88zWWKem4tBysSnW978H+TaLviIbL
+         gRKWK8TgU6u4ysOmsAus3gO9hkapv6kLExWrMHTG3ZJWiKzCxiZb+/X2Wm/bY7TGHhsd
+         kjDmQ7aAxBXh1toLH8155O4HY8ebIirW7k709O585hWJoSj90/UPPaEVr2LznT7IEArg
+         yTEHekw7QdfgjNuf1OpfqS71bf9+rN6JCzyzUz3hnJhQpJK8O7OVdGNkpoiO9Lg4pR+S
+         zflw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793704004; x=1794308804;
+        d=1e100.net; s=20260707; t=1793718775; x=1794323575;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=N/WKx1dvlKtMTD6b1Dkde2yUpnwD8vYx6xMXPAAWNvY=;
-        b=m6JPkeNWDB866KfrLfTlUOn7NFvOLsJVAWncbau9lltF6faBzwTAkdwksCuKJjOdnl
-         ucFq12qNKoaXdbSFkeAayEDqfBhnrf76lC6mzYoMSFmOc/cBvBUO2+Y/M97aN30aGktU
-         EKotCTun7tsdhnepfpGf+9bdHROTdT+nvD2sYmDR+7MZmoJwVQrt9yUYirINIWEKMC8v
-         XmhRtyHfv7SttkrHN1Eb2fAe5fci9zM7D7cXTP7pc8kTwV5In4VAApSxHIY3llyCTUFG
-         2lUbx+adHjod+cPn4bPX+X5vy6ia9pqpsnJuqst/oY+hiWv1l8iDxqt7WNgCaUqOro7R
-         CtuQ==
-X-Forwarded-Encrypted: i=1; AKwUvBygf9aHICKSlIopc6IkyaMyhDyPeU90qk0ruY4gqEvfssCbFijjeiOWIBk4GE9mSDshIxX12DBbJmamLg==@vger.kernel.org
-X-Gm-Message-State: APuU4Z9pQXAWhIdSNT05Q0E4dSRQPsMeSDSS7J3dj5ZtM2U0La53iqIB
-	nWpWDmZIcdvO3zgUDTffAwdv/VuZYaO5uDWe7R5DAwx5Wts7amFSoGeB1xrOdMikpQoOqXA9s1T
-	VEpoGM+BN/A+IiTgU2BF3Gd4WaOtKyiY=
-X-Gm-Gg: AYBFou3w6O23YnWkylxQ2sRrbp/NFtvDvTtafl0oY234XiZdAOwTytNJCxVa4FM14gw
-	pfBT8em1I2BdTj7qOXY210gfQmRGX0xTW/f6NYkN7Qq48QSrqvPxuCc1lu6x2mop2L2P9glMBhC
-	0p5nGVbdPhEHIHIWqxTbbWYMAC2ctZ5fZ2Nghs0KUyAXQiiUSRQ8jFrcLDpYLjP7g1qOi3dddX/
-	1napuE5LLHTw+jzvab6nWVUDN+beUWXWlRR2eRl2vlulbTkFj+fLFyQlNxj73qQFg7G1KwZPr16
-	8PW7usHQGMn++dTEVNscToAV53eeYP62I/HHUBEOGNwNR/WqGItGDdmnRAsERyPMxV1G94Q56pb
-	EMllXR2F9rc37Hry2/fBVGhWTR+gjXO9ioEISVNI7DjEZ5KAGD+noxoBmldfOXQFCI/Ec9cH2Ar
-	fnfSZobogvDPjCgAqvJ0GsPg==
-X-Received: by 2002:a05:6402:428f:b0:6ac:a862:d8ce with SMTP id
- 4fb4d7f45d1cf-6b4d428f81cmr8567727a12.7.1793704004167; Tue, 03 Nov 2026
- 03:06:44 -0800 (PST)
+        bh=QsewQ4bSQyXCreyiSJB98dbyhPJ57LIsDJYpo0Npvlg=;
+        b=vyao3XNnwQpjFAqH83H8h0WfZ/2Zu5+3mIJOyplR1oW9vW7QgdEbNszKYooBqgmzMF
+         PsWVPs9A5MWi6DkHI32ZJlMwsRCqJEUXcaqAl7BI7bQuX8Emsc9ni6HCKSpOcS2zwvQa
+         HWtHt60pnhoTnClVpy5VVOd9IIig4vtHJVTiPIjYUIJLsrVPQpspVNovzIDKaT7S87Hu
+         Jd0YS2i9yUZ6OY0Dsl5272aJWXJgWS+PreAPjk2R6XtkxMhpUTH+JoKz6Le7lK7eTWYo
+         JGr9OGkoIJlJ8ypsetNvj0X/sHy0iwUY6Lp7lMDkJURJB/1utkBV//8X69ok3QusMGCP
+         sSIw==
+X-Forwarded-Encrypted: i=1; AKwUvByG8wZcuiVJrIatVvokjd5tWsivUAZpapGJUlUSZL2Kf6FsUh1Escx0K/m5JAViNQgCcA66FvbJBaUpJA==@vger.kernel.org
+X-Gm-Message-State: APuU4Z8kmDtWwGHShqbmywbImE6BxbinAM4gsBuNMt7hwHIZj73b3N21
+	tpyzK+1+KSxNVzaqmmk9t97XWYEGsrmm34sPsJJNnUZVyByJBFQmzJWc3LXnHNzKg0j7RXoqkFf
+	8OzM0IkEcl921dEfE9TsTJ7kAQ+haxJI=
+X-Gm-Gg: AYBFou08HRUWlUPGwkrnbfWAFOxe/RC6qTYN168vHQjTTyff6qdoVWmeH3kGpBqYhMi
+	SipYQW1pLAWoVpzi9VSTYfvrtIZrNIeKxPe81vgCuBeQQav1Rq4QAfhq93dksNeETPEDmdArwkQ
+	nzbL97rVJlm73JeVEpgRkxRELIrQzM15KXR2iN43o+pp7R1P3+0INlk8JEfA7fgUyglr/pDNkh1
+	EH+fW56oTPgraQyH0o9rYoza1QNar+ZfakNh9NGm1NnMCy+lje1xJao8MGi0PS6piki4PDny+10
+	v3VKTB7iN0Tc7OSZIn1ix2F8V9wUm/CIWeiD7ExlJ6gkfyrZ3wHUhgyQcDcZjNKT9qdh1ydWira
+	BnNe4pTR5k5ss9q3pCAl02HneWlhDhrm64QgFphzJJpHjfjMOFR3f1gYte6hhY7hrMoOO8R/OaX
+	BzQSMIJumjl9zpmNJy
+X-Received: by 2002:aa7:d746:0:b0:6b1:bbbf:c8da with SMTP id
+ 4fb4d7f45d1cf-6b4d467f117mr6727840a12.17.1793718775223; Tue, 03 Nov 2026
+ 07:12:55 -0800 (PST)
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -105,96 +105,262 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261103-alpha-compile-v1-1-9e93e2260a9f@kernel.org>
-In-Reply-To: <20261103-alpha-compile-v1-1-9e93e2260a9f@kernel.org>
+References: <20261102-perf-alpha-profileme-v3-0-4bf6e1dda733@gmail.com> <20261102-perf-alpha-profileme-v3-2-4bf6e1dda733@gmail.com>
+In-Reply-To: <20261102-perf-alpha-profileme-v3-2-4bf6e1dda733@gmail.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Tue, 3 Nov 2026 12:06:32 +0100
-X-Gm-Features: AclHuK80yRCm0o-1xn8zHa6unhoXxUoLu6bQm-m9xx4ZQebfzMiUchQkkgUNT-g
-Message-ID: <CA+=Fv5T0NE3LiTEHtwORHzz=0qv4xkRxY7iReU9KQ8MQmcRPmQ@mail.gmail.com>
-Subject: Re: [PATCH] alpha: Use symbol assignment in SYM_END
-To: Linus Walleij <linusw@kernel.org>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Matt Turner <mattst88@gmail.com>, 
-	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	kernel test robot <lkp@intel.com>
+Date: Tue, 3 Nov 2026 16:12:44 +0100
+X-Gm-Features: AclHuK-5MktQVkWH25f7cHD8D0vNLr-mwxWg2ZtpgvT0msziqP_pJU8QaFNmgoE
+Message-ID: <CA+=Fv5QxqE08ZE+FWUhp44=bNypEpqx_JYZH3ELzu+nMD1HpbA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] perf python: Add alpha-profileme.py
+To: Matt Turner <mattst88@gmail.com>
+Cc: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Namhyung Kim <namhyung@kernel.org>, 
+	Mark Rutland <mark.rutland@arm.com>, 
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, 
+	Ian Rogers <irogers@google.com>, Adrian Hunter <adrian.hunter@intel.com>, 
+	James Clark <james.clark@linaro.org>, linux-alpha@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Linus,
+Hi Matt,
 
-On Tue, Nov 3, 2026 at 10:09=E2=80=AFAM Linus Walleij <linusw@kernel.org> w=
-rote:
+On Tue, Nov 3, 2026 at 3:19=E2=80=AFAM Matt Turner <mattst88@gmail.com> wro=
+te:
 >
-> Alpha uses the .set directive to select assembler options, so the
-> symbol assignment emitted by the generic SYM_END macro fails to assemble.
-> This breaks COMPILE_TEST builds left and right, e.g.:
+> perf report shows where Alpha ProfileMe samples land but cannot
+> aggregate the raw status attached to them.
 >
->   Error: junk at end of line, first unrecognized character is `,'
->   Error: .size expression for bcm6846_runner_start does not evaluate to a=
- constant
+> Add a standalone script, using the perf Python module, that summarizes
+> it by symbol or, with --pc, by instruction, in the style of DCPI: the
+> fraction of samples killed on a wrong path, not retired, mispredicted,
+> taken or stalled, the mean PCTR1 window count, and trap counts by type.
+> Mispredict and trap types are only counted when I_STAT[TRP] is set,
+> since they are stale otherwise. Redirect traps are counted by their
+> PALcode entry offset in PMPC.
 >
-> Override SYM_END to use an ordinary symbol assignment for the calculated
-> size. Preserve the symbol type, size and local size symbol while leaving
-> other architectures unchanged.
+> Raw data is only read from cpu PMU events, as a tracepoint's payload can
+> pass for ProfileMe status. Rows are kept apart by PCTR_CTL[SL1], as a
+> mean over two things PCTR1 can count means nothing.
 >
-> Reported-by: kernel test robot <lkp@intel.com>
-> Closes: https://lore.kernel.org/oe-kbuild-all/202611031620.n4ptlpo7-lkp@i=
-ntel.com/
-> Signed-off-by: Linus Walleij <linusw@kernel.org>
+> On an EV7, sampling a loop whose branch tests random data reports that
+> branch mispredicted in 21% of its samples, and 0% with sorted data.
+>
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
 > ---
-> The generic SYM_END uses .set for symbol assignment, but Alpha interprets
-> .set as an assembler mode directive. Provide an Alpha override using
-> ordinary assignment.
+>  tools/perf/python/alpha-profileme.py | 172 +++++++++++++++++++++++++++++=
+++++++
+>  1 file changed, 172 insertions(+)
 >
-> Tested the unchanged Runner wrapper with an Alpha-targeted GNU assembler
-> 2.46.1: the original header reproduces the reported errors, while the
-> fixed header assembles without warnings. Symbol sizes and the embedded
-> Runner bytes were checked. A full Alpha allyesconfig build was not run.
->
-> This patch was prepared with LLM assistance.
-> ---
->  arch/alpha/include/asm/linkage.h | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/arch/alpha/include/asm/linkage.h b/arch/alpha/include/asm/li=
-nkage.h
-> index aa8661fa60dc..a3f0302c92d0 100644
-> --- a/arch/alpha/include/asm/linkage.h
-> +++ b/arch/alpha/include/asm/linkage.h
-> @@ -6,4 +6,12 @@
->  #define SYSCALL_ALIAS(alias, name)                                     \
->         asm ( #alias " =3D " #name "\n\t.globl " #alias)
->
-> +#ifdef __ASSEMBLY__
-> +/* Alpha uses .set for assembler options, not symbol assignments. */
-> +#define SYM_END(name, sym_type)                                \
-> +       .type name sym_type ASM_NL                      \
-> +       .L__sym_size_##name =3D . - name ASM_NL           \
-> +       .size name, .L__sym_size_##name
-> +#endif
+> diff --git a/tools/perf/python/alpha-profileme.py b/tools/perf/python/alp=
+ha-profileme.py
+> new file mode 100755
+> index 000000000000..366b288c6e1b
+> --- /dev/null
+> +++ b/tools/perf/python/alpha-profileme.py
+> @@ -0,0 +1,172 @@
+> +#!/usr/bin/env python3
+> +# SPDX-License-Identifier: GPL-2.0
+> +"""Summarize Alpha ProfileMe samples.
 > +
->  #endif
+> +Aggregates the ProfileMe status that the Alpha cpu PMU attaches to each
+> +sample as PERF_SAMPLE_RAW data, by symbol or, with --pc, by instruction.
+> +
+> +Record with raw data, e.g.:
+> +  perf record -R -e instructions:p -- ./workload
+> +  alpha-profileme.py [-i perf.data] [--pc] [--top N]
+> +
+> +Columns:
+> +  samples   ProfileMe samples attributed to the row
+> +  killed%   profiled instruction killed before it was mapped (PM_KILLED_=
+BM)
+> +  invalid%  instruction did not trap and did not retire valid (VAL clear=
+)
+> +  mispr%    conditional branch mispredicted (TRP and MIS)
+> +  taken%    TAK set; only meaningful for rows that are conditional branc=
+hes
+> +  stall%    instruction stalled between fetch and map (PM_STALLED)
+> +  pctr1     mean PCTR1 count during the window; what it counts depends o=
+n
+> +            the event: inum retire delay for cycles:p, window cycles for
+> +            instructions:p, Bcache misses for bcache-misses:p and Mbox
+> +            replay traps for cpu/mbox-replay/p
+> +  traps     trap counts by type, only for samples with TRP set
+> +
+> +Samples from events that set PCTR1 to count different things are printed
+> +in separate tables, as their means cannot be compared.
+> +"""
+> +from __future__ import annotations
+> +
+> +import argparse
+> +from collections import defaultdict
+> +import struct
+> +import sys
+> +from typing import Optional
+> +import perf
+> +
+> +TRAP_TYPES =3D {
+> +    0: "replay", 2: "dtb2-3l", 3: "dtb2-4l", 4: "fen", 5: "unalign",
+> +    6: "dtb1", 7: "dfault", 8: "opcdec", 10: "mchk", 12: "arith",
+> +    14: "mt_fpcr", 15: "reset",
+> +}
+> +REDIRECTS =3D {0x481: "iacv", 0x581: "itbmiss", 0x681: "intr"}
+> +PCTR1_NAMES =3D ("cycles", "retire delay", "bcache misses", "mbox replay=
+s")
+> +SAMPLE =3D struct.Struct("<IQQQ")
+> +
+> +
+> +class Row:
+> +    """ProfileMe status totals for one symbol or instruction."""
+> +    def __init__(self) -> None:
+> +        self.samples =3D 0
+> +        self.killed =3D 0
+> +        self.invalid =3D 0
+> +        self.mispredict =3D 0
+> +        self.taken =3D 0
+> +        self.stalled =3D 0
+> +        self.pctr1 =3D 0
+> +        self.traps: dict[str, int] =3D defaultdict(int)
+> +
+> +
+> +def pct(n: int, d: int) -> float:
+> +    """Return n as a percentage of d."""
+> +    return 100.0 * n / d if d else 0.0
+> +
+> +
+> +class ProfileMe:
+> +    """Aggregates ProfileMe raw sample data."""
+> +    def __init__(self, by_pc: bool, top: int) -> None:
+> +        self.by_pc =3D by_pc
+> +        self.top =3D top
+> +        # Keyed by PCTR_CTL[SL1], which sets what PCTR1 counts.
+> +        self.tables: dict[int, dict[str, Row]] =3D defaultdict(lambda: d=
+efaultdict(Row))
+> +        self.skipped =3D 0
+> +        self.session: Optional[perf.session] =3D None
+> +
+> +    def process_event(self, sample: perf.sample_event) -> None:
+> +        """Add one sample's ProfileMe status to its row."""
+> +        raw =3D sample.raw_buf
+> +        # Raw data from another PMU or a tracepoint is not ProfileMe sta=
+tus.
+> +        if (sample.evsel.type not in (perf.TYPE_HARDWARE, perf.TYPE_RAW)=
+ or
+> +                not raw or len(raw) < SAMPLE.size):
+> +            self.skipped +=3D 1
+> +            return
+> +        version, pmpc, i_stat, ctl =3D SAMPLE.unpack_from(raw)
+> +        if version < 1:
+> +            self.skipped +=3D 1
+> +            return
+> +
+> +        symbol =3D sample.symbol or "[unknown]"
+> +        if self.by_pc:
+> +            if pmpc & 1:
+> +                key =3D f"PAL+{pmpc & 0x7fff:#x}"
+> +            else:
+> +                key =3D f"{pmpc & ~3:#018x} {symbol}"
+> +        else:
+> +            key =3D f"{sample.dso or '[unknown]'} {symbol}"
+> +
+> +        r =3D self.tables[(ctl >> 2) & 3][key]
+> +        r.samples +=3D 1
+> +        trp =3D (i_stat >> 39) & 1
+> +        if (ctl >> 26) & 1:
+> +            r.killed +=3D 1
+> +        if not trp and not (ctl >> 1) & 1:
+> +            r.invalid +=3D 1
+> +        if ctl & 1:
+> +            r.taken +=3D 1
+> +        if (ctl >> 27) & 1:
+> +            r.stalled +=3D 1
+> +        r.pctr1 +=3D (ctl >> 6) & 0xfffff
+> +
+> +        redirect =3D REDIRECTS.get(pmpc & 0x7fff) if pmpc & 1 else None
+> +        if redirect:
+> +            r.traps[redirect] +=3D 1
+> +        elif trp:
+> +            if (i_stat >> 40) & 1:
+> +                r.mispredict +=3D 1
+> +            else:
+> +                tt =3D (i_stat >> 34) & 0xf
+> +                r.traps[TRAP_TYPES.get(tt, "other")] +=3D 1
+> +
+> +    def print_totals(self) -> None:
+> +        """Print the busiest rows of each table."""
+> +        total =3D sum(r.samples for rows in self.tables.values() for r i=
+n rows.values())
+> +        print(f"{total} ProfileMe samples, {self.skipped} without Profil=
+eMe data")
+> +        for sl1, rows in sorted(self.tables.items()):
+> +            print(f"\npctr1 counts {PCTR1_NAMES[sl1]}:")
+> +            self.print_table(rows)
+> +
+> +    def print_table(self, rows: dict[str, Row]) -> None:
+> +        """Print the busiest rows of one table."""
+> +        print(f"{'samples':>8} {'killed%':>7} {'invalid%':>8} {'mispr%':=
+>6} "
+> +              f"{'taken%':>7} {'stall%':>6} {'pctr1':>7}  {'location':<4=
+0} traps")
+> +        ordered =3D sorted(rows.items(), key=3Dlambda kv: kv[1].samples,=
+ reverse=3DTrue)
+> +        for key, r in ordered[:self.top]:
+> +            traps =3D " ".join(f"{k}=3D{v}" for k, v in
+> +                             sorted(r.traps.items(), key=3Dlambda kv: -k=
+v[1]))
+> +            print(f"{r.samples:8d} {pct(r.killed, r.samples):7.1f} "
+> +                  f"{pct(r.invalid, r.samples):8.1f} "
+> +                  f"{pct(r.mispredict, r.samples):6.1f} "
+> +                  f"{pct(r.taken, r.samples):7.1f} "
+> +                  f"{pct(r.stalled, r.samples):6.1f} "
+> +                  f"{r.pctr1 / r.samples:7.1f}  {key:<40} {traps}")
+> +
+> +    def run(self, input_file: str) -> None:
+> +        """Run the session."""
+> +        self.session =3D perf.session(perf.data(input_file), sample=3Dse=
+lf.process_event)
+> +        try:
+> +            self.session.process_events()
+> +        finally:
+> +            # Break the reference cycle between perf.session and self.pr=
+ocess_event
+> +            # because perf.session lacks cyclic GC support (tp_traverse)=
+.
+> +            self.session =3D None
+> +        self.print_totals()
+> +
+> +
+> +def main() -> None:
+> +    """Main function."""
+> +    parser =3D argparse.ArgumentParser(description=3D"Summarize Alpha Pr=
+ofileMe samples")
+> +    parser.add_argument("-i", "--input", default=3D"perf.data", help=3D"=
+Input file")
+> +    parser.add_argument("--pc", action=3D"store_true", help=3D"aggregate=
+ by instruction")
+> +    parser.add_argument("--top", type=3Dint, default=3D30, help=3D"rows =
+to print")
+> +    args =3D parser.parse_args()
+> +
+> +    analyzer =3D ProfileMe(args.pc, args.top)
+> +    try:
+> +        analyzer.run(args.input)
+> +    except IOError as e:
+> +        print(e, file=3Dsys.stderr)
+> +        sys.exit(1)
+> +
+> +
+> +if __name__ =3D=3D "__main__":
+> +    main()
 >
-> ---
-> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-> change-id: 20261103-alpha-compile-efdde587115c
->
-> Best regards,
 > --
-> Linus Walleij <linusw@kernel.org>
+> 2.55.0
 >
 
-Thanks for fixing this. I reproduced the failure with the unchanged
-BCM6846 Runner wrapper using Alpha GNU as 2.43. With your patch it
-assembled without warnings. The start symbol is a 32768-byte OBJECT,
-the end label is at offset 0x8000, and the embedded bytes match the
-Runner assembler's output. I also cross-built the kernel and modules
-with my ES40-config and CONFIG_COMPILE_TEST=3Dy.
-
-One related observation: I tried SYM_FUNC_ALIAS() on Alpha and hit
-the same assembler error because the generic SYM_ALIAS() also uses
-.set. Maybe that is being handled separately?
-
-For this patch:
+I tested alpha-profileme.py with fresh ES40 recordings. It kept
+window cycles and retire delay in separate tables, and it skipped
+the unrelated tracepoint payload in my test. I also decoded the
+ES40 recordings successfully on x86-64.
 
 Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
 Tested-by: Magnus Lindholm <linmag7@gmail.com>
