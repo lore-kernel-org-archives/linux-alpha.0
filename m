@@ -1,89 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.171
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.224.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793672355;
-	b=lf+zfKbn1yjSBmxOi0srh1PKS64rMHh6CwmBAI2hzaSqe5imBtev2afMqSS++bvUFuao
-	 FWR9BTSi4QsLukcefEyVTf8YzazT/w57yfi/s0vqoGfKy5K5PAzfHZg0FrJnLAKb903Ui
-	 Si62aQs8vCjVD+m2KqdnHB/Vptkpaokm1M3VHB3kdQwWjuQstIN5OxtuyPcLK99e6WQF4
-	 5p0BaUTfsEOAnU5uNolzXsRaQAPr/Z22kAoWOllPSUc5BiEewGtqdQOPnST3Dn2qZUvQP
-	 ZwlBbqqxknFSLqnQ5p8/pz1Fkec551MwM36Ibr5eu2EkGhpL2mqCvPsucIuU2DrNcGA==
+	t=1793674920;
+	b=jUglhPp2BQJOm4Q+51b4oIlsNZAVUk+jxs37uScg244xdTJ0nO8TPx7oTa425W3+tpD4
+	 bun1wEZKvEw6yfJgrL8p2cVydwx2BO+UCFWWfi0GBQhZb7/2uFSalQQjAnuujtlRdTVPV
+	 L4dwC+otGLCq/CibGugJJlmaZ30KL49ylKhJxK7UmqG2J+tI2ix9NMJKLI4p194qWiwhC
+	 OuPfV0BJwSC6MMHCFfH4QaoFojrOGSZYRtfXmYHW/KIN9zEPtyq3ESE7ZsCrHX4kT892j
+	 Y7Hd/i1hpQ2LOdo7HR2S7liplkgJZqQR0c2NI4UGpVKFZG6dbfX7hG2mPqTxYhyKjcg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793672355;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793674920;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key;
-	bh=MvDrv7SprQaWmVBVhAVIY6gikWVWszm2+KTVP/5Y8Tk=;
-	b=25pHkGUM1HdV2rixCb79FVtc9VbAER8eunjIxc9bdwlcsqurmYlUaSeXEpRuWgNAnmdl
-	 WV+s2ARKKW6wSY5syZUUrsfuHZZHGNDbZrEJgDJ7pFnuzSTsje1RhEhl10eeY6WW1oh7h
-	 Z8xxoNeO2ZPKbveVoGnn9nbM5v3mkMSrgr1gPS7oqxn3AFd5KM4pkLwDF7771ANLUQgE2
-	 HoMsTflqLVGdQnKDf5TB3la71euPI1YiGp1mbEaYkspBL09SAKRhk3NzBFDqeEzubAxBq
-	 lpfFFSXtK2l3jDgdv2CN/LLxdfw9O6wocbOGXeijkQrVDtcuxP7u/89EnK1Y5euzFBg==
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Subject:Date:
+	 Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key;
+	bh=iWZ6T7xk8VtKH5R/9rzQs0i+4KFIZ3hVEHuGR9wxUGI=;
+	b=ko5qXWhBMKDIv4icThI2JG7s64ZgOEhvdDFmLiJnQgMEKxh0yDkq9ciDjuwdv0Pwr/O5
+	 unYYyZozu60MkjvcGFcquUb1dsx1HzOSRmGoEOzhLoFM6XhzCAM9oJ6XZZq8l4lXlW0Yt
+	 RIEPBpbvQxnlc8qdb2jM903f6NTDqoJbg45EtKxq0VxvhiExD+4NxlyVU9czZL7HlUMVo
+	 tGozWzeb/O6JBqFPAsrpejr78FENUEBrDuWEDPk8gIa0QwQuTRo+yFd6TIUrNtkg2bW2P
+	 7jmyeS2Sv29kwj2kd9reVQS5h3uKS4HL8Rl8BZqlbHPEgOgx+nBWwRMBsQOmNZJOj4A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Xad342Lh;
-	arc=none smtp.remote-ip=209.85.128.171
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="sxrpQ/Fg";
+	arc=none smtp.remote-ip=74.125.224.50
+Received: from mail-yx1-f50.google.com (mail-yx1-f50.google.com [74.125.224.50])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C9B8606A336
-	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 02:19:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5C9B8606A336
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 463AD606A327
+	for <linux-alpha@vger.kernel.org>; Tue,  3 Nov 2026 03:01:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 463AD606A327
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Xad342Lh
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-8b2fafe2812so1564637b3.0
-        for <linux-alpha@vger.kernel.org>; Mon, 02 Nov 2026 18:19:14 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=sxrpQ/Fg
+Received: by mail-yx1-f50.google.com with SMTP id 956f58d0204a3-679aeeddc6bso3403815d50.2
+        for <linux-alpha@vger.kernel.org>; Mon, 02 Nov 2026 19:01:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793672353; x=1794277153; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=MvDrv7SprQaWmVBVhAVIY6gikWVWszm2+KTVP/5Y8Tk=;
-        b=Xad342LhSMfiyI2xHtA1S+WvJhHtfSpXgbOD74InaXFn7ncfLNl+49TekVEXvUUujv
-         VTt9l2iVZD66xmuNs9oBHfQHnqAe0eQZ/DQfkm0DhLkoFFHYxU2L2g7UXd/jMdfEJnwm
-         uW95fDshUASSUDK/FbqMfAZjVQFZheEzWVdrjBys82eWOKMpsXgNvORz6q3mhjQ9chDo
-         UtXXP2PqIb7Xi+T/cpgJdCYTAmDTnYJ0/nA296MIWDynSMCnQsDy8N4lmozYqK2h+v/3
-         u5VFXGCOPqlLhIN8plezcXgaim8u+bBASxpWyMP2AhP+gNxEqN1bt9tK6WxBbvUYV8zK
-         jAlA==
+        d=gmail.com; s=20260707; t=1793674918; x=1794279718; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=iWZ6T7xk8VtKH5R/9rzQs0i+4KFIZ3hVEHuGR9wxUGI=;
+        b=sxrpQ/Fg2JFt5UhQftOqpwRcNtKxNtR5nNK2TDGIQqELxIlA94HJNYQnqwPns0uDWU
+         91OqkdSrYaHG/lKgiTuX57NR7+lvAOrsbwp3fhypMcglBFn77QR8/jUU1h8J0HcYglOK
+         sVdVWCT3Y4g02I+kyZFMg4z6J4tpHmr6f54jyQB8QFsUuHBA2RHzV7Sj7VdpIphSWs5i
+         v6pwLJSBlYnDF6F+UF5uUFyR45kagKhVjZBvofnGOM5uKil3dKGDurDWGDQTrKLlspPw
+         UaadcStd9/G14qySwV/Plg4VjI9r501xdOmSQ8L5JukSfZvE/Hg0rckyc47x7nujdjbv
+         BZuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793672353; x=1794277153;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=MvDrv7SprQaWmVBVhAVIY6gikWVWszm2+KTVP/5Y8Tk=;
-        b=tabkBZ1QRC0azMveRHGlw1DlBQRJWBS84AXkumyRMNdkKZ16NCExv5efEnnwddINrB
-         LI+ELYy2wtl9HjS7nR1u0RiTAWoSKos1bJSD2LN3Zr2hxJCr/qTok9+IB2zpKG0jg3zW
-         7Oj7WEn4i5COGggvHIBWHPZ3Al+oQXhqVH+91xQpXTWkbcYtEsKrE1sg2oJ/tPHwO5V3
-         rQIqeit62hOSIUgI/V0k1vaYb7GA+70MiaU6fKIkorXDoWU/K08/iSOVHKKIgFQtkDAi
-         zT1Qb1K/rfbUBOFxoFURsFjvOfWZcmByUKTexwZRXAChoEZzYMmZrwYXE4FRq8FMcStd
-         pUxQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxGgPm9jEpmDPG+WpDFo8DkWI4lmGrhbqO+n1/eEMiFZ8Fua+sEU3fxuoOFA5AfiK+CiQurezGUU0/A2g==@vger.kernel.org
-X-Gm-Message-State: APuU4Z8oVhba4Lr9R+1PzE9uINxPH/0eOnBf7ZxvDMITMagbkLj4iH/c
-	yQZyyCE8cT8bw4m1Vw47jI+V7Fe9dg8TFLzL0TmKrYGly1+2GR6jnRrA
-X-Gm-Gg: AYBFou1nys8dafQ0soveKUVM6rEgaXESqtqSiVe0g3Q4J++5pQ4n0Q2SvvGUY/xtgBk
-	UpeTqpfocVlNBlXmJFtKit8BPUdOu4MI0xgocFZGvPO++dgnjtjKIs04UpCzgFf+Lbtw8vWwtrj
-	GBIlCNFPIZrrqNrcNxrOsuAJhlr90W7AVz5VcgFTDFgMxynPUg7DfR5BpgFCY9Wu/WzW4uLOkKe
-	ehPZWs2opeC/TKBqKpewPmCjasswiHc4xCbsUAZoBmGUf4Ptb5pSMRNMfIE//nCZf4DJkWhPtBv
-	3iZor/9nolMBJRYyRhnEM7a34rHUgQg0RfQaNh9/5HfTTE+M4GGl5RAThkevfEFC3vkPqp3ZsUu
-	bQdK8qbMEK0gYboZARP7MDtIH4fuU2j7QVTO2dzmE6DA+zWXHeVDEBkShG673gf9M4bbptkdefT
-	w+kDZnCJ3ZdoEw4M09oNxd67vtmBwUHOlIBBRWDzZ10KmhXmSg3RlNp9BsUVBD9yHTnLckS3DZW
-	3cOnRgHW5senZ/V2Zns/iAwgdyiNTj0/ILS32aqS08fvzJzHXzCgWQz2L+EqyGBSqu7XN18eCKd
-	1gHanKNO9XZnz+LcVOeO7FjeQ6SRQpP1p02BfiPseAc1LWAn5zNASXij2b9BhTOqywUjpVy6bXy
-	HclwqWl56HA==
-X-Received: by 2002:a05:690c:6b12:b0:8b2:bb94:8cc3 with SMTP id 00721157ae682-8b2bb949006mr72128037b3.4.1793672353112;
-        Mon, 02 Nov 2026 18:19:13 -0800 (PST)
+        d=1e100.net; s=20260707; t=1793674918; x=1794279718;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=iWZ6T7xk8VtKH5R/9rzQs0i+4KFIZ3hVEHuGR9wxUGI=;
+        b=EnyUnVlA3D5K4yuMygZw0T9gsUipb2/69oYXwploOIDJkS69mBnCoj/qSk2HKITQIr
+         Egx1wohEJ11iGxqraJFRc/QvHX44rd6wq/Fx5Z3joyJK0BCV8MajKOJhwbv8jrrIsm2w
+         fvuyRC8UKuJWhn3VC0f37KjqO8P0iaRWi3N9OORud0uGzQTx5+eo866N6PWioZ6b68qF
+         pF/PHCAsV72rriVdUc5KyYh459On42V/sG7hTp8fwiz5UjoQQOhaVf+De7A6OAzyctQ8
+         dwO2XKoR06ISSRyu9bPAogeIuE63DBN2kPYwdZhOtWOAdFRPz96SQC2FoJVoAh/oYxRc
+         lSGA==
+X-Gm-Message-State: APuU4Z9IYE02L7jyVHt4pOYZbmTFEjUNBRhjTSJuc+u0/MvGp2zx0hYm
+	zNJqHcHbwFbQBVVxRkRHfXkeEzXorS18v+KjDs5J0UbLkGJSNXcbeWeo
+X-Gm-Gg: AYBFou3U4gMFmuCA1mDRCsekNYhC0GqDJCVg+g4ZEnjr1hxGkRblzxmHto4k1jnaQjB
+	b20FRrUqZXLCQjl8BgvqRvPHJDTkcgPt+vRW6iSkFSmt2RdfkhkVWKjHsQM22i/jd9BfVBhMpI5
+	ZoghKq1yjOVzH5o3iinC+SoTkLNuM19+6xAFdU1xMlo9v3WTf/vSsIAP8mbeCItZw/GkKhJl/ON
+	2htodV6ebzTKWD0X9ChUdYu0BE9TWRrIKE6xnvDgl/4jDz9ygzDUqI5EqhZ2wLuvszveeRw7xzA
+	XYaIenGHqXkz5q/S+xNLvtlQtW2GMK4hTvceMpMLZhZjLEClGDFlUP8AX0i0x+fwFlMPBm+iqir
+	NThMeDuJZxtrb+KXOikaO2kbs0z/lxS0ghIDMlXM0rxokwVVW8g5Wm1+QorU0yvXy80x3xrvmiu
+	d+ju1xKv81e5UMhgkgktFU1MTclZWnygBJNdvELV/fNKFTuCefQenqbeyandBcHUbADb27XbLxZ
+	uzpHYmlao31MBUp7uKlaFvZDnx5IEPyuRNw3MMnHol3hwENBkr4f24fxFnn3AiQd/zA35ExO8My
+	a7h0STO2ZfIYOR/Un2vbtPbK8s11FND6zKCGna2xMPvhKx5k6h6NZwSwaqyYE6tlW2sfPDA5nC6
+	b9UhK0KGXYw==
+X-Received: by 2002:a05:690e:169b:b0:667:e855:ecdb with SMTP id 956f58d0204a3-67ba4c7f1bdmr7334220d50.3.1793674918196;
+        Mon, 02 Nov 2026 19:01:58 -0800 (PST)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b2b716d420sm64921327b3.33.2026.11.02.18.19.12
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67baf3154cfsm6413297d50.19.2026.11.02.19.01.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2026 18:19:12 -0800 (PST)
+        Mon, 02 Nov 2026 19:01:56 -0800 (PST)
 From: Matt Turner <mattst88@gmail.com>
-Date: Mon, 02 Nov 2026 21:19:09 -0500
-Subject: [PATCH v3 2/2] perf python: Add alpha-profileme.py
+Subject: [PATCH v4 0/7] alpha/perf: add ProfileMe sampling
+Date: Mon, 02 Nov 2026 22:01:55 -0500
+Message-Id: <20261102-alpha-profileme-v4-0-61e00f5e1da8@gmail.com>
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -95,233 +94,150 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261102-perf-alpha-profileme-v3-2-4bf6e1dda733@gmail.com>
-References: <20261102-perf-alpha-profileme-v3-0-4bf6e1dda733@gmail.com>
-In-Reply-To: <20261102-perf-alpha-profileme-v3-0-4bf6e1dda733@gmail.com>
-To: Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
- Arnaldo Carvalho de Melo <acme@kernel.org>, 
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/2XNTQ6CMBCG4auYrq2ZDi2IK+9hXLRlkBr+0irRG
+ O5uwRiJLL9knndeLJB3FNhh82KeBhdc18YhtxtmK91eiLsiboaAqQCUXNd9pXnvu9LV1BBPKd/
+ rPMusUZJF1Xsq3WMuns6fHe7mSvY2ZaaLyoVb55/zy0FMd9/6flUfBAdeSGkUmhIVwPHSaFfvb
+ NewqT7gwiew9hi9zQBLYVOFGf775OcFiLVPos+xUEIYpUHKpR/H8Q1NvqIxQAEAAA==
+X-Change-ID: 20261024-alpha-profileme-6e98a977cb54
+To: Richard Henderson <richard.henderson@linaro.org>, 
+ Magnus Lindholm <linmag7@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
+ Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, 
  Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
  Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
  Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>, 
  Adrian Hunter <adrian.hunter@intel.com>, 
  James Clark <james.clark@linaro.org>
-Cc: Magnus Lindholm <linmag7@gmail.com>, linux-alpha@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org, 
- Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-perf-users@vger.kernel.org, Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=8152; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=DgT96Z0hihdJ6DSgtpMcvvBYBQLCqGIOXeDl+xKLPWI=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJeuswxylEXEe5Mm8DgLjyHYdGxza5u3uaplxR+35j3K
- HbN7at6HR9ZGMS4GGaKKbLErVdkmdW2Y6nPaelfMHNYmUCGSIs0MAABCwNfbmJeqZGOkZ6ptqGe
- IZChYxQPkdNj0MgsLi5NLdJNKyhyyMsvSSzJzM8r1ssvSM0rSC/QS8tMK8nIyC8qTgUaoZeXWmL
- q6uhmZGhgYuloYeZk4Whq4uzsZOjk5ujo7OpkZGluYuBs6WjiamnOwMUpAHPNfz2Gf6aSXo919i
- s2qJ8tFmBYpbjZdRaDk/emzX8v6Swps3dR62P4Z/axfvvTkylrDlga6lSq25+feziY3fbw0Xffx
- b4azvslwgQA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6294; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=GI2yJRLUaIOwEtKf3HjoI/9jnSBjkQZtJcT5P0UJiCI=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJe+i3O26A8M3BRz6r7054eKLSe0t1mzzvX5EVeidA3L
+ 3W/5vU7Oj6yMIhxMcwUU2SJW6/IMqttx1Kf09K/YOawMoEMkRZpYAACFga+3MS8UiMdIz1TbUM9
+ QyBDxygeIqfHoJFZXFyaWqSbVlDkkJdfkliSmZ9XrJdfkJpXkF6gl5aZVpKRkV9UnAo0Qi8vtcT
+ U1dHNyNDAxNLRwszJwtHUxNnZydDJzdHR2dXJyNLcxMDZ0tHE1dKcgYtTAOaauzmMDHNneFaf0H
+ OcoX3mXWHpzPzwjnr2k+u/VEyeeU3a+X21zWuG/4mup75mzHP+mP5udduSzNz5Cgu497XL8hwuW
+ 8e9/+apv0wA
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-perf report shows where Alpha ProfileMe samples land but cannot
-aggregate the raw status attached to them.
+The 21264 from EV67 on, and the 21364, have a second performance counter
+mode, ProfileMe, alongside the Aggregate mode that the driver uses today.
+An Aggregate mode sample reports the PC where the overflow interrupt was
+taken. On an EV7 that is anywhere from 15 instructions before to 12
+after the one that overflowed the counter, which makes perf annotate
+output close to useless. In ProfileMe mode the CPU picks one fetched
+instruction, follows it down the pipeline, and reports its PC along with
+what happened to it: whether it retired, whether it trapped and why,
+whether it was a mispredicted branch, stalled before map, or was killed
+on a wrong path, and what PCTR1 counted while it was in flight.
 
-Add a standalone script, using the perf Python module, that summarizes
-it by symbol or, with --pc, by instruction, in the style of DCPI: the
-fraction of samples killed on a wrong path, not retired, mispredicted,
-taken or stalled, the mean PCTR1 window count, and trap counts by type.
-Mispredict and trap types are only counted when I_STAT[TRP] is set,
-since they are stale otherwise. Redirect traps are counted by their
-PALcode entry offset in PMPC.
+Patch 1 fixes a constant passed to the wrong PALcode call, with no
+functional change. Patch 2 adds the sysfs format and event attributes
+the perf tool needs to name raw events. Patch 3 fixes counts lost when
+an event is stopped before its first start, and patch 4 stops reporting
+user registers that the entry code has not saved yet. Patch 5 adds
+ProfileMe sampling, selected with precise_ip or a new profileme config
+bit, so cycles:p and perf record's default event use it. Patch 6
+attaches the status registers to each sample as PERF_SAMPLE_RAW data,
+and patch 7 adds an option to randomize the sampling interval so that it
+cannot lock onto a loop.
 
-Raw data is only read from cpu PMU events, as a tracepoint's payload can
-pass for ProfileMe status. Rows are kept apart by PCTR_CTL[SL1], as a
-mean over two things PCTR1 can count means nothing.
+A separate series for perf-tools-next adds a decoder for the raw data
+to perf report -D and perf script -D, and a script that sums the status
+by symbol or by instruction, in the style of DCPI.
 
-On an EV7, sampling a loop whose branch tests random data reports that
-branch mispredicted in 21% of its samples, and 0% with sorted data.
+The two modes cannot run at the same time, because PCTR_CTL[SL0] sets
+the mode for both counters. A ProfileMe event is scheduled alone, and
+perf multiplexes it with any other hardware events. perf stat does not
+ask for precise events, so it keeps using Aggregate mode.
+
+To try it:
+
+  perf record -e cycles:p -- ./workload
+  perf annotate
+
+I tested this on an AlphaServer ES47 (EV7). Samples from a
+16-instruction loop land on all 16 instructions rather than on 4 PCs.
+DTB misses and unaligned traps are attributed to the faulting load. A
+branch on random data shows up as mispredicted in 21% of its samples,
+and in 0% with sorted data. A 12 minute perf record -a while building
+git took 4.45 million samples with no warnings. Sampling every 10000
+instructions, which used to wedge the CPU, ran 66 times without a hang.
+On two CPUs, this version survived 26 runs that mix sampling, context
+switches and multiplexing, with no warnings.
 
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- tools/perf/python/alpha-profileme.py | 172 +++++++++++++++++++++++++++++++++++
- 1 file changed, 172 insertions(+)
+Changes in v4:
+- Patch 4: move __entry_save_end past the r16-r18 stores in entSys,
+  as PAL_callsys does not save them and interrupts are still enabled
+  there.
+- Patch 5: report the user registers when the profiled instruction is
+  in the entry code but the interrupt was taken after it, since
+  perf_get_regs_user() sees the PMPC rather than the interrupted PC.
+- Link to v3: https://patch.msgid.link/20261101-alpha-profileme-v3-0-92d511b5a044@gmail.com
 
-diff --git a/tools/perf/python/alpha-profileme.py b/tools/perf/python/alpha-profileme.py
-new file mode 100755
-index 000000000000..366b288c6e1b
---- /dev/null
-+++ b/tools/perf/python/alpha-profileme.py
-@@ -0,0 +1,172 @@
-+#!/usr/bin/env python3
-+# SPDX-License-Identifier: GPL-2.0
-+"""Summarize Alpha ProfileMe samples.
-+
-+Aggregates the ProfileMe status that the Alpha cpu PMU attaches to each
-+sample as PERF_SAMPLE_RAW data, by symbol or, with --pc, by instruction.
-+
-+Record with raw data, e.g.:
-+  perf record -R -e instructions:p -- ./workload
-+  alpha-profileme.py [-i perf.data] [--pc] [--top N]
-+
-+Columns:
-+  samples   ProfileMe samples attributed to the row
-+  killed%   profiled instruction killed before it was mapped (PM_KILLED_BM)
-+  invalid%  instruction did not trap and did not retire valid (VAL clear)
-+  mispr%    conditional branch mispredicted (TRP and MIS)
-+  taken%    TAK set; only meaningful for rows that are conditional branches
-+  stall%    instruction stalled between fetch and map (PM_STALLED)
-+  pctr1     mean PCTR1 count during the window; what it counts depends on
-+            the event: inum retire delay for cycles:p, window cycles for
-+            instructions:p, Bcache misses for bcache-misses:p and Mbox
-+            replay traps for cpu/mbox-replay/p
-+  traps     trap counts by type, only for samples with TRP set
-+
-+Samples from events that set PCTR1 to count different things are printed
-+in separate tables, as their means cannot be compared.
-+"""
-+from __future__ import annotations
-+
-+import argparse
-+from collections import defaultdict
-+import struct
-+import sys
-+from typing import Optional
-+import perf
-+
-+TRAP_TYPES = {
-+    0: "replay", 2: "dtb2-3l", 3: "dtb2-4l", 4: "fen", 5: "unalign",
-+    6: "dtb1", 7: "dfault", 8: "opcdec", 10: "mchk", 12: "arith",
-+    14: "mt_fpcr", 15: "reset",
-+}
-+REDIRECTS = {0x481: "iacv", 0x581: "itbmiss", 0x681: "intr"}
-+PCTR1_NAMES = ("cycles", "retire delay", "bcache misses", "mbox replays")
-+SAMPLE = struct.Struct("<IQQQ")
-+
-+
-+class Row:
-+    """ProfileMe status totals for one symbol or instruction."""
-+    def __init__(self) -> None:
-+        self.samples = 0
-+        self.killed = 0
-+        self.invalid = 0
-+        self.mispredict = 0
-+        self.taken = 0
-+        self.stalled = 0
-+        self.pctr1 = 0
-+        self.traps: dict[str, int] = defaultdict(int)
-+
-+
-+def pct(n: int, d: int) -> float:
-+    """Return n as a percentage of d."""
-+    return 100.0 * n / d if d else 0.0
-+
-+
-+class ProfileMe:
-+    """Aggregates ProfileMe raw sample data."""
-+    def __init__(self, by_pc: bool, top: int) -> None:
-+        self.by_pc = by_pc
-+        self.top = top
-+        # Keyed by PCTR_CTL[SL1], which sets what PCTR1 counts.
-+        self.tables: dict[int, dict[str, Row]] = defaultdict(lambda: defaultdict(Row))
-+        self.skipped = 0
-+        self.session: Optional[perf.session] = None
-+
-+    def process_event(self, sample: perf.sample_event) -> None:
-+        """Add one sample's ProfileMe status to its row."""
-+        raw = sample.raw_buf
-+        # Raw data from another PMU or a tracepoint is not ProfileMe status.
-+        if (sample.evsel.type not in (perf.TYPE_HARDWARE, perf.TYPE_RAW) or
-+                not raw or len(raw) < SAMPLE.size):
-+            self.skipped += 1
-+            return
-+        version, pmpc, i_stat, ctl = SAMPLE.unpack_from(raw)
-+        if version < 1:
-+            self.skipped += 1
-+            return
-+
-+        symbol = sample.symbol or "[unknown]"
-+        if self.by_pc:
-+            if pmpc & 1:
-+                key = f"PAL+{pmpc & 0x7fff:#x}"
-+            else:
-+                key = f"{pmpc & ~3:#018x} {symbol}"
-+        else:
-+            key = f"{sample.dso or '[unknown]'} {symbol}"
-+
-+        r = self.tables[(ctl >> 2) & 3][key]
-+        r.samples += 1
-+        trp = (i_stat >> 39) & 1
-+        if (ctl >> 26) & 1:
-+            r.killed += 1
-+        if not trp and not (ctl >> 1) & 1:
-+            r.invalid += 1
-+        if ctl & 1:
-+            r.taken += 1
-+        if (ctl >> 27) & 1:
-+            r.stalled += 1
-+        r.pctr1 += (ctl >> 6) & 0xfffff
-+
-+        redirect = REDIRECTS.get(pmpc & 0x7fff) if pmpc & 1 else None
-+        if redirect:
-+            r.traps[redirect] += 1
-+        elif trp:
-+            if (i_stat >> 40) & 1:
-+                r.mispredict += 1
-+            else:
-+                tt = (i_stat >> 34) & 0xf
-+                r.traps[TRAP_TYPES.get(tt, "other")] += 1
-+
-+    def print_totals(self) -> None:
-+        """Print the busiest rows of each table."""
-+        total = sum(r.samples for rows in self.tables.values() for r in rows.values())
-+        print(f"{total} ProfileMe samples, {self.skipped} without ProfileMe data")
-+        for sl1, rows in sorted(self.tables.items()):
-+            print(f"\npctr1 counts {PCTR1_NAMES[sl1]}:")
-+            self.print_table(rows)
-+
-+    def print_table(self, rows: dict[str, Row]) -> None:
-+        """Print the busiest rows of one table."""
-+        print(f"{'samples':>8} {'killed%':>7} {'invalid%':>8} {'mispr%':>6} "
-+              f"{'taken%':>7} {'stall%':>6} {'pctr1':>7}  {'location':<40} traps")
-+        ordered = sorted(rows.items(), key=lambda kv: kv[1].samples, reverse=True)
-+        for key, r in ordered[:self.top]:
-+            traps = " ".join(f"{k}={v}" for k, v in
-+                             sorted(r.traps.items(), key=lambda kv: -kv[1]))
-+            print(f"{r.samples:8d} {pct(r.killed, r.samples):7.1f} "
-+                  f"{pct(r.invalid, r.samples):8.1f} "
-+                  f"{pct(r.mispredict, r.samples):6.1f} "
-+                  f"{pct(r.taken, r.samples):7.1f} "
-+                  f"{pct(r.stalled, r.samples):6.1f} "
-+                  f"{r.pctr1 / r.samples:7.1f}  {key:<40} {traps}")
-+
-+    def run(self, input_file: str) -> None:
-+        """Run the session."""
-+        self.session = perf.session(perf.data(input_file), sample=self.process_event)
-+        try:
-+            self.session.process_events()
-+        finally:
-+            # Break the reference cycle between perf.session and self.process_event
-+            # because perf.session lacks cyclic GC support (tp_traverse).
-+            self.session = None
-+        self.print_totals()
-+
-+
-+def main() -> None:
-+    """Main function."""
-+    parser = argparse.ArgumentParser(description="Summarize Alpha ProfileMe samples")
-+    parser.add_argument("-i", "--input", default="perf.data", help="Input file")
-+    parser.add_argument("--pc", action="store_true", help="aggregate by instruction")
-+    parser.add_argument("--top", type=int, default=30, help="rows to print")
-+    args = parser.parse_args()
-+
-+    analyzer = ProfileMe(args.pc, args.top)
-+    try:
-+        analyzer.run(args.input)
-+    except IOError as e:
-+        print(e, file=sys.stderr)
-+        sys.exit(1)
-+
-+
-+if __name__ == "__main__":
-+    main()
+Changes in v3:
+- New patch 3: clear PERF_HES_UPTODATE when an event starts counting,
+  so that a stop before the first start does not lose the count.
+- New patch 4: report no user registers for a sample taken in the entry
+  code, where the frame at task_pt_regs() is not complete. An interrupt
+  nested on one taken there is still not caught.
+- Patch 5: a user instruction whose interrupt is taken in the kernel now
+  reports its PC with no registers or user stack, as the frame at
+  task_pt_regs() may not be built yet. Thanks to Magnus Lindholm for
+  finding this and for the fix.
+- Patch 5: also move the counter away from overflow when a ProfileMe
+  event is removed, or stopped without PERF_EF_UPDATE, as
+  alpha_pmu_del() does not go through alpha_pmu_stop().
+- Patch 5: ignore an interrupt that was pending when the event was
+  stopped. Document that rewriting a counter does not cancel one.
+- Link to v2: https://patch.msgid.link/20261030-alpha-profileme-v2-0-c702f1c65272@gmail.com
 
--- 
-2.55.0
+Changes in v2:
+- Patch 1: explain why bit 0 clear means all processes, although the
+  Architecture Reference Manual says otherwise.
+- Patch 3: fix a CPU wedge during high-rate ProfileMe sampling. The
+  ProfileMe counters are now written twice, and a stopped counter is
+  moved away from overflow, as EV67 HRM PALcode restrictions 32 and 38
+  require.
+- Patch 3: set the profiled PC in place in the trap frame of the
+  instruction's mode instead of in a pt_regs copy on the stack, so
+  sampled registers and stack values are those of the right frame.
+  A kernel instruction whose interrupt is taken in user mode gets a
+  per-CPU frame holding only its PC, so the user frame is not changed.
+- Patch 4: drop the reserved field and pack the 64-bit fields of
+  struct alpha_profileme_sample, so they are 8-byte aligned in the
+  sample record and the record needs no padding. This changes the raw
+  data layout.
+- Patch 5: compute the jitter with mul_u64_u32_shr() and saturate the
+  sum, so that large periods cannot overflow.
+- Link to v1: https://patch.msgid.link/20261028-alpha-profileme-v1-0-d44b52bf2500@gmail.com
+
+---
+Matt Turner (7):
+      alpha/perf: pass PERFMON_CMD_LOGGING_ALL to the logging options call
+      alpha/perf: add sysfs format and event attributes
+      alpha/perf: clear PERF_HES_UPTODATE when an event starts counting
+      alpha/perf: do not report user registers from the entry code
+      alpha/perf: implement ProfileMe sampling
+      alpha/perf: attach ProfileMe status as PERF_SAMPLE_RAW data
+      alpha/perf: optionally randomize the ProfileMe sampling interval
+
+ arch/alpha/include/asm/perf_event.h      |   2 +
+ arch/alpha/include/asm/ptrace.h          |  12 +
+ arch/alpha/include/asm/wrperfmon.h       |  14 ++
+ arch/alpha/include/uapi/asm/perf_event.h |  31 +++
+ arch/alpha/kernel/entry.S                |   9 +
+ arch/alpha/kernel/perf_event.c           | 382 +++++++++++++++++++++++++++++--
+ arch/alpha/kernel/perf_regs.c            |  13 ++
+ 7 files changed, 450 insertions(+), 13 deletions(-)
+---
+base-commit: 330517c63aa9b48227b6ab45f01003effac77ae4
+change-id: 20261024-alpha-profileme-6e98a977cb54
+
+Best regards,
+--  
+Matt Turner <mattst88@gmail.com>
 
