@@ -1,89 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793818160;
-	b=Hm1npoY0jfsAlP6aWz99Td+NxzC8MBelBWEDf6h4uT/BS4a4STtYj9B33i0b5KSHG/+w
-	 Sb27LqLmGFEwuakRV4eiFkAO7LxPARjurUrlG2nKQvFgM/zSpegZO8Kdf8C0qBDeKQQBi
-	 BcLiBT/xqpsuZPh2w0hca9puJjle3HmQJpxw2mNG8VXhNnq+9p9sPJxMG0FmIYftQFBpr
-	 fh+0Im7WtpuHkJ/cCyz78h6972b18Uw2KaDwiDTzvo0T3mjfd870KfUwtVC50lHCwL9lK
-	 QvCmVjhuw8ipVS96OD1MFV1t8wImd/oBiYnEZmmxSSywRqhcBKDs1mczNwWCQudeO9w==
+	t=1793818156;
+	b=m111FRbgfbH3CElAldgg1oc9mauEHueG9JRk1OGiu36inJF5SzB6oShIaxf6rOl4N8AW
+	 2grwMNzNWZW9r/Z6YMNh99S0H3VrDnVgPWyQZowLqL0vxaiNyDPu9F09X8oqLIVIO2dQu
+	 5HPB1LJYNtWfwExrwvE00/ZNrZ8fHr5Xtsd97kTxyYVthoIdkapqi/Uj3KxFml4ZmvN7S
+	 pVEwQag+vwKVfBhil/Ly91ViqkQJUmGwVLsiaMZLAHw+w1m7lH+A/yr+SYY1uMx2KujU1
+	 d+8WQPbd9NNb9uA0CdHLSy9iDJa6h0ND64R2hc7fY20UqtlPk4SoWM3BRzdMN7iNqbw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793818160;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793818156;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
 	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
 	 X-Developer-Key;
-	bh=MrVZIFY9xpRe5kGm25GXPuJKC2m6ZmcUrunMXbmenrs=;
-	b=pQ5tuHA6XfEIc3Ngh6z3TFFnG3jZOVwtfOv+EeB5+v1y1vHDdFlcEu+o+adEfsElKevE
-	 l5GMBESRc8WOmm0O+NUPAOoETiVnIoxs/BrLOuKxHWFkTwVQa0rlS4cswfOARSWuqRhQB
-	 cpX8ihAkGCwJjWFkkQrU3vBpCtfH/F02FJ2YWwzwK0oj38NWkRvYfRf6IHsE6i4SZW+Wz
-	 DRYFamWvmWTnKKKkaWni8aNaxnvYHGpCbOaWK5dgWFpCkF2nY0/cYERL7KSYZFrCGx5bM
-	 riX7oB2RRbUcDV3z1Rsia/X90AJEfpSuwdJPOE9MpjD+Hbwm1WoSnMDthmo2ScuzgNw==
+	bh=t/6UJdmTXHa5CFtPmZ35mg3YaxIUiqdjrGgBWpPFHWo=;
+	b=TYDbXQY2Zs0ZgMDyUYi/Qn/dH5FFfVx47Dv7P4to68i7QIHepWKQUuHGEchYCbMp74LP
+	 BDR85I2QfMcqWCyyN+qoGoDL70cmnwHE9dlGgPGrdDqRC81/fmPCjvbXhgFYQhJpExjF1
+	 fGSn5KnYARmvrMd/a5RvS7M4uoksh42gxqy29a9Ifw4wThGgxI8sydFiYwRPBHrX5VSfN
+	 PooRGr0uYm5+wwbWUntOEp7BSfdT62d9fiUeH0tSEf2nxkHWoOh8kionLUmOm9jp6nGwj
+	 g0sdMh4IKmpVB80Rvg9DWl3ybs2rTF7C//cqbK0N+rZKh/Ys/qMls5iZeijnAHEOYAA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ztJspIif;
-	arc=none smtp.remote-ip=209.85.128.170
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Mrr0ksDP;
+	arc=none smtp.remote-ip=209.85.128.179
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31D21606D83E
-	for <linux-alpha@vger.kernel.org>; Wed,  4 Nov 2026 18:49:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 31D21606D83E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB344606D820
+	for <linux-alpha@vger.kernel.org>; Wed,  4 Nov 2026 18:49:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BB344606D820
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=ztJspIif
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-8b0dba37a7fso10127087b3.0
-        for <linux-alpha@vger.kernel.org>; Wed, 04 Nov 2026 10:49:20 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Mrr0ksDP
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-8b0d126f631so11532917b3.2
+        for <linux-alpha@vger.kernel.org>; Wed, 04 Nov 2026 10:49:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793818159; x=1794422959; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793818155; x=1794422955; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=MrVZIFY9xpRe5kGm25GXPuJKC2m6ZmcUrunMXbmenrs=;
-        b=ztJspIif9KEZJVeoG3u8+Vb8w3ge3wYyCCP+0qXbfwT0oDGPowkN9keJdubIUe97U/
-         Wg5I+NZCgkYfrCcYYqVNmvpfH88d6CsM6SQ8RUf+1yLsKXqlhrIWJBi+Swk6uoFsby2Q
-         ERxoeHKlj+WyGXmOVQTpVdM+N4E8YWxj7wZ26Dg0caKKpt8Ho+42PhxHXNtXkhXE2xa2
-         8eTVXSRKb4U4116u67tAgeQqDb6bcobt3HFUU98AM26xIev+PCHAAZVRGu9/nLM4104A
-         70xNwRL2XzOgTaptSxRwO3erRKs3cZ/SoIKXElqS+ucXzsFY34vLC4FQIVXrhB4bMc0b
-         9NPg==
+        bh=t/6UJdmTXHa5CFtPmZ35mg3YaxIUiqdjrGgBWpPFHWo=;
+        b=Mrr0ksDP79GRmhE+NSytNllRHQddie1qCX/qCdauyOszsQxpNAfOe6hSgYPqC8pSP5
+         6kaKBVyy2TOg+H3WfbgO8zR+akkuuKJfvfv+akCm2I3jwzhKAUzeRCQve9BLNwKI1Afk
+         A5WPcpysj84im93WrlXI7HKTfU/n67a0U2o7tAX1RpPTB9sPFozFw9q+bVwcqpqD4Lsn
+         AydXeqyM/csh+L8kppKKqP+cYZqmo3bGjvUOyQqrpvt+kft//t0HPeQXNf+54Qx/qcZv
+         sAWEpXld29UhikCKwfJ1fZytDZNotnVlB9RJ0AQpkU8tZFHbr+0pmUbjGtog3400E5n8
+         Vr7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793818159; x=1794422959;
+        d=1e100.net; s=20260707; t=1793818155; x=1794422955;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=MrVZIFY9xpRe5kGm25GXPuJKC2m6ZmcUrunMXbmenrs=;
-        b=mAaueDIw0XgHrkMA99HcGvmPweAeIb+gViyLyc/7DLT8R9bz0WVJuPW7Ohhinv2N7+
-         /lq5Sk0wDtMzTDN0qyrmh7E3WiDSLxKbf4922MKG8+E/Lm8xaa5+TiytitINXHCAVb9S
-         DLG4NyJzcXu9NrlXmwB1ndObeENCISSTMisOveruQc0k6SKhPXD41FV+7u1aQnTYBKI5
-         hgDXiyybH20kV6VgY4U+qJC2tWAChtUMQb/kDi0CgiSI0AkFhIHhp8/Vhs86XJc1ovNr
-         iKOR2me+AJ4ncu1IVzWggB9raQYeNLUhXMMsmb9cRo5ytFnZ5yQY/NMd99QfkPRX9Qy/
-         eg0Q==
-X-Gm-Message-State: APuU4Z/Qb8eVIsVm1cQslKC0w247bqaJ/g4CtX4JIQRFSBcqYNUBygK0
-	F1QXEWoMFMWY/gIJMx4X1uJgwHSLrUDLxIS2YzsUuoFaadkMbC278UIH
-X-Gm-Gg: AYBFou1lkGcRvRb67tfxFgFoqejjPhPUgH2P9bvlcfZ2kJV+3VfBLx9f7cahiwY0gaV
-	or70fJuBCR/eRYB/4+/0HYI00kbfeREVx/lYD3M27MjYCm13DtaXqV5zSiP7Tl2ivCRlxK/ZXd3
-	JQS3hmPt/GmGGz4BIC9nV02I1cmaj0SbyFNJRBvMWAq4iagzb5ZljBcfuK15RZM+H+7AyRRHVEa
-	9/JI0W8iukkd3Qs8BG6qDrFwNxYehS0l+yRB3eC+yUTvinVQFTC3MQHmCm8pWJiUQrtJHIVrmnL
-	g8hSpsxOiKgzXth52JKNukDtSH0Rtd+lVi2K/Yi0kYzlUFfuU/yVWZ4AkXirCfXgiDKfRS3EXH9
-	HIyzNMIUD6PFjKliHaiBwURkkHcg/Ttjj+G4qoXwhtqhWtvtIYGyLqfOemOaYoNcnhRNrlE+kZe
-	xSpm35ygBGzrlxz3/ZMIw0VJxXwq5x1PhWHjKYBWMs89qCLvJQQaqbLhZ9KfFlYxqQTP4W/KPft
-	OU6Zu50dUbkWfo3iRkNXV8vqBHtZqDwutIHSC9alqYZBd1DB9R3ZNfFIz5yOkkR3QCGS9t3Nbcw
-	huMll3Zki5Z6DeUG+SaORKDxMkPaoDiAwKFgOwp6TTdbNucRBUaTko+BsPG+jB7yEOO2SNA5i2S
-	riHjloHtwhQ==
-X-Received: by 2002:a05:690e:4105:b0:67c:41a:bf62 with SMTP id 956f58d0204a3-67c041ace87mr92159d50.31.1793818159061;
-        Wed, 04 Nov 2026 10:49:19 -0800 (PST)
+        bh=t/6UJdmTXHa5CFtPmZ35mg3YaxIUiqdjrGgBWpPFHWo=;
+        b=NYoNRSPpZSjzcDoPIv9qSoSlAAyO7B8e6BYhMs8n+wOIOu29GJoekFQjuoYskwmj4C
+         xc3VyC5bXhtbWpRLj33Yhe/nbWBDNwwEqwldRQPX7eXCsl/cBq2xetEXH6zxHUNmjCnm
+         x9QRRsQOGDt81lqQkWcKa1x8pXuyI05ucE2d+2RdtynozW9JPCqOFNHDEzKge1BbkAdR
+         fFNBVelCiwvkBRlCLa+bzAV2sw70THnlJCAU+K7ObHXJDAFQlsxZ5rOqcQsiW3OXW0fE
+         S1fRBeu8TZpA80iQLuYGVM2tGq537YsXy+6p7m3rBzpMNUI/7ncFlbHNer5ZVCLWuwwG
+         lA/w==
+X-Gm-Message-State: APuU4Z8E7ostF4eiC2JCmxBlHDW6tHUCyt95DdAkqt2GV9XQjJsCys4y
+	4dSn+YQSKI7rPAS++EaFkQAAMSoCbjr+QofDNMsdX5ZmnI7NfMzK6Yt+
+X-Gm-Gg: AYBFou11HK4/k8e0LHjPLIWAf14nXOKUBjuh6OnDgv67Z5Fk6BeifHaKI4SfaNUJ+0t
+	uFRVAUuyrNGuHxb1cnXMtQtuwXrr1z1gPBanuhe5XeEPbKp8sC/ThLTyincHbqIKlL9XDKij06v
+	hLYEpRKEujBjZOqvSi7KPMUbJdw04/Lc6VBraklGO/UyDTCCElz3G68ydPAYDN+8HXcixCY2m5p
+	gpNEY78FRzsj0WTQH53K2s5j1lGLeVk4wPigtb53wWoE3MbzATN6yHobq631mtNIKkTqziZlQbf
+	91sG2G6QIpgDqBN5wUd/r2yVJ2PdpZgzerTdPU/9hhGs3+mIharfubsa+SWml6vdeiLf6KQs+sZ
+	whWYGu5+Vmkl6hX+4orCj72Lm9uyE+Xwsvd+B5zUnDWrDMHrDJXCZDLeal+QtV4f6vnJ4RWZWUv
+	2j35LOd2O30mcLe9rIOzXJjEQuutzDS0T3sN4Xg2/jwMwL7XmscBYSMSQlJzILPBrcKNYnS4+Hb
+	ai/0P4lVhL0CYHU08DH1BJg6PJgeS8RUHzwzMS1ki0VL6WMRZ4vTBPFNiqC5QxCy+g/cjZW8TMO
+	U5qz0/OQvqzNL74SSBrRc84jGooZRZBh3G75ZvqnVpiQHDhJxcHBqlfLb4lrXgDMJ5NmoAqs/Ca
+	KxxR4IeAbNw==
+X-Received: by 2002:a05:690c:e010:20b0:8b3:2352:cc8e with SMTP id 00721157ae682-8b32352d394mr7107647b3.59.1793818154602;
+        Wed, 04 Nov 2026 10:49:14 -0800 (PST)
 Received: from localhost ([2600:1702:7a90:6f9f:66f3:d5d6:2d12:d460])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67bee202bc4sm1998531d50.4.2026.11.04.10.49.18
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b3097117b3sm24456457b3.1.2026.11.04.10.49.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2026 10:49:18 -0800 (PST)
+        Wed, 04 Nov 2026 10:49:13 -0800 (PST)
 From: Matt Turner <mattst88@gmail.com>
-Date: Wed, 04 Nov 2026 13:49:12 -0500
-Subject: [PATCH v6 05/13] alpha/perf: ignore overflow interrupts the
- counter does not account for
+Date: Wed, 04 Nov 2026 13:49:09 -0500
+Subject: [PATCH v6 02/13] alpha/perf: add sysfs format and event attributes
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -95,7 +94,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261104-alpha-profileme-v6-5-63362e9290a3@gmail.com>
+Message-Id: <20261104-alpha-profileme-v6-2-63362e9290a3@gmail.com>
 References: <20261104-alpha-profileme-v6-0-63362e9290a3@gmail.com>
 In-Reply-To: <20261104-alpha-profileme-v6-0-63362e9290a3@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -109,164 +108,89 @@ To: Richard Henderson <richard.henderson@linaro.org>,
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-perf-users@vger.kernel.org, Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6094; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=72vScTB6O6dHaasPBS0wMYfMhBz3Vy2ucix9UsfhK9I=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJe16lMqlN+diT4kryDcbHe+WdC+bfVo2oOrwmdU3taJ
- z+l2Xlqx0cWBjEuhpliiixx6xVZZrXtWOpzWvoXzBxWJpAh0iINDEDAwsCXm5hXaqRjpGeqbahn
- CGToGMVD5PQYNDKLi0tTi3TTCooc8vJLEksy8/OK9fILUvMK0gv00jLTSjIy8ouKU4FG6OWllpi
- 6OroZGRqYWDpamDlZOJqaODs7GTq5OTo6uzoZWZqbGDhbOpq4WpozcHEKwFwT08rI8O7pi5SGVS
- +4lQQNtcy79VoXHHkakc+WyVRp7eWT6NblzsjQxfLjRcbd7YETtxZs4tzgME0koOb7H5OX9z/Xu
- wS0/9nODgA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2352; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=nsB8jInGhmdIwF4AteMUmNQCWwgxX1qv6DhmPNtskC4=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJe16n8cxBhnnZH3cbnpkZGiP+Or88KnnhuOcsZkuPV1
+ NFoM4mh4yMLgxgXw0wxRZa49Yoss9p2LPU5Lf0LZg4rE8gQaZEGBiBgYeDLTcwrNdIx0jPVNtQz
+ BDJ0jOIhcnoMGpnFxaWpRbppBUUOefkliSWZ+XnFevkFqXkF6QV6aZlpJRkZ+UXFqUAj9PJSS0x
+ dHd2MDA1MLB0tzJwsHE1NnJ2dDJ3cHB2dXZ2MLM1NDJwtHU1cLc0ZuDgFYK65asHI8Jnh9uUtKZ
+ t2zNgbqVChL6fm0//z7DLO1zfuBDwKXXur8izD/wSrg+5cQRfmF7S0Vua2H3P8cobvawHzMcG3d
+ QvL/vvEsQIA
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-The interrupt handler adds a full counter period to the count of the
-event on the counter that interrupted, which goes wrong in two cases.
+The Alpha PMU registers with no attribute groups, so the perf tool has no
+way to learn the raw config layout, and the PMU's own events can only be
+named as raw hex numbers.
 
-Rewriting a counter does not cancel its pending interrupt: wrperfmon has
-no way to, and PALcode clears the request only when delivering it. An
-interrupt pending when an event is reloaded, or when perf moves another
-event onto the counter, is then taken as an overflow of a counter that
-has not overflowed. It adds a bogus period to the count and can emit a
-false sample.
+Describe the event field in format/event and export aliases for the four
+EV67 event types. mbox-replay has no generic hardware event, and can now
+be named as cpu/mbox-replay/.
 
-And alpha_perf_event_update() already adds the period when a read finds
-that the counter overflowed before its interrupt was taken. The
-interrupt then adds it again.
-
-An overflow leaves the counter just past zero, below the value it was
-written with, while a counter that has not overflowed is at or above it.
-Ignore an interrupt for a counter in the latter state, unless a read
-has already counted the overflow, in which case add nothing. For this to
-hold, write the counters at most half their range below overflow, as
-armpmu_event_set_period() does. Counting events then take an interrupt
-every 2^19 events rather than every 2^20.
-
-Fixes: 979f867191f8 ("alpha: implement HW performance events on the EV67 and later CPUs")
-Suggested-by: Ian Rogers <irogers@google.com>
-Assisted-by: Claude:claude-opus-5-5
 Signed-off-by: Matt Turner <mattst88@gmail.com>
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
 ---
- arch/alpha/kernel/perf_event.c | 59 +++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 52 insertions(+), 7 deletions(-)
+ arch/alpha/kernel/perf_event.c | 39 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
 diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
-index ecec78c355cd..dd7fc4ac1396 100644
+index 2d9383425357..70840c05d39b 100644
 --- a/arch/alpha/kernel/perf_event.c
 +++ b/arch/alpha/kernel/perf_event.c
-@@ -30,6 +30,9 @@
- #define MAX_HWEVENTS 3
- #define PMC_NO_INDEX -1
+@@ -212,6 +212,44 @@ static int ev67_raw_event_valid(u64 config)
+ };
  
-+/* hw_perf_event.flags */
-+#define ALPHA_PERF_FLAG_WRAPPED		0x1
+ 
++PMU_FORMAT_ATTR(event, "config:0-7");
 +
- /* For tracking PMCs and the hw events they monitor on each CPU. */
- struct cpu_hw_events {
- 	int			enabled;
-@@ -315,10 +318,16 @@ static int alpha_perf_event_set_period(struct perf_event *event,
- 	if (unlikely(left < alpha_pmu->pmc_left[idx]))
- 		left = alpha_pmu->pmc_left[idx];
- 
--	if (left > (long)alpha_pmu->pmc_max_period[idx])
--		left = alpha_pmu->pmc_max_period[idx];
-+	/*
-+	 * Start at most half the counter's range below overflow, so that the
-+	 * value an overflow leaves, just past zero, is always below the value
-+	 * written. See alpha_perf_event_ovf().
-+	 */
-+	if (left > (long)(alpha_pmu->pmc_max_period[idx] >> 1))
-+		left = alpha_pmu->pmc_max_period[idx] >> 1;
- 
- 	local64_set(&hwc->prev_count, (unsigned long)(-left));
-+	hwc->flags &= ~ALPHA_PERF_FLAG_WRAPPED;
- 
- 	alpha_write_pmc(idx, (unsigned long)(-left));
- 
-@@ -338,9 +347,9 @@ static int alpha_perf_event_set_period(struct perf_event *event,
-  * zero.  The value passed via ovf by the interrupt handler corrects for
-  * overflow.
-  *
-- * This can be racey on rare occasions -- a call to this routine can occur
-- * with an overflowed counter just before the PMI service routine is called.
-- * The check for delta negative hopefully always rectifies this situation.
-+ * A call to this routine can occur with an overflowed counter just before
-+ * the PMI service routine is called. A negative delta detects this, as the
-+ * counter is always written at most half its range below overflow.
-  */
- static unsigned long alpha_perf_event_update(struct perf_event *event,
- 					struct hw_perf_event *hwc, int idx, long ovf)
-@@ -359,10 +368,12 @@ static unsigned long alpha_perf_event_update(struct perf_event *event,
- 	delta = (new_raw_count - (prev_raw_count & alpha_pmu->pmc_count_mask[idx])) + ovf;
- 
- 	/* It is possible on very rare occasions that the PMC has overflowed
--	 * but the interrupt is yet to come.  Detect and fix this situation.
-+	 * but the interrupt is yet to come.  Detect and fix this situation,
-+	 * and tell the interrupt not to count the overflow again.
- 	 */
- 	if (unlikely(delta < 0)) {
- 		delta += alpha_pmu->pmc_max_period[idx] + 1;
-+		hwc->flags |= ALPHA_PERF_FLAG_WRAPPED;
- 	}
- 
- 	local64_add(delta, &event->count);
-@@ -835,6 +846,32 @@ void perf_event_print_debug(void)
- }
- 
- 
-+/*
-+ * Return the overflow that an interrupt from counter idx adds to the count,
-+ * or -1 if the counter has not overflowed since it was written.
-+ *
-+ * Rewriting a counter does not cancel its pending interrupt: wrperfmon has
-+ * no way to, and PALcode clears the request only when delivering it. So an
-+ * interrupt can arrive after the counter was reloaded or given to another
-+ * event. The counter is then at or above the value written, whereas an
-+ * overflow leaves it just past zero, below that value.
-+ */
-+static long alpha_perf_event_ovf(struct hw_perf_event *hwc, int idx)
-+{
-+	unsigned long prev;
++static struct attribute *ev67_format_attrs[] = {
++	&format_attr_event.attr,
++	NULL,
++};
 +
-+	/* alpha_perf_event_update() has already counted this overflow. */
-+	if (hwc->flags & ALPHA_PERF_FLAG_WRAPPED)
-+		return 0;
++static const struct attribute_group ev67_format_group = {
++	.name = "format",
++	.attrs = ev67_format_attrs,
++};
 +
-+	prev = local64_read(&hwc->prev_count) & alpha_pmu->pmc_count_mask[idx];
-+	if (alpha_read_pmc(idx) >= prev)
-+		return -1;
++/* Values must match enum ev67_pmc_event_type. */
++PMU_EVENT_ATTR_STRING(cycles, ev67_event_cycles, "event=0x01");
++PMU_EVENT_ATTR_STRING(instructions, ev67_event_instructions, "event=0x02");
++PMU_EVENT_ATTR_STRING(bcache-misses, ev67_event_bcache_misses, "event=0x03");
++PMU_EVENT_ATTR_STRING(mbox-replay, ev67_event_mbox_replay, "event=0x04");
 +
-+	return alpha_pmu->pmc_max_period[idx] + 1;
-+}
++static struct attribute *ev67_event_attrs[] = {
++	&ev67_event_cycles.attr.attr,
++	&ev67_event_instructions.attr.attr,
++	&ev67_event_bcache_misses.attr.attr,
++	&ev67_event_mbox_replay.attr.attr,
++	NULL,
++};
++
++static const struct attribute_group ev67_events_group = {
++	.name = "events",
++	.attrs = ev67_event_attrs,
++};
++
++static const struct attribute_group *ev67_attr_groups[] = {
++	&ev67_format_group,
++	&ev67_events_group,
++	NULL,
++};
 +
 +
- /*
-  * Performance Monitoring Interrupt Service Routine called when a PMC
-  * overflows.  The PMC that overflowed is passed in la_ptr.
-@@ -847,6 +884,7 @@ static void alpha_perf_event_irq_handler(unsigned long la_ptr,
- 	struct perf_event *event;
- 	struct hw_perf_event *hwc;
- 	int idx, j;
-+	long ovf;
+ static const struct alpha_pmu_t ev67_pmu = {
+ 	.event_map = ev67_perfmon_event_map,
+ 	.max_events = ARRAY_SIZE(ev67_perfmon_event_map),
+@@ -761,6 +799,7 @@ static struct pmu pmu = {
+ 	.start		= alpha_pmu_start,
+ 	.stop		= alpha_pmu_stop,
+ 	.read		= alpha_pmu_read,
++	.attr_groups	= ev67_attr_groups,
+ 	.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+ };
  
- 	__this_cpu_inc(irq_pmi_count);
- 	cpuc = this_cpu_ptr(&cpu_hw_events);
-@@ -891,7 +929,14 @@ static void alpha_perf_event_irq_handler(unsigned long la_ptr,
- 	}
- 
- 	hwc = &event->hw;
--	alpha_perf_event_update(event, hwc, idx, alpha_pmu->pmc_max_period[idx]+1);
-+	ovf = alpha_perf_event_ovf(hwc, idx);
-+	if (ovf < 0) {
-+		/* The interrupt was pending when the counter was written. */
-+		wrperfmon(PERFMON_CMD_ENABLE, cpuc->idx_mask);
-+		return;
-+	}
-+
-+	alpha_perf_event_update(event, hwc, idx, ovf);
- 	perf_sample_data_init(&data, 0, hwc->last_period);
- 
- 	if (alpha_perf_event_set_period(event, hwc, idx))
 
 -- 
 2.55.0
