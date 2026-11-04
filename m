@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793819877;
-	b=i6IwoLXOYGB9R0MzEU6gfsfciydFAJzdCF1JqM73AcLYi2aevhk+cg1mMrE43kKIgv5g
-	 ipeAvkGBbTn6oSIGFkKnT3Nw1FKW2qwHiDNBRZ7PAly/SQ1eRhnafp1aW2YQhve7BVKYq
-	 PaXdCWC90zcItTkWzQNWeZ2wcInyVdzqLr3wMRRsaj2RJBhPytMaDVXAqDT2aVR1rRmP6
-	 hzgMdztXgKXJ7ue0QF9Y3sE1X/3S1KuQkM6LTKkqy9IXpn/PDTpW3pJevo+D2Fg8DjNJh
-	 T6KYD03zXx5V9AXNaUQQtdAWpjxJ7/gLEeMw9zreHkLFl/kojLuQ6OlftGHbRlTLViQ==
+	t=1793819906;
+	b=q32I0hZ7nsHqFLD7d0ONb2x1rKgrD7j7lEnxL8IQ5LbrBW27+aF+N7zWntB7d9UVCuom
+	 ax4KVik9nFn+51tb1U75p1Hkt4+8JlzmQfOJVW2zs9voRCLcG2is9W5fW8IYwQGhAxiL0
+	 FhaFFj/U77fMMNsvJbKGwmewQSm4f4L83wYbu8W5a1HbCiPCXDLWMpiMD8N6+NKK2NWan
+	 IhxDl8BEXtATTG5zsdsH+j6gZoLpd7tlbXf/jri+gLTdgAQ9BPTfsLqfvkAJVRgI+sKP1
+	 PlXCkLi1IerBujQxZFg6fOqn6tigc4+1AKEcij94RI+xQ6FCpwE2e4Z2wZM/70jaaZA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793819877;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793819906;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:
 	 In-Reply-To:References:MIME-Version:Content-Type:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:Content-Transfer-Encoding;
-	bh=Bp2DPgSMAVNPpocNHMMHSMxcgQhQwNKqaFQNAmEUdgU=;
-	b=OUDzRoUgvlJlHy8+hS3IX8VXzQGZ7hwVqij1GjH70oJCJMH2KJQn8gK9p1AwA3FAAX1I
-	 CeKVH49VRTUItuTc9jgeeKW0ViChP+RwW43A91o7b21BvHOfnKenlRq3w30rjF9iTEt44
-	 rFVw6W0nd4vdo9bIQLSLklod0kqtxXDJx2yeBBGAAHxtgxwR1oi3AZV99ZbtHxhKgP9ZA
-	 8B5mMe085cSdPyls/PiJ2jSRbn1dBpxM/LkXaC0W8RyrIomWfCMvlFDQ6RkfKXbe3koxx
-	 FO2il5XjAfTaEk0V9F9LiJFoJ08Y62Cw9zq3n7YZz4DjFyjCdmICm3pnhfC1mV451MQ==
+	bh=axjAzDMxe/T5Kt/VR9558Sdu9PB/HLdF+q053OKTtnM=;
+	b=Rc0YTqCr5OXOzV934YkSYEDHYwHP5bSRzH2gGsqE9XXFMmxQ2fR/RlaJmjixWATLPLDo
+	 k8kryIGjlm/d1ojlfZzxiOicX1qsKGA6YLbuHoFlBp7ZteAoETFm6xwJcW29DVhlyEq0M
+	 IL2zXhur/Apt1Eo08RFJDZtKjOYWGUB1BhaSkGyMnfv+0he3dphrQPRz4X4ZOz2Fl3URO
+	 3zm36U9nDK4K7Jt9ytuR7BhHtiF3o8PufEwxdENKzdYHIuxKhWChaXtSeC9M2A0PFTfsy
+	 LTKDEHlLinoS4w1jVMEJhzWM/8MT3I++IRLh5lL/1uTc2nz/pw/dzt5KAmSKT+HRubg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="onbfdV/H";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CtF7Ltpa;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30D4B606A334;
-	Wed,  4 Nov 2026 19:17:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 945E6606EEBA;
+	Wed,  4 Nov 2026 19:18:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=onbfdV/H
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 496051F000C1;
-	Wed,  4 Nov 2026 19:17:45 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CtF7Ltpa
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6DB61F00919;
+	Wed,  4 Nov 2026 19:18:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793819877;
-	bh=Bp2DPgSMAVNPpocNHMMHSMxcgQhQwNKqaFQNAmEUdgU=;
+	s=k20260515; t=1793819906;
+	bh=axjAzDMxe/T5Kt/VR9558Sdu9PB/HLdF+q053OKTtnM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=onbfdV/HTacMnVbqXJ+FWmQQPtyp9R0J4UgJy9QwpRXMNAUpXq4U5MgLOpJJmdqil
-	 A0IpzV3lIP35dJV6mQZjczsBbIm16npn5PD8YgolOlJ1tMWq4drLkt1BRme9A6hdpk
-	 hU7if+GjyblRW+XhOHwJUvOM5bncZ4wy7T8dJkSSmoqVJFYODR5oteYh/K8C4sjSv7
-	 T90fJXFV4MCDOisGIN4JIrvvLoPWPs3/TneCCv2v3EeHxNcbD6g2Laj9xr6GhUYSzJ
-	 UbZZpN0HIrsvDaR+/nImX8hLuzR+la3jElQ0/AQag/TzZMVgu2cf2gdOENudtrxOC7
-	 u98wrpF2+gfGQ==
+	b=CtF7LtpaCnKrvS5VracHtmez/lTDVmZLEAJMPsf5RyRtHK8331ZbVhu/+wfqQSNNp
+	 k5kqnIbPjR6sVpgI8dl+aRQlbCOs2pnczhaDMKEZx/ZWxJhKcA7brLV8fiEaMbiuh9
+	 MFwalEMmSkSmMudfVxnNahrVfbIp17CK1joRPuayEeMp2faKCSbZvgOaORRjZAcf99
+	 D+S/7ltnAyBBNuf+VXhjPvzz/9hi+4KRi6bMiJuG/7hKYOJ5c3GtlY1t4+Db/rkvuL
+	 jH/DdCnBKpMBBqg0/ET26Tl25sQsMCrXwsOIkyA5elhHUZdHUYVdfAatvui3m3bHkd
+	 QSod2kP355CYg==
 From: Christian Brauner <brauner@kernel.org>
 To: linux-fsdevel@vger.kernel.org
 Cc: Linus Torvalds <torvalds@linux-foundation.org>,
@@ -100,9 +100,9 @@ Cc: Linus Torvalds <torvalds@linux-foundation.org>,
 	linux-debuggers@vger.kernel.org,
 	"Christian Brauner (Amutable)" <brauner@kernel.org>,
 	Chuck Lever <cel@kernel.org>
-Subject: [PATCH RESEND v2 07/51] lockd: don't hand out the terminator of nlm_end_grace
-Date: Wed,  4 Nov 2026 20:17:43 +0100
-Message-ID: <20261104-work-procfs-bugfixes-v2-7-021c84d852e0@kernel.org>
+Subject: [PATCH RESEND v2 09/51] profiling: report it when /proc/profile can't be created
+Date: Wed,  4 Nov 2026 20:18:12 +0100
+Message-ID: <20261104-work-procfs-bugfixes-v2-9-021c84d852e0@kernel.org>
 In-Reply-To: <20261104-work-procfs-bugfixes-v2-0-021c84d852e0@kernel.org>
 References: <20261104-work-procfs-bugfixes-v2-0-021c84d852e0@kernel.org>
 X-Mailing-List: linux-alpha@vger.kernel.org
@@ -116,33 +116,45 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.17-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=879; i=brauner@kernel.org; h=from:subject:message-id; bh=tKzHzMLxBoW/zY681xcBM67Jqe2y1s4JEAk9OycZ8F8=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMWS9brz82W5pn1bu8jVTxGdEXE56r5qmzRPmKXZbfpl5N e9UmTVSHaUsDGJcDLJiiiwO7Sbhcst5KjYbZWrAzGFlAhnCwMUpABN5aMHwv1BmWTKrQaW1pau+ y7lc/V6hFSvly7z1GnL9Bfe/by3pYGSYdlT+a0yoMVdMgqbeooRHhxKrFq9gfqp47glfRsvFU/e YAQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1225; i=brauner@kernel.org; h=from:subject:message-id; bh=tYIXM5EjsYRFpz3d9CdZ23LhMvzI2JA5U8qSrxldqzY=; b=owGbwMvMwCU28Zj0gdSKO4sYT6slMWS9brwqovU2YO3sJayOU6SjJt6WZHyobvyDXUfg5ueIY sXw4vmmHaUsDGJcDLJiiiwO7Sbhcst5KjYbZWrAzGFlAhnCwMUpABPh/8rIcHlz85mzfw/yeois tZ+X+nK/Y0nbTtuVF6duv2wgyFZ5PYmR4ROf8bk1y/9m+Rgw5Xqu+ydQsSxzObvU5rn/LzCHben y4gIA
 X-Developer-Key: i=brauner@kernel.org; a=openpgp; fpr=4880B8C9BD0E5106FC070F4F7B3C391EFEA93624
 Content-Transfer-Encoding: 8bit
 
-nlm_end_grace_read() answers with "Y\n" or "N\n" from a three byte
-buffer and hands out all three bytes, the terminating NUL included.
-Leave the NUL out.
+create_proc_profile() returns 0 whether proc_create() worked or not, so
+a write to /sys/kernel/profiling that turned profiling on but didn't
+get the file reports success and there is no file to read the profile
+from. Return -ENOMEM like the other failures of that write do.
 
-Fixes: d68e3c4aa416 ("lockd: add a /proc/fs/lockd/nlm_end_grace file")
+Fixes: 22b8ce94708f ("profiling: dynamically enable readprofile at runtime")
 Signed-off-by: Christian Brauner (Amutable) <brauner@kernel.org>
 ---
- fs/lockd/procfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/profile.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/fs/lockd/procfs.c b/fs/lockd/procfs.c
-index a01f08c8c2f3..74f7ab77535a 100644
---- a/fs/lockd/procfs.c
-+++ b/fs/lockd/procfs.c
-@@ -57,7 +57,7 @@ nlm_end_grace_read(struct file *file, char __user *buf, size_t size,
- 	resp[1] = '\n';
- 	resp[2] = '\0';
+diff --git a/kernel/profile.c b/kernel/profile.c
+index e7defa90a34c..820d5ec909d4 100644
+--- a/kernel/profile.c
++++ b/kernel/profile.c
+@@ -216,15 +216,15 @@ static const struct proc_ops profile_proc_ops = {
+ int __ref create_proc_profile(void)
+ {
+ 	struct proc_dir_entry *entry;
+-	int err = 0;
  
--	return simple_read_from_buffer(buf, size, pos, resp, sizeof(resp));
-+	return simple_read_from_buffer(buf, size, pos, resp, sizeof(resp) - 1);
+ 	if (!prof_on)
+ 		return 0;
+ 	entry = proc_create("profile", S_IWUSR | S_IRUGO,
+ 			    NULL, &profile_proc_ops);
+-	if (entry)
+-		proc_set_size(entry, (1 + prof_len) * sizeof(atomic_t));
+-	return err;
++	if (!entry)
++		return -ENOMEM;
++	proc_set_size(entry, (1 + prof_len) * sizeof(atomic_t));
++	return 0;
  }
- 
- static const struct proc_ops lockd_end_grace_proc_ops = {
+ subsys_initcall(create_proc_profile);
+ #endif /* CONFIG_PROC_FS */
 
 -- 
 2.53.0
