@@ -1,55 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=213.97.179.56
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793909205;
-	b=0I0ZOnTCQcMB+HP3x4H6TK8g7L7h9fwghjysaPXBGq8c9SJ7n/ZDX7VlwbJxPxPdvJjm
-	 u7Cs0xf1MfDASfshhE14VlkHjk1+Ou+G4fQmxbnLhLpw2xVKg5kxcieJRElvscto6vQrL
-	 wiQyfcK9hwIYsXhGqxR4lgc1Ynflk7Nz9wm3bEckXzh/ppyxhiyi/uOdLTAjHmh8s2Kv1
-	 0+gKqWubyfFJh47AvOz6tyReHKcVWTgP7AFlI70ntn/gVQNrQoxbeR8QttEtHBqlUBWlj
-	 pH142e/FQbnYXrqvjop1O0hnjj1rHtGlMlOALsEIPLtaipPL8RgwA4b3R8a0RbUWGzQ==
+	t=1793909212;
+	b=BwFkW10q1JhtQvbpWc1pdrwXB4AFoziMSqWcQXGR/s40XBpA5yqTGGw2D0nDeA+2+sm3
+	 CTy2fsOF8POPS2CWK146srtJS0J7PUedhUMpwIRycEgqk0g6XFEUx1LObJjloyj3WWA2W
+	 LcI9+aipSqEsqWwaiMhPmZnyGjXv+ibOujjxFbPXS0uBl+2/X7Vc/DmaII3UX393eAhVc
+	 0jtc+4GiUxxkWv4Eu/WZKAPh+dd4NZFyrqGPtA39Ta75iFeGycVmnRFgxQfLhkSQL8pTs
+	 b4ZoUGnh2c8XO4TUobWwL75rz/sJH9frz+DlJxtb2t2fkiVpnrWeAiPwjqw+5Evw1pA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793909205;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793909212;
 	h=DMARC-Filter:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
 	 In-Reply-To:To:Cc:X-Mailer;
-	bh=SU1M25qINQgNOKxrAiXC/3CTD8Pd/ZEYEU3LyG62jic=;
-	b=THp0+C2YEQOoS9J5ZyJcS/R08MdPqz8xEfeRPAVB4rkMSn7pbwhPo9gB5MHQN5nlPtCC
-	 Ehtn2DGHNzyTflrCzI72eHno1y9uHtbO50AQlBoLsVBDFnSMtgMYjkqSVierr1hyEmw/L
-	 kynIuVaL3Cqk/Gj32d+sy7SSZOXMHQD/nhSahSF2tksNiiukCwnsA2sd/papDPYJPpBce
-	 uFqdVnVSJwzHml4T84skoU68HzkVCo6/spyTJMFwF+kbPgTWwkJmuX1lCK9nQakV1UTBH
-	 w6qDzK41HUx066hfUcz49g0jriNLt9dNO1vCfFlvdrfarpqFBF8hj1CzjNgLbe3RHgQ==
+	bh=Kenou/u5GC+cXRy8kELS4DyKmMoQ5qDZG4ixNftcQaY=;
+	b=QGcghQQnxBSc9yxp9T21ellA46StCoBh1FSSR6ZJR4IBbmVevsCgdTwt1aDhvXYAq5kq
+	 bRQ+p5SX77AAIbiLNwoY0x/cBz7IVB2yM+Edsh9tDqGHi90gBjW4hEUY+lYBF10fBNtO/
+	 kfDJglhFnB2P0eqW1VCq/URVbCf+Oj9VH8ZXqj2Gm67xRXoawklUyF4UTrkp0qHREyfEV
+	 tG3yOBcQhC3aJ5J+Tzubs4cmExMFSTLmy4DWX/nHGNPBRV2lt7+9dEHQQVTmc2SgRtbMP
+	 2weqj4vVf9rzF+2dWfofFmx/7kRJAJ9iLX6Yfb8J/LGjgcXQZk+6jrYavHxo4LNmxvw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=igalia.com;
 	spf=pass smtp.mailfrom=igalia.com;
-	dkim=pass header.d=igalia.com header.i=@igalia.com header.a=rsa-sha256 header.s=20170329 header.b=MPHhECQY;
+	dkim=pass header.d=igalia.com header.i=@igalia.com header.a=rsa-sha256 header.s=20170329 header.b=UBo1KoQe;
 	arc=none smtp.remote-ip=213.97.179.56
 Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB62C606A33E;
-	Thu,  5 Nov 2026 20:06:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AB62C606A33E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA79B608361A;
+	Thu,  5 Nov 2026 20:06:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BA79B608361A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=igalia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=igalia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=igalia.com header.i=@igalia.com header.a=rsa-sha256 header.s=20170329 header.b=MPHhECQY
+	dkim=pass (2048-bit key, unprotected) header.d=igalia.com header.i=@igalia.com header.a=rsa-sha256 header.s=20170329 header.b=UBo1KoQe
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
 	s=20170329; h=Cc:To:Message-Id:Content-Transfer-Encoding:Content-Type:
 	MIME-Version:Subject:Date:From:From:Reply-To;
-	bh=SU1M25qINQgNOKxrAiXC/3CTD8Pd/ZEYEU3LyG62jic=; t=1793909204; x=2109269204; 
-	b=MPHhECQYyfGkaILeogWXVfYutKggHu5OmpM2xRo/T5chiYv99DqqN0cQsexNDgEksFt+B+y3iOM
-	BR2GUdeRBzE4Hl+cM7oMW2mBF5/iej0PuMloE0UapkX39y7PLuZM6IE0/q/2uuMVBmS4Y4j973gGu
-	d9BqwfgkxGeavbllTVed6qzjKrjX63Bi6Sjar5TVlvxsy7VCXFjCa4olhF/OcrWSfTCayl7HZBhO4
-	BOERRc1dpGYn83HL/S/BH3X1dUcQUN4OT3KybB6AG16IDw4Hr6OeTlB8DYEaZChAyfspJJeclRdmJ
-	ev5sa///4NEjwB4+ENWE9ndFjrPFjS6WAmqw==;
+	bh=Kenou/u5GC+cXRy8kELS4DyKmMoQ5qDZG4ixNftcQaY=; t=1793909211; x=2109269211; 
+	b=UBo1KoQeJ0LwYCMi78fphbnnqbjMXCTteeKcaPngqrOXKFB3dDdrt2PtQjJ8qG7QYJeMybM0TJ+
+	1YsAzbN2zz3ggtToZoq5oQhIRmI63SBhHkIp1BoClPDiadBfEVpZa6HS1+YHcxdaV1cv/OlNUyooQ
+	28LXHjuMORSeyBuG7J8L5MBv2z/np57yPfVFS3AxyvU2Rfe7Hs3lUripzeGa/PS3bef/OMEpJQl8d
+	kmYiA3NoFQqLq+PzpFSw21CEwpcpqpG0yAd7jRhSpTQduNHpugx7gc4kl8EqOPV1acFSkniTN0duG
+	NeBKPVMbKH/khsST1QEXZhylrN/0g3BpzhFQ==;
 Received: from [177.172.122.137] (helo=[192.168.15.100])
 	by fanzine2.igalia.com with esmtpsa 
 	(Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-	id 1xP3jO-003hS1-H1; Thu, 05 Nov 2026 21:06:42 +0100
+	id 1xP3jV-003hS1-Dn; Thu, 05 Nov 2026 21:06:49 +0100
 From: =?utf-8?q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
-Date: Thu, 05 Nov 2026 17:05:46 -0300
-Subject: [PATCH v9 11/15] alpha: Remove alpha_ prefix from custom syscall
- entries
+Date: Thu, 05 Nov 2026 17:05:48 -0300
+Subject: [PATCH v9 13/15] syscalls: Avoid matching substrings in the ABI
+ parsing
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -61,7 +61,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20261105-tonyk-syscall_table-v9-11-8d1275885d9c@igalia.com>
+Message-Id: <20261105-tonyk-syscall_table-v9-13-8d1275885d9c@igalia.com>
 References: <20261105-tonyk-syscall_table-v9-0-8d1275885d9c@igalia.com>
 In-Reply-To: <20261105-tonyk-syscall_table-v9-0-8d1275885d9c@igalia.com>
 To: Masami Hiramatsu <mhiramat@kernel.org>, Arnd Bergmanon <arnd@arndb.de>
@@ -74,90 +74,45 @@ Cc: Christian Brauner <brauner@kernel.org>, linux-kernel@vger.kernel.org,
  =?utf-8?q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
 X-Mailer: b4 0.15.2
 
-Some architectures need special entry points for some syscalls (like
-clone3). The current approach is, instead of having a special name like
-arch_syscall, to name if as __syscall. This is enough to different the
-common entry point to the architecture specific entry point.
+Currently, the abi parsing for grep will match substrings. For instance, an
+ABI called `abc` will match also the ABI called `abcde`. Use the space
+limiter to match a complete word and avoid matching substrings.
 
-Change alpha special syscall entries to do the same. This makes easier to
-join the syscall tables. Leave alpha_syscall_zero because this syscall only
-exists in alpha anyway.
+While here, add a true command in the end of grep command to avoid the
+script exiting earlier and being able to do the cleanup.
 
 Signed-off-by: André Almeida <andrealmeid@igalia.com>
 ---
-Changes from v7:
-- Fix __clone3 entry
----
- arch/alpha/kernel/entry.S              | 8 ++++----
- arch/alpha/kernel/syscalls/syscall.tbl | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ scripts/syscallhdr.sh | 2 +-
+ scripts/syscalltbl.sh | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
-index 790389a15c3c..25d05f45512d 100644
---- a/arch/alpha/kernel/entry.S
-+++ b/arch/alpha/kernel/entry.S
-@@ -729,9 +729,9 @@ ret_from_kernel_thread:
+diff --git a/scripts/syscallhdr.sh b/scripts/syscallhdr.sh
+index cf6bba3019b1..cf35ff05b824 100755
+--- a/scripts/syscallhdr.sh
++++ b/scripts/syscallhdr.sh
+@@ -109,7 +109,7 @@ gen_hdr() {
+ 	tmpfile=$(mktemp)
+ 	offset_nr=$2
  
- .macro	fork_like name
- 	.align	4
--	.globl	alpha_\name
--	.ent	alpha_\name
--alpha_\name:
-+	.globl	__sys_\name
-+	.ent	__sys_\name
-+__sys_\name:
- 	.prologue 0
- 	bsr	$1, do_switch_stack
- 	// NB: if anyone adds preemption, this block will need to be protected
-@@ -746,7 +746,7 @@ alpha_\name:
- 	ldq	$26, 56($sp)
- 	lda	$sp, SWITCH_STACK_SIZE($sp)
- 	ret
--.end	alpha_\name
-+.end	__sys_\name
- .endm
+-	grep -E "^[0-9A-Fa-fXx]+[[:space:]]+$abis" "$input" > $tmpfile
++	grep -E "^[0-9A-Fa-fXx]+[[:space:]]+$abis+[[:space:]]" "$input" > $tmpfile || true
+ 	while read nr abi name native compat; do
  
- fork_like fork
-diff --git a/arch/alpha/kernel/syscalls/syscall.tbl b/arch/alpha/kernel/syscalls/syscall.tbl
-index 8fc4701a6328..59eb066a40bf 100644
---- a/arch/alpha/kernel/syscalls/syscall.tbl
-+++ b/arch/alpha/kernel/syscalls/syscall.tbl
-@@ -9,7 +9,7 @@
- #
- 0	common	osf_syscall			alpha_syscall_zero
- 1	common	exit				sys_exit
--2	common	fork				alpha_fork
-+2	common	fork				__sys_fork
- 3	common	read				sys_read
- 4	common	write				sys_write
- 5	common	osf_old_open			sys_ni_syscall
-@@ -72,7 +72,7 @@
- 63	common	getpgrp				sys_getpgrp
- 64	common	getpagesize			sys_getpagesize
- 65	common	osf_mremap			sys_ni_syscall
--66	common	vfork				alpha_vfork
-+66	common	vfork				__sys_vfork
- 67	common	stat				sys_newstat
- 68	common	lstat				sys_newlstat
- 69	common	osf_sbrk			sys_ni_syscall
-@@ -242,7 +242,7 @@
- 309	common	get_kernel_syms			sys_ni_syscall
- 310	common	syslog				sys_syslog
- 311	common	reboot				sys_reboot
--312	common	clone				alpha_clone
-+312	common	clone				__sys_clone
- 313	common	uselib				sys_uselib
- 314	common	mlock				sys_mlock
- 315	common	munlock				sys_munlock
-@@ -474,7 +474,7 @@
- 542	common	fsmount				sys_fsmount
- 543	common	fspick				sys_fspick
- 544	common	pidfd_open			sys_pidfd_open
--545	common	clone3				alpha_clone3
-+545	common	clone3				__sys__clone3
- 546	common	close_range			sys_close_range
- 547	common	openat2				sys_openat2
- 548	common	pidfd_getfd			sys_pidfd_getfd
+ 		if [ -n "$offset_nr" ]; then
+diff --git a/scripts/syscalltbl.sh b/scripts/syscalltbl.sh
+index 1e9cac32c02d..403a604e7c76 100755
+--- a/scripts/syscalltbl.sh
++++ b/scripts/syscalltbl.sh
+@@ -70,7 +70,7 @@ gen_tbl() {
+ 	tmpfile=$(mktemp)
+ 	offset_nr=$2
+ 
+-	grep -E "^[0-9A-Fa-fXx]+[[:space:]]+$abis" "$input" > $tmpfile
++	grep -E "^[0-9A-Fa-fXx]+[[:space:]]+$abis+[[:space:]]" "$input" > $tmpfile || true
+ 	while read nr abi name native compat noreturn; do
+ 
+                 if [ -n "$offset_nr" ]; then
 
 -- 
 2.56.0
