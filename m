@@ -1,89 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.178
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.224.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793939428;
-	b=o1jfHdfGweah5dsncXt1w6W2IECa+6iPz3xigfIxXVIpNGoYUk/PYnB0cauOXK1Ph/Qe
-	 oMel5ItpjwDgiKhtvdPf73aUrZQNQ2VDO6sBTA6Su7M863/CMI2CtAEUjddRaepuZ5CQg
-	 Y3jDJ2nhRj/SdbXdtLoIM9irM4fw0CK4VcTP4Xafu+Hy8QnJxklzx29g+J3WDGAW/IH3y
-	 Bgnpx3acdG8AXnt1f2US9dZr72OXeBMzbnIZSftuoBKmOqfmOm7rGD2mLxGpFhZYlgt1R
-	 0+rXUaTO39Oboh9dW8tLZuw20tVYMyXT8PWhDMtKepgXT4vKkKPwGTMjsUemL55CIpw==
+	t=1793939429;
+	b=BTcwH9FXn9OhF+V0GAzpcVql43EfPzTAE6CW8+WgeSePN6gD31/cY5TOhgL07pAgLn6u
+	 9xVrFOJdXcYPawjHlIGLxgiXyUb6+MpHgy9sY/iW3n/k0ghb7RHGasok0uhDxO2yqL+ty
+	 kzT8NnP79pya42VukuXjiXpm9V7/44EmOKQZoEjnlL1Eqkv8sSXRf11q6AKVX/O7MeP6o
+	 3c4y9jK0+yJsnMQ1Q1pVL7gunyfs8aSCFeAyF/x/4af+I7U47L/i6ODmWJYcMv+G8pj+L
+	 zcgl1hjVHbX83jUax2xEnUiAVW1XAGM3GItTBEguNKvEDWJdGyLs+jz3GBrg7gIq0mQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793939428;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793939429;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
 	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
 	 X-Developer-Key;
-	bh=Qt2QOAvUUzC5pKhzoyVXfMO/Dg4eKNL7eiN9hGzgYQs=;
-	b=k/wrZ5KORClS/Zb5/dQZYXzq6fTW/9O/Tmu7tV+0rkLha97GD9PKRhnUER/3KVfasPAw
-	 uOUyMgVnTJwEA1CPt6SsEvPMUQlEFS3BpgAFKbEVFAumLZI3Uu/NElZJPs2tuLUEQ82BE
-	 Y39+Upz2Cl2WzbGx3V/mjnf+KPudbTxkll2S7QICHToDN/s6yb72TwMA+9IHlrVle5yRL
-	 V7XzglBc7+yi56MArmpBBWJhwm2fUE3sdQMpTy77KzThLtoQWFcR18hcck1lh2YnjletV
-	 jmcrYW9Jj6Od09QUzYbi2rVt9e5U1E6jFsEnJSc2smWI2+OcrhHMTa84UrR3Apdk9kA==
+	bh=7G6ubWNxEJnm/5usRwRUK4RV0GJVedj8s47HCFOXdQA=;
+	b=daILef720YbS1TZVBRHQfZ8IxorRPAh5OXteHx1iK0v0sV1CX5o3mIV7UPpUpMvYXs12
+	 cBIPy/jK5bm2ppOyAfVPDO5LYTt7dAmygdqGpw1CSYYQ4+J4VLWclSrdJnUfSFi2x1/rk
+	 ZJtTHPTOh7SAp0sTtCsrUHhEcTkwlbyqdRqj3Tx/8zkIKaNYRs6s9rtVCUJLQqbFWwFIi
+	 b86PD05nxxfZInKfv4syZjNOMfVogHFLX2Hg0/Qwk49WOnTmF1oRj/mzGMqIl/sP1FE81
+	 3ezmFXqZnJ6oXPt1I1xJSVvDeO2VJI1+p8IVDP5ax51AfT92bt/wHxvNwF6ccha2PNA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="z7/EZw5A";
-	arc=none smtp.remote-ip=209.85.128.178
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LxBReIVM;
+	arc=none smtp.remote-ip=74.125.224.42
+Received: from mail-yx1-f42.google.com (mail-yx1-f42.google.com [74.125.224.42])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC41606A334
-	for <linux-alpha@vger.kernel.org>; Fri,  6 Nov 2026 04:30:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1DC41606A334
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 167BA606A330
+	for <linux-alpha@vger.kernel.org>; Fri,  6 Nov 2026 04:30:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 167BA606A330
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=z7/EZw5A
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-8b0d126f631so1310967b3.2
-        for <linux-alpha@vger.kernel.org>; Thu, 05 Nov 2026 20:30:27 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LxBReIVM
+Received: by mail-yx1-f42.google.com with SMTP id 956f58d0204a3-67bf3c6654fso224041d50.1
+        for <linux-alpha@vger.kernel.org>; Thu, 05 Nov 2026 20:30:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793939426; x=1794544226; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793939428; x=1794544228; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=Qt2QOAvUUzC5pKhzoyVXfMO/Dg4eKNL7eiN9hGzgYQs=;
-        b=z7/EZw5AeVSjyj2cUbL9QD/44z13s26wWkZjAYPzcHCBGltU0DnS9GYSkbSv74D+M4
-         LmGMcEzxGU8EVmBKoTuXNdX9WfmvG5arn6lhES2REFtnoUzgFMzvM4mAOd0dKRjt+tOi
-         FA9Qb3O3Y8/fQRgCSvqjsNRNr6YTAgiL5tyKnfva5W+igW8Op4V9ljRR6Zbg00Be6ir/
-         VLw3z+08clxBY+ShwiFkM4W6/0Ljlehevjp/0agWuWtEl0w09dlpniRBRvmVpmPpe+WP
-         GQaTwOX7nBwBauUz7dNKxvDkp9o1tSD0nNm6xlV6IfSCtNoh0oVVx74rlXK69merKSxf
-         to9g==
+        bh=7G6ubWNxEJnm/5usRwRUK4RV0GJVedj8s47HCFOXdQA=;
+        b=LxBReIVMNpmlU/klkL+H0PKfZ/be2sJv4OxjMB6EfEEZjCNETRMsb28aLoX1Ve4FIQ
+         DgYlQStQ0k6zWe/2wWO4rpWIq85UcsMJ+Smo2KG41zbeN3pewgdqs4dOXBKkjAVwuTlx
+         cxrBUZDXT5EA3FnOi8SmU6vLED1numPmREWy5Hwr0l8rfegQWdkrZ7fHWf0c5VEPucT5
+         s/yWWUdMKGkPlvFx66eKxnZIXcaUTKIgYlipbKlrOmhWRbvxWlcODf7nG/MHBPYgfC9T
+         s4rq5SHvp5YonkkUh3N2sFOcj8QklxYIlJnLhMQj/0eAmkqZRo4TOaB1iyK6b3kStICn
+         8B1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793939426; x=1794544226;
+        d=1e100.net; s=20260707; t=1793939428; x=1794544228;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Qt2QOAvUUzC5pKhzoyVXfMO/Dg4eKNL7eiN9hGzgYQs=;
-        b=tSxL58zLT0wuarpzTQ7pNobj50UBM+cb6WJu6+h/gF0eUcT3WiStAsZWNV0cwH2rxU
-         C+AFAadUw2Qk3XF1FGslXrE9uhYOxoMfFLnrHICBfpT8rqhUqcIGjsxEpS992S4Us62q
-         y8ZgZl2OKFMGdlPs/e8dICGUEhfpJH9m4LJxycGd/Pwpy0HKslmi6O+Uje8V0P/AvS5e
-         6GRxR32TpIykCJWI0EvKsjk2x91lJxvgqTd6Qr96oQJ0s0+pradiQ87HpfK+19nq0I99
-         ZbccAOsUO3SVzMxItTvjhWS8+Rhd6/JBRGhEKdOCOTjoSnXcQzF+ZQoBXetA+2xEE/4o
-         3cYA==
-X-Gm-Message-State: APuU4Z+XCbP0OWrMgEyenFHire1FAoDEnzZU2KT29mvqqe4mqLwT6ROM
-	r2KUk2KcLpcyhZvVHCacuVr1aufGnyASzxNmDLnOKhWUb7N/4KkMJzZj
-X-Gm-Gg: AYBFou06FG0odTfCfRkHNf1kd1S9U5aE+a9yan1m18pAYXstQSKlg+fZXoOhLc+ESZ5
-	+HvGBlTdYDoz3cY8SukbrFIUM7Fd7vvf6xvLLsq2IPjSXhDseHSG6rLBAJKna/IBx/2iogcyUKk
-	xTXJ9cKlH0tDEEo4dftzEWlaZfCtQ3jqG7kOg8XAO+btjtAGIr3NxEzIoxzJQoMq8uB7646TqXf
-	n7RXr4vZWT9+asUWZHrHVq3t8U+PQ237PLHPtJa47kG1RC5nk0nYkI/xcn3iuDtJv8TW3IlQCeH
-	LiSKXd7GJ5S0paEeidJ8WgGogIZmqkOX6wmHxwX5vCFtR7s792BRoSRxfEVa16OvibGlFk9FADs
-	LSTfiWeOTqmq04aMkE9Kt34VAvPxhr4Jihljl9SVLZRfWmV8dfg52UZJHiPJM+VEZlGU/papQtc
-	6nyo0a1unN8dDLaULB0MqAOUn2cgqm8j5JwoT3CYenUmuBZHFeRYGtSU3Ja/73149+TvNPsH6Jg
-	thJAIap15EM2uAXuognlNZ/JzmRiLOLFUyPpYNKeGNpOS9slX73M7XE9tJxXa6Nf8U3HsLU/SKV
-	msEWRVWNn1wyGvuy7zzmj8utDBA9GgGaE7v8E8tFC7U1EnlYuAR2xar6P4cixarc7ST/MKFvKni
-	mBu5hknP4uDLjqkOI1c08DxEdb3Tr7Ds=
-X-Received: by 2002:a05:690c:24c:b0:8b0:eb6d:d887 with SMTP id 00721157ae682-8b341aca2f3mr7043577b3.56.1793939426105;
-        Thu, 05 Nov 2026 20:30:26 -0800 (PST)
+        bh=7G6ubWNxEJnm/5usRwRUK4RV0GJVedj8s47HCFOXdQA=;
+        b=GFdtUxV9gDUR44q++d+8niOEn7f0lEPSS/GKgEsjs/cikZdj+WPSF25kDE11URUElU
+         PUvXYntslRhggMvhiJ016XXldb/wAtGq2aLclA6IhckRfVTZVSzxfGpEbRtPwQXsKaw6
+         zHEXMwxlAOc88Se8eubXwsJQMS8X6GVFBHXqsxSzJs6D4WhIdHoxxP2eJ/Y4Bzi/yJsr
+         33G5J3wbeaWlDey7wfWycjpAooWZLruHFz4lMlbhThwrglDeMzoCzRbEVHryRyX54L93
+         FtoRmvariCve+1m2KxTW5DP3XzmsExGqTPL55+yP044zydKWs83V6ir9hglQIwxoK6t3
+         7klA==
+X-Gm-Message-State: APuU4Z8pIMyGTTavEWglDRuPFHbuBB7PZRypJ/gYm/qmSuAlfEbCJvDQ
+	a25eY7lbqIbAkX+UMROQ9Y0Z328Le8Akq8G3ar/274SvQkPu3IZg68uN
+X-Gm-Gg: AYBFou2/Wbosr9Ul/M/hFiGNULCdBPIb9y2EEkhiNL4ndEkoSV2JzPam7P6U/SZPDE7
+	omkcUtgnxzS2B7sp2VUMbz+1fb32NsOYaWixGy7yDxT372GcVpAHtU++PDrL/vFGzYc3VXcOdS5
+	5OZdkgEL6bh19oXh3qwyh7IC53pp2utuRFuheNsmD1wGVOlBaW2rOA9NXmssKXdxLiUhPMdx+vl
+	kpe6Nv4K5784Kn0LPaqew9CtJcYawlH/k6/3MBmNwNHB5BnGQljF3KFd9qYXpfQnQ8qI5vSXArY
+	LM8I4kIKFyg6+DZhQs7QhqLT5Pb9WatFtNs4yEk4l6HsGfihNBLqJZZElch+8/2nlGI6V8G2uBN
+	PZphB3PpSoe2gZeu2o0M/BIAeYuvXCY5WH7Dp8GYA+O+/Hs+SrAfTsMr5xoIrBMtNMEx/iCykje
+	avOmP1Qp0APfRNxj9f1Ft5Ix5JDNiI1mnQ4bsKE//wQkyOvdbGExmfk1LJv15wudGcR1ESyKJXf
+	KMMdcqpSfgaPTnI3RSXX08I8zk6m2QZ9dWUfPutKIWTQt3KzbhLX9vLOHHEZFs5HCSFXBaBKI9F
+	DgvKo+6SdMicGX4eY8vGXBhpgqbpqR5V0VhELJ0sDvJ6U0M7BWoRRiyjG77IMci8STSc9vxM0CG
+	8zjkgxhHJCA==
+X-Received: by 2002:a53:d9ca:0:b0:679:f885:cc16 with SMTP id 956f58d0204a3-67c14442d1emr555370d50.83.1793939427978;
+        Thu, 05 Nov 2026 20:30:27 -0800 (PST)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b33f8880d2sm11071467b3.42.2026.11.05.20.30.24
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67c135de73csm1164634d50.18.2026.11.05.20.30.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 20:30:24 -0800 (PST)
+        Thu, 05 Nov 2026 20:30:27 -0800 (PST)
 From: Matt Turner <mattst88@gmail.com>
-Date: Thu, 05 Nov 2026 23:30:20 -0500
-Subject: [PATCH v7 01/14] alpha/perf: do not update an event that has no
- counter in alpha_pmu_del()
+Date: Thu, 05 Nov 2026 23:30:21 -0500
+Subject: [PATCH v7 02/14] alpha/perf: pass PERFMON_CMD_LOGGING_ALL to the
+ logging options call
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -95,7 +95,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261105-alpha-profileme-v7-1-c474e892abb0@gmail.com>
+Message-Id: <20261105-alpha-profileme-v7-2-c474e892abb0@gmail.com>
 References: <20261105-alpha-profileme-v7-0-c474e892abb0@gmail.com>
 In-Reply-To: <20261105-alpha-profileme-v7-0-c474e892abb0@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -109,69 +109,66 @@ To: Richard Henderson <richard.henderson@linaro.org>,
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-perf-users@vger.kernel.org, Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2190; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=wxDmak7Q7QkYBMgHY3pFYg+88iHC+WUm5Tmzae9wpsE=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLeht8Jm32lm3vV6tfmAj6b/q5+sqv+hVDBvdl/PzdPW
- K/zxXR6WcdHFgYxLoaZYooscesVWWa17Vjqc1r6F8wcViaQIdIiDQxAwMLAl5uYV2qkY6Rnqm2o
- Zwhk6BjFQ+T0GDQyi4tLU4t00wqKHPLySxJLMvPzivXyC1LzCtIL9NIy00oyMvKLilOBRujlpZa
- Yujq6GRkamFg6Wpg5WTiamjg7Oxk6uTk6Ors6GVmamxg4WzqauFqaM3BxCsBc43eIkeHnunnM95
- Msnhrc/PNt4YNb9hZWpRdEExk+qp9xllD7XGjNyHDKuTn+SAVL5bFcDrnvHZpFR49GfrCxcN60M
- beSfZGZOBcA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2126; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=55HbKGU8JmFCdaXO+TdbP25wCaTvQMNhrLfu9ImNY30=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLeht+JfOuxdt/+L2WP56SUS2kkXjR7yvL9xPXbNutPN
+ TUtb3pzuuMjC4MYF8NMMUWWuPWKLLPadiz1OS39C2YOKxPIEGmRBgYgYGHgy03MKzXSMdIz1TbU
+ MwQydIziIXJ6DBqZxcWlqUW6aQVFDnn5JYklmfl5xXr5Bal5BekFemmZaSUZGflFxalAI/TyUkt
+ MXR3djAwNTCwdLcycLBxNTZydnQyd3BwdnV2djCzNTQycLR1NXC3NGbg4BWCusZNjZJj6+V2twO
+ yji+6ZPzkWfCYpT9LRM8NpxcvrIS2B1ikZTVMYGe789OB9ZLDPJ7IqcGO4UvHZiV+fX/4cULmi7
+ K1qTFXaWhYA
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-alpha_pmu_add() puts a new event on the list with current_idx set to
-PMC_NO_INDEX, and alpha_pmu_enable() assigns the counter later, through
-maybe_change_configuration(). Alpha has no group transaction callbacks,
-so the core schedules a group with the PMU disabled for the whole
-group. When a sibling does not fit, for example because the counters
-are multiplexed between groups, group_sched_in() rolls back the events
-it already added by calling alpha_pmu_del() on them, before the PMU is
-enabled again.
+alpha_pmu_enable() passes EV67_PCTR_MODE_AGGREGATE to
+PERFMON_CMD_LOGGING_OPTIONS. That constant is the counting mode bit for
+PCTR_CTL, which belongs in the PERFMON_CMD_DESIRED_EVENTS argument. The
+logging options call takes a flag in bit 0 where 0 means "count all
+processes". It works only because EV67_PCTR_MODE_AGGREGATE happens to be
+0.
 
-alpha_pmu_del() then passes idx == -1 to alpha_perf_event_update(),
-which indexes pmc_count_shift[], pmc_count_mask[] and pmc_max_period[]
-at -1, and it clears bit -1 of idx_mask, an undefined shift. On the
-EV67 PMU the entries before each array happen to make the computed
-delta zero, so the event's count survives, but only by luck of the
-struct layout.
+Table E-18 of the Alpha Architecture Reference Manual gives bit 0 the
+opposite sense, but the PALcode in the ES40 and ES47 firmware agrees
+with the above: it sets I_CTL[SPCE], which enables counting for all
+processes, unless bit 0 is set. Linux never sets the PME bit in the
+PCB, so if 0 meant "selected processes only", nothing would be counted.
 
-The event was never on a counter, so there is no count to absorb and no
-counter to turn off. Only remove it from the list.
+Add a name for that argument and pass it instead. No functional change.
 
-Fixes: 979f867191f8 ("alpha: implement HW performance events on the EV67 and later CPUs")
-Assisted-by: Claude:claude-opus-5-5
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+Tested-by: Magnus Lindholm <linmag7@gmail.com>
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- arch/alpha/kernel/perf_event.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ arch/alpha/include/asm/wrperfmon.h | 2 ++
+ arch/alpha/kernel/perf_event.c     | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/arch/alpha/include/asm/wrperfmon.h b/arch/alpha/include/asm/wrperfmon.h
+index c97b82a1f7db..1fa9bc813263 100644
+--- a/arch/alpha/include/asm/wrperfmon.h
++++ b/arch/alpha/include/asm/wrperfmon.h
+@@ -23,6 +23,8 @@
+ #define PERFMON_CMD_I_STAT 8
+ #define PERFMON_CMD_PMPC 9
+ 
++/* PERFMON_CMD_LOGGING_OPTIONS arguments */
++#define PERFMON_CMD_LOGGING_ALL 0
+ 
+ /* EV5/EV56/PCA56 Counters */
+ #define EV5_PCTR_0 (1UL<<0)
 diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
-index a3eaab094ece..f77abeeb25b8 100644
+index f77abeeb25b8..bb0692e93748 100644
 --- a/arch/alpha/kernel/perf_event.c
 +++ b/arch/alpha/kernel/perf_event.c
-@@ -506,11 +506,17 @@ static void alpha_pmu_del(struct perf_event *event, int flags)
- 					cpuc->current_idx[j];
- 			}
+@@ -734,7 +734,7 @@ static void alpha_pmu_enable(struct pmu *pmu)
+ 		maybe_change_configuration(cpuc);
  
--			/* Absorb the final count and turn off the event. */
--			alpha_perf_event_update(event, hwc, idx, 0);
--			perf_event_update_userpage(event);
-+			/*
-+			 * Absorb the final count and turn off the event,
-+			 * unless a failed group schedule rolled it back
-+			 * before it was given a counter.
-+			 */
-+			if (idx != PMC_NO_INDEX) {
-+				alpha_perf_event_update(event, hwc, idx, 0);
-+				perf_event_update_userpage(event);
- 
--			cpuc->idx_mask &= ~(1UL<<idx);
-+				cpuc->idx_mask &= ~(1UL<<idx);
-+			}
- 			cpuc->n_events--;
- 			break;
- 		}
+ 		/* Start counting the desired events. */
+-		wrperfmon(PERFMON_CMD_LOGGING_OPTIONS, EV67_PCTR_MODE_AGGREGATE);
++		wrperfmon(PERFMON_CMD_LOGGING_OPTIONS, PERFMON_CMD_LOGGING_ALL);
+ 		wrperfmon(PERFMON_CMD_DESIRED_EVENTS, cpuc->config);
+ 		wrperfmon(PERFMON_CMD_ENABLE, cpuc->idx_mask);
+ 	}
 
 -- 
 2.55.0
