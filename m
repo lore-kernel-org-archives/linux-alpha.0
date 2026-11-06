@@ -1,89 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.176
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.224.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793939460;
-	b=5nLN26lMqIOPsyKXDEsrRIpWpW4cGJcI4B2S1Ka4j/yox29g5PTLBlYBmDAGd3kd7lhb
-	 VYml7cPi22OLjSeJqqJdpkzvl7Kfaw4hayRHwu0CGTqrcCuZ0iFKtEhXt1RwUV0J8SbHA
-	 jMD2UjwFnjMW62FXmckRyuOyjGCeG+F2p7ZrapxPxGlOAVPVbe71UWmLLWIvJzQqm4Lzn
-	 Oiz4SMKFZdBl+5kWXCfEZPMMQv1+hQzsgF1KoS8SfIvXdDRoDNmj0NMxA0OdhNkw9HZ23
-	 6B9tjTVbKHxu/Yn1KkA3XChgr0sqQojxBXYmeqC4wzPzu26NDVWWtt3FQLAI0USnGmg==
+	t=1793939462;
+	b=XlqgNJkAcSosQSZOJl0jKUtZsB3ahDJ+EtwZ7V4ql7RVlwvCYYcvLaUK/YxhAZ/723YI
+	 K0CwgEb68kd3UkV7utV67g+Re4zkBmtm916Ngm6SuJGaW8ZYqPRARB32+5E1iGvLJkbgu
+	 wBeRhzMcvTy1i+MA1DFt7Z+PPlioTWd5IBazC4A5buBE7/cGct/VWJfjbB8lvuhZ8g28G
+	 y9MyXu+zypGgqfprL7Au9ewEXES1qPq1h7DlyQLCP39lMjgvSuLOawowSROeFpMv9UHyr
+	 DElZlQxIqpEc5Ntc+goWkJ3jpUCp8Df5q2SQoSQZCLimAJlU8G+58SrP5pOj278QEhQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793939460;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793939462;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
 	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
 	 X-Developer-Key;
-	bh=MsPW5K9wIVWLH8zTIi0shO9heiIb/dOsSeBuo+Lhef0=;
-	b=kBVZNCgTZJraoKzVsK7d4KB5wSksIVc8XF58slA9X3IEiMlrHUd7r00cAYpp6LmsW4Ih
-	 UY7dUwmhK0ZR2ri6Yzk32uMogmzRB+yi+0gM+xrz6wnhUu9nnqNCyoP37HiDy8QLr4z09
-	 sJ2uNiWQVuqOgG1rMRfLIj2tjoC3g5PNSg1sbAd124Yng8tEeCytOc/8aw9jTG0SShUiu
-	 IwQ3KvfUoinph9HWUDIReFMf8U/4CjSpvUMA+F3GKKGh4pdZCTA+rvyK1HFRXQdMRQddG
-	 ord34FHEDqtjp2j0yPin3zdbxbW7/3eBBFlSXUIJunZqWO4V6NISMHJzlQ3a2LNqxPw==
+	bh=G831IGB9qOUDsorlr+4vmy2c2tG0vM4lZyaYNCG2Gtk=;
+	b=VkOILgmsBBnjMvEfAP6mHw3YomXk20aQPeHVGYCCkONbSWpsvhk3HVk4GLX5BwvulodR
+	 DNJtw3eWW1eR9Aw6Qg9Nm3QOms6x0/Z65/PiujkANSKOuecSpGNnz4qBBfUzMS7CGqhLk
+	 cSqsNEe7lYE78yrPr1ckebThYDZ7SBtD5hE3lGUnVe98nrFmqCbJS9I7FRkzrb1gcnf6t
+	 B6AO7lOr7phmIQcycvV4TrpFAHttI+18dnS1AMZJDk0maGhMRZkPfv3cKfus20A7TYWbh
+	 6rmhdZ0K39uGgs9f3L33gqrh7mobL1F4N7TCjVjLL26UmH3uvl5zh6OWABXcUnrP6bw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=L7MECB70;
-	arc=none smtp.remote-ip=209.85.128.176
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JW9uZOk+;
+	arc=none smtp.remote-ip=74.125.224.49
+Received: from mail-yx1-f49.google.com (mail-yx1-f49.google.com [74.125.224.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1B73606A33D
-	for <linux-alpha@vger.kernel.org>; Fri,  6 Nov 2026 04:30:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B1B73606A33D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80236606A337
+	for <linux-alpha@vger.kernel.org>; Fri,  6 Nov 2026 04:31:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 80236606A337
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=L7MECB70
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-8b300713befso1069507b3.1
-        for <linux-alpha@vger.kernel.org>; Thu, 05 Nov 2026 20:30:59 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JW9uZOk+
+Received: by mail-yx1-f49.google.com with SMTP id 956f58d0204a3-67bee1f693bso178061d50.1
+        for <linux-alpha@vger.kernel.org>; Thu, 05 Nov 2026 20:31:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793939459; x=1794544259; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793939460; x=1794544260; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=MsPW5K9wIVWLH8zTIi0shO9heiIb/dOsSeBuo+Lhef0=;
-        b=L7MECB70DwWz713BM4+LuzQwCxLCy9bzNYAZNX1OrN3ke5g9nymLp+njHxZmAVJqrY
-         xKX/ePAjXg9VJRi1cqPn8GEUjgleL7axnNyCdpNA1zAkgrsKxkpB8lwZ/EmTZcH/b4x3
-         tibbLBFjD/+HLO2+tniKIzPpGSDbYtPjncsKH8sBFn/Q20zw1AIBn2vyjSP0xIjyhWoM
-         ++9bzBQpgg4kh1/KdufEK8okI/UcS65elEi0pyu9KEQNELEG8cFLW110LVzTnZEBv3wd
-         z1mScfxNSqHhMXEVnziBiWdRdYwsn7OffxB1rNqdji6CoUOZ2R5+2eyWBCcASxwzaxTd
-         om0g==
+        bh=G831IGB9qOUDsorlr+4vmy2c2tG0vM4lZyaYNCG2Gtk=;
+        b=JW9uZOk+rNSQ0m1adb0AsrizzOXv///NVOzlcihnXuhGXfg7nk6sI/LzJXLs9znidL
+         xultSDHgrmVtwdxSvRjf0vsO0gVNnOf42FlZjbjj2v0xzBBywYjTHKHe/ZSv4h1qBdMJ
+         SzbmcB+B0xIpnLwRefdeiD9iiRRJ/zkQqddXcFGyDvW0yVINTPlZV6rWBPD3nUWDYual
+         g1owPhzY5b84z2MN43fMbeBNuhcoZCnSudC1B2iTIEzmh8u1UftGmVwGVUyIf4aJseta
+         sk7dcir+3YOWR4Kfc6xW+CR6Z3pBEakhYo+jV8/xDp+Mk78WwLD2xiW0DVx0K7Orelnd
+         qvbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793939459; x=1794544259;
+        d=1e100.net; s=20260707; t=1793939460; x=1794544260;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=MsPW5K9wIVWLH8zTIi0shO9heiIb/dOsSeBuo+Lhef0=;
-        b=gEstQ4MODpNhN6grSt1orNKWOa3gZ6Glb+qeVaNDxiBaQIgkeepLXn/OR/u+9yT6zX
-         GP1PNjIP/UlvYdpM6gSQTIOAMYnZH8mDVkRDsrNra+hyq5YgKCH0ZQSuoKH7UOfSxnWL
-         biGHufGwJR9uwu0MnpGevGTutIr7XCUl/+I1670qGTJDinvpwPnhUsAQZDa3ReRr0JBg
-         LohgQ/2ZWjcA8N+t3F7+TmFo03jHyfzLtzA4S3u99t/nwkHwIGDjNuBonokr50lvABLd
-         gtS334B63Qu33mdyWGEaZXIrCJlWK8jx1suqffoG38+8AL8oy+/rgpIuORgfW2vfEMht
-         Dvug==
-X-Gm-Message-State: APuU4Z83viiVxfEP7JTFJu2IeRwa3Misnn7KatY86LllbdYWYWqQ+9nY
-	WfirJY9qwzAqBccp74XtTLqMvKy495Xs/I160rUiA1rpH23VoVrXQ19U
-X-Gm-Gg: AYBFou1OA66V+WrqYlxTFl6GLs0JwKjc4iRIpOVyUdWwDyCcoIqwUs0ToABnm/O/iVS
-	dpnim4m8aY6OQTuK/uhv+80xrueOhnp0LlNN9F5f7kGdY/zDD7i+2tWUuE4/Eo8kpVhBlJNLUl6
-	2mO62dcFbLSS7DFiEiMmVvB32reqcLwAvHlyyfsV/laUb96QElv8y6GXqEFw7W8Fyt95lsauJkM
-	xyM4yfF3/7LOzPSPL54L0KGdyR/5TPrTBzAjjVZq7hSJqAyPsxaoz3J0xRt83WRABsWmMqO/pht
-	GVetkF9PEyk4E+9+R797Jca/LUwSCr+j+WRHDqMoJGl4YsrWJvP8reRCYN1iUvF2BqOKY3UorwF
-	9XUz5cgHFmrs0XMNFwTPFu5+I7i1BD1XB9htfNwpZvT3XpswAq9IAk67RWcuJlwC9x6zTbEoFGQ
-	LkWulNhLGzZ7L50OoKRE9QW1b/6CU1FY7e2qGzqeakh11AT+AfOcZdzw+ZLxissDDgn3c7R5BXN
-	u4YEMOc+mtFdfG7LaTFWivoawTWT+NNPpaxF6Q8ApeqaBCAhd2SfUQw1H7RUsE22ij8toVFPueo
-	tJAbkschqSCqpISeVru5ws5E/z9Qm1q0Hiuxuu6fbwnf/ego4ZNoB9evpp8YxttyPOUBmFGOsok
-	tj90wIjx0Vg==
-X-Received: by 2002:a05:690c:1a:b0:8b1:69b4:b56b with SMTP id 00721157ae682-8b3417dc562mr8895757b3.8.1793939458803;
-        Thu, 05 Nov 2026 20:30:58 -0800 (PST)
+        bh=G831IGB9qOUDsorlr+4vmy2c2tG0vM4lZyaYNCG2Gtk=;
+        b=CnWsQt7tX43COi4DS737UiTTbN3DBQEP0fLtOFdet7dNrxzqGkBq7HZQK64H+HDfbK
+         AEKxVklpyc9XYQKSnlUhggmYafQiho5jNCy6AnQvlP1G43y1d0XEw8Bz7wk6hGQuxuJm
+         FORkurgn1G+wILeuM+xMxAlvoxfUyzAWX+xRnHa7BK2lXFbVRDLb2bKukhhcw7V20kIY
+         wP2EnX340z/TLuYAQeBcIBstGVUxw0lxXb1PjCI2W2b9OEOgFBsMbwCzRljtzao0+3m0
+         yoc5220yyLI0XPpJGgv6ttlZSEN79jeJI+t4MAF+HxGUDLZkdmNGNQuxy2KHpBsfFI1y
+         WyfQ==
+X-Gm-Message-State: APuU4Z8JkgtUVsS49pVWaD9JSWJyi/NFCMHC2EWffkvIro+x9DUz0CSp
+	tfTXgFtURueklruS3Ofow77kBVbB4/1nAdWh2auCMY8662DGUsweJKMd
+X-Gm-Gg: AYBFou1t15Fha8ReQD+rknmSBoTvTd0sp22IKRPQmtUWtslWe4yblnjMnd6pqlef4nO
+	SAB5xzXW/tOOOzibu18Jq/d6YpQXRyBZJMjUNUnTtETAbj0RqKoThJIQnIxowgSvmzjVn6rBuc6
+	lh5Z3uFTqKmmLrKBtofiCi0rHlMlt70U9PMiX0M85pDYWfWp/68thaXO/YT87AfDYZZdGrpq2T3
+	TljcRx5opMlCo0zhIqp37ToHCtgBzY/oIRkxO5TAi4chj5rg57b0zPVSdfrGkL0Gxc6JJGTC7sy
+	EjAUi2yzQl9RyAPiC1jV5dbxg4MJhjAfwCrXZtGAPfp+nEV+6lEMM2Eeq8yC0BIDOXOCnoD17ib
+	/1Yz6CsBpCeuCK6T7LlF/ckI94rDWX4L7KRqv+w7JUbDWxFaYWq7sGCimdEthgrRRzX6TUavlCu
+	3NrxbHhV+5hYMS4/gc6exZRmkVFCLmkqbTN+Eo7r27ZCnAYHa9YxAHwUzHg7iIBJ2OkSpdN5N7V
+	oB5wPglJajHBnruxS6R1k4JRLNV+KfYHpVQL1g+ny1NkVh9VrhVY/+772G+2OpAids7voKoiOek
+	mIqAKPjBL943JeH7w36hWf5EHsUXORWU5EfrmAREVHhWA1ybdsUQ8LsXMh9RovcEKNmRNkYdC/7
+	25ej75PEnvQ==
+X-Received: by 2002:a05:690e:400c:b0:67b:e062:2972 with SMTP id 956f58d0204a3-67c143dc3c6mr999569d50.40.1793939460464;
+        Thu, 05 Nov 2026 20:31:00 -0800 (PST)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b33f5f316csm11175647b3.1.2026.11.05.20.30.54
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67c13371f3csm1206662d50.3.2026.11.05.20.30.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 20:30:58 -0800 (PST)
+        Thu, 05 Nov 2026 20:30:59 -0800 (PST)
 From: Matt Turner <mattst88@gmail.com>
-Date: Thu, 05 Nov 2026 23:30:32 -0500
-Subject: [PATCH v7 13/14] alpha/perf: sample only retired instructions for
- precise events
+Date: Thu, 05 Nov 2026 23:30:33 -0500
+Subject: [PATCH v7 14/14] alpha/perf: honor exclude_user and exclude_kernel
+ for ProfileMe events
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -95,7 +95,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261105-alpha-profileme-v7-13-c474e892abb0@gmail.com>
+Message-Id: <20261105-alpha-profileme-v7-14-c474e892abb0@gmail.com>
 References: <20261105-alpha-profileme-v7-0-c474e892abb0@gmail.com>
 In-Reply-To: <20261105-alpha-profileme-v7-0-c474e892abb0@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -109,34 +109,32 @@ To: Richard Henderson <richard.henderson@linaro.org>,
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-perf-users@vger.kernel.org, Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1972; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=t93WYO3sOCggQKfxs++3pirdoJx+OAS0XM5ZjaMNX24=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLeht896KoZ+IpRhsUx27gy/vJ861/P2atlbvTnpP09a
- JkfkOnR8ZGFQYyLYaaYIkvcekWWWW07lvqclv4FM4eVCWSItEgDAxCwMPDlJuaVGukY6ZlqG+oZ
- Ahk6RvEQOT0Gjczi4tLUIt20giKHvPySxJLM/LxivfyC1LyC9AK9tMy0koyM/KLiVKARenmpJaa
- ujm5GhgYmlo4WZk4WjqYmzs5Ohk5ujo7Ork5GluYmBs6WjiauluYMXJwCMNcc6mJkuBgoJn5i2f
- wF/nNO3ds1vX3D3DuMNw5XvJkl4ZFSN9ezVY2R4eTnpOV7l6ZMElzdPY+196F15bsVf1dqHJj7r
- Cds3Z47a9kB
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4451; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=etGiS+KjgiyXzjebY7Rb4XAH8uHilSqEgpWO7GWDiV0=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLeht+9d2HOdUku7mwvlT32rmWdc2//WKtRkn3Wy9BWs
+ /hrhkZHx0cWBjEuhpliiixx6xVZZrXtWOpzWvoXzBxWJpAh0iINDEDAwsCXm5hXaqRjpGeqbahn
+ CGToGMVD5PQYNDKLi0tTi3TTCooc8vJLEksy8/OK9fILUvMK0gv00jLTSjIy8ouKU4FG6OWllpi
+ 6OroZGRqYWDpamDlZOJqaODs7GTq5OTo6uzoZWZqbGDhbOpq4WpozcHEKwFzzM5mRYYNwHC+v9O
+ 6drUE/T8oqhfbqxd7uuGzduS3qRMisJmabM4wMt6/P4mX9diNpfdaF8mojf0HXaRGqR9PWXva3+
+ hHMc+AEDwA=
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-ProfileMe samples include instructions killed on a wrong path, which
-show up as hot spots in perf report although they did no work. On an
-EV7 loop with a randomly mispredicted branch, 19% of the samples were
-killed before being mapped and another 48% later.
+The PMU sets PERF_PMU_CAP_NO_EXCLUDE, as the counters count in every
+mode. perf record then fails for unprivileged users: at the default
+perf_event_paranoid of 2, the tool sets exclude_kernel for them.
 
-PEBS and AMD IBS op samples are of retired instructions only, so make
-precise_ip imply the retired filter, unless filters are given. The
-profileme bit still selects every sample. With cycles:p, both kinds of
-killed sample went to 0%.
+A ProfileMe sample says which mode the profiled instruction ran in, so
+the excluded samples can be dropped, as AMD IBS does with swfilt. Do
+that for ProfileMe events, counting PALmode as kernel, and ignore
+exclude_hv, as there is no hypervisor. A sample that falls back to the
+interrupted PC is dropped if either its PC or the profiled instruction
+is in an excluded mode. Aggregate events cannot tell, so event_init
+now rejects their exclude bits itself, along with exclude_idle,
+exclude_guest and exclude_host for all events.
 
-DTB miss samples, whose instruction is aborted, are then dropped too:
-cycles:p reports DTB hits only, and the misses need cpu/cycles,trapped/p.
-
-The kept samples carry the full period, as do those AMD IBS keeps when
-its swfilt discards others. So in frequency mode the sample rate, and
-the event count perf report estimates from the periods, fall by the
-share of killed instructions: to about a third on that loop.
+The event count, and what PCTR1 counted during a window, still include
+the excluded modes.
 
 Suggested-by: Ian Rogers <irogers@google.com>
 Assisted-by: Claude:claude-opus-5-5
@@ -144,25 +142,95 @@ Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
 Tested-by: Magnus Lindholm <linmag7@gmail.com>
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- arch/alpha/kernel/perf_event.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/alpha/kernel/perf_event.c | 47 ++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 38 insertions(+), 9 deletions(-)
 
 diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
-index 332ff19ffd95..aa6ec2161ec4 100644
+index aa6ec2161ec4..58d132be8d0e 100644
 --- a/arch/alpha/kernel/perf_event.c
 +++ b/arch/alpha/kernel/perf_event.c
-@@ -849,6 +849,11 @@ static int __hw_perf_event_init(struct perf_event *event)
- 	if (attr->config1 && !profileme)
+@@ -844,6 +844,18 @@ static int __hw_perf_event_init(struct perf_event *event)
  		return -EINVAL;
- 	hwc->config = attr->config1;
-+	/* As with PEBS, precise samples are of retired instructions. */
-+	if (attr->precise_ip && !attr->config1 &&
-+	    !(attr->type == PERF_TYPE_RAW &&
-+	      (attr->config & ALPHA_PERF_CONFIG_PROFILEME)))
-+		hwc->config = ALPHA_PERF_CONFIG1_RETIRED;
+ 	hwc->flags = profileme ? ALPHA_PERF_FLAG_PROFILEME : 0;
  
- 	if (attr->type == PERF_TYPE_RAW &&
- 	    (attr->config & ALPHA_PERF_CONFIG_RANDOMIZE)) {
++	/*
++	 * The counters count in every mode, but ProfileMe samples say which
++	 * mode the profiled instruction ran in, so those that are excluded can
++	 * be dropped. PALmode counts as kernel, and exclude_hv is ignored, as
++	 * there is no hypervisor.
++	 */
++	if (attr->exclude_idle || attr->exclude_guest || attr->exclude_host)
++		return -EINVAL;
++	if (!profileme &&
++	    (attr->exclude_user || attr->exclude_kernel || attr->exclude_hv))
++		return -EINVAL;
++
+ 	if (attr->config1 & ~ALPHA_PERF_CONFIG1_FILTERS)
+ 		return -EINVAL;
+ 	if (attr->config1 && !profileme)
+@@ -995,7 +1007,6 @@ static struct pmu pmu = {
+ 	.stop		= alpha_pmu_stop,
+ 	.read		= alpha_pmu_read,
+ 	.attr_groups	= ev67_attr_groups,
+-	.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+ };
+ 
+ 
+@@ -1151,6 +1162,24 @@ static u64 alpha_profileme_status(unsigned long i_stat,
+ 	return status;
+ }
+ 
++/*
++ * Whether exclude_user or exclude_kernel rules out a sample of the profiled
++ * instruction at pmpc, reported at pc. A PALmode PMPC counts as kernel. The
++ * two differ only when the sample falls back to the interrupted PC, and
++ * such a sample is then dropped if either mode is excluded.
++ */
++static bool alpha_profileme_excluded(struct perf_event *event,
++				     unsigned long pmpc, unsigned long pc)
++{
++	bool pm_user = !(pmpc & EV67_PMPC_PAL) &&
++		       (pmpc & EV67_PMPC_PC_MASK) < TASK_SIZE;
++	bool user = pc < TASK_SIZE;
++
++	if (event->attr.exclude_user && (pm_user || user))
++		return true;
++	return event->attr.exclude_kernel && !(pm_user && user);
++}
++
+ /* What the memory instruction at pc does, or PERF_MEM_OP_NA. */
+ static u64 alpha_profileme_mem_op(unsigned long pc)
+ {
+@@ -1261,14 +1290,6 @@ static void alpha_perf_event_profileme(struct perf_event *event,
+ 		local64_add(ovr, &hwc->period_left);
+ 	}
+ 
+-	/* A dropped sample still counts, for throttling and frequency mode. */
+-	if ((alpha_profileme_status(i_stat, pctr_ctl, pmpc) & hwc->config) !=
+-	    hwc->config) {
+-		if (alpha_perf_event_set_period(event, hwc, 0))
+-			perf_event_account_interrupt(event);
+-		return;
+-	}
+-
+ 	/*
+ 	 * Attribute the sample to the profiled instruction rather than to
+ 	 * wherever the interrupt landed. perf takes the sample's mode,
+@@ -1313,6 +1334,14 @@ static void alpha_perf_event_profileme(struct perf_event *event,
+ 		memset(pm_regs, 0, sizeof(*pm_regs));
+ 	}
+ 
++	/* A dropped sample still counts, for throttling and frequency mode. */
++	if ((alpha_profileme_status(i_stat, pctr_ctl, pmpc) & hwc->config) !=
++	    hwc->config || alpha_profileme_excluded(event, pmpc, pc)) {
++		if (alpha_perf_event_set_period(event, hwc, 0))
++			perf_event_account_interrupt(event);
++		return;
++	}
++
+ 	perf_sample_data_init(&data, 0, hwc->last_period);
+ 	if (pc_only)
+ 		alpha_profileme_drop_regs(event, &data, PERF_SAMPLE_REGS_USER |
 
 -- 
 2.55.0
