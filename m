@@ -1,88 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.171
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793939455;
-	b=t/R/fZVRWmESoDNJPAOZA2ArsTyMjPk+d83jhqv/y9OKzJbETgav3GkhxykFC0SzODdf
-	 Wtp0OC9o+DCW7x8VfTvBrpMkiZoTiv5dOlkctnP4mPZdiDa/tRttN4FTNtw5mZuPxBREm
-	 J1ahp5DtHBjdIVRd6h9ZHpE6tpnuBioqsiAt0SKU6D7hvl3hYCFrZXCCNRdN+S1B0xrZE
-	 3UOntThgWtlUaQ4cFb0nREiUQ4ZooEstZgifs1zn6SLeH62q1D4lUe6VGTBHstjEcBDyh
-	 aGFf7woGCslY3mh8CHc0ioONDp3wGMKuIiukMBqDvyRLIEHMJ4MxLghIU7EOyu+zZLQ==
+	t=1793939453;
+	b=kMVzwgkXE9MNLsILrGJq4lwHANtcLCmz1awQery/OhL7CGHoM6iGIXj3tvpG38aMYqhv
+	 qyquCtur2UyBKPPf1Y2tULI1YCBQhe5Y3X2t/0NLSx6DwRLxNsumdCWjCAQdhebe7XepD
+	 xCxek6FM2MxgBe1VpFLcGcZK9AJbBb2WPCmCInQ66z92o6+KYcdY7njJxbmc+tSydYkMV
+	 e9dLqyezQtOZty4L9YtQUb52kvt/XRc/GjIQMq6FEaLf4wEnpkznM1j/kRuQypv/v0CtL
+	 WSJ2pNcNO9zp/mXub8CHIqEDh48Mtu+4x4KNYJ/7SThl8pPGPWAOiQUIvh3zSSeoUqg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793939455;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793939453;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
 	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
 	 X-Developer-Key;
-	bh=6pY9oYrBmZ0/EKuaAKL4Y9cNMnWHHJFhPtzKsqAxM1g=;
-	b=2HyTmbqcnBJYteWCtq0QcO+c0XvVS8FAKkDj9spMzHexYPqWoIOTiuHMYsNc0p+TOMKC
-	 +E5aPDWFaga3lQcn/uKZrVeNXbm/VBaafS4q++hY88IGbYxauOzIVQCUGYCVKABQUsBUV
-	 hrknIstWCDzPYC/zGKhCTx4GHIw2RO585bFtMXtAldRVE0TEqamw9JLhnX+vE7l6aXe3H
-	 LTAfwxEp9pDCBDNPyKOdWfc18zzExPemlJbVFtmnAik5wAW04oioKwXZ+vfZsDp8LcrJm
-	 aOWsDjlx5/eY5huyM6cxNMP8fqDGZClRAKZC3BCEGmchDuw5jNGiPtFKxMicoxHykOQ==
+	bh=efJIevtmWbzBz0eL/0yvclaJn4m3ipFrnt8V+2kunhs=;
+	b=LheAf0RE9IvdpCI+578UZXnmZ5ZK6T3s9GIVRL+4Q020u0S1K1PcOJdkyc+hyc7VY5Je
+	 WAkFlIwceTatHZqyMJZRuEYtGx7XsHMlE3kmdw8F3B2eRHUEuNi1UJsRDLMIsdMDu1EYc
+	 LDWC2SFrxTMgjzFpDrff/o/j/iJHHBwoe49VVL+k/XIhi0auwdTIvAVd+VDxKJDbByp2q
+	 nxEZRjUCw1mDjHI+yO3nvikkvMyRbixliUV4XfYNOPD489GUof1RVqMwx8X2kn5rollIS
+	 /9MGhbvxnrhHoQO8NlDyvHCEV+3htWKdchJaMMjP/9bKsw8abrxJy7pbqrrgVraocWQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=v56mdQ4q;
-	arc=none smtp.remote-ip=209.85.128.170
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=g4Vte6+c;
+	arc=none smtp.remote-ip=209.85.128.171
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98E0F606A328
-	for <linux-alpha@vger.kernel.org>; Fri,  6 Nov 2026 04:30:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 98E0F606A328
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7CEA606A32F
+	for <linux-alpha@vger.kernel.org>; Fri,  6 Nov 2026 04:30:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B7CEA606A32F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=v56mdQ4q
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-8b308fca7c3so1182687b3.2
-        for <linux-alpha@vger.kernel.org>; Thu, 05 Nov 2026 20:30:54 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=g4Vte6+c
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-8b30ff12f84so962737b3.2
+        for <linux-alpha@vger.kernel.org>; Thu, 05 Nov 2026 20:30:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793939454; x=1794544254; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1793939452; x=1794544252; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=6pY9oYrBmZ0/EKuaAKL4Y9cNMnWHHJFhPtzKsqAxM1g=;
-        b=v56mdQ4qOkfjzA9lBcHkXhWtCEjEkODiJZp7zn8qRnVfpezmFM9ggr9bm/XkOhSFHs
-         egQOsAp8ifwG3BqQulSDBha8H3pC/tvQM/0cxgpGnl+0gupizNhM8nJs+vyxvXUgYmf0
-         dPVkteV3Yx5RNlJH3FJgDW1+lr+yodXMSy1iLqISTqIpxcBL9fm61CyPCaiioWtoa45x
-         epUsFRLRnVBNmGfCV5h/dbPevPGASB9lLeF6RyDJaEgCLXuegqZrVJYemUVzp+d4ww0I
-         7njVwOKHrcgjztHjdW3CX6lZzHhW/ceBns784uaRFGxcj5dGMdOvJ4XRkPTdMjKxnA/x
-         wzRw==
+        bh=efJIevtmWbzBz0eL/0yvclaJn4m3ipFrnt8V+2kunhs=;
+        b=g4Vte6+c9K2gc+wTdFcBZzMSwuu07pva66q0cmBPuqml/09qwgrwUr3oteTG1CfT6j
+         DYcfNjEa54c9EY98tMudjTTYJFW7+S7+4ikzk/lqZbs8qYq2igkZ+/rHfG9T4qhfEB6x
+         FqakXqnHOii/DMivdDjjosTf6zPAFkhgn29wx2R5W0NhqZP8ADXBfAPPmyxcQLRUpiDj
+         zCPsYmVJjbijSDPFVLbQqWgxh9oFdZrszfSJwdXU8qLGl28ZkuP7XeXeXdq5epb6AROh
+         SI0PgAJx3/uNMbEXhr2BtPEgQCkkmvVB/LWAosruCxMla7BjLpCVRczqpSmxz4Z2KOFH
+         7VYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793939454; x=1794544254;
+        d=1e100.net; s=20260707; t=1793939452; x=1794544252;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=6pY9oYrBmZ0/EKuaAKL4Y9cNMnWHHJFhPtzKsqAxM1g=;
-        b=S0XhL7biT0Rv20eF5Mbnleb4BO1r1dl1mpXm57mNjoMFLOE1SChfjrrUB1+zAR5qFl
-         IE32SHx+DJllWM2TNxmfLVkxS0vgTCYvED04xNtX0iQXai0wa1U9sCndcT2WRPolnRi9
-         ezNaA+yYwreGwHW/mOpvOU8KKRFj6gK0shtVoVtgIfM3X/dEQC5A8p393vi5KE/XdJKp
-         eZ0k16kXyP7vj2rd4NWkRdoO+rSgMNQ2heid3AMcaYyHjYBQrRVoZweq9tq4Khb+yMfK
-         VbvE9uyDfpOlIcZi/eCrC3TDqk9wTovCJpeVlZM4sNhkrniBO7a9NNCw2fuu9phTVnwm
-         vqUw==
-X-Gm-Message-State: APuU4Z/YcqfVDNJCt8CGApV8T0YoNt50zdW3ft7nVT5DpgnKDsSuOwgx
-	DLqrkIKPXh2MctBUx9wZ4za2F/vtouF3jUr785D//FlK0ZJokvvSnAT/
-X-Gm-Gg: AYBFou3m53AIV17S35txP1HKpkdZxS1/Q0kiohwwj79IRYLsQGuXhbVh2E1mwgNx70L
-	BP3zMGNSXE40HtrtmjWJLH+f2ejH5Frb/j5tsqH3Cm5LvqTtm/Fq4p5cAQgTVjXdZh9K9hS1ME+
-	1YAQJVofbDvUw7WenyR/oUBxhjVjKEQTySUdmMJWCABKSAblH+GP3FdWiBmtQ4W4pLmZNEYOza0
-	I7vpCX107pQ1/HSmvuxhvfltNW7+o5Ql2PMYz+k66ZKiTxaE9Ex/jOtNcdsRij0B1Aqxc5xY4WQ
-	CZfdi5s2FzOG6YEbAt7vFgHgPSw1u+oYqLQhl335oFMb4wF2EcPUEESTg9H+sZ6sroSOLSVvQE1
-	A5rRf6A/Rltq6JgwBhGc6AC4tQAey1CSXXEzPVNIOI+DHRWUnMKjpImAiUDtmrvUdRbTuFbmLhw
-	cnxgSbS77wz7cY1RpqGCDRPD2uNIent+Bj4Z8kAtJ/gjs11diFPPBCbsSETfNQGHUpBboc4uUkV
-	0Em5Y2NXUIjQbr2NBgNBlid08QD3NTPIwJ9UKrXcLoWCiJaS7eexpZ8myj1+h553BCHnyILmDUm
-	33v46cS3QX2IlsO/qU9T99UBfNstQ7HtUflxTOWS2nPRPyrWK+Jflu+GSeC1iI6ORuOZiJki6IP
-	XA3G4GEuIkw==
-X-Received: by 2002:a05:690c:c0d6:b0:887:f4fc:ed49 with SMTP id 00721157ae682-8b341afce3amr6938077b3.50.1793939453498;
-        Thu, 05 Nov 2026 20:30:53 -0800 (PST)
+        bh=efJIevtmWbzBz0eL/0yvclaJn4m3ipFrnt8V+2kunhs=;
+        b=RxXLWgU09/sonm/VGW0b3lLPwnsT1fK9c1CsS3ET+bcoK/QTh2AJMKh9xLPEsbjos6
+         mBFhxQRRTv2I+PH3ot6EVaIRF7FzsaJK/cL4IzLH58ttMTOnjn9W9hrBnReSsiLoBpqJ
+         TOK6F5bd7/hyGi3q8ZDnZsbrRYi0fsdLAL5XOYo6dHRWq0Fi1rTb8mzGD7sxLi/VJG2Z
+         LfmUXlYCJWoKuGH0Dxb+O9bkr9G0OS79+OUPBJG8mn0JvgP+9O+iK+m3xYB6lHBSWXU+
+         r1K9i0hUvJN4a6vC74j+CqVynDEQWSwwUgK3ScueAmejKmtKhQumerS8XMOIVJ02+qNO
+         TXPQ==
+X-Gm-Message-State: APuU4Z9dQiufrLpVPXjqi013drtY5+uPmgzPRsp/bSqFkLOLrGAunwSq
+	8upjn/Apo8beQjtSTdH3M47BrtgDH+0gMUuBphnjn4xCqB1zzBuf7eLR
+X-Gm-Gg: AYBFou3z5MT13WQ8WIRRMKXZuAe53LkFurKK2YTWvzMzvjcDVavkQMEpTS0gb+7jZiz
+	ilfbt9y5y6zqWdXG0f45JhZ6UIOj3sxBOryssCAp4eamwOK2v9ycxXI3Q1VYFUWX3ZXzf1GYc3Q
+	57EnOtcYFoVS8/90JkdLI4J20qDrE2G8ilJuQVk1UEWdMb3tAPbF2Fk+InICFJKn9yzB3/VRGgV
+	qbHdM2Wo9ENvnGalXz44UPOGXGhiogXrZKLH6u1YO2A31vr8eZVIe5spXAPNaAEeNozuu3SEp1G
+	VDzF3ORKHe2UEMBox4PV2eht0BBv4JulrfNXzvJV9zUvJX2a1CViYDZCuZl60iOIBcP27wtFixS
+	UM3ZaHMxPWBwSU5QlmYUIBO3mm3qbupfqghFvDmPY2NwLHOxuEufH15Ey1yHIG4WHu8ZPTN+0lO
+	kKgYb9Xty1B30by+iVCE8G7eX8KneoIvyMjzIYvHxGbs2fFscGUNI5xlgy0SXV6pYf3H1I87rVQ
+	BVwiZHUehNzL9e+388fj1uviibKxpyMnPsowUduQeu63Nyls54wZbQwl26Omou1WIF57xqcXA5A
+	fJ1XGO7kkkiMmbPqSCJihq28p/X2l8buJ26hPCGNWL1ssisxTLUsOLATLxHL6xA7YWZhYmF99pR
+	yKKhh+cCO1Q==
+X-Received: by 2002:a05:690c:e3e5:b0:8b3:141c:b6a1 with SMTP id 00721157ae682-8b341907805mr8559537b3.9.1793939451840;
+        Thu, 05 Nov 2026 20:30:51 -0800 (PST)
 Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b33f865b4esm11357757b3.39.2026.11.05.20.30.52
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b33f8221absm11083687b3.27.2026.11.05.20.30.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 20:30:52 -0800 (PST)
+        Thu, 05 Nov 2026 20:30:50 -0800 (PST)
 From: Matt Turner <mattst88@gmail.com>
-Date: Thu, 05 Nov 2026 23:30:31 -0500
-Subject: [PATCH v7 12/14] alpha/perf: add ProfileMe sample filters
+Date: Thu, 05 Nov 2026 23:30:30 -0500
+Subject: [PATCH v7 11/14] alpha/perf: report the data source of ProfileMe
+ memory accesses
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -94,7 +95,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261105-alpha-profileme-v7-12-c474e892abb0@gmail.com>
+Message-Id: <20261105-alpha-profileme-v7-11-c474e892abb0@gmail.com>
 References: <20261105-alpha-profileme-v7-0-c474e892abb0@gmail.com>
 In-Reply-To: <20261105-alpha-profileme-v7-0-c474e892abb0@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -108,31 +109,36 @@ To: Richard Henderson <richard.henderson@linaro.org>,
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-perf-users@vger.kernel.org, Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6520; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=guz9PdCEHj/OWYcfh9fKRX97INdfiWY3upKk0j4FFCY=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLeht9du/79gdvTY7nN7YtZLmm5CJb9yFnUFP+s1e0Tw
- 6P0H4uUOz6yMIhxMcwUU2SJW6/IMqttx1Kf09K/YOawMoEMkRZpYAACFga+3MS8UiMdIz1TbUM9
- QyBDxygeIqfHoJFZXFyaWqSbVlDkkJdfkliSmZ9XrJdfkJpXkF6gl5aZVpKRkV9UnAo0Qi8vtcT
- U1dHNyNDAxNLRwszJwtHUxNnZydDJzdHR2dXJyNLcxMDZ0tHE1dKcgYtTAOaa6a8ZGY53eD7l+i
- VZuD/PR5qpsKzu/bSKTo03E8Xlyz0Wpvyacojhn8mWnH0Kx1rCC4/8cP764cONWydWGLEzd+2Y2
- mYl719zjRMA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5887; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=RXbXjkvuN6GKQzTUONd1iASZ3Os1NJ2tcOOToftbhFY=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLeht996vkzYP0sr0eTNi08YTzrQsqr72ZdG7ZpnJwYE
+ Gm54t9Gh46PLAxiXAwzxRRZ4tYrssxq27HU57T0L5g5rEwgQ6RFGhiAgIWBLzcxr9RIx0jPVNtQ
+ zxDI0DGKh8jpMWhkFheXphbpphUUOeTllySWZObnFevlF6TmFaQX6KVlppVkZOQXFacCjdDLSy0
+ xdXV0MzI0MLF0tDBzsnA0NXF2djJ0cnN0dHZ1MrI0NzFwtnQ0cbU0Z+DiFIC55k0Hw39HnrcPjo
+ c7iR3/86ev+WLOGfcNIhIM1Wt61tUedHsqfD+IkeGf1ttlwl3FB0K6nrsefWPUMUvhhd/y2QVR0
+ 3zVlxQcy+YEAA==
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-ProfileMe samples any fetched instruction, including those killed on a
-wrong path, and what happened to it is only in the PERF_SAMPLE_RAW data.
+Whether a ProfileMe sample's memory access missed the DTB is only in the
+PERF_SAMPLE_RAW data, as a DTB miss trap.
 
-Add three config1 bits that keep only the samples of instructions that:
+Set PERF_SAMPLE_DATA_SRC for the samples of memory instructions, so that
+the memory sort keys see them. One that trapped on a DTB miss gets an L1
+miss in mem_dtlb. PALcode fills the DTB, so one that retired without
+that trap hit it, and gets an L1 hit. mem_op comes from the opcode, as
+I_STAT does not say whether the access was a load or a store. A load
+into $31 or $f31 is a prefetch, except for ldq_u, a UNOP that is left
+out. Samples that fall back to the interrupted PC get none.
 
-  retired     retired. VAL says so for an instruction that did not trap,
-              and the trap type for one that did.
-  mispredict  were mispredicted conditional branches.
-  trapped     trapped, mispredicts included, or caused an ITB miss,
-              Istream access violation or interrupt redirect.
+On an EV7, a loop that loads one word from each page of 64 MB in random
+order had as many DTB hit samples on the load as misses: the miss trap
+aborts the load, and its refetch hits. A prefetch into $31 takes the
+same trap, and its samples are reported as PFETCH misses and hits.
 
-A sample must match every bit that is set, as with Arm SPE's
-event_filter. The driver drops the samples that do not, and they still
-count as interrupts for throttling and frequency mode.
+I_STAT[TRP] is ignored for an instruction killed before it was mapped. On
+an EV7, TRP and MIS were seen set for killed instructions that are not
+even branches.
 
 Suggested-by: Ian Rogers <irogers@google.com>
 Assisted-by: Claude:claude-opus-5-5
@@ -140,167 +146,144 @@ Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
 Tested-by: Magnus Lindholm <linmag7@gmail.com>
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- arch/alpha/include/asm/wrperfmon.h | 10 +++++
- arch/alpha/kernel/perf_event.c     | 83 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 93 insertions(+)
+ arch/alpha/include/asm/wrperfmon.h | 12 ++++++
+ arch/alpha/kernel/perf_event.c     | 86 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 98 insertions(+)
 
 diff --git a/arch/alpha/include/asm/wrperfmon.h b/arch/alpha/include/asm/wrperfmon.h
-index dc24c7cb45db..6526438e73ee 100644
+index 7fbbfd74926a..dc24c7cb45db 100644
 --- a/arch/alpha/include/asm/wrperfmon.h
 +++ b/arch/alpha/include/asm/wrperfmon.h
-@@ -106,9 +106,14 @@
- #define EV67_I_STAT_MIS (1UL<<40)
+@@ -100,6 +100,18 @@
+ /* ProfileMe status, from the EV67/EV68 Hardware Reference Manuals. */
+ #define EV67_I_STAT_OVR_SHIFT 30
+ #define EV67_I_STAT_OVR_MASK 0x7UL
++#define EV67_I_STAT_TRAP_TYPE_SHIFT 34
++#define EV67_I_STAT_TRAP_TYPE_MASK 0xfUL
++#define EV67_I_STAT_TRP (1UL<<39)
++#define EV67_I_STAT_MIS (1UL<<40)
++
++/* I_STAT[TRAP_TYPE] values */
++#define EV67_TRAP_DTB_DOUBLE_3 2
++#define EV67_TRAP_DTB_DOUBLE_4 3
++#define EV67_TRAP_DTB_SINGLE 6
++
++#define EV67_PCTR_VAL (1UL<<1)
++#define EV67_PCTR_PM_KILLED_BM (1UL<<26)
  
- /* I_STAT[TRAP_TYPE] values */
-+#define EV67_TRAP_REPLAY 0
- #define EV67_TRAP_DTB_DOUBLE_3 2
- #define EV67_TRAP_DTB_DOUBLE_4 3
-+#define EV67_TRAP_FEN 4
-+#define EV67_TRAP_UNALIGNED 5
- #define EV67_TRAP_DTB_SINGLE 6
-+#define EV67_TRAP_DFAULT 7
-+#define EV67_TRAP_OPCDEC 8
- 
- #define EV67_PCTR_VAL (1UL<<1)
- #define EV67_PCTR_PM_KILLED_BM (1UL<<26)
-@@ -116,5 +121,10 @@
  /* PMPC bits 63:2 hold the profiled PC. Bit 0 set means a PALmode address. */
  #define EV67_PMPC_PAL (1UL<<0)
- #define EV67_PMPC_PC_MASK (~3UL)
-+/* PMPC[14:0] of the redirect traps, which do not set I_STAT[TRP] */
-+#define EV67_PMPC_PAL_OFFSET_MASK 0x7fffUL
-+#define EV67_PMPC_IACV 0x0481
-+#define EV67_PMPC_ITB_MISS 0x0581
-+#define EV67_PMPC_INTERRUPT 0x0681
- 
- #endif
 diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
-index 803ec99cb9ae..332ff19ffd95 100644
+index 529186ea8873..803ec99cb9ae 100644
 --- a/arch/alpha/kernel/perf_event.c
 +++ b/arch/alpha/kernel/perf_event.c
-@@ -42,6 +42,13 @@
- #define ALPHA_PERF_CONFIG_EVENT		0xffULL
- #define ALPHA_PERF_CONFIG_PROFILEME	BIT_ULL(8)
- #define ALPHA_PERF_CONFIG_RANDOMIZE	BIT_ULL(9)
-+/* attr.config1 of a ProfileMe event: which instructions to keep samples of. */
-+#define ALPHA_PERF_CONFIG1_RETIRED	BIT_ULL(0)
-+#define ALPHA_PERF_CONFIG1_MISPREDICT	BIT_ULL(1)
-+#define ALPHA_PERF_CONFIG1_TRAPPED	BIT_ULL(2)
-+#define ALPHA_PERF_CONFIG1_FILTERS	(ALPHA_PERF_CONFIG1_RETIRED | \
-+					 ALPHA_PERF_CONFIG1_MISPREDICT | \
-+					 ALPHA_PERF_CONFIG1_TRAPPED)
+@@ -20,6 +20,7 @@
+ #include <linux/overflow.h>
+ #include <linux/prandom.h>
+ #include <linux/sched/task_stack.h>
++#include <linux/uaccess.h>
  
- /* hw_perf_event.flags */
- #define ALPHA_PERF_FLAG_WRAPPED		0x1
-@@ -261,11 +268,17 @@ static int ev67_raw_event_valid(u64 config)
- PMU_FORMAT_ATTR(event, "config:0-7");
- PMU_FORMAT_ATTR(profileme, "config:8");
- PMU_FORMAT_ATTR(randomize, "config:9");
-+PMU_FORMAT_ATTR(retired, "config1:0");
-+PMU_FORMAT_ATTR(mispredict, "config1:1");
-+PMU_FORMAT_ATTR(trapped, "config1:2");
- 
- static struct attribute *ev67_format_attrs[] = {
- 	&format_attr_event.attr,
- 	&format_attr_profileme.attr,
- 	&format_attr_randomize.attr,
-+	&format_attr_retired.attr,
-+	&format_attr_mispredict.attr,
-+	&format_attr_trapped.attr,
- 	NULL,
- };
- 
-@@ -831,6 +844,12 @@ static int __hw_perf_event_init(struct perf_event *event)
- 		return -EINVAL;
- 	hwc->flags = profileme ? ALPHA_PERF_FLAG_PROFILEME : 0;
- 
-+	if (attr->config1 & ~ALPHA_PERF_CONFIG1_FILTERS)
-+		return -EINVAL;
-+	if (attr->config1 && !profileme)
-+		return -EINVAL;
-+	hwc->config = attr->config1;
-+
- 	if (attr->type == PERF_TYPE_RAW &&
- 	    (attr->config & ALPHA_PERF_CONFIG_RANDOMIZE)) {
- 		if (!profileme)
-@@ -1071,6 +1090,62 @@ static bool alpha_profileme_trp(unsigned long i_stat, unsigned long pctr_ctl)
- 	return !(pctr_ctl & EV67_PCTR_PM_KILLED_BM) && (i_stat & EV67_I_STAT_TRP);
+ #include <asm/hwrpb.h>
+ #include <linux/atomic.h>
+@@ -1064,6 +1065,88 @@ static void alpha_profileme_set_regs_user(struct perf_event *event,
+ 				  sizeof(u64);
  }
  
-+/*
-+ * VAL says whether an instruction that did not trap retired. For one that
-+ * did, the trap type decides: these faults abort it, to be replayed,
-+ * refetched after a fill, or emulated. Other traps, mispredicts among
-+ * them, are counted as retired.
-+ */
-+static bool alpha_profileme_retired(unsigned long i_stat,
-+				    unsigned long pctr_ctl)
++/* TRP, and MIS with it, are stale for an instruction killed before mapping. */
++static bool alpha_profileme_trp(unsigned long i_stat, unsigned long pctr_ctl)
 +{
-+	if (pctr_ctl & EV67_PCTR_PM_KILLED_BM)
-+		return false;
-+	if (!(i_stat & EV67_I_STAT_TRP))
-+		return pctr_ctl & EV67_PCTR_VAL;
-+	if (i_stat & EV67_I_STAT_MIS)
-+		return true;
++	return !(pctr_ctl & EV67_PCTR_PM_KILLED_BM) && (i_stat & EV67_I_STAT_TRP);
++}
 +
-+	switch ((i_stat >> EV67_I_STAT_TRAP_TYPE_SHIFT) &
-+		EV67_I_STAT_TRAP_TYPE_MASK) {
-+	case EV67_TRAP_REPLAY:
-+	case EV67_TRAP_DTB_DOUBLE_3:
-+	case EV67_TRAP_DTB_DOUBLE_4:
-+	case EV67_TRAP_FEN:
-+	case EV67_TRAP_UNALIGNED:
-+	case EV67_TRAP_DTB_SINGLE:
-+	case EV67_TRAP_DFAULT:
-+	case EV67_TRAP_OPCDEC:
-+		return false;
++/* What the memory instruction at pc does, or PERF_MEM_OP_NA. */
++static u64 alpha_profileme_mem_op(unsigned long pc)
++{
++	u32 insn;
++	bool r31;
++
++	if (pc < TASK_SIZE) {
++		if (copy_from_user_nofault(&insn, (const void __user *)pc,
++					   sizeof(insn)))
++			return PERF_MEM_OP_NA;
++	} else if (copy_from_kernel_nofault(&insn, (const void *)pc,
++					    sizeof(insn))) {
++		return PERF_MEM_OP_NA;
++	}
++
++	/* A load into $31 or $f31 is a prefetch, except for ldq_u: a UNOP. */
++	r31 = ((insn >> 21) & 0x1f) == 31;
++
++	switch (insn >> 26) {
++	case 0x0b:					/* ldq_u */
++		return r31 ? PERF_MEM_OP_NA : PERF_MEM_OP_LOAD;
++	case 0x0a: case 0x0c:				/* ldbu, ldwu */
++	case 0x20: case 0x21: case 0x22: case 0x23:	/* ldf, ldg, lds, ldt */
++	case 0x28: case 0x29:				/* ldl, ldq */
++		return r31 ? PERF_MEM_OP_PFETCH : PERF_MEM_OP_LOAD;
++	case 0x2a: case 0x2b:				/* ldl_l, ldq_l */
++		return PERF_MEM_OP_LOAD;
++	case 0x0d: case 0x0e: case 0x0f:		/* stw, stb, stq_u */
++	case 0x24: case 0x25: case 0x26: case 0x27:	/* stf, stg, sts, stt */
++	case 0x2c: case 0x2d: case 0x2e: case 0x2f:	/* stl, stq, stl_c, stq_c */
++		return PERF_MEM_OP_STORE;
 +	default:
-+		return true;
++		return PERF_MEM_OP_NA;
 +	}
 +}
 +
-+/* What the profiled instruction did, as config1 filter bits. */
-+static u64 alpha_profileme_status(unsigned long i_stat,
-+				  unsigned long pctr_ctl, unsigned long pmpc)
++/*
++ * Report the DTB access of a memory instruction. PALcode fills the DTB, so
++ * one that retired without a DTB miss trap hit it.
++ */
++static void alpha_profileme_data_src(struct perf_sample_data *data,
++				     unsigned long pc, unsigned long i_stat,
++				     unsigned long pctr_ctl)
 +{
-+	u64 status = 0;
++	u64 op, dtlb;
 +
-+	if (alpha_profileme_retired(i_stat, pctr_ctl))
-+		status |= ALPHA_PERF_CONFIG1_RETIRED;
 +	if (alpha_profileme_trp(i_stat, pctr_ctl)) {
-+		status |= ALPHA_PERF_CONFIG1_TRAPPED;
 +		if (i_stat & EV67_I_STAT_MIS)
-+			status |= ALPHA_PERF_CONFIG1_MISPREDICT;
-+	} else if (pmpc & EV67_PMPC_PAL) {
-+		switch (pmpc & EV67_PMPC_PAL_OFFSET_MASK) {
-+		case EV67_PMPC_IACV:
-+		case EV67_PMPC_ITB_MISS:
-+		case EV67_PMPC_INTERRUPT:
-+			status |= ALPHA_PERF_CONFIG1_TRAPPED;
++			return;
++		switch ((i_stat >> EV67_I_STAT_TRAP_TYPE_SHIFT) &
++			EV67_I_STAT_TRAP_TYPE_MASK) {
++		case EV67_TRAP_DTB_SINGLE:
++		case EV67_TRAP_DTB_DOUBLE_3:
++		case EV67_TRAP_DTB_DOUBLE_4:
++			dtlb = PERF_MEM_TLB_L1 | PERF_MEM_TLB_MISS;
 +			break;
++		default:
++			return;
 +		}
-+	}
-+	return status;
-+}
-+
- /* What the memory instruction at pc does, or PERF_MEM_OP_NA. */
- static u64 alpha_profileme_mem_op(unsigned long pc)
- {
-@@ -1181,6 +1256,14 @@ static void alpha_perf_event_profileme(struct perf_event *event,
- 		local64_add(ovr, &hwc->period_left);
- 	}
- 
-+	/* A dropped sample still counts, for throttling and frequency mode. */
-+	if ((alpha_profileme_status(i_stat, pctr_ctl, pmpc) & hwc->config) !=
-+	    hwc->config) {
-+		if (alpha_perf_event_set_period(event, hwc, 0))
-+			perf_event_account_interrupt(event);
++		op = alpha_profileme_mem_op(pc);
++	} else if (!(pctr_ctl & EV67_PCTR_PM_KILLED_BM) &&
++		   (pctr_ctl & EV67_PCTR_VAL)) {
++		dtlb = PERF_MEM_TLB_L1 | PERF_MEM_TLB_HIT;
++		op = alpha_profileme_mem_op(pc);
++		if (op == PERF_MEM_OP_NA)
++			return;
++	} else {
 +		return;
 +	}
 +
- 	/*
- 	 * Attribute the sample to the profiled instruction rather than to
- 	 * wherever the interrupt landed. perf takes the sample's mode,
++	data->data_src.val = PERF_MEM_NA;
++	data->data_src.mem_op = op;
++	data->data_src.mem_dtlb = dtlb;
++	data->sample_flags |= PERF_SAMPLE_DATA_SRC;
++}
++
+ /*
+  * Handle the close of a ProfileMe window on PCTR0.
+  *
+@@ -1178,6 +1261,9 @@ static void alpha_perf_event_profileme(struct perf_event *event,
+ 		data.sample_flags |= PERF_SAMPLE_WEIGHT_TYPE;
+ 	}
+ 
++	if (exact && (event->attr.sample_type & PERF_SAMPLE_DATA_SRC))
++		alpha_profileme_data_src(&data, pc, i_stat, pctr_ctl);
++
+ 	if (!alpha_perf_event_set_period(event, hwc, 0))
+ 		return;
+ 
 
 -- 
 2.55.0
