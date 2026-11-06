@@ -1,89 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.224.49
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793939462;
-	b=XlqgNJkAcSosQSZOJl0jKUtZsB3ahDJ+EtwZ7V4ql7RVlwvCYYcvLaUK/YxhAZ/723YI
-	 K0CwgEb68kd3UkV7utV67g+Re4zkBmtm916Ngm6SuJGaW8ZYqPRARB32+5E1iGvLJkbgu
-	 wBeRhzMcvTy1i+MA1DFt7Z+PPlioTWd5IBazC4A5buBE7/cGct/VWJfjbB8lvuhZ8g28G
-	 y9MyXu+zypGgqfprL7Au9ewEXES1qPq1h7DlyQLCP39lMjgvSuLOawowSROeFpMv9UHyr
-	 DElZlQxIqpEc5Ntc+goWkJ3jpUCp8Df5q2SQoSQZCLimAJlU8G+58SrP5pOj278QEhQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793939462;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.45
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793967171;
+	b=JaKQ3GsdWQE5kn8k+pgopuAYEM6SkacdUL16BLxPIwYeZs2dvEFf2GGZLW1aW90yJwP7
+	 dN2g63keffT3+u/Lz0pkg/TDX/Ab4cPhIqMMKadfvF+XLjovb/WRHFDVTMVUVxDp5LCOP
+	 4e3+1xiu643V4Z5rxCYkmC9kCwQQDSbFVWfMYmMMZMYdmxpxjPunJoPHYw0zkvPUGZc+q
+	 bdwIgSnHWLd2teslhQ3p98v5jFFI57i4xNPOmr0nzCM2CIgBZCNT2PSDV3R23UA5sJkXb
+	 Xl8GrlKjdhxvIXhsN9KXVmq6tWdVEj+px73kH3ULcnWkpTCudTIG5P0o5ths89fmwjA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793967171;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
-	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
-	 X-Developer-Key;
-	bh=G831IGB9qOUDsorlr+4vmy2c2tG0vM4lZyaYNCG2Gtk=;
-	b=VkOILgmsBBnjMvEfAP6mHw3YomXk20aQPeHVGYCCkONbSWpsvhk3HVk4GLX5BwvulodR
-	 DNJtw3eWW1eR9Aw6Qg9Nm3QOms6x0/Z65/PiujkANSKOuecSpGNnz4qBBfUzMS7CGqhLk
-	 cSqsNEe7lYE78yrPr1ckebThYDZ7SBtD5hE3lGUnVe98nrFmqCbJS9I7FRkzrb1gcnf6t
-	 B6AO7lOr7phmIQcycvV4TrpFAHttI+18dnS1AMZJDk0maGhMRZkPfv3cKfus20A7TYWbh
-	 6rmhdZ0K39uGgs9f3L33gqrh7mobL1F4N7TCjVjLL26UmH3uvl5zh6OWABXcUnrP6bw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=x1/cuWPUTv0vs8CRRmZ6/x/mFtko9mxhwsi/tFyavW0=;
+	b=iRv0+KgBOq/EFmGax2AIjcE/QQp9M1Og4QyelPve33jC3InBzhykjFa/FvUK6m21tR6s
+	 X7Sst4cVBebAVPeCxaz7dUR+7UVvL+Vp46+Qw+xdKiIC7YHreg1Rl3Wsqz6E68vFLuwJB
+	 Ot6Go5MDnLYDzJfX1843D6llUFfNTitXy0MQwdVU23ZVZEKIFlN+bv0gP5zN34JOBydA9
+	 e8/smn1A8nceCGUoPVERxu5v0wGbKT0kJ3XWr5tHymTmauhP21Rp9RjKGOntF8+LiiAu8
+	 Jmr+Ok5+lJOoFADBwYeEiLRpIDJ5epkcg4oCAWJ5lVx5YCkA+gLIaZrcUPlLO/tTsJA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JW9uZOk+;
-	arc=none smtp.remote-ip=74.125.224.49
-Received: from mail-yx1-f49.google.com (mail-yx1-f49.google.com [74.125.224.49])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xDYrVneH;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.45
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80236606A337
-	for <linux-alpha@vger.kernel.org>; Fri,  6 Nov 2026 04:31:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 80236606A337
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69D88606A32E
+	for <linux-alpha@vger.kernel.org>; Fri,  6 Nov 2026 12:12:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 69D88606A32E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=JW9uZOk+
-Received: by mail-yx1-f49.google.com with SMTP id 956f58d0204a3-67bee1f693bso178061d50.1
-        for <linux-alpha@vger.kernel.org>; Thu, 05 Nov 2026 20:31:01 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=xDYrVneH
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6b587538a37so671956a12.2
+        for <linux-alpha@vger.kernel.org>; Fri, 06 Nov 2026 04:12:50 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793967169; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Jmp3GIk4E3Pw25DlYh5A70Lx6Z5oTnPuushKjOgWM+o7Ib5v+34S0YlEZRVHCqMGOL
+         JeVCLpKgAw72KXfHbg/G4JEgFaV99ij+J57JyXlrl8M8ZB6O+90WA4ly9EMOgyjSDsBP
+         CrcFbh7ahWoem21X6XEO6JAtvotMcfW1+yvteaFUupgO1Vi/Rj/KIlq4M7YH/X5AN2sF
+         hi7HiuQeWpAQ24ZQddxSySHfUncpaDZpKU76Rnft7ivpXSN1yE47Grb30x8GkKa2Ocjl
+         /McUmDVE0sV0HtvIGiT4/tXD4UI6db/EzuQ81zfqCN6bkucBHxzmoBUa4XsrIpkKxi+Z
+         rYQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=x1/cuWPUTv0vs8CRRmZ6/x/mFtko9mxhwsi/tFyavW0=;
+        fh=HWreJuamP8SwZRMAS8oxZVVfBCRI31ifCjedr8vfVNU=;
+        b=cq31Kl5L+JpkAm0+l/WLahB9dwiWv5GFu/NC5bJGjM/BowGYK3fdry6A/RwFx6fbSg
+         vhbDOSo07NjGoP5zQtP0S0Hi1hT8e8NELCNXwShdGh3OxctL/e8XNtEKZXfEFnZS52M0
+         aSvUEyyYUCCl01reTD3K3nFvdiAt0Xl8fSK+9+YJpdeWf1hErdDzWKav6SZA7TQuXNZx
+         ianHpAxRaUjapIh7VJVzoosxyyG/Mtd2WoGNBdqZI/hbZ/GtrSKeGxSKsdxVcHZQ1BW5
+         LLC8vs2iDcGGbWYm3ZoDLl+gQOlYsQCxI535nYN2vrl9C6FHqfntdlG0apeERQlI0LVB
+         /cRA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793939460; x=1794544260; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=G831IGB9qOUDsorlr+4vmy2c2tG0vM4lZyaYNCG2Gtk=;
-        b=JW9uZOk+rNSQ0m1adb0AsrizzOXv///NVOzlcihnXuhGXfg7nk6sI/LzJXLs9znidL
-         xultSDHgrmVtwdxSvRjf0vsO0gVNnOf42FlZjbjj2v0xzBBywYjTHKHe/ZSv4h1qBdMJ
-         SzbmcB+B0xIpnLwRefdeiD9iiRRJ/zkQqddXcFGyDvW0yVINTPlZV6rWBPD3nUWDYual
-         g1owPhzY5b84z2MN43fMbeBNuhcoZCnSudC1B2iTIEzmh8u1UftGmVwGVUyIf4aJseta
-         sk7dcir+3YOWR4Kfc6xW+CR6Z3pBEakhYo+jV8/xDp+Mk78WwLD2xiW0DVx0K7Orelnd
-         qvbw==
+        d=gmail.com; s=20260707; t=1793967169; x=1794571969; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=x1/cuWPUTv0vs8CRRmZ6/x/mFtko9mxhwsi/tFyavW0=;
+        b=xDYrVneHd9NtSZJg0aPJWE2CrXqH1XhMoEBmuZu1Aq20xV6zyQmbDXClWwhR5sMHH1
+         RifzHNcrt9zUYGkUN0udrQlRIcs28wCcQZt8AY3ZsXmNAG0m1KfOViGsnbgKseghiwis
+         OEoziMx0kBGsIQWK/5GDVyMw6GnwIKEBEQhZ0m4L5moDCZUpWRoHJNOg+xxtJEDD2VB3
+         UK1PBd+qffmb0RXq92LwXbuXDPw8lios74hyBidrpWWaeOsqVwEIpaCKo2sLUtO5OQxo
+         1zL0DGnTQcMTY6sYyHvCqLGEe0kev4324IiqG1ZzM7ttp2pJK1cr86cPsszoMSCf4Z75
+         cG8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793939460; x=1794544260;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
+        d=1e100.net; s=20260707; t=1793967169; x=1794571969;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=G831IGB9qOUDsorlr+4vmy2c2tG0vM4lZyaYNCG2Gtk=;
-        b=CnWsQt7tX43COi4DS737UiTTbN3DBQEP0fLtOFdet7dNrxzqGkBq7HZQK64H+HDfbK
-         AEKxVklpyc9XYQKSnlUhggmYafQiho5jNCy6AnQvlP1G43y1d0XEw8Bz7wk6hGQuxuJm
-         FORkurgn1G+wILeuM+xMxAlvoxfUyzAWX+xRnHa7BK2lXFbVRDLb2bKukhhcw7V20kIY
-         wP2EnX340z/TLuYAQeBcIBstGVUxw0lxXb1PjCI2W2b9OEOgFBsMbwCzRljtzao0+3m0
-         yoc5220yyLI0XPpJGgv6ttlZSEN79jeJI+t4MAF+HxGUDLZkdmNGNQuxy2KHpBsfFI1y
-         WyfQ==
-X-Gm-Message-State: APuU4Z8JkgtUVsS49pVWaD9JSWJyi/NFCMHC2EWffkvIro+x9DUz0CSp
-	tfTXgFtURueklruS3Ofow77kBVbB4/1nAdWh2auCMY8662DGUsweJKMd
-X-Gm-Gg: AYBFou1t15Fha8ReQD+rknmSBoTvTd0sp22IKRPQmtUWtslWe4yblnjMnd6pqlef4nO
-	SAB5xzXW/tOOOzibu18Jq/d6YpQXRyBZJMjUNUnTtETAbj0RqKoThJIQnIxowgSvmzjVn6rBuc6
-	lh5Z3uFTqKmmLrKBtofiCi0rHlMlt70U9PMiX0M85pDYWfWp/68thaXO/YT87AfDYZZdGrpq2T3
-	TljcRx5opMlCo0zhIqp37ToHCtgBzY/oIRkxO5TAi4chj5rg57b0zPVSdfrGkL0Gxc6JJGTC7sy
-	EjAUi2yzQl9RyAPiC1jV5dbxg4MJhjAfwCrXZtGAPfp+nEV+6lEMM2Eeq8yC0BIDOXOCnoD17ib
-	/1Yz6CsBpCeuCK6T7LlF/ckI94rDWX4L7KRqv+w7JUbDWxFaYWq7sGCimdEthgrRRzX6TUavlCu
-	3NrxbHhV+5hYMS4/gc6exZRmkVFCLmkqbTN+Eo7r27ZCnAYHa9YxAHwUzHg7iIBJ2OkSpdN5N7V
-	oB5wPglJajHBnruxS6R1k4JRLNV+KfYHpVQL1g+ny1NkVh9VrhVY/+772G+2OpAids7voKoiOek
-	mIqAKPjBL943JeH7w36hWf5EHsUXORWU5EfrmAREVHhWA1ybdsUQ8LsXMh9RovcEKNmRNkYdC/7
-	25ej75PEnvQ==
-X-Received: by 2002:a05:690e:400c:b0:67b:e062:2972 with SMTP id 956f58d0204a3-67c143dc3c6mr999569d50.40.1793939460464;
-        Thu, 05 Nov 2026 20:31:00 -0800 (PST)
-Received: from localhost ([2600:1702:7a90:6f9f:8bc4:8aec:108d:7a04])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67c13371f3csm1206662d50.3.2026.11.05.20.30.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 20:30:59 -0800 (PST)
-From: Matt Turner <mattst88@gmail.com>
-Date: Thu, 05 Nov 2026 23:30:33 -0500
-Subject: [PATCH v7 14/14] alpha/perf: honor exclude_user and exclude_kernel
- for ProfileMe events
+        bh=x1/cuWPUTv0vs8CRRmZ6/x/mFtko9mxhwsi/tFyavW0=;
+        b=N3ASGonmplQ42exZlvADLMZ8Z4Zs03Q4bc1jXcDOZQNGYZks9TVFPjDQ7GHmUmHrGi
+         aTdG2MftI2TRnHwPdKIdTjcTGWRXcRon4LQIwrpiL3bZW9LtMkBKJWKT4ySmoZfUvN7H
+         oI2OhuRdSEgon1CaA4H5lCEIozn7nvXCjDN//AlrcOTJ27PyP4ilhnT/2WVUEcMxkyhp
+         p1Bk8XNi0cIluAnwAgdxdlQgwlEmRAd7Cf6szu0KVMSaUChCRnDwG3r7bqbIWnQvStik
+         UfXiIXGecDvTj8hdeaPaH6iY3+2MpsOFA2r+So17rMysVDiEt1PW84mzM8L3H00HM6hY
+         5QAw==
+X-Forwarded-Encrypted: i=1; AKwUvByIluHupjJ0/Svta7bBQHJLptCQM5NKGYeLDw8bfcPFlJoJAczCrg0UYyfeBCKHFcMR6VQOC5Huw3lMBQ==@vger.kernel.org
+X-Gm-Message-State: APuU4Z94TjRXKZen79fd7MlhgekTza9JhqSDT3DtDBft1iWqwuXHhsXC
+	MVnErOkRf9SS6Xsvx1nT7Qs4T4tHI9D+51R+l0Js7Hzlu5sa2MpeTxSdr43xUj2KZkMX6zCOvxG
+	7GYK8yeo0xXj8wn9k/HtfjAbHN39Ap6s=
+X-Gm-Gg: AYBFou1XqExk5ceN2JfYxBKeC9zXMr4vtlJs/Rupn5JIfsdaqea39+j/vLSBjyrKQzS
+	ZR3yTEysJm05QAjsRB4CIjJkuVJSqu/kYSuHT3P9RJ45AhJwSpQuGHbiPpgJk5Rya5Ywum3mWo8
+	9k8TSbNMkjwt6g38ZR3YKSMomA4kDvOdvWcCQv5zkW0oeLDebqP+N9vTrdbfqe6BMlIZf3DEc+0
+	Et9svjwnjbBP/QrdR8TwrjNqdkY9mey4xC+Hvf0BQGVYsKs5rPvWsSXc9ZpnkTb7dml5Nax205N
+	V7oh5kOR7UJIqc29r20B4spd4fCm4bUAaScmOedlDQfLDnIRbvdn0kuXt0rWD8IQz7zuFW+95t1
+	K6o/u1wb2jLip/e89j2m7pujXzYjUYTKv4Rstnj4c5a34awbq2m4yi0l7DdGBduJyUAHhrfXNrf
+	EbHREI/imzXaUvGEDMUfQxdA==
+X-Received: by 2002:a05:6402:2708:b0:6b5:96e9:ae95 with SMTP id
+ 4fb4d7f45d1cf-6b5977c05b4mr1611439a12.10.1793967168580; Fri, 06 Nov 2026
+ 04:12:48 -0800 (PST)
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -93,145 +105,124 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261105-alpha-profileme-v7-14-c474e892abb0@gmail.com>
-References: <20261105-alpha-profileme-v7-0-c474e892abb0@gmail.com>
-In-Reply-To: <20261105-alpha-profileme-v7-0-c474e892abb0@gmail.com>
-To: Richard Henderson <richard.henderson@linaro.org>, 
- Magnus Lindholm <linmag7@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
- Ingo Molnar <mingo@redhat.com>, Arnaldo Carvalho de Melo <acme@kernel.org>, 
- Namhyung Kim <namhyung@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
- Alexander Shishkin <alexander.shishkin@linux.intel.com>, 
- Jiri Olsa <jolsa@kernel.org>, Ian Rogers <irogers@google.com>, 
- Adrian Hunter <adrian.hunter@intel.com>, 
- James Clark <james.clark@linaro.org>, Michael Cree <mcree@orcon.net.nz>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-perf-users@vger.kernel.org, Matt Turner <mattst88@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4451; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=etGiS+KjgiyXzjebY7Rb4XAH8uHilSqEgpWO7GWDiV0=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLLeht+9d2HOdUku7mwvlT32rmWdc2//WKtRkn3Wy9BWs
- /hrhkZHx0cWBjEuhpliiixx6xVZZrXtWOpzWvoXzBxWJpAh0iINDEDAwsCXm5hXaqRjpGeqbahn
- CGToGMVD5PQYNDKLi0tTi3TTCooc8vJLEksy8/OK9fILUvMK0gv00jLTSjIy8ouKU4FG6OWllpi
- 6OroZGRqYWDpamDlZOJqaODs7GTq5OTo6uzoZWZqbGDhbOpq4WpozcHEKwFzzM5mRYYNwHC+v9O
- 6drUE/T8oqhfbqxd7uuGzduS3qRMisJmabM4wMt6/P4mX9diNpfdaF8mojf0HXaRGqR9PWXva3+
- hHMc+AEDwA=
-X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
- fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
+References: <20261105-alpha-force-success-fix-v1-1-8c26d60c5fff@gmail.com>
+In-Reply-To: <20261105-alpha-force-success-fix-v1-1-8c26d60c5fff@gmail.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Fri, 6 Nov 2026 13:12:36 +0100
+X-Gm-Features: AclHuK-imma2RB3IIgOI8b1RYP__FJLRZ_l9IgLeNTSprdfcIZVW6dvD-NI_UWw
+Message-ID: <CA+=Fv5RXzRvCwmzJ8FY8=fxmHCF1X6XAj=LtfbVD5gVJJxi1mQ@mail.gmail.com>
+Subject: Re: [PATCH 7.1.y 7.2.y 7.3.y] alpha: honor force_successful_syscall_return()
+ again
+To: Matt Turner <mattst88@gmail.com>
+Cc: stable@vger.kernel.org, Richard Henderson <richard.henderson@linaro.org>, 
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The PMU sets PERF_PMU_CAP_NO_EXCLUDE, as the counters count in every
-mode. perf record then fails for unprivileged users: at the default
-perf_event_paranoid of 2, the tool sets exclude_kernel for them.
+Hi Matt,
 
-A ProfileMe sample says which mode the profiled instruction ran in, so
-the excluded samples can be dropped, as AMD IBS does with swfilt. Do
-that for ProfileMe events, counting PALmode as kernel, and ignore
-exclude_hv, as there is no hypervisor. A sample that falls back to the
-interrupted PC is dropped if either its PC or the profiled instruction
-is in an excluded mode. Aggregate events cannot tell, so event_init
-now rejects their exclude bits itself, along with exclude_idle,
-exclude_guest and exclude_host for all events.
+On Fri, Nov 6, 2026 at 12:39=E2=80=AFAM Matt Turner <mattst88@gmail.com> wr=
+ote:
+>
+> This fix is for 7.1.y, 7.2.y and 7.3.y only.  Mainline is not affected
+> since commit 83bd31c2840b ("alpha: enable GENERIC_ENTRY") in v7.4-rc1,
+> which replaced the saved-r0 check with a flag in thread_info.  That
+> conversion is far too large for stable, so this patch fixes the old
+> entry code instead.
+>
+> Syscalls that return data rather than a status, such as PTRACE_PEEKUSR,
+> PTRACE_PEEKTEXT/PEEKDATA, osf_sigprocmask and shmat, call
+> force_successful_syscall_return() so that a result with the top bit set
+> is not mistaken for an error.  On alpha that clears the saved r0, and
+> $syscall_error and $strace_error used to check for this and take the
+> success path.
+>
+> Commit 55b22075f784 ("alpha: add support for SECCOMP and
+> SECCOMP_FILTER") moved the restart syscall number to r2 and dropped both
+> checks, so any negative result now comes back to userspace as an
+> error with a3 set.  PTRACE_PEEKUSR of a register holding -1 fails with
+> EPERM, which makes sandbox abort when it traces static binaries during
+> Gentoo package builds, and PTRACE_PEEKUSR of a register holding
+> 0xffffffffffffe000 fails with errno 8192, which breaks unwinding of a
+> ptrace-stopped thread in elfutils (run-backtrace-native.sh).
+>
+> Restore the checks on both exit paths.  On the traced path the success
+> path also has to stop falling through into
+> SYSCALL_SKIP_RETURN_RESTART_GATE, which is meant for skipped syscalls
+> and would turn a forced-success result of -1 into ENOSYS.
+>
+> Link: https://bugs.gentoo.org/985765
+> Fixes: 55b22075f784 ("alpha: add support for SECCOMP and SECCOMP_FILTER")
+> Assisted-by: Claude:claude-opus-5-5
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
+> ---
+> This is a stable-only fix for 7.1.y, 7.2.y and 7.3.y; it applies to all
+> three (with a 16-line offset on 7.1.y and 7.2.y).  Mainline fixed the
+> same problem differently by switching alpha to GENERIC_ENTRY in v7.4-rc1,
+> which is too large to backport.
+> ---
+>  arch/alpha/kernel/entry.S | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+>
+> diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
+> index 9f2608de2544..fe88cd598492 100644
+> --- a/arch/alpha/kernel/entry.S
+> +++ b/arch/alpha/kernel/entry.S
+> @@ -603,6 +603,14 @@ ret_to_kernel:
+>
+>         .align 3
+>  $syscall_error:
+> +       /*
+> +        * force_successful_syscall_return() zeroes the saved r0 (the
+> +        * syscall number): the negative return value is data, not an
+> +        * error number.
+> +        */
+> +       ldq     $18, 0($sp)
+> +       beq     $18, $ret_success
+> +
+>          /* Restart syscall nr comes from saved r2 (preserved even if r0 =
+overwritten). */
+>         ldq     $18, 16($sp)    /* old syscall nr for restart */
+>
+> @@ -700,9 +708,11 @@ ret_from_straced:
+>  $strace_success:
+>         stq     $31, 72($sp)            /* a3=3D0 =3D> no error */
+>         stq     $0, 0($sp)              /* save return value */
+> +       br      $strace_leave
+>
+>  $strace_skip_call:
+>         SYSCALL_SKIP_RETURN_RESTART_GATE
+> +$strace_leave:
+>         DO_SWITCH_STACK
+>         jsr     $26, syscall_trace_leave
+>         UNDO_SWITCH_STACK
+> @@ -710,6 +720,10 @@ $strace_skip_call:
+>
+>         .align  3
+>  $strace_error:
+> +       /* See $syscall_error. */
+> +       ldq     $18, 0($sp)
+> +       beq     $18, $strace_success
+> +
+>         ldq     $18, 16($sp)    /* restart syscall nr */
+>         ldq     $19, 72($sp)    /* .. and this a3 */
+>
+>
+> ---
+> base-commit: f2c53ea949c5048f96b3dbb5a5ee7131ce4ff2de
+> change-id: 20261105-alpha-force-success-fix-6df76c50033a
+>
+> Best regards,
+> --
+> Matt Turner <mattst88@gmail.com>
+>
 
-The event count, and what PCTR1 counted during a window, still include
-the excluded modes.
+Built and boot-tested on v7.1, v7.2 and v7.3 using Alpha QEMU
+with stock Clipper PALcode, with one and four CPUs.
 
-Suggested-by: Ian Rogers <irogers@google.com>
-Assisted-by: Claude:claude-opus-5-5
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+All 56 raw r0/a3 checks passed with the patch, covering traced
+and untraced ptrace PEEK returns, including -1 and -8192,
+other forced-success returns, and normal success/error cases.
+Unpatched controls reproduced 32 failures on each release.
+
 Tested-by: Magnus Lindholm <linmag7@gmail.com>
-Signed-off-by: Matt Turner <mattst88@gmail.com>
----
- arch/alpha/kernel/perf_event.c | 47 ++++++++++++++++++++++++++++++++++--------
- 1 file changed, 38 insertions(+), 9 deletions(-)
-
-diff --git a/arch/alpha/kernel/perf_event.c b/arch/alpha/kernel/perf_event.c
-index aa6ec2161ec4..58d132be8d0e 100644
---- a/arch/alpha/kernel/perf_event.c
-+++ b/arch/alpha/kernel/perf_event.c
-@@ -844,6 +844,18 @@ static int __hw_perf_event_init(struct perf_event *event)
- 		return -EINVAL;
- 	hwc->flags = profileme ? ALPHA_PERF_FLAG_PROFILEME : 0;
- 
-+	/*
-+	 * The counters count in every mode, but ProfileMe samples say which
-+	 * mode the profiled instruction ran in, so those that are excluded can
-+	 * be dropped. PALmode counts as kernel, and exclude_hv is ignored, as
-+	 * there is no hypervisor.
-+	 */
-+	if (attr->exclude_idle || attr->exclude_guest || attr->exclude_host)
-+		return -EINVAL;
-+	if (!profileme &&
-+	    (attr->exclude_user || attr->exclude_kernel || attr->exclude_hv))
-+		return -EINVAL;
-+
- 	if (attr->config1 & ~ALPHA_PERF_CONFIG1_FILTERS)
- 		return -EINVAL;
- 	if (attr->config1 && !profileme)
-@@ -995,7 +1007,6 @@ static struct pmu pmu = {
- 	.stop		= alpha_pmu_stop,
- 	.read		= alpha_pmu_read,
- 	.attr_groups	= ev67_attr_groups,
--	.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
- };
- 
- 
-@@ -1151,6 +1162,24 @@ static u64 alpha_profileme_status(unsigned long i_stat,
- 	return status;
- }
- 
-+/*
-+ * Whether exclude_user or exclude_kernel rules out a sample of the profiled
-+ * instruction at pmpc, reported at pc. A PALmode PMPC counts as kernel. The
-+ * two differ only when the sample falls back to the interrupted PC, and
-+ * such a sample is then dropped if either mode is excluded.
-+ */
-+static bool alpha_profileme_excluded(struct perf_event *event,
-+				     unsigned long pmpc, unsigned long pc)
-+{
-+	bool pm_user = !(pmpc & EV67_PMPC_PAL) &&
-+		       (pmpc & EV67_PMPC_PC_MASK) < TASK_SIZE;
-+	bool user = pc < TASK_SIZE;
-+
-+	if (event->attr.exclude_user && (pm_user || user))
-+		return true;
-+	return event->attr.exclude_kernel && !(pm_user && user);
-+}
-+
- /* What the memory instruction at pc does, or PERF_MEM_OP_NA. */
- static u64 alpha_profileme_mem_op(unsigned long pc)
- {
-@@ -1261,14 +1290,6 @@ static void alpha_perf_event_profileme(struct perf_event *event,
- 		local64_add(ovr, &hwc->period_left);
- 	}
- 
--	/* A dropped sample still counts, for throttling and frequency mode. */
--	if ((alpha_profileme_status(i_stat, pctr_ctl, pmpc) & hwc->config) !=
--	    hwc->config) {
--		if (alpha_perf_event_set_period(event, hwc, 0))
--			perf_event_account_interrupt(event);
--		return;
--	}
--
- 	/*
- 	 * Attribute the sample to the profiled instruction rather than to
- 	 * wherever the interrupt landed. perf takes the sample's mode,
-@@ -1313,6 +1334,14 @@ static void alpha_perf_event_profileme(struct perf_event *event,
- 		memset(pm_regs, 0, sizeof(*pm_regs));
- 	}
- 
-+	/* A dropped sample still counts, for throttling and frequency mode. */
-+	if ((alpha_profileme_status(i_stat, pctr_ctl, pmpc) & hwc->config) !=
-+	    hwc->config || alpha_profileme_excluded(event, pmpc, pc)) {
-+		if (alpha_perf_event_set_period(event, hwc, 0))
-+			perf_event_account_interrupt(event);
-+		return;
-+	}
-+
- 	perf_sample_data_init(&data, 0, hwc->last_period);
- 	if (pc_only)
- 		alpha_profileme_drop_regs(event, &data, PERF_SAMPLE_REGS_USER |
-
--- 
-2.55.0
-
