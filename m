@@ -1,101 +1,108 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.179
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794276349;
-	b=haASysTGz2XHrsrvSa7Mh8UEb75ke9FyPaW0HTV3HXKab7co26O1XM/xfzfU8o840oMk
-	 S5QBKt8x2/ksve+MnhY5XnYWYGyXB1Tf6verNC9XHAJAJaDN82J0cA8RyQ0XTEXn6dN09
-	 jDpfAcka8vPWG1hqx0IKb3XrSl7dEoHElkYC0rMbNpV3WAeGc+g5IuMGTYpIeFOHecCp5
-	 DDoOFiTq6cDu+DxomfGPk86N+5ay9RLMQUFB4y+nzc1GEc7xoyfmIHVoLffgHZo9KvY4u
-	 sblKKSJn80behPvnJXsQ2MvPtrU7hqdgL3XlERvVHiYJcM0pvyx3XR3UHQxl8n6Ivdg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794276349;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.129.124
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794304784;
+	b=kxXMJ/vD3GHC/LS8zEf4/H7rK3rppnRORLCLXUb84tIIKkPJveTcmvXbm9acj4V336Xn
+	 zXhMRUnPvTSp3ZAoVv5jQtv0XTCVvAq94LuSc103A+PjrZtzE3H78BIEFydqESSP1A0vP
+	 2Vcr9Mc1AQUo2l64m6fSDgdw9Sny0t2lRd3XsGg3rS2vbSg2IEyh3R/Z49sKBWGLE8FJ3
+	 VIw7eV9adaysSPA8jbKYEPY7MlcMtfCwVLPnQrrgur+kbQs9C78c2x/keGIHwPaMgYVvR
+	 SOqmPgdOMPqQ5kkqZehfWJHuMgfbj0nIw8SPgvRR3pd2wsKNqxstKDwMM7p/O5C3FhA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794304784;
+	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
+	 X-Mimecast-MFC-AGG-ID:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=rvBtJIxhWUVb0UP6eLGnrGtj2/MrbT/J0MltdyjUmf4=;
-	b=ju9XhibG8OHeYCt44JzuSTHRuLC8at6EKYNc6Ns9+h2YJyr89UJ4xoI5mpGYgD+le8fj
-	 YzPEs8PfZNJfXZ8E2f4isoFfRieAugA9fQEJX7IcBrWmOgvFXpGJCOQVIe1IZSH2KWzMz
-	 YgCRQtOfMgruMGKjpfvztTk2mP04nv1rNimJLK7dc6t/hwbgqY+nng2qxokXNnJbjBRoK
-	 /+i/r1JxM349PpVutA6Fy72oWpiOLklRX9AGQ23bal31+fn4ts8phD4AIjYqmlwlWyIWV
-	 gueB6tiFhdaLFW9BaLeJIzW4utE/TRkLQUYH3GV8CrPO4A2y/69MsKlRql0ps+gzP8w==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tdDn4sPz;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.179
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 X-Received:Received:Message-ID:Date:MIME-Version:User-Agent:Subject:
+	 To:Cc:References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=wJOySXG09dMXLqdSSIWuOhORrXWnSA3N/YtRXqebW2s=;
+	b=dS609oZwHgIhq95Jvw5UbkteyXm/ZWtowKfcXcT5wbgB4wr0uyDViLR0Ow5Llt854Lwp
+	 oB/brRzUF6biM+rDpxhy5XWjDvFTWZogETHzjLNP1UePJm+amtCZ6gxxqUCSO0GNKMkog
+	 BJlD4oPlurT8CcEJUWVQOWw2lSvJlL1FaAaR9BszoHu/hAgKefnDl0P+21nVaeulMvEBD
+	 F6GHfaMLkPPThuMcobyipveVNK6GxiKT++iZKSiFQDxhqVs9cRvF2EnItKFIYpV6aUrxW
+	 G8Z53RDIbh+ZmbBz9pyL8lxRQJ+Xw4giNCC5xvtPKGhzckGvnyHdIYDcpDdLJ5eV+2g==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=redhat.com;
+	spf=pass smtp.mailfrom=redhat.com;
+	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=Sr8AcXcQ;
+	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=google header.b=pwVcifKi;
+	arc=none smtp.remote-ip=170.10.129.124
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 357C2606A31C
-	for <linux-alpha@vger.kernel.org>; Tue, 10 Nov 2026 02:05:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 357C2606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31298606A331
+	for <linux-alpha@vger.kernel.org>; Tue, 10 Nov 2026 09:59:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 31298606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=tdDn4sPz
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3ae0a5c1715so2018381fa.1
-        for <linux-alpha@vger.kernel.org>; Mon, 09 Nov 2026 18:05:48 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794276347; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Azuxtx9w0SPFpaQCSHM65syE7KPP8TejOOZOm7ZDI7M9bCz4KyGg4XTcP+RJN2//K5
-         PMo9gwI9x5EMbWruk7/yLXZLHo8qcPn/Z4zwUOJWYCihR0iL39sSTvr5Nn2b3lyU3oOb
-         D9+HtBqbufp0R3rREFpgAb1dyuKMR59kwbmiBQkQ0yLOZQXTSPulMn1QxphfcIUxJodD
-         anXYiGgOb53SadBemxhy7hBkeGC4EXEo+Z7K+OybSASLVL1rMsAvAuMZWalX7YxN7VBQ
-         oM4AvV5PtQBknQaLk00W/ES5/z6Z9a1hnxFEHmDwLl2bU7yjWiEc9IeTu9alu1EXHrBe
-         nBGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=rvBtJIxhWUVb0UP6eLGnrGtj2/MrbT/J0MltdyjUmf4=;
-        fh=jVxzExnx8Q8hVAdlb26R1MEHK5rPFehiNLa6u4TyyFU=;
-        b=aP/rCvirB21Va96eFoNm4BUN6f4FES/bNPCgUeDLYi2EBb86Z6pj2GCL2rULQWXOlg
-         bHRmcTNTUgx9xTJBT7mpQzGp6cgCctAHlJbSvFE0SqCNHtsjUP8OdLgSTHvWM1WInp8p
-         SF4yv3ULwq1M4kGCj18vW+dkZUX7w/7VdD2XPe0p1XfvLGz8s7TrwOAEzblDkTYP3sV/
-         o2NycXBby206PKkmd1x6bzKEiOM4cRjZePlWhKocPyZl9W3t9CYofjEs2RQI7Q5Fek1K
-         +nO/v/IpAElAlPA5t0CylyDWCibsTAVj9wlUpdpeVRnCa+xmV3IsdO0C0FpvBDYOw+J9
-         wICA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=Sr8AcXcQ;
+	dkim=pass (2048-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=google header.b=pwVcifKi
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1794304782;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=wJOySXG09dMXLqdSSIWuOhORrXWnSA3N/YtRXqebW2s=;
+	b=Sr8AcXcQs/idA572AS4kHK5mkBfqbzDUhsVXooXETEkLQUhNdhAjrrhn1qTbuC+1RLV99Y
+	3t9yLwAtfBq1GB52cSdNh84FMArl5mXWzx0Qsvx8gDze9t56Fu08T5o0AUqJnET7cvToqF
+	KOJIb4WneTE/JXNiB/eY8Nt9kDXrIBo=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-563-hJUHoHr8OxuueJwXIVaRRQ-1; Tue, 10 Nov 2026 04:59:40 -0500
+X-MC-Unique: hJUHoHr8OxuueJwXIVaRRQ-1
+X-Mimecast-MFC-AGG-ID: hJUHoHr8OxuueJwXIVaRRQ_1794304780
+Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-48df02b91f9so1041708f8f.1
+        for <linux-alpha@vger.kernel.org>; Tue, 10 Nov 2026 01:59:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794276347; x=1794881147; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=rvBtJIxhWUVb0UP6eLGnrGtj2/MrbT/J0MltdyjUmf4=;
-        b=tdDn4sPz+qE4U3fnx0xZx3mtokkTI2dZkE5ZSClQ+Gl4tiacu/wnJJrvejDCXPlGHs
-         oQ2BfLCA0G7CK0YrVZAsXZ9nxYNUUuRrqD1nypJBMB/JFyQaT1BCoqJnY2+e5KZ+bJ9p
-         q6/EypUVz42tB6F7U4UftfDvco3E1M029FTpNzFiXYOJo9x3zD/cZF/Y9CLH/7KWUyYz
-         XaqKvW8PTUcXLWeQ3yttCYuwD6L/pMdgiUdvS7Mttfr97m+jRhvDgxD62gQAIXBQO5fu
-         Spnae0MCiTw9NMhIouThLRFY1G3jHATu63+Q3dAYD36+tckN1yzyk8GOf4rVVWMq5Sd2
-         QNCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794276347; x=1794881147;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=redhat.com; s=google; t=1794304779; x=1794909579; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=rvBtJIxhWUVb0UP6eLGnrGtj2/MrbT/J0MltdyjUmf4=;
-        b=ADHriLpQU+W9HJWqSvZ1DqSYRoszuzJ+sGOx59UKJbBQvrF/uhKmOD/b+TNNKxLMHA
-         nwsJV6VljW9XrEeVdPW9GPBfPOzwY0b+j7rsQ+Xh3taNaRkW1widB0ju5SAVC14zFQub
-         07G3dpyXyxErUIJgxoXJxPk4X5a0bRtxTjcRlVy/5fudyRGQlN0SwSbrWcA7cV3Yghhj
-         Toim+AR/z4Cbk/eF9PdwyEVm9mI77SmWQBm31sd4R1qdnobh5/F1v1WMolOHel/O6nlJ
-         ysGqPqK3yt/ze7jum2p4IMTk5bNpoyKAd5ij2pbFw3DWFN2i88FlH0aaFzL3jfxcIkFu
-         zybA==
-X-Forwarded-Encrypted: i=1; AL+hErFe1E57nDi+toH4g0uxWsKwotGTzmX+y38XqmMiWkgVoKHZ3pUHAIk7Ws3/lVDEuiA4xbag5QG6SHoy3Q==@vger.kernel.org
-X-Gm-Message-State: APuU4Z9YBYeGUmLViQPLL7t+XwRmuk5qruOgMsS5ljCSTQnsaPtm6hnu
-	81sfY+UfXYhg4RdVit0JlK4j/WaO16VJkDjDJyd3Obosn5P1PeDjE34ZVVDSGFDhSDFdZ+c12su
-	1/BrYGbThlvxhzu5j6PiZiJCipSMHFOM=
-X-Gm-Gg: AYBFou2McKT9eQpysMz4ZDB3UuwUAXARn1Mot4H46ZKwz3buF6Nrrx7uZK/KCJNZOvf
-	QMd3J4L8n8rIKM6bCXMvwOdqPPikqosWWowNqJxSMn6ANHPEjFJFtkPkxZ+KM+TxS1DD5AaXS7c
-	ZCa2AvXvRKrSuY55dSi1RJn2en4mz9vZ8xwwLI0BiXsJBC3mhnhoDFkWgHt12UPL0sLMMaCr0Lt
-	jtUf0z3ohuvWLIyMZBio7pX/elLfuzOuKlmu867acdT3jf8bbz4hBLEf6Ia8nGELu2HRc7XO9p8
-	1Byp79mxFo1A+tgfb3ha1v6Cv0jw2XG4WRWDNoIDWgDOX/PVCeSgWzSvNDA6uSCH+mWbZkToFDZ
-	+vNs8grTuLufKZro6TG3cYS94jUklFLWAftVODJirZqQQJMjVIZEDg1aOzgFVuk8ueLzwzGvZj4
-	KvqD+ivwAc9PxSXGPebEtgHm9b6ziUrruKVBEYugUiBsQNOT1Y/Ns6
-X-Received: by 2002:a2e:a98e:0:b0:3a9:7c85:a16d with SMTP id
- 38308e7fff4ca-3ae090e40b9mr2048221fa.5.1794276347097; Mon, 09 Nov 2026
- 18:05:47 -0800 (PST)
+        bh=wJOySXG09dMXLqdSSIWuOhORrXWnSA3N/YtRXqebW2s=;
+        b=pwVcifKi5R717WwYht+A5NQ+1KUnmZZJM7aqfetEvTH5Jax/idjFuxSMvglmNksLc5
+         qZ+o51ofJXR3ufizsYt/C7nPTmwEl5oCWtcWbEN3A9LXFI6DVFOvlOPwFR+mBvniQya5
+         FSiS4c+4lqeC28O3zL0RAFbiutJU+k9EgRX+J+gY1GUIvC3QKDKyqVeLeEAmNFCPMhR1
+         f19LqChJ2gvWqT+L73lAiEV9pwoWUh17PA45v/hsBSZWsTlzckDM2mCjzTvh0Q8mAEBi
+         /Pqz1/V3OfyDAW0OxAoPyHcnvGqyWjD5dxd4HBiISoxV/cUcDU8GJ9VIricHnmaHp0nW
+         bIfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794304779; x=1794909579;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=wJOySXG09dMXLqdSSIWuOhORrXWnSA3N/YtRXqebW2s=;
+        b=SBmcCtXL9T52j6c7cIunjSdBGM1SrVXEOv2skYGZXLrF/7PA9Daf0VErIPCMbRt2bC
+         uHkprvBRazhPrrZPps/Sf2MAS1uNweB1Bk9bPYnELzCIiym61CdMvZKeXaM2NN2289h2
+         TXoMgsg7gGz9GXF/ze5eu09047iMHNzzCYVaSSKnIlTVWpKr13WsEcJ7B7b8tK3Dyr/L
+         Vh82SuJUwQRbnhXylx3Vl1g7P0BoSy2j6MtO5PDGk9SQbMcHvzgiL9noOiY4l8lfbfG0
+         F0fZvFQk0a3LnLG4I3TvcAVH0rSaiYN8OrbIdugWrCebMWgVdoxY4MZ7zDUvcXkB2AOX
+         xsdA==
+X-Forwarded-Encrypted: i=1; AL+hErFCzf1Y/NJHizS+hEhtvs8QqvGn7dzX725WZq8FJnaD5x75hNjdnwlsZp3o5wqr6/t3oit1rvLRw7YjCA==@vger.kernel.org
+X-Gm-Message-State: APuU4Z+5883FhvAuemwaXFGlqardNgMlBG6Kn3m+9sRNi1jJlpD5G74N
+	sXa5PPOG/yNu+hPm3NV+lSik1zxfvz1BqkCrZflnyOK4cq5bWKeCHUwRH9MhCtr0aMSDHn1b7gc
+	IO+XYhd2Mr12/S1nUke95Ky34hjMTlh5GJKtGXTSoZXboszTAllEIRenjPRDVJFy2
+X-Gm-Gg: AYBFou3lsMgMlQFkxjp1JLFFPG3EtK6eT258Je+w7ddI5KDASAzWt8sM+AfVdu/cint
+	ktEv7xS2B2qX1aZBbCKNvlVG8U9cISbtS6liW/ixpOeBAj/bTBpy4eRc/x3p7iaxSF4vyiXcI5p
+	bjWuNZ+pHAPWNLuuCYqWrSc7XINTENkZ5nqxDYOx00ly6p+0bvWUWvg8lfCeJpU6oJs9npMdSNE
+	07s1uCCCsjA7uDg0sSW6zBQEq6jchMVosvQtMoze66WXybELEsPSqKO9dgcY3dwgnxwnhAlbVRn
+	aJ2WCebZZ+GEBIlSFC0SsTpT70xbNWjpWTDWWq3nIHK/LayLzqxV+BCwraskJiI8N4VJR+3TBJu
+	niaqUiWzZ6nnXraRcZHv9Z2odc+pvvzzDyDOmYJNGY0zleWJwoZSLHaiAaOymqQVUZJhJ1jB+a9
+	FABrMWA9TwBYc+gm1XzYRnKdYel55qYwo2OJqQYaycLP4e
+X-Received: by 2002:a05:600c:4e0d:b0:4ba:cd:f45a with SMTP id 5b1f17b1804b1-4ba0234ee12mr34932575e9.14.1794304779695;
+        Tue, 10 Nov 2026 01:59:39 -0800 (PST)
+X-Received: by 2002:a05:600c:4e0d:b0:4ba:cd:f45a with SMTP id 5b1f17b1804b1-4ba0234ee12mr34932105e9.14.1794304779321;
+        Tue, 10 Nov 2026 01:59:39 -0800 (PST)
+Received: from [192.168.88.30] (ip231-128-192-82.pool-bba.aruba.it. [82.192.128.231])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4ba022fbf75sm44329265e9.0.2026.11.10.01.59.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Nov 2026 01:59:38 -0800 (PST)
+Message-ID: <c3e7afde-65ac-48e2-a89b-9fc1ad42aa87@redhat.com>
+Date: Tue, 10 Nov 2026 10:59:36 +0100
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -105,82 +112,56 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <cover.1794040317.git.linmag7@gmail.com> <547ee20a68b3f2d848d451c69ad023c0361f41ee.1794040317.git.linmag7@gmail.com>
-In-Reply-To: <547ee20a68b3f2d848d451c69ad023c0361f41ee.1794040317.git.linmag7@gmail.com>
-From: Matt Turner <mattst88@gmail.com>
-Date: Mon, 9 Nov 2026 21:05:34 -0500
-X-Gm-Features: AclHuK_rqFRFpVgh6MA1aE6J-sPjlpj-Y4wuItG9aVYgITuJ8lbM2pcP42HV0Y0
-Message-ID: <CAEdQ38FkLVgK2rhvqL9WDxvGkSu455ETYWvd0zVw+PML_5Cqgg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] alpha/perf: Account for time spent handling PMU interrupts
-To: Magnus Lindholm <linmag7@gmail.com>
-Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next 2/3] net: add SO_PASSCRED_THREAD to get a
+ thread-specific SCM_CREDENTIALS
+To: Andrew Halaney <andrew@amutable.com>,
+ Kuniyuki Iwashima <kuniyu@google.com>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>,
+ Jakub Kicinski <kuba@kernel.org>, Simon Horman <horms@kernel.org>,
+ Shuah Khan <shuah@kernel.org>, Christian Brauner <brauner@kernel.org>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Helge Deller <deller@gmx.de>, Andreas Larsson <andreas@gaisler.com>,
+ Willem de Bruijn <willemb@google.com>, Arnd Bergmann <arnd@arndb.de>
+Cc: netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-arch@vger.kernel.org
+References: <20261102-halaney-scm-creds-thread-v1-0-0b4d75dbf35f@amutable.com>
+ <20261102-halaney-scm-creds-thread-v1-2-0b4d75dbf35f@amutable.com>
+Content-Language: en-US
+From: Paolo Abeni <pabeni@redhat.com>
+In-Reply-To: <20261102-halaney-scm-creds-thread-v1-2-0b4d75dbf35f@amutable.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, Nov 7, 2026 at 4:19=E2=80=AFAM Magnus Lindholm <linmag7@gmail.com> =
-wrote:
-> Alpha does not report PMU interrupt duration to perf, preventing its
-> adaptive throttling from reducing an excessively costly sampling rate.
+On 11/3/26 00:12, Andrew Halaney wrote:
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index e7405be8941f..6b443bd44581 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -1586,6 +1586,13 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
+>   			ret = -EOPNOTSUPP;
+>   		break;
+>   
+> +	case SO_PASSCRED_THREAD:
+> +		if (sk_is_unix(sk))
+> +			sk->sk_scm_credentials_thread = valbool;
+> +		else
+> +			ret = -EOPNOTSUPP;
+> +		break;
 
-Nice find, and thanks for the thorough testing write-up. The logic looks
-right to me: time_init() runs before early initcalls, and since it zeroes
-est_cycle_freq when the HWRPB value is within tolerance, the
-"est_cycle_freq ? : hwrpb->cycle_freq" idiom picks the same frequency it
-did. A few small things below.
+AF_UNIX supports custom setsockopt since commit
+de1c489b57c11fabc766aeb6777ed5b0038fa3bb
 
-It would be worth adding a sentence on the symptom from the cover letter
-(short sampling periods leave the machine unresponsive with RCU
-grace-period kthread starvation reports) so the commit stands on its own.
+I think it would be better to move add the af unix specific ones
+into net/unix/af_unix.c.
 
-> +#include <linux/math64.h>
+But that is IMHO more suited for a follow-up; the series LGTM,
+thanks.
 
-On 64-bit, div64_u64() is just a plain division, so this include only
-serves that one call. See below for an alternative that drops it.
+Paolo
 
-> +extern unsigned long est_cycle_freq;
-
-This is already declared in arch/alpha/kernel/proto.h. Please
-#include "proto.h" instead, like the rest of arch/alpha/kernel does.
-
-> +static unsigned long pmu_cycle_freq __read_mostly;
-
-Since this is only written from an early_initcall, __ro_after_init seems
-a better fit.
-
-> +     u32 start =3D get_cycles();
-> +     u32 cycles;
-> +
-> +     alpha_perf_event_irq_inner(la_ptr, regs);
-> +     /* Unsigned subtraction handles a wrap of the low 32-bit counter. *=
-/
-> +     cycles =3D (u32)get_cycles() - start;
-
-cycles_t is already a 32-bit unsigned int on Alpha, so the cast isn't
-needed. Declaring these as cycles_t would read a bit more naturally.
-
-> +     if (likely(pmu_cycle_freq))
-> +             perf_sample_event_took(div64_u64((u64)cycles * NSEC_PER_SEC=
-,
-> +                                              pmu_cycle_freq));
-
-Alpha has no integer divide instruction, so this compiles to a __divqu
-millicode call on every PMU interrupt. It's small next to the handler
-cost you measured, but it's easy to avoid: compute a mult/shift pair
-once at init with clocks_calc_mult_shift() and convert with
-mul_u64_u32_shr(cycles, mult, shift) here.
-
-> +     /* Match the calibrated frequency selected by time_init(). */
-> +     pmu_cycle_freq =3D est_cycle_freq ? est_cycle_freq : hwrpb->cycle_f=
-req;
-
-Not for this patch, but this is now the second copy of that selection
-(show_cpuinfo() has the other). Having time_init() store the frequency
-it chose in a global would let both just read it. Fine as a follow-up.
-
-With the proto.h and cast nits fixed (the rest at your discretion),
-
-Reviewed-by <mattst88@gmail.com>
-
-Thanks,
-Matt
