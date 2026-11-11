@@ -1,100 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.53
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794382814;
-	b=F003HVd4JNi19Eg1J6cUDQwrn9WehsYJybU9fXzRHzNNL9p2fvl+TsJ2ngItHIDQGpPC
-	 Wh34ot6mTFy3H2frscvbkPUi7OEeMY2gB2GPja5ixq2bLhzNJFTdSMPoEa02c5kOvVM0C
-	 dNQO4Oonyvme9c3iloDd73dweJgpCSCA+tbNJHHe4MEcS8Yb0mUtqmgq5OnBRt0aa9XoW
-	 aeECVyv4zuq1KtZ/umQ2Ujc1TN9Svn8zfrKVDlDqk9JBhjzkArxOa4U5uzb1qQwaxAdY7
-	 D2Yflu5iypesQrCcPSO6yk1yqcV2nCy7FUZW0/KooW4bU7LxReA5sTPNOL7Clb9luqg==
+	t=1794382999;
+	b=RbETooPOg3IA6cWkNHj065bpdw0uwfaJkSB3gTLFVWmNfVRQzAk1aXRTcJ5KO4aMhzZd
+	 RRUNXGjDI1co46mLZh9tq1hW+/8tyVGpMT/dcKmhQ6nk472KLN/WI7uc0sglpUjrB/wJ2
+	 g9pv6DInS95n9U7cD6unhvGThHJCSonyxACjQAYrCSThknNWsYmX9/Hgk7OFrv8UV/8mz
+	 NEaz+1CeBdLNoncy0eUW8nsoTknEXGMGnju0axKLRv8CoEdKGvSSEGppod81cxB30Qrni
+	 UrgubXP6CdY+Nm3c3ES0gUj4AyxeTMRO1abFnW40R7iI28S8k1fE4SFtA2q++vUHGmg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794382814;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794382999;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
 	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
 	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=UE+ZO+LDbUQkJMK6amSVRY89ivr6MWd0ox+os4xr0eo=;
-	b=N9om+EosqiMU5zF3JXJekXu2zhru51AAwwszjqmrShAX0SjFdFgzO2zACupXKpHHQya5
-	 Zar9kKlkJfJnDhbJjJyjF1JnO2Wqjwj24QVpgxU1hzYCPWDIvLDrwNO+jaI/IROnx5mZ/
-	 osX//yf1yYbjlr1shu2h2BAELb+GvaCHAFWXj8c9xUFJBPiZgxPJe8A30n2BK/sPgT5G7
-	 ypeZ8XMErsr6xAy7KrW3FXueTHL0bIE0DPEuOzHEV+GMuzOzlrdVMwVMfVJMAEulVA12a
-	 qwrgDmPltKE4sIMBxHS/TCODiyJT9h5EU5nASfqcL+/yZ05hmnnwYPHJv+wu+P7NiQw==
+	bh=27U7oUdIa14bzFyO20wq2H7dyWDMznLD1QtfCXJzapQ=;
+	b=1S/pe3xG0JEhXKURmn0+SCeQC+uSN+Ux8SregrZonoDlcsQsAfO4tVOTuQRhfYNfOikM
+	 PldAEpJ949B3uhimLo+VXC08x692kzHNehCHsOwLHAkjJYwb2kHUlYrOWlh8ETS0kNHLr
+	 p9vOmMrXbSSFxvy2H6QP68l0D9ZP8IMfmL1zUQ/876+k8wryxcyncxuuLn4fE83XFDdmc
+	 f1BgiKNi559xOEggRQJqS++cntS4uwd5YprIBimyVjbSMoJIbyuUfN1hBniMVzgIi4VZA
+	 pvg4hHeBRYPzxx2+UAonHrcMXoQQCcWg8WIcQITCbT7ie/JhyrRpNE0CeSqawa3n+jw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VCD6QF64;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.48
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=h5NQKG5D;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.53
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C591C606A324
-	for <linux-alpha@vger.kernel.org>; Wed, 11 Nov 2026 07:40:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C591C606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 074EC606A330
+	for <linux-alpha@vger.kernel.org>; Wed, 11 Nov 2026 07:43:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 074EC606A330
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VCD6QF64
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6b757029223so1830771a12.0
-        for <linux-alpha@vger.kernel.org>; Tue, 10 Nov 2026 23:40:13 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794382812; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=h5NQKG5D
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6b757029223so1832834a12.0
+        for <linux-alpha@vger.kernel.org>; Tue, 10 Nov 2026 23:43:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794382997; cv=none;
         d=google.com; s=arc-20260327;
-        b=bPswj1XigDjZHrecRpYjaeKejpX/+gTVUXRd40eM27eRa13q5ifG0VBbFlaARvq7+V
-         WMJLQJD3dD5N9jmoVD9oVNTCVOUOO5/PciKiI4ye/SHCiVTDHQeZkO2xjSrj1AWqlnKq
-         M/mj9n4KvOd1+fa+cVV1qkqTFlcIlxYanaOSNQxEJQ0e57/Dbdhopxt5/ItlYdJhqF0M
-         VWpteDBtgrw5xjhM52sMJgfTfTiVvJmcqLtESzm8dF28yeC0xbOH7G2Zzn0dLiM7JGQq
-         2mLgIatxsthKXl1tOgtamhrdPXUhVHuFknpEDAVwP7zBKxIDJjU7JXksYRrA6B6DHzJ+
-         pkwg==
+        b=Jh0E5ooqICkKLCa4nZ8hOn23xI9w2ARUsJmrgEioDxCnpr3QcOYqI9iFnP8bkQhtsR
+         bXtC9pqM8jDFJtfeJZfFN8F+d9OYtdhkHDT9y5VMi9LCYE/8Sro/3sA8AqpkQU2hlDWa
+         GyDTwHB3MuHTsoRRNdD3kHBfUBhPEirFMVjOFmyNW9WUCJBObbx5SFQ65jb8DjwBYFQl
+         tfm8l13IkdghUY7M538YUem/uBX+S+Pa6WJsxLOajSt0R7C4ofmMQW8E3TXmWPNaJLfY
+         jvEXOT9sc39/W+p8KC8ytcT6/zosUZ1B1DbZ2J9JlZA7cPbRW8phYVwrbpK/Hkg5SftE
+         fLkg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=UE+ZO+LDbUQkJMK6amSVRY89ivr6MWd0ox+os4xr0eo=;
-        fh=dzjrfAFb7j8qwwvjSWWZd2FRbsaA/9CWw9g3zUineYs=;
-        b=OU1JouE5ATyV2iSdnGBF7xptp9lNQve/VR9SDW3FOc7iK6I6ufR4PETS/PGW5ZGsta
-         0AojBDpvba8Z81F5Qw3sceHjoSOauw/J8P5kXv+kiptctMW/I8Q9mXVUNVTjKx+LiJjX
-         ai7daQmgDBwdxZ4Nr3VSoz69gnwbrRwK1dFSRrxq8O1TA5QptQweGiVaPKYLRAa1ta5c
-         2qmU3492yiGepSH0qhgK24SyqMwS7qGBIfh2VURIcKoP1FqgTwj5L5ifu6WeV6BSjOIl
-         O6DI2YaG1KM7ZITEJvKcuHTxUOqsp/M1RCAiLMZnsj3KM7r1FyCxy6bvlMOjwUrI4Dfo
-         8zHw==;
+        bh=27U7oUdIa14bzFyO20wq2H7dyWDMznLD1QtfCXJzapQ=;
+        fh=1QsC555eyNw7TKZj4/20wwBS9ePLgjYEe98jUPKJBaQ=;
+        b=Pww0yUb2VyyZTOhbBTLfPQBcTQzlwpfiTK2/tRYHzXzIlXByAuLMtBJferW+6z8RVn
+         4N9sR7tWYfsF7Z/do6aS5lT/0JA4gjcrYqevW439myii/hecvohXrLKsC+5FVvWmU9n0
+         WEvpwiX/5acsFuJN/2w1QLd9njBblsjDQK9+uYuKb6flKOk63p6NnxhE7NzXdbivkikk
+         NR4fbMI0Rsm171BTsF6nteyiiArvZaSs19q7KquhxiZMdp37vBUwHJx2gTQYlKFK2oUH
+         mvS9mmhLVKmtdQOZzqcw0EfzQWCr7fu08OFxTATU5xGsghDdWXpOqzYaIp05AesUwK38
+         +YNg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794382812; x=1794987612; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794382997; x=1794987797; darn=vger.kernel.org;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=UE+ZO+LDbUQkJMK6amSVRY89ivr6MWd0ox+os4xr0eo=;
-        b=VCD6QF64cq+6EajKVeH2KGvi/U5cBgOq2QaZUPujN9TUpScC8tW0bSWQt0oDUSy4JW
-         S6Z8D6nWlIJvYo0C12W4DfrOkGdol86fJwYUUTyy4O1KRs5ZZZUMVLH5TcN2PkElzTMC
-         CDPcO/9EjC2evHTSCepGDSbwuoSelf7KCGcOupsWhHmqIXstiHNkS+oNFTvRiDsE9USX
-         LiWsrb9RYjjdGp3t/FMvX1MXOCXDbkNCM98PDcj50ceTD5evbGSrKBzvVmJsknTflsiz
-         goYBb6lxDQzfivXfrbKsifTYJfLVgLYCutTWcyI9Jo7kHyPrf094IrOod562TSGGHij3
-         JFcg==
+        bh=27U7oUdIa14bzFyO20wq2H7dyWDMznLD1QtfCXJzapQ=;
+        b=h5NQKG5DsH5k0QdRiJVJ86KtbHIpBxOZtiNveHnZG/t4JAkAZl11gGqvbZh2gbx+CZ
+         U7R2l09uEN9Mz6txyG/VHZJvSvlNiFdQj+V+bgbOtkQgjiNZU0CA5FMY6smQ/+4XBAH3
+         TyiknHwqbS9a1ikRyqP2U11AjltnFdJ0aJiSYxxvbDIdddHQa9rv+KTy80xEhAMzl3C+
+         bIpY5WP4LhG5OSEIpLn1ynS3EgjFFWznVldcdS2uIAoKSyrP0PX27WalhA9H67xC1xsv
+         oVv9D9PpI4KM5wKfG/3AUYQbehBCy8YKKKaBfMQR6O76UfhYBDJ2qQ9F1ZaCwVdZpUw3
+         DTXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794382812; x=1794987612;
+        d=1e100.net; s=20260707; t=1794382997; x=1794987797;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=UE+ZO+LDbUQkJMK6amSVRY89ivr6MWd0ox+os4xr0eo=;
-        b=ZDdPyam0hhTSfIMKos0sgpGo5GtRC0USXZQTXOFMo9adagKlPHOwxYl2lTeGlYyehC
-         yck1aTbfB0KNX8g+fTBSy0K2qH9ww8cgt3VCIRsbQXvLMNHTbxrgF5A0Ezy5yOWuhKem
-         H/iC7fgQ01T5+e+/w6bfJKBCODVXj4WwrCiPBJqyFWxvacQSYJnBlHE9U1Uu9zfUIdDc
-         gfuhg7vUwWFgE27sAGpzimUi+JdDOpGxQUIAouuSI+rjxxcnmCyqt29Vm+JhLCdb0ea5
-         J02CxAMv10PUKqJKTR7W0/mOig6fuQyuHs7o/aMRdABX0f/dCOsOsXrlaAgHHdRS/FSV
-         90Qw==
-X-Forwarded-Encrypted: i=1; AL+hErEH0pBYCK5uv6KT3MZz1tvUCDCG/xFdnDZuigTcOB4dMRkXhtXcMzft2jO/7Y5YYYB18TWSSG19+OBV4g==@vger.kernel.org
-X-Gm-Message-State: APuU4Z+wbSW0V0M97nv+APyH6jv6gmfXd5ukQYqzaVueyCiOvODzFscw
-	1+B/KeJVeRxOF5dSK0TpqyZjIoOEUukPTHisodLPnFmQ3PDrxCmjSKhlihjbZ/6r1rnAxIUK7tm
-	lDSypxm88jkcYL7ZTXQsCIpAIJ822xW8=
-X-Gm-Gg: AYBFou0Zjza+qpOqbvjMQd6/Ok5QbLySmFDDpuOnQs39OxR5JEXgaRja6P+VAnsO1tE
-	eSwTp17MWH24XmM1JmaJS/0qtAuO92xb4z7lxdJGpMrf46BCwlQnjL+F8B0Pd5VA2m5mgSlAVeG
-	PaAXlnnqg4gkT9jQKjsdtMSsj2LIlAJwBAQrbfESXIWdQQmPKwDVPD4iAL00sXZYK6AreXqaN0I
-	FwECqHt6HYN5YvV72bt6+/YC/lpV0i4awoJpU/9BqVRbDD0a27xmMqkQPJkFmGCV8oCgi5zsxVJ
-	uzaVR+8y2V2tD40H7M7e//ksdFJvFuyOghHgNqBRlydsXFz0QsyzX14p1I1flw7dIxX1k98J4dq
-	q3oBRK+DieFUeATddRcHuknSky7TMIVPjUbto6+YAKLpe7yELXkpcPzY+wh2UlxYUuMcyaQ==
-X-Received: by 2002:a05:6402:a614:b0:6b4:2aa6:2bf7 with SMTP id
- 4fb4d7f45d1cf-6b7773fba00mr814626a12.17.1794382812113; Tue, 10 Nov 2026
- 23:40:12 -0800 (PST)
+        bh=27U7oUdIa14bzFyO20wq2H7dyWDMznLD1QtfCXJzapQ=;
+        b=hSmG1nTsquSWuT8I0A4OybNo3CzsfU/usHKnBsZyL6qdip8FuGED7OBH7NemDgtuvj
+         hJ/RrL67yp78cdHg21m2R27AkB3zH3FjD09X7UkP+JsegPg5mRHIS/0MoLGCiqeLGZI+
+         UNm6Uvh1nfcQS+Z2SnuhaSf2ZiG67KEt3d/BFVPiwrG+3Jz+SJnI/4SpqLGX9RLCgIu9
+         LZgd0Ow2Kf5V92wZR+pjSZYRMyFAA9oFnQlW/wNKdtqHxPTCc5K/M7tJNS6ZNklkuYXp
+         1yxXc7Q8AubSNIq1vqIvvMGq0VxKilAk4i+IghB3VYu4wnjrQPLQ1+TiVMoUf9cknXoZ
+         +d1w==
+X-Forwarded-Encrypted: i=1; AL+hErHU/WRpI7IbakAaVO49ZoOM40u8frugoZZp9p4dlO/WpUQFpxNq4orV4usY60ebq0cyig2DR5ZIqkNA6g==@vger.kernel.org
+X-Gm-Message-State: APuU4Z9Dt1AMQp9WWrHLJrIUV3y6/7YR8dsRCoKtDGF1I3nOqaB4Yf6c
+	TO09qjcibJLO8Fb2UuLtOw2VB7BvVzT/0QfKrLWoSg++RmKSykzxYU5XmNYOOkdDT6gZ/U1orfv
+	zuc9lFF29fzT3X50ZlTVx/fiQ0JirSGY=
+X-Gm-Gg: AYBFou0jmrI4ZK6Hyum2dY+k11ncSrZKXo+fj5px6I+mx3O+GU4lQFnSQfFsTO+DxEh
+	J1RaOv1dCOn8ijdSLnb5ziVEA/5dE2Q5LjvU4+cbOKLL/0GXddes+Hibd1osjFiWRl8JE/aIqDH
+	9jn5RJWYuWXN6YG/zFWAzPis3QDafYzBvaV1cm4ltMr3LWfZUajrS1ysZLBDiaFTHBfztUzyYkc
+	TmYYw0o5v1/+CmFgZtlmogYL4f9f3HpTwWn4Wg2gyM3OtW1ZhSM2KGZPSoFldT7xb0APr8LTSYD
+	vWVcGg05bJZdpJSNjYfjGJBny/g51yN47RslkDJnIi+9CNd5l+XuyojpmKp7OaGK7aDVpfiduvf
+	mNsRFwekMZg2Ah1VPHzxtkmn2CCK6TP5AvXErYH8Ey0HAgcV6fsWTgigtPS4Hpn7HOBG1WQ==
+X-Received: by 2002:aa7:c1c4:0:b0:6b5:90b9:e1f4 with SMTP id
+ 4fb4d7f45d1cf-6b7773edf4bmr819135a12.15.1794382997169; Tue, 10 Nov 2026
+ 23:43:17 -0800 (PST)
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -104,14 +104,13 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261105-tonyk-syscall_table-v9-0-8d1275885d9c@igalia.com> <20261105-tonyk-syscall_table-v9-10-8d1275885d9c@igalia.com>
-In-Reply-To: <20261105-tonyk-syscall_table-v9-10-8d1275885d9c@igalia.com>
+References: <20261105-tonyk-syscall_table-v9-0-8d1275885d9c@igalia.com> <20261105-tonyk-syscall_table-v9-11-8d1275885d9c@igalia.com>
+In-Reply-To: <20261105-tonyk-syscall_table-v9-11-8d1275885d9c@igalia.com>
 From: Magnus Lindholm <linmag7@gmail.com>
-Date: Wed, 11 Nov 2026 08:40:00 +0100
-X-Gm-Features: AclHuK-efo-IN8C0PeBM3H51GRM-qrC5WxHB8slQK0l-tYnt6GeST1OC-lb_0Yw
-Message-ID: <CA+=Fv5RNznnVyh4AM_ZTdwyK4iv-8TEO5Ejx0_81sf5CTeoGgw@mail.gmail.com>
-Subject: Re: [PATCH v9 10/15] alpha: Define entry point for
- set_mempolicy_home_node syscall
+Date: Wed, 11 Nov 2026 08:43:04 +0100
+X-Gm-Features: AclHuK-WWcZzAuRTugYoSHBXz8aDMS8vLzO87BtuVYEGxCZ10b0uUmgcqCUEPe8
+Message-ID: <CA+=Fv5Tm4-DV9KEKxO11ta84EvqigB-KDemhOML1hx9zoxx0cA@mail.gmail.com>
+Subject: Re: [PATCH v9 11/15] alpha: Remove alpha_ prefix from custom syscall entries
 To: =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
 Cc: Masami Hiramatsu <mhiramat@kernel.org>, Arnd Bergmanon <arnd@arndb.de>, 
 	Christian Brauner <brauner@kernel.org>, linux-kernel@vger.kernel.org, 
@@ -124,55 +123,117 @@ Content-Transfer-Encoding: quoted-printable
 
 Hi Andr=C3=A9
 
-On Thu, Nov 5, 2026 at 9:06=E2=80=AFPM Andr=C3=A9 Almeida <andrealmeid@igal=
+On Thu, Nov 5, 2026 at 9:26=E2=80=AFPM Andr=C3=A9 Almeida <andrealmeid@igal=
 ia.com> wrote:
 >
-> Instead of explicitly defining set_mempolicy_home_node as sys_ni_sycall i=
-n
-> the syscall table, define it as the real syscall entry point,
-> sys_set_mempolicy_home_node. As per commit fdb7d9b7acd0 ("alpha: remove
-> DISCONTIGMEM and NUMA"), alpha doesn't have NUMA support, so none of the
-> mempolicy sycalls will ever be compiled for alpha, resulting in the
-> COND_SYSCALL() fallback being used to result in the sys_ni_syscall.
+> Some architectures need special entry points for some syscalls (like
+> clone3). The current approach is, instead of having a special name like
+> arch_syscall, to name if as __syscall. This is enough to different the
+> common entry point to the architecture specific entry point.
 >
-> There's no function change here, but this step helps to unify the syscall
-> tables and create a common table to rule them all.
+> Change alpha special syscall entries to do the same. This makes easier to
+> join the syscall tables. Leave alpha_syscall_zero because this syscall on=
+ly
+> exists in alpha anyway.
 >
-> Acked-by: Magnus Lindholm <linmag7@gmail.com>
 > Signed-off-by: Andr=C3=A9 Almeida <andrealmeid@igalia.com>
 > ---
->  arch/alpha/kernel/syscalls/syscall.tbl | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Changes from v7:
+> - Fix __clone3 entry
+> ---
+>  arch/alpha/kernel/entry.S              | 8 ++++----
+>  arch/alpha/kernel/syscalls/syscall.tbl | 8 ++++----
+>  2 files changed, 8 insertions(+), 8 deletions(-)
 >
+> diff --git a/arch/alpha/kernel/entry.S b/arch/alpha/kernel/entry.S
+> index 790389a15c3c..25d05f45512d 100644
+> --- a/arch/alpha/kernel/entry.S
+> +++ b/arch/alpha/kernel/entry.S
+> @@ -729,9 +729,9 @@ ret_from_kernel_thread:
+>
+>  .macro fork_like name
+>         .align  4
+> -       .globl  alpha_\name
+> -       .ent    alpha_\name
+> -alpha_\name:
+> +       .globl  __sys_\name
+> +       .ent    __sys_\name
+> +__sys_\name:
+>         .prologue 0
+>         bsr     $1, do_switch_stack
+>         // NB: if anyone adds preemption, this block will need to be prot=
+ected
+> @@ -746,7 +746,7 @@ alpha_\name:
+>         ldq     $26, 56($sp)
+>         lda     $sp, SWITCH_STACK_SIZE($sp)
+>         ret
+> -.end   alpha_\name
+> +.end   __sys_\name
+>  .endm
+>
+>  fork_like fork
 > diff --git a/arch/alpha/kernel/syscalls/syscall.tbl b/arch/alpha/kernel/s=
 yscalls/syscall.tbl
-> index 52e3538cc7df..8fc4701a6328 100644
+> index 8fc4701a6328..59eb066a40bf 100644
 > --- a/arch/alpha/kernel/syscalls/syscall.tbl
 > +++ b/arch/alpha/kernel/syscalls/syscall.tbl
-> @@ -489,7 +489,7 @@
->  # 557 reserved for memfd_secret
->  558    common  process_mrelease                sys_process_mrelease
->  559    common  futex_waitv                     sys_futex_waitv
-> -560    common  set_mempolicy_home_node         sys_ni_syscall
-> +560    common  set_mempolicy_home_node         sys_set_mempolicy_home_no=
-de
->  561    common  cachestat                       sys_cachestat
->  562    common  fchmodat2                       sys_fchmodat2
->  563    common  map_shadow_stack                sys_map_shadow_stack
+> @@ -9,7 +9,7 @@
+>  #
+>  0      common  osf_syscall                     alpha_syscall_zero
+>  1      common  exit                            sys_exit
+> -2      common  fork                            alpha_fork
+> +2      common  fork                            __sys_fork
+>  3      common  read                            sys_read
+>  4      common  write                           sys_write
+>  5      common  osf_old_open                    sys_ni_syscall
+> @@ -72,7 +72,7 @@
+>  63     common  getpgrp                         sys_getpgrp
+>  64     common  getpagesize                     sys_getpagesize
+>  65     common  osf_mremap                      sys_ni_syscall
+> -66     common  vfork                           alpha_vfork
+> +66     common  vfork                           __sys_vfork
+>  67     common  stat                            sys_newstat
+>  68     common  lstat                           sys_newlstat
+>  69     common  osf_sbrk                        sys_ni_syscall
+> @@ -242,7 +242,7 @@
+>  309    common  get_kernel_syms                 sys_ni_syscall
+>  310    common  syslog                          sys_syslog
+>  311    common  reboot                          sys_reboot
+> -312    common  clone                           alpha_clone
+> +312    common  clone                           __sys_clone
+>  313    common  uselib                          sys_uselib
+>  314    common  mlock                           sys_mlock
+>  315    common  munlock                         sys_munlock
+> @@ -474,7 +474,7 @@
+>  542    common  fsmount                         sys_fsmount
+>  543    common  fspick                          sys_fspick
+>  544    common  pidfd_open                      sys_pidfd_open
+> -545    common  clone3                          alpha_clone3
+> +545    common  clone3                          __sys__clone3
+>  546    common  close_range                     sys_close_range
+>  547    common  openat2                         sys_openat2
+>  548    common  pidfd_getfd                     sys_pidfd_getfd
 >
 > --
 > 2.56.0
 >
+>
 
-My Acked-by already in this patch still stands.
+This conflicts with my Alpha for-next:
 
-I tested the series against my Alpha for-next, with the integration
-adjustments described in my replies to patches 11 and 12. Full GENERIC
-SMP and DP264 UP builds passed.
+  https://git.kernel.org/pub/scm/linux/kernel/git/lindholm/alpha.git
+  branch: for-next
 
-The generated dispatch table changes syscall 560 to
-sys_set_mempolicy_home_node as intended. Alpha has no NUMA support,
-so this still resolves to the sys_ni_syscall fallback.
+Commit d38895ba9330 ("alpha: dispatch system calls from C") removes
+the fork_like assembly wrappers and changes the table entries to
+sys_fork, sys_vfork, sys_clone and sys_clone3.
+
+Consequently, this rename is no longer needed when integrating your
+series on top of that branch. I skipped this patch for my integration
+test and retained those existing entries.
+
+My for-next is registered with linux-next, so this is an interaction
+we should account for when the trees are combined.
 
 Thanks,
 Magnus
