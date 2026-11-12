@@ -1,111 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=202.12.124.144
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794496441;
-	b=hqyU2IqAb1Oyo6Ay1wLh+NS1yeMBkVKrlP1ptzzGNnHFo6H/KKGn5bdWw+kuxPp0Toue
-	 OtMef4YmNVJ2/8zlJF2vu2z2A5Or1LeAE1UN+ron9onVSgFoLl8Plc7gxg04pNc0TIIc8
-	 kp37yW56ECTG5ZmQp6mWJ8BekM4QSEUToIlA3MOCS36erAfUsIOHq7p9J4sgmMO4F5plW
-	 YjryERiB0byLSl2CzF3Gm9noQt0F1hKqjT0oc8xKge4HPS1VGSzK0gHZKAtMvdSd8cAwh
-	 cmTzQyscsPc1RiUZI3HJznfyY6wjq9FnIMAU2/S8QqxY47DuL5ElvIYY4U6L0JAIbDw==
+	t=1794513895;
+	b=1Hb5+OPeiCIsvhrW+u1BTgXTlLKfcvoXfM9q9FwprwGgWtPldjHa2dcbIW2YEFbPAbYY
+	 XnqhGu5KJD4CTBTCNa8uq4X2OacOMSD7n3ZzoRHnKOGqm4EesUxzmX/UpqeuNkZUwPTpk
+	 uLa9ulrHj6IRJ6wJ35ANGKA7yVjo9DEFbTaZDFCP1DXbM4YJAI//yB995S9kXgfET25At
+	 eqGoAUfwLZMYYmhjZKnnuhod/f0t4JPlDLNkcKQ9rZbLpLo999iZI0PbC5XtH4o0YLurQ
+	 L3NFH+kH2GV7qru3ucKIZJThrADwURMVwmC+nmeFcRlIsiFK+RX51It3e06pXyHV2Sw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794496441;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
-	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
-	 X-ME-Sender:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:Received:X-Mailer:
-	 MIME-Version:X-ThreadId:Date:From:To:Cc:Message-Id:In-Reply-To:
-	 References:Subject:Content-Type:Content-Transfer-Encoding;
-	bh=yr0atXZ0m6oU194Yrrdf0AUxqB9AC9ns0Dfj3SU/vfU=;
-	b=LTt8O1cxb5QlsWC33eoWfNImOrZY1NObU45ieAH0iRKdyrnhMlYMzCrdsETz14X78O+g
-	 C/VPEoVToCwK1BA/mFA5vZfJtAhWBnTtM0qsEwEwcnnXVL7IQ/oJmE677YNqIKXA+nIkJ
-	 dHc9vtwoZtdy9icf1DTnHIiFT4dSVqKZSJCarBP4VhgBymKjcQxh83e2zOTZmRQDupl1T
-	 x7IQQDlbI+M5MLhmnAXU5JKYm9VcNKx0Lb/97qw/tOtQD58YvTQ023ImtWVDvLWrZCBMO
-	 V/rttlI363qEbDDXyXSo9QUo1I2lKPrWEws1SLOfxkgAg/m9czjntMRmFup34rsxoDg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794513895;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:X-Developer-Signature:X-Developer-Key:
+	 Content-Transfer-Encoding;
+	bh=ZzAEPo+mJYYdSMOGK5VsZrT/x37yOXBsr3c/ZdKsZyM=;
+	b=k3NnWMPeZJYZWpRXhLeAmhkO04NdcBuXVVQSkUj1U3mCMdD+/VgsD+JhM7j7lEVWrh32
+	 ssZ6Ktme5TncBuCDx6wW/aKoAr8j7kU3/8FvdGYUNHbGcVTHQnOtSE+CG9M/ca1M9gGUB
+	 BTZVw00y20xYNLnGZEnrUSw3QK6jNicypJTgAg4VVggJ2SFzCYm++3Gs7qN2J1Cj90yFs
+	 I/aX71Z3crbw3O9GUfxc28dnSQAmzAIRlCX7sDgauqX0HSWsNlW3L1I/9iInq3JE3fycp
+	 YyT2k0Qn0ItdkfVAeQbazlffk+0PI7Z/Mq/eYI6zq/sbasynUgoQvZrJOzSLnJX9vsg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arndb.de;
-	spf=pass smtp.mailfrom=arndb.de;
-	dkim=pass header.d=arndb.de header.i=@arndb.de header.a=rsa-sha256 header.s=fm2 header.b="Pfgi/xpw";
-	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=oz9i6IbK;
-	arc=none smtp.remote-ip=202.12.124.144
-Received: from fout-b1-smtp.messagingengine.com (fout-b1-smtp.messagingengine.com [202.12.124.144])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RT6qnGcV;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2911F60A2618
-	for <linux-alpha@vger.kernel.org>; Thu, 12 Nov 2026 15:14:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2911F60A2618
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49CA6606A32D;
+	Thu, 12 Nov 2026 20:04:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=arndb.de header.i=@arndb.de header.a=rsa-sha256 header.s=fm2 header.b=Pfgi/xpw;
-	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=oz9i6IbK
-Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
-	by mailfout.stl.internal (Postfix) with ESMTP id 7B7021D001E9
-	for <linux-alpha@vger.kernel.org>; Thu, 12 Nov 2026 10:14:00 -0500 (EST)
-Received: from ams-imap-03 ([10.64.2.23])
-  by ams-compute-02.internal (MEProxy); Thu, 12 Nov 2026 10:14:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1794496435;
-	 x=1794582835; bh=yr0atXZ0m6oU194Yrrdf0AUxqB9AC9ns0Dfj3SU/vfU=; b=
-	Pfgi/xpwEatfQthVxvTtNqAXrKIh0mwHmnic2aeLsrDBG8t3hY3NC4RYzy8fgSJb
-	wAW/NdjoV/0YfCBNfv4G+IZjlUSKEiRzS4vkRa9U980g1dwieP1snnZhIJWSG8TI
-	Bia9jZ4TCVXU4chpKvWb2yjrgl/Zok879rDtSoaJnnBfXxntf1p025ei3NX4D75/
-	k6ILjz2EE1AtW8EIFHfmT6duNtFGW+wn7bSjFSRV6jNesWO5f0ezH/+OvEstkx1r
-	bwExdHgmA7CwHudQfZgKpIiZ73+2ieY6hGRhXW/tIK22ghKtpWs+10JtP4S2nOGx
-	G822pQceXiXSFuFKoIqYiQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1794496435; x=
-	1794582835; bh=yr0atXZ0m6oU194Yrrdf0AUxqB9AC9ns0Dfj3SU/vfU=; b=o
-	z9i6IbKnYqZoI9sWpPEtnLV/t+kGE1rqXxfRBswwGEkq2tRxXPlmkDWw8q4My5a/
-	EnqVEiXfX4qcFL8Dd/8zc/DkhwTu0OcoVuphscVfbScStMtq0+jU3VoT3dXNCIK0
-	0NWvMoCg2xE5HFRup9lLBxHkggZ3Z6NfiZp+ppMLYi85sCDWDuZyvM/rjKh5i9Ct
-	tUuDN83BTPrd2rJIRJ5N5XQZ0j6LkhlBUd1pe2igTuQ/4KYJ4e3k8DKmexbkVegE
-	Px0uQ67fHMPtrJavDz+oxQL4OQjpahOGC3jAtyowq5potpHU6UY9oeA8WjOIxzJW
-	w3EmhHPxUgDV7ayQx6rrQ==
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=sign d=arndb.de a=rsa-sha256;
-DKIM2-Signature: i=1; m=1; t=1794496435; d=arndb.de;
-	mf=PGFybmRAYXJuZGIuZGU+;
-	rt=PGxpbnV4LWFscGhhQHZnZXIua2VybmVsLm9yZz4=;
-	s=fm2:rsa-sha256:HW/9EbTG7J8ivKFflvypD6dn3shCXcQgXD/IcpRNqqV2/lV
-	+g4Qa8E1ZEr77EQGC0ErvCZ37EbznINDMDzYXCtR9M8oQfVBUB/Lbhv1j5ukfjMb
-	qSdNqwRx1x4Jespz9XCY/y51xtOQffci8pT9un+5Wo84FlvnkwnfbSfBQ+a2lzSC
-	o96qhoGoevJ12GSOnKbAApjuJrS5onji2mjzvmVl0EJDTI+TWCD1nfGXmLjETUz4
-	p1a16EymDcBtz2zBznQTh0DdFJdrHEkbtRpodCCPjgNQk44jlLa04xufjzaJ83Zs
-	L4lUPebqe671EKdXOlrRbYyufpw7lMCnlwgsrLg==;
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=mi-m=1; hc=12;
-	hn=cc,content-transfer-encoding,content-type,date,feedback-id,
-	from,in-reply-to,message-id,mime-version,references,subject,to;
-Message-Instance: m=1; h=sha256:V1Y82DRVNhyeaUYCMNFZd6V8It90rR9izI2oqRP8sZs=:qTDNJSMbhXSIYjAgbioGGC+Lc/CIZXEv1nkhrvv13rk=;
-X-ME-Sender: <xms:r9f1agHvDzAKRrPYdrBZTHEKh2jVCLH1DRg4mFWOt30Q00V3mmpIIg>
-    <xme:r9f1akJ9_tUbTgUxIt-Ajm4_zzXX-qr1o96ybFv7O8m-xR_pOzobZA47p7D2YSf8A
-    1qAEo5v03Cek16v9zAHPZKzmdauaTZleIor8Vk5olZ4FNxEFr4B9Wg>
-X-ME-Proxy-Cause: dmFkZTG1vXRcIn8fotWLJjzVfhVY+BjzjZ1qnowZOpNT/rv+EfWWS2ow7G1Onc4Rm16y5R
-    PG1+D3bOroSLj+j2Vred/jg9H127leojZpubS8ufggGVB/6Hgoe+/Uv1Qj+LK7TzQEE9fn
-    GbEf4kU1UIKVEsjjQ26u1CMO51m0ygZnUabeb4JqpKgwxOcfrkn1JkKVVVIgQm9G+hxaru
-    cZHBkZwNXHRKmLY/AT1AxSnLbbzlPdZyTsiA2jwUcJtLEMWUHGN0RmzLffaEwCuReOzBvv
-    V0DoNxTflc682GMTUPUfaiVC+PuH/fmzSt7e4TEEsDbzT2ILvNgldqw9fH+7wLIDPNnuFS
-    Uz50TehBjPHbyFSYDcqjMWbpC/goN8iYSRtjaG4fiqNdRhhmp4yLwzSEfGLMjwnNH9PopE
-    vrJahlsIv+oXJbB65fkFSEHeYdVueu9/mKAOT1D4DLPLYTLqc8hF8k7bFIUXSyZA2lAYIq
-    RUdkugBgRWOX7JkF+sZPau2iumroWiUlTOieJYj/zqemrD6Mesh9+mk1S6YUOO9Z9fonrE
-    tyI9CCpS3h5cKlwNAXTQose5L4743s6lfJrOYw2qDDmA/fkOiN8dNa4i99yiVjUJVBBWn+
-    iASqgGkD128e7nh/7FymnoaXMCjO32WVukw/dsjBvpWQ35/ca0UlqIeiC+6w
-X-ME-Proxy: <xmx:sdf1avFuKdv5T3dsTFH9ppTkwaxvuCrz8maXZ9iftAf7pvSsaeOUYA>
-    <xmx:sdf1as8yYC-u4FVbPf-mQaqaQxwC8tcj7la1HVFZMsAsX82B1sCRNw>
-    <xmx:sdf1asRrAUm7B84nxg5wuPfMFiJ2mOeByjn7sA4q3omujSg0VCLzNg>
-    <xmx:sdf1ahoFyMfShoLhzNDcVFSRhAC8ZhaAXM1DxSNm3dYv5NsTLO22Bw>
-    <xmx:s9f1asjyFS14B1Fed_hOIYHbZ_Hjcq0cHv3iscjg-yluFg5JykcpP0gc>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.ams.internal (Postfix, from userid 501)
-	id 3AA9232A0099; Thu, 12 Nov 2026 10:13:51 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RT6qnGcV
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FC4B1F000C4;
+	Thu, 12 Nov 2026 20:04:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794513895;
+	bh=ZzAEPo+mJYYdSMOGK5VsZrT/x37yOXBsr3c/ZdKsZyM=;
+	h=From:To:Cc:Subject:Date;
+	b=RT6qnGcVxCc+ElixYKASeKV03mXEhHhaLCiYOGKLliflYPnBJFQtktD1TCq5C6dr5
+	 mXiVUQOLbhORPmL5M85ReZoIP6+ezj8eMBrgwyXtXwKkDdoqYCJ6WE7bph9hbpDqJm
+	 1LBvmoC8/MFsv10PMFqDM84/sBPaKJ09Ee7cdhDhzWZpoj6y7Ue9mXtErHIQjHKq9P
+	 nJuCEFFJkcJr/TA4ZJlg5K9rulGD66JykOyD2wgZY34EkqbamZznT9SLBVKkc7/U1t
+	 PC+I9bbwaXFGTOCRqoTKH9HB5fCS7ajiIq07Y+tDaitcRTbJNDhixL01y7peW2UeGV
+	 WykdJL+HDVzSw==
+From: Thorsten Blum <blum@kernel.org>
+To: Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>
+Cc: Thorsten Blum <blum@kernel.org>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] alpha/serial: Use generic BASE_BAUD in asm/serial.h
+Date: Thu, 12 Nov 2026 21:03:59 +0100
+Message-ID: <20261112200359.32685-3-blum@kernel.org>
+X-Mailer: git-send-email 2.56.1
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -115,54 +60,36 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-ThreadId: AXRzvbN5yUxV
-Date: Thu, 12 Nov 2026 16:13:30 +0100
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>
-Cc: "Christian Brauner" <brauner@kernel.org>, linux-kernel@vger.kernel.org,
- linux-kbuild@vger.kernel.org, kernel-dev@igalia.com,
- "Masami Hiramatsu" <mhiramat@kernel.org>,
- "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>,
- linux-alpha@vger.kernel.org, linux-s390@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, soc@lists.linux.dev,
- linux-mips@vger.kernel.org, sparclinux@vger.kernel.org
-Message-Id: <1bb5a117-bcc6-414c-9268-4c007d219ee5@app.fastmail.com>
-In-Reply-To: <ecabf256-3dff-47dc-9e59-8f381c2df4ff@igalia.com>
-References: <20261105-tonyk-syscall_table-v9-0-8d1275885d9c@igalia.com>
- <20261105-tonyk-syscall_table-v9-9-8d1275885d9c@igalia.com>
- <0cfb4dbf-f3e2-4ceb-ab89-0453ae59793d@app.fastmail.com>
- <e3910a18-dc28-470f-be2f-6a6d568ba7e3@igalia.com>
- <301115f6-3f1e-4e83-bc01-0ba49dec496a@app.fastmail.com>
- <ecabf256-3dff-47dc-9e59-8f381c2df4ff@igalia.com>
-Subject: Re: [PATCH v9 09/15] syscalls: Add an option for offsetting the common table
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-Developer-Signature: v=1; a=openpgp-sha256; l=975; i=blum@kernel.org; h=from:subject; bh=5j62QPT3v1tBMqlQfLH+UVxKw7S/kONwQuU0FMHGIXI=; b=owGbwMvMwCUWt7pQ4caZUj3G02pJDFnfpNfbc1svfa36ouuYMPu1T3xVsbkpdt/cixdGnd50y NNy/+zSjlIWBjEuBlkxRZYHs37M8C2tqdxkErETZg4rE8gQBi5OAZjIrj5GhjN+Me9cEhbc3eDz PH+RUEHIjAknjb6JXRLmmBmz01X/mhbDf7+Kww48bfd4TiQUFe7lYf29Rr/249eOrb+y+dY8a7p YxQ8A
+X-Developer-Key: i=blum@kernel.org; a=openpgp; fpr=1D60735E8AEF3BE473B69D84733678FD8DFEEAD4
+Content-Transfer-Encoding: 8bit
 
-On Thu, Nov 12, 2026, at 16:10, Andr=C3=A9 Almeida wrote:
-> Em 12/11/2026 12:08, Arnd Bergmann escreveu:
->> On Thu, Nov 12, 2026, at 15:37, Andr=C3=A9 Almeida wrote:
->>> Em 12/11/2026 11:07, Arnd Bergmann escreveu:
->>>> On Thu, Nov 5, 2026, at 21:05, Andr=C3=A9 Almeida wrote:
->>> So one option does a string concat, the other option really does a s=
-um
->>> operation. If I had used --offset 110, the result would be
->>>
->>> #define __NR_file_setattr (110 + 469)
->>> #define __NR_listns (110 + 470)
->>> #define __NR_rseq_slice_yield (110 + 471)
->>=20
->> I think for consistency, that would have been fine here, possibly
->> using another macro.
->>=20
->
-> Something like:
->
-> #define __NR_common_offset 110
->
-> #define __NR_file_setattr (__NR_common_offset + 469)
->
-> Sounds good?
+Include asm-generic/serial.h and use the generic BASE_BAUD definition
+instead of redefining it.
 
-Yes, works for me.
+Signed-off-by: Thorsten Blum <blum@kernel.org>
+---
+ arch/alpha/include/asm/serial.h | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-      Arnd
+diff --git a/arch/alpha/include/asm/serial.h b/arch/alpha/include/asm/serial.h
+index 91115447319c..205e61ef2975 100644
+--- a/arch/alpha/include/asm/serial.h
++++ b/arch/alpha/include/asm/serial.h
+@@ -3,15 +3,7 @@
+  * include/asm-alpha/serial.h
+  */
+ 
+-
+-/*
+- * This assumes you have a 1.8432 MHz clock for your UART.
+- *
+- * It'd be nice if someone built a serial card with a 24.576 MHz
+- * clock, since the 16550A is capable of handling a top speed of 1.5
+- * megabits/second; but this requires the faster clock.
+- */
+-#define BASE_BAUD ( 1843200 / 16 )
++#include <asm-generic/serial.h>
+ 
+ /* Standard COM flags (except for COM4, because of the 8514 problem) */
+ #ifdef CONFIG_SERIAL_8250_DETECT_IRQ
