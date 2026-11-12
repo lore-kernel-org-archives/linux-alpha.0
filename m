@@ -1,89 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.178
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794443339;
-	b=olHHpJp5/OOTkF7h2fC7CDa9LazT1IOgxNNXj3XBTL7e6KE21aOvmyFC1LaqiKSpTkmZ
-	 i0sO3JMYM2stuJnSogSyAwoTJ5gUVlLWzTLAMxK3yyDaq6YcsIMPmX4yWyzWsmv6865BT
-	 T8J07sj9BBf3jSf2mgqxduZnMQTNwd93UOsgyqy00eqFxsXnGfLmgldPKlPIss/8D1rtV
-	 G15nNZh7H6DRaLnYvCwzcBEYOwG4340dgDO2zJY4ktD720Cdw4Si44kvTWUvVKwKGJ0Uh
-	 0K4zfOlj5EvLugoRXlgpyJk+Njg/a8kDe33xZV7wiVfGFRZIOT4pLMug2pNeO8dJIgA==
+	t=1794447992;
+	b=aDES7JFBAHPh3vwhdEQXlGOsYfmPdfd/1fUg6vEuAqv4QAAYZf/crJ880yreTdHR7NK+
+	 JXgWi8FsAApnjAJG6e++xEGVDS1H3VSUS6PIm1fuRAO1fAE2QEMNu/fFA5Nex3L1c9Qyj
+	 55ZcT9xbyU2nUnY9cGRMGllH480gOjPOIX85QkhpmkV2QcXHZVwlmMaADADDPGpRip95M
+	 Q+LH2LnpMfb+0SnSXPCc3LbQdQTDxGg0pHdj5adxrDEWrtV5f+WDSS93blamJVHmE838O
+	 ZbeeyonuQYMVGO+kD6X6FdQAzgPk0L+55lxdsvQBPcKXaY1GHIvcu4Lq6ZLtimSJmNQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794443339;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key;
-	bh=NrSzbFzhb/48pQwefucbagWYjcsLjKvWanQjAidltxQ=;
-	b=pWWY37FBvI8NSJmpSAsRX1kh6v8fi/lukllGV+CMOQmolD1yHUvyatApNZCsMMaeCy2b
-	 VE/+5MsjgINkm08gJyPRWObxPLB6qR62vuhNzPT/qZNAFWgUGSARQXieX4of0WD0T4Jam
-	 h2G3ZyOI3C828bNFIAq42KYPj+oTFAh4CPeYjXpDFvq8+wBowiIdzRqcLFu1ppQKavmJs
-	 +uh1gF48fQUUIUHG4PV+0TA4WOvhc7fisG9bq4pE5syt/zfPSWSLKBmQnaAOwgEuUsPe/
-	 6BO/yhbpVo3wq7croTfOq4ESMUmidpEUjvjQ2N86JvGAirUyoSgscbanXa+EY4MsSJw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794447992;
+	h=Received:DKIM-Signature:Subject:From:To:Cc:Date:Message-ID:
+	 In-Reply-To:References:X-sashiko-severity:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version;
+	bh=f+XkNcgdG0Sy9wKL/HCuBDFw6WXi30Rm2xWjumq4AE8=;
+	b=eAWzdNjByBcOBKpuMwjJq6CMs3KyiUrN6Bl+tks7KI1twdocV4uacAFgUDza1d6502nK
+	 gPMRMx1pyB4Fxv9ObCWodWzaS5xB/LpD//h/I6KYkM9VaMhxbuxVLHitK+FDXJ1qTOoHI
+	 xuqNZLJMbHq8f0L1eOC+zkW5SPs6T1ZFsQ5puu8gbpO0chnfIm9lWQBLwY0y8iwtfaTfA
+	 9l8kT8McI7naPzIpvDHcD5i1Uh17xq6VtTiDokgNTchH/Hxee2tBFIX4jj31BESLSv6gF
+	 ZQ6e89tBrfOnoEk3JmP+GsGV0Hfmlxrukek9MBFoxSeZ0s4cQIS1Eq5rpoEd0EsjIwQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PAFYordc;
-	arc=none smtp.remote-ip=209.85.128.178
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VnKsYILe;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D716606A321
-	for <linux-alpha@vger.kernel.org>; Thu, 12 Nov 2026 00:28:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3D716606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20B7E606A338;
+	Thu, 12 Nov 2026 01:46:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=PAFYordc
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-8b32b2e691aso4008987b3.0
-        for <linux-alpha@vger.kernel.org>; Wed, 11 Nov 2026 16:28:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794443338; x=1795048138; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=NrSzbFzhb/48pQwefucbagWYjcsLjKvWanQjAidltxQ=;
-        b=PAFYordcAlFwxsujOd7fSn/4PQJ6fa3zPVS6mw55aYy5QF43dixpt3/3X0PUtkRqzq
-         Un0sHWSZJcdTv2azHZrdTifJBVehAMUfZTakao+ijmw9SiJ4wy4CF+IXYI/JBLEBGQzZ
-         PGDmzt8yGq+e3VAqiMx3dgyeWoGZRnUyCyWJmu0RPIvQEMkt0KVjs8V4AtRcd3aFbrqo
-         HnqvhDjnevub0HGIGBNQ6wq2w9w/4T1ny09gndrXUK/+NyFrJh+ofxlhZyh9xMY7FWNg
-         ffnW5N2qqx6jsey4o9v1NtDC0B030Obxowvm99m3FQbkALcAJS5yePSk21EEhikrmkPz
-         AiTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794443338; x=1795048138;
-        h=cc:to:message-id:content-transfer-encoding:content-type
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=NrSzbFzhb/48pQwefucbagWYjcsLjKvWanQjAidltxQ=;
-        b=dto1lo5qOd0ruGiYGkPFei0tYJ8GIjyobOw+DAO/8CD0aAGO1AThGj+OU200VmJOWd
-         SnrQrBpREe43PZbqcuoc0rC6kPN0U1jEOflYiRXB0YUveO0S3151h3yn6K8+CFK6QaGq
-         TWK5nExGG7vZUjLEskmjI5meyAppuJEhmH1rieEqiEtl+VHCyuxk0FZnbP4Z5Yion9NK
-         PFxk9LI7ZKUQ9rFzWKyts6fG85X22a9JlvMs0uBziSxp01PLtvdHK5IG9dkWfuK2zUYj
-         cOKPw3GwulFoY+wmtgklqUOEiP0uFrTDoyV2nhHOH31yhoxUAr4AQKp5BcYF8qdj6TMt
-         9DMA==
-X-Forwarded-Encrypted: i=1; AL+hErH3iEtB/KZvNfNkGbZo9cw9pepKKDsTYjV2LWfcuuBQHPOuqKGWa/2qEx4FSRboklBhwzLI7Tiy31BWlQ==@vger.kernel.org
-X-Gm-Message-State: APuU4Z/HOTQq0oaRzAufICOCUXtr3M+548pAo+chRodtCV30I9xkx5/d
-	yox8klgD4NSXHUNho5UcMMBhkhqyFNsUcuwTE8nnDXZARxXU3OVeah6J
-X-Gm-Gg: AYBFou2brHMQ8SkRCsqr5d9UnPwl0hZXHt4SnTdWZ0qcdurYy04B7O20py+neJERzBU
-	cL2OSeYZMbDPLmGEbm5asN2XCEg+9pH+YEhiAN95q1GWwMBEZ8SAkzI7FGZ0eDmlPZZBwgZIRNf
-	bQlR3GkBm8Bjjj+CTQI+uGuqskqU/n/fmubBvDrTF9Mjm8VXs8vIqmOy3R2CILoEldwhbWUlrMQ
-	LgojynNnq9MtT17BObEBxK3EMzL/FDA7iIG7tMXPHazlGJT4pMmAXF1/HuYZxvqhhfV8r4h+8eJ
-	p5sQcYx2/mztx5EreWmfUFBFN066OOK3Zx5Fybx2ddcHfAF6K34QIO2bJr+Vgda7B+u7ikNAzlT
-	5QYiD2Qb5KGyIzzlLPmev1YzcbD8yANYHeUpp5HcuYSYpU8D5tKvbJ/9sAjrs2nGYH667F69MJ8
-	ZoJbcl5F9RZqUfOyDrYbEIoqBb3CrgO0u5Fma1Y7pVrg+0nPuIqOT7Hp5MvXmTeFCza1+tDt8K9
-	U8gTft01cKe4liiacaCXBjdqvl8dtZVRHAFI9Eioi8hRGvVFG/gM7iNPBwKDBxmxwIraVWHKt+W
-	P61YTy8PH8viyQb379z1VtK5YsO3T4pTtMDwGCEzGgG5CwsPcJQ/mxv5gxT6raf4A2tGHo4Jod3
-	yvAsBzxwh5A4m8As3JTH7vdRJy5Np6SWgAtILE8cASWfDuHu1/TUdt5HSsSvhFg==
-X-Received: by 2002:a05:690c:c0c3:b0:8b0:6722:6734 with SMTP id 00721157ae682-8b3bb155926mr6839747b3.34.1794443338082;
-        Wed, 11 Nov 2026 16:28:58 -0800 (PST)
-Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b3933a6554sm57571227b3.12.2026.11.11.16.28.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Nov 2026 16:28:56 -0800 (PST)
-From: Matt Turner <mattst88@gmail.com>
-Date: Wed, 11 Nov 2026 19:28:56 -0500
-Subject: [PATCH] vgacon: Fall back to the dummy console if mapping VGA
- memory fails
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=VnKsYILe
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FAC21F00A05;
+	Thu, 12 Nov 2026 01:46:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794447991;
+	bh=f+XkNcgdG0Sy9wKL/HCuBDFw6WXi30Rm2xWjumq4AE8=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References;
+	b=VnKsYILesXYWEYm/qO+C8ozkPFtrbagYux+N40hoTqwuraizfOxhaum/g8oqq/+us
+	 AiAL1pywFeUQbSJOjQL96kktN1RInFGf64VRezBLUW3aDXw1nnpYM7SPfAiNpctDgj
+	 EA3NzG/LCUXQ0Lm0Od27k9DSdXxzE7lIJjnRdwyW3GDQ0pNWycQBJ5mtZpdjxYhGeC
+	 j6HWcL+rXoSUoxxJzG0Pi229MK+cIx+Vkyt5Rnd9nFiLfjzTlpyKT+Mqy+YVdOSXf6
+	 NOAmjC/spTQLBhA6fYJp5qFjGaEIN+FHKLm/BH6XZ//YerAS6hM2HM6yvLgDvZ3GNG
+	 iqfm9bM8ko59Q==
+Subject: Re: [PATCH net-next v2] net: add SO_BYPASS_RFS to exclude a socket
+ from RFS and aRFS
+From: netdev-bot+sashiko@kernel.org
+To: vitaly.zuevsky@gcore.com
+Cc: netdev@vger.kernel.org, davem@davemloft.net, edumazet@kernel.org,
+ kuba@kernel.org, pabeni@redhat.com, horms@kernel.org, corbet@lwn.net,
+ skhan@linuxfoundation.org, rdunlap@infradead.org,
+ richard.henderson@linaro.org, mattst88@gmail.com, linmag7@gmail.com,
+ tsbogend@alpha.franken.de, James.Bottomley@HansenPartnership.com,
+ deller@gmx.de, andreas@gaisler.com, kuniyu@google.com, willemb@google.com,
+ arnd@arndb.de, brauner@kernel.org, andrew@amutable.com, jkoolstra@xs4all.nl,
+ alexander@mihalicyn.com, tariqt@nvidia.com, saeedm@nvidia.com,
+ nashuiliang@gmail.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-arch@vger.kernel.org
+Date: Thu, 12 Nov 2026 01:46:29 +0000
+Message-ID: <179444798912.2199510.16652368770211815180@kernel.org>
+In-Reply-To: <20261109014547.81555-1-vitaly.zuevsky@gcore.com>
+References: <20261109014547.81555-1-vitaly.zuevsky@gcore.com>
+X-sashiko-severity: Medium
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -93,70 +72,228 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261111-vgacon-ioremap-null-v1-1-6dd05bf390ef@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMQQ5AMBCF4avIrE2iIoiriEW1gxFaaRFJ4+6Kt
- /sW7w/gyTF5aJIAjk72bE2ESBNQkzQjIetoyLO8FHF4jlJZg2wdrXJDcywLSl2oStRFX2cVxOf
- maODrq7bdb3/0M6n9TcF9P4NsHx93AAAA
-X-Change-ID: 20261111-vgacon-ioremap-null-ad4c7184b807
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Helge Deller <deller@gmx.de>
-Cc: linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org, 
- linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, 
- stable@vger.kernel.org, Matt Turner <mattst88@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1460; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=br3GFCtz3RXFRK3DsA4LkWP9fcwbxa8J0zn4MRkuUF4=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLK+criL7v37qOiykO8rawfHuuk+WyP0ikzsHuj9nsVwQ
- sin7fCvjo8sDGJcDDPFFFni1iuyzGrbsdTntPQvmDmsTCBDpEUaGICAhYEvNzGv1EjHSM9U21DP
- EMjQMYqHyOkxaGQWF5emFummFRQ55OWXJJZk5ucV6+UXpOYVpBfopWWmlWRk5BcVpwKN0MtLLTF
- 1dXQzMjQwsXS0MHOycDQ1cXZ2MnRyc3R0dnUysjQ3MXC2dDRxtTRn4OIUgLnmUTAjQ9v1oF3ZfR
- 8OxC4xawm0WOOg2hj571rb9g/LopWvnRE9dpPhnybXhpaPzH/zz0vn7L19vfNZ3UWnSt4l31dM5
- BKapXb7CDMA
-X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
- fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-On Alpha, setup_arch() registers vgacon whenever CONFIG_VGA_CONSOLE is
-enabled. On Marvel (EV7) systems whose SRM console is serial, no VGA
-hose is set, so marvel_ioremap() finds no hose for 0xb8000 and returns
-NULL. vgacon_startup() then probes video memory through that NULL
-pointer and oopses in console_init():
+Thank you for your contribution! Sashiko AI review found 5 potential
+issue(s) to consider.
 
-  Unable to handle kernel paging request at virtual address 0000000000000000
-  pc is at vgacon_startup+0x174/0x910
+Critical: 0 · High: 0 · Medium: 2 · Low: 3
 
-VGA_MAP_MEM() is ioremap() on Alpha and powerpc and can fail. Treat
-failure like a failed probe and fall back to the dummy console. If a
-VGA card is present, locate_and_init_vga() still switches to vgacon
-once PCI is up.
+If you believe none of the issues are legitimate, please reply to each
+issue of Medium severity or higher and explain why the AI is wrong.
+If any of them are legitimate and you plan to respin, please let patchwork
+know by including "pw-bot: cr" as a separate line at the end of your reply
+(one such reply per series is enough).
 
-Cc: stable@vger.kernel.org
-Assisted-by: Claude:claude-opus-5-5
-Signed-off-by: Matt Turner <mattst88@gmail.com>
----
- drivers/video/console/vgacon.c | 2 ++
- 1 file changed, 2 insertions(+)
+- [Medium] The commit message says setting SO_BYPASS_RFS on a socket that
+  was already recorded means the flow "stops being steered with the next…
+- [Medium] Setting SO_BYPASS_RFS does not reliably remove the socket's
+  rps_sock_flow_table entry, and an entry re-recorded in a race is never…
+- [Low] The commit message says that setting SO_BYPASS_RFS on a listening
+  socket "excludes every connection accepted from it".
+- [Low] SO_BYPASS_RFS is added as a generic SOL_SOCKET option, but
+  MPTCP's SOL_SOCKET handler was not updated.
+- [Low] sk_bypass_rfs is a 1-bit bitfield in sock_common
+  (include/net/sock.h:186).
 
-diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgacon.c
-index e7e6750f1f87..09f7c376b468 100644
---- a/drivers/video/console/vgacon.c
-+++ b/drivers/video/console/vgacon.c
-@@ -324,6 +324,8 @@ static const char *vgacon_startup(void)
- 	}
- 
- 	vga_vram_base = VGA_MAP_MEM(vga_vram_base, vga_vram_size);
-+	if (!vga_vram_base)
-+		goto no_vga;
- 	vga_vram_end = vga_vram_base + vga_vram_size;
- 
- 	/*
+--
 
----
-base-commit: fa4ad798f6f681031775266044ba1b0cf3c670bd
-change-id: 20261111-vgacon-ioremap-null-ad4c7184b807
+net: add SO_BYPASS_RFS to exclude a socket from RFS and aRFS
 
-Best regards,
---  
-Matt Turner <mattst88@gmail.com>
+This adds a boolean SOL_SOCKET option, SO_BYPASS_RFS, that keeps a
+socket out of rps_sock_flow_table, so neither RFS nor aRFS steers its
+flow. The state is a new bit in sock_common that sock_copy() copies to
+children, and setting the option clears any existing table entry. Close
+time deletion is skipped for bypassing sockets.
 
+> diff --git a/Documentation/networking/scaling.rst b/Documentation/networking/scaling.rst
+> index 6c9836000a8d1..b23c874056225 100644
+> --- a/Documentation/networking/scaling.rst
+> +++ b/Documentation/networking/scaling.rst
+> @@ -428,6 +428,21 @@ queues. So for instance, if rps_sock_flow_entries is set to 131072 and there
+>  are 16 configured receive queues, rps_flow_cnt for each queue might be
+>  configured as 8192.
+>  
+> +Excluding individual sockets
+> +~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> +
+> +RFS is configured per host and per queue, but whether it pays off
+> +depends on the traffic pattern. SO_BYPASS_RFS keeps a socket's flow
+> +out of rps_sock_flow_table, so neither RFS nor accelerated RFS acts on
+> +it: packets stay on the CPU chosen by RSS or RPS, and no filter is
+> +programmed into the NIC. The option is inherited through accept(), so
+> +a listening socket that sets it excludes every connection it accepts
+> +while the sockets the process connects itself remain steered. It may
+> +be set at any time; an entry already recorded is removed. This suits
+
+[Severity: Low]
+
+Is "inherited through accept()" accurate? The bit sits in the copied
+part of sock_common. It reaches the child through sock_copy() in
+sk_clone() when the child is created at handshake completion, not at
+accept():
+
+	memcpy(nsk, osk, offsetof(struct sock, sk_dontcopy_begin));
+
+Setting the option on the listener does not walk the accept queue. A
+connection whose handshake finished before the setsockopt() therefore
+has sk_bypass_rfs == 0. When that connection is accepted later,
+__inet_accept() still does:
+
+	sock_rps_record_flow(newsk);
+
+so the flow is recorded and steered.
+
+The commit message says "setting it on a listening socket excludes
+every connection accepted from it". Should both texts say that only
+connections established after the option is set inherit it?
+
+[ ... ]
+
+> diff --git a/include/net/rps.h b/include/net/rps.h
+> index e33c6a2fa8bbc..7c62ae607d182 100644
+> --- a/include/net/rps.h
+> +++ b/include/net/rps.h
+> @@ -149,7 +149,7 @@ static inline void sock_rps_record_flow_hash(__u32 hash)
+>  static inline void sock_rps_record_flow(const struct sock *sk)
+>  {
+>  #ifdef CONFIG_RPS
+> -	if (!rfs_is_needed())
+> +	if (!rfs_is_needed() || sk->sk_bypass_rfs)
+>  		return;
+
+[Severity: Low]
+
+Will KCSAN report this read? sk_bypass_rfs is a 1-bit bitfield. It
+shares a byte with skc_reuse, skc_reuseport, skc_ipv6only,
+skc_net_refcnt and skc_bypass_prot_mem.
+
+sk_setsockopt() writes it with a plain read-modify-write under the
+socket lock. sock_rps_record_flow() reads it without the lock on the
+per-packet paths (inet_recvmsg(), inet_send_prepare(),
+mptcp_rps_record_subflows() and others). sock_rps_delete_flow() and
+sk_getsockopt() also read it without the lock.
+
+Bitfields cannot be wrapped in READ_ONCE()/WRITE_ONCE(), and none of
+these accesses use data_race(). Nearby lockless fields such as
+sk_rxhash and sk_incoming_cpu use READ_ONCE()/WRITE_ONCE(), and the v1
+sk_flags approach used atomic bitops. Would non-bitfield storage or
+data_race() annotations be better here?
+
+[ ... ]
+
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index e2401d735c5a7..00808217aebf1 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+
+[ ... ]
+
+> @@ -1597,6 +1598,14 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
+>  		reuseport_update_incoming_cpu(sk, val);
+>  		break;
+>  
+> +#ifdef CONFIG_RPS
+> +	case SO_BYPASS_RFS:
+> +		if (valbool)
+> +			sock_rps_delete_flow(sk);
+> +		sk->sk_bypass_rfs = valbool;
+
+[Severity: Medium]
+
+Can a concurrent recvmsg() or sendmsg() put the entry back here? The
+delete runs while sk_bypass_rfs is still 0. inet_recvmsg() and
+inet_send_prepare() check the bit and write the table without the
+socket lock:
+
+CPU0 (setsockopt, lock_sock held)    CPU1 (recvmsg, no socket lock)
+                                     sock_rps_record_flow()
+                                       sees sk_bypass_rfs == 0
+sock_rps_delete_flow()
+  slot = RPS_NO_CPU
+                                       _sock_rps_record_flow()
+                                         slot = hash | cpu
+sk->sk_bypass_rfs = 1
+
+After this, every sock_rps_record_flow() and sock_rps_delete_flow() on
+the socket returns early on the bit. That includes the close-time
+cleanup in inet_unhash(), udp and sctp.
+
+Does the stale entry then keep steering the flow through RFS after the
+socket is closed, until a colliding hash overwrites it? With aRFS it
+would also keep the NIC filter active, since rflow->last_qtail keeps
+advancing.
+
+Setting the bit before the delete would only narrow the window, unless
+the record side re-checks after a paired barrier or the close-time
+delete is kept for this case.
+
+[Severity: Medium]
+
+Does this stop steering for a flow that accelerated RFS has already
+steered? The only cleanup here is
+sock_rps_delete_flow()->_sock_rps_delete_flow(), which writes
+RPS_NO_CPU into the rps_sock_flow_table slot. The per-rxqueue
+rps_dev_flow entry and the filter installed by ndo_rx_flow_steer()
+stay in place.
+
+The driver removes that filter only when rps_may_expire_flow() returns
+true:
+
+net/core/dev.c:rps_may_expire_flow() {
+    ...
+		if (READ_ONCE(rflow->filter) == filter_id &&
+		    rps_flow_is_active(rflow, log, cpu))
+			expire = false;
+    ...
+}
+
+Once the socket entry is cleared, get_rps_cpu() sends this flow to
+try_rps:
+
+		ident = READ_ONCE(sock_flow_table[flow_id].ent);
+		if ((ident ^ hash) & ~net_hotdata.rps_cpu_mask)
+			goto try_rps;
+
+At that point rflow->last_qtail stops advancing. Expiry then depends
+only on unrelated backlog traffic on the target CPU. If that CPU sees
+little RPS/RFS backlog traffic, can the flow stay hardware-steered
+indefinitely?
+
+With software RFS, the flow also moves to the RSS/RPS CPU at once. It
+skips the input_queue_head vs last_qtail check that get_rps_cpu()
+normally uses to hand off in order. If the option is set mid-flow, can
+packets still queued in the old CPU's backlog be delivered out of
+order?
+
+The commit message says "a flow recorded earlier stops being steered
+with the next packet". scaling.rst says "no filter is programmed into
+the NIC" and "It may be set at any time; an entry already recorded is
+removed". Should the documentation describe these effects, or should
+the rps_dev_flow and filter state be handled too?
+
+> +		break;
+> +#endif
+
+[Severity: Low]
+
+Should MPTCP be covered as well? mptcp_setsockopt_sol_socket() accepts
+a fixed list of SOL_SOCKET options and ends with:
+
+	return -EOPNOTSUPP;
+
+so setsockopt(SO_BYPASS_RFS) on an MPTCP socket fails. The option is
+also not in the comment there that lists unsupported options.
+
+MPTCP records RFS entries per subflow through
+mptcp_rps_record_subflows()->sock_rps_record_flow(ssk), which tests
+ssk->sk_bypass_rfs. sync_socket_options() copies sk_incoming_cpu to new
+subflows but has nothing for sk_bypass_rfs. So allowing the option on
+the msk alone would not affect the subflows.
+
+SO_INCOMING_CPU is handled in mptcp_setsockopt_sol_socket(),
+mptcp_sol_socket_sync_intval() and sync_socket_options(). Could
+SO_BYPASS_RFS be handled the same way, or at least be listed as
+unsupported?
+
+-- 
+Sashiko AI review · https://netdev-ai.bots.linux.dev/sashiko/#/patchset/20261109014547.81555-1-vitaly.zuevsky%40gcore.com
