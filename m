@@ -1,95 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794649718;
-	b=E1YwQ/eYKyCvdcZU36K7lffmm1iVicfAGILxqy/YYNbVWhT0KeC5ziq+xXxoC47tt1rE
-	 G8nGZpG3k5BxjTOnG2ut78+YSEes3QltRmUkw6IyoF+El4YBur+h0xuhd1r+DrmczjuOQ
-	 e5E8CJJL//THtz+UL3Zq42c+cep3Qwvaq86Lj3zk7BpNngtm418k+4HnLz7GvzepbARBQ
-	 01BGJhAOosqRuPhMRhPOYwyrSD2LwJU1dLZpCjuyLbtbojrdtC+fm9FwuLWgH12StOBOF
-	 Km/TLc/4OI6KWE2RLXSsNm3F9cJJpalTQYWznserHeAFdkw3h6UVt6SpaPKFtCey0CA==
+	t=1794650030;
+	b=kaEmJM5mbaoeTEQMBFXSBYKyElG5M1aYPIkCyF8fOYFkIWLueYeaabnt6znixJNaQxGT
+	 3NLapAZyD6ApfbBBaTBmLpIZnUC9bRs3LA9MXX3wZaIzN8BHzIXecnJpOjoXgtx+RcN64
+	 JrbVxkGgzt7+ZajcSqNvUZradkqqa9EN2C+kgl+MJd5CCpW/qJh6X+y73ZAXcArhsnA+L
+	 D+IH/GUHnXFDXrlThfnyYBwEExe3dlMapRDTGxRq4NVubqPe6wyeEsggesRr3c1dvCiKN
+	 7EHxmpzNzuEJzC3SJIvNd4bZoiXkgkrxK64H2XlXnytSxf0Am38zVJmamSt/zF6Cy4w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794649718;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794650030;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=cGthlXWV1TPnbXav8/uYptPiYuvwIvb0LRz3xc/iwOs=;
-	b=eA04jjZK7q9VWLHoO2ntTasTJK+q83m97FewdgESza0yWPmGknjIfN+edlNgwIjBHggc
-	 +ocwmbLvphGBvrRJ5a9ehdyLuxMUOmOTnRdqclCRT6UOIKQ3ALWrTFr4btTEM7uGjjNL9
-	 Z56csrcTKD6JpNDKqM5Bib+UOa6JHIbaLjIxGMo/2ljVOjqSN6dL71gZFC5qE7VlSgSDS
-	 wi698Sy9vROgOYINWHpDh0wlKo+1JGXdQMXp5pbW3PidMnRZy35DXSfI/Qj8ECM2JQDhi
-	 4Td5C+hiIBIgcHsrQFSxPGKXepdemjf22SiGmBFqB3gavSuo5v7YSfXOMwCYgotzESg==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=f7twjAGqTefNetbUPu09hDc/iSPsogMXjZV3p18saLo=;
+	b=o7sUOnWLSix5sdR9KWJBWzF/Utb/WMLBLm46PbL0/P8nnGxi12Eu2pmWUKmvDt560waf
+	 bnEh/rqLLAytpI6bBFYNEsLnGyA1VlZOadag4oMnN3hwKQNzpM2mvr9XlhQAdkvR2OBx6
+	 dR505Kg8sYq+LoKhzd25krEUDUEvoCZ4GnksGISzo2J0861mj0GyOPBqY1CUr96kKfQH5
+	 w44ov19q8M8uqwL39Y7LCacVEqDYBxnZzRWBeQoQSnnotpr06tRiF/lzeN7/08Hl3WpQr
+	 zs4RK9mJBF39bkiJG6QOIVZ0izV69he9KrAdiS0Dg8SBe8fAkj6bZ53/9tGy5Dux/dQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=mwrD58tL;
-	arc=none smtp.remote-ip=209.85.208.42
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=L3fEDOUK;
+	arc=none smtp.remote-ip=209.85.218.52
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 817B5606A333
-	for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 09:48:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 817B5606A333
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A986E606A330
+	for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 09:53:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A986E606A330
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=mwrD58tL
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-6b47c1a3c74so3144918a12.3
-        for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 01:48:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=L3fEDOUK
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-c5067a2411bso314060966b.2
+        for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 01:53:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794649717; x=1795254517; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=cGthlXWV1TPnbXav8/uYptPiYuvwIvb0LRz3xc/iwOs=;
-        b=mwrD58tLg70M8xqSV+oqj96b/06LwWYbQEwB3QoQKHV4dEfp0pNSWr6HVnD0UrCY+7
-         Elf70LNvG260+GWlJtE8H3E0Tc2tDJRX8an4aNvduL2CHHHil/VEdYwpHc6djmMU2Ly8
-         ZDhunIPrW6ob4UTjvazWOvDsVju9+pfmB+rdLmTVc0yiW5dS4haWmYCmlA49lzkNQGqH
-         pgaubz3M8wZRw9TF3wup1BvKVwmkHfnd3jWygoAt3z1mL6O5vPP9nqqfIVX0de4DuWVV
-         D8wKQiWnHM1hakPlh6xpAHtqn0oaIFK9JtLWdEiHpZ3dg7qggzQ7J/Spxl4eQdBo4TIB
-         aU6w==
+        d=gmail.com; s=20260707; t=1794650028; x=1795254828; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=f7twjAGqTefNetbUPu09hDc/iSPsogMXjZV3p18saLo=;
+        b=L3fEDOUKUrMGN+T6AX+4RQ3VUn1y+jH6+iefZneP3H1ilEigPd0NTSzCv/ELLZ0Vpp
+         VhlPfN+sVbGWgNzewj2RPd9WO/sHZMTkdY4rxGHqVngCkNOM3PlGxnr8mglE7RQnLNaV
+         hbOQgCV+/mghOd1j1KvGLEjNico4uf7QCu6nCSZApBFdLh0lxTVJIuN4v7nV/eQunOdE
+         ouiy10wlvDA9vfn9tXFqbwyTC7hLIgCpi/JZLYskMyjmrh/f79682k3OPD3vUk3aHYIv
+         6MXOUK0ioIHmwJpF2qW8UBojR4zEfM/+xqZWIjwxdBx+Y4mcORDRzY1DlUMYcwyO0d4R
+         x5EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794649717; x=1795254517;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=cGthlXWV1TPnbXav8/uYptPiYuvwIvb0LRz3xc/iwOs=;
-        b=2AnebB3W1m+JxLn8lXJBdDhW1ebWb8B4gc6EnEUazGUXbe3m/aKjGbketMDvx6CaFg
-         /9jO31fb1sEJtNVBZgUp0p+UYqeKpc2d2zA+oYGM7d4DgwRaHBUia6XGf2q3muKPTmzx
-         0eCZjIasTLbweJ94Z0auM11VdJ/t9HpohhOjHEPp/jovWoE0UZ7p4eLB6W0qF2Md00lL
-         KTXNhO15Wraj453S9b8bQC/GtHR8+X01gMOYaxYXkcivcP2EHzjlb0sLK31tbk1J1KtN
-         i7mppgTSuEy3EwfHkmvHlBsZ1SYrEsQLBw9NWlZ9s5nvYrKobi9QOCXI1Zmwxdk58K8D
-         sa8Q==
-X-Forwarded-Encrypted: i=1; AL+hErHZ5bYL9o9aE77YIJSv0OAuZp1xSbh/URtuQgoTMUNg6XDYa5RCyIs7jjQ5iwgq28Dc4k/J+es6JPrmWg==@vger.kernel.org
-X-Gm-Message-State: APuU4Z8ehFvwL1uTp6RS5ljPzOZXu85xCER5z+Jpm8i2a/XhbiaR+whG
-	z07GpWFcWMe3qmjFdrJj1sB1feGv5paq8z9JH09EUVOy/o9a1gCSc/Vc
-X-Gm-Gg: AYBFou2W+O24vqAFpKc1KSbDVKoWoWxSR9GZG9fNhIL65MJCjeinIlpEYnC90jMn2ui
-	l6wvJk0+wbDJyoQeUTRlos6DNpgDyxiWpoff9FkeWlco1jb2lrrs2g9dFqIXpMJcWxTF7KhU/eX
-	D90zw2IZE0kPQFaJx6qhUP4FpSw1JPqamm/6Qyi9x7RVNdn84hdfb7Kv25yQF1Gfw97mIe0iEoX
-	yq9+5Lf8XKE6AGPAZ5TvQp3qmgBeEKX3wXsfI8Foa+tjsXT7OKsKCNJ7z9da5Cc1JhccQDR0d7z
-	xwSD578CpLrKgrUn0O4bV/vpdMO+AuBcNduo01BmBJQA/5lj+x9NHO4Fr0vLZ8m0D3h6iFsbHCc
-	Z2JcymkkH8pHnFJPUvrvFqnZ8KuyomLBHA/tPMIwwjrkzCGxyNm1CVTvl1IKYR4MYExcppySIYI
-	/uiH4+hP5WZ2yAY9tHCpdZFT2bMOjbDX1JC7ie6fnqZJ6nXK8blXDY002mPsElla9zZto1E/M1R
-	073eE/Ooq6UwKtgOUlpAc4+l7D02GkUd4mzcMCRcJioWs9itoAWVauiKYPuFpbrBIilYWM4XgB3
-	Wxl2aWrfiMpXaBCrV8llhv6/ODRP8QzHyTUAuarpd31J00ac2tnfhIwd/HaQ9z3NW8xXtEM=
-X-Received: by 2002:a05:6402:4413:b0:6b5:9150:edf3 with SMTP id 4fb4d7f45d1cf-6b7c0d144a7mr4237429a12.43.1794649716926;
-        Sat, 14 Nov 2026 01:48:36 -0800 (PST)
+        d=1e100.net; s=20260707; t=1794650028; x=1795254828;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=f7twjAGqTefNetbUPu09hDc/iSPsogMXjZV3p18saLo=;
+        b=rq1skgJprMAUssqLnzCulx36ctULaQ0AXB9U8NN9XiZsHlMkaVwjVEApLKG01Pp3hT
+         rEh2ohkD4i6jMZSdpqhe5aDeIF7U0oQVK5xiS++Pt0m11+pa+p0wKOulJ47X9sH4twRN
+         uUgEB+fiIr717eFCUxZmx2cFT3t8GFmJYdNtWK1jvTxoFHmLdOBHGL3MWL0OLrFl+vFu
+         s724lJZ1Or1sn/2aLHhBdOVGnHqUuLdRUx9Uq7vsj5IuWW3gfrZGxt4LhtJMN3nNsxWI
+         Ltd+xiB4XSdH7hnO5SR3T2Gvj9gerqMJ2n5IRbnQVk0z8eC+tzLyQeWzAlTE3gxXTcyn
+         blVQ==
+X-Forwarded-Encrypted: i=1; AL+hErEO/ZcldD7aw/AvibMAlXMuONhbZbfkIfvVkVbgV2Rb1nalGp6DCt3ONccX9Ce4doukfeDMkQg1UVZNDg==@vger.kernel.org
+X-Gm-Message-State: APuU4Z/qr9WGI6HtfYe2S5g8VNQZn322HQ0sWBgJ2yHh64C409+qgmvE
+	x0b4DOwW/aqCOYj6sfKrMAzJRRy4ga3saDiy6qcVELOTRws2ySBbkUFo
+X-Gm-Gg: AYBFou2JTJtAEIqpEPdzFMunG2rBlbLN8dz4X7XropFU/0/JPjpWSNCeVjeRAxoUHVD
+	6LlxFiYCpdNjc3A9ATEe+hd3mqPKfNEiE3WoZi5cgT7UM9bj4SmObJeuEya1RgiC6V+3RSaF5Ye
+	yPV4ptc0sBe9EBHDX/XvoTqF9V1Al3lfkF2I2pEUZbR3nWQADQ/vdlRI9JyDUKAgkqWoPhtfpW7
+	xZCfXdEEnIGuBh/1rQ3azpwX30ZSzr1/G+h6ObrTtgHcJxzB5S+6jUyMALKe66FMYwmimMdow4l
+	oueUAqNAqXY1F9Dujq+ew7BuBj3TmSYGHhx5rTNQ26hfGkZh221kKznx+lAO/MGbBomK55DooDe
+	FwzdU/iWeXAzgJJYYtZFwmqK5AMf6sxLdUl4lrgqAYQiCJTLVA7ytsTR2bDBk4EQ7aJ8ZMuu5LX
+	eRgNGDRNGQF7M7kyyIqqYn+81SSuqDWBC/v8cSFN+7qo2LWyNrRigMmE7Yuur/sY6Sg615qRWkn
+	XLOjLqHrQJPffb7Ey1uhPuiHq4GyA5pu8YUKU4l4E8716c6CuYQMJ7KFu2geMgmq21+APlxHOoh
+	ZSu10Sl4NbC9M+/3FWvtfncxX67XVT4SPW7j1deRmApcBJ4irj9lyQjcnDmjp6uldEln7Ac=
+X-Received: by 2002:a17:907:1c9e:b0:c50:93b6:52ed with SMTP id a640c23a62f3a-c509654e2f8mr451033166b.40.1794650027938;
+        Sat, 14 Nov 2026 01:53:47 -0800 (PST)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b7c23c672asm2062135a12.15.2026.11.14.01.48.35
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c5095b236d4sm197311266b.18.2026.11.14.01.53.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Nov 2026 01:48:36 -0800 (PST)
+        Sat, 14 Nov 2026 01:53:47 -0800 (PST)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: richard.henderson@linaro.org,
 	mattst88@gmail.com,
 	linux-kernel@vger.kernel.org,
 	linux-alpha@vger.kernel.org
 Cc: linmag7@gmail.com
-Subject: [PATCH v3] alpha: Add support for HAVE_ARCH_JUMP_LABEL
-Date: Sat, 14 Nov 2026 10:48:19 +0100
-Message-ID: <20261114094826.1282965-2-linmag7@gmail.com>
+Subject: [PATCH v2 0/2] alpha: enable DMA CMA support
+Date: Sat, 14 Nov 2026 10:53:15 +0100
+Message-ID: <20261114095335.1283016-1-linmag7@gmail.com>
 X-Mailer: git-send-email 2.56.0
-In-Reply-To: <20261114094826.1282965-1-linmag7@gmail.com>
-References: <20261114094826.1282965-1-linmag7@gmail.com>
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -101,219 +98,61 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Implement static key (jump label) support for Alpha. Emit jump table
-entries and patch instruction sites between NOP and BR, synchronizing
-instruction caches after each update.
+This revision addresses Matt Turner's review of the original CMA patch.
 
-Warn and leave the instruction unchanged if the target is outside the
-signed 21-bit branch displacement range.
+Split early parameter parsing into a prerequisite patch. Use the generic
+DMA contiguous allocation/free helpers, skip CMA on the GFP_DMA retry,
+and use exact-size buddy allocations to match current helper semantics.
+Remove the redundant highmem check and preserve existing zeroing.
 
-This relies on kernel and module text being writable; Alpha does not
-implement STRICT_KERNEL_RWX or STRICT_MODULE_RWX.
+Reserve top-down below the direct-map window and usable RAM limits.
+This avoids preferentially taking low memory with bottom-up allocation;
+it is not a strict exclusion of the first 16 MiB. Explicit cma= address
+ranges retain the generic override semantics. If there is no direct-map
+window, skip the default reservation.
 
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
-Reviewed-by: Matt Turner <mattst88@gmail.com>
----
- .../core/jump-labels/arch-support.txt         |  2 +-
- arch/alpha/Kconfig                            |  1 +
- arch/alpha/include/asm/jump_label.h           | 65 +++++++++++++++
- arch/alpha/kernel/Makefile                    |  2 +
- arch/alpha/kernel/jump_label.c                | 79 +++++++++++++++++++
- 5 files changed, 148 insertions(+), 1 deletion(-)
- create mode 100644 arch/alpha/include/asm/jump_label.h
- create mode 100644 arch/alpha/kernel/jump_label.c
+The configured default is 16 MiB; cma=0 disables the default reservation.
 
-diff --git a/Documentation/features/core/jump-labels/arch-support.txt b/Documentation/features/core/jump-labels/arch-support.txt
-index 683de7c15058..119c71b7cec0 100644
---- a/Documentation/features/core/jump-labels/arch-support.txt
-+++ b/Documentation/features/core/jump-labels/arch-support.txt
-@@ -6,7 +6,7 @@
-     -----------------------
-     |         arch |status|
-     -----------------------
--    |       alpha: | TODO |
-+    |       alpha: |  ok  |
-     |         arc: |  ok  |
-     |         arm: |  ok  |
-     |       arm64: |  ok  |
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 6ccb2d230326..e7e7cb37d670 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -28,6 +28,7 @@ config ALPHA
- 	select PCI_DOMAINS if PCI
- 	select PCI_SYSCALL if PCI
- 	select HAVE_ARCH_COMPILER_H
-+	select HAVE_ARCH_JUMP_LABEL
- 	select HAVE_ASM_MODVERSIONS
- 	select HAVE_DEBUG_KMEMLEAK
- 	select HAVE_GUP_FAST
-diff --git a/arch/alpha/include/asm/jump_label.h b/arch/alpha/include/asm/jump_label.h
-new file mode 100644
-index 000000000000..df0b59530c85
---- /dev/null
-+++ b/arch/alpha/include/asm/jump_label.h
-@@ -0,0 +1,65 @@
-+/* SPDX-License-Identifier: GPL-2.0
-+ *
-+ * Alpha architecture jump label (static key) definitions
-+ *
-+ * Defines patch site emission and jump table layout for
-+ * Alpha static key support.
-+ *
-+ * Copyright (C) 2026 Magnus Lindholm <linmag7@gmail.com>
-+ */
-+
-+#ifndef _ASM_ALPHA_JUMP_LABEL_H
-+#define _ASM_ALPHA_JUMP_LABEL_H
-+
-+#ifndef __ASSEMBLER__
-+
-+#include <linux/types.h>
-+
-+#define JUMP_LABEL_NOP_SIZE 4
-+
-+typedef u64 jump_label_t;
-+
-+struct jump_entry {
-+	jump_label_t code;
-+	jump_label_t target;
-+	jump_label_t key;
-+};
-+
-+static __always_inline bool arch_static_branch(struct static_key *key, bool branch)
-+{
-+	asm goto("1:\n\t"
-+		 "nop\n\t"
-+		 ".pushsection __jump_table, \"aw\"\n\t"
-+		 ".align 3\n\t"
-+		 ".quad 1b, %l[l_yes], %0\n\t"
-+		 ".popsection\n\t"
-+		 :
-+		 : "i"(&((char *)key)[branch])
-+		 :
-+		 : l_yes);
-+
-+	return false;
-+l_yes:
-+	return true;
-+}
-+
-+static __always_inline bool arch_static_branch_jump(struct static_key *key, bool branch)
-+{
-+	asm goto("1:\n\t"
-+		 "br $31, %l[l_yes]\n\t"
-+		 ".pushsection __jump_table, \"aw\"\n\t"
-+		 ".align 3\n\t"
-+		 ".quad 1b, %l[l_yes], %0\n\t"
-+		 ".popsection\n\t"
-+		 :
-+		 : "i"(&((char *)key)[branch])
-+		 :
-+		 : l_yes);
-+
-+	return false;
-+l_yes:
-+	return true;
-+}
-+
-+#endif /* __ASSEMBLER__ */
-+#endif /* _ASM_ALPHA_JUMP_LABEL_H */
-diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
-index 850f1265cc55..4088cd56866e 100644
---- a/arch/alpha/kernel/Makefile
-+++ b/arch/alpha/kernel/Makefile
-@@ -92,3 +92,5 @@ obj-$(CONFIG_ALPHA_TITAN)	+= err_ev6.o err_titan.o
- obj-$(CONFIG_ALPHA_TSUNAMI)	+= err_ev6.o err_tsunami.o
- 
- endif # GENERIC
-+
-+obj-$(CONFIG_JUMP_LABEL) += jump_label.o
-diff --git a/arch/alpha/kernel/jump_label.c b/arch/alpha/kernel/jump_label.c
-new file mode 100644
-index 000000000000..9168d5da978b
---- /dev/null
-+++ b/arch/alpha/kernel/jump_label.c
-@@ -0,0 +1,79 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Alpha architecture jump label (static key) support
-+ *
-+ * Implements runtime patching of static key sites by replacing
-+ * a NOP instruction with an unconditional branch and vice versa.
-+ *
-+ * Copyright (C) 2026 Magnus Lindholm <linmag7@gmail.com>
-+ */
-+
-+#include <linux/jump_label.h>
-+#include <linux/kernel.h>
-+#include <asm/cacheflush.h>
-+
-+/*
-+ * Alpha instruction encoding helpers.
-+ *
-+ * Branch format:
-+ *   [31:26] opcode
-+ *   [25:21] Ra
-+ *   [20:0 ] disp (signed, in instructions; hardware multiplies by 4)
-+ *
-+ * Unconditional branch:
-+ *   BR opcode is 0x30.  We use Ra=r31 so no link register is written.
-+ *
-+ * Updated PC semantics:
-+ *   Target = (pc + 4) + (disp << 2)
-+ * so disp = (target - (pc + 4)) >> 2.
-+ */
-+#define ALPHA_OP_BR	0x30
-+#define ALPHA_RA_R31	31
-+#define ALPHA_BR_DISP_MASK	((1u << 21) - 1)
-+
-+#define ALPHA_INSN_NOP	0x47FF041Fu /* BIS r31,r31,r31 */
-+
-+static inline bool alpha_br_insn(unsigned long pc, unsigned long target,
-+				 u32 *insn)
-+{
-+	long off_bytes = (long)target - (long)(pc + 4);
-+	long disp = off_bytes >> 2;
-+
-+	/*
-+	 * 21-bit signed displacement: range is [-2^20, 2^20-1] instructions.
-+	 * If this trips, the site/target are too far apart for a BR.
-+	 */
-+	if (WARN_ON_ONCE(disp < -(1L << 20) || disp > ((1L << 20) - 1)))
-+		return false;
-+
-+	*insn = (ALPHA_OP_BR << 26) |
-+		(ALPHA_RA_R31 << 21) |
-+		((u32)disp & ALPHA_BR_DISP_MASK);
-+	return true;
-+}
-+
-+static inline void alpha_patch_text(u32 *site, u32 insn)
-+{
-+	WRITE_ONCE(*site, insn);
-+	/*
-+	 * Alpha needs an I-cache sync after patching executable text.
-+	 */
-+	flush_icache_range((unsigned long)site, (unsigned long)site + sizeof(*site));
-+}
-+
-+void arch_jump_label_transform(struct jump_entry *entry,
-+			       enum jump_label_type type)
-+{
-+	u32 *site = (u32 *)jump_entry_code(entry);
-+	u32 insn;
-+
-+	if (type == JUMP_LABEL_JMP) {
-+		if (!alpha_br_insn((unsigned long)site, jump_entry_target(entry),
-+				   &insn))
-+			return;
-+	} else {
-+		insn = ALPHA_INSN_NOP;
-+	}
-+
-+	alpha_patch_text(site, insn);
-+}
+These two patches apply independently on for-next at 0b4cadbe7c39.
+The ES40 test kernel additionally contains jump-label v3. The combined
+kernel, boot image and modules cross-build with W=1. Both CMA patches
+pass checkpatch with no warnings or errors.
+
+CMA testing on a three-CPU AlphaServer ES40 with cma=64M:
+
+  - Reserved 64 MiB at 0x7c000000, above the first 16 MiB and below
+    the 2 GiB direct-map limit.
+  - Ran four allocation cases on each CPU (12 cases total).
+  - 32 MiB and 24 KiB (three-page) GFP_KERNEL allocations used CMA.
+  - 8 KiB (one-page) GFP_KERNEL and 24 KiB GFP_ATOMIC allocations
+    bypassed CMA.
+  - All buffers passed zeroing and CPU write/read checks.
+  - CMA allocation/release counters balanced, and available_pages
+    returned to its pre-test value after each allocation was freed.
+
+The initial harness compared CmaFree immediately after freeing a small
+allocation. That was not a reliable per-allocation check; verification
+using the CMA sysfs counters confirmed that all test pages were released.
+
+No new kernel warnings or faults appeared during testing. These tests
+exercise coherent allocation and freeing, not device-initiated DMA.
+GFP_ATOMIC was tested from process context. Boots with cma=0, cma=4M
+and the default size, fragmentation stress, and no-IOMMU platform
+validation remain outstanding.
+
+Link to v1:
+https://lore.kernel.org/linux-alpha/20260219205514.4434-1-linmag7@gmail.com/
+
+Magnus Lindholm (2):
+  alpha: parse early parameters before reserving contiguous memory
+  alpha: enable contiguous memory allocation for coherent DMA
+
+ .../io/dma-contiguous/arch-support.txt         |  2 +-
+ arch/alpha/Kconfig                             |  1 +
+ arch/alpha/kernel/pci_iommu.c                  | 13 +++++++++----
+ arch/alpha/kernel/setup.c                      | 18 ++++++++++++++++++
+ 4 files changed, 29 insertions(+), 5 deletions(-)
+
 
 base-commit: 0b4cadbe7c39d830dec35c4a2655483de0dae568
 -- 
