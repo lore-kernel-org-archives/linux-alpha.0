@@ -1,101 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.45
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794678404;
-	b=WIEi6fwmoT7EUICvyZ1H++f+HpYqc5FMQIjrFqkaY7q6cE9lGX6dVU7KTz3EUMqHEsss
-	 ppTAMPpAx6+VlrElpMhtjVty5HNZgxuAGLQdULgsgKnX3oz/VP4D8e6rkw3LPrvZQ65QD
-	 feo6fAOwLOzn19V0StxqvTXiIz6+Kdejk//b0Pl9imlihRoZyWcjfLlMZVecpHum7ZszR
-	 8C0Lpuyk8F02r9hXyLaf6TMhFymN9IS5hjCs80EFlds02T3Ci78f/sQcOJoeRV1XeuHBA
-	 XOO/RVpypn/5gM8t7EiVfX5JhIEn7+xIiwQgzhOIAt0ZXPPI7BoHuR1diDP7p1qdCpQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794678404;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=pYqZh4XlswEo3j+2ZthYHRt3Pfc8EeD6RAuf8AYBUIc=;
-	b=bUuh1em0O/RlATIRVeuZtlWuUBnU7Als2GHHIlOD27AVVzRwQTQcCEDPFI7+Jb1SlpDR
-	 RBKNb/J5xcYnjFDJwXu7bsQAoQmvTFPviIQqc3S33YVHdh3A091BPfJKTCJrgfOv2xzF+
-	 yNcLmYFdKkp/OotBwtrLNBZ02fFo9MOtbFoLBtaDK687VGO1qL1qApp23ynzRVbDihzzF
-	 D8wETImh1bP440T+JMmFuBVL5IennK/g7wM/6dCEcDJI3ZISIcCyZCpjRCIBTooVSD6aY
-	 vpEk7zVdVKvaK/kMgLGaYZuG3ZDHS/tCKZ/D22laQJw8VRDb7AVKeZVXr0COmiXAV8Q==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=T8AESTwR;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.45
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C874606A329
-	for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 17:46:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4C874606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=130.136.161.50
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794682052;
+	b=arsm0qnNpP9ztNg6tgEOOPpNokgQmUuGOrwhR0ogTcqxUs2D7pzJFm31SImcUni1cGNB
+	 db9DorqiM683maZuEfA7X8pJHIhm8/DHz4NM/etcWGi+fXbkluI2t9cHmkWk8cRhGqWdZ
+	 fQ1x8FF1fxq+4brnI9jwjUtDLM4VWpwlIN0DYnHzmOSG285NvnMSeboaMyRs6fGaxVKaA
+	 ld3q4lMc8jI6pdXxcLWtgjyO+DjUBXx6lUz8IB95Zw0mfhQssC5XL6gt7AVQd6dyMeThq
+	 yOdBBtIZndTdB609FmLxiQjb3oHjvuXBwBa5bPqVYjDRHggTk7WcxDQhiuLVDiWlVGg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794682052;
+	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:Date:
+	 Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=usIPslq1cfT97Mm83gdtb2Vu2a+gdviQvXX9W9YM1v8=;
+	b=vaWO9fuAlQshIbzDlrnGKRBqU1UERjD1b3RDZH62XjUbkf2kRcLgumTU5xPH+SN9CMrU
+	 CEhuQYm0ibIql7dmlI2/JyYOVuTYNPfAUJ2yYSkMvyl0RYNt4rxykGuB7cpLwf1nFpqOz
+	 EPhj2aQLOSH3yCIg9oSe/+vn+tC5k8JuHTnIIy9fxpp2RMx3F3s8GV9yVWIqXFi7KeZ0t
+	 Uai5keT42Uby7hywz6a1tCyUrXXZEVULsv00WJctqmH3b6UWQ5xMNm4DOzQzCqwZqDyD/
+	 R9hM6b/Du3CusiysRZtmj7sRJqeM18VIzENgQC+3ZqJ8o2jmKJkD+2lJ5hzPpBabHBA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=cs.unibo.it;
+	spf=pass smtp.mailfrom=cs.unibo.it;
+	dkim=pass header.d=cs.unibo.it header.i=@cs.unibo.it header.a=rsa-sha256 header.s=virtlab header.b=I8r0O3zb;
+	arc=none smtp.remote-ip=130.136.161.50
+Received: from mail.virtlab.unibo.it (mail.virtlab.unibo.it [130.136.161.50])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C710B606A323;
+	Sat, 14 Nov 2026 18:47:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C710B606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cs.unibo.it
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cs.unibo.it
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=T8AESTwR
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6b6e8b6d424so3752282a12.0
-        for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 09:46:44 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794678403; cv=none;
-        d=google.com; s=arc-20260327;
-        b=NaXcqnpF5QcZbHUR8SEuF34gRwj+5NOQ2WzRhCDEMSV/uWpiiBj+UJcCaDI8RZzEGN
-         rdmEFC0U2wi/wVNH+bENFVcrbx+G2JftdnCs7irIRbCsGL803ZeNN2rHj/fK/M4F1Djp
-         qi5f4j38LilW4JDiEmrnakt7wpuswETe5S3OeZZvcYo1NbcmTmIG2sb7r/8E51D1D4Xq
-         uUGtCsvGWNKQaj5YvzObF6APNXTxPbohUd/pnZakfdpEmFE/9Vd8GkxNG0yth3M9amt/
-         I3kDRF8CSbvNoz0vP2GqKUQ9kYo4e6yIOmoExxSqXAE+3rB9X7Hy9pKJI0jk3VVpg5Je
-         OY4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=pYqZh4XlswEo3j+2ZthYHRt3Pfc8EeD6RAuf8AYBUIc=;
-        fh=/+MCB+EmLSFuqmscT2EFpl2cGxdNmgEt6ujvDJAZmCU=;
-        b=V3GYstYat9bjASEm+fwtcFQpq+H+Cod3OkytvCMtAPb/hok34Nfu8ppFcg0NIHSF6c
-         DI8orIBfuNx0FWgN8VjoQTnhjLbJgD9HRxGjuhunmwzThyFa58nw1p/bfzbQEaVdHu1f
-         ein6OHEIg3bjmxU1ZGWZC5bzfgnkSk69hog8IhJ3h/CniPGer2cOhooN5bZTY8mGuIz5
-         KDwvq5kFQ8xUF0LwAYcsYzYdBod9bwK+10CADKSe4kxqdQuYDl7F4JG7ZtziPpvt1mZ/
-         ncpIB5NbTaikAAKYzDEvwhxGrtGajmlhthurnZdMYFFerpL9MuGqZUwH1usiG09NkFgG
-         j8iQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794678403; x=1795283203; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=pYqZh4XlswEo3j+2ZthYHRt3Pfc8EeD6RAuf8AYBUIc=;
-        b=T8AESTwRSBK4+s5Y1XiUDYreObOu9Sg26aZfY0inbg0QZTuP1DIYuqbw9iSECjZK0Q
-         t4PO4P66xOEyHQBO6S8KvBCAbny/2vO/bjQc8W1zBgkUD0Gi8CsBuLheNZKVBkriXp5V
-         awxQ3k/2MLtrmFc/un7VHYTL7u090Ze77kdGK0peZap+aQgFPG4cvQaWv9iycB6naqRU
-         VNZmD7nQMw5i4FJUBVAHJtYXP1TL+cWGOr8+9sIhGx6WtQoqH5RSAh6ByXqJ/9cPBSb7
-         ydhBXwt+MgLQqzK80C6iSLUsz4cQCJ6DfjiBAC2iR8Fe+77Ze+21NO1MiRSC/VtzVUAQ
-         odNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794678403; x=1795283203;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=pYqZh4XlswEo3j+2ZthYHRt3Pfc8EeD6RAuf8AYBUIc=;
-        b=wpDS+c3CGCYJgmREzF8yoZpC+A+oR/kInLbj3tKkL9RXjA4VDk3EtVd/36TZndhPat
-         vRiaupd/dbnmbTH8d8D75nnrGX0kNMTaA/uFlb/le8kXmEn1nMLzv/3VuVcFfNBxSu9d
-         0VpxgRwb0DVmrGTr9e02V50voklSFjNEsHlwgZTgTiluIE9cLlAadONOE6LXRnsMmc8I
-         FdA+DDsZ0hFINxVv/vUPeGVDTnag+LZ/qkzZ8lYed0phIXGQ2InIT2Jsqd6LKi5Tp37O
-         6TwKB/ZpZwEJm2nopwKnkxwEvgvAscaR9C/ETw2OJ7yFu3BcTZLptqUTGWx7uDympzn1
-         NDBw==
-X-Forwarded-Encrypted: i=1; AL+hErE1MhsJxFAE0eSJ9Owz7hDwMh1Ci+v4qWVDDsS5s5QeTaYGINYDJk4cgccj0dtVYLvS2lALglxsbW+QCw==@vger.kernel.org
-X-Gm-Message-State: APuU4Z+6uQX/qmA3kEecs1JfVkKO30lP47dWpNFGF7tz4hM55HYh+Pn8
-	rTrkcD2ONgCk4SL/ZT9uoFwsWUUQJNvZN0BBok62oawXPVqwKOhpzxuutVpdtQRlgif41JWhc5s
-	rDdGxNjFpihub9MFJn/+GpjJOvpBVkEI=
-X-Gm-Gg: AYBFou1Gd1s4WALFpsGQwuwzTQn+o+pyKbLiIh9IN03Xi9cI6k0MZ+HokyIpdSWDt6W
-	zz+O9+JT11mLXFYVifJLgb0Cqf/QFx4yUUKFe7vFO2ChFnp8F6sEYDPS9Ti8+vcGcGsvPRAQkB0
-	njrKpGhODI0g3at9J7ifMV176Uce1Vu7tzNvkurlJ23a3yxzK6a6NdwkkiW0b90t9JyMa9DDYIE
-	LpsK/E0WANYvWTsx3KXYG8iOmWbe8/sobd5c7+9Sri1yB7QnifBBtYF/i1Au3unHfO/5HguqL1k
-	U751TZwreCL21qnx8pR+rn+YHBBvrhPOx/7Pxe/VMv0uir5Gq4W4nXI+DblZqdgL+cSJ7lSyMgb
-	SPP2qWrtnGY2fClZfeP3ngLJM1Ly6+xt0Iqti+xBBOHLUczku+v8SXdFI6f0HFdSMOyDEvJveZ0
-	7ad3GZzoYN3Dk+vulJFWZvCrs=
-X-Received: by 2002:a05:6402:42c6:b0:6b5:76be:be54 with SMTP id
- 4fb4d7f45d1cf-6b7c0c6fac2mr5086521a12.35.1794678402519; Sat, 14 Nov 2026
- 09:46:42 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=cs.unibo.it header.i=@cs.unibo.it header.a=rsa-sha256 header.s=virtlab header.b=I8r0O3zb
+Received: from eipi10.cs.unibo.it (host0.studiodavoli.it [109.234.61.1])
+	by mail.virtlab.unibo.it (Postfix) with ESMTPA id 84A081C0145;
+	Sat, 14 Nov 2026 19:47:28 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=cs.unibo.it;
+	s=virtlab; t=1794682049;
+	bh=4OoxQ6arIeZu/vN+Ihq9aApJ9I0DFUIQBpN7zRBlfZw=;
+	h=From:To:Cc:Subject:Date:From;
+	b=I8r0O3zbGw34mgT2X1Qre//qmSTh3gOeexo8EaGTtv1ZazwUCTNcO/YfjfCGKTnCG
+	 +Qjgrxy6JEZ9aPs6zu1KrZAdFabi1gHaSujHV+wLlPncx8IFQ48giOpWqp6GIm7RYO
+	 oGb/EWxerDf355sdx1T0uRv3Ywp3mhxUq8KzFGYg=
+From: Renzo Davoli <renzo@cs.unibo.it>
+To: linux-kernel@vger.kernel.org
+Cc: Renzo Davoli <renzo@cs.unibo.it>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Oleg Nesterov <oleg@redhat.com>,
+	Shuah Khan <shuah@kernel.org>,
+	Alexey Gladkov <legion@kernel.org>,
+	Eugene Syromyatnikov <evgsyr@gmail.com>,
+	Davide Berardi <berardi.dav@gmail.com>,
+	"Dmitry V . Levin" <ldv@strace.io>,
+	=?UTF-8?q?Michal=20Such=C3=A1nek?= <msuchanek@suse.de>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	strace-devel@lists.strace.io,
+	linux-api@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	Brian Cain <bcain@kernel.org>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	Michal Simek <monstr@monstr.eu>,
+	Dinh Nguyen <dinguyen@kernel.org>,
+	Simon Schuster <schuster.simon@siemens-energy.com>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Chris Zankel <chris@zankel.net>,
+	Max Filippov <jcmvbkbc@gmail.com>,
+	linux-alpha@vger.kernel.org,
+	linux-hexagon@vger.kernel.org,
+	linux-m68k@lists.linux-m68k.org,
+	linux-um@lists.infradead.org
+Subject: [PATCH v4 0/3] ptrace_set_syscall_info: add support for instruction pointer modification
+Date: Sat, 14 Nov 2026 19:47:15 +0100
+Message-ID: <20261114184720.373178-1-renzo@cs.unibo.it>
+X-Mailer: git-send-email 2.55.0
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -105,89 +84,161 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261114094826.1282965-1-linmag7@gmail.com> <20261114094826.1282965-2-linmag7@gmail.com>
- <CAEdQ38FMuOzdFkU4RQFhZJkSiczzVLu-eBiZmjwpiUUahDvjCQ@mail.gmail.com>
-In-Reply-To: <CAEdQ38FMuOzdFkU4RQFhZJkSiczzVLu-eBiZmjwpiUUahDvjCQ@mail.gmail.com>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Sat, 14 Nov 2026 18:46:30 +0100
-X-Gm-Features: AclHuK_W6ympXicZilhjs-sdGjEUv0-83IxfodgP5fKhvBWmh_RZR9-nRq4qQUw
-Message-ID: <CA+=Fv5QzBe_+k9C6ThbVV+Ou4My6Kr9qjFMsf2c+Bkex5_D+3g@mail.gmail.com>
-Subject: Re: [PATCH v3] alpha: Add support for HAVE_ARCH_JUMP_LABEL
-To: Matt Turner <mattst88@gmail.com>
-Cc: richard.henderson@linaro.org, linux-kernel@vger.kernel.org, 
-	linux-alpha@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi Matt,
+PTRACE_SET_SYSCALL_INFO is a generic ptrace API that complements
+PTRACE_GET_SYSCALL_INFO by allowing a tracer to modify details of a
+system call in which the tracee is currently blocked.
 
-On Sat, Nov 14, 2026 at 5:54=E2=80=AFPM Matt Turner <mattst88@gmail.com> wr=
-ote:
->
-> On Sat, Nov 14, 2026 at 4:48=E2=80=AFAM Magnus Lindholm <linmag7@gmail.co=
-m> wrote:
-> > diff --git a/arch/alpha/kernel/Makefile b/arch/alpha/kernel/Makefile
-> > index 850f1265cc55..4088cd56866e 100644
-> > --- a/arch/alpha/kernel/Makefile
-> > +++ b/arch/alpha/kernel/Makefile
-> > @@ -92,3 +92,5 @@ obj-$(CONFIG_ALPHA_TITAN)   +=3D err_ev6.o err_titan.=
-o
-> >  obj-$(CONFIG_ALPHA_TSUNAMI)  +=3D err_ev6.o err_tsunami.o
-> >
-> >  endif # GENERIC
-> > +
-> > +obj-$(CONFIG_JUMP_LABEL) +=3D jump_label.o
->
-> Nit: this would read better up with the other unconditional obj-
-> lines near the top of the file rather than trailing the GENERIC
-> block.
->
-> > +#include <linux/jump_label.h>
-> > +#include <linux/kernel.h>
-> > +#include <asm/cacheflush.h>
->
-> Nit: checkpatch --strict suggests <linux/cacheflush.h> here.
->
-> > +     if (WARN_ON_ONCE(disp < -(1L << 20) || disp > ((1L << 20) - 1)))
-> > +             return false;
->
-> Thanks. The target is always within the same function and Alpha gcc
-> doesn't do hot/cold partitioning, so I don't expect this to fire, but
-> it's a cheap safety net.
->
-> > +static inline void alpha_patch_text(u32 *site, u32 insn)
-> > +{
-> > +     WRITE_ONCE(*site, insn);
-> > +     /*
-> > +      * Alpha needs an I-cache sync after patching executable text.
-> > +      */
-> > +     flush_icache_range((unsigned long)site, (unsigned long)site + siz=
-eof(*site));
-> > +}
->
-> On SMP this is smp_imb(), so every key flip IPIs all CPUs once per
-> site. That's correct, and fine as a starting point; batching via
-> arch_jump_label_transform_queue()/_apply() would be the natural
-> follow-up you mention in the cover letter.
->
-> I applied this on 0b4cadbe7c39 and cross-built an SMP defconfig with
-> JUMP_LABEL and STATIC_KEYS_SELFTEST at W=3D1 with no new warnings. The
-> patch sites in vmlinux are the expected 0x47ff041f nops with nearby
-> targets.
->
-> The diffstat in the cover letter is stale (63/146 vs. 65/148 in the
-> patch), but that doesn't matter for applying.
->
-> None of the above needs a respin from my side.
->
-> Reviewed-by: Matt Turner <mattst88@gmail.com>
+The API is designed to let tracers inspect and modify system call
+information in a simple, architecture-agnostic manner.
 
-Thanks for reviewing and build-testing this. I'll fix the Makefile
-placement and cacheflush include when applying it, and refresh the
-cover-letter diffstat. Batching can remain a follow-up.
+The current implementation only supports modifying the subset of
+system call information needed by strace: the system call number,
+arguments, and return value.
 
-The boot selftest and 30 module load/unload cycles also passed on
-my three-CPU ES40, including cross-module static keys.
+This patch set extends PTRACE_SET_SYSCALL_INFO with support for
+modifying the tracee's instruction pointer.
 
-Thanks,
-Magnus
+To do this, the tracer stores the new instruction pointer value in the
+instruction_pointer field of the ptrace_syscall_info structure and
+sets the PTRACE_SYSCALL_INFO_FLAG_SET_IP flag in the flags field.
+
+This flag is introduced to avoid breaking existing code that uses
+PTRACE_SET_SYSCALL_INFO and currently ignores the
+instruction_pointer field.
+
+The proposal does not add any new ptrace capability. It merely provides a
+portable interface for a capability that already exists and is already relied
+upon by existing applications.
+
+WHY
+
+PTRACE_SYSCALL_INFO_FLAG_SET_IP completes the set of actions that a tracer can
+request when intercepting a system call.
+
+A tracer can currently instruct a tracee to:
+
+* execute the original system call;
+* execute a different system call (or the same system call with modified arguments);
+* skip the system call and provide the desired return value and/or errno.
+
+The proposed PTRACE_SYSCALL_INFO_FLAG_SET_IP adds a fourth possibility:
+* execute an arbitrary sequence of two or more system calls in place of the original one.
+
+The mechanism is straightforward. During a PTRACE_SYSCALL_INFO_EXIT stop, the
+tracer rewinds the instruction pointer to the system call instruction (e.g. by
+2 bytes on x86-64 for syscall, or by the appropriate amount on other
+architectures). When the tracee resumes, it immediately generates a new
+syscall-entry stop, allowing the tracer to provide a new system call number and
+arguments. By repeating this process, a tracer can transparently replace a
+single system call with any sequence of system calls.
+
+This capability already exists on all architectures through
+architecture-specific interfaces such as PTRACE_POKEUSER, PTRACE_SETREGS, or
+PTRACE_SETREGSET. PTRACE_SYSCALL_INFO_FLAG_SET_IP does not introduce a new
+capability; it merely exposes an existing one through the portable
+PTRACE_GET_SYSCALL_INFO/PTRACE_SET_SYSCALL_INFO API.
+
+WHO
+
+The VUOS project uses this mechanism extensively.
+VUOS provides namespace-like execution environments implemented entirely in
+user space, without relying on kernel namespaces.
+https://wiki.virtualsquare.org/#/tutorials/vuosbasics
+
+For example, VUOS allows unprivileged processes to use user-space
+implementations of filesystems (FUSE), networking stacks, virtual devices, and
+other resources.
+
+To improve scalability on multicore systems, VUOS implements what we call the
+guardian angel model: each traced thread has its own dedicated tracer thread.
+This avoids a single tracer becoming a bottleneck.
+
+When a traced thread creates a child, ownership of the new tracee must be
+transferred to a newly created guardian angel. This requires delaying execution
+of the child's first system call until the new tracer has attached.
+
+The current implementation proceeds as follows:
+* save the original system call number and arguments;
+* replace the system call with a blocking ppoll(NULL, 0, NULL, NULL) call;
+* detach the original tracer;
+* attach the new guardian angel using PTRACE_SEIZE;
+* interrupt the blocking ppoll() with PTRACE_INTERRUPT;
+* at the subsequent syscall-exit stop, rewind the instruction pointer to the system call instruction;
+* at the following syscall-entry stop, restore the original system call number and arguments.
+
+This mechanism is currently implemented using architecture-specific register
+manipulation. PTRACE_SYSCALL_INFO_FLAG_SET_IP would allow the same
+implementation to be written using the portable ptrace syscall information API.
+
+Although VUOS is the primary motivation for this proposal, the feature is
+generally useful for any project implementing ptrace-based system call
+interposition, including PRoot, strace's syscall injection machinery, and
+similar frameworks.
+
+This patchset is a new version of the proposed patchset entitled:
+ptrace_set_syscall_info: add support for seccomp syscall skipping and
+instruction pointer modification
+
+The patchset has been split in two:
+syscall skipping (previously sent)
+instruction pointer modification (this)
+
+This patch series depends on the syscall-skipping series:
+[PATCH v11 0/3] PTRACE_SET_SYSCALL_INFO: add support for seccomp syscall skipping
+https://lore.kernel.org/lkml/20261114181923.370930-1-renzo@cs.unibo.it/
+
+This series is based on top of v11 of that series and should be applied
+after it.
+
+The prerequisite series is currently not in mainline.
+
+Testing (QEMU, v7.4-rc2 with v11 of the syscall-skipping series,
+tools/testing/selftests/ptrace/set_syscall_info):
+
+                               x86_64 (KVM)
+  ptrace/set_syscall_info      3/3
+
+Changes in v04:
+* rebased to Linux 7.4-rc2, on top of v11 of the syscall-skipping series
+* ptrace: adapted to the syscall-skipping series, where a
+  PTRACE_SYSCALL_INFO_SECCOMP stop turned into a PTRACE_SYSCALL_INFO_EXIT
+  one is handled by ptrace_set_syscall_info_seccomp_skip();
+  PTRACE_SYSCALL_INFO_FLAG_SET_IP applies to that case too
+* ptrace: check that the new instruction pointer fits in an unsigned long
+  before changing any register, so that -ERANGE leaves the tracee untouched
+* selftests/ptrace/set_syscall_info.c: checkpatch fixes in the
+  PTRACE_SYSCALL_INFO_FLAG_SET_IP test case
+
+Changes in v03:
+rebased to Linux 7.3-rc1
+
+Changes in v02:
+compatibility issues with updated syscall skipping
+set_syscall_info selftest: improve error messages
+
+Renzo Davoli (3):
+  asm/ptrace.h: add instruction_pointer_set
+  ptrace: add PTRACE_SYSCALL_INFO_FLAG_SET_IP
+  selftests/ptrace: add a test case for PTRACE_SYSCALL_INFO_FLAG_SET_IP
+
+ arch/alpha/include/asm/ptrace.h               |   6 +
+ arch/hexagon/include/asm/ptrace.h             |   6 +
+ arch/m68k/include/asm/ptrace.h                |   6 +
+ arch/microblaze/include/asm/ptrace.h          |   6 +
+ arch/nios2/include/asm/ptrace.h               |   6 +
+ arch/um/include/asm/ptrace-generic.h          |   6 +
+ arch/xtensa/include/asm/ptrace.h              |   6 +
+ include/uapi/linux/ptrace.h                   |   4 +
+ kernel/ptrace.c                               |  38 ++--
+ .../selftests/ptrace/set_syscall_info.c       | 173 ++++++++++++++++++
+ 10 files changed, 247 insertions(+), 10 deletions(-)
+
+base-commit: 7e1392a42ea288d70a266f6553fe06f57f8647ea
+prerequisite-patch-id: bad42bc3bb8ed701597b19c4de6b76e5bab93895
+prerequisite-patch-id: 1b2e63fe71203031ae67a78e49b091369f8de5e1
+prerequisite-patch-id: 2135a43ed9d9539fb21b5e2539ef35e959251ab6
+-- 
+2.47.3
+
