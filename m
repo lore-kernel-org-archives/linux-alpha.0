@@ -1,89 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.171
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.224.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794678003;
-	b=niEMOd37FpOBRIQK0HrBVE6j8ywdUBhgEuoYQvC06E7Nrlfzi4L6txMeMQdZm6ih9cPY
-	 YsE1HmtdqRqB0t6T6UGyVd3gJTt/CGgax8dmsJRSF1uhSMhyRnFFs4fwdzOfs2ZdW0oIs
-	 YOGdLgLyfqYY7fWg9lQuIEnEz9boRHxN7tp8DHCyMeAg2OP/e2VLAE7iDBAsz9wjrAKdD
-	 ahwqfJ4zi9A3dry0xsqXi29zLk9UqlH+9BWrOB6Oaxz128l9zEBOH2nyg6gVfil2inEDD
-	 dQ42bpoUcOSz3alzHSMHC6NGCG7ZPr9CJDa1Kkd7soex6yizD7vfIJt60vVpuaKnUhg==
+	t=1794678004;
+	b=2Ot3hG5DD96Q5JC4scGLWt1JOLDUA7l3GAdVuRE7Nf5ubaw1c5KHgByZwCZiyOgT20qo
+	 /PAK8+ftOFKtFZXuAxGS0BqO0NeB2IMl5rrFd7hiwx8tcQ2HP7Zzk2wC2DdkFvTRNooWF
+	 Qh7TngLVbIWllwE8XB/+a6HanotO9vA0sJ97Fq+eE3ukw3FeUj59tvkvTWq2hP7VTy3CP
+	 lHdFfy/fGr7PQefp8BnxMvFv3Ic3F6ZhUcivNTWqCXD/N3YirXCGdNrR3DE6zjSCDvOwK
+	 4Geu6K73gkii0DODSTGHPCHYEl/btP/xIZi6wuR5hVO6rTl6iwewtrhGiTtYlc/cihg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794678003;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794678004;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
 	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
 	 X-Developer-Key;
-	bh=vYu8kBmzY99tvtLA+mnOuYYwUJpf0GKsu/QGHy4PRNs=;
-	b=I+HXmNcLMXHx1fLixoJdVSj7mgGFasGpliUZ/Hzc/crnwKGBRaeGriwpD4OdJKNE5jAd
-	 qDmaoCBZ+PYsE+TeYuUVrTC01EwYc4YfauhL+DGb/m2Jt99xa8yBMFPDb+6Ic8NQKtH0+
-	 K7V8pGAqEGBL46LAVVpFn1LK0qlWPJYC7YmS+yvx+8hpkMrS9Cz2J0R4xLsy7yV8/qA8Z
-	 I65uipzpTWXO0kTwT5sdB6oaJwi8m1tfzJ6cAozV2BrXNjdf0c9vQ8eoFYfFadLiDeofm
-	 UBMCbXjyQKRC1SO6VjzMbaXZiXS9eUb7s2JdXtDf7z16DuJXc+uz7M3jIf61KnsUbuQ==
+	bh=/226Y4aFcKPk0d3VKmImdxm39V8qyA0QwzRmeBW298A=;
+	b=v0ioIJd6uze/1ZN9nXx+Qsp1OiLlowmaUURr8r7ljEI/A2g+8qS7iEi4r9DBhxvpXFvy
+	 8v5V6HxzuwNJIvesTbUFMjCeZnjhPXL5m9UAtKu7lL/xuZ/ZZuoebk24HGBXiJ7amnwJR
+	 RL1Sft9qRQqdtFeDNUWW+MkMOlJf6/0P+jJKZaFkb49pbNDhgYq0OzAsmQLadbqu6fz51
+	 SdMuS878wS8QXQTRpTug0Tg5eMxFboL6VBHURCrmLB4OshHkDIa5grVCh8WXlbIjdeFj9
+	 CtCskUZ5DdCwzE01anpTcUupDroRi1hHEN9rUnK5KVref2vRjwhXctU8c7Jkzy7OXeg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="T2M/hAOU";
-	arc=none smtp.remote-ip=209.85.128.171
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=NDe3mNXQ;
+	arc=none smtp.remote-ip=74.125.224.48
+Received: from mail-yx1-f48.google.com (mail-yx1-f48.google.com [74.125.224.48])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3390260A2604
-	for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 17:40:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3390260A2604
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D94A606A88E
+	for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 17:40:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3D94A606A88E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=T2M/hAOU
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-8b30ff12f84so14397447b3.2
-        for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 09:40:02 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=NDe3mNXQ
+Received: by mail-yx1-f48.google.com with SMTP id 956f58d0204a3-67d9a5e9bb6so1103563d50.2
+        for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 09:40:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794678001; x=1795282801; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794678003; x=1795282803; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=vYu8kBmzY99tvtLA+mnOuYYwUJpf0GKsu/QGHy4PRNs=;
-        b=T2M/hAOUHm7uGuNFMed0BjamiBxSsKItBtsFVXBGkmxxGMZpXDk83QsNUkfC95ltd0
-         BFujSxWn9wo5vcAXnbQOYKQwfKmMzEumz6Qhxmv0iom0H9bSQuScYRx3/y/C3CvlEaP/
-         axMz0b6Yx9p+GI11DmgZkKK82XvgGotQ/a2ceHlkupcjiWQdf4uWwqHWMHgqC9Wvv45/
-         259WDPHZnAf/OJ+Pa1lMB8/htuhSTUb/Ut1kumCjL50zlOkTKcP5QtyFfR+BueMucjxr
-         hQ2NnERFkf9466BvLEbqdi7wQzVYDqWiFRfLnolKdkbzfCyB+fGu9oxREdN254CH7yGe
-         hJlg==
+        bh=/226Y4aFcKPk0d3VKmImdxm39V8qyA0QwzRmeBW298A=;
+        b=NDe3mNXQCyKWUsPt59T+7jGbsgmo5mW1rT6AsgZyh92OB21xDOtjpHJvXNkZ1b/3ls
+         Yo27iCN6LI3Ky2Do0u3f3eDvQX+7XCJM2Ri18VIQHGTCYNXz3lQl8gZclD8JLArc1UD4
+         YB7SipA/xm451JLDYpO2IMY31S4xnqURwQZnqD85NYbEKzlnAyDVPjFAxXSCmdIFmYZb
+         Mvl0W5rTQwYG43dUOeHHPeDVIt/TjOisCzi0vzHmfkxd4BGsxrJt7pWvoo2PrXlZ/2gI
+         6PmxtuWoIZvKvFKbPUubTPA1Sw+CcUkVwMKLLvOpn6w3pdNtcf02S1OLoEsvFPNHj9j0
+         0RJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794678001; x=1795282801;
+        d=1e100.net; s=20260707; t=1794678003; x=1795282803;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=vYu8kBmzY99tvtLA+mnOuYYwUJpf0GKsu/QGHy4PRNs=;
-        b=sfui6DZ91L11vF3AvFE0F4sC8RXMUGcJJ9XIoeVnkEkwXmbyxztFLDUDQ322x9l5M6
-         bzGtFpvwdvdqCw4V71dtnEn3f4UIpl/h2s6oijiG785iDNtlwkenBGFU4F4eBcrgoKmV
-         Edzg2eifz79ivTNX6quFWvF1N9GcGRvbytUbq2asH4kXr5tUJUTwfqLEEH+aeMAgmYAM
-         XRFYQDKKkI6o+CAeFejh3a2GCyTR5Gp9n6xn6HZt6gMG5u2e2kCHWi4g5Qpuu8q9Hotk
-         k2bkyjTUVeW2odVeR1hqRJ+L8MIP24QoZBlANsmfHZM3IDzfwWmJxtcNnQmVDV8EYAGQ
-         RMAA==
-X-Gm-Message-State: APuU4Z+LKkrFeSMleGu5Qsp77Z17d9D3ho5oxmFeMwKG7CWxk0PuGuai
-	tg9XfnqT7A97TrQcLtehgoKkb3Hgurwt4L06SmD+I5pCdd9nyaZd+7a6
-X-Gm-Gg: AYBFou1pEk3bu5SP2e137r7qqxtc07uG8dtfo0sdy5xWGYI/n2SVQ6mIpzyjd8gIT/x
-	/mbSrBYL9KjcqNJLtOB8EXXXdlHqszroaT8nNJzuJq8sWu8eu8Y8mEuoMEe1kZXLNmyRAl+zVyo
-	Wo5oGL7pRr3gMpbJmoi576pRM56N2mwFm53Jec67NiRjaAZppnJnSyMcauyyGJqMPXryMEo3Okq
-	PWzooP5T9W5g0HXagcXZKGGkhrA0YKcQebjpPlDJI+FnjWdA4yY+3IJekI7VlFgh44kwTerf3aP
-	Xcu+yiDpzmaIglq/zEm3ANCi+2hSqBGNz7LN4kgJS33OhThmk3IycLLAvqPjRSEVUTFm/e/zufK
-	7BylFv4Rxk1Ms2Np/ac/VPkimT4VQT5RgPGYzGdbfVOjD/BpIY6tzCXQprfleM1pCdSMYF59DM/
-	7i+rDCOc4jAWsa1pwFFrt3yXAsiVs6GYMAmoJL24R05EHoydUA4gsYyE44OiWVqBV8M2H4l6Ih4
-	QXUFL5+Kdl/gvGofGfOnmEKtUWioSDzV4JA8REcxHFSGYftsz7D0KecmmSOIGFsW5udyAx0xDpC
-	bw+4R0JKe7WRRkT7FRW6fL0Ymq/4COT7/lCrJ6cBPNduREiFMiV7QAD8yFnrr4Vs82ghqov6Yjf
-	AJEwaYZ4jDDTqVj7y7J6/XddGd60Y+POaXap8T7X+lEpzn1req2KJ5cZ4tRes7v4=
-X-Received: by 2002:a05:690c:fd2:b0:8b4:cc58:78d6 with SMTP id 00721157ae682-8b4cc5882a1mr1774357b3.19.1794678001020;
-        Sat, 14 Nov 2026 09:40:01 -0800 (PST)
+        bh=/226Y4aFcKPk0d3VKmImdxm39V8qyA0QwzRmeBW298A=;
+        b=V2flNf94aPq6pwmp29c1jQSyCZb18hjx5a4OURbfuE8kAcTkY06yN9NTizcx8vKASZ
+         ZFxu15ifnbTuB4sPwZMbm+uo1Ff5xroiXGrf33yNXtoixJejHwpCoEkFclconwNvSN70
+         F+Bz3gzVABDYnw31tAWROz2ARXwldsw8lmP7hNBt3TB+IubtC4yJHleLTc6hzsIyRzZ8
+         dULVGHlI+QpBFgmErOBhvvBfGXYPVQbqQkHNmYISsb+tdGz5NgBhDKU7GAZxmka7DCiE
+         mcjaDmJBVSleR3NU5v8MRiW7GgwnELkfWLfsWKLS0c2k4POJRZSr1Yt/rJRU1ZcqwV07
+         +vew==
+X-Gm-Message-State: APuU4Z9GMqlk57rZRk9+cADeuG3t7PXO3XUKbpRu4wXXKbESJNvG/uqB
+	smx5KkmOD7JqgjQWJavCQ+3LVBTAwDnEnYxq78YET5tHrfw7KGo47Mkb
+X-Gm-Gg: AYBFou2yrAzoLsIBflebetj35GscIKumtAp2iMusMZYYnylWOcNhUZ55K20bnnGT4Kh
+	RBt6bNFH3/i87NQu9wehzcIQEuuAibVBtkB60DwReAAVCzi71raB0AYgTy00iiZ/SA2VSVe/Vc9
+	PMe2rbEM3WiJJJmJLaPcJcFcuc7kPHiFlz2jV568KuPTQF1zBJJ+PhUF7Lzj2ji2B8l/E/yxpOE
+	zv4oIR8TO0lAqM9xP01iYY6CbE37DHDniRI2tXRi6ljoHj7rc0RYQM7scUSJojuliYSfES89B4W
+	LEVOm6jq2loAg1eSzl/XbvzuL5lgKbKGUujvv7myE4ntK7ZPsPxR7dSKWARMWl/G9UAdfnCvoZk
+	spy7c7vpcYz33trCrDngIMXzvrH62duD0fMfHMM5mDjPJitlr1YW0l0HMEVta+aAkf+Unog/XtY
+	iIGxHaW5s39QDmHSl1JZmM5i6zJ8b0h5OYOcTh8wQDcq6F3z88oD3Vy4wboTAUFwblUEQe2LVKK
+	U1u2lFZz2fEbgTlQkUV0A5PmvX2ojRrYek3OsMq5MLJYybWiE89AMnnCs/wXV5fExPh4uUbqVK3
+	4QM0DA1t0xHAMQK5jfxjh1jACMcYKYHWJAj0/KvaJitz287XGPYYLy4lu91AmQv2l+TnGFySZJ5
+	1qs186X7pqqJQEoXH6T6OtQadshbbnHnxRHG7t7ZnAMvq2KxhmO6+UAcAaRUqHA==
+X-Received: by 2002:a05:690e:48e:b0:677:cb43:4b3a with SMTP id 956f58d0204a3-67d8979ac95mr2046603d50.156.1794678003167;
+        Sat, 14 Nov 2026 09:40:03 -0800 (PST)
 Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b4c65f85c3sm9088097b3.33.2026.11.14.09.39.59
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b4aa7f1a0dsm48618117b3.1.2026.11.14.09.40.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Nov 2026 09:39:59 -0800 (PST)
+        Sat, 14 Nov 2026 09:40:02 -0800 (PST)
 From: Matt Turner <mattst88@gmail.com>
-Date: Sat, 14 Nov 2026 12:39:51 -0500
-Subject: [PATCH 5/7] hwmon: Add driver for Marvel AlphaServer environmental
- sensors
+Date: Sat, 14 Nov 2026 12:39:52 -0500
+Subject: [PATCH 6/7] alpha: marvel: notify environmental events
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -95,7 +94,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261114-marvel-env-v1-5-890328e4b7e5@gmail.com>
+Message-Id: <20261114-marvel-env-v1-6-890328e4b7e5@gmail.com>
 References: <20261114-marvel-env-v1-0-890328e4b7e5@gmail.com>
 In-Reply-To: <20261114-marvel-env-v1-0-890328e4b7e5@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
@@ -104,732 +103,81 @@ Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, 
  Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=21842; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=CGsKsW8Qw7uqFhmB+YTN/1Si8VAmgG+9q66togiUJmo=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJ+zHl8o+RJlav2L9tgJzve+StiOf7PvfKMqarR2/zpj
- sn3uVk0Oz6yMIhxMcwUU2SJW6/IMqttx1Kf09K/YOawMoEMkRZpYAACFga+3MS8UiMdIz1TbUM9
- QyBDxygeIqfHoJFZXFyaWqSbVlDkkJdfkliSmZ9XrJdfkJpXkF6gl5aZVpKRkV9UnAo0Qi8vtcT
- U1dHNyNDAxNLRwszJwtHUxNnZydDJzdHR2dXJyNLcxMDZ0tHE1dKcgYtTAOYaAx2Gv9IPbC+1NZ
- Sfss05K2Xpqj5fZuadicn5lglcalaLv//nWcnIsCF2Wrm0l8fyB9kTUxP2xpiVnBNbyZPRn8J76
- 4bjXjZbDgA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2124; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=kn6qAKEjNgVefdGm65LCAkz/4DlKpjG6hjl3uYO+Iy8=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJ+zHnss77lqeSh2wWmTuuz5si0HdjDcu3iJYONOorrM
+ vcfZ+Cz6vjIwiDGxTBTTJElbr0iy6y2HUt9Tkv/gpnDygQyRFqkgQEIWBj4chPzSo10jPRMtQ31
+ DIEMHaN4iJweg0ZmcXFpapFuWkGRQ15+SWJJZn5esV5+QWpeQXqBXlpmWklGRn5RcSrQCL281BJ
+ TV0c3I0MDE0tHCzMnC0dTE2dnJ0MnN0dHZ1cnI0tzEwNnS0cTV0tzBi5OAZhrtK4zMvRfP3jms+
+ d67XBGN5n1d9xmlKT5mqfP/6nwNV/Bp9T7ZzfDP2t7OfsvB/YFG81SKZA4/Vi/knVPmLHUhjsh2
+ 1u1mniPcwEA
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-The management firmware of the Marvel (EV7) AlphaServers, the GS1280,
-ES80 and ES47, monitors temperatures, fans, voltages and power supplies.
-The SRM console describes each sensor as a packet in a power and
-environment node of its config tree (GCT), and fills in the readings
-when asked to refresh the node. The packet layout was taken from Tru64
-UNIX.
-
-Export the sensors through hwmon. Temperatures come with their warning
-and fault thresholds and fans with their warning threshold. Voltages
-export a reading and an alarm, power supplies only an alarm.
-
-A refresh keeps the boot CPU in the console with interrupts disabled for
-up to 300 ms per node, so refresh a node at most once per
-update_interval.
+A change in the state of a sensor arrives as a system event logout
+frame. Call an atomic notifier chain on each one, so that a sensor
+driver can reread its sensors and tell userspace without polling.
 
 Assisted-by: Claude:claude-opus-5-5
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
- Documentation/hwmon/index.rst      |   1 +
- Documentation/hwmon/marvel-env.rst |  60 ++++
- MAINTAINERS                        |   8 +
- drivers/hwmon/Kconfig              |  11 +
- drivers/hwmon/Makefile             |   1 +
- drivers/hwmon/marvel-env.c         | 552 +++++++++++++++++++++++++++++++++++++
- 6 files changed, 633 insertions(+)
+ arch/alpha/include/asm/marvel_env.h | 5 +++++
+ arch/alpha/kernel/err_marvel.c      | 9 ++++++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/hwmon/index.rst b/Documentation/hwmon/index.rst
-index 199ca79621e9..b062ad1ff53f 100644
---- a/Documentation/hwmon/index.rst
-+++ b/Documentation/hwmon/index.rst
-@@ -157,6 +157,7 @@ Hardware Monitoring Kernel Drivers
-    ltc4286
-    lx1308
-    macsmc-hwmon
-+   marvel-env
-    max127
-    max15301
-    max16064
-diff --git a/Documentation/hwmon/marvel-env.rst b/Documentation/hwmon/marvel-env.rst
-new file mode 100644
-index 000000000000..db36127c3805
---- /dev/null
-+++ b/Documentation/hwmon/marvel-env.rst
-@@ -0,0 +1,60 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+Kernel driver marvel-env
-+========================
-+
-+Supported systems:
-+
-+  * Marvel (EV7) AlphaServers: the GS1280, ES80 and ES47 families,
-+    booted from the SRM console
-+
-+Author: Matt Turner <mattst88@gmail.com>
-+
-+Description
-+-----------
-+
-+The management firmware of these machines monitors temperatures, fans,
-+voltages and power supplies, and the SRM console describes each sensor in
-+its configuration tree (GCT). This driver asks the console to refresh the
-+readings and exports them.
-+
-+The console has no sensor names, so the labels are built from the reporting
-+unit (such as ``CMM0`` or ``MBM/PBM``) and the sensor's position in that
-+unit. On systems with more than one drawer the label starts with the
-+cabinet and drawer numbers.
-+
-+A refresh keeps the boot CPU in the console with interrupts disabled for up
-+to 300 ms per unit, so a unit is refreshed at most once every
-+``update_interval`` milliseconds (10000 by default).
-+
-+Sysfs entries
-+-------------
-+
-+=========================== =================================================
-+``update_interval``         Minimum time between refreshes of a unit, in ms
-+
-+``temp[1-*]_input``         Temperature
-+``temp[1-*]_max``           Warning threshold
-+``temp[1-*]_crit``          Fault threshold
-+``temp[1-*]_max_alarm``     Sensor is in the warning or fault state
-+``temp[1-*]_crit_alarm``    Sensor is in the fault state
-+``temp[1-*]_label``         Sensor label
-+
-+``fan[1-*]_input``          Fan speed
-+``fan[1-*]_min``            Warning threshold
-+``fan[1-*]_min_alarm``      Fan is in the warning or fault state
-+``fan[1-*]_fault``          Fan is in the fault state
-+``fan[1-*]_label``          Fan label
-+
-+``in[0-*]_input``           Voltage
-+``in[0-*]_alarm``           Sensor is in the warning or fault state
-+``in[0-*]_label``           Sensor label
-+
-+``power[1-*]_alarm``        Power supply is in the warning or fault state
-+``power[1-*]_label``        Power supply label
-+=========================== =================================================
-+
-+Sensors that the console reports as unknown or not present when the driver
-+loads are not exported. If a sensor becomes unknown later, reading its input
-+attribute fails with ``-ENODATA``, as does reading the alarm of a voltage
-+sensor or power supply.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 93abbb315065..09dee8fab9ec 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16100,6 +16100,14 @@ L:	linux-mips@vger.kernel.org
- S:	Maintained
- F:	arch/mips/boot/dts/img/pistachio*
+diff --git a/arch/alpha/include/asm/marvel_env.h b/arch/alpha/include/asm/marvel_env.h
+index 583dca6c02d1..14b05efa6f51 100644
+--- a/arch/alpha/include/asm/marvel_env.h
++++ b/arch/alpha/include/asm/marvel_env.h
+@@ -2,6 +2,8 @@
+ #ifndef __ALPHA_MARVEL_ENV_H
+ #define __ALPHA_MARVEL_ENV_H
  
-+MARVEL ALPHASERVER ENVIRONMENTAL SENSOR DRIVER
-+M:	Matt Turner <mattst88@gmail.com>
-+L:	linux-hwmon@vger.kernel.org
-+L:	linux-alpha@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/hwmon/marvel-env.rst
-+F:	drivers/hwmon/marvel-env.c
++#include <linux/notifier.h>
 +
- MARVELL 88E6XXX ETHERNET SWITCH FABRIC DRIVER
- M:	Andrew Lunn <andrew@lunn.ch>
- L:	netdev@vger.kernel.org
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 18c682e1a475..50a1bf966f30 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -1255,6 +1255,17 @@ config SENSORS_MACSMC_HWMON
- 	  This driver can also be built as a module. If so, the module will
- 	  be called macsmc-hwmon.
+ /*
+  * Ask the console to refresh the environmental readings of the GCT node at
+  * @offset from the start of the GCT. Returns the console status, which is 1
+@@ -9,4 +11,7 @@
+  */
+ long marvel_cfgtree_partial_update(unsigned long offset);
  
-+config SENSORS_MARVEL_ENV
-+	tristate "Marvel (EV7) AlphaServer environmental sensors"
-+	depends on ALPHA_MARVEL || ALPHA_GENERIC
-+	help
-+	  If you say yes here you get support for the temperature, fan,
-+	  voltage and power supply sensors of Marvel AlphaServers (the
-+	  GS1280, ES80 and ES47), as described by the SRM console.
++/* Called from machine check context on each environmental system event. */
++extern struct atomic_notifier_head marvel_env_notifier;
 +
-+	  This driver can also be built as a module. If so, the module
-+	  will be called marvel-env.
-+
- config SENSORS_MAX1111
- 	tristate "Maxim MAX1111 Serial 8-bit ADC chip and compatibles"
- 	depends on SPI_MASTER
-diff --git a/drivers/hwmon/Makefile b/drivers/hwmon/Makefile
-index d4c345ed7261..2b1b1850d641 100644
---- a/drivers/hwmon/Makefile
-+++ b/drivers/hwmon/Makefile
-@@ -157,6 +157,7 @@ obj-$(CONFIG_SENSORS_LTC4282)	+= ltc4282.o
- obj-$(CONFIG_SENSORS_LTC4283)	+= ltc4283.o
- obj-$(CONFIG_SENSORS_LTQ_CPUTEMP) += ltq-cputemp.o
- obj-$(CONFIG_SENSORS_MACSMC_HWMON)	+= macsmc-hwmon.o
-+obj-$(CONFIG_SENSORS_MARVEL_ENV)	+= marvel-env.o
- obj-$(CONFIG_SENSORS_MAX1111)	+= max1111.o
- obj-$(CONFIG_SENSORS_MAX127)	+= max127.o
- obj-$(CONFIG_SENSORS_MAX16065)	+= max16065.o
-diff --git a/drivers/hwmon/marvel-env.c b/drivers/hwmon/marvel-env.c
-new file mode 100644
-index 000000000000..cdc7e059e17b
---- /dev/null
-+++ b/drivers/hwmon/marvel-env.c
-@@ -0,0 +1,552 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Environmental sensors of Marvel (EV7) AlphaServers: the GS1280, ES80 and
-+ * ES47 families.
-+ *
-+ * The SRM console describes every sensor in the config tree (GCT). Each power
-+ * and environment (P&E) node may carry a list of environmental packets:
-+ * temperature and voltage sensors, fans and power supplies. The console fills
-+ * in the readings when asked to refresh the node. The packet layout was
-+ * taken from Tru64 UNIX.
-+ */
-+
-+#include <linux/hwmon.h>
-+#include <linux/jiffies.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/string.h>
-+
-+#include <asm/gct.h>
+ #endif /* __ALPHA_MARVEL_ENV_H */
+diff --git a/arch/alpha/kernel/err_marvel.c b/arch/alpha/kernel/err_marvel.c
+index 46c521cea9a0..6e0b0aabdaca 100644
+--- a/arch/alpha/kernel/err_marvel.c
++++ b/arch/alpha/kernel/err_marvel.c
+@@ -17,10 +17,14 @@
+ #include <asm/smp.h>
+ #include <asm/err_common.h>
+ #include <asm/err_ev7.h>
 +#include <asm/marvel_env.h>
+ 
+ #include "err_impl.h"
+ #include "proto.h"
+ 
++ATOMIC_NOTIFIER_HEAD(marvel_env_notifier);
++EXPORT_SYMBOL_GPL(marvel_env_notifier);
 +
-+#define DRVNAME "marvel_env"
-+
-+#define GCT_TYPE_PE		0x13
-+#define GCT_FLAGS_REQUIRED	BIT(9)
-+#define GCT_FLAGS_EXCLUDED	(BIT(2) | BIT(7) | BIT(12) | BIT(14))
-+
-+/* Packet types. */
-+#define ENV_PKT_POWER_SUPPLY	0x08
-+#define ENV_PKT_FAN		0x09
-+#define ENV_PKT_SENSOR		0x2a
-+
-+/*
-+ * Sensor packet: kind, status, reading, high warning, high fault.
-+ * Temperatures are in tenths of a degree Celsius, voltages in millivolts.
-+ * For voltages the two thresholds look like the nominal voltage and an upper
-+ * limit, so they are not exported.
-+ */
-+#define SENSOR_KIND		0x28
-+#define SENSOR_STATUS		0x2c
-+#define SENSOR_VALUE		0x30
-+#define SENSOR_WARN		0x34
-+#define SENSOR_FAULT		0x38
-+#define SENSOR_SIZE		0x3c
-+
-+#define SENSOR_KIND_THERMAL	2
-+#define SENSOR_KIND_VOLT_FIRST	3
-+#define SENSOR_KIND_VOLT_LAST	5
-+
-+/* Fan packet: status, rpm, low warning, low fault. */
-+#define FAN_STATUS		0x24
-+#define FAN_VALUE		0x28
-+#define FAN_WARN		0x2c
-+#define FAN_SIZE		0x34
-+
-+/* Power supply packet: status. */
-+#define PS_STATUS		0x24
-+#define PS_SIZE			0x28
-+
-+/* Status values, in the low byte of the status word. */
-+#define ENV_OK			0
-+#define ENV_WARNING		1
-+#define ENV_FAULT		2
-+#define ENV_UNKNOWN		0xfe
-+#define ENV_NOT_PRESENT		0xff
-+
-+/* Console status of a refresh that Tru64 also treats as success. */
-+#define CFGTREE_STATUS_OK2	(-0x4a)
-+
-+struct marvel_env_node {
-+	gct6_node *node;
-+	unsigned long offset;		/* from the start of the GCT */
-+	unsigned long last_refresh;
-+	bool valid;
-+	unsigned int cabinet, drawer, pe;
-+};
-+
-+struct marvel_env_chan {
-+	struct marvel_env_node *node;
-+	unsigned int pkt;		/* packet offset in the node */
-+	char label[32];
-+};
-+
-+struct marvel_env_data {
-+	struct device *dev;
-+	struct mutex lock;		/* serializes refreshes and reads */
-+	unsigned int update_interval;	/* ms */
-+	struct marvel_env_node *nodes;
-+	unsigned int nr_nodes;
-+	struct marvel_env_chan *chans[hwmon_max];
-+	unsigned int nr_chans[hwmon_max];
-+};
-+
-+static const char * const pe_names[] = {
-+	[0x09] = "MBM",
-+	[0x0a] = "MBM/PBM",
-+	[0x0c] = "PS",
-+	[0x0d] = "FAN",
-+	[0x0f] = "CMM0", [0x10] = "CMM1", [0x11] = "CMM2", [0x12] = "CMM3",
-+	[0x14] = "VRM0", [0x15] = "VRM1", [0x16] = "VRM2", [0x17] = "VRM3",
-+	[0x19] = "PBM",
-+	[0x1a] = "XSHELF",
-+	[0x1b] = "PCIPS",
-+	[0x1c] = "PCIFANS",
-+};
-+
-+static inline u32 env_rd(struct marvel_env_node *n, unsigned int off)
-+{
-+	return *(u32 *)((char *)n->node + off);
-+}
-+
-+static inline u8 env_status(struct marvel_env_node *n, unsigned int off)
-+{
-+	return env_rd(n, off) & 0xff;
-+}
-+
-+static bool env_status_valid(u8 status)
-+{
-+	return status != ENV_UNKNOWN && status != ENV_NOT_PRESENT;
-+}
-+
-+static bool env_status_alarm(u8 status)
-+{
-+	return status == ENV_WARNING || status == ENV_FAULT;
-+}
-+
-+static unsigned int env_status_off(enum hwmon_sensor_types type)
-+{
-+	switch (type) {
-+	case hwmon_fan:
-+		return FAN_STATUS;
-+	case hwmon_power:
-+		return PS_STATUS;
-+	default:
-+		return SENSOR_STATUS;
+ static const char *
+ marvel_env_state(u16 state)
+ {
+@@ -82,8 +86,11 @@ marvel_process_680_frame(struct ev7_lf_subpackets *lf_subpackets, int print)
+ 			status = MCHK_DISPOSITION_REPORT;
+ 	}
+ 
+-	if (print)
++	/* The frame is processed twice; notify on the printing pass only. */
++	if (print) {
+ 		marvel_print_680_frame(lf_subpackets);
++		atomic_notifier_call_chain(&marvel_env_notifier, 0, NULL);
 +	}
-+}
-+
-+static inline gct6_node *gct_node(gct6_handle h)
-+{
-+	return GCT_NODE_PTR(h);
-+}
-+
-+/* Cabinet and drawer come from the P&E node's parent. */
-+static void marvel_env_keys(struct marvel_env_node *n)
-+{
-+	gct6_node *parent = n->node->parent ? gct_node(n->node->parent) : NULL;
-+
-+	n->pe = n->node->id & 0xff;
-+	if (!parent)
-+		return;
-+	if (parent->type == GCT_TYPE_PE && parent->subtype == 0x3d)
-+		n->cabinet = (parent->id >> 48) & 0xff;
-+	else
-+		n->cabinet = (parent->id >> 48) & 0x3f;
-+	n->drawer = (parent->id >> 32) & 0xff;
-+}
-+
-+static int marvel_env_refresh(struct marvel_env_data *data,
-+			      struct marvel_env_node *n)
-+{
-+	long status;
-+
-+	if (n->valid && time_before(jiffies, n->last_refresh +
-+				    msecs_to_jiffies(data->update_interval)))
-+		return 0;
-+
-+	status = marvel_cfgtree_partial_update(n->offset);
-+	if (status != 1 && status != CFGTREE_STATUS_OK2) {
-+		dev_warn_ratelimited(data->dev,
-+				     "refresh of GCT node %#lx failed: %ld\n",
-+				     n->offset, status);
-+		return -EIO;
-+	}
-+	n->last_refresh = jiffies;
-+	n->valid = true;
-+	return 0;
-+}
-+
-+/* The hwmon type of a packet, or hwmon_max to skip it. */
-+static enum hwmon_sensor_types marvel_env_pkt_type(struct marvel_env_node *n,
-+						   unsigned int pkt,
-+						   unsigned int type)
-+{
-+	unsigned int len = env_rd(n, pkt) & 0xffff;
-+	u32 kind;
-+
-+	switch (type) {
-+	case ENV_PKT_SENSOR:
-+		if (len < SENSOR_SIZE)
-+			break;
-+		kind = env_rd(n, pkt + SENSOR_KIND);
-+		if (kind == SENSOR_KIND_THERMAL)
-+			return hwmon_temp;
-+		if (kind >= SENSOR_KIND_VOLT_FIRST && kind <= SENSOR_KIND_VOLT_LAST)
-+			return hwmon_in;
-+		break;
-+	case ENV_PKT_FAN:
-+		if (len >= FAN_SIZE)
-+			return hwmon_fan;
-+		break;
-+	case ENV_PKT_POWER_SUPPLY:
-+		if (len >= PS_SIZE)
-+			return hwmon_power;
-+		break;
-+	}
-+	return hwmon_max;
-+}
-+
-+static void marvel_env_add_chan(struct marvel_env_data *data,
-+				struct marvel_env_node *n, unsigned int pkt,
-+				enum hwmon_sensor_types type,
-+				unsigned int index)
-+{
-+	static const char * const what[hwmon_max] = {
-+		[hwmon_temp] = "Temp", [hwmon_fan] = "Fan",
-+		[hwmon_in] = "Volt", [hwmon_power] = "PS",
-+	};
-+	struct marvel_env_chan *c;
-+	const char *pe = NULL;
-+	size_t len = 0;
-+
-+	c = &data->chans[type][data->nr_chans[type]++];
-+	c->node = n;
-+	c->pkt = pkt;
-+
-+	if (n->cabinet || n->drawer)
-+		len = scnprintf(c->label, sizeof(c->label), "Cab%u Dra%u ",
-+				n->cabinet, n->drawer);
-+
-+	if (n->pe < ARRAY_SIZE(pe_names))
-+		pe = pe_names[n->pe];
-+	if (pe && !strncasecmp(pe, what[type], strlen(what[type])))
-+		scnprintf(c->label + len, sizeof(c->label) - len, "%s %u",
-+			  pe, index);
-+	else if (pe)
-+		scnprintf(c->label + len, sizeof(c->label) - len, "%s %s %u",
-+			  pe, what[type], index);
-+	else
-+		scnprintf(c->label + len, sizeof(c->label) - len, "PE%u %s %u",
-+			  n->pe, what[type], index);
-+}
-+
-+/*
-+ * Walk a P&E node's packets, counting them, or adding them when @add. The
-+ * header at hd_extension holds the count at +0x10 and the offset of the
-+ * first packet at +0x14. As Tru64 does, visit count + 1 packets and number
-+ * sensors from their position minus one.
-+ */
-+static void marvel_env_walk(struct marvel_env_data *data,
-+			    struct marvel_env_node *n, bool add)
-+{
-+	unsigned int size = n->node->size;
-+	unsigned int hdr = n->node->hd_extension;
-+	unsigned int count, pkt, i;
-+
-+	if (!hdr || hdr + 0x18 > size)
-+		return;
-+	count = env_rd(n, hdr + 0x10);
-+	pkt = env_rd(n, hdr + 0x14);
-+
-+	for (i = 0; i <= count; i++) {
-+		enum hwmon_sensor_types type;
-+		unsigned int len, pkt_type;
-+
-+		if (pkt < 8 || pkt + 8 > size)
-+			break;
-+		len = env_rd(n, pkt) & 0xffff;
-+		pkt_type = env_rd(n, pkt + 4) & 0xffff;
-+		if (len < 8 || pkt + len > size)
-+			break;
-+
-+		type = marvel_env_pkt_type(n, pkt, pkt_type);
-+		if (type != hwmon_max && add)
-+			marvel_env_add_chan(data, n, pkt, type,
-+					    pkt_type == ENV_PKT_SENSOR && i ?
-+					    i - 1 : i);
-+		else if (type != hwmon_max)
-+			data->nr_chans[type]++;
-+		pkt += len;
-+	}
-+}
-+
-+/* Collect the P&E nodes with an environmental packet list. */
-+static void marvel_env_find_nodes(struct marvel_env_data *data,
-+				  gct6_node *node, bool record)
-+{
-+	for (; node; node = node->next ? gct_node(node->next) : NULL) {
-+		if (node->magic != GCT_NODE_MAGIC)
-+			return;
-+		if (node->type == GCT_TYPE_PE && node->hd_extension &&
-+		    (node->flags & GCT_FLAGS_REQUIRED) &&
-+		    !(node->flags & GCT_FLAGS_EXCLUDED)) {
-+			if (record) {
-+				struct marvel_env_node *n =
-+					&data->nodes[data->nr_nodes];
-+
-+				n->node = node;
-+				n->offset = (char *)node - (char *)gct_node(0);
-+				marvel_env_keys(n);
-+			}
-+			data->nr_nodes++;
-+		}
-+		if (node->child)
-+			marvel_env_find_nodes(data, gct_node(node->child),
-+					      record);
-+	}
-+}
-+
-+static umode_t marvel_env_is_visible(const void *drvdata,
-+				     enum hwmon_sensor_types type,
-+				     u32 attr, int channel)
-+{
-+	const struct marvel_env_data *data = drvdata;
-+	const struct marvel_env_chan *c;
-+
-+	if (type == hwmon_chip)
-+		return 0644;
-+
-+	/* Hide sensors that are absent when the driver loads. */
-+	c = &data->chans[type][channel];
-+	if (!env_status_valid(env_status(c->node, c->pkt + env_status_off(type))))
-+		return 0;
-+	return 0444;
-+}
-+
-+static int marvel_env_read(struct device *dev, enum hwmon_sensor_types type,
-+			   u32 attr, int channel, long *val)
-+{
-+	struct marvel_env_data *data = dev_get_drvdata(dev);
-+	struct marvel_env_chan *c;
-+	struct marvel_env_node *n;
-+	unsigned int pkt;
-+	u8 status;
-+	int ret;
-+
-+	if (type == hwmon_chip) {
-+		*val = data->update_interval;
-+		return 0;
-+	}
-+
-+	c = &data->chans[type][channel];
-+	n = c->node;
-+	pkt = c->pkt;
-+
-+	mutex_lock(&data->lock);
-+	ret = marvel_env_refresh(data, n);
-+	if (ret)
-+		goto out;
-+
-+	switch (type) {
-+	case hwmon_temp:
-+		status = env_status(n, pkt + SENSOR_STATUS);
-+		switch (attr) {
-+		case hwmon_temp_input:
-+			if (!env_status_valid(status))
-+				ret = -ENODATA;
-+			else
-+				*val = (s32)env_rd(n, pkt + SENSOR_VALUE) * 100L;
-+			break;
-+		case hwmon_temp_max:
-+			*val = (s32)env_rd(n, pkt + SENSOR_WARN) * 100L;
-+			break;
-+		case hwmon_temp_crit:
-+			*val = (s32)env_rd(n, pkt + SENSOR_FAULT) * 100L;
-+			break;
-+		case hwmon_temp_max_alarm:
-+			*val = env_status_alarm(status);
-+			break;
-+		case hwmon_temp_crit_alarm:
-+			*val = status == ENV_FAULT;
-+			break;
-+		default:
-+			ret = -EOPNOTSUPP;
-+		}
-+		break;
-+	case hwmon_fan:
-+		status = env_status(n, pkt + FAN_STATUS);
-+		switch (attr) {
-+		case hwmon_fan_input:
-+			if (!env_status_valid(status))
-+				ret = -ENODATA;
-+			else
-+				*val = env_rd(n, pkt + FAN_VALUE);
-+			break;
-+		case hwmon_fan_min:
-+			*val = env_rd(n, pkt + FAN_WARN);
-+			break;
-+		case hwmon_fan_min_alarm:
-+			*val = env_status_alarm(status);
-+			break;
-+		case hwmon_fan_fault:
-+			*val = status == ENV_FAULT;
-+			break;
-+		default:
-+			ret = -EOPNOTSUPP;
-+		}
-+		break;
-+	case hwmon_in:
-+	case hwmon_power:
-+		status = env_status(n, pkt + env_status_off(type));
-+		if (!env_status_valid(status))
-+			ret = -ENODATA;
-+		else if (type == hwmon_in && attr == hwmon_in_input)
-+			*val = (s32)env_rd(n, pkt + SENSOR_VALUE);
-+		else
-+			*val = env_status_alarm(status);
-+		break;
-+	default:
-+		ret = -EOPNOTSUPP;
-+	}
-+out:
-+	mutex_unlock(&data->lock);
-+	return ret;
-+}
-+
-+static int marvel_env_write(struct device *dev, enum hwmon_sensor_types type,
-+			    u32 attr, int channel, long val)
-+{
-+	struct marvel_env_data *data = dev_get_drvdata(dev);
-+
-+	if (type != hwmon_chip || attr != hwmon_chip_update_interval)
-+		return -EOPNOTSUPP;
-+
-+	mutex_lock(&data->lock);
-+	data->update_interval = clamp_val(val, 0, 3600 * MSEC_PER_SEC);
-+	mutex_unlock(&data->lock);
-+	return 0;
-+}
-+
-+static int marvel_env_read_string(struct device *dev,
-+				  enum hwmon_sensor_types type, u32 attr,
-+				  int channel, const char **str)
-+{
-+	struct marvel_env_data *data = dev_get_drvdata(dev);
-+
-+	*str = data->chans[type][channel].label;
-+	return 0;
-+}
-+
-+static const struct hwmon_ops marvel_env_ops = {
-+	.is_visible = marvel_env_is_visible,
-+	.read = marvel_env_read,
-+	.write = marvel_env_write,
-+	.read_string = marvel_env_read_string,
-+};
-+
-+static const struct {
-+	enum hwmon_sensor_types type;
-+	u32 config;
-+} marvel_env_hwmon[] = {
-+	{ hwmon_temp, HWMON_T_INPUT | HWMON_T_MAX | HWMON_T_CRIT |
-+		      HWMON_T_MAX_ALARM | HWMON_T_CRIT_ALARM | HWMON_T_LABEL },
-+	{ hwmon_fan, HWMON_F_INPUT | HWMON_F_MIN | HWMON_F_MIN_ALARM |
-+		     HWMON_F_FAULT | HWMON_F_LABEL },
-+	{ hwmon_in, HWMON_I_INPUT | HWMON_I_ALARM | HWMON_I_LABEL },
-+	{ hwmon_power, HWMON_P_ALARM | HWMON_P_LABEL },
-+};
-+
-+static const struct hwmon_channel_info * const marvel_env_chip_info =
-+	HWMON_CHANNEL_INFO(chip, HWMON_C_UPDATE_INTERVAL);
-+
-+static int marvel_env_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	const struct hwmon_channel_info **info;
-+	struct marvel_env_data *data;
-+	struct hwmon_chip_info *chip;
-+	struct device *hwmon;
-+	unsigned int i, k, nr_info = 0;
-+
-+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+	data->dev = dev;
-+	data->update_interval = 10 * MSEC_PER_SEC;
-+	mutex_init(&data->lock);
-+
-+	marvel_env_find_nodes(data, gct_node(0), false);
-+	if (!data->nr_nodes)
-+		return -ENODEV;
-+	data->nodes = devm_kcalloc(dev, data->nr_nodes, sizeof(*data->nodes),
-+				   GFP_KERNEL);
-+	if (!data->nodes)
-+		return -ENOMEM;
-+	data->nr_nodes = 0;
-+	marvel_env_find_nodes(data, gct_node(0), true);
-+
-+	for (i = 0; i < data->nr_nodes; i++) {
-+		marvel_env_refresh(data, &data->nodes[i]);
-+		marvel_env_walk(data, &data->nodes[i], false);
-+	}
-+
-+	info = devm_kcalloc(dev, ARRAY_SIZE(marvel_env_hwmon) + 2,
-+			    sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return -ENOMEM;
-+	info[nr_info++] = marvel_env_chip_info;
-+
-+	for (k = 0; k < ARRAY_SIZE(marvel_env_hwmon); k++) {
-+		enum hwmon_sensor_types type = marvel_env_hwmon[k].type;
-+		struct hwmon_channel_info *ci;
-+		u32 *config;
-+
-+		if (!data->nr_chans[type])
-+			continue;
-+		data->chans[type] = devm_kcalloc(dev, data->nr_chans[type],
-+						 sizeof(*data->chans[type]),
-+						 GFP_KERNEL);
-+		ci = devm_kzalloc(dev, sizeof(*ci), GFP_KERNEL);
-+		config = devm_kcalloc(dev, data->nr_chans[type] + 1,
-+				      sizeof(*config), GFP_KERNEL);
-+		if (!data->chans[type] || !ci || !config)
-+			return -ENOMEM;
-+		for (i = 0; i < data->nr_chans[type]; i++)
-+			config[i] = marvel_env_hwmon[k].config;
-+		ci->type = type;
-+		ci->config = config;
-+		info[nr_info++] = ci;
-+		data->nr_chans[type] = 0;
-+	}
-+	if (nr_info == 1)
-+		return -ENODEV;
-+
-+	for (i = 0; i < data->nr_nodes; i++)
-+		marvel_env_walk(data, &data->nodes[i], true);
-+
-+	chip = devm_kzalloc(dev, sizeof(*chip), GFP_KERNEL);
-+	if (!chip)
-+		return -ENOMEM;
-+	chip->ops = &marvel_env_ops;
-+	chip->info = info;
-+
-+	hwmon = devm_hwmon_device_register_with_info(dev, DRVNAME, data, chip,
-+						     NULL);
-+	return PTR_ERR_OR_ZERO(hwmon);
-+}
-+
-+static struct platform_driver marvel_env_driver = {
-+	.driver = {
-+		.name = DRVNAME,
-+	},
-+	.probe = marvel_env_probe,
-+};
-+module_platform_driver(marvel_env_driver);
-+
-+MODULE_ALIAS("platform:" DRVNAME);
-+MODULE_DESCRIPTION("Marvel (EV7) AlphaServer environmental sensors");
-+MODULE_LICENSE("GPL");
+ 
+ 	return status;
+ }
 
 -- 
 2.56.1
