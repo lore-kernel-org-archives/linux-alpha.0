@@ -1,60 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=137.74.80.154
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794733481;
-	b=YCHWN12duRDRu+ZIS47HjhHzEa2r/GfXlc/37/4jBS1R7pJOoLQVEqzJvhXvqqdmFmmS
-	 tqabH4nqu5xkrkU92C0tFX9nvv3UqUmPaSKRaiG19X4GsyTHEZzfOT4F+F++3PqFIwTKr
-	 3kRcpHhQ8cm5YqAch8ea90nebK0yJLeaInq+I4BuVDxoogUCOfCGa3hACNGgWUpKzkM/v
-	 n5XF24VHLNPn5u2RmuZgnlyK6k+5wNNQZy360+d6xpt7eGWEwIX6VpkLZ3xNAStpjaBL5
-	 Ndzn4LVPE1WXXnjt7UY2Fksh0MHpFGUpEVLwZ/KIHGMakDp7MXvt7gBpmXQZqd+Nsnw==
+	t=1794735482;
+	b=Vl2hzgdG6088SNiZUq/UmesFTF/2PWkbJZjNf3pa1m7u/b/Yl+pUXSmmhAq1Fh6uThjh
+	 lrm1sRmyYz2exUv0v5WBMSbnXMblt3soQMnzY+wn8kReVNdjV+smpk9vk4BWbgpFGZ+e4
+	 86yuFERhef7gAbGeFzS1pTDuPdKvihHqa67wIakk6zkDBvbbQ6lwOeXPtH+Ur5Ujr9jZh
+	 0TTXYB2WhIZNq9ybDU2gLZz5Zh8MTtR3womQbjorsL5TVlB1RhN46PhAYs/vxDS4Ytx72
+	 Ou31OgtW5oKzkV53BxIhIkkQ3SLELophXZLSO1KxqFrWiNx44vOq8edXZAhAkDvEmsA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794733481;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Received:Message-ID:
-	 Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:X-Rspamd-Queue-Id:X-Spamd-Result:
-	 X-Rspamd-Action:X-Rspamd-Server;
-	bh=aOqxkrW83kpunAumN7rod+MaRbRg0gs5eEr4a92heYg=;
-	b=0OaDf33lhnQod19/VzlvXrgvsVc6aQhzGStDH/kCYrBP2+QAeVyJKVh7h2nUpMTl/a/c
-	 7U3uWf7tkOKqOrXbMnM+nU+nJPQ2SeJze2eZTRXHjtjfWGQiR43vSf9DolQts/WnMgoSg
-	 keowq268Nd+DOt+7/s7Fk5iW2EQkUxleavi7r4E7gYCeTU+973HOtpA5XcIyv448yPeMd
-	 6IiEWuhKLJx43+Gbu83Xys46D8P15yddWxS61uNg8cFYxNocsekcTJF2MzGT2JtuFJshr
-	 jD47973F5jZZFdBdBo3KdwPG8Har0nLW14rKB3k34P5TApXI+0loCc9g+atiezROhFA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794735482;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=r7wTp+ResCv9/vauP3XOa+9Wav8fHpAlVrS4kplYpIo=;
+	b=Y+2zuGruU3vN2+DAjSsF/Dxj5NbnA37ocPW9QaH56U4Zlx1v/cq+rk0KFz18VmZ2fCpy
+	 YdNz1GL9N16JUjab1eghoIEwYVmVUJQ/4K3SoG3e3hZmItOirgdh7jklUDmS0vV1BwjVr
+	 lu9FYwfDy+JN6s9gEXTily9ZKDlxcCSsiMg4+kmc4w96KligBv0AYpnnnRmGU5WL/yB6N
+	 CZYYcSEs/a085DapHjcISEnenVlErIcoLiA+Pj3g6GAk8TGL78iIRLT76liM1sBqhU3uo
+	 yihS+yGgfwjwQJu+yNjeLOOvjqLF0RFbEsLcTB9mrXF2l7nTKG3kTZMg8KXYkJgG4OA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=aosc.io;
-	spf=pass smtp.mailfrom=aosc.io;
-	dkim=pass header.d=aosc.io header.i=@aosc.io header.a=rsa-sha256 header.s=default header.b=iC+cU0M9;
-	arc=none smtp.remote-ip=137.74.80.154
-Received: from relay4.mymailcheap.com (relay4.mymailcheap.com [137.74.80.154])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VedZ6Yct;
+	arc=none smtp.remote-ip=209.85.208.179
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B9BA606A31D;
-	Sun, 15 Nov 2026 09:04:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7B9BA606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=aosc.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aosc.io
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F29C0606A31D
+	for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 09:38:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F29C0606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=aosc.io header.i=@aosc.io header.a=rsa-sha256 header.s=default header.b=iC+cU0M9
-Received: from nf2.mymailcheap.com (nf2.mymailcheap.com [54.39.180.165])
-	by relay4.mymailcheap.com (Postfix) with ESMTPS id 9C6D6201CE;
-	Sun, 15 Nov 2026 09:04:32 +0000 (UTC)
-Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.38.223.107])
-	by nf2.mymailcheap.com (Postfix) with ESMTPSA id 76D824007B;
-	Sun, 15 Nov 2026 09:04:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aosc.io; s=default;
-	t=1794733466; bh=aOqxkrW83kpunAumN7rod+MaRbRg0gs5eEr4a92heYg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=iC+cU0M9VMvtQXr1DSggNdA8arI5Jso1ixqGVvyAdMQXYVekTFPD+EmiVKTqPLf6r
-	 PG6CA0c1i7L1MZ6lXGzA/IsbknEY8e9u0mClSgIue5Tq985pJ2KLkEt9Q/fEmpZXjg
-	 b1T6RKy4Fcpow4b1xd5UGQu+LqOuT+9rPPRtN3zA=
-Received: from [198.18.0.1] (li1563-205.members.linode.com [139.162.83.205])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange x25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by mail20.mymailcheap.com (Postfix) with ESMTPSA id 401BFE1E63;
-	Sun, 15 Nov 2026 09:04:20 +0000 (UTC)
-Message-ID: <91614ad9-3110-48b5-ac12-67b40a0599b4@aosc.io>
-Date: Sun, 15 Nov 2026 17:04:14 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VedZ6Yct
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-3ada7d53082so33590251fa.0
+        for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 01:38:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794735480; x=1795340280; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=r7wTp+ResCv9/vauP3XOa+9Wav8fHpAlVrS4kplYpIo=;
+        b=VedZ6Yct43cphb21llsRwcKTjkaJ1KK+1lE5uBQNhhpNW6TPs7YlDmJCU8ZqBdnTTB
+         tseOqUhHoo0CLMjkd8nJ4FagYTH3vhEpGFGUeg5UaSw5aEjPA3T11MZNTIIEua/mn2BO
+         wlj5EjmIkMszzHeq/4oUZrA+KtILwBiMEPompoMdL7v/LlplJoSTw4S9yGZmDdxIbbeC
+         dzsfP+dXkYnVsuARbl/AbaMaJLtz8bmvp0x866JnPQES4x326oJ0SHiT14MVJJPBI26z
+         9ylk6D6nNNIObrYBCppy/oUwVW0UjD2MVt6NK5c1dgUjA1kuXZE+Gx1mas/V7QdbELdG
+         RHsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794735480; x=1795340280;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=r7wTp+ResCv9/vauP3XOa+9Wav8fHpAlVrS4kplYpIo=;
+        b=cW7RbFgndUNPU9RlV2TiwQTJFhaIIn3OwN24JXJEMcM7S3YyF0sSOqUtyy36chWVAH
+         6bbCrGh5tAvoDxWigvDh8rcKF6bFSnb0IT+LL6ol6PjqBTsz3gi2X3XkiaPXbeMuQ0ZW
+         4VjfQj4+v0nu8xz5XCF5Q9KblszggqOo+whaZM9LN9BL6e/TDCZP3wR+s+IzUGwHpr5n
+         o/LkypgVVXKagyCoyoNlezXDC+PrXfS5vBCjMhDe+DgjwZVOTOSa5Y5reDG2AbnpGcc8
+         78KZMaGXo3alnYRMvuzh2ennPhOe6ct+Rvnpq7R3+fq8e69rNVlOEw4hBhRK4YmIjtT2
+         kVyg==
+X-Forwarded-Encrypted: i=1; AL+hErHsKTCh5ky9VyI7nCb+Qb0ei78SLIr/I5qPae8ahaa7HMqE02bKLom7Jd5oRYR5O0LV+jp48ToTAx/lZA==@vger.kernel.org
+X-Gm-Message-State: APuU4Z+dJmq8F6lHF1LQMBd07RbO52kiWoINb7UyMd0BgGiusK1XKAao
+	HHVrrF/gyXCQJk1GXwUz+pLVwfTxvqpXwlcLxySS9bQkCrEWpJFlHChc
+X-Gm-Gg: AYBFou19UMjUoSnYvrwctCUsj+Mo3jM4NvuWI2QFVCaSq962cLgbh+36qcwIhslToFX
+	c0qbLflw2brV6NQQAHwyJDpUSRgVMMXS+3Qlze35pTk34lMSgZUDwsImE6R+hFuY/8ZjAdV0vMi
+	u0useNisVw858GCbV0zSqvGBlr6saOWWhttBzbwjYHHsCtSm8dGQWGj49rm/2yeNkO/wP7/D5A6
+	KrAwiSt9n1Phv/pU4E27Cx08fjnZszk9/s0+dqdP0xbtFGEQfdbUQkZ1fa8H48kFdLxKq9oCUad
+	fvvbPz8XSLt5QEw1jRhhSmhhFORw0ZpknGyKxx8qBpdG0BiE54WZEqCLwCjfK+izJbVzN62D10D
+	ZDRQJ+33oRUO2YKbdlBTc1CabpFRyBGp+srP6DYuWFK+l7VX/qVtE6dgtJ0K54idwihBHMqFJVo
+	BrNudyG7OfPXsPLgCNxxpp9RKpsCg32eM8S8oMjyWlyXHQ2vc7ZUBLv9oxxcx3z97zkgD6VSss9
+	AGGfF46+FNgPlbAvAtyKHXC8EXMhyGuJ8kRqQA78sig8CQuyjdWh7NLiKhHOzUSW5BKiJ5FR1nW
+	tH/arXJZ30ZBVy8cUYzrqXjybjIDboB//Pu1KaQsgnhF64HAju+rg94dAUEVuSl8BsXL8Gw=
+X-Received: by 2002:a05:651c:a184:b0:3ad:372b:1fc8 with SMTP id 38308e7fff4ca-3ae2b4f8112mr16428611fa.9.1794735479714;
+        Sun, 15 Nov 2026 01:37:59 -0800 (PST)
+Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3ae2b7ae92dsm23598851fa.23.2026.11.15.01.37.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Nov 2026 01:37:59 -0800 (PST)
+From: Magnus Lindholm <linmag7@gmail.com>
+To: richard.henderson@linaro.org,
+	mattst88@gmail.com,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org
+Cc: linmag7@gmail.com
+Subject: [PATCH v4 0/1] alpha: Add support for HAVE_ARCH_JUMP_LABEL
+Date: Sun, 15 Nov 2026 10:37:47 +0100
+Message-ID: <20261115093752.1287968-1-linmag7@gmail.com>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -64,58 +96,42 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [7.3.y] Please backport e517a172b776 ("alpha: select
- SYSCTL_EXCEPTION_TRACE")
-To: Sasha Levin <sashal@kernel.org>, Matt Turner <mattst88@gmail.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>,
- Magnus Lindholm <linmag7@gmail.com>, linux-alpha@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <4ab8d1e3-4e8d-4172-b36e-570eb1ef9e11@aosc.io>
- <draft-agent5-0002-re-alpha-show-signal-msg@kernel.org>
-Content-Language: en-US
-From: Mingcong Bai <jeffbai@aosc.io>
-In-Reply-To: <draft-agent5-0002-re-alpha-show-signal-msg@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 76D824007B
-X-Spamd-Result: default: False [-0.30 / 10.00];
-	R_SPF_ALLOW(-0.10)[+mx];
-	R_DKIM_ALLOW(-0.10)[aosc.io:s=default];
-	MIME_GOOD(-0.10)[text/plain];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ARC_NA(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	ASN(0.00)[asn:16276, ipnet:51.38.0.0/16, country:FR];
-	MIME_TRACE(0.00)[0:+];
-	RCVD_COUNT_ONE(0.00)[1];
-	DMARC_POLICY_ALLOW(0.00)[aosc.io,quarantine];
-	TO_DN_SOME(0.00)[];
-	FREEMAIL_TO(0.00)[kernel.org,gmail.com];
-	RCPT_COUNT_SEVEN(0.00)[7];
-	MID_RHS_MATCH_FROM(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	R_DKIM_ALIGNED(0.00)[strict];
-	RCVD_TLS_ALL(0.00)[];
-	LOCAL_OUTBOUND(0.00)[];
-	FREEMAIL_CC(0.00)[linaro.org,gmail.com,vger.kernel.org];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DKIM_TRACE(0.00)[aosc.io:+]
-X-Rspamd-Action: no action
-X-Rspamd-Server: nf2.mymailcheap.com
 
-Hi Sasha,
+Apply-time cleanups following Matt Turner's review of v3:
 
-在 2026/11/15 01:42, Sasha Levin 写道:
-> On 2026-11-14, Mingcong Bai <jeffbai@aosc.io> wrote:
->> Please consider (partially) backporting this patch to fix build on Alpha.
-> 
-> Queued the whole commit for 7.3, 6.18, 6.12 and 6.6, thanks. We have no alpha
-> compiler here, so a build check on your side would be welcome.
+- Move jump_label.o beside the other object entries near the top of
+  arch/alpha/kernel/Makefile, outside the GENERIC block.
+- Include linux/cacheflush.h instead of asm/cacheflush.h.
+- Regenerate the cover-letter diffstat and retain Matt's Reviewed-by.
 
-Thank you, will test when 7.3.5-rc1 comes out.
+The jump-label implementation is otherwise unchanged from v3.
 
-Best Regards,
-Mingcong Bai
+V3 was cross-built with W=1 and boot-tested on a three-CPU AlphaServer
+ES40 with CMA v2. The static-key boot selftest and 30 module load/unload
+cycles passed, including cross-module keys. This revised export has
+not been rebuilt or boot-tested separately.
+
+Batching I-cache synchronization and relative jump-table entries remain
+follow-ups. The early jump_label_init() call needed before Alpha's new
+early-parameter parsing is carried by the separate CMA v3 series.
+
+This patch applies to for-next at 0b4cadbe7c39.
+
+Magnus Lindholm (1):
+  alpha: Add support for HAVE_ARCH_JUMP_LABEL
+
+ .../core/jump-labels/arch-support.txt         |  2 +-
+ arch/alpha/Kconfig                            |  1 +
+ arch/alpha/include/asm/jump_label.h           | 65 +++++++++++++++
+ arch/alpha/kernel/Makefile                    |  1 +
+ arch/alpha/kernel/jump_label.c                | 79 +++++++++++++++++++
+ 5 files changed, 147 insertions(+), 1 deletion(-)
+ create mode 100644 arch/alpha/include/asm/jump_label.h
+ create mode 100644 arch/alpha/kernel/jump_label.c
+
+
+base-commit: 0b4cadbe7c39d830dec35c4a2655483de0dae568
+-- 
+2.43.0
 
