@@ -1,71 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=44.202.169.35
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794697284;
-	b=bcwwQsA9OWMJslwOuqCeYsqjHq13kng15vUkUUJ8D0NCPsAtgokkSwa5ReAeEWbhvY2j
-	 EJp3dlu7dRIVr7oOZgncbcLDVxd2lawxhb/3f2pRW2N6NKdy2vBFgc8Yqxi3udexlwNqH
-	 8JJnrojuv/OAS+Y7foKgUWoPh69djTmm5+29tnEnDx2DLnkN9yIXKWXhQRnGAdwCN2xkK
-	 NYdtR6Mn9YepO1UKakiYDZvFKXZhvNNYnnGVGKfhpsstXRvzioyX6iL74QJAO0ZXsSb46
-	 EurEqiIir0Af7OmRKBAa+OQskZ2D3vSw3pB6uCG541SNeRKQ/qaXJB0GJ+yLFCnj7rw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794697284;
-	h=DMARC-Filter:Received:Received:X-Authority-Analysis:DKIM-Signature:
-	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 References:Content-Language:From:Autocrypt:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
-	 X-AntiAbuse:X-AntiAbuse:X-BWhitelist:X-Source-IP:X-Source-L:X-Exim-ID:
-	 X-Source:X-Source-Args:X-Source-Dir:X-Source-Sender:X-Source-Auth:
-	 X-Email-Count:X-Org:X-Source-Cap:X-Local-Domain:X-CMAE-Envelope;
-	bh=1NGwc1JPwDHdEiu0v8Lwn5lSdaGLpJu9/e3I5X4X/zU=;
-	b=TvnvJVdo5lqjNFUf7VWoww8EN9CViv+yJif3W14PYzDspR6cOYC7iXZs5RmYnX4FxmuF
-	 XgK8OHuKXWvIm1Kp32QP2WVu4kTSOHmldqZVgfW39CPI1y+CwKzBfWtq+TBGCYx53w0C8
-	 gaSTwBh72PJS/64pTQPfcvXoSkXgqZrawOIBP0EMTXubYkR/iy/XGLVUYfepjwHir+ddn
-	 My7yiNetTtRFI7ryNfVKGCtp//rrPPmh01OM6oRNC3l1OTwgQpGOJPvW8ZGX22yRVL8Hc
-	 1vqo//MlQSP3jiCsnathp1e6+/K4jojc7NPb862dujhrtovqESCJssVsMVKjgPbT1Gw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=roeck-us.net;
-	spf=fail smtp.mailfrom=roeck-us.net;
-	dkim=pass header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=aHpGYPrs;
-	arc=none smtp.remote-ip=44.202.169.35
-Received: from omta036.useast.a.cloudfilter.net (omta036.useast.a.cloudfilter.net [44.202.169.35])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.175
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794710649;
+	b=cWAw8BfYCH5D3J72UfFkVVf4u7ST7KjqB3ULfeTPfSvSBheh7kpoaX8DC9kJKIqIxmOz
+	 q44lmBsT7G9JOgxig/n6Cg1c4ELoYbCRZJFJdHddus3VWaqg8qNd7RHpY+raT9rYWFRAf
+	 eRLdk/QYg/ClJ/5fGQO2QpHSbiAKs2P8fZZht+2jE3tDJ4wMrJ71QJG+GaySCJ8ZXCT1U
+	 4hLt1MKRuLbVlo9+r0xc9DjNkdmNSIWBgDDLcmaOmJYCanD0TcOK1iQuU4sncucgi9pqK
+	 gM4Lnzhse+s5yZF2sgIcTnKlHGNVMPvHUYdFDbw2Ew8LmPOxik8Ge3Q104biDIN0+QA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794710649;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=WImIugUvsCB3dULRzrcWqUtpzfjQNdC7aiK6me5zFHM=;
+	b=KtUqpet/e5ED34EqQpPAWjaVEPdfzNgT70YcMkkNOGL9/LUh4tmATpj4Tjy11LYYMy8S
+	 JwOrN5Tu/tIj1RlfPou+cYI+mUXWmedrvdRK0F7fjJyhXRA+pJIdAP078OcuYh2ngIkvV
+	 KL76ULQf9B5r7Y7CkEX1jE3FMZD4ecktg0cc/oT7XCxNXUoM8b+OxZP1bxiVGcUc/wjMu
+	 L9I9Cy3hSqrChy3s0/wtS5vnjwnmqUJju0OUrffim+noLJAaIa95rk1nMBFKVKbGtqp/3
+	 P5+f5DOrQ2eli1lFH9JadHu6WuxdUXwVUi7CFjzjri84B5r6AElta5u4y1eYWw32S4A==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RJnm5XLx;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.175
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BDCC606A33D
-	for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 23:01:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8BDCC606A33D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=roeck-us.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61C42606A329
+	for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 02:44:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 61C42606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=aHpGYPrs
-Received: from eig-obgw-6003b.ext.cloudfilter.net ([10.0.30.175])
-	by cmsmtp with ESMTPS
-	id S3znxG2j84vCDSMkJx1rwO; Sat, 14 Nov 2026 23:01:19 +0000
-Received: from 162-215-252-36.unifiedlayer.com ([208.91.199.152])
-	by cmsmtp with ESMTPS
-	id SMkIxvKfRGh2BSMkJxzPDf; Sat, 14 Nov 2026 23:01:19 +0000
-X-Authority-Analysis: v=2.4 cv=Aszu3P9P c=1 sm=1 tr=0 ts=6af8e83f
- a=QNED+QcLUkoL9qulTODnwA==:117 a=2cfIYNtKkjgZNaOwnGXpGw==:17
- a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=M0FbrtG7MMAA:10 a=pGLkceISAAAA:8
- a=xdmuYzsaov-w2H670QYA:9 a=QEXdDO2ut3YA:10 a=KPbNTLLc3YvdawN95zVk:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
-	List-Archive; bh=1NGwc1JPwDHdEiu0v8Lwn5lSdaGLpJu9/e3I5X4X/zU=; b=aHpGYPrsgUBs
-	hcNaeJwk1onR/GZJELL3k6+xL5vvG1aISq1h0/Umhkd12RxtXGyeXmsqAfqj3UfRDGJB1Qo7WU0xh
-	WtBRPWWPuortCXhAB1sswVT2eytTXSO4gxwKo+HdJaze3G7tpzPVpVx5NWxdLApe+BaqwW/GlcMoG
-	K37uupttpgB5nI9VR/4Q8jtomqyHkDUMcxqXZo2eV88B2vCgVrFFsGJhhDnTfmr1aDro8MiaAxX+t
-	LKxyJyF3J63T6TgiabS1eeWobNLZYE1RK8aq6/RQQdnxNhlrJnMbtvCYQZs52GM1IV63Xa07mIRFj
-	yF5oJrJlf/fWCG1N6l+VJw==;
-Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:60910)
-	by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <linux@roeck-us.net>)
-	id 1xSMkI-00000003CdU-2pvm;
-	Sun, 15 Nov 2026 04:31:18 +0530
-Message-ID: <4d69d3e9-9e05-485d-87e2-428616cd5d9d@roeck-us.net>
-Date: Sat, 14 Nov 2026 15:01:17 -0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RJnm5XLx
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-3ae2ab35d82so20777511fa.0
+        for <linux-alpha@vger.kernel.org>; Sat, 14 Nov 2026 18:44:09 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794710647; cv=none;
+        d=google.com; s=arc-20260327;
+        b=STBPzDqiSwVf2qIznf5r5IenRDJ/7PkjlIg3myNubFbMuECBq0VLJsBIqLY60DlwBe
+         jNA1wxn+x4lVJhN7uz4U9EZH9F+EGa2OwT1kzhAAGaHTAFvrjonCrDNWCewGKFEgEeq7
+         tt6VrsUKEpT1vcWI+3+bBMlVqQZ2CKkeKxN/Kn2yUwmAGugC0mO5/6NPZchN4xxgGzk1
+         e9gJlq8oDF7FvJxdLkylvhfUuSs+WQQr6eR9np6lPt940UtRXIVQzAg+uVyI7QSgCVSH
+         3n5U7o3v3RDCMGVpTRIVN1c5mF5cKJeqsSTs4WK8NSYXxktEDbj5XvCeQS+6rC/mp3mN
+         qA5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=WImIugUvsCB3dULRzrcWqUtpzfjQNdC7aiK6me5zFHM=;
+        fh=X9CQKtJqlwshAsJ9wfxYlpssDs32RUzdb7iWj+YOc9c=;
+        b=eJVdUTHC5R5JmhcbuTuk1l8Zd15dYHpSPivb7D6LSAuS6yZ87zx/KcrstL4YJAJ95+
+         3MsLx4P067HcebnuXkAyBO1q6Q7xM14I88/GDpUHx3ctrNpRXf3jW3tTqT5zzVfsdUqO
+         FJbEUzCSriXFX5R2bLU0VSW++XakGgPGS2SsyVRdSN1+6t5kRAZpp5YpS95iVsK2Mtxt
+         AWkyNNCqhh4ViBi4yR9xnIurKKG4fKuaVvLFZXILLmKApqZ0fPK3cUEwapJlhD1V4kXS
+         PGTuzNzrepO9t9y8c1rgCNIJyu6JlIDTb1SHCrHuUYJoV8GFlNeeCgmbF3fdycHTMLK/
+         lANw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794710647; x=1795315447; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=WImIugUvsCB3dULRzrcWqUtpzfjQNdC7aiK6me5zFHM=;
+        b=RJnm5XLxoNK866TvF2CkdY9AW+tb0cJ1wYfWzlZZh4X3OnWmWeykxS1NvAKwM8nW4T
+         R0GTMYqQAqdx2m+VPUhijNqDi8cWar7oJaJKzJJHy3fk2ZhupkgqBuEO2Dm1/9fLTVli
+         B4TTFx8z1iautbvXT5v2AYyLPiC1D5IFu0cThMCSZq2yjUxVximJ9/eQK3h4Y8PNalZJ
+         T0bhpinyLP3mCG8jD9SPRJAwIQG6O46nBkuNR5hDYOKD8kgPQNHFOx2jEmOVhY8xIlii
+         X65pjY/kWAjU8ccru4oBjZFJoMbyWVKnyH3W5/nrAP0JqE/t4MtEabZ0HgYpG0dll8c1
+         OYAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794710647; x=1795315447;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=WImIugUvsCB3dULRzrcWqUtpzfjQNdC7aiK6me5zFHM=;
+        b=NIRra4WHP+QMcwszoxHj5bQwhLdnIsyRcq5ufQaLeI+QjDzhTy30Ti3KYNGH3ZpvuB
+         zgsL27CaeuUHsT/SFLvTWM+m3kcsyeoHqb/f4yQcccVUkGtw0uBVQZ4EBzGevw0/H3Ge
+         0yjqGPqM59XFEBkVG6tcRWfbJWSSnYUmGtOvpO1ZZOh6uqLYYJ8mNgJvq3gp2gcvijIu
+         XaRVYVJRo6yddM7/LacnNWkwWZtrMQBGrXyYF3PFSmW20VmvH2VhbuDoXcm5gjJKIBMw
+         C48gy6eGAjEORtVGTasKvLOCicn+d1Sxtu1M7UbnqXyMO5Z70kf7w82Q68nYCbOy2983
+         pINg==
+X-Forwarded-Encrypted: i=1; AL+hErEOlIc/xSpidI2ACj/2/ChNNI5adriOxspeIRkdVgwV0Pl+JODR77RJSziVe0AZ3OdmQVp3yitoA2eBQQ==@vger.kernel.org
+X-Gm-Message-State: APuU4Z8mOuyTsON58fqhHEU3N4BJbOrXEwrTKsALPKcOuy4dmSbX+HDx
+	bTREQWV/NFUE7qg5KtxLSL7WR3JGYcgymKafQjO6hP373VbRK2qCfgh1OSOWk1Fb4iBVQXC+TEI
+	BpnfpfY70M2p41tSsEgU9pSwjIpH7I84=
+X-Gm-Gg: AYBFou3xcqVZGUBJ3icf+NiV4K7A09Si95bwQwnKkoFrZQeavFlYx93+McRa5y6iobZ
+	D6TaRmr4qL2rZUvhIK4C+IIYVkx92rzQJaAiB0RfkjXMH/nsfR2sUntTkyc8xlNu8FSo0lwz3Q7
+	U5dJ7dNTZq8FvxcRP7DcikiyBZ67a6OUN62TzmcPAzIjNyZwVcEYM9N/JtEdVMDaS4Yj/U8kz+Q
+	pSFKw6EfGZE3xj2tUxmS2LrA8qMueooEHnm5GnBhV1Co5gPezX/4z6lp/rCenHmW/uWlht0XGzA
+	MSHshAwFhXRouVaxhzgsjWJIWhnYZtDtgAOx/x1PqFrxAe03NZkGhJQ2snKqi0UeowdvVJY7N5r
+	MXN4IRiA07AQPDkhElXJZmjNezmilFAq7BsojeM/h8CIxJH9Qz/Esw7zmbWWEClRjNC51MrooYU
+	led+HkK60qDLiGNMT7ggHz
+X-Received: by 2002:a2e:bc90:0:b0:3aa:ee7a:5466 with SMTP id
+ 38308e7fff4ca-3ae2b4f52f0mr22163651fa.16.1794710647252; Sat, 14 Nov 2026
+ 18:44:07 -0800 (PST)
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -75,124 +105,38 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/7] alpha: marvel: report environmental events without
- VERBOSE_MCHECK
-To: Matt Turner <mattst88@gmail.com>,
- Richard Henderson <richard.henderson@linaro.org>,
- Magnus Lindholm <linmag7@gmail.com>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org
 References: <20261114-marvel-env-v1-0-890328e4b7e5@gmail.com>
- <20261114-marvel-env-v1-1-890328e4b7e5@gmail.com>
-Content-Language: en-US
-From: Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- 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
- np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
-In-Reply-To: <20261114-marvel-env-v1-1-890328e4b7e5@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - roeck-us.net
-X-BWhitelist: no
-X-Source-IP: 108.223.40.66
-X-Source-L: No
-X-Exim-ID: 1xSMkI-00000003CdU-2pvm
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:60910
-X-Source-Auth: guenter@roeck-us.net
-X-Email-Count: 11
-X-Org: HG=direseller_whb_net_legacy;ORG=directi;
-X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfNvTJb/rtDhWE1hHeqSUyoWwl1eCdtrg3BbAf5pc5IfUba7jbavthOawG87Fr4vqG/QikwZCA7kU3Jx2ZD8+RMIeOP0W2VDfCdtrXc9gs7NOE3QBtm6M
- IXr8fU6/Gdc5mjIJPnrjF+r/g4nh9S0VaOK8mG5QIEdvVBBHiybnPuayPWLc9GnQacvrA2rFkDCoqaPUSEJfJ/BW+ZQh4VgkVAKAh5dTsqP7qS8pbtuStiTH
+ <20261114-marvel-env-v1-1-890328e4b7e5@gmail.com> <4d69d3e9-9e05-485d-87e2-428616cd5d9d@roeck-us.net>
+In-Reply-To: <4d69d3e9-9e05-485d-87e2-428616cd5d9d@roeck-us.net>
+From: Matt Turner <mattst88@gmail.com>
+Date: Sat, 14 Nov 2026 21:43:55 -0500
+X-Gm-Features: AclHuK-rDAmxPKOpteTkagDnbYP3PTwmOyt-Q5uXcex0poBTc5yw5ifEj6zGwJs
+Message-ID: <CAEdQ38E=+Yb2hJs3L1KHgR1Kbe796NDD2z=n=7YytQ+uiJJWEg@mail.gmail.com>
+Subject: Re: [PATCH 1/7] alpha: marvel: report environmental events without VERBOSE_MCHECK
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Richard Henderson <richard.henderson@linaro.org>, Magnus Lindholm <linmag7@gmail.com>, 
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 11/14/26 09:39, Matt Turner wrote:
-> The service processors report temperature, fan, voltage and power supply
-> alarms as system event (0x680) logout frames. The frame is already
-> classified as reportable, but without CONFIG_VERBOSE_MCHECK only the
-> header line reaches the log, which does not say which sensor or what
-> happened. Print the subpackets unconditionally.
-> 
-> Assisted-by: Claude:claude-opus-5-5
+On Sat, Nov 14, 2026 at 6:01=E2=80=AFPM Guenter Roeck <linux@roeck-us.net> =
+wrote:
+>
+> On 11/14/26 09:39, Matt Turner wrote:
+> > The service processors report temperature, fan, voltage and power suppl=
+y
+> > alarms as system event (0x680) logout frames. The frame is already
+> > classified as reportable, but without CONFIG_VERBOSE_MCHECK only the
+> > header line reaches the log, which does not say which sensor or what
+> > happened. Print the subpackets unconditionally.
+> >
+> > Assisted-by: Claude:claude-opus-5-5
+>
+> For all patches: This is obsolete. Please base your patches on the latest
+> kernel and ask the agent to follow AGENTS.md.
 
-For all patches: This is obsolete. Please base your patches on the latest
-kernel and ask the agent to follow AGENTS.md.
-
-Thanks,
-Guenter
-
-> Signed-off-by: Matt Turner <mattst88@gmail.com>
-> ---
->   arch/alpha/kernel/err_marvel.c | 2 --
->   1 file changed, 2 deletions(-)
-> 
-> diff --git a/arch/alpha/kernel/err_marvel.c b/arch/alpha/kernel/err_marvel.c
-> index c0c0ccefc467..832567a3ccbb 100644
-> --- a/arch/alpha/kernel/err_marvel.c
-> +++ b/arch/alpha/kernel/err_marvel.c
-> @@ -24,7 +24,6 @@
->   static void
->   marvel_print_680_frame(struct ev7_lf_subpackets *lf_subpackets)
->   {
-> -#ifdef CONFIG_VERBOSE_MCHECK
->   	struct ev7_pal_environmental_subpacket *env;
->   	struct { int type; char *name; } ev_packets[] = {
->   		{ EL_TYPE__PAL__ENV__AMBIENT_TEMPERATURE,
-> @@ -62,7 +61,6 @@ marvel_print_680_frame(struct ev7_lf_subpackets *lf_subpackets)
->   		       env->unit_id,
->   		       env->condition);
->   	}
-> -#endif /* CONFIG_VERBOSE_MCHECK */
->   }
->   
->   static int
-> 
-
+Sorry about that. The series is on v7.4-rc1, which already has the
+removal, so the trailer was my mistake rather than a stale base. In v2
+I've dropped it from every patch and mentioned the tool use in the
+cover letter instead.
