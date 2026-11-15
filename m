@@ -1,95 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.182
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794739098;
-	b=SU0k3nBTg/rVcctxCRxD4/hIkeaxPAeL0KKU+ErqwBcD/ZJGvmtAisYpvjPLwI2V3Q8h
-	 bgTXnXCeB5iyn3wAGfDKDD0MsZDxUr1YBTu4kSqMfXpBC9S4Bnns+POEANorVPgEpJDKL
-	 MLGttD8a5s1IZNy3j33uImMdxx2KjeSEqybNijYYhHb1DU+qiQc/9a/11ddhT0/Pz9fsI
-	 wymd+SQ7E0k4MfVe+DM1aD51Fhy0DlCZb0m2d+/vg0emua1wJDkFbIWcj15UDwk9cL/cF
-	 NdQ9356Rrg43f00NN0gW1Nxe7zycaXq4LZPiJhU7SjtkpAgHiSVEKXyDXEYOVrJoYiA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794739098;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.45
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794739658;
+	b=j0egj6XD60atwsGbrKDa59ZkPdl3MpgSEtrb2PV7TnQYMoJuvly/GqBr+sCO1ADxwfeo
+	 opSVqEIF6QE8u+7z2IobtMxxdhWZwnjYTLtyKAVbDribAP2OG+OllRUAZU2oKI9aVxEXE
+	 6yvc/6DdvbEjl3EZ1HVLcHOlgcfhk57uHsZD3WEvLOaYOcoZBI0SfUA1OJJnP4Atr5FeU
+	 kjYwZOLSYTHoQkYDIESlyuz66yjGy5TGt8ReE7FpeVeLWWLq/x4hgEJAXphDdexY5Irzb
+	 TFoPSfofUA97HogJSOXB4kGW8JqoP3eS1RU2U9GaLQbIWj2SXHxQOH70mFShvJ4eHzw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794739658;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=dm9ePAdwTgqDyhmZBdfRQC0uQmjTicoUXjhAVnrQHGQ=;
-	b=qC8PDKovpYWC5u+Bral5K2es7qIP0XYK+MEmwrtxagCOCMjgx5NyWa2m9CF+nZY6GDXF
-	 BnxKN5261Y3+jRhDO81GrvNt4kHEEB8ulelfrHNb9is9DtGrSq/OWvX97GXIpSns1/sCN
-	 WE570/r5II+B2JAgxBTBSi250rAoUe2KUqzFPqM7SFLXA8Z6X3c+IkVoUmkJsQLijLFG0
-	 cqofRRX8Mx6gytcEAKMMMnncqYFPwraC5cruQsHlmzIY9eq4FuHeU9aIwEKNaJFdHNwEx
-	 P9oooVpghon1PqQjXKU9yLY4E+6j7T2yuaHz16V63N1KhVLOcPxq2xKPx8MVKbibENg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=7hNKkJJ70oe8gF6M+CzP6oDsWzOHjvQZU/Y9Gmdl08c=;
+	b=wZ32RfsRjP2w6+eS5YQKk/4OO3/wn21RsR+M2aOXQwVCURYH7tsHqICJro1JQ7SsAaM2
+	 F3txw0lWotyV1qxbTKegODS+egQH8mONIMyzy/zd8vYnGa7ieBU6WHMa4yZ5HFz/r/Bsk
+	 wBz6bqslDDrdTXjXp4/QKtnZLOU3NjN2pkgMgFvdxCYV1T59avOZYFmkraA2i7JCnmPGL
+	 +VOGVQPI61KB5XlrXEbQ+chOm4yQdLQ2YdfRC2dCF9ZlLL3fo5QMYpzDsRUARoHl5U9Dk
+	 iehrbWYxSHSLoLdbw6Ywi4ERvh074vZh8QDubJLEwcrzW8GhNt/7D0vPUvfrHtQlsXg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yIvHXUks;
-	arc=none smtp.remote-ip=209.85.208.182
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0yaroapg;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.45
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB19E606A338
-	for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 10:38:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BB19E606A338
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D89A2606A31A
+	for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 10:47:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D89A2606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yIvHXUks
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-3acc7a0b558so24274191fa.3
-        for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 02:38:17 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0yaroapg
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6b6e7a05225so3900447a12.0
+        for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 02:47:37 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794739656; cv=none;
+        d=google.com; s=arc-20260327;
+        b=L2b6f5QczdSwVcttANjrJbXxF+bORJ7Y6qSlBvsx8ZL0wfGVri8Qw9YQ/t1FxHEO2L
+         X1M8p47iT3y/cqpDpN1JYnrOHSQTOExCIKC71xg2f6ztT2WeGmdC2RjvDES6wpZRbbgQ
+         eRk8rpky6FM+o6rvHXNBq7x5PhINsdnoGf1Q9V/VSN+3CLgxDpalIwLj1tyXVhBQHKmp
+         0FuGnIx5piydlfbmRGg5SQ1REY8/RTLkFGH+GV+1vLVCN5mWpp7hJhpd+7WWHMoSLhLO
+         liLbNgBDqWTBn4xniLHLdthAaGzXyK9eDJ0VPrgYeBfAojle+IqKeAgkABOK/FQsoifU
+         iAvw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=7hNKkJJ70oe8gF6M+CzP6oDsWzOHjvQZU/Y9Gmdl08c=;
+        fh=joWYHOZmqerRb8gySQpvHUbsFbKr/y/26F06WA03PMI=;
+        b=ZphCFEM1twa5DkIcjH4TQC497Zc17Vv7JaPfEOIGEgeDpdh7lh9LIib9Gwch9u5CfH
+         7GgPC9nokpdm4ehPPONPe4WHFAqIjwumYIcLhIlh7eA5sGWaHgOTwe6tbdIINPwcwMk8
+         glcCOzianz7TwRCSiIHnfku0D2i2bcXwqOG1riugFgCD3hGjpFPRexU3vns3mnC+iy9q
+         pcqHNoKIhvvhxaznpd1e/BfOBsbswLVgZCuVqXRrPcRcmbs1E5Nz2PcUsMYzVs2DkKD4
+         dGiVEKoIzgwe+xDan3RS1OW2WdO6KyBRes0PqNoOIwOakm2eAcifGJJM000/SbWLlEdm
+         wUIg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794739096; x=1795343896; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=dm9ePAdwTgqDyhmZBdfRQC0uQmjTicoUXjhAVnrQHGQ=;
-        b=yIvHXUksCtGG93KMJYaPLmlW6MYv5D2vIXzEzLKh9XBN03bnBZq1lHdFB/K4PjTsTz
-         l4Unt4Wbj+1BMBe0pMpriGardCoa8T9zfNuyaUcpShMwctWjggRrWDWFn11bL4vwvoib
-         utDQ52Z5rN/fg/AefmoebuJbO5dJI0C/qD6kZiNO446FBdoV9sIWEBuzVo8Xo4KckBoW
-         BtYtEZ+YHb50ujKda7C7dC1gVolAZwJ4Hf7zHzNdqI+Ar5iag33spyfSCDhT8ut8cuqP
-         NaK31BPd3g2xAXtgQ8wM8wcgiHNLqw/9eQlz7uY7eJqjZQZj7Y0xDODj/slODqj2fRGr
-         1L7g==
+        d=gmail.com; s=20260707; t=1794739656; x=1795344456; darn=vger.kernel.org;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=7hNKkJJ70oe8gF6M+CzP6oDsWzOHjvQZU/Y9Gmdl08c=;
+        b=0yaroapgliwOF0oOHtWneHn+AdMq1iwYFupBALuhtU3xq7N0C0+ZXMXQBOyAD3GGj3
+         ADZtTTRBEDnocmSTov3Wwyi37rGwqCr+HLlstUHOgnypSOW+E+KmursMGa63W6Tnkeb0
+         2HJa350marYhNYgiyC9Mhal5zMx0fYTLVN9pK5TFrnev2h3xNhv6Kq+AKp1FWzQW/iu3
+         waXFyfO6tsZdUYlhT01bX8S3mtvCYQubF6Z2TTIJiS+atpCFkVXvqr1oc41709tBLZ4F
+         jY+ntJosrKvGTfIAPqlra6oMeZ6Tr1ifs4X6fhNMK39u2/RNTfI/rAysCKqQrMoUqKDA
+         Y6gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794739096; x=1795343896;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=dm9ePAdwTgqDyhmZBdfRQC0uQmjTicoUXjhAVnrQHGQ=;
-        b=PWuAe7KgNOU4svfIgd9+dfYJZeZrWigOGAk4RMhmAGcOexsyBylSEiy2Y1shs2xhY5
-         4adtgaIH4W9zYzcv9M4/kn8DbOLLzeDoKJRfDSzx3eVdFru3wadbxWxNujAMaRm2SaV0
-         pZO4YRD5ISKnjnQsievCAWzWYY3DhTNcvohx3Lo4A147KTnGtUyl4QVqyp6VTgRyVhQ+
-         xQ80Z4oOg4GYdMFuIRbmfGaEMQIfbDco8YWvwfX0wYHcFGx2Xdjkn4sva4uTDM8imSZP
-         7r92ci8MTYLOXJ0gt0UVQwpPLAvAZ86L70CJsz0nRYiTsG5Gdn8fn6e7LqjyVPyk19Go
-         /uPg==
-X-Forwarded-Encrypted: i=1; AL+hErHSRMBC63MJcIB+6ABIQ0YLdF+T7Dvl4iy7LDwaeL+TqeAFBssF8YzDC0OyBhhNimMChniIG/Ah3RVf1w==@vger.kernel.org
-X-Gm-Message-State: APuU4Z+eFHBbLr7Be+QH/Zw7i5VTUl6xXQdBkTE8WADfgu6a7MK0f4TF
-	5gZXfMF3D0zNeLKRxhkHMjq66DwU1pHDQryun2Ito3EybkPYc0cZ0sDB
-X-Gm-Gg: AYBFou0JNSWtoxPH2THJjwEdnLXWL6ZDb2DGPfHA0QupPZAVkFCIe4tMNOljTM3srT0
-	IyNZ8kjz+qDCEUevhg3+5cPvA3f7Iw0LpUstdawQWjowionYmMA8Er8C6t7rQ9HYKZTOUJelbCK
-	opHZSyvrtu02ii/QlGO3igqYHfhzzE3uXJ1c80czXce6ZJTXvYv4CGDfum+fMoBp5z48UC3myiY
-	O4eVFef52QFwCjvGpvuvAeNH4sIcqUbv7Uk+Z4QAYoJAyLR4bno7QOQLnzccpGgfxyFOv3XvRRp
-	vIe4cBHedITn5/W5qZ83YuPRTexx1V0XNK80HO5GdyMPQCdbplk1FtISZnYEyV686kh+/+5LNk3
-	/MSC64PwyS2qVcjvk9DuU0IfW0uvb+xAh+CssxIOHcpDCqnHssYI2O1/ogAzibmsr7IJ8pxaXrC
-	TEjCQAltpmRdQ3W9bae7/FrMH9p00EGp+oYsBvQ/QfR+p2651sNO6BUaHCOCzXwRJaimRQrO+S1
-	ZM6rN6M4Qm+sTRW1J8LZ5gTZxAlECkKAElis0f27dhqFdsX2Pr4EUUxoy8DPbZkUKELAFqN1l7g
-	yVb1UVqglYOeJbXlzpxbdKlrcfeWi+o6Xtdlpa6xRfp4oqqgZnyyqssrAeD7/fODP2iPTKA=
-X-Received: by 2002:a05:651c:983:b0:3a3:749e:319d with SMTP id 38308e7fff4ca-3ae2b508d40mr20659161fa.17.1794739095852;
-        Sun, 15 Nov 2026 02:38:15 -0800 (PST)
-Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c17135649asm2304491e87.77.2026.11.15.02.38.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Nov 2026 02:38:15 -0800 (PST)
-From: Magnus Lindholm <linmag7@gmail.com>
-To: richard.henderson@linaro.org,
-	mattst88@gmail.com,
-	linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org
-Cc: linmag7@gmail.com
-Subject: [PATCH v3 2/2] alpha: enable contiguous memory allocation for coherent DMA
-Date: Sun, 15 Nov 2026 11:37:43 +0100
-Message-ID: <20261115103809.1288167-3-linmag7@gmail.com>
-X-Mailer: git-send-email 2.56.0
-In-Reply-To: <20261115103809.1288167-1-linmag7@gmail.com>
-References: <20261115103809.1288167-1-linmag7@gmail.com>
+        d=1e100.net; s=20260707; t=1794739656; x=1795344456;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=7hNKkJJ70oe8gF6M+CzP6oDsWzOHjvQZU/Y9Gmdl08c=;
+        b=lUm+H9tfKkIgY9F5g7CQKJ8o0GOJXIHhkb7xOiNkvqZIUvw4asyeZFvouw1wIEmTp+
+         fRCeHoBdE6vk6Pe0QmoY68S8M4t3MBGCitX89da5kijZF+Hrk2tzUZPIwH+EZoTH91hS
+         WQwQ4HgiTjVEhbWauog9DZtJtRRSFslWpPB8KX1Qd4WVghoXIyU5OWl0k1LMysvr4jBP
+         6OPT7oRRxdh7C0WHR5HmeYTO0RFUCG9EGQYZdSOPb1/PbMgeWe8/XQlGGSmIIY9s44C8
+         Q1nhqwMXNBW+a/fxqaWI4MrZqiA2iLi4vCeHia/Wb8kGb6NrnWqbNcKCHZb4ZVtu6cZG
+         cI4Q==
+X-Forwarded-Encrypted: i=1; AL+hErFBVDi14k+7a7r0n76mt49W9XrtWvfzaC/n2EQj6JLDU8W/PpROklh55zf9U4CbVb67ZMq9YTB3up0Irg==@vger.kernel.org
+X-Gm-Message-State: APuU4Z/c7XoFmTIuk7zkVrp8PlGbQl7vknFtawpir6gjq0UAJNGsh+mN
+	rEOl0iygG7qwViUD7Nm2lNsAUhnJ3S2gVA4vGeFG00DfvpmoHm2mkhyJoKIAQAVlLfEmVCnjsI6
+	nzEaxvLokjgZTi1WIaXQ9ql+Nocwbjx4=
+X-Gm-Gg: AYBFou3zVEb6rePYtaqa0IPJTuSm/V5uUxvz/1+Ut1kGTgT1NZY0QsJyFodGBoAFHVj
+	scE/Ia2EYhCsyOwk7aH9SN/8zmhIjgf3rU+mSX/+UqaDjOyJlFfsVcPNPaOBBIMyreh131HG7w+
+	2/Be+Tj4Uoar9V2GmT14HL2xmBRELn8UZnxXCAKtzgaiCs7MfX7A/62GXyBlP9Cd7RXEySHb7w6
+	NEp6HG46/hEgTNPZybSp9nWZydooyGBQCrPjAFh5UqC8QrJ+ZrtOJDvnCkL+M6Ei+osmh0aQO2i
+	8FR4Ncxm7oV7oYYXqJuok+kuetk5Pts++vehYei1qrJoK1shMNGz9zik3pl75fxXVxmC3jM77qP
+	PJAi/cTAoJle/a5QPzz91BDbXvyZA/TSP33Naua/fRZdtXSc6iZzpa+BdDF7/HGGQlccG/Bfw09
+	0B5G423KXIdRWSbV+5Po/Y4YA=
+X-Received: by 2002:a05:6402:13d6:b0:6b5:74dd:37ee with SMTP id
+ 4fb4d7f45d1cf-6b7c0d2d212mr5900328a12.44.1794739656036; Sun, 15 Nov 2026
+ 02:47:36 -0800 (PST)
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -99,145 +105,161 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20261104-perf-alpha-profileme-v4-0-1771ea02950e@gmail.com>
+ <CA+=Fv5RBKVAdGgq=BGPmLXpczcB3qvQcSw8aat7nB2ePXcG4yg@mail.gmail.com> <avQKb-vBxTvMn1yF@z2>
+In-Reply-To: <avQKb-vBxTvMn1yF@z2>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Sun, 15 Nov 2026 11:47:24 +0100
+X-Gm-Features: AclHuK9Mu_cJKLZOoV0Y-yZCRrVtpzl_e4de-VMWVu7r7OWJeMEUlQrpyeZtftw
+Message-ID: <CA+=Fv5SA6so5VjPzjj1tCNKxwOk=5ejj0YhEG483u_-RY+7NoQ@mail.gmail.com>
+Subject: Re: [PATCH v4 0/3] perf alpha: Decode ProfileMe samples
+To: Namhyung Kim <namhyung@kernel.org>
+Cc: Ian Rogers <irogers@google.com>, Matt Turner <mattst88@gmail.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
+	Arnaldo Carvalho de Melo <acme@kernel.org>, Mark Rutland <mark.rutland@arm.com>, 
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>, Jiri Olsa <jolsa@kernel.org>, 
+	Adrian Hunter <adrian.hunter@intel.com>, James Clark <james.clark@linaro.org>, 
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-perf-users@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Select HAVE_DMA_CONTIGUOUS and reserve a default CMA area after the
-machine has initialized its DMA windows. Prefer top-down placement
-below the direct-map and usable RAM limits. Skip the default reservation
-when no direct-map window exists. Explicit cma= ranges retain their
-generic override semantics; top-down placement is a preference, not a
-hard lower bound excluding the first 16 MiB.
+Hi,
 
-Use dma_alloc_contiguous(), which rejects non-blocking callers, before
-falling back to alloc_pages_exact(). Pair both paths with
-dma_free_contiguous(), whose buddy fallback uses free_pages_exact().
-Skip CMA on the GFP_DMA retry after a mapping failure so it cannot
-return the same unsuitable CMA pages. Retain zeroing for CMA memory.
+On Wed, Nov 11, 2026 at 7:25=E2=80=AFAM Namhyung Kim <namhyung@kernel.org> =
+wrote:
+>
+> Hello,
+>
+> On Tue, Nov 10, 2026 at 08:31:02PM +0100, Magnus Lindholm wrote:
+> > Hi all,
+> >
+> > On Wed, Nov 4, 2026 at 7:53=E2=80=AFPM Matt Turner <mattst88@gmail.com>=
+ wrote:
+> > >
+> > > The Alpha kernel series "alpha/perf: add ProfileMe sampling" adds
+> > > ProfileMe sampling to the Alpha cpu PMU. Each ProfileMe sample carrie=
+s
+> > > the profiled instruction's PMPC and its I_STAT and PCTR_CTL status as
+> > > PERF_SAMPLE_RAW data, which says whether the instruction retired,
+> > > whether it trapped and why, whether it was a mispredicted branch,
+> > > stalled before map, or was killed on a wrong path, and what PCTR1
+> > > counted while it was in flight:
+> > >
+> > >   https://lore.kernel.org/r/20261104-alpha-profileme-v6-0-63362e9290a=
+3@gmail.com
+> > >
+> > > This series is the perf tool side. Patch 1 decodes the raw data in pe=
+rf
+> > > report -D and perf script -D, as is done for AMD IBS. It copies the n=
+ew
+> > > uapi header from the kernel series into tools/arch, so it should wait
+> > > until that header is merged. Patch 2 adds a script that sums the stat=
+us
+> > > by symbol or by instruction, in the style of DCPI. Patch 3 gives perf
+> > > mem a ProfileMe event, as the kernel series reports the DTB hits and
+> > > misses of loads and stores in the data source.
+> > >
+> > > To try it, with the kernel series applied:
+> > >
+> > >   perf record -R -e cpu/instructions,profileme/ -- ./workload
+> > >   tools/perf/python/alpha-profileme.py --pc
+> > >
+> > > I tested this on an AlphaServer ES47 (EV7). Sampling a loop whose
+> > > branch tests random data reports that branch mispredicted in 21% of i=
+ts
+> > > samples, and 0% with sorted data. As a normal user, perf mem record o=
+n
+> > > a loop that loads one word from each page reports the load's DTB hits
+> > > and misses.
+> > >
+> > > Signed-off-by: Matt Turner <mattst88@gmail.com>
+> > > ---
+> > > Changes in v4:
+> > > - Patches 1 and 2: ignore TRP, and MIS and the trap type with it, for
+> > >   an instruction killed before it was mapped, as the kernel series
+> > >   does. Thanks to Ian Rogers.
+> > > - Patch 2: record cpu/instructions,profileme/ in the example, as a
+> > >   precise event now samples only retired instructions, which leaves
+> > >   the killed% and invalid% columns at 0. Thanks to Ian Rogers.
+> > > - New patch 3: add a perf mem event for Alpha, cpu/cycles,profileme/.
+> > >   Suggested by Ian Rogers.
+> > > - Link to v3: https://patch.msgid.link/20261102-perf-alpha-profileme-=
+v3-0-4bf6e1dda733@gmail.com
+> > >
+> > > Changes in v3:
+> > > - Patch 1: silence -Wpacked around the uapi header, which breaks the
+> > >   build where __u64 is 4-byte aligned, such as sh4.
+> > > - Patch 2: only read raw data from cpu PMU events, as a tracepoint's
+> > >   payload can pass for ProfileMe status. Thanks to Magnus Lindholm.
+> > > - Patch 2: print a table for each thing PCTR1 can count, so that mixi=
+ng
+> > >   events no longer averages unrelated values. Thanks to Magnus Lindho=
+lm.
+> > > - Link to v2: https://patch.msgid.link/20261030-perf-alpha-profileme-=
+v2-0-9ce2f0b0e622@gmail.com
+> > >
+> > > Changes in v2:
+> > > - Patch 1: copy the raw data out of the sample and convert it from
+> > >   little endian, so that it decodes on strict-alignment and big-endia=
+n
+> > >   hosts.
+> > > - Patches 1 and 2: follow the new 28-byte struct alpha_profileme_samp=
+le
+> > >   from kernel v2.
+> > > - Link to v1: https://patch.msgid.link/20261028-perf-alpha-profileme-=
+v1-0-f46c1938d001@gmail.com
+> > >
+> > > ---
+> > > Matt Turner (3):
+> > >       perf alpha: Decode ProfileMe raw samples
+> > >       perf python: Add alpha-profileme.py
+> > >       perf alpha: Add perf mem support
+> > >
+> > >  tools/arch/alpha/include/uapi/asm/perf_event.h |  31 +++++
+> > >  tools/perf/Documentation/perf-mem.txt          |   3 +
+> > >  tools/perf/arch/alpha/Build                    |   2 +-
+> > >  tools/perf/arch/alpha/util/Build               |   2 +
+> > >  tools/perf/arch/alpha/util/mem-events.c        |  17 +++
+> > >  tools/perf/arch/alpha/util/mem-events.h        |   7 +
+> > >  tools/perf/arch/alpha/util/pmu.c               |  11 ++
+> > >  tools/perf/check-headers.sh                    |   1 +
+> > >  tools/perf/python/alpha-profileme.py           | 178 +++++++++++++++=
+++++++++++
+> > >  tools/perf/util/Build                          |   1 +
+> > >  tools/perf/util/alpha-sample-raw.c             | 156 +++++++++++++++=
++++++++
+> > >  tools/perf/util/sample-raw.c                   |   2 +
+> > >  tools/perf/util/sample-raw.h                   |   2 +
+> > >  13 files changed, 412 insertions(+), 1 deletion(-)
+> > > ---
+> > > base-commit: 4626d370ae89b8af4d46a45372b269f926ec662d
+> > > change-id: 20261028-perf-alpha-profileme-8010299be323
+> > >
+> > > Best regards,
+> > > --
+> > > Matt Turner <mattst88@gmail.com>
+> > >
+> >
+> > My plan is to take this series through the Alpha tree alongside the
+> > kernel ProfileMe support. Does that work for the perf maintainers?
+> > An Acked-by would be appreciated.
+>
+> Should be ok as it hardly touches the common code.
+>
+> Acked-by: Namhyung Kim <namhyung@kernel.org>
+>
+> Ian, does it look ok to you?
+>
 
-Round the size up to a page boundary in both allocation and free. CMA
-allocates size >> PAGE_SHIFT pages, so an unaligned size could otherwise
-allocate too few pages and overrun the allocation during zeroing. Keep
-the mapping and unmapping lengths consistent with the aligned size.
+Thanks for the ack. Taking this through the Alpha tree will keep
+the tools support together with the kernel changes it depends on.
+I'll add your Acked-by when applying the series to my for-next,
+pending any further comments from Ian.
 
-With CONFIG_DMA_CMA=y, the default CMA_SIZE_MBYTES setting reserves
-16 MiB without a cma= argument. cma=0 disables the default area.
+Thanks,
+Magnus
 
-Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
----
- .../io/dma-contiguous/arch-support.txt        |  2 +-
- arch/alpha/Kconfig                            |  1 +
- arch/alpha/kernel/pci_iommu.c                 | 19 +++++++++++++------
- arch/alpha/kernel/setup.c                     | 15 +++++++++++++++
- 4 files changed, 30 insertions(+), 7 deletions(-)
-
-diff --git a/Documentation/features/io/dma-contiguous/arch-support.txt b/Documentation/features/io/dma-contiguous/arch-support.txt
-index 3c6ce35d704f..6cd205a991f6 100644
---- a/Documentation/features/io/dma-contiguous/arch-support.txt
-+++ b/Documentation/features/io/dma-contiguous/arch-support.txt
-@@ -6,7 +6,7 @@
-     -----------------------
-     |         arch |status|
-     -----------------------
--    |       alpha: | TODO |
-+    |       alpha: |  ok  |
-     |         arc: | TODO |
-     |         arm: |  ok  |
-     |       arm64: |  ok  |
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 6ccb2d230326..cddc1f3af209 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -30,6 +30,7 @@ config ALPHA
- 	select HAVE_ARCH_COMPILER_H
- 	select HAVE_ASM_MODVERSIONS
- 	select HAVE_DEBUG_KMEMLEAK
-+	select HAVE_DMA_CONTIGUOUS
- 	select HAVE_GUP_FAST
- 	select HAVE_KERNEL_BZIP2
- 	select HAVE_KERNEL_GZIP
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index 955b6ca61627..19aa5c05de2b 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -408,15 +408,20 @@ static void *alpha_pci_alloc_coherent(struct device *dev, size_t size,
- {
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
- 	void *cpu_addr;
--	long order = get_order(size);
-+	struct page *page;
- 
-+	size = PAGE_ALIGN(size);
- 	gfp &= ~GFP_DMA;
- 
- try_again:
--	cpu_addr = (void *)__get_free_pages(gfp | __GFP_ZERO, order);
-+	/* A low-memory retry must not return the same unsuitable CMA pages. */
-+	page = (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev, size, gfp);
-+	if (page)
-+		cpu_addr = page_address(page);
-+	else
-+		cpu_addr = alloc_pages_exact(size, gfp | __GFP_ZERO);
- 	if (! cpu_addr) {
--		printk(KERN_INFO "pci_alloc_consistent: "
--		       "get_free_pages failed from %ps\n",
-+		pr_info("pci_alloc_consistent: allocation failed from %ps\n",
- 			__builtin_return_address(0));
- 		/* ??? Really atomic allocation?  Otherwise we could play
- 		   with vmalloc and sg if we can't find contiguous memory.  */
-@@ -426,7 +431,7 @@ static void *alpha_pci_alloc_coherent(struct device *dev, size_t size,
- 
- 	*dma_addrp = pci_map_single_1(pdev, virt_to_phys(cpu_addr), size, 0);
- 	if (*dma_addrp == DMA_MAPPING_ERROR) {
--		free_pages((unsigned long)cpu_addr, order);
-+		dma_free_contiguous(dev, virt_to_page(cpu_addr), size);
- 		if (alpha_mv.mv_pci_tbi || (gfp & GFP_DMA))
- 			return NULL;
- 		/* The address doesn't fit required mask and we
-@@ -452,8 +457,10 @@ static void alpha_pci_free_coherent(struct device *dev, size_t size,
- 				    unsigned long attrs)
- {
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
-+
-+	size = PAGE_ALIGN(size);
- 	dma_unmap_single(&pdev->dev, dma_addr, size, DMA_BIDIRECTIONAL);
--	free_pages((unsigned long)cpu_addr, get_order(size));
-+	dma_free_contiguous(dev, virt_to_page(cpu_addr), size);
- 
- 	DBGA2("pci_free_consistent: [%llx,%zx] from %ps\n",
- 	      dma_addr, size, __builtin_return_address(0));
-diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
-index f21a7c8f5213..f40a87b30a7c 100644
---- a/arch/alpha/kernel/setup.c
-+++ b/arch/alpha/kernel/setup.c
-@@ -31,6 +31,7 @@
- #include <linux/panic_notifier.h>
- #include <linux/platform_device.h>
- #include <linux/memblock.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/pci.h>
- #include <linux/seq_file.h>
- #include <linux/root_dev.h>
-@@ -584,6 +585,20 @@ setup_arch(char **cmdline_p)
- 	jump_label_init();
- 	parse_early_param();
- 
-+	/*
-+	 * Prefer higher memory within the direct-map window, rather than
-+	 * consuming scarce low memory with a bottom-up CMA reservation.
-+	 * Explicit cma= ranges retain the generic command-line semantics.
-+	 */
-+	if (__direct_map_size) {
-+		bool bottom_up = memblock_bottom_up();
-+
-+		memblock_set_bottom_up(false);
-+		dma_contiguous_reserve(min_t(phys_addr_t, __direct_map_size,
-+					     PFN_PHYS(max_low_pfn)));
-+		memblock_set_bottom_up(bottom_up);
-+	}
-+
- 	/* Reserve standard resources.  */
- 	reserve_std_resources();
- 
--- 
-2.43.0
-
+> Thanks,
+> Namhyung
+>
