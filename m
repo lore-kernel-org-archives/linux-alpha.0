@@ -1,92 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.181
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794739096;
-	b=nNY8qbIgesafpvUxDLKQDU6gMyvbG1yNFw06Cl9bwi2u6dkFucJ7ANJK6JNoywKSXeQm
-	 a1YDIzHSwY/b2O+0Z0+QxwNx+RRDYPLGUTx2I8yP1Ex6VZ5+YKwZRWpHU7JNCrSDw/u/T
-	 ZAg0B+gIE2i39HrVk5udX1oxVdF83dfWg6eqqDIHRNthWkvhQE+z+wBrMIrmUsftIKzNI
-	 203kRO2DFtvO0nHLojBcrsG4bxrm2iSOCPGh0nZGnhfXE6gxoTvpAHE8hkZ7QoRsmDiyD
-	 7u5IgnvV34YVXuC8yuV1WZy9K8gOPWAWKs2l/NW9z2TnmqrVmaBO9/ylJ3leFrmwZRA==
+	t=1794739098;
+	b=SU0k3nBTg/rVcctxCRxD4/hIkeaxPAeL0KKU+ErqwBcD/ZJGvmtAisYpvjPLwI2V3Q8h
+	 bgTXnXCeB5iyn3wAGfDKDD0MsZDxUr1YBTu4kSqMfXpBC9S4Bnns+POEANorVPgEpJDKL
+	 MLGttD8a5s1IZNy3j33uImMdxx2KjeSEqybNijYYhHb1DU+qiQc/9a/11ddhT0/Pz9fsI
+	 wymd+SQ7E0k4MfVe+DM1aD51Fhy0DlCZb0m2d+/vg0emua1wJDkFbIWcj15UDwk9cL/cF
+	 NdQ9356Rrg43f00NN0gW1Nxe7zycaXq4LZPiJhU7SjtkpAgHiSVEKXyDXEYOVrJoYiA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794739096;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794739098;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=y8oiXQV1HOy7NuomfkqPftUJd1Ir7JJpxig8oQcCTK8=;
-	b=k+gmKs1kpCGYXXo42jIzPitPBNRJHxniSJVTA6LlGsJ06h6g+nDCfgjA0BO7BVlBmG4x
-	 GUSWkxiWSTfo0jmvyW8ObMu6+J8V/3pLBB+p6fGLMMw29V3AE9SbqVb6rQ1wKuU4/QBtW
-	 Y29AUr7aewClAQMReRE26mEKu5+M69UZzBwND6qDrRj1ix3SdwTuHmeFL74tyAaLTfDll
-	 1vrxRH6SnSQNoi6dUicz3M7gofRomN31m5TOxegb4ebz2MhqpEmwfGlhdazjeIxx2VI8e
-	 VokeNuTEuboJzfe+rmEB4biZoes6x4+iFB6FVtVSwZ9MVCd2FEVePEj25abxEs4KMog==
+	bh=dm9ePAdwTgqDyhmZBdfRQC0uQmjTicoUXjhAVnrQHGQ=;
+	b=qC8PDKovpYWC5u+Bral5K2es7qIP0XYK+MEmwrtxagCOCMjgx5NyWa2m9CF+nZY6GDXF
+	 BnxKN5261Y3+jRhDO81GrvNt4kHEEB8ulelfrHNb9is9DtGrSq/OWvX97GXIpSns1/sCN
+	 WE570/r5II+B2JAgxBTBSi250rAoUe2KUqzFPqM7SFLXA8Z6X3c+IkVoUmkJsQLijLFG0
+	 cqofRRX8Mx6gytcEAKMMMnncqYFPwraC5cruQsHlmzIY9eq4FuHeU9aIwEKNaJFdHNwEx
+	 P9oooVpghon1PqQjXKU9yLY4E+6j7T2yuaHz16V63N1KhVLOcPxq2xKPx8MVKbibENg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=fAgGLWci;
-	arc=none smtp.remote-ip=209.85.208.181
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yIvHXUks;
+	arc=none smtp.remote-ip=209.85.208.182
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AADF606A327
-	for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 10:38:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6AADF606A327
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB19E606A338
+	for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 10:38:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BB19E606A338
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=fAgGLWci
-Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-3ab30b3212aso24431781fa.0
-        for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 02:38:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yIvHXUks
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-3acc7a0b558so24274191fa.3
+        for <linux-alpha@vger.kernel.org>; Sun, 15 Nov 2026 02:38:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794739095; x=1795343895; darn=vger.kernel.org;
+        d=gmail.com; s=20260707; t=1794739096; x=1795343896; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=y8oiXQV1HOy7NuomfkqPftUJd1Ir7JJpxig8oQcCTK8=;
-        b=fAgGLWciBjUBmsBp3/62k5L97NrmqQfGrjl/XpIJfQD5buxxAf4J+bTv5zbJ5WVB68
-         2+T+Q1NfnbxRCZtPXTRxEWWPz2I2sg4aZs5Cb+dXgPIeOuqvGkjSlWZYEp5LAVsIG6bP
-         kogwv49fjey60nhLHHgqyYknKGHEPmMMCGZgjaZ/qpimyNWPfpuLwWrZVzYMJTfrYOym
-         ZhDOjTEajgamBu4wIxrIiykX8RPISOJab3Z0+ce7CTwwABZyxRHn8leS+btBlJSCFSdE
-         9Tql1ThL9OAS2wuDv5uZHP3CXtOGBU5bOu6tXg28A3/8viaDyQEIJOtxjo4wbZWlMIf4
-         UG4g==
+        bh=dm9ePAdwTgqDyhmZBdfRQC0uQmjTicoUXjhAVnrQHGQ=;
+        b=yIvHXUksCtGG93KMJYaPLmlW6MYv5D2vIXzEzLKh9XBN03bnBZq1lHdFB/K4PjTsTz
+         l4Unt4Wbj+1BMBe0pMpriGardCoa8T9zfNuyaUcpShMwctWjggRrWDWFn11bL4vwvoib
+         utDQ52Z5rN/fg/AefmoebuJbO5dJI0C/qD6kZiNO446FBdoV9sIWEBuzVo8Xo4KckBoW
+         BtYtEZ+YHb50ujKda7C7dC1gVolAZwJ4Hf7zHzNdqI+Ar5iag33spyfSCDhT8ut8cuqP
+         NaK31BPd3g2xAXtgQ8wM8wcgiHNLqw/9eQlz7uY7eJqjZQZj7Y0xDODj/slODqj2fRGr
+         1L7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794739095; x=1795343895;
+        d=1e100.net; s=20260707; t=1794739096; x=1795343896;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=y8oiXQV1HOy7NuomfkqPftUJd1Ir7JJpxig8oQcCTK8=;
-        b=smXV7dxCudeytJuh83WiL1iUNQWsNuZr+hP1y///fOv0I2wKrGkveVL8vH/1vI/72z
-         57A1A2nnMMFeowFamB0mUBPqrzlmTzQZkSIqe9boVciXu2k6qLQjz8yfJjuBVGffrjHY
-         Wk2ImognDr8MErVEH/xTyOox1QlbhgYmQJWvfrSoYRAnLI9njxOpa/okLclVFKepdUFh
-         Rl7mvs/dGxttHS2aD3xXfjBk645z/Wb/IySqcVlbiWrVOpWRQGalAZ5BOeWo18sjGZfk
-         N2Z4OjraBAizDfCjBciQEBASbKJR+SO71ouVcOrWeH0WFtY1VHoryn3IPiMVKSSs5z3/
-         A1gw==
-X-Forwarded-Encrypted: i=1; AL+hErGT9mRhY01Meduus6J/eyx+A/COUFMztGNUKqj535cF14+QtL+506sd75ItjGDAwhliaUF7o8g7Bwsb3Q==@vger.kernel.org
-X-Gm-Message-State: APuU4Z/UWde3tA+TM2jt4fm5UXIp2bLKuurUAHRcWyb/Rn8Ul6BE8YDl
-	Xo/8+yM9Ihs7pyagmys0Gi4yRYpP2NFQR5e1mho6ZlUmg7ckTDlWkjxx
-X-Gm-Gg: AYBFou18U/mPKcnIQMQ352ZLjs89LlJ6tf/3Uv/9d8hKLjRgrUapQOixH3VOcmmfet7
-	+kf1PtLLZe3kG80s14osNGPodaSzKLgLYTBWwMFHPFgfxnoAiAHXd/mm9nY7LPvGXPHLLsVOJns
-	Wc0efhYuDigG6b6C8dXDqWeTz8Pb3qwbCK8RJOX9Upy+CoM589SPtf1hVWOjRs3p7x9dLYrwaUy
-	QX4oYlY/CGjHM7wlUJ6oaCAMGJwgoPWbhSbLIKwtHNucnNqSmve9WVYXyeLo7Nr7JmYUv6HAfN5
-	fvTnvrXpnqJwSUMxM/4KT8HgSLyx7TrHFaHoj4dXW0tP1nVCe6bj6ciVyXwtY56yHxGl6IcZIqz
-	phORks+U+12ADNQ6VMezQOm6Am1TpxLZphrNSTaO/p1ogV9s/gUJWGe2a/lW0p7a6aUmHzH1Dte
-	5UI8TOf+hbUEFVRm5aN/BW8/brJSANQU03+WM+dhX6rmtNCEUK/jpQM4es7H9GjAnEF215SSzm5
-	7g7jGxZXp0bHyxIWTm9Y999B9Tm80cvv/jFAES4gxsd2izWJ+L2VDd9m9Fw1yKVuc5Vxu+6tAKt
-	LNdxlg5NURz4zZGTZpJOBxdz1lTaojxMa7miQOmA96SoW6eXbHpxhtXatjARrLr7LLz7ZHk=
-X-Received: by 2002:a05:6512:b1b:b0:5bf:b7d2:c7d3 with SMTP id 2adb3069b0e04-5c170b51016mr2198984e87.39.1794739094460;
-        Sun, 15 Nov 2026 02:38:14 -0800 (PST)
+        bh=dm9ePAdwTgqDyhmZBdfRQC0uQmjTicoUXjhAVnrQHGQ=;
+        b=PWuAe7KgNOU4svfIgd9+dfYJZeZrWigOGAk4RMhmAGcOexsyBylSEiy2Y1shs2xhY5
+         4adtgaIH4W9zYzcv9M4/kn8DbOLLzeDoKJRfDSzx3eVdFru3wadbxWxNujAMaRm2SaV0
+         pZO4YRD5ISKnjnQsievCAWzWYY3DhTNcvohx3Lo4A147KTnGtUyl4QVqyp6VTgRyVhQ+
+         xQ80Z4oOg4GYdMFuIRbmfGaEMQIfbDco8YWvwfX0wYHcFGx2Xdjkn4sva4uTDM8imSZP
+         7r92ci8MTYLOXJ0gt0UVQwpPLAvAZ86L70CJsz0nRYiTsG5Gdn8fn6e7LqjyVPyk19Go
+         /uPg==
+X-Forwarded-Encrypted: i=1; AL+hErHSRMBC63MJcIB+6ABIQ0YLdF+T7Dvl4iy7LDwaeL+TqeAFBssF8YzDC0OyBhhNimMChniIG/Ah3RVf1w==@vger.kernel.org
+X-Gm-Message-State: APuU4Z+eFHBbLr7Be+QH/Zw7i5VTUl6xXQdBkTE8WADfgu6a7MK0f4TF
+	5gZXfMF3D0zNeLKRxhkHMjq66DwU1pHDQryun2Ito3EybkPYc0cZ0sDB
+X-Gm-Gg: AYBFou0JNSWtoxPH2THJjwEdnLXWL6ZDb2DGPfHA0QupPZAVkFCIe4tMNOljTM3srT0
+	IyNZ8kjz+qDCEUevhg3+5cPvA3f7Iw0LpUstdawQWjowionYmMA8Er8C6t7rQ9HYKZTOUJelbCK
+	opHZSyvrtu02ii/QlGO3igqYHfhzzE3uXJ1c80czXce6ZJTXvYv4CGDfum+fMoBp5z48UC3myiY
+	O4eVFef52QFwCjvGpvuvAeNH4sIcqUbv7Uk+Z4QAYoJAyLR4bno7QOQLnzccpGgfxyFOv3XvRRp
+	vIe4cBHedITn5/W5qZ83YuPRTexx1V0XNK80HO5GdyMPQCdbplk1FtISZnYEyV686kh+/+5LNk3
+	/MSC64PwyS2qVcjvk9DuU0IfW0uvb+xAh+CssxIOHcpDCqnHssYI2O1/ogAzibmsr7IJ8pxaXrC
+	TEjCQAltpmRdQ3W9bae7/FrMH9p00EGp+oYsBvQ/QfR+p2651sNO6BUaHCOCzXwRJaimRQrO+S1
+	ZM6rN6M4Qm+sTRW1J8LZ5gTZxAlECkKAElis0f27dhqFdsX2Pr4EUUxoy8DPbZkUKELAFqN1l7g
+	yVb1UVqglYOeJbXlzpxbdKlrcfeWi+o6Xtdlpa6xRfp4oqqgZnyyqssrAeD7/fODP2iPTKA=
+X-Received: by 2002:a05:651c:983:b0:3a3:749e:319d with SMTP id 38308e7fff4ca-3ae2b508d40mr20659161fa.17.1794739095852;
+        Sun, 15 Nov 2026 02:38:15 -0800 (PST)
 Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c17135649asm2304491e87.77.2026.11.15.02.38.13
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c17135649asm2304491e87.77.2026.11.15.02.38.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Nov 2026 02:38:13 -0800 (PST)
+        Sun, 15 Nov 2026 02:38:15 -0800 (PST)
 From: Magnus Lindholm <linmag7@gmail.com>
 To: richard.henderson@linaro.org,
 	mattst88@gmail.com,
 	linux-kernel@vger.kernel.org,
 	linux-alpha@vger.kernel.org
 Cc: linmag7@gmail.com
-Subject: [PATCH v3 1/2] alpha: parse early parameters before reserving contiguous memory
-Date: Sun, 15 Nov 2026 11:37:42 +0100
-Message-ID: <20261115103809.1288167-2-linmag7@gmail.com>
+Subject: [PATCH v3 2/2] alpha: enable contiguous memory allocation for coherent DMA
+Date: Sun, 15 Nov 2026 11:37:43 +0100
+Message-ID: <20261115103809.1288167-3-linmag7@gmail.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261115103809.1288167-1-linmag7@gmail.com>
 References: <20261115103809.1288167-1-linmag7@gmail.com>
@@ -101,41 +101,139 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Run parse_early_param() in setup_arch(), after machine initialization
-and before further memory reservations. This lets the subsequent CMA
-reservation honor cma= before start_kernel() reaches its normal call.
+Select HAVE_DMA_CONTIGUOUS and reserve a default CMA area after the
+machine has initialized its DMA windows. Prefer top-down placement
+below the direct-map and usable RAM limits. Skip the default reservation
+when no direct-map window exists. Explicit cma= ranges retain their
+generic override semantics; top-down placement is a preference, not a
+hard lower bound excluding the first 16 MiB.
 
-Initialize jump labels first so early handlers can safely change static
-keys. The later jump_label_init() call in start_kernel() is harmless.
+Use dma_alloc_contiguous(), which rejects non-blocking callers, before
+falling back to alloc_pages_exact(). Pair both paths with
+dma_free_contiguous(), whose buddy fallback uses free_pages_exact().
+Skip CMA on the GFP_DMA retry after a mapping failure so it cannot
+return the same unsuitable CMA pages. Retain zeroing for CMA memory.
 
-The parser uses boot_command_line and guards against repeated calls.
-This moves all early parameter handlers, not just the CMA handler.
+Round the size up to a page boundary in both allocation and free. CMA
+allocates size >> PAGE_SHIFT pages, so an unaligned size could otherwise
+allocate too few pages and overrun the allocation during zeroing. Keep
+the mapping and unmapping lengths consistent with the aligned size.
+
+With CONFIG_DMA_CMA=y, the default CMA_SIZE_MBYTES setting reserves
+16 MiB without a cma= argument. cma=0 disables the default area.
 
 Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
-Reviewed-by: Matt Turner <mattst88@gmail.com>
 ---
- arch/alpha/kernel/setup.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../io/dma-contiguous/arch-support.txt        |  2 +-
+ arch/alpha/Kconfig                            |  1 +
+ arch/alpha/kernel/pci_iommu.c                 | 19 +++++++++++++------
+ arch/alpha/kernel/setup.c                     | 15 +++++++++++++++
+ 4 files changed, 30 insertions(+), 7 deletions(-)
 
+diff --git a/Documentation/features/io/dma-contiguous/arch-support.txt b/Documentation/features/io/dma-contiguous/arch-support.txt
+index 3c6ce35d704f..6cd205a991f6 100644
+--- a/Documentation/features/io/dma-contiguous/arch-support.txt
++++ b/Documentation/features/io/dma-contiguous/arch-support.txt
+@@ -6,7 +6,7 @@
+     -----------------------
+     |         arch |status|
+     -----------------------
+-    |       alpha: | TODO |
++    |       alpha: |  ok  |
+     |         arc: | TODO |
+     |         arm: |  ok  |
+     |       arm64: |  ok  |
+diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+index 6ccb2d230326..cddc1f3af209 100644
+--- a/arch/alpha/Kconfig
++++ b/arch/alpha/Kconfig
+@@ -30,6 +30,7 @@ config ALPHA
+ 	select HAVE_ARCH_COMPILER_H
+ 	select HAVE_ASM_MODVERSIONS
+ 	select HAVE_DEBUG_KMEMLEAK
++	select HAVE_DMA_CONTIGUOUS
+ 	select HAVE_GUP_FAST
+ 	select HAVE_KERNEL_BZIP2
+ 	select HAVE_KERNEL_GZIP
+diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
+index 955b6ca61627..19aa5c05de2b 100644
+--- a/arch/alpha/kernel/pci_iommu.c
++++ b/arch/alpha/kernel/pci_iommu.c
+@@ -408,15 +408,20 @@ static void *alpha_pci_alloc_coherent(struct device *dev, size_t size,
+ {
+ 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
+ 	void *cpu_addr;
+-	long order = get_order(size);
++	struct page *page;
+ 
++	size = PAGE_ALIGN(size);
+ 	gfp &= ~GFP_DMA;
+ 
+ try_again:
+-	cpu_addr = (void *)__get_free_pages(gfp | __GFP_ZERO, order);
++	/* A low-memory retry must not return the same unsuitable CMA pages. */
++	page = (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev, size, gfp);
++	if (page)
++		cpu_addr = page_address(page);
++	else
++		cpu_addr = alloc_pages_exact(size, gfp | __GFP_ZERO);
+ 	if (! cpu_addr) {
+-		printk(KERN_INFO "pci_alloc_consistent: "
+-		       "get_free_pages failed from %ps\n",
++		pr_info("pci_alloc_consistent: allocation failed from %ps\n",
+ 			__builtin_return_address(0));
+ 		/* ??? Really atomic allocation?  Otherwise we could play
+ 		   with vmalloc and sg if we can't find contiguous memory.  */
+@@ -426,7 +431,7 @@ static void *alpha_pci_alloc_coherent(struct device *dev, size_t size,
+ 
+ 	*dma_addrp = pci_map_single_1(pdev, virt_to_phys(cpu_addr), size, 0);
+ 	if (*dma_addrp == DMA_MAPPING_ERROR) {
+-		free_pages((unsigned long)cpu_addr, order);
++		dma_free_contiguous(dev, virt_to_page(cpu_addr), size);
+ 		if (alpha_mv.mv_pci_tbi || (gfp & GFP_DMA))
+ 			return NULL;
+ 		/* The address doesn't fit required mask and we
+@@ -452,8 +457,10 @@ static void alpha_pci_free_coherent(struct device *dev, size_t size,
+ 				    unsigned long attrs)
+ {
+ 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
++
++	size = PAGE_ALIGN(size);
+ 	dma_unmap_single(&pdev->dev, dma_addr, size, DMA_BIDIRECTIONAL);
+-	free_pages((unsigned long)cpu_addr, get_order(size));
++	dma_free_contiguous(dev, virt_to_page(cpu_addr), size);
+ 
+ 	DBGA2("pci_free_consistent: [%llx,%zx] from %ps\n",
+ 	      dma_addr, size, __builtin_return_address(0));
 diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
-index 9fda01b73b18..f21a7c8f5213 100644
+index f21a7c8f5213..f40a87b30a7c 100644
 --- a/arch/alpha/kernel/setup.c
 +++ b/arch/alpha/kernel/setup.c
-@@ -25,6 +25,7 @@
- #include <linux/cpu.h>
- #include <linux/errno.h>
- #include <linux/init.h>
-+#include <linux/jump_label.h>
- #include <linux/string.h>
- #include <linux/ioport.h>
+@@ -31,6 +31,7 @@
  #include <linux/panic_notifier.h>
-@@ -579,6 +580,10 @@ setup_arch(char **cmdline_p)
- 	if (alpha_mv.init_arch)
- 		alpha_mv.init_arch();
+ #include <linux/platform_device.h>
+ #include <linux/memblock.h>
++#include <linux/dma-map-ops.h>
+ #include <linux/pci.h>
+ #include <linux/seq_file.h>
+ #include <linux/root_dev.h>
+@@ -584,6 +585,20 @@ setup_arch(char **cmdline_p)
+ 	jump_label_init();
+ 	parse_early_param();
  
-+	/* Early options may change static keys and configure DMA CMA. */
-+	jump_label_init();
-+	parse_early_param();
++	/*
++	 * Prefer higher memory within the direct-map window, rather than
++	 * consuming scarce low memory with a bottom-up CMA reservation.
++	 * Explicit cma= ranges retain the generic command-line semantics.
++	 */
++	if (__direct_map_size) {
++		bool bottom_up = memblock_bottom_up();
++
++		memblock_set_bottom_up(false);
++		dma_contiguous_reserve(min_t(phys_addr_t, __direct_map_size,
++					     PFN_PHYS(max_low_pfn)));
++		memblock_set_bottom_up(bottom_up);
++	}
 +
  	/* Reserve standard resources.  */
  	reserve_std_resources();
