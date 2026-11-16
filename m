@@ -1,77 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794812947;
-	b=ePYLK8Y++vV92rE1O+zSZCs4lo87Otb4FfAJWiDs70cEphLaB2Y96yBMFN3hxfG6Wu7S
-	 ID1wO3/s7IRKmfszS6ass9rVS/NkT+0IEKNclHH6Na5A1XglLvVX89hw6EX3OTizXWw11
-	 XaY2Vq2klq+DvtRoTGG5+ExU/nDQ1RsbCFoZ8eimZrSHXVAtAp/S1UOfts+Fre8by4a0k
-	 75Ao4/kAVxy2XfqfbsSPh5jyAdGfMPBkfJKDBLVoPGrY+SF+4T5MKQQKPRboRM10D4ihZ
-	 XGbgoYXU6qr45whCoELyMp4Xzt4TGUiDdtmlGclm984F6gQjikei6KsKoZ/5SsaMAvg==
+	t=1794842683;
+	b=DAHKNSs4LgxDkRf6TukxLHcmrrfmiKUd5B5Fw0SzATQ0gFNSj4Jh7NG6uEIwhxpmBESG
+	 FIhmwHmQkgXuCuiidtvguasM6OBwm/SGE3U9WMSxoIFVhbfBLAiP9TcRQ+2xvS2kHfnq4
+	 iKLIZeWGbylcoQYLvZ/lqafGmjjIpbor2ynt0jVxJ4Ztn0ktw+ZTQkqfk5uxCoy9NnuT2
+	 hoOJuyoSdTq3q6FqdemCSfrkHw7GLXuZunQ/e3ehEp7HhPhl0UI0R2jZr/Ccin13aVR/p
+	 r3wlRiyyh3dREYSi8VFhwVBLzudjWY0wMa1wAjcTFZyBlLTbufm00w/gSabR2njkXlg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794812947;
-	h=DMARC-Filter:Received:Received:Date:From:To:cc:Subject:In-Reply-To:
-	 Message-ID:References:User-Agent:MIME-Version:Content-Type;
-	bh=1mHmG9IJHtIMld4ZeRanDjKIMZUQxx8f0ptnWkrCv+U=;
-	b=0i8RahmNidBKHbWBeQckX6v4j9iCyuvVL/fZe/BEsPc/Xoe2nv+21TKq8Z9boKNYHrYK
-	 TotB7T80Z1D6oFXyUkcSsAhoCh3IC2ARjY/i+UN6pi3dNYn0B76azB/X9E/tIfcdqgcSB
-	 9AKBwpQFVyOBZwo6poe7axdA/vqIytMUUML/LMiEAVafmfqLwAHbYtegV4ihhnpc2LQN1
-	 1aZBowjXeK5BftnnOth8JJo70ZfTNBNImfEeyD/SSoOHs0mtHF983Xw9qw+XNmuv9T2VO
-	 QrXYqlONvEBxO/uVPvcWVve8MQ3C5gxmDeM/Gca8NoKmNnPn6fkxMNR6i7ZoQw4/UxQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794842683;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=ZagMFuwoqQmG7RfPFuV2agqCMwWb+eWrIodA0wVAt/I=;
+	b=kc+qn0m9gEyx/Qgf4yecT5abdYzugUrV/Q/o9Sq392whO0ZQH5QibBD27tvaaCnTlc3z
+	 2OuyCmrE9KDiZHQFWINoBX5YcACstYnLaWcYlUi9+q4HaV4COwwKN6lAKx2CVTEiVsuFQ
+	 PGYxVOV82hYJ8ZLOXfVcOHUfgLDxo6U904hWUstlTURYOgvXKK/8Mn9EUzzbl0JGFsRJw
+	 9siTJL9ZTaI+yp5I3jAbuawDuXqZyBTetSKpbCxwyhpixRBEi5trJaVxZ8sIcqflprfNm
+	 Ebjkcwm5x/RaFitdfa9vZdCOPhPDvjMyqi+GrU3H6kY3pPXPOaYSGgnV/y4xkIOJacw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=orcam.me.uk;
-	spf=none smtp.mailfrom=orcam.me.uk;
-	arc=none smtp.remote-ip=78.133.224.34
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 364A6606A332;
-	Mon, 16 Nov 2026 07:09:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 364A6606A332
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 39D8A92009C; Mon, 16 Nov 2026 08:09:04 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 376CC92009B;
-	Mon, 16 Nov 2026 07:09:04 +0000 (GMT)
-Date: Mon, 16 Nov 2026 07:09:04 +0000 (GMT)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-cc: David Laight <david.laight.linux@gmail.com>, 
-    Christian Brauner <brauner@kernel.org>, 
-    Geert Uytterhoeven <geert@linux-m68k.org>, linux-fsdevel@vger.kernel.org, 
-    Jann Horn <jannh@google.com>, Josef Bacik <josef@toxicpanda.com>, 
-    Chris Mason <mason@kernel.org>, Jeff Layton <jlayton@kernel.org>, 
-    NeilBrown <neil@brown.name>, Eric Dumazet <edumazet@kernel.org>, 
-    Thomas Gleixner <tglx@kernel.org>, Al Viro <viro@zeniv.linux.org.uk>, 
-    Jonathan Corbet <corbet@lwn.net>, Christoph Hellwig <hch@lst.de>, 
-    Greg Kroah-Hartman <gregkh@suse.de>, 
-    Joel Granados <joel.granados@kernel.org>, Kees Cook <kees@kernel.org>, 
-    Jan Kara <jack@suse.cz>, Jan Kara <jack@suse.com>, 
-    linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org, 
-    linux-acpi@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-    linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org, 
-    linux-um@lists.infradead.org, linux-wireless@vger.kernel.org, 
-    linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org, 
-    ntfs3@lists.linux.dev, platform-driver-x86@vger.kernel.org, 
-    coreteam@netfilter.org, kexec@lists.infradead.org, 
-    linux-pci@vger.kernel.org, linux-sound@vger.kernel.org, 
-    netfilter-devel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-    ibm-acpi-devel@lists.sourceforge.net, jfs-discussion@lists.sourceforge.net, 
-    linux-alpha@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-    linux-cifs@vger.kernel.org, linux-fbdev@vger.kernel.org, 
-    linux-hwmon@vger.kernel.org, linux-mm@kvack.org, linux-sh@vger.kernel.org, 
-    linux-usb@vger.kernel.org, samba-technical@lists.samba.org, 
-    sparclinux@vger.kernel.org, linux-m68k@lists.linux-m68k.org, 
-    linux-doc@vger.kernel.org, linux-serial@vger.kernel.org, 
-    linux-atm-general@lists.sourceforge.net, Takashi Iwai <tiwai@suse.de>, 
-    linux-input@vger.kernel.org, linux-raid@vger.kernel.org, 
-    linux-ext4@vger.kernel.org, linux-modules@vger.kernel.org, 
-    linux-debuggers@vger.kernel.org, Chuck Lever <cel@kernel.org>
-Subject: Re: [PATCH RESEND v2 14/23] proc: let procfs copy in writes before
- pinning the entry
-In-Reply-To: <CAHk-=whsA3tKcUCBJDj_vmJ11rVGT9rivgnKjGRgMO21CPmCxg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.2611160657470.17804@angie.orcam.me.uk>
-References: <20261104-work-procfs-core-v2-14-76ace653a773@kernel.org> <CAMuHMdVfakapgBK6TBhO1iWX8qzvLDk8jzRS=t2MVa5G=MCUeg@mail.gmail.com> <20261107-akteur-gemieden-eckdaten-21304d085e35@brauner> <20261108185953.28054fb3@pumpkin>
- <alpine.DEB.2.21.2611090504170.17804@angie.orcam.me.uk> <20261109214558.0d9d5228@pumpkin> <CAHk-=whsA3tKcUCBJDj_vmJ11rVGT9rivgnKjGRgMO21CPmCxg@mail.gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=LQAEBG+e;
+	arc=none smtp.remote-ip=198.175.65.12
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38A78606A31C;
+	Mon, 16 Nov 2026 15:24:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 38A78606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=LQAEBG+e
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794842684; x=1826378684;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=GRh4SofygV+5aDjOZUvpz9bJEvSN9BNrYyA01TPktTU=;
+  b=LQAEBG+e5yDTLH0I9Cd/+8QXbHAJ1cORu4IughwbFD5HQAo4CJHuQX/B
+   G9Bu7zyApIiftAeWYXRZn2HJzXroISW0TFctzsa5AD2B07jCDFH69H5AY
+   UUXvxyIz4s4FrzWmmniJg6IJSaS6CfZVzaokzDnC0cCs/JtMa2py/2k0O
+   CKO0R4qpBh83cS7J8Gydc3Khhk1RH7ucQmRfzDdBsOIvQuosCFJlIwPPq
+   UXhGYZn72YeO0ghhblDmctPFoekwCjkfhtpr02coeDnzIHsZCogaLowG3
+   Jowl/crJvFpDschhYpAhGU2SXQGHIXfnTE98HYZGZ4bc7AErbqV9khAcs
+   g==;
+X-CSE-ConnectionGUID: Zqg6AYh+S/uUmTjN/rMhtQ==
+X-CSE-MsgGUID: +CCt2wvsTJycjzMqiV+tgQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11968"; a="3455499"
+X-IronPort-AV: E=Sophos;i="6.27,216,1787036400"; 
+   d="scan'208";a="3455499"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 07:24:43 -0800
+X-CSE-ConnectionGUID: vLg1fQ+tQ1Wz85DhiZowLg==
+X-CSE-MsgGUID: ZZVSnkYZRCikVX+dlHplTQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,216,1787036400"; 
+   d="scan'208";a="9414106"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.151])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Nov 2026 07:24:38 -0800
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To: linux-pci@vger.kernel.org,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	Magnus Lindholm <linmag7@gmail.com>,
+	linux-alpha@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 02/13] alpha/PCI: Convert to pci_bus_size_and_assign_resources()
+Date: Mon, 16 Nov 2026 17:23:47 +0200
+Message-ID: <20261116152403.2672-3-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20261116152403.2672-1-ilpo.jarvinen@linux.intel.com>
+References: <20261116152403.2672-1-ilpo.jarvinen@linux.intel.com>
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -81,21 +88,46 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, 9 Nov 2026, Linus Torvalds wrote:
+To serialize bridge window sizing and resource assignment, PCI core
+needs to hold locks across both phases. Alpha nautilus PCI code calls
+pci_bus_size_bridges() and pci_bus_assign_resources() separately
+because it needs to do special resource alignment and setup after the
+window sizes have been calculated. At least the former would seem to
+belong to some existing __weak pcibios_*() hook but the latter might
+need yet another pcibios_*() hook just for this single use.
 
-> > Just that the cast would have to be:
-> >         u8 *foo = (u8 *)bar;
-> > where 'bar' is 'char *', and I don't think you need a cast there when
-> > char is unsigned.
-> 
-> .. and just to clarify: 'char' is always unsigned in the kernel on all
-> architectures since commit 3bc753c06dd0 ("kbuild: treat char as always
-> unsigned") back four years ago...
+The nautilus code runs during init, so nothing is likely to race with
+it. Converting it is mainly about consolidating the sizing and
+assignment entry points of PCI core, which eventually allows removing
+pci_bus_assign_resources().
 
- Thanks, yes, that's the piece of the context I was missing.  I've since
-actually come across this commit while investigating which Linux ports 
-have plain `char' signed in the psABI (MIPS for sure).
+Instead of trying to do a complex rework of the code, which is risky
+without the ability to test on the hardware, simply convert
+pci_bus_assign_resources() to pci_bus_size_and_assign_resources(). This
+adds a small bit of extra work by performing the sizing step again, but
+the calculations should yield the same sizes, so it seems safe.
 
-  Maciej
+Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+---
+ arch/alpha/kernel/sys_nautilus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
+index 13b79960b4b9..23a74fd4a83f 100644
+--- a/arch/alpha/kernel/sys_nautilus.c
++++ b/arch/alpha/kernel/sys_nautilus.c
+@@ -263,7 +263,7 @@ nautilus_init_pci(void)
+ 	if ((IRONGATE0->dev_vendor >> 16) > 0x7006)	/* Albacore? */
+ 		IRONGATE0->pci_mem = pci_mem;
+ 
+-	pci_bus_assign_resources(bus);
++	pci_bus_size_and_assign_resources(bus);
+ 	pci_bus_add_devices(bus);
+ }
+ 
+-- 
+2.47.3
+
