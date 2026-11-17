@@ -1,100 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.181
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794939219;
-	b=o8ORnlYzE9n+1pzOmjXVZ0d5rcOsApTLnMiBm+MKTkzUeyNVvrbe2FLczyJHMSZGZUnd
-	 CasKjuYJ0qaYHex8I3pRqCMHRKsPp7LUUEkNoG4xC3NiU9UFOpJRGijj+Abe6W3SKxsNY
-	 mhQvhISEoAmadGIUww/AYyTobb3NxxbPzG0gFfsDEXMpC0aCelNfIolslKYIQIVgv5QAe
-	 wvPWdaBpFJjZ8GD579f1KmEl33IrEMafc/JCyyCSuEGWSLDg4uMYpR2K6fd50YoXmXPwK
-	 EqCCqLCK0Z86/Z8rc+j/OIzkJ81pfOOJmYptzXrj1cmrsNNVzilC7IutWzzr3ZDbJlA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794939219;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.224.49
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794939220;
+	b=5AH7POGfBvIWs2eW3tNGVCOYZxStkN8N9iGgjgAUOw53njZW66kRwOtXvTy/4OldhzyI
+	 aO5qEKw7WfaRpTMwv6aCgHZb7b/Lm4i8h4+paXA8691diKy5YpKHKGZBTZASnqc8xqxyH
+	 E2CsPs7NU+CUXAKWNzuDL8WU+8ibJpxMaIF3TZoY7Jfhb6ggS9NUZqQFra+Q4hVPn7NzJ
+	 sdIsFJz5Y6Cd0TsaVr44C5OYwuV586nhP/MsxJI5zz4NFxNfAdcIak3PFwZqIFaL2zxsy
+	 01rBsY2dkUV4pyWF5mYbQGhH6a6n2NLhAp+WWzvsCGcK+92G1PaqXpSFOq3stlsi5jw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794939220;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=erlUER00uutbOeUXRe0dMlrIK7k5YTIn1N9SBf2g4jc=;
-	b=RtyDbpPx9enwOl4hDAbC3a0judmnz8jABbcVUnAOpgt9ZwLwd6TywyDJzv5grYixs94c
-	 68e5nrbHFv1bBiFGhTDKF1Yd9SggDGqjypF0HKy9VXXAXAmFPFCmiIxNlPYI2zxvf/k5l
-	 O4XqKhY2sN197Glk3s608sD3YrDSXjqXjDdAO5WRTRL1ZB8Z5XcrneqOECz3m4bhq5Kna
-	 2hSq0GYoZTPqNrUJhKwVNYPeaP5gsO9/yqU1IvpNGOrABNy8BFjKTyVelaPHb/d+jpT4b
-	 zvTed3GrnmZ1EQzF3UeAsNR4RJ+45MSwJEPMUkrewIyIIabXdgDT4DpoVLYuAItkRwA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
+	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key;
+	bh=6fd7grfB3tzoFbfBTrAoxkisbPV2yJhpf6JFjYB4i4M=;
+	b=dzwISl5EXsKzq1J3KMxD78hWjcDDg/f69NdGZdu0PCy4FOflxjpMPe6Fqx06doa9FIxs
+	 iAP0WxVK3RSl5DzJlz1m4EFZWmWyk6i3VgV/CzyQ19UlhzuD+qERNnIANbaLjG+D+rucq
+	 h3NdV9rDJZsZjWU5ZZ1TPG6NHyzGXzMdApe27idDfu9B6OiTqtUMMng1G00BqohBqvM/E
+	 L3GYIge11nX+ootf8yJKlxsuVukgEikaPE/d9Q2HCytdA8RNqft6Y/4VelNZvaxVjOCNE
+	 XEhK8OrOpe2IlGluQUMy2sLsP70YhYFh31tNDY2j32jjJegTYbUTJGvRoZm2Q7HgFYg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yWq8fIRK;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.181
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MmxQwpGT;
+	arc=none smtp.remote-ip=74.125.224.49
+Received: from mail-yx1-f49.google.com (mail-yx1-f49.google.com [74.125.224.49])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0C6F606A894
-	for <linux-alpha@vger.kernel.org>; Tue, 17 Nov 2026 18:13:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A0C6F606A894
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 150D5606A88B
+	for <linux-alpha@vger.kernel.org>; Tue, 17 Nov 2026 18:13:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 150D5606A88B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=yWq8fIRK
-Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-3ae0d0b9db2so1821971fa.1
-        for <linux-alpha@vger.kernel.org>; Tue, 17 Nov 2026 10:13:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794939217; cv=none;
-        d=google.com; s=arc-20260327;
-        b=YT3GQcR8lNiTcojKIrRm+zOkcZ2nLIwQ/fWdhUAeIGBc6C90PC3mbQN9ryhurBHq0S
-         cQcRYr13we5ckhFSbmuFgv4aRNAIvngJJ7wpK5yMw9uvZM6CEoO3VhPUdLLEwqI3I+tF
-         tu0iCkVYISTGX0QlD+/DYROSFjBU2wLVzEEUe/fxlGPCHtQX85ZqI4iuT66JqqOzUyqL
-         fogc+FbrOuRVqVPeo41mNRxWykhrV3usR0pRSH31uhcObQyd2TePZ3sWJpQ6fvhMLSD+
-         5NHWnpTDz3blzkM+GiXnYEMBpIyZFV3jl/11V4JwFrXQ008gjTzn8lIh34zfJIhQLei5
-         FszA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=erlUER00uutbOeUXRe0dMlrIK7k5YTIn1N9SBf2g4jc=;
-        fh=jAgazOazLdPZ3AdLTQfqlJIP65YskAkBeqX+vbV3688=;
-        b=sRJOk+Oy2e7Yl/42gwwONU6uDaeQZ7PQnfh/2hs10I48g5QM0KxFKoDYr1P9/zrDbw
-         IN9yk2iZIBl0ZkwsHIMRqCs5W0/UQ6eThUFxj4X9mKv5UV3xUGEnSA6vxS3vTB/mc4tJ
-         6ZTcK9P0YCv/6KMV4OH1AigPaJ7dH1uZgkCnjaQuqIPWgqX40tVBiXG5p+WFMGZ+86dF
-         jfnrVWf6WS7dz+pvyt934VYrFW5H37jscTIe2dTfbOgUGKZeeyAdzu/GngwcnOO3v/Ew
-         Ydfos2HIN5RSQG+zorPBbL+l2WLALP7VzOh13QJjOTDNro4yU6zpo5806kIAx8w5/zMt
-         9iNg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=MmxQwpGT
+Received: by mail-yx1-f49.google.com with SMTP id 956f58d0204a3-67da7d18f2fso3828d50.0
+        for <linux-alpha@vger.kernel.org>; Tue, 17 Nov 2026 10:13:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794939217; x=1795544017; darn=vger.kernel.org;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=erlUER00uutbOeUXRe0dMlrIK7k5YTIn1N9SBf2g4jc=;
-        b=yWq8fIRKsYvOVYJkN+zuhrDf5zzTzUqBNqndE5f6I0NuyPm5k1QYBU1TxuA6LUrayP
-         u9g/rJO1y8oNXunkiwTxK/PEnIDGWko/TH/y6fdqeoZVr5MsQ38hY+z2KpG3sgq6BJWk
-         Uk+PxgsWz4df/3Q3gszOS0a28AGCRXK7qrNrs1liYe8mvfvy0RnMZDm+HY4rEK2OLNdl
-         D2O2ciFFGs/v3uIhVFRIcdDMCp1tY8Cx2whBmtqPrFLKaSr1dI29ZNSeJFdbxCrEUFQW
-         HB6ed0+jh3NibJOScnRUnJw3EhuLteXt9rttaO5Wl9w1CYEPMjG8/8bAlAkv7VxP311K
-         I4QA==
+        d=gmail.com; s=20260707; t=1794939219; x=1795544019; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=6fd7grfB3tzoFbfBTrAoxkisbPV2yJhpf6JFjYB4i4M=;
+        b=MmxQwpGTj9NNy0RMrOJv3wL6yArdoKdNFg5vsACRwNLJ23zoNJoMRPCRiMrzrxbUKZ
+         u6kgPFEE170tnccn+ZPH2oI0O26G5G8au84zWGuTnC/rROEJ9NuK3fx4NQoAfjBAi4Lj
+         ayC+6jfzy3Ah1R9+tifrhIqiSNwFiMngsvKNOprhhhMlRjhCNFSqlW95JmVeVpphc88/
+         /BblIG2qFtA847q91ML6UQ0lVaXOascRfUrWl/8YKagZcvC8eEV1DvvNObYBEKj2yWq2
+         z2crBBJ1HVxCJT6L8u3MFHv+1j6DGjLIF6qtFpMIpVBZfSji33i5Oo3p1LJ5Xo3aajps
+         JJgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794939217; x=1795544017;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1794939219; x=1795544019;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=erlUER00uutbOeUXRe0dMlrIK7k5YTIn1N9SBf2g4jc=;
-        b=ZMRW1O+qCm/Q05JALD1Y/ZUkmz5qWM2igtLs86BjdHo+nuLcwHI8sZEG6qZ1/pUmZN
-         O3dldliPsl+4LHFHgRrFYvcvdmoPVWv52CjRUX/vrdcOtwqbz3ghK+UMc4dazvTL7/3S
-         RzNzzDGSMPoTT4gVoBh1rkHPHEGhNgj0+WLCh7JHRQF6SMfX8w1eufUWSi8nrTWvdjqf
-         0183Dxe3mO7cQoLBkRsU3Hq6PdpW3p1iz4BHWB9n4fLmWfkQt1w/M4RSbs1kycG+TD/3
-         u69ydMVSXfzZKe6nlpwJlxj+esIpiT2MN0qswiO1GaGh9NPnOyRVLH/cyIZvyThqVWse
-         K1mQ==
-X-Forwarded-Encrypted: i=1; AL+hErEouIFDSYkdfJJs6V0lUEyqOgg1NSfJYIUJ4sJxVYVwqQm/p9NpjyNQKu2yguNiI+AUMYDbxk6Z5ka/cg==@vger.kernel.org
-X-Gm-Message-State: APuU4Z+peQtMji1NqPhASQDP9vKJZLva46YkKlncjor49G1nwBsCNfwn
-	3RIkG6JKtujxrXHQa3I6urROn5POPTqcfEEYNEhmwymcmz4ZSiycbX3ZQ5+huA1CDwqUhsgtVLs
-	tCWuuTIs7Qu0K36h5LeqVX/ZQcMKyAYo=
-X-Gm-Gg: AYBFou0pOWyhRj193nXeGSowxeyaG2oHGrZdiAqj5vuIKC8G3ISmPEbFUWYn2kPD6AT
-	NXTTdh/ENNO7692u+CEk0qTivx/TGL0E7q8MzakwcI0E9Z/ANiabuWbCuZtWU7txaBxS1P5+Ds+
-	mgyxW63OoE2dUTFNZeSiyTTE76T8lAa0ejF4lF/gX47Z1bTZWZpDbqot6XUS1r0OBn0jPbeRVPu
-	alBY91Ttl3c+ETyeUN8rd68g3LCZbqHX2g4+aI0Gi9jNGGldSeJKYNPFqWdejHiPoOfDYwUeWFO
-	DbmvfNJsfMXPNJect/7Sl4/0QEiEZaJg+8RVDz9IpJe9M2QEXkkygfmb47AOBJuHFAGK8Kw4FdL
-	7Kxz46pChx7jgGe1iWCvPNXUsf8GnjIe+MsZOjl8fjoEVvKlLMitWKsW4Z3wKfSCh3TgK8cJD0H
-	eGPB5kFTu4uVFdHGPBTERW9KP0tYcLcuXZ5lX3o4UmHROYVvI=
-X-Received: by 2002:a2e:ab0c:0:b0:3ab:f9b:974 with SMTP id 38308e7fff4ca-3ae2b6b6de0mr41375121fa.29.1794939216626;
- Tue, 17 Nov 2026 10:13:36 -0800 (PST)
+        bh=6fd7grfB3tzoFbfBTrAoxkisbPV2yJhpf6JFjYB4i4M=;
+        b=LH+m/URuuqxDvBGKQswc4psBQHHTc14GU+exy3UUPv365MMvKk9olFcU+Yzcewg7cC
+         u9SUZJJu9UEM+macMp3lCRvLIR7vdLGjtO7imcyLMfyEFbS3/ptqH2RRrd75D0ZOaCoi
+         lOhXnKxqxOV/nAnzi/AnwvOM9Oy206K6Pxxyd4r3IWBfWiQIHK18ipwzpWqTmZ3IGu3a
+         ijab/f9z2NGyjq1dRIccJDRotsLzboqAeSLB2B8FG2eDsedEO1UpiUOCnOtO7S3sxXWX
+         42n0FWNxjRE90gOn1mDH6A7oboBQLJI1Tl98dXlAhmU360oJQyxsnHP0XfZEieYzjvmZ
+         kwjA==
+X-Gm-Message-State: APuU4Z/Safxj8AEqUP9rV8oPTTcopEgmmTwNqiU+mo33zZhvUrLwUtus
+	Z36Z6xCNlVmNjP2J6AS0bvzFoGLYFYQPizPgUGUjV7b9JJzZ3ra4wIXw
+X-Gm-Gg: AZFdTZfFkIvj6W0uT3EqDJT4DZcw/CD7xVBhnfHNre57QOdLmuoRDopdMJizC1sw/h0
+	d2zS6B3YfLePVFfBVrJghh/boIxMxitMl1nEh8H+Qv780c08fQwJjdan2dG0aAY/CjmM1dZtJMv
+	aDmcwV5kyei+tMMpmvlQqGCVawfTBCJX1HMX9BZYaE45ldGSEAPQb/MySU8EAZZQlG4zVGucIXe
+	/m87yCKCubDE6eGePCrEQL4vsKKbww7FAN3o6JE9aT7TltYA3l3HYaqSTVLzL4TMrt3G0HLF8xm
+	q+0NVwQz+xqNvNV3+gIU9VV6q9YknyelLSV8iN8kfuMEOJNe7HZKA5XD5xeYCJ1T2UvReusXN1O
+	cHxq/PVt6/YJQVzo9Ha8+vWrqc+s1y51aV62fk8vOv9YYjGEeCIKC7eozwMBVKPIjVmCzAxOjoD
+	vhV9tHo8EpZnD6+brS/Y0yeq+XgMb6CkP0NS7H/cQIVY3KpfapLwVcRk5ZhU4O1Wz9+v620JBmy
+	JMpQsabTPmEsUSSF62bl+pBDOygA/h2ybIFsF1tprBx+1B9Mzt5J5SZfheoTREz9XOZicuJWi8y
+	m8n+KseI0GyITtrGxkJO+39SEb83iixcvdNzU7/blWmgysvKq0b1swBqoiAGaDFxc4gRj/4h7s/
+	Meb6rLCWO28IHPOGfqBzxRjhBjCZ7tiVDS0dd6bOatpulQM4HlrC+Ab+T/3JfY1sYymHy5HbN6b
+	MCqdV4KIO+1hkXngFmzQ==
+X-Received: by 2002:a05:690e:12cb:b0:67d:a102:b8f4 with SMTP id 956f58d0204a3-67dc74c31c3mr2212909d50.0.1794939218891;
+        Tue, 17 Nov 2026 10:13:38 -0800 (PST)
+Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-67dd3fed78dsm268757d50.4.2026.11.17.10.13.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2026 10:13:38 -0800 (PST)
+From: Matt Turner <mattst88@gmail.com>
+Date: Tue, 17 Nov 2026 13:13:31 -0500
+Subject: [PATCH v3 4/7] alpha: marvel: notify environmental events
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -104,32 +93,93 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-References: <20261116-marvel-env-v2-0-ef614eb2e7f1@gmail.com>
- <20261116-marvel-env-v2-6-ef614eb2e7f1@gmail.com> <71d115df-0380-4724-8cc1-ca7da0aa5fc4@roeck-us.net>
-In-Reply-To: <71d115df-0380-4724-8cc1-ca7da0aa5fc4@roeck-us.net>
-From: Matt Turner <mattst88@gmail.com>
-Date: Tue, 17 Nov 2026 13:13:23 -0500
-X-Gm-Features: AclHuK_oNiRl-U7dZo5t_PUbIvckg4PZjah-4kUWpzh4pr8I4MHJijK9LPm47r0
-Message-ID: <CAEdQ38G0hC3QvZrM-YLUGUT=0DQqjJi=G=CWu=2fUwZLs1wLBQ@mail.gmail.com>
-Subject: Re: [PATCH v2 6/7] hwmon: Add driver for Marvel AlphaServer
- environmental sensors
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Richard Henderson <richard.henderson@linaro.org>, Magnus Lindholm <linmag7@gmail.com>, 
-	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261117-marvel-env-v3-4-0edc370fdca9@gmail.com>
+References: <20261117-marvel-env-v3-0-0edc370fdca9@gmail.com>
+In-Reply-To: <20261117-marvel-env-v3-0-0edc370fdca9@gmail.com>
+To: Richard Henderson <richard.henderson@linaro.org>, 
+ Magnus Lindholm <linmag7@gmail.com>, Guenter Roeck <linux@roeck-us.net>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, 
+ Matt Turner <mattst88@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2137; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=kTcqrZoPJJjAEKBBA1jTVVnkVIO/Zb02KSORE5Uuqtg=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLL+zPSo1y/OD5lwet4Pl0UP9Q8KXFLOvCMk/um067T0i
+ OTHXs0RHR9ZGMS4GGaKKbLErVdkmdW2Y6nPaelfMHNYmUCGSIs0MAABCwNfbmJeqZGOkZ6ptqGe
+ IZChYxQPkdNj0MgsLi5NLdJNKyhyyMsvSSzJzM8r1ssvSM0rSC/QS8tMK8nIyC8qTgUaoZeXWmL
+ q6uhmZGhgYuloYeZk4Whq4uzsZOjk5ujo7OpkZGluYuBs6WjiamnOwMUpAHNN+S2G/yH3tZzbXw
+ hUz/gvV5CRc7ZayXvSmybOXTvf7l2huD6p6gLDf4e7dvWTfyX5f1PO+c54ZUttXtDEDRpJ3gclP
+ dQcV1V+ZwIA
+X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
+ fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-On Tue, Nov 17, 2026 at 11:13=E2=80=AFAM Guenter Roeck <linux@roeck-us.net>=
- wrote:
-> This is not how the update_interval is supposed to be used. update_interv=
-al
-> is expected to be programmed into the chip.
->
-> Soft intervals should be hard-coded.
+A change in the state of a sensor arrives as a system event logout
+frame. Call an atomic notifier chain on each one, so that a sensor
+driver can reread its sensors and tell userspace without polling.
 
-Understood. v3 drops the update_interval attribute and refreshes a unit
-at most once every 10 seconds.
+Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
+Signed-off-by: Matt Turner <mattst88@gmail.com>
+---
+ arch/alpha/include/asm/marvel_env.h | 5 +++++
+ arch/alpha/kernel/err_marvel.c      | 9 ++++++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-Thanks,
-Matt
+diff --git a/arch/alpha/include/asm/marvel_env.h b/arch/alpha/include/asm/marvel_env.h
+index 16ccd2002a11..dbbf827a18ad 100644
+--- a/arch/alpha/include/asm/marvel_env.h
++++ b/arch/alpha/include/asm/marvel_env.h
+@@ -2,6 +2,8 @@
+ #ifndef __ALPHA_MARVEL_ENV_H
+ #define __ALPHA_MARVEL_ENV_H
+ 
++#include <linux/notifier.h>
++
+ /*
+  * Ask the console to refresh the environmental readings of the GCT node at
+  * @offset from the start of the GCT. Returns the console status, which is 1
+@@ -9,4 +11,7 @@
+  */
+ long marvel_cfgtree_partial_update(unsigned long offset);
+ 
++/* Called from machine check context on each environmental system event. */
++extern struct atomic_notifier_head marvel_env_notifier;
++
+ #endif /* __ALPHA_MARVEL_ENV_H */
+diff --git a/arch/alpha/kernel/err_marvel.c b/arch/alpha/kernel/err_marvel.c
+index 46c521cea9a0..6e0b0aabdaca 100644
+--- a/arch/alpha/kernel/err_marvel.c
++++ b/arch/alpha/kernel/err_marvel.c
+@@ -17,10 +17,14 @@
+ #include <asm/smp.h>
+ #include <asm/err_common.h>
+ #include <asm/err_ev7.h>
++#include <asm/marvel_env.h>
+ 
+ #include "err_impl.h"
+ #include "proto.h"
+ 
++ATOMIC_NOTIFIER_HEAD(marvel_env_notifier);
++EXPORT_SYMBOL_GPL(marvel_env_notifier);
++
+ static const char *
+ marvel_env_state(u16 state)
+ {
+@@ -82,8 +86,11 @@ marvel_process_680_frame(struct ev7_lf_subpackets *lf_subpackets, int print)
+ 			status = MCHK_DISPOSITION_REPORT;
+ 	}
+ 
+-	if (print)
++	/* The frame is processed twice; notify on the printing pass only. */
++	if (print) {
+ 		marvel_print_680_frame(lf_subpackets);
++		atomic_notifier_call_chain(&marvel_env_notifier, 0, NULL);
++	}
+ 
+ 	return status;
+ }
+
+-- 
+2.56.1
+
