@@ -1,48 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794874078;
-	b=pZOxKrhcaYysajvNDGTslmiKaAvRdAgk7+CO7H2GIYgTvYjA5S/T7PeIJoyIrTfQwiQW
-	 WfN80kQ4byAOxmKHT7Wh+ZjDAJ3tiD1a+utjCvY8VtuqHNAlIltT3M6hASWSJEFwnONAh
-	 rjeaomQb5CfnWYbscfqMyz0+uwiCO5+ECCajeK4Ir/NyjpQ1q+JmzgzFhJZC0880NX02J
-	 fPCmbGDzeRCS0jhDrJqyaZttoh+7ldC3ojthLLV8bNzq+OqtoewJsUJyku3ZvXdIKrFC8
-	 b2TPwtiCW3Vt57cSfAJWGn+eCqs01NO6xUuisa6HdRrgTVtf6XcVDyyvqQmpYoAIeKA==
+	t=1794884352;
+	b=y+gm92cJYgIcZAS0kpri2C/IXDN8IPAyUOeCNnv+flwBqLNc6jtVmoU+MwqSqNLygBcv
+	 1s84lBPoOOrtrzwcbS4CuuGJa96Jxwd4EJ1tE3Bpmiq3IHPPe7Zp4Hp4N1tR7Va9YRvvc
+	 zAQc2Bv9UYSLW2BU7ebnW3r0yFcqCLAyovDqE4UBq+2CF/XdE+tD9lgHBA5ZZ8k5o50B5
+	 c4S5UNZIqhtJ6svHYiZmSYwM5LfF5LQGoCTaWJUs4AhJkzYyOhpzSK4giV1kyuVVVJ3t+
+	 Gvoa/0/C2XNMX4EdIp++QS/oWusGZr4+kq35YQ+fMemm+Eeb81zwp7ndBz+cZxHfnbg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794874078;
-	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:
-	 X-Mailer;
-	bh=4vXmR0iRJiG7E8im3JcTb6JVxOpKMALSsdkAo4Dw988=;
-	b=Hd5JhEpHhGk4AKktSsAEbjpnBU5rZsgkULc5iM0mZnNccVOX6KL92dOmgy9XaILgRu4Q
-	 CBqnJBfqTe4bpLt1n6PIykWmevg82xw3qetR3JXZeYUp8nYOP4/0eCBkSTe2lKtnzuj2P
-	 Is5J/DjXFuatstDWBQqF8vQ6dO+x4L8oNNiYrBr40iAL1uh5hqjZyiFzAkR4B642EeWbY
-	 FqeIFjbZuC5i/RBeCdw2luFt6Ry1kpMBeclr09xeupnymqFjirIo2gBiF8O43Tfoz3Spk
-	 a3lhnOni5J3r/9OPskhFywo1YRncQUMJw6GJ7MtiqjmCAZ+GiQiHrMISkot+StFMTwA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794884352;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Subject:Date:
+	 Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	 X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:
+	 X-Developer-Key;
+	bh=slhAC7n0qqOkMBcIxUMzZVPcbaUbXiJAGexBTZo7f90=;
+	b=f616yQUc2S6GkResmQe8xWNj1j915MBAoxMcpd4gUqk/t16A2ANqOC1jlhIDYXwkwe2s
+	 LCcAxv2XGMrSnEgZRo0jY9Sb+cNYVWgCVSe6q70Hu5/kwh0SznXGzo+Rk/8Na8sja34nz
+	 TIoTv5IdkUCF+QChWS0N1fuMJP5uWSq7IRSoDOgIZUJLpVaTyt1use/U16RnFub3l4K/w
+	 JHP1IQSwYaJ3o65avOpmP0C1/RjB/hM22R1krTacS6DgAKnQvYXcUNNf8xAyr9HyQu6AT
+	 bGJS1bOdPmaf/2pL8+/C2w/qcmjNPACFM1DsC7uLfOR62iMLKLYT+93oFlSd2D1LKjw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TAS69EtV;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dQoZW17j;
+	arc=none smtp.remote-ip=209.85.128.174
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7963A606A31C;
-	Tue, 17 Nov 2026 00:07:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C189606A31C
+	for <linux-alpha@vger.kernel.org>; Tue, 17 Nov 2026 02:59:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5C189606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TAS69EtV
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BCE31F000C4;
-	Tue, 17 Nov 2026 00:07:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794874078;
-	bh=4vXmR0iRJiG7E8im3JcTb6JVxOpKMALSsdkAo4Dw988=;
-	h=From:Date:Subject:To:Cc;
-	b=TAS69EtVs8dGL3xFkUKstXKQ8GO6Nn1jUEijop60uPzkKojv/HFOfi6kgTP6lBQW3
-	 Z2LPsEckLUGoRPGjYopWZl9r6HdEHqacD6ehu+YUQlBa38vC66Xhn6IZgk/to0Njni
-	 4qJtSvJY1pBXfwus1/cqMlDQ/Do5oN2+u5blNMs9Xe483/Ekb4hzS+GaquddC3AImu
-	 IvQyRIJeX8+a4QtzQvI1w0Ii7aP7x+eAAgAs62OXqUqjGxVeL/0a2TToSNeZAq8nZF
-	 picF4qXId4oDk3nGrWp93iaEWYCDT9xsL88kLj/s7aZ66RP8hKEsL4LCvnvQX9zm4C
-	 M19OHRMTzwdGw==
-From: Linus Walleij <linusw@kernel.org>
-Date: Tue, 17 Nov 2026 01:07:53 +0100
-Subject: [PATCH v2] alpha: Use symbol assignment in SYM_END
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dQoZW17j
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-8b4dbdc9592so6613867b3.3
+        for <linux-alpha@vger.kernel.org>; Mon, 16 Nov 2026 18:59:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794884351; x=1795489151; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=slhAC7n0qqOkMBcIxUMzZVPcbaUbXiJAGexBTZo7f90=;
+        b=dQoZW17jiNebFuE6azQ83jmKtjqcxcl5zox5/c9ay6PslDfs/OuTxMsQK+M93ZKxLu
+         CyJYN8ep/zcVgJmJyDSjHdmSyO8In/0hZGEXZXgl188jmnl8t7EW4jrx2miND6RHUCGB
+         CgJW+Q/Bf4JgPuTefi0kDMTb7iEg+i8irfbYxbN64//aJaiyIUsEG+siLRDJs0dpCndY
+         CdzY5+RJF9PvDX9DgMSx0PK0f9olnMNJc8gppLDlmu23HGwYc2L7nHo2Y5I6ywE0mHNy
+         31yP+aUy91KVf6nZ32brydM00jb9uxJAKYSP0ghepC3RbnV2VUvM1l7wM1KjfUWbyzDO
+         u3aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794884351; x=1795489151;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=slhAC7n0qqOkMBcIxUMzZVPcbaUbXiJAGexBTZo7f90=;
+        b=yUq9iNABAzmceSAKdgApOZ4mwVnSjTF9V9OzdNe3jYro8/1Qk+Yg5u6n1D+cwzKxRB
+         dfCLpBAi8cUElZf8o/Ks+apFjIl5euQIfHrAReOlJr1zGDskKOO5t1+32JNHi36jA3v5
+         L9vajOqR/5KgY56uHC5ENzZ8/W1HV6dta1uhtk4CybnQxU9yqqtzDCmYdopsKfmJRqrT
+         kU8EIVkifxIiBpaHuEh8O0j3I0zvhqfSlbQskrnJoQRsCXuhIhe/fV/eL1ddHOpfhVrz
+         to9qEYSTXFQBVq2hTlRdWRDRniAYbGV751AJTjuWZhjFJGNil9hIBbuCmyJLG1wQjvdw
+         I9pQ==
+X-Gm-Message-State: APuU4Z8UVAolyaVvJjJJQPKEvvg2msrODM93ZzfvkAZejgtxvw+s9uAP
+	i5sMvHzRBYW7ayvVdLKCYpFT6V9SxfVcf2nZEe9PyM2rDtzQPlnTNPsr
+X-Gm-Gg: AZFdTZdrcwzvlzO8tFqFEtaAEq866Zch4RWJfsIMgCllLbJhwE+Qgu90Bf5fQ34FGhg
+	kjJrAz0u2jkAp/cOWWcxdnr0OCFaEGSKOVY9HNihLb2O5WkRu8CHlTi7Zq/3rvfi0e16aivpmt+
+	n2vzEYYgZ1b8IOXvp0P/Xww5TuwCxvv0qXBmQZQ843F1WQ4yxco3+7+FHZ7m9nv5wJzARTMOk4j
+	xtIfBWiB8PWqpsOnfwvlERhcJk1vDJyxXdHz3pI7iRXjlY0My+l9GcUYUyhGbG1VXFvogMP2rAZ
+	oXZsjyV6Ipqx2hZftFZUDeT4IlXtW/zkSlhKBuiTlx+nBoDmm0QidX3/i5cKLin0qZPaaBRg3ap
+	iMLxKdjziMVFl2U5gh3QBInxzWEL9M82XCVGEQ99owzypVPOMwGvVincSJnfzxmN8NZnhrc8BxK
+	YJPR5s3K/c2eUnSmYc3lB+qwUoIxg0dj9G3hQxiAsoxoN6uXGHMC0hGYuJqJAVayKLA3H/0zYZU
+	rwGTt1xlU4jZKaFWKN6NSH4dVjJGCeg+3ccK3rdb88nlBLEx2DXxYDwbiMTxtCrqbwxB/PYE7qd
+	dNV+nwvPSEjEeHmT6tIcdd/QvjtcJVmDgvASyE3kRLXcM0UrEHsoc/adSw6NsrEGaFdy0+2ZHov
+	cmotfzTzywSQ2X99S4VWSpddWaI0t5SUSlInrs734oL8B6BEHmxBq0k7VZmNzD6GaUNOdUE+BWP
+	C7MbskIxkPNHqPb+c8HA==
+X-Received: by 2002:a05:690c:ec5:b0:8ab:4c8f:2844 with SMTP id 00721157ae682-8b4aa2a0f51mr73400777b3.39.1794884351354;
+        Mon, 16 Nov 2026 18:59:11 -0800 (PST)
+Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b4ec065f84sm14469217b3.29.2026.11.16.18.59.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2026 18:59:10 -0800 (PST)
+From: Matt Turner <mattst88@gmail.com>
+Subject: [PATCH v2 0/7] alpha: marvel: environmental sensors
+Date: Mon, 16 Nov 2026 21:59:07 -0500
+Message-Id: <20261116-marvel-env-v2-0-ef614eb2e7f1@gmail.com>
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -54,73 +95,114 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261117-alpha-compile-v2-1-846bb099b319@kernel.org>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAA/3XMsQ6DIBAA0F8hN0vjYbTVyf9oHAgccqkVAg1pY
- /j3pu5d3/AOyJSYMkzigESFM4cdJqEaAcbrfSXJFiYBqlUDYttJvUWvpQnPyBtJctZSf7si9gY
- aATGR4/f53ZdGgOf8Culz9gV/+m8qKFGONHak1NDq0c0PSjttl5BWWGqtXzcHn5KrAAAA
-X-Change-ID: 20261103-alpha-compile-efdde587115c
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/22NyQ6CMBRFf4W8tTUdkGnlfxgWpTzhGQbTYqMh/
+ Xdb3Lo8ybnn7uDQEjposh0senK0LhHkKQMz6mVARn1kkFwWQoiczdp6nBgunvVcVrUpVdFpBXH
+ wtHin9xG7tT92r+6BZkuFZIzkttV+jjcvkvc37AXjrKq5khXmXYmX6zBrms5mnaENIXwBKOuc4
+ 7YAAAA=
+X-Change-ID: 20261114-marvel-env-d0289c736ba3
 To: Richard Henderson <richard.henderson@linaro.org>, 
- Matt Turner <mattst88@gmail.com>, Magnus Lindholm <linmag7@gmail.com>
+ Magnus Lindholm <linmag7@gmail.com>, Guenter Roeck <linux@roeck-us.net>
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
- kernel test robot <lkp@intel.com>, Linus Walleij <linusw@kernel.org>
-X-Mailer: b4 0.16.0
+ linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, 
+ Matt Turner <mattst88@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4421; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=2N/yDN2Wcz2QGAy54x4oEamhIu757IC6EK7THi85BJc=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJ+H/qzetuVvIoC36zY7Wp/JHPDE9069+2S91qsMs2uz
+ mTrw/PbOj6yMIhxMcwUU2SJW6/IMqttx1Kf09K/YOawMoEMkRZpYAACFga+3MS8UiMdIz1TbUM9
+ QyBDxygeIqfHoJFZXFyaWqSbVlDkkJdfkliSmZ9XrJdfkJpXkF6gl5aZVpKRkV9UnAo0Qi8vtcT
+ U1dHNyNDAxNLRwszJwtHUxNnZydDJzdHR2dXJyNLcxMDZ0tHE1dKcgYtTAOaa5EKG/xmWhp8D69
+ iDJVPk5pfFlyZecviS9/LQ9jZLC6aXNpYOBYwMH21/XNZ/Ha52r7HnW2zxNcuUpg9XXkQIMD1QW
+ HUm8OpyFgA=
+X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
+ fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-Alpha uses the .set directive to select assembler options, so the
-symbol assignment emitted by the generic SYM_END macro fails to assemble.
-This breaks COMPILE_TEST builds left and right, e.g.:
+The service processors of the Marvel AlphaServers (GS1280, ES80, ES47)
+monitor temperatures, fans, voltages and power supplies. Linux can't read
+these sensors, and the events the firmware raises when one changes state
+are printed only with CONFIG_VERBOSE_MCHECK, and then decoded wrongly.
 
-  Error: junk at end of line, first unrecognized character is `,'
-  Error: .size expression for bcm6846_runner_start does not evaluate to a constant
+Patches 1 and 2 fix the event reporting. Patch 3 adds the SRM callback
+that refreshes the readings of one config tree node, patch 4 passes the
+firmware's events to a notifier chain, and patch 5 registers a platform
+device. Patch 6 is the hwmon driver, which polls, and patch 7 makes it
+reread the sensors and notify userspace when the firmware reports an
+event.
 
-Override SYM_END to use an ordinary symbol assignment for the calculated
-size. Preserve the symbol type, size and local size symbol while leaving
-other architectures unchanged.
+The hwmon patches depend on the alpha ones, so I'd suggest the whole
+series go through the alpha tree with an ack from Guenter.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Closes: https://lore.kernel.org/oe-kbuild-all/202611031620.n4ptlpo7-lkp@intel.com/
-Signed-off-by: Linus Walleij <linusw@kernel.org>
----
-The generic SYM_END uses .set for symbol assignment, but Alpha interprets
-.set as an assembler mode directive. Provide an Alpha override using
-ordinary assignment.
+Tested on an ES47, where sensors(1) shows the temperatures, fans,
+voltages and power supply status. Disconnecting AC from one of its two
+power supplies raised a system event that set the supply's in_fault and
+woke poll() and udev, and reconnecting it cleared the fault the same
+way. No voltage is out of range, so the voltage alarms were checked by
+forcing the warning and failure states in the console's packets.
 
-Tested the unchanged Runner wrapper with an Alpha-targeted GNU assembler
-2.46.1: the original header reproduces the reported errors, while the
-fixed header assembles without warnings. Symbol sizes and the embedded
-Runner bytes were checked. A full Alpha allyesconfig build was not run.
+I used Claude Code to help write this series: working out the packet
+layout, drafting the code and changelogs, and checking the firmware
+documentation. I reviewed and tested the result.
 
-This patch was prepared with LLM assistance.
+Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
 Changes in v2:
-- Use __ASSEMBLER__ instead of __ASSEMBLY__, as requested by Thomas Huth.
-- Link to v1: https://patch.msgid.link/20261103-alpha-compile-v1-1-9e93e2260a9f@kernel.org
----
- arch/alpha/include/asm/linkage.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+- hwmon: report the firmware's states by their documented meaning: a
+  sensor's warning and failure states are its reading reaching the
+  warning and failure limits, not a broken sensor (Guenter)
+- hwmon: report power supplies as in channels with only a fault
+  attribute instead of power alarms (Guenter)
+- hwmon: depend on !ALPHA_LEGACY_START_ADDRESS for generic kernels,
+  which leave out core_marvel.o (Sashiko)
+- hwmon: drop the private mutex, rely on the hwmon core lock and take
+  hwmon_lock() in the event work (Sashiko)
+- hwmon: notify each alarm attribute whose value changed, and only those
+  (Sashiko, Magnus)
+- hwmon: report a voltage outside its limits as in_min_alarm and
+  in_lcrit_alarm or in_max_alarm and in_crit_alarm, by comparing it with
+  the nominal voltage in the console's packet (Guenter, Magnus)
+- alpha: define CCB_CFGTREE in asm/console.h instead of the uapi header,
+  since it is a Marvel console extension, and say it comes from Tru64
+  (Magnus)
+- hwmon: return -ENODATA from every alarm of a sensor that became unknown
+- alpha: drop the unreachable SRM check from
+  marvel_cfgtree_partial_update(), and move the GCT node type and
+  subtype the driver uses to asm/gct.h
+- Reorder: fix the event layout before printing it unconditionally, and
+  put the alpha patches first
+- Drop the Assisted-by trailers, describe tool use here instead (Guenter)
+- Link to v1: https://patch.msgid.link/20261114-marvel-env-v1-0-890328e4b7e5@gmail.com
 
-diff --git a/arch/alpha/include/asm/linkage.h b/arch/alpha/include/asm/linkage.h
-index aa8661fa60dc..275de8ac693b 100644
---- a/arch/alpha/include/asm/linkage.h
-+++ b/arch/alpha/include/asm/linkage.h
-@@ -6,4 +6,12 @@
- #define SYSCALL_ALIAS(alias, name)					\
- 	asm ( #alias " = " #name "\n\t.globl " #alias)
- 
-+#ifdef __ASSEMBLER__
-+/* Alpha uses .set for assembler options, not symbol assignments. */
-+#define SYM_END(name, sym_type)				\
-+	.type name sym_type ASM_NL			\
-+	.L__sym_size_##name = . - name ASM_NL		\
-+	.size name, .L__sym_size_##name
-+#endif
-+
- #endif
-
 ---
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-change-id: 20261103-alpha-compile-efdde587115c
+Matt Turner (7):
+      alpha: marvel: fix the environmental subpacket layout
+      alpha: marvel: report environmental events without VERBOSE_MCHECK
+      alpha: marvel: refresh environmental readings through the console
+      alpha: marvel: notify environmental events
+      alpha: marvel: register a platform device for the environmental sensors
+      hwmon: Add driver for Marvel AlphaServer environmental sensors
+      hwmon: (marvel-env) Notify userspace of environmental events
+
+ Documentation/hwmon/index.rst       |   1 +
+ Documentation/hwmon/marvel-env.rst  |  76 ++++
+ MAINTAINERS                         |   8 +
+ arch/alpha/include/asm/console.h    |   5 +
+ arch/alpha/include/asm/err_ev7.h    |  16 +-
+ arch/alpha/include/asm/gct.h        |   2 +
+ arch/alpha/include/asm/marvel_env.h |  17 +
+ arch/alpha/kernel/core_marvel.c     |  56 +++
+ arch/alpha/kernel/err_marvel.c      |  39 +-
+ arch/alpha/kernel/proto.h           |   1 +
+ arch/alpha/kernel/srmcons.c         |   3 +-
+ arch/alpha/lib/callback_srm.S       |   1 +
+ drivers/hwmon/Kconfig               |  12 +
+ drivers/hwmon/Makefile              |   1 +
+ drivers/hwmon/marvel-env.c          | 690 ++++++++++++++++++++++++++++++++++++
+ 15 files changed, 909 insertions(+), 19 deletions(-)
+---
+base-commit: 0b4cadbe7c39d830dec35c4a2655483de0dae568
+change-id: 20261114-marvel-env-d0289c736ba3
 
 Best regards,
 --  
-Linus Walleij <linusw@kernel.org>
+Matt Turner <mattst88@gmail.com>
 
