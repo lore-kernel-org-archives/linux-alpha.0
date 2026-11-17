@@ -1,89 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.174
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.224.46
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794884352;
-	b=y+gm92cJYgIcZAS0kpri2C/IXDN8IPAyUOeCNnv+flwBqLNc6jtVmoU+MwqSqNLygBcv
-	 1s84lBPoOOrtrzwcbS4CuuGJa96Jxwd4EJ1tE3Bpmiq3IHPPe7Zp4Hp4N1tR7Va9YRvvc
-	 zAQc2Bv9UYSLW2BU7ebnW3r0yFcqCLAyovDqE4UBq+2CF/XdE+tD9lgHBA5ZZ8k5o50B5
-	 c4S5UNZIqhtJ6svHYiZmSYwM5LfF5LQGoCTaWJUs4AhJkzYyOhpzSK4giV1kyuVVVJ3t+
-	 Gvoa/0/C2XNMX4EdIp++QS/oWusGZr4+kq35YQ+fMemm+Eeb81zwp7ndBz+cZxHfnbg==
+	t=1794884355;
+	b=M4fQG7/fyMwqZ1c2+BBXS3fK35AOLmFyKan6PQFhIrmuYy3+NII0d7UX+6dKfsW03IOH
+	 rbtv2rqoSc4MtdzdZ7cMrwweDqvRqi65U4LVsj4DORO8dX+1K4lC35XgeqtIZxxgBjigG
+	 GEXPx1D74lQy7FmRCRoZWBrMyZOEUA1dRv6E1g/L8BmG+srUlikLqkQxKG8AyyfI0P2gM
+	 qBtvHvyQxAwLzEpBiXZT9qaFyHJB77GzbWnmij6ke/1ND3EJI4LNBsQPEhUU9VLJQy4vU
+	 pIXYksEfAXs3DBLFCDcn89U8N6vnPwosBIVTk5GfsZUw62IChLCMQSsPhKLWwdmaiww==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794884352;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794884355;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Subject:Date:
-	 Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
+	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
 	 X-Developer-Key;
-	bh=slhAC7n0qqOkMBcIxUMzZVPcbaUbXiJAGexBTZo7f90=;
-	b=f616yQUc2S6GkResmQe8xWNj1j915MBAoxMcpd4gUqk/t16A2ANqOC1jlhIDYXwkwe2s
-	 LCcAxv2XGMrSnEgZRo0jY9Sb+cNYVWgCVSe6q70Hu5/kwh0SznXGzo+Rk/8Na8sja34nz
-	 TIoTv5IdkUCF+QChWS0N1fuMJP5uWSq7IRSoDOgIZUJLpVaTyt1use/U16RnFub3l4K/w
-	 JHP1IQSwYaJ3o65avOpmP0C1/RjB/hM22R1krTacS6DgAKnQvYXcUNNf8xAyr9HyQu6AT
-	 bGJS1bOdPmaf/2pL8+/C2w/qcmjNPACFM1DsC7uLfOR62iMLKLYT+93oFlSd2D1LKjw==
+	bh=8P1/Pm6zdpbmVBckxFfIxYUQ+6NaRKkAOkiaJp3aUKg=;
+	b=M1oJBVO6PyR8I9hiJUb5PGi4WtTMeDNWK4NqqEykvXI6pH12gOgZ2i6rXAuAXE6pU3CF
+	 SNHojcCi4upOt8SyPKlL/6nEhKp+zmS8RrZJMS3V3OJ2UMjoqrnPNbJ6lamez6DvbVp21
+	 JUaO35F+7fw7H0G4MA3qQVrgB2ct2Cas+VhLnBcGx+UKUTvj8xW4FosBVipfQxt4YmCh9
+	 h7RyC4jMgGXsx0yyd4GVVjgDB561DWzyhrkIFDpF/xt6Lw+o7Ilfl8tCGKih5CsMONtkX
+	 2bHxEYwLd0fQ3p/0ZPio1BV2LZ6q+f5TtcIaHRX1JTiGsoheqe6c5Eefjc9mSYZi1qQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dQoZW17j;
-	arc=none smtp.remote-ip=209.85.128.174
-Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=wL80WENN;
+	arc=none smtp.remote-ip=74.125.224.46
+Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com [74.125.224.46])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C189606A31C
-	for <linux-alpha@vger.kernel.org>; Tue, 17 Nov 2026 02:59:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5C189606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50906606A33A
+	for <linux-alpha@vger.kernel.org>; Tue, 17 Nov 2026 02:59:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 50906606A33A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dQoZW17j
-Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-8b4dbdc9592so6613867b3.3
-        for <linux-alpha@vger.kernel.org>; Mon, 16 Nov 2026 18:59:12 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=wL80WENN
+Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-67db89857abso2101353d50.0
+        for <linux-alpha@vger.kernel.org>; Mon, 16 Nov 2026 18:59:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794884351; x=1795489151; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=slhAC7n0qqOkMBcIxUMzZVPcbaUbXiJAGexBTZo7f90=;
-        b=dQoZW17jiNebFuE6azQ83jmKtjqcxcl5zox5/c9ay6PslDfs/OuTxMsQK+M93ZKxLu
-         CyJYN8ep/zcVgJmJyDSjHdmSyO8In/0hZGEXZXgl188jmnl8t7EW4jrx2miND6RHUCGB
-         CgJW+Q/Bf4JgPuTefi0kDMTb7iEg+i8irfbYxbN64//aJaiyIUsEG+siLRDJs0dpCndY
-         CdzY5+RJF9PvDX9DgMSx0PK0f9olnMNJc8gppLDlmu23HGwYc2L7nHo2Y5I6ywE0mHNy
-         31yP+aUy91KVf6nZ32brydM00jb9uxJAKYSP0ghepC3RbnV2VUvM1l7wM1KjfUWbyzDO
-         u3aQ==
+        d=gmail.com; s=20260707; t=1794884353; x=1795489153; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=8P1/Pm6zdpbmVBckxFfIxYUQ+6NaRKkAOkiaJp3aUKg=;
+        b=wL80WENNSTootYxtR+B3YqVHCVtpSWi0ER6jk/PCnQBPezPc0/U7vRAzRMzzc3UCQ8
+         Yx6eZ8XDwdxhz+AQ18JZYy+Rdwtm3/R4/ERR38NvW8P8P05NBvpDOndLb8m94oxTizGk
+         uBipB3yR05uvDI5wj2SRRVzj2SbfVT50/JegaA0WhKUu3bxNjobo4t/MrXxcFQdQQeJX
+         5TsQzLd1vmDeUmJ13FcBT3aD9k3GjFSVKrnyDxIOT1xB1hmewVNDYMz67TctVMkM8wEe
+         ptCeZEiAXOnhNd+FQdyCNqWpHGBUDCZXmHUmHYFfJ91f2CaGgDImCPivQ1NNbE5vjXT6
+         m/uA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794884351; x=1795489151;
-        h=cc:to:content-transfer-encoding:content-type:mime-version
-         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=slhAC7n0qqOkMBcIxUMzZVPcbaUbXiJAGexBTZo7f90=;
-        b=yUq9iNABAzmceSAKdgApOZ4mwVnSjTF9V9OzdNe3jYro8/1Qk+Yg5u6n1D+cwzKxRB
-         dfCLpBAi8cUElZf8o/Ks+apFjIl5euQIfHrAReOlJr1zGDskKOO5t1+32JNHi36jA3v5
-         L9vajOqR/5KgY56uHC5ENzZ8/W1HV6dta1uhtk4CybnQxU9yqqtzDCmYdopsKfmJRqrT
-         kU8EIVkifxIiBpaHuEh8O0j3I0zvhqfSlbQskrnJoQRsCXuhIhe/fV/eL1ddHOpfhVrz
-         to9qEYSTXFQBVq2hTlRdWRDRniAYbGV751AJTjuWZhjFJGNil9hIBbuCmyJLG1wQjvdw
-         I9pQ==
-X-Gm-Message-State: APuU4Z8UVAolyaVvJjJJQPKEvvg2msrODM93ZzfvkAZejgtxvw+s9uAP
-	i5sMvHzRBYW7ayvVdLKCYpFT6V9SxfVcf2nZEe9PyM2rDtzQPlnTNPsr
-X-Gm-Gg: AZFdTZdrcwzvlzO8tFqFEtaAEq866Zch4RWJfsIMgCllLbJhwE+Qgu90Bf5fQ34FGhg
-	kjJrAz0u2jkAp/cOWWcxdnr0OCFaEGSKOVY9HNihLb2O5WkRu8CHlTi7Zq/3rvfi0e16aivpmt+
-	n2vzEYYgZ1b8IOXvp0P/Xww5TuwCxvv0qXBmQZQ843F1WQ4yxco3+7+FHZ7m9nv5wJzARTMOk4j
-	xtIfBWiB8PWqpsOnfwvlERhcJk1vDJyxXdHz3pI7iRXjlY0My+l9GcUYUyhGbG1VXFvogMP2rAZ
-	oXZsjyV6Ipqx2hZftFZUDeT4IlXtW/zkSlhKBuiTlx+nBoDmm0QidX3/i5cKLin0qZPaaBRg3ap
-	iMLxKdjziMVFl2U5gh3QBInxzWEL9M82XCVGEQ99owzypVPOMwGvVincSJnfzxmN8NZnhrc8BxK
-	YJPR5s3K/c2eUnSmYc3lB+qwUoIxg0dj9G3hQxiAsoxoN6uXGHMC0hGYuJqJAVayKLA3H/0zYZU
-	rwGTt1xlU4jZKaFWKN6NSH4dVjJGCeg+3ccK3rdb88nlBLEx2DXxYDwbiMTxtCrqbwxB/PYE7qd
-	dNV+nwvPSEjEeHmT6tIcdd/QvjtcJVmDgvASyE3kRLXcM0UrEHsoc/adSw6NsrEGaFdy0+2ZHov
-	cmotfzTzywSQ2X99S4VWSpddWaI0t5SUSlInrs734oL8B6BEHmxBq0k7VZmNzD6GaUNOdUE+BWP
-	C7MbskIxkPNHqPb+c8HA==
-X-Received: by 2002:a05:690c:ec5:b0:8ab:4c8f:2844 with SMTP id 00721157ae682-8b4aa2a0f51mr73400777b3.39.1794884351354;
-        Mon, 16 Nov 2026 18:59:11 -0800 (PST)
+        d=1e100.net; s=20260707; t=1794884353; x=1795489153;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :content-type:mime-version:subject:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=8P1/Pm6zdpbmVBckxFfIxYUQ+6NaRKkAOkiaJp3aUKg=;
+        b=j+pbSVHp9r99q1oK9KS/gPp8lW4d/ITDH/90Ms35MmsdHTcxPlkCAPAjfrGsAsWsNR
+         RSbhnYhSgEjfOX1IycU8sM19VX3qnpszQ2ymXliidiI+HGIIX6tyGbc3e55Chv7lT/ja
+         vqAFDE6mD/izHDGs/meIE7aGbQvnuAIPz41FS5L8rcnMo6xSxffFFjevUN/FZu4Dm6KJ
+         DId+sRjZW+hFd8knmGfAqcJMtY98tLQlpt4BgdTdROiGnAHxCxSwZmvRSysmWMf9kE2u
+         syikeyEvs0xaEaNXk4rJJ6y9oyJFKjhpXGUIOcEHjoV2yTTGQ6OKeI4SLUfNfFkyiHhs
+         yaSw==
+X-Gm-Message-State: APuU4Z9rfFwbj49dLEWt9NREaRJ3ZmBKw2JzROmocOIE/Z/e4F3zPOeu
+	XamzOw90nIO6cxcT+xuvjSRdbQ8gFWkgPewCNJkemcii2XnCzSLT+iW8
+X-Gm-Gg: AZFdTZfEFIVCGaClsgxFXi9t5SJjZiB/QQD3voQrwKUxXtcoZQ3JTf6Jj0eElW0No5A
+	pUqFzzV++403/qmczVD6BoUzJ8dI9qk/2KoIl5A3a7KPR6bB3JtEsMvK35MkzZHilRTE8tiYY6k
+	yv1ODQxCjufShEfZu3DLHRV4cObg+quZpVE0xEGl2D6zY3YOlVtrXBlvLE7vNxYwYEs6vA1hwIL
+	ZTHgw5DZsIqDKY2M9iP0iG/1J+w7UIWq7dc5eXCOfq/4FbTi0j/s1rgWDkgeo+0asLoeqIdABp2
+	HmZZWYyil4dNzD3AOnJxukstt9uqjg4hl6xFkZiFQ7UtRbCBvmwIa/TlNk3bYQWTsjfnUHwp9RY
+	k++LC+yx1VKf4ETF4aaAK4kyfit0RaPlitmEQsXrH/6Q8MmT2Vq1zaSjpsC3wBPBHMbaBL+F5wc
+	kzmlTgFt2LqVxkGWgkVawOZ5bHHYCJOC70m+KgbWM6GB1+Q9nO1CtA47P9GUfEKPmjVvcNzYfrj
+	XGDxfcNjgTVm+k+R+HRieWFb9iapgXc8JpOhgZKWTmaBxUGBrIc07TqmicmTzYmkh+sBNiSS5V9
+	IJYCSONbfftBIH4FUoYfGyAzRTPCMxrNoEWrZTQUqG/HqIx7WFMwOMiDpqT+29OqsTWx6cOF5Uy
+	ARA/UQ+nxuRLWdtZN2MXpFA8n7vdl4NYzcoDOResPRyAT2mTLMMDj+vCsfRjC+3q7gM0WgQ3vuN
+	qdbrsl9UR2eU8AY5dpQQ==
+X-Received: by 2002:a05:690e:b89:b0:67d:b299:df5e with SMTP id 956f58d0204a3-67db299f0camr2146318d50.108.1794884353312;
+        Mon, 16 Nov 2026 18:59:13 -0800 (PST)
 Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b4ec065f84sm14469217b3.29.2026.11.16.18.59.09
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b4ec069d3csm14474487b3.28.2026.11.16.18.59.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 18:59:10 -0800 (PST)
+        Mon, 16 Nov 2026 18:59:12 -0800 (PST)
 From: Matt Turner <mattst88@gmail.com>
-Subject: [PATCH v2 0/7] alpha: marvel: environmental sensors
-Date: Mon, 16 Nov 2026 21:59:07 -0500
-Message-Id: <20261116-marvel-env-v2-0-ef614eb2e7f1@gmail.com>
+Date: Mon, 16 Nov 2026 21:59:08 -0500
+Subject: [PATCH v2 1/7] alpha: marvel: fix the environmental subpacket
+ layout
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -95,114 +96,127 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/22NyQ6CMBRFf4W8tTUdkGnlfxgWpTzhGQbTYqMh/
- Xdb3Lo8ybnn7uDQEjposh0senK0LhHkKQMz6mVARn1kkFwWQoiczdp6nBgunvVcVrUpVdFpBXH
- wtHin9xG7tT92r+6BZkuFZIzkttV+jjcvkvc37AXjrKq5khXmXYmX6zBrms5mnaENIXwBKOuc4
- 7YAAAA=
-X-Change-ID: 20261114-marvel-env-d0289c736ba3
+Message-Id: <20261116-marvel-env-v2-1-ef614eb2e7f1@gmail.com>
+References: <20261116-marvel-env-v2-0-ef614eb2e7f1@gmail.com>
+In-Reply-To: <20261116-marvel-env-v2-0-ef614eb2e7f1@gmail.com>
 To: Richard Henderson <richard.henderson@linaro.org>, 
  Magnus Lindholm <linmag7@gmail.com>, Guenter Roeck <linux@roeck-us.net>
 Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, 
  Matt Turner <mattst88@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4421; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=2N/yDN2Wcz2QGAy54x4oEamhIu757IC6EK7THi85BJc=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJ+H/qzetuVvIoC36zY7Wp/JHPDE9069+2S91qsMs2uz
- mTrw/PbOj6yMIhxMcwUU2SJW6/IMqttx1Kf09K/YOawMoEMkRZpYAACFga+3MS8UiMdIz1TbUM9
- QyBDxygeIqfHoJFZXFyaWqSbVlDkkJdfkliSmZ9XrJdfkJpXkF6gl5aZVpKRkV9UnAo0Qi8vtcT
- U1dHNyNDAxNLRwszJwtHUxNnZydDJzdHR2dXJyNLcxMDZ0tHE1dKcgYtTAOaa5EKG/xmWhp8D69
- iDJVPk5pfFlyZecviS9/LQ9jZLC6aXNpYOBYwMH21/XNZ/Ha52r7HnW2zxNcuUpg9XXkQIMD1QW
- HUm8OpyFgA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3288; i=mattst88@gmail.com;
+ h=from:subject:message-id; bh=N9eREZDTgtKh+3whukIkS3keJAYcEhk3gX0b/rM2its=;
+ b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLJ+H/rDn+Uq9cLsRvnN/k/mcbrFSgELM+9JLDM9dTw5u
+ SpfNGd+x0cWBjEuhpliiixx6xVZZrXtWOpzWvoXzBxWJpAh0iINDEDAwsCXm5hXaqRjpGeqbahn
+ CGToGMVD5PQYNDKLi0tTi3TTCooc8vJLEksy8/OK9fILUvMK0gv00jLTSjIy8ouKU4FG6OWllpi
+ 6OroZGRqYWDpamDlZOJqaODs7GTq5OTo6uzoZWZqbGDhbOpq4WpozcHEKwFzT/Jfhn1m9ueOWxm
+ bve0Xut0Xjas401AktCg7dO+8z85rFdz9Vv2P4HyBZt+NUnmfmOrUNvKe/TO83//lgu/DkJF6Ly
+ t4gkfvPGAE=
 X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
  fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
 
-The service processors of the Marvel AlphaServers (GS1280, ES80, ES47)
-monitor temperatures, fans, voltages and power supplies. Linux can't read
-these sensors, and the events the firmware raises when one changes state
-are printed only with CONFIG_VERBOSE_MCHECK, and then decoded wrongly.
+struct ev7_pal_environmental_subpacket does not match what the MBM and
+CMM firmware (V2.7) put in system event frames, which is:
 
-Patches 1 and 2 fix the event reporting. Patch 3 adds the SRM callback
-that refreshes the readings of one config tree node, patch 4 passes the
-firmware's events to a notifier chain, and patch 5 registers a platform
-device. Patch 6 is the hwmon driver, which polls, and patch 7 makes it
-reread the sensors and notify userspace when the firmware reports an
-event.
+  +0   cabinet
+  +2   drawer
+  +8   PE (the power and environment node holding the sensor)
+  +10  sensor index
+  +14  state: 0 ok, 1 warning, 2 fault, 0xfffe unknown, 0xffff removed
 
-The hwmon patches depend on the alpha ones, so I'd suggest the whole
-series go through the alpha tree with an ack from Guenter.
-
-Tested on an ES47, where sensors(1) shows the temperatures, fans,
-voltages and power supply status. Disconnecting AC from one of its two
-power supplies raised a system event that set the supply's in_fault and
-woke poll() and udev, and reconnecting it cleared the fault the same
-way. No voltage is out of range, so the voltage alarms were checked by
-forcing the warning and failure states in the console's packets.
-
-I used Claude Code to help write this series: working out the packet
-layout, drafting the code and changelogs, and checking the firmware
-documentation. I reviewed and tested the result.
+So the byte printed as "Condition" was half of the sensor index, and the
+state was never printed. Use the firmware's layout and print the state
+along with the sensor's key. This matches the frames in the error log of
+an ES47.
 
 Signed-off-by: Matt Turner <mattst88@gmail.com>
 ---
-Changes in v2:
-- hwmon: report the firmware's states by their documented meaning: a
-  sensor's warning and failure states are its reading reaching the
-  warning and failure limits, not a broken sensor (Guenter)
-- hwmon: report power supplies as in channels with only a fault
-  attribute instead of power alarms (Guenter)
-- hwmon: depend on !ALPHA_LEGACY_START_ADDRESS for generic kernels,
-  which leave out core_marvel.o (Sashiko)
-- hwmon: drop the private mutex, rely on the hwmon core lock and take
-  hwmon_lock() in the event work (Sashiko)
-- hwmon: notify each alarm attribute whose value changed, and only those
-  (Sashiko, Magnus)
-- hwmon: report a voltage outside its limits as in_min_alarm and
-  in_lcrit_alarm or in_max_alarm and in_crit_alarm, by comparing it with
-  the nominal voltage in the console's packet (Guenter, Magnus)
-- alpha: define CCB_CFGTREE in asm/console.h instead of the uapi header,
-  since it is a Marvel console extension, and say it comes from Tru64
-  (Magnus)
-- hwmon: return -ENODATA from every alarm of a sensor that became unknown
-- alpha: drop the unreachable SRM check from
-  marvel_cfgtree_partial_update(), and move the GCT node type and
-  subtype the driver uses to asm/gct.h
-- Reorder: fix the event layout before printing it unconditionally, and
-  put the alpha patches first
-- Drop the Assisted-by trailers, describe tool use here instead (Guenter)
-- Link to v1: https://patch.msgid.link/20261114-marvel-env-v1-0-890328e4b7e5@gmail.com
+ arch/alpha/include/asm/err_ev7.h | 16 ++++++++++++----
+ arch/alpha/kernel/err_marvel.c   | 28 +++++++++++++++++-----------
+ 2 files changed, 29 insertions(+), 15 deletions(-)
 
----
-Matt Turner (7):
-      alpha: marvel: fix the environmental subpacket layout
-      alpha: marvel: report environmental events without VERBOSE_MCHECK
-      alpha: marvel: refresh environmental readings through the console
-      alpha: marvel: notify environmental events
-      alpha: marvel: register a platform device for the environmental sensors
-      hwmon: Add driver for Marvel AlphaServer environmental sensors
-      hwmon: (marvel-env) Notify userspace of environmental events
+diff --git a/arch/alpha/include/asm/err_ev7.h b/arch/alpha/include/asm/err_ev7.h
+index ab17e6333764..5d30af0221fb 100644
+--- a/arch/alpha/include/asm/err_ev7.h
++++ b/arch/alpha/include/asm/err_ev7.h
+@@ -147,17 +147,25 @@ struct ev7_pal_io_subpacket {
+  *	   class PAL (14), type POWER_SUPPLY (14)
+  *	   class PAL (14), type LAN (15)
+  *	   class PAL (14), type HOT_PLUG (16)
++ *
++ * Cabinet, drawer, PE and sensor are the keys of the sensor's GCT packet.
+  */
+ struct ev7_pal_environmental_subpacket {
+ 	u16 cabinet;
+ 	u16 drawer;
+ 	u16 reserved1[2];
+-	u8 module_type;
+-	u8 unit_id;		/* unit reporting condition */
+-	u8 reserved2;
+-	u8 condition;		/* condition reported       */
++	u16 pe;
++	u16 sensor;
++	u16 reserved2;
++	u16 state;		/* EV7_ENV_STATE_* */
+ };
+ 
++#define EV7_ENV_STATE_OK	0
++#define EV7_ENV_STATE_WARNING	1
++#define EV7_ENV_STATE_FAULT	2
++#define EV7_ENV_STATE_UNKNOWN	0xfffe
++#define EV7_ENV_STATE_REMOVED	0xffff
++
+ /*
+  * Convert environmental type to index
+  */
+diff --git a/arch/alpha/kernel/err_marvel.c b/arch/alpha/kernel/err_marvel.c
+index c0c0ccefc467..85f7a56816ce 100644
+--- a/arch/alpha/kernel/err_marvel.c
++++ b/arch/alpha/kernel/err_marvel.c
+@@ -21,6 +21,19 @@
+ #include "err_impl.h"
+ #include "proto.h"
+ 
++static const char *
++marvel_env_state(u16 state)
++{
++	switch (state) {
++	case EV7_ENV_STATE_OK:		return "ok";
++	case EV7_ENV_STATE_WARNING:	return "warning";
++	case EV7_ENV_STATE_FAULT:	return "fault";
++	case EV7_ENV_STATE_UNKNOWN:	return "unknown";
++	case EV7_ENV_STATE_REMOVED:	return "removed";
++	default:			return "unrecognized";
++	}
++}
++
+ static void
+ marvel_print_680_frame(struct ev7_lf_subpackets *lf_subpackets)
+ {
+@@ -50,17 +63,10 @@ marvel_print_680_frame(struct ev7_lf_subpackets *lf_subpackets)
+ 		if (!env)
+ 			continue;
+ 
+-		printk("%s**%s event (cabinet %d, drawer %d)\n",
+-		       err_print_prefix,
+-		       ev_packets[i].name,
+-		       env->cabinet,
+-		       env->drawer);
+-		printk("%s   Module Type: 0x%x - Unit ID 0x%x - "
+-		       "Condition 0x%x\n",
+-		       err_print_prefix,
+-		       env->module_type,
+-		       env->unit_id,
+-		       env->condition);
++		printk("%s**%s %s (cabinet %u, drawer %u, PE %u, sensor %u, state %#x)\n",
++		       err_print_prefix, ev_packets[i].name,
++		       marvel_env_state(env->state), env->cabinet,
++		       env->drawer, env->pe, env->sensor, env->state);
+ 	}
+ #endif /* CONFIG_VERBOSE_MCHECK */
+ }
 
- Documentation/hwmon/index.rst       |   1 +
- Documentation/hwmon/marvel-env.rst  |  76 ++++
- MAINTAINERS                         |   8 +
- arch/alpha/include/asm/console.h    |   5 +
- arch/alpha/include/asm/err_ev7.h    |  16 +-
- arch/alpha/include/asm/gct.h        |   2 +
- arch/alpha/include/asm/marvel_env.h |  17 +
- arch/alpha/kernel/core_marvel.c     |  56 +++
- arch/alpha/kernel/err_marvel.c      |  39 +-
- arch/alpha/kernel/proto.h           |   1 +
- arch/alpha/kernel/srmcons.c         |   3 +-
- arch/alpha/lib/callback_srm.S       |   1 +
- drivers/hwmon/Kconfig               |  12 +
- drivers/hwmon/Makefile              |   1 +
- drivers/hwmon/marvel-env.c          | 690 ++++++++++++++++++++++++++++++++++++
- 15 files changed, 909 insertions(+), 19 deletions(-)
----
-base-commit: 0b4cadbe7c39d830dec35c4a2655483de0dae568
-change-id: 20261114-marvel-env-d0289c736ba3
-
-Best regards,
---  
-Matt Turner <mattst88@gmail.com>
+-- 
+2.56.1
 
