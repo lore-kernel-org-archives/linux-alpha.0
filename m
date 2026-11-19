@@ -1,90 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.179
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=44.202.169.35
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795047004;
-	b=xtqbVroFIx87OHrKw7sKD/7xchVLqpDJZTMcVzYm5QVsRm+Qyb1nUwEPOxGmtlzFVzx9
-	 ursPKgee+s9ixBcVjNesckpWftcEbWOJsV8MCngcverhd1tFkom3wn5KdVac0bKqJDms0
-	 fuUMqP/mZe2t94THgxV2e2dW273xO6fWXp4FQgf/RY6/hulTOlm8GXRmYaxaPk75H+h5U
-	 I7LMnqjVgQ6F1AM+kG/Z4/GbRbE8T18J9ypLi6tp1IWhLm1h3fdU8XX16jBqWm/IrEG3K
-	 hSPQ39UYazyukDX8hDCn+je4x1ml6XHIYQ8G8zU6qaCnGSwyKeN/+H3zubXoTrO3gnQ==
+	t=1795061863;
+	b=WJfcvqwQnn1GcD9QzyASWGbJuxBL+0CLGfrDYmXBF8TM6BOfPyD5FD8fWfY0yKjJ1oSj
+	 SZxg7HzIqZjP6pQ+uFhOBlFAGRRW3a9jwjYSjHkpU6mdqJWGglS7RTXNR1Aiu1h6amMBo
+	 0zVXnzMIkwasV+vE00Zxk9LnQhP8ybCvgJmcMjZivW83yvm+VOsRwyI5K019UMCzZxuAE
+	 DMKgC3vASvZgsBwv9CRYGsEGGoDYzoY+HR5FpG94NWVwuDhYN3bC9CoFqj1wC1toi1myM
+	 jW6dctqQ2DOFCG7rBsZpjQXDGWzCLnpi6R9ln84prCA2+QIVCOfuJZvdKGjRBYmXiCQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795047004;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
-	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
-	 X-Developer-Key;
-	bh=Cz6JhA4vgHQqGHllNtBlEMCpr/c5f2N6W+pIECb8wEI=;
-	b=txyibNHsjW2hy6Owd7H5kbtUCP+qqb0XR4BNOyEmbK0Fg8DiqqcvL3jkqFD1KGnf0V/d
-	 crysy1iqhl7wh/egGsCAi3Lhczfu6peA6J9VJUZl1kcAUwrDNTRTq53QhaGLYKAR6xKG6
-	 DfGjgi5pAVxxogvn7sIi6rl1AaEZX5LdXDmEqX6negQZq6h+xA2QLUSmhCNsTox0jnOOm
-	 PXo6iOeB+LsuWQo0QLoOHtZBK2YgLReqjvtKTjTHPMDQH7GjgYJnZzhmVQGdupBUTb7Eh
-	 5sVPK98JkS5GBa2Xcgz072q0EBkOlCxq82Sl27ZI4JVQFgDzDfcNk6uDYrnujCT47AA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795061863;
+	h=DMARC-Filter:Received:Received:X-Authority-Analysis:DKIM-Signature:
+	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 References:Content-Language:From:Autocrypt:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
+	 X-AntiAbuse:X-AntiAbuse:X-BWhitelist:X-Source-IP:X-Source-L:X-Exim-ID:
+	 X-Source:X-Source-Args:X-Source-Dir:X-Source-Sender:X-Source-Auth:
+	 X-Email-Count:X-Org:X-Source-Cap:X-Local-Domain:X-CMAE-Envelope;
+	bh=iwOG8aMkU8Xz2AEC6SLQXw7rEKoyBeNEE/LagbloY/o=;
+	b=xdmoxnrwAb6rL7YoT1DtdoX/shl62CQIPfrM9iNGh6kqs8flm7DBkwuHH/AHSsujGKy9
+	 UnXtkkVs5NU276LSzyfMZG7o6GW6PY3tk5lHf7NQ84UVPiJ/tAFxfMJF5e+KssOA6kc7I
+	 b90tcZA2d76dN3GSpzWnty3VzWVA/hzuOz/qHjH8VxDtHmmzX/3HZi6rvTSR4l8X4xgMM
+	 nSgZpxfTv9GuPdcsqJ2WRbYMuwSHkyPHj8Q0zgc/0CZs7zPSJDrW+DiLCUT3KiQ78SklL
+	 YkawyCZdtv9yclapzWgaHYJxU5FcTjsa1iF6MBcpReGq6NGJLvTznKt7XvEYk0dIORA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=T0HssYh2;
-	arc=none smtp.remote-ip=209.85.128.179
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=none header.from=roeck-us.net;
+	spf=fail smtp.mailfrom=roeck-us.net;
+	dkim=pass header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b="kr/XbSUo";
+	arc=none smtp.remote-ip=44.202.169.35
+Received: from omta036.useast.a.cloudfilter.net (omta036.useast.a.cloudfilter.net [44.202.169.35])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41A42606A333
-	for <linux-alpha@vger.kernel.org>; Thu, 19 Nov 2026 00:10:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 41A42606A333
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36BE9606A320
+	for <linux-alpha@vger.kernel.org>; Thu, 19 Nov 2026 04:17:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 36BE9606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=roeck-us.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=T0HssYh2
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-8b32daac9d7so2911557b3.0
-        for <linux-alpha@vger.kernel.org>; Wed, 18 Nov 2026 16:10:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795047002; x=1795651802; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Cz6JhA4vgHQqGHllNtBlEMCpr/c5f2N6W+pIECb8wEI=;
-        b=T0HssYh2SSHWHrSuOXQ97kVsD2vAdVHgdABDUZORdNsFg9hXotQCamW/b67k/LRdkY
-         oPNq9O5RP9TDGOiVLO0O4j1HRnwaVJWs1ZlddnurfTtbfZWfOrPxrjc+0lQ2SoF655d9
-         6fEcL8IpZcxhUdfl5+ehGszFQO2SrXLc2gJ4gl0k6GQM9/IfWfEYfCpwBLqteoTV2uAF
-         VCNiWOSYS9GcYMZ1jrlPR9zXjMrrArSEPtNp/VLAo+ExjzvrVBguWhGL8qqxUVD84hC0
-         vZCLwQuSg3afgF/hvvz8fm0zMZ4RLnDfYZfxMQojLt+S0F3GMlFk8iDbOEXEq7W50LZr
-         pVCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795047002; x=1795651802;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Cz6JhA4vgHQqGHllNtBlEMCpr/c5f2N6W+pIECb8wEI=;
-        b=aYpnGzB9DUF2TgJtSN/ZWhBb9L6j+mB14UBOu1IqJUnDxn/B/b1EFbUixI8R3couCi
-         QvWiQu9OkUdHjbzeuc/S4GTmJVlRF5KYLGZVm5jESTJAObMEttd9YdTaqsVqVgxl2QH8
-         9CU9X5ztET0lLo03aPVaRIm2c0Al/6e2+nADgfWcVwauP5FyZWA1+1UZ6yEiEVSsf4/P
-         R08MkNyj+Gp+tdKaR6Wu8UPxxH6U9+bE48RadzzmWhxycYGOugcX0IfQ/yM3CCV3XaG4
-         fAbMLiI4Ca5WhtbQ91DgSeiWKwVnt5J4YgvByARdo1anXZUs3TGvh2rTG/+F1trAKN/Q
-         edQw==
-X-Gm-Message-State: APuU4Z9jRgiqBEchyTpJvDzvf/Tn12gPquXzbJGFHCe5UyhKQRDGT/Yb
-	D5TokvTfeuLOoHccxLJmiAw9LifRuEgRQ077U5XnmbZ4dqRb4bMcFT6d
-X-Gm-Gg: AZFdTZdYKTVn+0CejhWg5uumcDuXU8MpLUyv9Md5gXcFhIMndvci1utMe/0Jzin3Ari
-	60A4pRIQvV9eEAc9jKNU5M0wpC8RUJZ9yHzgIbHCQr9qbbNW19K8OvcNa69sn5KiE09bfW9Ao6u
-	cYgRua02Pp+7Ph2ldtKFnvJUwktDUeweis4OjcROEFUEmsKz4LtTI88vbtuEVgKQ1zXdgqpge4a
-	DGchfcp6FnqTbo05ZZfvZshVEjDjyYS1euzhiWMexTdqiMLJAGhOo+nGRjwddKBNKxVmTUaQ1Fb
-	955MZKa0jhgYgqJZgPOJqJ3t7+nTIkb4zgzrNtaEWsBByJf2tafbhu0xDGFJlQMV3am1Jdwmzue
-	7rOdm1uzs6HKZOSEZibkmMAlTwYRUesFkOl1D8T0GH0uphq1x2uA54c29wtmPpd8yAI5T2k/Ws2
-	G9r4aXFOTy1zIbwGS0T+2dz3q0KJpXz4G/u8TVuENPiPNd/TM9tcBRaOXXKsPPMDIfPOegzSney
-	ml/YKfwwJk8sRDj37dEsECb6Ij6tz6yPr1o4b3cCJZasKz7QMhPPOW8KeyO0STis/Sp9SxZ+1v6
-	x97qGgFRJd05e1qGrfVZ8VbuGmYg9L9jdNARPsJ0s70tgSAK2syWouIONEMuTcgyXVlTkv2UmhE
-	FeKzmrS1ng8CbSZFmt/9vXCFODfx2dsTUJ4lp9U7dXUZk8gDfE5H12lg3ivG7Un14OHz5uovbi/
-	sLsR1c/P8z0PNhGq22Ng==
-X-Received: by 2002:a05:690c:4990:b0:8b5:2a0:606e with SMTP id 00721157ae682-8b513d44ceemr1089987b3.18.1795047002245;
-        Wed, 18 Nov 2026 16:10:02 -0800 (PST)
-Received: from localhost (107-220-129-194.lightspeed.chrlnc.sbcglobal.net. [107.220.129.194])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b4fe0eb8d2sm25158667b3.36.2026.11.18.16.10.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2026 16:10:01 -0800 (PST)
-From: Matt Turner <mattst88@gmail.com>
-Date: Wed, 18 Nov 2026 19:09:52 -0500
-Subject: [PATCH v4 7/7] hwmon: (marvel-env) Notify userspace of
- environmental events
+	dkim=pass (2048-bit key) header.d=roeck-us.net header.i=@roeck-us.net header.a=rsa-sha256 header.s=default header.b=kr/XbSUo
+Received: from eig-obgw-6007b.ext.cloudfilter.net ([10.0.30.166])
+	by cmsmtp with ESMTPS
+	id TqVPxbXBN4vCDTtagxdbgT; Thu, 19 Nov 2026 04:17:42 +0000
+Received: from 162-215-252-36.unifiedlayer.com ([208.91.199.152])
+	by cmsmtp with ESMTPS
+	id TtafxUwmd3nNNTtafxhSR9; Thu, 19 Nov 2026 04:17:41 +0000
+X-Authority-Analysis: v=2.4 cv=TuLmhCXh c=1 sm=1 tr=0 ts=6afe7865
+ a=QNED+QcLUkoL9qulTODnwA==:117 a=2cfIYNtKkjgZNaOwnGXpGw==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=M0FbrtG7MMAA:10 a=pGLkceISAAAA:8
+ a=_jlGtV7tAAAA:8 a=SxDrggpomWqlGV9BuskA:9 a=QEXdDO2ut3YA:10
+ a=nlm17XC03S6CtCLSeiRr:22 a=KPbNTLLc3YvdawN95zVk:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=roeck-us.net; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:
+	List-Archive; bh=iwOG8aMkU8Xz2AEC6SLQXw7rEKoyBeNEE/LagbloY/o=; b=kr/XbSUow+KH
+	SX8zB1gvreI5QV+lul7xDp21jd4UG1I7qz/GdWwyQdaWHtb1wmN3dyM2gKL3EJNuWkkK47YPO5IJw
+	6FtZt15TZkY2DayBcCBFeu8sWuW2ZQKmyQDxtLbGoPbonKbYhy/V2xieNX7hC8+jHYTE67lodM+Ij
+	4FV+MNU8C9TNG2cy2Rd/E61pb9ELdMCfR+vX0yJnC8oHaqtQfM6V5pgTzQ7n/8+Ljoz10c+JjY6ry
+	e8pi8FTUIvyjlHyg9vKIuwHlKA5RYots0iT605XIgp9ruDCkYMCyNJS9mY1dHP9LJ1zfZCRQw/AtN
+	CP+JW/sENK0vQLf0+xvdzQ==;
+Received: from 108-223-40-66.lightspeed.sntcca.sbcglobal.net ([108.223.40.66]:55370)
+	by bh-25.webhostbox.net with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.100.1)
+	(envelope-from <linux@roeck-us.net>)
+	id 1xTtaf-00000001z9Z-0EJc;
+	Thu, 19 Nov 2026 09:47:41 +0530
+Message-ID: <c212df8a-6ff7-4a4f-a90e-7bb6c073f617@roeck-us.net>
+Date: Wed, 18 Nov 2026 20:17:39 -0800
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -94,222 +76,127 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261118-marvel-env-v4-7-200317e496c2@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 6/7] hwmon: Add driver for Marvel AlphaServer
+ environmental sensors
+To: Matt Turner <mattst88@gmail.com>,
+ Richard Henderson <richard.henderson@linaro.org>,
+ Magnus Lindholm <linmag7@gmail.com>
+Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org
 References: <20261118-marvel-env-v4-0-200317e496c2@gmail.com>
-In-Reply-To: <20261118-marvel-env-v4-0-200317e496c2@gmail.com>
-To: Richard Henderson <richard.henderson@linaro.org>, 
- Magnus Lindholm <linmag7@gmail.com>, Guenter Roeck <linux@roeck-us.net>
-Cc: linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org, 
- Matt Turner <mattst88@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6655; i=mattst88@gmail.com;
- h=from:subject:message-id; bh=qZd97RW9IxalQgdmkxJLFmDFqrpkV05FcdnVxnLWCBQ=;
- b=owGbwMvMwCW25rVmCc8sv+mMp9WSGLL+2XlJfX753nl10dmpc/37opgy38RU8HLwzZXRzH0o5
- 7um7sTbjo8sDGJcDDPFFFni1iuyzGrbsdTntPQvmDmsTCBDpEUaGICAhYEvNzGv1EjHSM9U21DP
- EMjQMYqHyOkxaGQWF5emFummFRQ55OWXJJZk5ucV6+UXpOYVpBfopWWmlWRk5BcVpwKN0MtLLTF
- 1dXQzMjQwsXS0MHOycDQ1cXZ2MnRyc3R0dnUysjQ3MXC2dDRxtTRn4OIUgLnmqjQjwzXlfz//+G
- 2/+rxfSsn6Z13/ZyXf+qtn9s7I1vfYqv3lxDlGhitpGw5KN/FuDT4dXvhbJfDZri2+WzMu+h198
- euZ6X6FajYA
-X-Developer-Key: i=mattst88@gmail.com; a=openpgp;
- fpr=3BB639E56F861FA2E86505690FDD682D974CA72A
+ <20261118-marvel-env-v4-6-200317e496c2@gmail.com>
+Content-Language: en-US
+From: Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ xsFNBE6H1WcBEACu6jIcw5kZ5dGeJ7E7B2uweQR/4FGxH10/H1O1+ApmcQ9i87XdZQiB9cpN
+ RYHA7RCEK2dh6dDccykQk3bC90xXMPg+O3R+C/SkwcnUak1UZaeK/SwQbq/t0tkMzYDRxfJ7
+ nyFiKxUehbNF3r9qlJgPqONwX5vJy4/GvDHdddSCxV41P/ejsZ8PykxyJs98UWhF54tGRWFl
+ 7i1xvaDB9lN5WTLRKSO7wICuLiSz5WZHXMkyF4d+/O5ll7yz/o/JxK5vO/sduYDIlFTvBZDh
+ gzaEtNf5tQjsjG4io8E0Yq0ViobLkS2RTNZT8ICq/Jmvl0SpbHRvYwa2DhNsK0YjHFQBB0FX
+ IdhdUEzNefcNcYvqigJpdICoP2e4yJSyflHFO4dr0OrdnGLe1Zi/8Xo/2+M1dSSEt196rXaC
+ kwu2KgIgmkRBb3cp2vIBBIIowU8W3qC1+w+RdMUrZxKGWJ3juwcgveJlzMpMZNyM1jobSXZ0
+ VHGMNJ3MwXlrEFPXaYJgibcg6brM6wGfX/LBvc/haWw4yO24lT5eitm4UBdIy9pKkKmHHh7s
+ jfZJkB5fWKVdoCv/omy6UyH6ykLOPFugl+hVL2Prf8xrXuZe1CMS7ID9Lc8FaL1ROIN/W8Vk
+ BIsJMaWOhks//7d92Uf3EArDlDShwR2+D+AMon8NULuLBHiEUQARAQABzTJHdWVudGVyIFJv
+ ZWNrIChMaW51eCBhY2NvdW50KSA8bGludXhAcm9lY2stdXMubmV0PsLBgQQTAQIAKwIbAwYL
+ CQgHAwIGFQgCCQoLBBYCAwECHgECF4ACGQEFAmgrMyQFCSbODQkACgkQyx8mb86fmYGcWRAA
+ oRwrk7V8fULqnGGpBIjp7pvR187Yzx+lhMGUHuM5H56TFEqeVwCMLWB2x1YRolYbY4MEFlQg
+ VUFcfeW0OknSr1s6wtrtQm0gdkolM8OcCL9ptTHOg1mmXa4YpW8QJiL0AVtbpE9BroeWGl9v
+ 2TGILPm9mVp+GmMQgkNeCS7Jonq5f5pDUGumAMguWzMFEg+Imt9wr2YA7aGen7KPSqJeQPpj
+ onPKhu7O/KJKkuC50ylxizHzmGx+IUSmOZxN950pZUFvVZH9CwhAAl+NYUtcF5ry/uSYG2U7
+ DCvpzqOryJRemKN63qt1bjF6cltsXwxjKOw6CvdjJYA3n6xCWLuJ6yk6CAy1Ukh545NhgBAs
+ rGGVkl6TUBi0ixL3EF3RWLa9IMDcHN32r7OBhw6vbul8HqyTFZWY2ksTvlTl+qG3zV6AJuzT
+ WdXmbcKN+TdhO5XlxVlbZoCm7ViBj1+PvIFQZCnLAhqSd/DJlhaq8fFXx1dCUPgQDcD+wo65
+ qulV/NijfU8bzFfEPgYP/3LP+BSAyFs33y/mdP8kbMxSCjnLEhimQMrSSo/To1Gxp5C97fw5
+ 3m1CaMILGKCmfI1B8iA8zd8ib7t1Rg0qCwcAnvsM36SkrID32GfFbv873bNskJCHAISK3Xkz
+ qo7IYZmjk/IJGbsiGzxUhvicwkgKE9r7a1rOwU0ETofVZwEQALlLbQeBDTDbwQYrj0gbx3bq
+ 7kpKABxN2MqeuqGr02DpS9883d/t7ontxasXoEz2GTioevvRmllJlPQERVxM8gQoNg22twF7
+ pB/zsrIjxkE9heE4wYfN1AyzT+AxgYN6f8hVQ7Nrc9XgZZe+8IkuW/Nf64KzNJXnSH4u6nJM
+ J2+Dt274YoFcXR1nG76Q259mKwzbCukKbd6piL+VsT/qBrLhZe9Ivbjq5WMdkQKnP7gYKCAi
+ pNVJC4enWfivZsYupMd9qn7Uv/oCZDYoBTdMSBUblaLMwlcjnPpOYK5rfHvC4opxl+P/Vzyz
+ 6WC2TLkPtKvYvXmdsI6rnEI4Uucg0Au/Ulg7aqqKhzGPIbVaL+U0Wk82nz6hz+WP2ggTrY1w
+ ZlPlRt8WM9w6WfLf2j+PuGklj37m+KvaOEfLsF1v464dSpy1tQVHhhp8LFTxh/6RWkRIR2uF
+ I4v3Xu/k5D0LhaZHpQ4C+xKsQxpTGuYh2tnRaRL14YMW1dlI3HfeB2gj7Yc8XdHh9vkpPyuT
+ nY/ZsFbnvBtiw7GchKKri2gDhRb2QNNDyBnQn5mRFw7CyuFclAksOdV/sdpQnYlYcRQWOUGY
+ HhQ5eqTRZjm9z+qQe/T0HQpmiPTqQcIaG/edgKVTUjITfA7AJMKLQHgp04Vylb+G6jocnQQX
+ JqvvP09whbqrABEBAAHCwWUEGAECAA8CGwwFAmgrMyQFCSbODQkACgkQyx8mb86fmYHlgg/9
+ H5JeDmB4jsreE9Bn621wZk7NMzxy9STxiVKSh8Mq4pb+IDu1RU2iLyetCY1TiJlcxnE362kj
+ njrfAdqyPteHM+LU59NtEbGwrfcXdQoh4XdMuPA5ADetPLma3YiRa3VsVkLwpnR7ilgwQw6u
+ dycEaOxQ7LUXCs0JaGVVP25Z2hMkHBwx6BlW6EZLNgzGI2rswSZ7SKcsBd1IRHVf0miwIFYy
+ j/UEfAFNW+tbtKPNn3xZTLs3quQN7GdYLh+J0XxITpBZaFOpwEKV+VS36pSLnNl0T5wm0E/y
+ scPJ0OVY7ly5Vm1nnoH4licaU5Y1nSkFR/j2douI5P7Cj687WuNMC6CcFd6j72kRfxklOqXw
+ zvy+2NEcXyziiLXp84130yxAKXfluax9sZhhrhKT6VrD45S6N3HxJpXQ/RY/EX35neH2/F7B
+ RgSloce2+zWfpELyS1qRkCUTt1tlGV2p+y2BPfXzrHn2vxvbhEn1QpQ6t+85FKN8YEhJEygJ
+ F0WaMvQMNrk9UAUziVcUkLU52NS9SXqpVg8vgrO0JKx97IXFPcNh0DWsSj/0Y8HO/RDkGXYn
+ FDMj7fZSPKyPQPmEHg+W/KzxSSfdgWIHF2QaQ0b2q1wOSec4Rti52ohmNSY+KNIW/zODhugJ
+ np3900V20aS7eD9K8GTU0TGC1pyz6IVJwIE=
+In-Reply-To: <20261118-marvel-env-v4-6-200317e496c2@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - bh-25.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - roeck-us.net
+X-BWhitelist: no
+X-Source-IP: 108.223.40.66
+X-Source-L: No
+X-Exim-ID: 1xTtaf-00000001z9Z-0EJc
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: 108-223-40-66.lightspeed.sntcca.sbcglobal.net [108.223.40.66]:55370
+X-Source-Auth: guenter@roeck-us.net
+X-Email-Count: 4
+X-Org: HG=direseller_whb_net_legacy;ORG=directi;
+X-Source-Cap: cm9lY2s7YWN0aXZzdG07YmgtMjUud2ViaG9zdGJveC5uZXQ=
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfMA25qT6+4UCncDF6aOHtCu5PzVzKS/MSIATveZZKXtKf+N0sRlTKQgcR9UzMY3T10qHMzXn6SZc7eDznHtVBInpFAh/HMCxZDIsung8P3W/hkxrFs0X
+ RU+g52lvEAZ5wmRfxZ0E82ypZ5aJ4AAR3ykgzxr76kok/nucbPYycM34WXcWtM5nVU5/1ekzcIgjRNyycU5qKhwTWxvI3uOy7VcySzuk3nj6hJvespSp6f1j
 
-The firmware reports each change of a sensor's state as a system event
-machine check. On one, reread every node from a workqueue and notify
-userspace of each alarm attribute whose value changed. The notifier runs
-in machine check context, so it only queues an irq_work, which queues
-the work. The work takes the hwmon device lock to serialize the refresh
-with the sysfs callbacks.
+On 11/18/26 16:09, Matt Turner wrote:
+> The management firmware of the Marvel (EV7) AlphaServers, the GS1280,
+> ES80 and ES47, monitors temperatures, fans, voltages and power supplies.
+> The SRM console describes each sensor as a packet in a power and
+> environment node of its config tree (GCT), and fills in the readings
+> when asked to refresh the node. The packet layout was taken from Tru64
+> UNIX.
+> 
+> The firmware gives each temperature, fan and voltage sensor a warning
+> limit and a failure limit, and reports the sensor in the warning or
+> failure state once its reading reaches one. Neither state means that the
+> sensor is broken: a temperature past its failure limit is too high, not
+> faulty. Power supplies are either working or failed, with the cause
+> (AC, POK, overtemperature, fan) logged by the firmware.
+> 
+> Export the sensors through hwmon. A temperature's warning and failure
+> limits become max and crit, with max_alarm set in either state and
+> crit_alarm in the failure state. A fan's warning limit becomes min, with
+> min_alarm set in either state and fault in the failure state, which is
+> when the firmware counts the fan as failed. A voltage exports its
+> reading, with min_alarm or max_alarm set in either state and lcrit_alarm
+> or crit_alarm in the failure state, depending on which side of its
+> nominal voltage it reads. The console gives the nominal voltage and only
+> one other limit, so the voltage limits are not exported. A power supply
+> is a voltage channel with only a fault attribute.
+> 
+> A refresh keeps the boot CPU in the console with interrupts disabled for
+> up to 300 ms per node, so refresh a node at most once every 10 seconds.
+> The hwmon core serializes the callbacks, which also
+> serializes the refreshes.
+> 
+> The console callback lives in core_marvel.o, which generic kernels
+> built with ALPHA_LEGACY_START_ADDRESS leave out.
+> 
+> Signed-off-by: Matt Turner <mattst88@gmail.com>
 
-Signed-off-by: Matt Turner <mattst88@gmail.com>
-Reviewed-by: Magnus Lindholm <linmag7@gmail.com>
----
- Documentation/hwmon/marvel-env.rst |  4 ++
- drivers/hwmon/Kconfig              |  1 +
- drivers/hwmon/marvel-env.c         | 89 ++++++++++++++++++++++++++++++++++++--
- 3 files changed, 90 insertions(+), 4 deletions(-)
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 
-diff --git a/Documentation/hwmon/marvel-env.rst b/Documentation/hwmon/marvel-env.rst
-index 02d5241749bc..4123c44fd2c1 100644
---- a/Documentation/hwmon/marvel-env.rst
-+++ b/Documentation/hwmon/marvel-env.rst
-@@ -26,6 +26,10 @@ cabinet and drawer numbers.
- A refresh keeps the boot CPU in the console with interrupts disabled for up
- to 300 ms per unit, so a unit is refreshed at most once every 10 seconds.
- 
-+The firmware also reports every change of state as a system event machine
-+check. When one arrives, the driver refreshes all units and notifies
-+userspace through the alarm attributes.
-+
- Sysfs entries
- -------------
- 
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index c0ce5591c82d..99c5d84c8752 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -1258,6 +1258,7 @@ config SENSORS_MACSMC_HWMON
- config SENSORS_MARVEL_ENV
- 	tristate "Marvel (EV7) AlphaServer environmental sensors"
- 	depends on ALPHA_MARVEL || (ALPHA_GENERIC && !ALPHA_LEGACY_START_ADDRESS)
-+	select IRQ_WORK
- 	help
- 	  If you say yes here you get support for the temperature, fan,
- 	  voltage and power supply sensors of Marvel AlphaServers (the
-diff --git a/drivers/hwmon/marvel-env.c b/drivers/hwmon/marvel-env.c
-index 8ec3dd7c0b23..effa70b3b35b 100644
---- a/drivers/hwmon/marvel-env.c
-+++ b/drivers/hwmon/marvel-env.c
-@@ -17,12 +17,15 @@
-  */
- 
- #include <linux/hwmon.h>
-+#include <linux/irq_work.h>
- #include <linux/jiffies.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/notifier.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- #include <linux/string.h>
-+#include <linux/workqueue.h>
- 
- #include <asm/gct.h>
- #include <asm/marvel_env.h>
-@@ -97,16 +100,21 @@ struct marvel_env_chan {
- 	unsigned int pkt;		/* packet offset in the node */
- 	bool ps;			/* power supply, as an in channel */
- 	bool present;			/* known when the driver loaded */
-+	u32 alarms;			/* alarm attributes last reported */
- 	char label[32];
- };
- 
- struct marvel_env_data {
- 	struct device *dev;
-+	struct device *hwmon;
- 	struct marvel_env_node *nodes;
- 	unsigned int nr_nodes, max_nodes;
- 	struct marvel_env_chan *chans[hwmon_max];
- 	unsigned int nr_chans[hwmon_max], max_chans[hwmon_max];
- 	bool multi_drawer;		/* label with cabinet and drawer */
-+	struct irq_work irq_work;
-+	struct work_struct work;
-+	struct notifier_block nb;
- };
- 
- static const char * const pe_names[] = {
-@@ -293,6 +301,7 @@ static void marvel_env_add_chan(struct marvel_env_data *data,
- 	c->ps = ps;
- 	status = marvel_env_status(type, c);
- 	c->present = env_status_valid(status);
-+	c->alarms = marvel_env_alarms(type, c, status);
- 
- 	if (data->multi_drawer)
- 		len = scnprintf(c->label, sizeof(c->label), "Cab%u Dra%u ",
-@@ -498,6 +507,72 @@ static u32 marvel_env_config(enum hwmon_sensor_types type,
- 	}
- }
- 
-+/* Reread everything after a system event and report changed alarms. */
-+static void marvel_env_event_work(struct work_struct *work)
-+{
-+	struct marvel_env_data *data =
-+		container_of(work, struct marvel_env_data, work);
-+	unsigned int i, k;
-+
-+	guard(hwmon_lock)(data->hwmon);
-+
-+	for (i = 0; i < data->nr_nodes; i++) {
-+		data->nodes[i].valid = false;
-+		marvel_env_refresh(data, &data->nodes[i]);
-+	}
-+
-+	for (k = 0; k < ARRAY_SIZE(marvel_env_types); k++) {
-+		enum hwmon_sensor_types type = marvel_env_types[k];
-+
-+		for (i = 0; i < data->nr_chans[type]; i++) {
-+			struct marvel_env_chan *c = &data->chans[type][i];
-+			unsigned long changed;
-+			unsigned int attr;
-+			u8 status;
-+			u32 alarms;
-+
-+			if (!c->present)
-+				continue;
-+			status = marvel_env_status(type, c);
-+			if (!env_status_valid(status))
-+				continue;
-+			alarms = marvel_env_alarms(type, c, status);
-+			changed = alarms ^ c->alarms;
-+			c->alarms = alarms;
-+			for_each_set_bit(attr, &changed, 32)
-+				hwmon_notify_event(data->hwmon, type, attr, i);
-+		}
-+	}
-+}
-+
-+static void marvel_env_irq_work(struct irq_work *irq_work)
-+{
-+	struct marvel_env_data *data =
-+		container_of(irq_work, struct marvel_env_data, irq_work);
-+
-+	schedule_work(&data->work);
-+}
-+
-+/* Runs in machine check context, so only queue the irq_work. */
-+static int marvel_env_event(struct notifier_block *nb, unsigned long action,
-+			    void *unused)
-+{
-+	struct marvel_env_data *data =
-+		container_of(nb, struct marvel_env_data, nb);
-+
-+	irq_work_queue(&data->irq_work);
-+	return NOTIFY_OK;
-+}
-+
-+static void marvel_env_unregister(void *arg)
-+{
-+	struct marvel_env_data *data = arg;
-+
-+	atomic_notifier_chain_unregister(&marvel_env_notifier, &data->nb);
-+	irq_work_sync(&data->irq_work);
-+	cancel_work_sync(&data->work);
-+}
-+
- static int marvel_env_probe(struct platform_device *pdev)
- {
- 	u32 *config[hwmon_max] = { };
-@@ -505,7 +580,6 @@ static int marvel_env_probe(struct platform_device *pdev)
- 	const struct hwmon_channel_info **info;
- 	struct marvel_env_data *data;
- 	struct hwmon_chip_info *chip;
--	struct device *hwmon;
- 	unsigned int i, k, nr_info = 0;
- 
- 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
-@@ -579,9 +653,16 @@ static int marvel_env_probe(struct platform_device *pdev)
- 	chip->ops = &marvel_env_ops;
- 	chip->info = info;
- 
--	hwmon = devm_hwmon_device_register_with_info(dev, DRVNAME, data, chip,
--						     NULL);
--	return PTR_ERR_OR_ZERO(hwmon);
-+	data->hwmon = devm_hwmon_device_register_with_info(dev, DRVNAME, data,
-+							   chip, NULL);
-+	if (IS_ERR(data->hwmon))
-+		return PTR_ERR(data->hwmon);
-+
-+	init_irq_work(&data->irq_work, marvel_env_irq_work);
-+	INIT_WORK(&data->work, marvel_env_event_work);
-+	data->nb.notifier_call = marvel_env_event;
-+	atomic_notifier_chain_register(&marvel_env_notifier, &data->nb);
-+	return devm_add_action_or_reset(dev, marvel_env_unregister, data);
- }
- 
- static struct platform_driver marvel_env_driver = {
+I assume thqat the series will be applied through an Alpha tree.
+Please let me know if I should apply this and the next patch
+through the hwmon-next tree.
 
--- 
-2.56.1
+Thanks,
+Guenter
 
