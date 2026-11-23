@@ -1,65 +1,64 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=193.142.43.55
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795426649;
-	b=G3FuSJSEn4vM3DyEm/OW8s+jldjypTA78tLkEDUijPoJFrQ4OixhYeDBwaYpell3eJP7
-	 cz+x7WU/gse+dWgLq/CFRdZZuBRH57jHpCZ4OZpPoCfltiiNja3L6XrLZDGm+ODXQMyRa
-	 PDoJf+GyjGqPn89oL9js+kdFh5c2GyzWn9ynnh9w5ow84NkgXwBiaKkCg3YVwJ/6k5vjz
-	 ZofuXWVlW1iH+AODG9nP5UN8y1joIdlbcxvXrW39f7xZOXkkg4W4iNZvkmuZItVplRsPW
-	 Tj+/K4xHne7AC4/zh9HPS467QhCvcAQoXqgn7KHoqTXqUX7tfHDThBGN0lHNCzbBC5A==
+	t=1795426654;
+	b=knAIprg7/XHb4dJDCYlf9+UiSr8GWRfpgJGn1YUx6RWXLRTU8rEj442zrUkPSw1+M3po
+	 RL73H7tZZ+044KCb5S02jIvojCgVXNKL7ym5wl1PFEotijIsLb9wWk1tg538f5IBxxThW
+	 ynFlwYE7uTXLmw9HlLh07aA8GUYJxwnKhXi2vJz8EltrkI7EP1Fro3JJauNWWuEMovLtp
+	 7zXMxjqcvn1dKKKiIaukn/T+5rR/sY7rD4L3RKo5rMsTIE3q764/4cmY2ZyeR8LJ/ET+G
+	 mXNNdMTR+eeiDmueUWngtIMHnySFL4wCeTv/5bMKQr2P2beb/8R5RzQwOAjA2SeRaxw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795426649;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795426654;
 	h=DMARC-Filter:From:DKIM-Signature:DKIM-Signature:Date:Subject:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
 	 References:In-Reply-To:To:Cc:X-Developer-Signature:X-Developer-Key;
-	bh=dDtQZ0VAonHgAXv6V61xlzs7rkDt1P1WSeLVHahPhAk=;
-	b=ZhkkUuo9H1uz8KMD9VJ07vK9z1EgWXChWiFs02/99fYkC6JMWuWfF8WZAOhw5YT9R2Dy
-	 XU13R69No85d7UUfBkQAvhFucYab6S7NR9XS1brkirSzPh2GH7wmqfWT3+h4x3lCKfpxn
-	 EB2VPOo6GgEbysA4DJGB5CJtMb3SiFQ6Uw+1n+7SIIp4tPA1fHHQoBBIw0gOKFemDLtVP
-	 L06lcGnT/RLET9W9d9cfLIqbTgamLNfUPbgLBxT/kvWCStRqWSXUD8RmsC8nTpLHTrglV
-	 jN54BJ7pBUtE5rTBg1BMqsCI1fIIUjjIC+UQyBjRiiMCJhDaCON+8Iig5OJVHRj1U0w==
+	bh=wyQVJDn0J0MtFHgb5Qr9bVYS1xHAFGjzONhCtcrDq0g=;
+	b=tw8OVrkb+Jj9DmhnDAcicCYwGRXPTBtXJ1nuK2V4EYMjLO9/rssjmbjDM5/GugNyVQ1e
+	 6/d4cufYk3MNu0odl+FhN06rpl5kep/WuPhyB+yLjTULWQIVg2NdLj1K8S7jHpOtSaix/
+	 Ka4DEIzv6zMAAevnQKFi1/1B1azAe+ICx916gLrsTyBnVQDv0w1I8Afu3WTIbgsUQ9hnV
+	 zU7h+7K7QOWNH9F0hQPfMvYuyAnIVBz765QtWiON/gr3c63PUnKKO9ulZ570jdEI83R9Y
+	 wCZcElO2UHapw8naQVdwEIj3RUtuNtb7z4diygOJR0xFwnM64fJ2Yzp4Ag7OuZqk2Dg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linutronix.de;
 	spf=pass smtp.mailfrom=linutronix.de;
-	dkim=pass header.d=linutronix.de header.i=@linutronix.de header.a=rsa-sha256 header.s=2020 header.b=0j5Gmmlj;
-	dkim=pass header.d=linutronix.de header.i=@linutronix.de header.a=ed25519-sha256 header.s=2020e header.b=xKFKMpGl;
+	dkim=pass header.d=linutronix.de header.i=@linutronix.de header.a=rsa-sha256 header.s=2020 header.b=sy6wKMMi;
+	dkim=pass header.d=linutronix.de header.i=@linutronix.de header.a=ed25519-sha256 header.s=2020e header.b=EIfbqxqQ;
 	arc=none smtp.remote-ip=193.142.43.55
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81E5F606A32C;
-	Mon, 23 Nov 2026 09:37:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 81E5F606A32C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 172CD606A6A8;
+	Mon, 23 Nov 2026 09:37:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 172CD606A6A8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.a=rsa-sha256 header.s=2020 header.b=0j5Gmmlj;
-	dkim=pass header.d=linutronix.de header.i=@linutronix.de header.a=ed25519-sha256 header.s=2020e header.b=xKFKMpGl
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.a=rsa-sha256 header.s=2020 header.b=sy6wKMMi;
+	dkim=pass header.d=linutronix.de header.i=@linutronix.de header.a=ed25519-sha256 header.s=2020e header.b=EIfbqxqQ
 From: =?utf-8?q?Thomas_Wei=C3=9Fschuh?= <thomas.weissschuh@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1795426647;
+	s=2020; t=1795426652;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=dDtQZ0VAonHgAXv6V61xlzs7rkDt1P1WSeLVHahPhAk=;
-	b=0j5Gmmljkca/E2gltZCv/iUBQbTWeg/kQBkYf9XVAiAvA+qtjrKckZWXQHPA2f/1TeXecV
-	/zE0P2DNvoi8HzN3ElVxpGGiQAEUlNEcd6UGF8hYrc/wSMLNce0GBczPBbKvIrUO5X19RR
-	R1IdOvKig4vP9CGu5Hhx6vXZPUH55eQ55Cmk36Mb44np+ZIxlZSOLnCp0ymuePoAJEdl+5
-	TwmUudfDzyUogJxAH8+mEPtUHitYqGo8y7Cn1b+rbDaEO5y1tmknjd9BzK8UJv7cfl21hY
-	ru0ooQgiSTna2g0imjxfqNWRrK9ENYE5x9K6ykIbUErgd+RZ7TijW+6DyYVOYg==
+	bh=wyQVJDn0J0MtFHgb5Qr9bVYS1xHAFGjzONhCtcrDq0g=;
+	b=sy6wKMMiSIYJJrLVs8OtFCFEbAMDezBV33VL71jtQheALKkWfogtOtkMSo7f3iDpx1hnmH
+	DCow9DPdvS16RqXtCng1RNmV+NhFA2xClLPkTLPOYfmJGRa8ojIpmcuQsaxu56R6M4Fm+F
+	kWBEw+7wIe+yzmSezbHp2T0eZORxNQJkDKd/9DCeDLuJAd/R7aeaufQ9FSQHhA2EizTWnq
+	xfUG5037egX7h41/8CHjMiihW5FLjTaXA3mTegbNGNV896H0etpBsr0RNnEtHhkJFChwPx
+	ujWRQS8fQWadjGCep69ydOg4Axb/KfFESJIPml36wiPo21QQXQ8D1RJkrL8ZZg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1795426647;
+	s=2020e; t=1795426652;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=dDtQZ0VAonHgAXv6V61xlzs7rkDt1P1WSeLVHahPhAk=;
-	b=xKFKMpGlecHS7QXXG/FYCxByPNPhxibU2GcZwDKmWF1WUgWqaJk6Gin5FmwBxGa5E4PlWb
-	9bnxn8NrLGCuOXAA==
-Date: Mon, 23 Nov 2026 10:37:07 +0100
-Subject: [PATCH v3 02/15] auxvec.h: Move AT_VECTOR_SIZE definitions to
- linux/auxvec.h
+	bh=wyQVJDn0J0MtFHgb5Qr9bVYS1xHAFGjzONhCtcrDq0g=;
+	b=EIfbqxqQDY5EeJRfGC/cqaJZmr3BsSxE/bXQsnuaukyukzxhYJf5e7OI+OIDmQ4Kkwp59O
+	ifnISwgD66ulBTCQ==
+Date: Mon, 23 Nov 2026 10:37:15 +0100
+Subject: [PATCH v3 10/15] powerpc: Remove AT_VECTOR_SIZE_ARCH from UAPI
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -71,7 +70,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20261123-at-vector-size-arch-v3-2-d342dae9e843@linutronix.de>
+Message-Id: <20261123-at-vector-size-arch-v3-10-d342dae9e843@linutronix.de>
 References: <20261123-at-vector-size-arch-v3-0-d342dae9e843@linutronix.de>
 In-Reply-To: <20261123-at-vector-size-arch-v3-0-d342dae9e843@linutronix.de>
 To: Kees Cook <kees@kernel.org>, Arnd Bergmann <arnd@arndb.de>
@@ -82,56 +81,60 @@ Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
  linux-mips@vger.kernel.org, sparclinux@vger.kernel.org, 
  linux-sh@vger.kernel.org, linux-alpha@vger.kernel.org, 
  =?utf-8?q?Thomas_Wei=C3=9Fschuh?= <thomas.weissschuh@linutronix.de>
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1795426640; l=1309;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1795426640; l=1614;
  i=thomas.weissschuh@linutronix.de; s=20240209; h=from:subject:message-id;
- bh=vTIIJIwUFOUw6+gUJjUOc4a2N37x7HojOq0oR0BBlzg=;
- b=GyKn4Bxu+C22SecrgL0rmVE25rtNo0/nZVqR9YcowgOuG6XWN+hFQ7LVwF48ESsfl68yPNaNg
- 5OD4YumxPGrDTLDcZ/xMG4kmg7ZscPSTHPCE8zZxHWIbEnZdxHW3/L6
+ bh=lq2CTgfwZG73WGl5OVl7p6mIHPWbhjx1Tz1RNRtR7N8=;
+ b=bJ5A5zd3pfSWIa+VMd5QiOGWtRTF6UJscvwGWocaeSTuxYx7he2xiLti1KebdjyptmSFP9R36
+ LWL13Cj7QasDcyXmn53dOiu+z7BAW25TVHWTaylnvQbJlD/oDtlC0ip
 X-Developer-Key: i=thomas.weissschuh@linutronix.de; a=ed25519;
  pk=pfvxvpFUDJV2h2nY0FidLUml22uGLSjByFbM6aqQQws=
 
-The auxvec.h header is a more fitting place for these definitions.
+There is nothing userspace can do with this value. In the kernel is
+always combined with AT_VECTOR_SIZE_BASE, which is not exposed to
+userspace and also changes from time to time.
+
+Move the symbol to a kernel-internal header.
 
 Signed-off-by: Thomas Weißschuh <thomas.weissschuh@linutronix.de>
 Reviewed-by: Kees Cook <kees@kernel.org>
 ---
- include/linux/auxvec.h   | 7 +++++++
- include/linux/mm_types.h | 6 ------
- 2 files changed, 7 insertions(+), 6 deletions(-)
+ arch/powerpc/include/asm/auxvec.h      | 7 +++++++
+ arch/powerpc/include/uapi/asm/auxvec.h | 6 ++----
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/auxvec.h b/include/linux/auxvec.h
-index 8bcb9b726262..4b364e639f08 100644
---- a/include/linux/auxvec.h
-+++ b/include/linux/auxvec.h
-@@ -6,4 +6,11 @@
- 
- #define AT_VECTOR_SIZE_BASE 24 /* NEW_AUX_ENT entries in auxiliary table */
-   /* number of "#define AT_.*" above, minus {AT_NULL, AT_IGNORE, AT_NOTELF} */
+diff --git a/arch/powerpc/include/asm/auxvec.h b/arch/powerpc/include/asm/auxvec.h
+new file mode 100644
+index 000000000000..d6c180e9ac2c
+--- /dev/null
++++ b/arch/powerpc/include/asm/auxvec.h
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_POWERPC_AUXVEC_H
++#define _ASM_POWERPC_AUXVEC_H
 +
-+#ifndef AT_VECTOR_SIZE_ARCH
-+#define AT_VECTOR_SIZE_ARCH 0
++#define AT_VECTOR_SIZE_ARCH	15 /* entries in ARCH_DLINFO */
++
 +#endif
-+
-+#define AT_VECTOR_SIZE (2*(AT_VECTOR_SIZE_ARCH + AT_VECTOR_SIZE_BASE + 1))
-+
- #endif /* _LINUX_AUXVEC_H */
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 1ed35d258d2e..c75626c5aad4 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -26,12 +26,6 @@
+diff --git a/arch/powerpc/include/uapi/asm/auxvec.h b/arch/powerpc/include/uapi/asm/auxvec.h
+index aa7c16215453..9ab5b6d17929 100644
+--- a/arch/powerpc/include/uapi/asm/auxvec.h
++++ b/arch/powerpc/include/uapi/asm/auxvec.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+-#ifndef _ASM_POWERPC_AUXVEC_H
+-#define _ASM_POWERPC_AUXVEC_H
++#ifndef _UAPI_ASM_POWERPC_AUXVEC_H
++#define _UAPI_ASM_POWERPC_AUXVEC_H
  
- #include <asm/mmu.h>
+ /*
+  * We need to put in some extra aux table entries to tell glibc what
+@@ -50,6 +50,4 @@
  
--#ifndef AT_VECTOR_SIZE_ARCH
--#define AT_VECTOR_SIZE_ARCH 0
--#endif
--#define AT_VECTOR_SIZE (2*(AT_VECTOR_SIZE_ARCH + AT_VECTOR_SIZE_BASE + 1))
+ #define AT_MINSIGSTKSZ		51      /* stack needed for signal delivery */
+ 
+-#define AT_VECTOR_SIZE_ARCH	15 /* entries in ARCH_DLINFO */
 -
--
- struct address_space;
- struct futex_private_hash;
- struct mem_cgroup;
+ #endif
 
 -- 
 2.56.1
