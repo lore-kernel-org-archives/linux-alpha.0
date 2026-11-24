@@ -1,111 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.168.172.148
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795443438;
-	b=Tvqq8vkiO2eURs4ctlSpX6zbTw/wIeag6kybXKTs4pDqE+/KM2oktKmHAIK3eTVc73Hw
-	 JtFiFz/rqSRgFDJGVWwGz1PcLEmK8UB1omyrr+iKJuk3GDrpNjgMhd1wwfRo59dvoXh2y
-	 pKjUKgqMcnhmPIL1TVYSJRHxRp/jixFEyjhaQ4iEtcXmMZ6866/1NW269Bmg0ZCqXtYTW
-	 oKccDHeD925FQ6lqJgLpaYJj+y0QehvQ4yGLDszLRHY8XjjxZYCcndrfIOgKKUPrbbd9Y
-	 fj/44xaYX0yEzVVFkwo8Rndj9f+fbCU7GpX7PaxbuSgYI7yYP5Fo/gB4jIdVDt+U92w==
+	t=1795519981;
+	b=hdKtGbsqfkf2wg3DE4lNKDWxMb6ofmB6kBpXDFZCkjeIMoWgPYCn/+BsYZ/z3ur6qGg8
+	 vnT4Nv6XZhj7opEesgVkHNjkKx34QbcHAbCvwcjiaJLCdu5uM+gmn28eR71FuJBxyQYJz
+	 S0erVpYteLSpv6j3BH+WBWbxekfyuxFrcArHrekPN1eWvPq9XHZvPVsuQcSupdiKwL994
+	 jMPclE7BrhDvUHNWpGwueQdc3+XitYTOoHlGv6IC3NrQVYMC69mD0DhRkaSq21TdKcDTv
+	 nOy2hO6370Dx+t3TQK4c/+MNi7wnAMT9Ma6itp65O6JlsDSCLsujyn8P8ij1nW3k3Bw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795443438;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
-	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
-	 X-ME-Sender:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:Received:X-Mailer:
-	 MIME-Version:X-ThreadId:Date:From:To:Cc:Message-Id:In-Reply-To:
-	 References:Subject:Content-Type:Content-Transfer-Encoding;
-	bh=BHJ91NJtNYQ6/J6+FaRGzznho5yPOY/r3tuo2Sshg1o=;
-	b=YDBpWtJ6ao573Up//MgcoY6I2fz8Neyf+UhLwl0tirVo4c2B+tFj9GZBDsxozf/7mrY5
-	 bBqi7qWhRsBGIUxP2TX45a8S+AM3CJr20IY58/XVbCzwjGL9P3RFQkfzeqIFAP2QtOCRf
-	 fEPGC77DwG1uFrQgBFViryQIgT7Dws/N23HGuDkyjtUdBo73p6nU3CpnmFV4/9TppxsdW
-	 g/GqDHzu57/OuCq+HAcP9e2IaIIdSnvTmaQS1YjXKQMvwC8EhcipGsnov1tcSXjISBLi4
-	 F7h29kTkdCSn/Fkp5pwpXKCxpvDyT+Ppw+FSpdMgrZnWNvf1Tf8DWy8GAdGza71VGow==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795519981;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=s/bSSvf0Im0ruzCTIFpwwFuOavhKohFLurdyvyasMP4=;
+	b=tE5hO6QYBtVFFrrQOswm9YcPHhy6UwVM6lp8jitk4aTOeH1TJyf3muh+80egCzx7430P
+	 S9U/1RBm+mAgG5TXN3e3c2cMYbln56hiHFBOhVzUsLPLgjbFNOOkL06DyD6tTmCFwRTJq
+	 TyyHxhlc74KOg8cbd2IjLhE8ePh2xRWmqYmrta9CyHPc36j1g6YEYZRoY6PlBF+D3J0mq
+	 F1B4eMoChKplcZc6ljuucSqCWwdOERL8hSWcCRZArIPL68Sr8a+9vCeiyo8h16xK5cDiD
+	 HBIeGiPByx8JHNcOw9YEZAzRzDg30DOGxZxNwjl4pfTDU5iefcTKRqG5ex4RV1/PaVg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arndb.de;
-	spf=pass smtp.mailfrom=arndb.de;
-	dkim=pass header.d=arndb.de header.i=@arndb.de header.a=rsa-sha256 header.s=fm2 header.b=cPLj8Yt9;
-	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=hC6LIkJb;
-	arc=none smtp.remote-ip=103.168.172.148
-Received: from fout-a5-smtp.messagingengine.com (fout-a5-smtp.messagingengine.com [103.168.172.148])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=baylibre.com;
+	spf=pass smtp.mailfrom=baylibre.com;
+	dkim=pass header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=WLScM0wC;
+	arc=none smtp.remote-ip=209.85.221.47
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32492606A31E
-	for <linux-alpha@vger.kernel.org>; Mon, 23 Nov 2026 14:17:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 32492606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D805606A327
+	for <linux-alpha@vger.kernel.org>; Tue, 24 Nov 2026 11:32:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1D805606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=arndb.de header.i=@arndb.de header.a=rsa-sha256 header.s=fm2 header.b=cPLj8Yt9;
-	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=hC6LIkJb
-Received: from ams-compute-02.internal (ams-compute-02.internal [10.64.2.62])
-	by mailfout.phl.internal (Postfix) with ESMTP id 3A80AEC0BA2
-	for <linux-alpha@vger.kernel.org>; Mon, 23 Nov 2026 09:17:17 -0500 (EST)
-Received: from ams-imap-03 ([10.64.2.23])
-  by ams-compute-02.internal (MEProxy); Mon, 23 Nov 2026 09:17:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1795443431;
-	 x=1795529831; bh=BHJ91NJtNYQ6/J6+FaRGzznho5yPOY/r3tuo2Sshg1o=; b=
-	cPLj8Yt9KDzFT9oOBUn+/GuSsf5mynsPFU3peaGSzzjdcM3xPq2nCeDkNchhwU0y
-	agEnTSgyBbGQ/yirLqdAtbec6K/eMPAPx84L678ABrYcb+wpXySl2GHRp4LB9WLN
-	CFo2ebu58MUl9iNZ9Ieq9B5w0n8KUsPK5DwUz9m8y9EZ7/GezgGomuFh9mdki4r/
-	+BIiXtKtzOGG5D+kuw3mpodMWyr20zPfOAhpC9pxJqrf1XcU6K399GtXsEQMc/8R
-	39qj2UCf7kgamdATa+Pl6YH54Dj6cd0VQx4T8GjJ0eSyaIyzVoR7OVUL9GzpK8m7
-	+ruoO3v7zMRO6WezXgniMQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1795443431; x=
-	1795529831; bh=BHJ91NJtNYQ6/J6+FaRGzznho5yPOY/r3tuo2Sshg1o=; b=h
-	C6LIkJbKj92f5S7k/JXfyeaid1Af9ZzNDUOfhQPFxJP9BRVK8CoFu3txAUBGFSdE
-	kDtEOIgPiZzvlCZbCv4YLx/KipUoHlpFtABBaFDzTO/Eo99zurKqUHK11ZRFH3nk
-	zrK7lUHYw/5sxSK66fxI2EBGUdhZg116RSbILC1OuB62zbnw2sD4sW3+a4PBWhw+
-	vIkMNp+LX1SFD5zMvRTmes4VjgpqWOOFse8Womzu4lb2d/5udJ8V95DWmA0O1EvJ
-	RGzmtn81sr/9oZLy7H3BztHTIli/UeDdJz4S0o8+2QlJ2kzB0w3ffJ58MILv/tOp
-	VBsPDLa1+OUIFoA4NwwtQ==
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=sign d=arndb.de a=rsa-sha256;
-DKIM2-Signature: i=1; m=1; t=1795443431; d=arndb.de;
-	mf=PGFybmRAYXJuZGIuZGU+;
-	rt=PGxpbnV4LWFscGhhQHZnZXIua2VybmVsLm9yZz4=;
-	s=fm2:rsa-sha256:CZixao1v+8eILtpc5p93Wl+eZUm5QU58C4xCdJpaNsunBYR
-	oeZj7A6SdCtKZKspFW67S58sSRvPoFTCzY0VSn8lUtKgeofHmiHafnWlECJCpzzF
-	jwqRs5E2ls/OVgFaqajfkKYn2QRr8W1z5f2fcVsuYpgmdZazErliAHZ1YSnvvhMA
-	EI+Cb8X3d/OVw+jdFYGXP/0QxvcwYHCy/r5AfoYQ4wp7z4ExbxzQLY8IllBvG8A2
-	aCEbXOw4qK1MJwIw11DBbc+aKg/nVXjIBr/HEsgMxVDoYfAzHnoIbiMxyLK5TBmZ
-	3DrYOz1WdsGnbZFpsAw98ozztlYotnIo4rU/acQ==;
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=mi-m=1; hc=12;
-	hn=cc,content-transfer-encoding,content-type,date,feedback-id,
-	from,in-reply-to,message-id,mime-version,references,subject,to;
-Message-Instance: m=1; h=sha256:Sap56MIkcyZT8r4cYNPG+lEt8q7zj6cm/hR6DX/YHXU=:rDsMBjpfa65jK66igtyHf1M93PmlfJObl6/94lUiVSI=;
-X-ME-Sender: <xms:4koEa8b6jWHk9Km-gWsvkjXKBe9FOycLSAoQHdX1x28WgylltvrlXg>
-    <xme:4koEayN-2NZ5tuVMTv_F6M4wNcDyjmgtjmjdAzvHywIA7KHMufFQZrYw4q170T5Th
-    fPdBGfTNlodLlNUN9knmz7mxDJr9FP9Hc2uPOv3pg8T14AiyewMGhM>
-X-ME-Proxy-Cause: dmFkZTGFrwq2MF5SSuOMe3naqs9tbtMAmc3XEG2p+PrgD+xfiVSS77ldCceRFMgHOXXvSL
-    Ging+R6VT6K3yz4OUeCdmIETXjNj7XXI0r9Tg2543OHjiuaKhMh+yVJAoB6OkAWbwGP/U3
-    JowxnSxhNhDyTsBNjiM7LlqkLGWpphbuTeJ0WjErvJ9KhK0fJtLolaHFC6Kw2talXF2YGF
-    JN7yWyVcYnsY66wGn8uoBc1Op9fn/HtafFpC/Ha3Z7ng5ziTGTERGiQYQq5K4ZdS/5JuDE
-    HH1gfdWjYiM0bW96wZfgClnWGF2XIAu99qwAHGam6Iwuv/kahBWnYmwWVFrVPNzzZ/ahP5
-    U1UkBFU5ZxOctbFZFvYR87OCQ9D85IrFkHXF9AU7aFYWG6vLW8lI9uDg5E561v2/5hKHQA
-    sjQFn5A8NcDFUKKIz/Gj2N6XcZVOTlbQkDMhl7pFKmJR0nTwtc/ea8J3ozLffLR/0wUUbB
-    iamGkspUsbgem4niF9wBtKb8Aybdc10XaTbLUSATly8dgGeAoj4vWgf2FM9ltEDrHvDjNY
-    51emBC5k6bV+SyYpJacMFkokFxMkxKPk9r+T99bzSjJsfdRVRAC/r+2KM3FJJSK6C1f8wW
-    I+V82FhA+/RpOowStt3CO/53UAvaoCC1+Mr9HKqAkD73+MJL10fMk/SelFXQ
-X-ME-Proxy: <xmx:5UoEa7zTEzd5mDVuAJ0khzXfAhl-NnyAwD2CijXl1cunNEN88JhvqQ>
-    <xmx:5UoEa4LmzfnQ4K0KUaYuA7sCKQ4bXebQmmhpsTBdhtm50HSfa0pUZw>
-    <xmx:5UoEa9456MjeyYgj744opH-waU6skY_xuQzxaCDvT7bwukaslpL8Pw>
-    <xmx:5UoEa2xmieeiTKUZnDvuF-Yhydil8f6ZkK_qEXx5P2wofodg1yRZbQ>
-    <xmx:50oEa5l_6AC-8c6ZgGJR10cedMu4FgnH1XmeVBS7jPfPPs2PoWN-CFom>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.ams.internal (Postfix, from userid 501)
-	id 6EB4832A009C; Mon, 23 Nov 2026 09:17:06 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=baylibre.com header.i=@baylibre.com header.a=rsa-sha256 header.s=google header.b=WLScM0wC
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-498f5fa5103so2610396f8f.2
+        for <linux-alpha@vger.kernel.org>; Tue, 24 Nov 2026 03:32:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre.com; s=google; t=1795519978; x=1796124778; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=s/bSSvf0Im0ruzCTIFpwwFuOavhKohFLurdyvyasMP4=;
+        b=WLScM0wCE8n9bNC8leElzo3pEq/ZLH6iPvqMGmOwKm9O08hQt/HJ9t/dvdyrs2DAF8
+         holVOYZ4x1H/YWixsMjoiqqly926eZqs0KhAfZaiDI0yeew12uAe7354UmW4eneA/Zg8
+         HTJbj5M1/msNpPZzGuLt24k30RgklKoe3xTZXIQoDQHJp2peaXS/6ogsqfd7Rk1XJqSH
+         KL0h/6ZvUqJtdxlbQlGs3lwj0PIETp8OP0WPZ9U1AvrNhswvxRurpoy8+m6MZWkf4mWp
+         8oXaCztL0QuP6BiNfKJak2pmy2UEwuebqfCkqDj7/LJXrLJEXjfsMFnibmRezcuj2V3P
+         IGng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795519978; x=1796124778;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=s/bSSvf0Im0ruzCTIFpwwFuOavhKohFLurdyvyasMP4=;
+        b=1VYWcSrHsvIWlFupGv4lFdcBTZ84NPP41YB2C8gP6WXCvvjYVWaGzTyLwMKlXsJuOv
+         rMCjWIVvEFqKiomuWh5fqJwPspEu+2eQ4GFEhLDwfVjeNDnXsDrRhB1HzNSj84GQfP+/
+         qKXqisnyeH2PElWyISmnp5UK0aoAuiAqRejwt+H3lVkdMi0vmJIiYEz4r31MqLUz02zA
+         BczBNJ/Ha/uRtltQemN9BrXA3EN+gbpLMofF8VHn1dmp2yivGM1oL6xzL9eMUH3AeY3S
+         ybkK+EFdxEYb/eWBFsWHTND5T3cdwdyulNk41sThDAFivwiLAVFz7mKNyVDBu5lsgbwt
+         6hSA==
+X-Forwarded-Encrypted: i=1; AL+hErH8DDiqGC9UParrFzZsCNGSyELimyfINT4ZW3qG4zpTmJsh8Dc3UbjfcJJAWEI40X0aD4561L+n9XmdNw==@vger.kernel.org
+X-Gm-Message-State: APuU4Z+EoY092tUdbrFOZdAX3R5uXxW0EFf2zv8W798Tpx81vKgdit3+
+	nKLFftifdMqYNkAAFqa7Yvmz6aF9q/iG/zYzcjUzsh9byjEyd5keIc0i+rykyf8BOccYy9AExlK
+	sRVj/
+X-Gm-Gg: AZFdTZcA0fnCoD8chDWAophfvOF4ljuMrS5MbfiBOE3mYaYx1Oi6GTqeksyPzbnlAYd
+	EcR9iRvYBW1E9aylSCPiq6WFsjn9uNpmgez5eEnn49lIj2c4e3BDO2XeLJrAB9jz1ctjXhkVdHG
+	vicxhlYOT0naDvEh9OhtPs+WW9BwYMdh+il3X1TSLl6ePKUKkf9DqMwMvOl3Pnn+HLvGEeoZiyb
+	hJoagMQ7RfJceG+yH8kOskr8N2XhQVKbeL4CszsI2eeK+BoB6gQTbq8EWLiV0e7tS6PK+dWtpao
+	A2Tfkm9I3TUrIitY6+svFsCW6SCCJfIWnGa1D/TfbYZWqfGOCxndHsSP/B+Iaq1q3PSmMNvEzPm
+	FLQaBaj6I3HfRsxlzlRNNzgnUZJ5DCtaSJIPDPRrJq1oA+sZrYx2siJLEsET+acUJbkf9xLKlG4
+	5JHkQqspBhgxkHpEXzkNqgUd+7UrMi5GB9bpwruHyrUK0AMrCHJWp/9zBQyQ79kx15Mfpi60vHf
+	HyQO2r02qZsPQ6c2YVjkxF+TvofJBi8zkH9eQ8eKod/yWCITQ+OLJG5PvpzTyUewaxf8YLOLY+X
+	9wuUlw1sHOLP7nBD31fjcjOU43WRwWBu9PMIj8tCGQCZC6xzSRxESShQ/UUCQVeE+HdhWXJly+z
+	BIpBS1blSva+/nioJ
+X-Received: by 2002:a05:6000:40da:b0:4b7:83a0:6c06 with SMTP id ffacd0b85a97d-4b783a06c89mr2288961f8f.15.1795519978076;
+        Tue, 24 Nov 2026 03:32:58 -0800 (PST)
+Received: from localhost (p200300f65f19a9047f1ca7b446868308.dip0.t-ipconnect.de. [2003:f6:5f19:a904:7f1c:a7b4:4686:8308])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-4ab6a67f1b2sm25503606f8f.25.2026.11.24.03.32.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Nov 2026 03:32:57 -0800 (PST)
+Date: Tue, 24 Nov 2026 12:32:55 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: richard.henderson@linaro.org, mattst88@gmail.com, 
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org, linux-next@vger.kernel.org, 
+	Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org, 
+	will@kernel.org
+Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
+ coherent DMA
+Message-ID: <awVzJMLVw4wUSqky@monoceros>
+References: <20261115103809.1288167-1-linmag7@gmail.com>
+ <20261115103809.1288167-3-linmag7@gmail.com>
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -115,55 +102,172 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-X-ThreadId: AMjdjL9dYp0J
-Date: Mon, 23 Nov 2026 15:16:41 +0100
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <thomas.weissschuh@linutronix.de>
-Cc: "Kees Cook" <kees@kernel.org>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, Linux-Arch <linux-arch@vger.kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-riscv@lists.infradead.org,
- loongarch@lists.linux.dev, linux-s390@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, linux-mips@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-sh@vger.kernel.org,
- linux-alpha@vger.kernel.org, "Paul Walmsley" <pjw@kernel.org>,
- "Andy Chiu" <andybnac@gmail.com>, "Magnus Lindholm" <linmag7@gmail.com>
-Message-Id: <b7b8e8cd-d0ba-4e37-93f3-0fa209207124@app.fastmail.com>
-In-Reply-To: 
- <20261123110111-6431e85f-39a4-427e-b545-2e7a590a6c19@linutronix.de>
-References: <20261123-at-vector-size-arch-v3-0-d342dae9e843@linutronix.de>
- <ec5359c1-c16e-4177-8dfa-2ae5ab8a874f@app.fastmail.com>
- <20261123110111-6431e85f-39a4-427e-b545-2e7a590a6c19@linutronix.de>
-Subject: Re: [PATCH v3 00/15] exec: Remove AT_VECTOR_SIZE_ARCH from UAPI
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="zz6vlopso3otapss"
+Content-Disposition: inline
+In-Reply-To: <20261115103809.1288167-3-linmag7@gmail.com>
+
+
+--zz6vlopso3otapss
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
+ coherent DMA
+MIME-Version: 1.0
 
-On Mon, Nov 23, 2026, at 11:03, Thomas Wei=C3=9Fschuh wrote:
-> On Mon, Nov 23, 2026 at 10:44:40AM +0100, Arnd Bergmann wrote:
->> On Mon, Nov 23, 2026, at 10:37, Thomas Wei=C3=9Fschuh wrote:
->> > There is nothing userspace can do with this value. In the kernel is
->> > always combined with AT_VECTOR_SIZE_BASE, which is not exposed to
->> > userspace and also changes from time to time.
->> >
->> > Move the symbol to kernel-internal headers.
->> >
->> > Meant to be applied through the asm-generic or execve tree.
->> > The default recipient list was huge. I trimmed it to only the
->> > architecture lists.
->> >
->> > Signed-off-by: Thomas Wei=C3=9Fschuh <thomas.weissschuh@linutronix.=
-de>
->>=20
->> Hi Thomas,
->>=20
->> I'm happy to take this through the asm-generic tree. I've already
->> made sure it all applies and the patches look good to me. I'd
->> wait a few more days for additional Ack or any other replies,
->> let me know once you think I should apply this version.
->
-> This v3 is functionally identical to v1 and v2 which have been on the
-> list of a long time. I am not sure how much more feedback will come.
-> IMO it can already be applied to gain more exposure in -next.
+Hello,
 
-Fair enough, pushed out to the asm-generic tree now.
+On Sun, Nov 15, 2026 at 11:37:43AM +0100, Magnus Lindholm wrote:
+> Select HAVE_DMA_CONTIGUOUS and reserve a default CMA area after the
+> machine has initialized its DMA windows. Prefer top-down placement
+> below the direct-map and usable RAM limits. Skip the default reservation
+> when no direct-map window exists. Explicit cma=3D ranges retain their
+> generic override semantics; top-down placement is a preference, not a
+> hard lower bound excluding the first 16 MiB.
+>=20
+> Use dma_alloc_contiguous(), which rejects non-blocking callers, before
+> falling back to alloc_pages_exact(). Pair both paths with
+> dma_free_contiguous(), whose buddy fallback uses free_pages_exact().
+> Skip CMA on the GFP_DMA retry after a mapping failure so it cannot
+> return the same unsuitable CMA pages. Retain zeroing for CMA memory.
+>=20
+> Round the size up to a page boundary in both allocation and free. CMA
+> allocates size >> PAGE_SHIFT pages, so an unaligned size could otherwise
+> allocate too few pages and overrun the allocation during zeroing. Keep
+> the mapping and unmapping lengths consistent with the aligned size.
+>=20
+> With CONFIG_DMA_CMA=3Dy, the default CMA_SIZE_MBYTES setting reserves
+> 16 MiB without a cma=3D argument. cma=3D0 disables the default area.
+>=20
+> Signed-off-by: Magnus Lindholm <linmag7@gmail.com>
+> ---
+>  .../io/dma-contiguous/arch-support.txt        |  2 +-
+>  arch/alpha/Kconfig                            |  1 +
+>  arch/alpha/kernel/pci_iommu.c                 | 19 +++++++++++++------
+>  arch/alpha/kernel/setup.c                     | 15 +++++++++++++++
+>  4 files changed, 30 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/Documentation/features/io/dma-contiguous/arch-support.txt b/=
+Documentation/features/io/dma-contiguous/arch-support.txt
+> index 3c6ce35d704f..6cd205a991f6 100644
+> --- a/Documentation/features/io/dma-contiguous/arch-support.txt
+> +++ b/Documentation/features/io/dma-contiguous/arch-support.txt
+> @@ -6,7 +6,7 @@
+>      -----------------------
+>      |         arch |status|
+>      -----------------------
+> -    |       alpha: | TODO |
+> +    |       alpha: |  ok  |
+>      |         arc: | TODO |
+>      |         arm: |  ok  |
+>      |       arm64: |  ok  |
+> diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
+> index 6ccb2d230326..cddc1f3af209 100644
+> --- a/arch/alpha/Kconfig
+> +++ b/arch/alpha/Kconfig
+> @@ -30,6 +30,7 @@ config ALPHA
+>  	select HAVE_ARCH_COMPILER_H
+>  	select HAVE_ASM_MODVERSIONS
+>  	select HAVE_DEBUG_KMEMLEAK
+> +	select HAVE_DMA_CONTIGUOUS
+>  	select HAVE_GUP_FAST
+>  	select HAVE_KERNEL_BZIP2
+>  	select HAVE_KERNEL_GZIP
+> diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
+> index 955b6ca61627..19aa5c05de2b 100644
+> --- a/arch/alpha/kernel/pci_iommu.c
+> +++ b/arch/alpha/kernel/pci_iommu.c
+> @@ -408,15 +408,20 @@ static void *alpha_pci_alloc_coherent(struct device=
+ *dev, size_t size,
+>  {
+>  	struct pci_dev *pdev =3D alpha_gendev_to_pci(dev);
+>  	void *cpu_addr;
+> -	long order =3D get_order(size);
+> +	struct page *page;
+> =20
+> +	size =3D PAGE_ALIGN(size);
+>  	gfp &=3D ~GFP_DMA;
+> =20
+>  try_again:
+> -	cpu_addr =3D (void *)__get_free_pages(gfp | __GFP_ZERO, order);
+> +	/* A low-memory retry must not return the same unsuitable CMA pages. */
+> +	page =3D (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev, size, gfp);
+> +	if (page)
+> +		cpu_addr =3D page_address(page);
+> +	else
+> +		cpu_addr =3D alloc_pages_exact(size, gfp | __GFP_ZERO);
+>  	if (! cpu_addr) {
+> -		printk(KERN_INFO "pci_alloc_consistent: "
+> -		       "get_free_pages failed from %ps\n",
+> +		pr_info("pci_alloc_consistent: allocation failed from %ps\n",
+>  			__builtin_return_address(0));
+>  		/* ??? Really atomic allocation?  Otherwise we could play
+>  		   with vmalloc and sg if we can't find contiguous memory.  */
+> @@ -426,7 +431,7 @@ static void *alpha_pci_alloc_coherent(struct device *=
+dev, size_t size,
+> =20
+>  	*dma_addrp =3D pci_map_single_1(pdev, virt_to_phys(cpu_addr), size, 0);
+>  	if (*dma_addrp =3D=3D DMA_MAPPING_ERROR) {
+> -		free_pages((unsigned long)cpu_addr, order);
+> +		dma_free_contiguous(dev, virt_to_page(cpu_addr), size);
 
-     Arnd
+On next-20261123 I get a build error on an ARCH=3Dalpha allmodconfig build
+
+arch/alpha/kernel/pci_iommu.c: In function =E2=80=98alpha_pci_alloc_coheren=
+t=E2=80=99:
+arch/alpha/kernel/pci_iommu.c:418:41: error: too few arguments to function =
+=E2=80=98dma_alloc_contiguous=E2=80=99; expected 4, have 3
+  418 |         page =3D (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev,=
+ size, gfp);
+      |                                         ^~~~~~~~~~~~~~~~~~~~
+In file included from arch/alpha/kernel/pci_iommu.c:14:
+include/linux/dma-map-ops.h:105:14: note: declared here
+  105 | struct page *dma_alloc_contiguous(struct device *dev, size_t size, =
+gfp_t gfp,
+      |              ^~~~~~~~~~~~~~~~~~~~
+
+which seems to be a conflict between
+
+	next-20261123~159^2 =3D f03df6019b56 ("alpha: enable contiguous memory all=
+ocation for coherent DMA")
+
+=66rom
+https://git.kernel.org/pub/scm/linux/kernel/git/lindholm/alpha.git for-next
+
+and
+
+	next-20261123~104^2~23^2~7 =3D 31f7e12d621b ("dma-contiguous: pass the NUM=
+A node to dma_alloc_contiguous()")
+
+=66rom
+https://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git dma_alloc_co=
+herent_node
+
+I guess the right thing to do is to pull
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git dma_alloc_c=
+oherent_node
+
+into the alpha tree and fix the offending function call in the merge
+commit.
+
+Best regards
+Uwe
+
+--zz6vlopso3otapss
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmsFdeMACgkQj4D7WH0S
+/k5++gf8Def1hTBgcrh/KoII3KUQugHVpyoXdwJDAayGMHuOUnodDFoEcOG7dRch
+ODRC7w2t0rKG/XIYwabEtNnXK6BanW5b3foBoafZTtB+E9v7swJK3Z2TpNYsfIDh
+eba7AQFbffHbCTwNlzdCMTEmyqqz0qhL5Mc8YONsN9lq4no+UNOzN9123YxSnsaH
+MaVWVYaV/ZLWle1TLI3vUfb+L+fQzX96kFbT6FeX1FGO8Cubq37kGONVgLybBvC+
+y5GTwQ0VbUIoYQ74Bt+7Jo7qbU8NSyhEiosy5G7TDUQ05NX1Eikj5eiYv+XvHR2u
+zBKgWDi9C98biJIon1f+BFbkWqNA2g==
+=1TSm
+-----END PGP SIGNATURE-----
+
+--zz6vlopso3otapss--
