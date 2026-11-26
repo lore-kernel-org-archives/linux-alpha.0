@@ -1,87 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795648207;
-	b=rrMA4AWWzCTPPR+zd5ImeEpztFdlKXWjIf4M8NpLHhZFqgswkYxLDDb2nSSTnr4s8fyF
-	 EV5kedkiGairaKNJXE7BfGioue3GH2CPMkMJ1JP/QdD7sLdJkjSdqLfk9icsqEvGWWdCz
-	 1OJD2aH2acu3D6OY6Mb6tv6FP9f7+tvnhy3v9xEy/hErpl7BKgMSfr5aeHq6QY2cZtZME
-	 hbtjpAUXEmuXFOYTatBdoJrvSJAWMyVUTL/pBfqnlDYb/uBmKbOVITJFuX2wovuVmjFZU
-	 8rUfU74zCAvUK7GSw15eGBdlPZkZ9elNMaiNFndelfvMUHR11mcsmz1t0GznNHeucHA==
+	t=1795661341;
+	b=o6hV83k2n6NZ/WxzRL+hzrAVZ8Q72qo+IvWpO+hOFycVFo9hycGMS9O2wOadMa82WDcE
+	 XscmmKXsE8z6vNKEVmADaNROfkTQ8J2yXz14tWdatis/+qR5q0cE2XTfbUilRrPLpCZyn
+	 E9Ni58l/ixbqhbCXF8Pv4hfknRGCWyNY+wmRIiVS/5ZbzMmKrMFcVtX9SO9HbK/97TWvc
+	 f4DeXkBsJL5Pe/KwKsJKCPiKnfMFSQ7L+PdNA2YNDGEVgpF3w7VRPMGBJYRFgGO+TRtv1
+	 0pLR8ROc3iF0H+Zx+SDodYBtzmS+zceIHph7SZj0QiESM0cHvmCu8ehqfHobupWtD7A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795648207;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=4YzMCKbk1cYbKbWntsU/48LDpJeK2LIKRm0a3SbPemw=;
-	b=AexPwF6EnrWTfBBGEdb0QQGM6QILRO5BQVQiXndkjzxaozTzYoR7pl+GhL6ULPQ18gso
-	 T/UxQvka+4iC4eeuFL5E0Vta4uvGZlKe+wK7AKElfqmZfGPiZeLn/qjVx1b7sGbrVJY4K
-	 1SWppp7PEddq1WiThYU6PAp6UNZZkg1EIQOvIZvwFnLYGVwWwKtQjXe15KxUuCtQGG7TL
-	 KzHxpc8Hrg5KUr0Vgr8ItXwA+dWan+tkKSW+u/Xs1abGxkn1rDrk/15Kx6jUlgki7jpIi
-	 mcOORQwNOnUv0HRjgbAhhAi96Xx69r6vYeIi1CQWDhd7vxnP4UUAbFlOHhNZdbpfrPw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795661341;
+	h=Received:DKIM-Signature:To:Cc:Subject:From:In-Reply-To:Message-ID:
+	 References:Date:MIME-Version:Content-Type;
+	bh=+Ba94K1J0+ldR1shzY2hFpeSi+738mOCdRdjKxYDuL0=;
+	b=EAHNAQ92QFJahoS6exv2UBIoiojh6PYhhO9wQtA2VMaV016lfcKjq3F2weGiUC865gwQ
+	 VtNoFjfFyxtAeVXEc1khe7VZN8SG77MgPLorvurp2aRAM1ayzmzjYUKTALak7gv6FZQb2
+	 APT0AHiC1VxDkDeh0p3u6UcVxQDjKM3Y7Mun6Ql9yjK8vN94aOv/RI6zKUGV92my80daE
+	 AwqkuvogITm3Rk2pM07d2HZ5n1sLnd8XmmuemjuB4hmyQu2lyAvKGvQqh59kBAkldbSWe
+	 ATYpFK6+x4libVRKOXC4g2oWN0te1yUReOEa7k7T/3Jg302FehzuvDv8tv1RnpLwGPQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Q1RGcxx9;
-	arc=none smtp.remote-ip=192.198.163.17
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZIhwKiDC;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60CF8606A31E;
-	Wed, 25 Nov 2026 23:10:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 60CF8606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AE56606A31E;
+	Thu, 26 Nov 2026 02:49:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Q1RGcxx9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1795648207; x=1827184207;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Cz+sDZ9qDfvxJjsd0/fLKyYqYPzsuCkjZP6s/wo8egU=;
-  b=Q1RGcxx998wcahhsNtmTk0EdTAZPLmYkkK6+bmPPv5YYAfYFmv/CFvep
-   HDEM8rVDVZ32zTCzZ+pKbj9P9u2Q6MgS56cONVK2FtZY1Eg5lLwLrUlkL
-   Lp59O7nFX9bxtJwY3v88GdTLgH4z6kd0/29/NEnJP+o0DXBSaaG85cCQd
-   i3J8DRECI2XqhQJlnLUvDOGKoOzb0ADAJwOnpXi1CvEDeU9u5jc0wz3yX
-   R5nJ6oHqEU4YKyuKjVzGqhR6fj6M/KYQgXdmuKBJEuiJ05gtfng43oGGp
-   ONeOqonJePQwLN0gcIR5ctXgH2pWWnExX7ScW5OecSXPdn4hS/QmDh8LZ
-   g==;
-X-CSE-ConnectionGUID: bWGmoPLLQeuhdv8TwMudsQ==
-X-CSE-MsgGUID: f3FFJmV1RY2MHtxj+Pz/8w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11977"; a="4537917"
-X-IronPort-AV: E=Sophos;i="6.27,233,1787036400"; 
-   d="scan'208";a="4537917"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 15:10:06 -0800
-X-CSE-ConnectionGUID: MapZj/8LRNqNTkxJ5pL8KA==
-X-CSE-MsgGUID: eG68Sv4NRoysG2SIGwqU5g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,233,1787036400"; 
-   d="scan'208";a="11866141"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.96])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Nov 2026 15:10:01 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: linux-pci@vger.kernel.org,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-	Rob Herring <robh@kernel.org>,
-	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-	David Matlack <dmatlack@google.com>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Matt Turner <mattst88@gmail.com>,
-	Magnus Lindholm <linmag7@gmail.com>,
-	linux-alpha@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v3 02/17] alpha/PCI: Convert to pci_bus_size_and_assign_resources()
-Date: Thu, 26 Nov 2026 01:09:01 +0200
-Message-ID: <20261125230925.2441-3-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20261125230925.2441-1-ilpo.jarvinen@linux.intel.com>
-References: <20261125230925.2441-1-ilpo.jarvinen@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZIhwKiDC
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F3DD1F000C0;
+	Thu, 26 Nov 2026 02:49:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795661340;
+	bh=+Ba94K1J0+ldR1shzY2hFpeSi+738mOCdRdjKxYDuL0=;
+	h=To:Cc:Subject:From:In-Reply-To:References:Date;
+	b=ZIhwKiDCGIOU+tn/dwLSp9MzukekwRcckQRabyrFBwW1s8FKMQDaRi3jUoH1PBCpT
+	 OKflu/NLQNoC3wr8ljTy6EEADwlpQSLrJtZYpKqK1AOqLlALEdzoUTwW+/ME83ASWQ
+	 Exc+Gs2AZxJQAhxLL0TqVu7BGPRZl2TGp2/t3uPeM+uFx3AtpSq8nNCHw4ZuvULZAo
+	 t96P+dWA9euA+RC0A95VBN3vRNajaxFm1xIQU9D7LisqC3v/XTCozM+6K7v0S+RSWd
+	 3gf1Kpd1R6+V6CK1zVr+k6yVNykgqDB11mgV1mpp6DirdM37nUMovgxgkDUgLEKCNH
+	 WkFGWkbrf7GUw==
+To: Geert Uytterhoeven <geert@kernel.org>
+Cc: "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>,
+  "Martin K . Petersen" <mkp@kernel.org>,  Kars de Jong
+ <jongk@linux-m68k.org>,  linux-scsi@vger.kernel.org,
+  linux-parisc@vger.kernel.org,  linux-alpha@vger.kernel.org,  Geert
+ Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] scsi: 53c700: Fix hostdata[] size on 64-bit
+From: "Martin K. Petersen" <mkp@kernel.org>
+In-Reply-To: <0df0fae8a75e46f2f1613d398c1e137211d924a0.1795423196.git.geert@linux-m68k.org>
+Message-ID: <yq1ik1kjoj1.fsf@mail.kernel.org>
+References: <0df0fae8a75e46f2f1613d398c1e137211d924a0.1795423196.git.geert@linux-m68k.org>
+Date: Wed, 25 Nov 2026 21:48:59 -0500
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -91,50 +60,17 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-To serialize bridge window sizing and resource assignment, PCI core
-needs to hold locks across both phases. Alpha nautilus PCI code calls
-pci_bus_size_bridges() and pci_bus_assign_resources() separately
-because it needs to do special resource alignment and setup after the
-window sizes have been calculated. At least the former would seem to
-belong to some existing __weak pcibios_*() hook but the latter might
-need yet another pcibios_*() hook just for this single use.
 
-The nautilus code runs during init, so nothing is likely to race with
-it. Converting it is mainly about consolidating the sizing and
-assignment entrypoints of PCI core, which eventually allows removing
-pci_bus_assign_resources().
+Geert,
 
-Instead of trying to do a complex rework of the code, which is risky
-without the ability to test on the hardware, simply convert
-pci_bus_assign_resources() to pci_bus_size_and_assign_resources(). This
-adds a small bit of extra work by performing the sizing step again. The
-Irongate PCI memory window is a host bridge window and not a device
-resource, so the resource assignment algorithm does not move or release
-it, and sizing does not change it either once it has been registered.
+> NCR_700_detect() allocates four bytes for a single-entry hostdata
+> array, to store the NCR_700_Host_Parameters pointer. However, hostdata
+> is an array of unsigned longs, thus storing a pointer or unsigned long
+> causes a buffer overflow on 64-bit platforms.
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Acked-by: Magnus Lindholm <linmag7@gmail.com>
-Cc: stable@vger.kernel.org
----
- arch/alpha/kernel/sys_nautilus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Applied to 7.5/scsi-staging, thanks!
 
-diff --git a/arch/alpha/kernel/sys_nautilus.c b/arch/alpha/kernel/sys_nautilus.c
-index 13b79960b4b9..23a74fd4a83f 100644
---- a/arch/alpha/kernel/sys_nautilus.c
-+++ b/arch/alpha/kernel/sys_nautilus.c
-@@ -263,7 +263,7 @@ nautilus_init_pci(void)
- 	if ((IRONGATE0->dev_vendor >> 16) > 0x7006)	/* Albacore? */
- 		IRONGATE0->pci_mem = pci_mem;
- 
--	pci_bus_assign_resources(bus);
-+	pci_bus_size_and_assign_resources(bus);
- 	pci_bus_add_devices(bus);
- }
- 
 -- 
-2.47.3
-
+Martin K. Petersen
