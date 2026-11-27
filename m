@@ -1,60 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795766706;
-	b=eINvuR2R+UwN3vJm+P7QlbG1SIcSX9H8r3Bab1EHdJn8P3yuCy2BL29XpLIYq6wPOJ4j
-	 qr49FMowVY9tQ8XWbFijuZtkImBttDUTchbKA1O93ei80+HxGAUxr0J/DLdNlcyPGAUsS
-	 IprEzLphX0fUl2K4jKW/k5q0BCzVmcnrDx65sa0IoxXCNJPzYxDv/iTRVsSvvIL1eJhRx
-	 2hZS86eJjkl3hbtJlNdXViEMBJD7OTdxMtT6T4B8IEdO29OeySzencw77BvPGCUz+BZQ7
-	 Ovw8iRk+3r3Vrz02Q8iYf1XzLMF3lwBQC6Z3xqw0JmELLwW6wCsygpdrZWwQLitExXg==
+	t=1795798633;
+	b=dvqRdQYqN/hqiDnC/OGmFV+g6igCvKUa1zW6my9qw7rO0/v0NVNf0wnBARIBEqtBNgAv
+	 iyrRt9wWP+PPHbx7xAMU/2COEUTSwP94/4O7bHvEinOVKU8Scl07Z/r6PDxB3fmyLjv9o
+	 F91q5mo3hyIGntZWXVGh4yq55jV5N0793itK3V2kXIpl7nKpQEA930oMqtMH+pIxZXjfe
+	 ePEl+mq42wuW0tlgKCX74hh7+meI8SVhAa/qPTfo7/aO7o/TbVO+ty6r5REdzLbJbK1Dp
+	 3e6VX+gpOjALTzKUWLY3nJoVwWOOL0fDBzav4tfl8Zq3zMIano5ZviaYCtS0Smh352A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795766706;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=b9EsOhhl5MbUkBFLbXLeMzsujw/yfpfNAxfoGKVG51k=;
-	b=X1byaDWGlnbtLL8wtD0AZ2gsQ1X5/VnwaS/6RpEH1lH09EaAUZ0mV5Yrnwd00p0jGY/Q
-	 JIWTmB7H6M1fnY/tnOLWGUvV+nLKsi9MUW7m99f6ESD4X2QgEJl8044fjK7/Di6Ab7Fzg
-	 xV+c75Bvz6IFQibeJSFNk9mtaBOFtpjfBNznMPhiRlFr66/c2tcWJcPF/t5EPgTkgWDDM
-	 H+Hwk7mpSMypvC5to9Fn+8x7pZ9BDYEB6xxFFKroZAoAaJfFWwX8zFCEOUMIMNGOG4BLP
-	 X/w+L8Q9/q4mFsqTZo6YOKRMiB60pXd7qkFm59pKyvsACVINogPyM1VG8Q6jGFV1UxA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795798633;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=QWqsYXBpyz119NEUDtLLwZ6AbhGxnRQniGPx+qgcEmI=;
+	b=x5bUNOW+oABjlexcs1oNUKMeAxuoo9knhNpbqh7zV1SnwKcrXx3nfFtxqigHw82LKsiP
+	 cBCO25mTGXgdtlUx3mkZ7+tYFaw0ndrw/237NmPj3Sm9ttPvjPa4Het2LmzgA9U/5/yUR
+	 fjwxokvpWqIvjdqrCRxVAhjStDU+ZqtMWdT7J6Q8Dxllf1wNcKhTJhq4oTnji+tR0vUCS
+	 IupGyeffWrgcUlLROOQHMmJueK8gU/myKq0wdNG8P4NRSbsc55NLm3mqrPEpczMaCjfC5
+	 TUgx2p/N2X7j07QguDSPK+SX8y2fkyYVuZ6W96th6GFRFV1yxLD/+BKwoRIRgF30x/Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=lmKLhork;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="QI/W9g6P";
+	arc=none smtp.remote-ip=209.85.167.48
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C6AF606A326
-	for <linux-alpha@vger.kernel.org>; Fri, 27 Nov 2026 08:05:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9C6AF606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 320E1606A321
+	for <linux-alpha@vger.kernel.org>; Fri, 27 Nov 2026 16:57:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 320E1606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=lmKLhork
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261127080456euoutp020ac9029d37dc7aa5c1aded39efd05634~r2Evn95bu0971009710euoutp02R
-	for <linux-alpha@vger.kernel.org>; Fri, 27 Nov 2026 08:04:56 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261127080456euoutp020ac9029d37dc7aa5c1aded39efd05634~r2Evn95bu0971009710euoutp02R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1795766697;
-	bh=b9EsOhhl5MbUkBFLbXLeMzsujw/yfpfNAxfoGKVG51k=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=lmKLhorkbhc96ziVTzFCZyFRqhVWslhZeZnDqzPfl768Kl0OrzH63gjdzkdEkaj8p
-	 ezMVDO853DxbSEgRO37CBAhlVcOOzG7BjxOSX9wfF0FfHqCUPWKWrkX9hG6n+jp0eJ
-	 ym+Poojt1SNdAbG2//977sH6yzrW3gmKPixHvbNI=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261127080456eucas1p1bd7e7242f8ec2c09eacb6e447ea94c14~r2EvOSE7M3256732567eucas1p1W;
-	Fri, 27 Nov 2026 08:04:56 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261127080455eusmtip2fa0050c4f8fdaa9edae69f83622844aa~r2EuKqPjg1750517505eusmtip2x;
-	Fri, 27 Nov 2026 08:04:55 +0000 (GMT)
-Message-ID: <a9a5161a-195f-497e-9dae-76142a4b5997@samsung.com>
-Date: Fri, 27 Nov 2026 09:04:55 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=QI/W9g6P
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5c1465bbbdaso7036820e87.3
+        for <linux-alpha@vger.kernel.org>; Fri, 27 Nov 2026 08:57:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795798631; x=1796403431; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=QWqsYXBpyz119NEUDtLLwZ6AbhGxnRQniGPx+qgcEmI=;
+        b=QI/W9g6PjguWumNsp9s0QYCFEI23Sog6oyqQgBpp69luFOXlyrR1dbrXKT4OMtXmkg
+         960LJZH8wn/+6080Dhar9oYc9AJQw15bHHtBrlu2zPV34np4CI1QvLb2JrssV5i5/WoM
+         NqZwGUjgm1mwj+W3ACM6l7ft8tePKzz1K+El/g7rpVnE3a3oAvyJpLFm42VAbUxbbmsu
+         K8j6Kfb5alXIO+IuxdwkPw0Y7I1XL1V5N/RXmG6CD/zjr7QCCJEeguOoloOSctsq5wug
+         JEsQyYjCFOrELybveazwHiGm2rsEuECvQa5iJuBda8aKPQ7O+JmLNwCvHPfL0csBRyKZ
+         qG7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795798631; x=1796403431;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=QWqsYXBpyz119NEUDtLLwZ6AbhGxnRQniGPx+qgcEmI=;
+        b=nBnJ8zUtdVRbCbGiGiOcB/NO7W3Mu7XAm14AcEydsuMJurRXwu3xC7UxZv5h8WD9MU
+         tLocugjfqjKEpMviQ9yoRbY41BBjLXr9mpSiYKY2qk4vHvdPYM1HZ/BNR5QWSqxJDEfW
+         XM+38ZI14hHO22VWcDRedhZ20K3tsWvXZBiJ8oo2zJeEPuBlSeGTOASpgbcd7itxkui0
+         J3E7jb149YSDBCvSl3jMO32F+VhkWDJLLEFlJm8LUXmMbIlO+u+pqUHeds5HxcprkfYn
+         tgJPEmfF6Rf/ZTFu8A0bVCuFrxJfFvVjW51oy3B0W2lwWa2wrQuSIrNfcB8JszdVQXiS
+         izWQ==
+X-Forwarded-Encrypted: i=1; AL+hErEu/IlGjqKwSydmHoS3om5YitXizDhIDeUVpISOKHaGCPLamyVwRiaLKpVG9DrlxvOIK1EA3ZgLqCk3Dw==@vger.kernel.org
+X-Gm-Message-State: APuU4Z+MOIQ/axqvF2nvg6pg2c/oG5kFJFJVpUbcx/Gw8BBgKb/nFTbH
+	VyWgconpAem8jtdplSzvAoFLHtAKzLxRPSeqQXGwhacotmY54BdoQ8wG
+X-Gm-Gg: AZFdTZftD9rP/W+zSlATs+YH6ENA7RcD1tI04s6IUxIS8heI7W0Xe9BIN2dx5Rg9tG9
+	EWHwf9WIh6+qylm349K0hcEbL1Ud/11A4jA/6DCHPRokXn8PeuxfvqvpI2WpTBFCVg4+20xNH6Z
+	N+fYV9lbsX4yStuQSw8h/Zo9/yyKD8DB5UQLOZwxsEQChZorh0VYd8Nwgu+Br+8tXXHqem5YJ01
+	IW5eEFWXrjQC2fANhMMaopYjz/I8w/Cm+8e/YXS2krmUrxckTctnyaIDxCgIr1njN9JLoXhWPOo
+	c6IR9dktHSBmx/63ZPuuXqtEZjnYir4+zO3G7s/4lEC66mKDYrYxZW3dyOEzCZf1fNwNN885VZF
+	9plywdWh4Wciv+FrMOMMAWIc4gJnLOWNa68a4njo+VbWw0nPm3gJNabwRFHaP+GfrU02NU3wfko
+	Sm/HoY9nQeIaJf4G8wSckKkcqd3UbOy55WSp2mS0sHwIlUgx1QQ4f4MZRoko2j6l78isArhHSM7
+	9KM/+NSllhjS7SzTNy8WlSxA6kpRvbB4cCCnuOYIspe+SN0H08IsrVLFLlBDIDJHY1IzkiSs3r1
+	DVyfDzgvjfW24YmOQrIz/35BF3LhnISFVUrbgYK8Wwm4N7542djdNLtXVxlHSgr+u3vDJOA=
+X-Received: by 2002:a05:6512:6891:10b0:5bf:d959:6ee9 with SMTP id 2adb3069b0e04-5c1bc874b47mr4871867e87.35.1795798630965;
+        Fri, 27 Nov 2026 08:57:10 -0800 (PST)
+Received: from buildhost.darklands.se ([2001:9b1:ff:d701:51eb:176f:63d9:53f8])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5c1bd04096asm6045081e87.47.2026.11.27.08.57.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Nov 2026 08:57:10 -0800 (PST)
+From: Magnus Lindholm <linmag7@gmail.com>
+To: richard.henderson@linaro.org,
+	mattst88@gmail.com,
+	linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org
+Cc: linmag7@gmail.com,
+	m.szyprowski@samsung.com,
+	kuba@kernel.org,
+	u.kleine-koenig@baylibre.com
+Subject: [PATCH v4 0/2] alpha: enable DMA CMA support
+Date: Fri, 27 Nov 2026 17:55:48 +0100
+Message-ID: <20261127165626.1352471-1-linmag7@gmail.com>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -64,90 +99,56 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
- coherent DMA
-To: Magnus Lindholm <linmag7@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
-	<u.kleine-koenig@baylibre.com>
-Cc: Jakub Kicinski <kuba@kernel.org>, richard.henderson@linaro.org,
-	mattst88@gmail.com, linux-kernel@vger.kernel.org,
-	linux-alpha@vger.kernel.org, linux-next@vger.kernel.org,
-	netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
-	will@kernel.org, Mark Brown <broonie@kernel.org>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <CA+=Fv5RttOgZp9vftYN2XfmV31TyC_o_eSejruM_bbf6v7zfBQ@mail.gmail.com>
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261127080456eucas1p1bd7e7242f8ec2c09eacb6e447ea94c14
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261124232303eucas1p10f2da7a94c8aa19fa4e406d089c1367e
-X-EPHeader: CA
-X-CMS-RootMailID: 20261124232303eucas1p10f2da7a94c8aa19fa4e406d089c1367e
-References: <20261115103809.1288167-1-linmag7@gmail.com>
-	<20261115103809.1288167-3-linmag7@gmail.com> <awVzJMLVw4wUSqky@monoceros>
-	<CGME20261124232303eucas1p10f2da7a94c8aa19fa4e406d089c1367e@eucas1p1.samsung.com>
-	<CA+=Fv5QJxoxEoKxRpm5Hisdf=y+VpmM-s_VBC1tDQ2FTCfb08w@mail.gmail.com>
-	<3467269e-9929-4c9f-bc19-847976f49527@samsung.com>
-	<awa6Owm3eDW3EitJ@monoceros>
-	<CA+=Fv5RttOgZp9vftYN2XfmV31TyC_o_eSejruM_bbf6v7zfBQ@mail.gmail.com>
 
-On 25.11.2026 12:52, Magnus Lindholm wrote:
-> On Wed, Nov 25, 2026 at 11:53 AM Uwe Kleine-König
-> <u.kleine-koenig@baylibre.com> wrote:
->> On Wed, Nov 25, 2026 at 09:54:08AM +0100, Marek Szyprowski wrote:
->>> On 25.11.2026 00:22, Magnus Lindholm wrote:
->>>> Thanks for catching this and identifying the interacting commits.
->>>>
->>>> I reproduced the error on next-20261123. In
->>>> arch/alpha/kernel/pci_iommu.c, I changed:
->>>>
->>>> page = (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev, size, gfp);
->>>>
->>>> to:
->>>>
->>>> page = (gfp & GFP_DMA) ? NULL :
->>>> dma_alloc_contiguous(dev, size, gfp, dev_to_node(dev));
->>>>
->>>> This fixes the allmodconfig pci_iommu.o build. A full DP264 UP build
->>>> with CMA enabled also passed, as did an object build with CMA disabled.
->>>> The full allmodconfig build hit an unrelated cgroup sample error
->>>> involving PATH_MAX and LINE_MAX.
->>>>
->>>> I'd prefer to keep the Alpha tree independent of the DMA series.
->> That's up to you, but in my eyes merging in the immutable branch
->> provided by Jakub into your tree (or rebasing on top of it as suggested
->> by Marek) is really the easiest option. That way you don't have to wait
->> for the change to hit Linus' tree and there is no further need for
->> coordination or others paying attention to not create non-bisectable
->> commit graphs.
->>
->> However looking at the immutable branch I see it contains both the dma
->> API change and then separately various adaptions to ethernet drivers.
->> IMHO the immutable branch should only contain the API changes (that is
->> the commits up to 31f7e12d621b) to reduce the amount of possible
->> conflict.
-> Thanks, that makes sense. I guess best is for me  to rebase the Alpha changes
-> onto the shared DMA API changes and update the caller in my CMA commit.
->
-> As you point out, using only the four API commits through 31f7e12d621b
-> would avoid bringing the Ethernet driver conversions into the Alpha tree.
->
-> Jakub, Marek, would that commit be a suitable immutable base for this?
+This series enables CMA for Alpha coherent DMA allocations and parses
+early parameters before reserving the CMA area.
 
-Yes, that would also work.
+Changes in v4:
+- Rebase onto Marek's stable dma_alloc_coherent_node_api tag.
+- Pass dev_to_node(dev) as the fourth argument to dma_alloc_contiguous(),
+  preserving the previous device-node selection.
 
+Patch 1 is unchanged. Matt Turner's Reviewed-by tags are retained on
+both patches.
 
-> A separate stable tag at that point would be helpful.
->
-> I'll then rebase, retest, and notify Mark before updating for-next.
+Built with GCC 14.2.1 and boot-tested on a three-CPU AlphaServer ES40
+(DP264 SMP), with CMA, compaction and jump labels enabled. Booting with
+cma=64M reserved 64 MiB as requested.
 
-Here is a stable tag for You, I'm sorry for the delay:
+A private coherent-DMA probe passed 39 allocation/free cases across
+all three CPUs. Requests included 1 byte, 8 KiB - 1, 8 KiB, 8 KiB + 1,
+12 KiB, 16 KiB - 1, 16 KiB, 16 KiB + 1, 20 KiB, 24 KiB and 32 MiB.
+Checks covered zeroing, data integrity, page-rounded CMA usage and
+restoration of the CMA bitmap after free. GFP_ATOMIC requests of
+12 KiB and 20 KiB correctly bypassed CMA on every CPU. No new kernel
+errors appeared during the tests; loading the private probe produced
+only the expected out-of-tree-module taint. No hardware DMA transfers
+were submitted by the probe.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git dma_alloc_coherent_node_api
+These two commits were tested in the complete Alpha queue at
+b4a6d2833fb56d3cf04c4d243f00b7a3f92bd43a. The exported patches also
+apply directly to the API tag below. Both pass checkpatch.
+Other reservation-size boots and no-IOMMU testing remain outstanding.
 
-Best regards
+Base repository:
+https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git
+Tag: dma_alloc_coherent_node_api
+
+Previous version:
+https://lore.kernel.org/r/20261115103809.1288167-1-linmag7@gmail.com
+
+Magnus Lindholm (2):
+  alpha: parse early parameters before reserving contiguous memory
+  alpha: enable contiguous memory allocation for coherent DMA
+
+ .../io/dma-contiguous/arch-support.txt        |  2 +-
+ arch/alpha/Kconfig                            |  1 +
+ arch/alpha/kernel/pci_iommu.c                 | 20 +++++++++++++------
+ arch/alpha/kernel/setup.c                     | 20 +++++++++++++++++++
+ 4 files changed, 36 insertions(+), 7 deletions(-)
+
+base-commit: 31f7e12d621bc5b1dcda0b5e6855e39adc8aaebd
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.43.0
 
