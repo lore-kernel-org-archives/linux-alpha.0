@@ -1,56 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795661341;
-	b=o6hV83k2n6NZ/WxzRL+hzrAVZ8Q72qo+IvWpO+hOFycVFo9hycGMS9O2wOadMa82WDcE
-	 XscmmKXsE8z6vNKEVmADaNROfkTQ8J2yXz14tWdatis/+qR5q0cE2XTfbUilRrPLpCZyn
-	 E9Ni58l/ixbqhbCXF8Pv4hfknRGCWyNY+wmRIiVS/5ZbzMmKrMFcVtX9SO9HbK/97TWvc
-	 f4DeXkBsJL5Pe/KwKsJKCPiKnfMFSQ7L+PdNA2YNDGEVgpF3w7VRPMGBJYRFgGO+TRtv1
-	 0pLR8ROc3iF0H+Zx+SDodYBtzmS+zceIHph7SZj0QiESM0cHvmCu8ehqfHobupWtD7A==
+	t=1795766706;
+	b=eINvuR2R+UwN3vJm+P7QlbG1SIcSX9H8r3Bab1EHdJn8P3yuCy2BL29XpLIYq6wPOJ4j
+	 qr49FMowVY9tQ8XWbFijuZtkImBttDUTchbKA1O93ei80+HxGAUxr0J/DLdNlcyPGAUsS
+	 IprEzLphX0fUl2K4jKW/k5q0BCzVmcnrDx65sa0IoxXCNJPzYxDv/iTRVsSvvIL1eJhRx
+	 2hZS86eJjkl3hbtJlNdXViEMBJD7OTdxMtT6T4B8IEdO29OeySzencw77BvPGCUz+BZQ7
+	 Ovw8iRk+3r3Vrz02Q8iYf1XzLMF3lwBQC6Z3xqw0JmELLwW6wCsygpdrZWwQLitExXg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795661341;
-	h=Received:DKIM-Signature:To:Cc:Subject:From:In-Reply-To:Message-ID:
-	 References:Date:MIME-Version:Content-Type;
-	bh=+Ba94K1J0+ldR1shzY2hFpeSi+738mOCdRdjKxYDuL0=;
-	b=EAHNAQ92QFJahoS6exv2UBIoiojh6PYhhO9wQtA2VMaV016lfcKjq3F2weGiUC865gwQ
-	 VtNoFjfFyxtAeVXEc1khe7VZN8SG77MgPLorvurp2aRAM1ayzmzjYUKTALak7gv6FZQb2
-	 APT0AHiC1VxDkDeh0p3u6UcVxQDjKM3Y7Mun6Ql9yjK8vN94aOv/RI6zKUGV92my80daE
-	 AwqkuvogITm3Rk2pM07d2HZ5n1sLnd8XmmuemjuB4hmyQu2lyAvKGvQqh59kBAkldbSWe
-	 ATYpFK6+x4libVRKOXC4g2oWN0te1yUReOEa7k7T/3Jg302FehzuvDv8tv1RnpLwGPQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795766706;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=b9EsOhhl5MbUkBFLbXLeMzsujw/yfpfNAxfoGKVG51k=;
+	b=X1byaDWGlnbtLL8wtD0AZ2gsQ1X5/VnwaS/6RpEH1lH09EaAUZ0mV5Yrnwd00p0jGY/Q
+	 JIWTmB7H6M1fnY/tnOLWGUvV+nLKsi9MUW7m99f6ESD4X2QgEJl8044fjK7/Di6Ab7Fzg
+	 xV+c75Bvz6IFQibeJSFNk9mtaBOFtpjfBNznMPhiRlFr66/c2tcWJcPF/t5EPgTkgWDDM
+	 H+Hwk7mpSMypvC5to9Fn+8x7pZ9BDYEB6xxFFKroZAoAaJfFWwX8zFCEOUMIMNGOG4BLP
+	 X/w+L8Q9/q4mFsqTZo6YOKRMiB60pXd7qkFm59pKyvsACVINogPyM1VG8Q6jGFV1UxA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZIhwKiDC;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=lmKLhork;
+	arc=none smtp.remote-ip=210.118.77.12
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AE56606A31E;
-	Thu, 26 Nov 2026 02:49:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C6AF606A326
+	for <linux-alpha@vger.kernel.org>; Fri, 27 Nov 2026 08:05:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9C6AF606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZIhwKiDC
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F3DD1F000C0;
-	Thu, 26 Nov 2026 02:49:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795661340;
-	bh=+Ba94K1J0+ldR1shzY2hFpeSi+738mOCdRdjKxYDuL0=;
-	h=To:Cc:Subject:From:In-Reply-To:References:Date;
-	b=ZIhwKiDCGIOU+tn/dwLSp9MzukekwRcckQRabyrFBwW1s8FKMQDaRi3jUoH1PBCpT
-	 OKflu/NLQNoC3wr8ljTy6EEADwlpQSLrJtZYpKqK1AOqLlALEdzoUTwW+/ME83ASWQ
-	 Exc+Gs2AZxJQAhxLL0TqVu7BGPRZl2TGp2/t3uPeM+uFx3AtpSq8nNCHw4ZuvULZAo
-	 t96P+dWA9euA+RC0A95VBN3vRNajaxFm1xIQU9D7LisqC3v/XTCozM+6K7v0S+RSWd
-	 3gf1Kpd1R6+V6CK1zVr+k6yVNykgqDB11mgV1mpp6DirdM37nUMovgxgkDUgLEKCNH
-	 WkFGWkbrf7GUw==
-To: Geert Uytterhoeven <geert@kernel.org>
-Cc: "James E . J . Bottomley" <James.Bottomley@HansenPartnership.com>,
-  "Martin K . Petersen" <mkp@kernel.org>,  Kars de Jong
- <jongk@linux-m68k.org>,  linux-scsi@vger.kernel.org,
-  linux-parisc@vger.kernel.org,  linux-alpha@vger.kernel.org,  Geert
- Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] scsi: 53c700: Fix hostdata[] size on 64-bit
-From: "Martin K. Petersen" <mkp@kernel.org>
-In-Reply-To: <0df0fae8a75e46f2f1613d398c1e137211d924a0.1795423196.git.geert@linux-m68k.org>
-Message-ID: <yq1ik1kjoj1.fsf@mail.kernel.org>
-References: <0df0fae8a75e46f2f1613d398c1e137211d924a0.1795423196.git.geert@linux-m68k.org>
-Date: Wed, 25 Nov 2026 21:48:59 -0500
+	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=lmKLhork
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261127080456euoutp020ac9029d37dc7aa5c1aded39efd05634~r2Evn95bu0971009710euoutp02R
+	for <linux-alpha@vger.kernel.org>; Fri, 27 Nov 2026 08:04:56 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261127080456euoutp020ac9029d37dc7aa5c1aded39efd05634~r2Evn95bu0971009710euoutp02R
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1795766697;
+	bh=b9EsOhhl5MbUkBFLbXLeMzsujw/yfpfNAxfoGKVG51k=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=lmKLhorkbhc96ziVTzFCZyFRqhVWslhZeZnDqzPfl768Kl0OrzH63gjdzkdEkaj8p
+	 ezMVDO853DxbSEgRO37CBAhlVcOOzG7BjxOSX9wfF0FfHqCUPWKWrkX9hG6n+jp0eJ
+	 ym+Poojt1SNdAbG2//977sH6yzrW3gmKPixHvbNI=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261127080456eucas1p1bd7e7242f8ec2c09eacb6e447ea94c14~r2EvOSE7M3256732567eucas1p1W;
+	Fri, 27 Nov 2026 08:04:56 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20261127080455eusmtip2fa0050c4f8fdaa9edae69f83622844aa~r2EuKqPjg1750517505eusmtip2x;
+	Fri, 27 Nov 2026 08:04:55 +0000 (GMT)
+Message-ID: <a9a5161a-195f-497e-9dae-76142a4b5997@samsung.com>
+Date: Fri, 27 Nov 2026 09:04:55 +0100
 X-Mailing-List: linux-alpha@vger.kernel.org
 List-Id: <linux-alpha.vger.kernel.org>
 List-Post: <mailto:linux-alpha@vger.kernel.org>
@@ -60,17 +64,90 @@ List-Unsubscribe: <mailto:linux-alpha+unsubscribe@vger.kernel.org>
 List-Owner: <mailto:linux-alpha+owner@vger.kernel.org>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v3 2/2] alpha: enable contiguous memory allocation for
+ coherent DMA
+To: Magnus Lindholm <linmag7@gmail.com>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+	<u.kleine-koenig@baylibre.com>
+Cc: Jakub Kicinski <kuba@kernel.org>, richard.henderson@linaro.org,
+	mattst88@gmail.com, linux-kernel@vger.kernel.org,
+	linux-alpha@vger.kernel.org, linux-next@vger.kernel.org,
+	netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+	will@kernel.org, Mark Brown <broonie@kernel.org>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <CA+=Fv5RttOgZp9vftYN2XfmV31TyC_o_eSejruM_bbf6v7zfBQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20261127080456eucas1p1bd7e7242f8ec2c09eacb6e447ea94c14
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261124232303eucas1p10f2da7a94c8aa19fa4e406d089c1367e
+X-EPHeader: CA
+X-CMS-RootMailID: 20261124232303eucas1p10f2da7a94c8aa19fa4e406d089c1367e
+References: <20261115103809.1288167-1-linmag7@gmail.com>
+	<20261115103809.1288167-3-linmag7@gmail.com> <awVzJMLVw4wUSqky@monoceros>
+	<CGME20261124232303eucas1p10f2da7a94c8aa19fa4e406d089c1367e@eucas1p1.samsung.com>
+	<CA+=Fv5QJxoxEoKxRpm5Hisdf=y+VpmM-s_VBC1tDQ2FTCfb08w@mail.gmail.com>
+	<3467269e-9929-4c9f-bc19-847976f49527@samsung.com>
+	<awa6Owm3eDW3EitJ@monoceros>
+	<CA+=Fv5RttOgZp9vftYN2XfmV31TyC_o_eSejruM_bbf6v7zfBQ@mail.gmail.com>
+
+On 25.11.2026 12:52, Magnus Lindholm wrote:
+> On Wed, Nov 25, 2026 at 11:53 AM Uwe Kleine-König
+> <u.kleine-koenig@baylibre.com> wrote:
+>> On Wed, Nov 25, 2026 at 09:54:08AM +0100, Marek Szyprowski wrote:
+>>> On 25.11.2026 00:22, Magnus Lindholm wrote:
+>>>> Thanks for catching this and identifying the interacting commits.
+>>>>
+>>>> I reproduced the error on next-20261123. In
+>>>> arch/alpha/kernel/pci_iommu.c, I changed:
+>>>>
+>>>> page = (gfp & GFP_DMA) ? NULL : dma_alloc_contiguous(dev, size, gfp);
+>>>>
+>>>> to:
+>>>>
+>>>> page = (gfp & GFP_DMA) ? NULL :
+>>>> dma_alloc_contiguous(dev, size, gfp, dev_to_node(dev));
+>>>>
+>>>> This fixes the allmodconfig pci_iommu.o build. A full DP264 UP build
+>>>> with CMA enabled also passed, as did an object build with CMA disabled.
+>>>> The full allmodconfig build hit an unrelated cgroup sample error
+>>>> involving PATH_MAX and LINE_MAX.
+>>>>
+>>>> I'd prefer to keep the Alpha tree independent of the DMA series.
+>> That's up to you, but in my eyes merging in the immutable branch
+>> provided by Jakub into your tree (or rebasing on top of it as suggested
+>> by Marek) is really the easiest option. That way you don't have to wait
+>> for the change to hit Linus' tree and there is no further need for
+>> coordination or others paying attention to not create non-bisectable
+>> commit graphs.
+>>
+>> However looking at the immutable branch I see it contains both the dma
+>> API change and then separately various adaptions to ethernet drivers.
+>> IMHO the immutable branch should only contain the API changes (that is
+>> the commits up to 31f7e12d621b) to reduce the amount of possible
+>> conflict.
+> Thanks, that makes sense. I guess best is for me  to rebase the Alpha changes
+> onto the shared DMA API changes and update the caller in my CMA commit.
+>
+> As you point out, using only the four API commits through 31f7e12d621b
+> would avoid bringing the Ethernet driver conversions into the Alpha tree.
+>
+> Jakub, Marek, would that commit be a suitable immutable base for this?
+
+Yes, that would also work.
 
 
-Geert,
+> A separate stable tag at that point would be helpful.
+>
+> I'll then rebase, retest, and notify Mark before updating for-next.
 
-> NCR_700_detect() allocates four bytes for a single-entry hostdata
-> array, to store the NCR_700_Host_Parameters pointer. However, hostdata
-> is an array of unsigned longs, thus storing a pointer or unsigned long
-> causes a buffer overflow on 64-bit platforms.
+Here is a stable tag for You, I'm sorry for the delay:
 
-Applied to 7.5/scsi-staging, thanks!
+https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git dma_alloc_coherent_node_api
 
+Best regards
 -- 
-Martin K. Petersen
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
